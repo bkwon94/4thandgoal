@@ -30,7 +30,7 @@ const REVEAL_PAGE = sitePage(`<main style="height:3000px">Home</main>
     }).observe(document.getElementById("late"));
   </script>`);
 
-type Fixture = { site: string; scratch: string; folder: (id: string) => string; lines: string[] };
+type Fixture = { root: string; scratch: string; folder: (id: string) => string; lines: string[] };
 
 /*
  * A page for the verbs. Each event that a verb sets off adds one mark to the URL hash, so the url file of a step list
@@ -69,9 +69,17 @@ const VERBS_PAGE = sitePage(`<a id="to-week" href="/week-07/" style="display:blo
 /* The page that the link of the verbs page opens. It is green, so a shot after the click differs from the shot before. */
 const WEEK_PAGE = sitePage(`<div style="height:200px;background:#00ff00">Week 7</div>`);
 
+/* The temp roots of the fixtures of the running test. The hook below removes them, so no test cleans up for itself. */
+const roots: string[] = [];
+
+test.afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true });
+});
+
 /* A temp site with a home page and a 404.html, and a temp scratch root with one step list for each entry of lists. */
 function fixture(lists: Record<string, unknown>): Fixture {
   const root = mkdtempSync(join(tmpdir(), "evidence-"));
+  roots.push(root);
   const site = join(root, "site");
   const scratch = join(root, "scratch");
   mkdirSync(site);
@@ -86,7 +94,7 @@ function fixture(lists: Record<string, unknown>): Fixture {
     mkdirSync(folder(id), { recursive: true });
     writeFileSync(join(folder(id), "steps.json"), JSON.stringify(list));
   }
-  return { site: root, scratch, folder, lines: [] };
+  return { root, scratch, folder, lines: [] };
 }
 
 async function run(browser: import("@playwright/test").Browser, fx: Fixture): Promise<void> {
@@ -94,27 +102,23 @@ async function run(browser: import("@playwright/test").Browser, fx: Fixture): Pr
     scratch: fx.scratch,
     slug: "demo",
     browser,
-    serve: () => serveDir(join(fx.site, "site")),
+    serve: () => serveDir(join(fx.root, "site")),
     log: (line) => fx.lines.push(line),
   });
 }
 
 test("a route-only step list gives six shots named <width>-<theme>.png beside its steps.json", async ({ browser }) => {
   const fx = fixture({ "AT-1": { route: "/" } });
-  try {
-    await run(browser, fx);
-    expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([
-      "1280-dark.png",
-      "1280-light.png",
-      "375-dark.png",
-      "375-light.png",
-      "768-dark.png",
-      "768-light.png",
-      "steps.json",
-    ]);
-  } finally {
-    rmSync(fx.site, { recursive: true });
-  }
+  await run(browser, fx);
+  expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([
+    "1280-dark.png",
+    "1280-light.png",
+    "375-dark.png",
+    "375-light.png",
+    "768-dark.png",
+    "768-light.png",
+    "steps.json",
+  ]);
 });
 
 /* The color of one pixel of a PNG as [r, g, b]. The browser decodes the file, so the test needs no image package. */
@@ -138,24 +142,16 @@ async function pixel(page: import("@playwright/test").Page, file: string, x: num
 
 test("the light shot is light and the dark shot is dark", async ({ browser, page }) => {
   const fx = fixture({ "AT-1": { route: "/" } });
-  try {
-    await run(browser, fx);
-    expect(await pixel(page, join(fx.folder("AT-1"), "1280-light.png"), 600, 10)).toEqual([255, 255, 255]);
-    expect(await pixel(page, join(fx.folder("AT-1"), "1280-dark.png"), 600, 10)).toEqual([0, 0, 0]);
-  } finally {
-    rmSync(fx.site, { recursive: true });
-  }
+  await run(browser, fx);
+  expect(await pixel(page, join(fx.folder("AT-1"), "1280-light.png"), 600, 10)).toEqual([255, 255, 255]);
+  expect(await pixel(page, join(fx.folder("AT-1"), "1280-dark.png"), 600, 10)).toEqual([0, 0, 0]);
 });
 
 test("a section that reveals on scroll shows in the full-page shot", async ({ browser, page }) => {
   const fx = fixture({ "AT-1": { route: "/" } });
-  try {
-    await run(browser, fx);
-    // The late section sits at 3000px to 3400px. Shown, it is red; hidden, the page background shows through.
-    expect(await pixel(page, join(fx.folder("AT-1"), "375-dark.png"), 100, 3200)).toEqual([255, 0, 0]);
-  } finally {
-    rmSync(fx.site, { recursive: true });
-  }
+  await run(browser, fx);
+  // The late section sits at 3000px to 3400px. Shown, it is red; hidden, the page background shows through.
+  expect(await pixel(page, join(fx.folder("AT-1"), "375-dark.png"), 100, 3200)).toEqual([255, 0, 0]);
 });
 
 /*
@@ -176,37 +172,29 @@ test("a shot after a scroll shows the page at its scroll position, not at the to
   const fx = fixture({
     "AT-1": { route: "/sticky/", steps: [{ shot: "top" }, { scroll: "end" }, { shot: "end" }], widths: [1280], themes: ["dark"] },
   });
-  mkdirSync(join(fx.site, "site", "sticky"));
-  writeFileSync(join(fx.site, "site", "sticky", "index.html"), STICKY_PAGE);
-  try {
-    await run(browser, fx);
-    const band = async (name: string) => {
-      const file = join(fx.folder("AT-1"), `${name}-1280-dark.png`);
-      // The full-page shot draws the fixed band where the viewport sits. The band is 100px high, so a row every 100px meets it.
-      const rows = [];
-      for (let y = 50; y < 4000; y += 100) rows.push(await pixel(page, file, 300, y));
-      return rows;
-    };
-    expect(await band("top")).toContainEqual([255, 0, 0]);
-    expect(await band("top")).not.toContainEqual([0, 0, 255]);
-    expect(await band("end")).toContainEqual([0, 0, 255]);
-    expect(await band("end")).not.toContainEqual([255, 0, 0]);
-  } finally {
-    rmSync(fx.site, { recursive: true });
-  }
+  mkdirSync(join(fx.root, "site", "sticky"));
+  writeFileSync(join(fx.root, "site", "sticky", "index.html"), STICKY_PAGE);
+  await run(browser, fx);
+  const band = async (name: string) => {
+    const file = join(fx.folder("AT-1"), `${name}-1280-dark.png`);
+    // The full-page shot draws the fixed band where the viewport sits. The band is 100px high, so a row every 100px meets it.
+    const rows = [];
+    for (let y = 50; y < 4000; y += 100) rows.push(await pixel(page, file, 300, y));
+    return rows;
+  };
+  expect(await band("top")).toContainEqual([255, 0, 0]);
+  expect(await band("top")).not.toContainEqual([0, 0, 255]);
+  expect(await band("end")).toContainEqual([0, 0, 255]);
+  expect(await band("end")).not.toContainEqual([255, 0, 0]);
 });
 
 test("a missing path shows the 404.html of the folder in each shot", async ({ browser, page }) => {
   const fx = fixture({ "AT-1": { route: "/no/such/page/" } });
-  try {
-    await run(browser, fx);
-    const shots = readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png"));
-    expect(shots).toHaveLength(6);
-    // Only the 404.html of the folder has the green band. A plain server 404 page has no color at all.
-    for (const name of shots) expect(await pixel(page, join(fx.folder("AT-1"), name), 300, 100), name).toEqual([0, 255, 0]);
-  } finally {
-    rmSync(fx.site, { recursive: true });
-  }
+  await run(browser, fx);
+  const shots = readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png"));
+  expect(shots).toHaveLength(6);
+  // Only the 404.html of the folder has the green band. A plain server 404 page has no color at all.
+  for (const name of shots) expect(await pixel(page, join(fx.folder("AT-1"), name), 300, 100), name).toEqual([0, 255, 0]);
 });
 
 test("a bad verb, a bad key, and a bad value each stop the run before the first shot, with the file and the step named", async ({ browser }) => {
@@ -227,13 +215,9 @@ test("a bad verb, a bad key, and a bad value each stop the run before the first 
   ];
   for (const { list, error } of cases) {
     const fx = fixture({ "AT-1": { route: "/" }, "AT-2": list });
-    try {
-      await expect(run(browser, fx)).rejects.toThrow(error);
-      const files = [...readdirSync(fx.folder("AT-1")), ...readdirSync(fx.folder("AT-2"))];
-      expect(files.filter((file) => file.endsWith(".png"))).toEqual([]);
-    } finally {
-      rmSync(fx.site, { recursive: true });
-    }
+    await expect(run(browser, fx)).rejects.toThrow(error);
+    const files = [...readdirSync(fx.folder("AT-1")), ...readdirSync(fx.folder("AT-2"))];
+    expect(files.filter((file) => file.endsWith(".png"))).toEqual([]);
   }
 });
 
@@ -268,32 +252,28 @@ test("each verb runs: a click, a fill, a scroll to a selector and to the end, an
     // The last wait lets the page open before the shot after the last step.
     "AT-8": { route: "/verbs/", steps: [{ click: "#to-week" }, { url: true }, { wait: "url" }], ...one },
   });
-  try {
-    await run(browser, fx);
-    // AT-1 has shot steps, so the runner takes only the named shots, and no shot after the last step.
-    const names = ["before", "after-tap"].flatMap((name) =>
-      [375, 1280].flatMap((width) => ["light", "dark"].map((theme) => `${name}-${width}-${theme}.png`)),
-    );
-    const urls = [375, 1280].flatMap((width) => ["light", "dark"].map((theme) => `url-${width}-${theme}.txt`));
-    expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([...names, ...urls, "steps.json"].sort());
-    for (const name of urls) expect(urlOf(fx.folder("AT-1"), name), name).toBe("/week-07/");
-    // The shot before the click shows the blue link; the shot after it shows the green week page.
-    expect(await pixel(page, join(fx.folder("AT-1"), "before-1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
-    expect(await pixel(page, join(fx.folder("AT-1"), "after-tap-1280-dark.png"), 300, 100)).toEqual([0, 255, 0]);
+  await run(browser, fx);
+  // AT-1 has shot steps, so the runner takes only the named shots, and no shot after the last step.
+  const names = ["before", "after-tap"].flatMap((name) =>
+    [375, 1280].flatMap((width) => ["light", "dark"].map((theme) => `${name}-${width}-${theme}.png`)),
+  );
+  const urls = [375, 1280].flatMap((width) => ["light", "dark"].map((theme) => `url-${width}-${theme}.txt`));
+  expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([...names, ...urls, "steps.json"].sort());
+  for (const name of urls) expect(urlOf(fx.folder("AT-1"), name), name).toBe("/week-07/");
+  // The shot before the click shows the blue link; the shot after it shows the green week page.
+  expect(await pixel(page, join(fx.folder("AT-1"), "before-1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
+  expect(await pixel(page, join(fx.folder("AT-1"), "after-tap-1280-dark.png"), 300, 100)).toEqual([0, 255, 0]);
 
-    // A step list with no shot step gets one shot after the last step, with the plain name.
-    expect(readdirSync(fx.folder("AT-2")).sort()).toEqual(["1280-dark.png", "steps.json", "url-1280-dark.txt"]);
-    expect(urlOf(fx.folder("AT-2"), "url-1280-dark.txt")).toContain("name-Ja");
-    expect(urlOf(fx.folder("AT-3"), "url-1280-dark.txt")).toContain("far");
-    expect(urlOf(fx.folder("AT-3"), "url-1280-dark.txt")).not.toContain("bottom");
-    expect(urlOf(fx.folder("AT-4"), "url-1280-dark.txt")).toContain("bottom");
-    expect(urlOf(fx.folder("AT-5"), "url-1280-dark.txt")).toContain("ready");
-    expect(urlOf(fx.folder("AT-6"), "url-1280-dark.txt")).toContain("ready");
-    expect(urlOf(fx.folder("AT-7"), "url-1280-dark.txt")).not.toContain("ready");
-    expect(urlOf(fx.folder("AT-8"), "url-1280-dark.txt")).toMatch(/^\/verbs\//);
-  } finally {
-    rmSync(fx.site, { recursive: true });
-  }
+  // A step list with no shot step gets one shot after the last step, with the plain name.
+  expect(readdirSync(fx.folder("AT-2")).sort()).toEqual(["1280-dark.png", "steps.json", "url-1280-dark.txt"]);
+  expect(urlOf(fx.folder("AT-2"), "url-1280-dark.txt")).toContain("name-Ja");
+  expect(urlOf(fx.folder("AT-3"), "url-1280-dark.txt")).toContain("far");
+  expect(urlOf(fx.folder("AT-3"), "url-1280-dark.txt")).not.toContain("bottom");
+  expect(urlOf(fx.folder("AT-4"), "url-1280-dark.txt")).toContain("bottom");
+  expect(urlOf(fx.folder("AT-5"), "url-1280-dark.txt")).toContain("ready");
+  expect(urlOf(fx.folder("AT-6"), "url-1280-dark.txt")).toContain("ready");
+  expect(urlOf(fx.folder("AT-7"), "url-1280-dark.txt")).not.toContain("ready");
+  expect(urlOf(fx.folder("AT-8"), "url-1280-dark.txt")).toMatch(/^\/verbs\//);
 });
 
 test("widths [768, 1280] writes no 375 file, and themes [light] writes no dark file", async ({ browser }) => {
@@ -301,26 +281,22 @@ test("widths [768, 1280] writes no 375 file, and themes [light] writes no dark f
     "AT-1": { route: "/", widths: [768, 1280] },
     "AT-2": { route: "/", themes: ["light"] },
   });
-  try {
-    await run(browser, fx);
-    expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([
-      "1280-dark.png",
-      "1280-light.png",
-      "768-dark.png",
-      "768-light.png",
-      "steps.json",
-    ]);
-    expect(readdirSync(fx.folder("AT-2")).sort()).toEqual(["1280-light.png", "375-light.png", "768-light.png", "steps.json"]);
-  } finally {
-    rmSync(fx.site, { recursive: true });
-  }
+  await run(browser, fx);
+  expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([
+    "1280-dark.png",
+    "1280-light.png",
+    "768-dark.png",
+    "768-light.png",
+    "steps.json",
+  ]);
+  expect(readdirSync(fx.folder("AT-2")).sort()).toEqual(["1280-light.png", "375-light.png", "768-light.png", "steps.json"]);
 });
 
 /* A serve that gives each client its own folder with its own band color, and counts each serve of each client. */
 function clientServe(fx: Fixture, colors: Record<string, string>): { serve: (client: string) => ReturnType<typeof serveDir>; served: string[] } {
   const served: string[] = [];
   for (const [client, color] of Object.entries(colors)) {
-    const site = join(fx.site, client);
+    const site = join(fx.root, client);
     mkdirSync(site);
     writeFileSync(join(site, "index.html"), sitePage(`<div style="height:200px;background:${color}">${client}</div>`));
   }
@@ -328,7 +304,7 @@ function clientServe(fx: Fixture, colors: Record<string, string>): { serve: (cli
     served,
     serve: (client) => {
       served.push(client);
-      return serveDir(join(fx.site, client));
+      return serveDir(join(fx.root, client));
     },
   };
 }
@@ -339,19 +315,15 @@ test("two tests with two clients serve each client one time and put the client f
   const both = { route: "/", clients: ["cpc", "norcal"] };
   const fx = fixture({ "AT-1": both, "AT-2": both });
   const site = clientServe(fx, { cpc: "#0000ff", norcal: "#ffff00" });
-  try {
-    await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
-    expect(site.served).toEqual(["cpc", "norcal"]);
-    for (const id of ["AT-1", "AT-2"]) {
-      const shots = readdirSync(fx.folder(id)).filter((file) => file.endsWith(".png"));
-      expect(shots.sort()).toEqual(
-        ["cpc", "norcal"].flatMap((client) => [375, 768, 1280].flatMap((width) => [`${client}-${width}-dark.png`, `${client}-${width}-light.png`])).sort(),
-      );
-      expect(await pixel(page, join(fx.folder(id), "cpc-1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
-      expect(await pixel(page, join(fx.folder(id), "norcal-1280-dark.png"), 300, 100)).toEqual([255, 255, 0]);
-    }
-  } finally {
-    rmSync(fx.site, { recursive: true });
+  await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
+  expect(site.served).toEqual(["cpc", "norcal"]);
+  for (const id of ["AT-1", "AT-2"]) {
+    const shots = readdirSync(fx.folder(id)).filter((file) => file.endsWith(".png"));
+    expect(shots.sort()).toEqual(
+      ["cpc", "norcal"].flatMap((client) => [375, 768, 1280].flatMap((width) => [`${client}-${width}-dark.png`, `${client}-${width}-light.png`])).sort(),
+    );
+    expect(await pixel(page, join(fx.folder(id), "cpc-1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
+    expect(await pixel(page, join(fx.folder(id), "norcal-1280-dark.png"), 300, 100)).toEqual([255, 255, 0]);
   }
 });
 
@@ -359,27 +331,19 @@ test("a test with no clients key shoots cpc with no prefix, and a test of one cl
   const fx = fixture({ "AT-1": { route: "/" }, "AT-2": { route: "/", clients: ["norcal"] } });
   const site = clientServe(fx, { cpc: "#0000ff", norcal: "#ffff00" });
   const plain = [375, 768, 1280].flatMap((width) => [`${width}-dark.png`, `${width}-light.png`]).sort();
-  try {
-    await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
-    expect(site.served).toEqual(["cpc", "norcal"]);
-    expect(readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png")).sort()).toEqual(plain);
-    expect(readdirSync(fx.folder("AT-2")).filter((file) => file.endsWith(".png")).sort()).toEqual(plain);
-    expect(await pixel(page, join(fx.folder("AT-1"), "1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
-    expect(await pixel(page, join(fx.folder("AT-2"), "1280-dark.png"), 300, 100)).toEqual([255, 255, 0]);
-  } finally {
-    rmSync(fx.site, { recursive: true });
-  }
+  await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
+  expect(site.served).toEqual(["cpc", "norcal"]);
+  expect(readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png")).sort()).toEqual(plain);
+  expect(readdirSync(fx.folder("AT-2")).filter((file) => file.endsWith(".png")).sort()).toEqual(plain);
+  expect(await pixel(page, join(fx.folder("AT-1"), "1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
+  expect(await pixel(page, join(fx.folder("AT-2"), "1280-dark.png"), 300, 100)).toEqual([255, 255, 0]);
 });
 
 test("a bad clients value stops the run before the first shot, with the file named", async ({ browser }) => {
   for (const clients of ["cpc", [], ["cpc", "cpc"], [7]]) {
     const fx = fixture({ "AT-1": { route: "/" }, "AT-2": { route: "/", clients } });
-    try {
-      await expect(run(browser, fx)).rejects.toThrow(/AT-2[/\\]steps\.json: "clients" must be a list of distinct client slugs/);
-      expect(readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png"))).toEqual([]);
-    } finally {
-      rmSync(fx.site, { recursive: true });
-    }
+    await expect(run(browser, fx)).rejects.toThrow(/AT-2[/\\]steps\.json: "clients" must be a list of distinct client slugs/);
+    expect(readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png"))).toEqual([]);
   }
 });
 
@@ -388,30 +352,25 @@ test("a test with two clients puts the client first in a named shot and in the u
     "AT-1": { route: "/", steps: [{ shot: "top" }, { url: true }], widths: [1280], themes: ["dark"], clients: ["cpc", "norcal"] },
   });
   const site = clientServe(fx, { cpc: "#0000ff", norcal: "#ffff00" });
-  try {
-    await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
-    expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([
-      "cpc-top-1280-dark.png",
-      "cpc-url-1280-dark.txt",
-      "norcal-top-1280-dark.png",
-      "norcal-url-1280-dark.txt",
-      "steps.json",
-    ]);
-  } finally {
-    rmSync(fx.site, { recursive: true });
-  }
+  await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
+  expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([
+    "cpc-top-1280-dark.png",
+    "cpc-url-1280-dark.txt",
+    "norcal-top-1280-dark.png",
+    "norcal-url-1280-dark.txt",
+    "steps.json",
+  ]);
 });
 
 test("the evidence server serves on its fixed port, so the API can allow its origin", async ({ page }) => {
   const fx = fixture({});
-  const server = await serveDir(join(fx.site, "site"), EVIDENCE_PORT);
+  const server = await serveDir(join(fx.root, "site"), EVIDENCE_PORT);
   try {
     expect(server.url).toBe(EVIDENCE_ORIGIN);
     await page.goto(`${server.url}/missing/`);
     await expect(page.locator("body")).toContainText("Lost page");
   } finally {
     await server.close();
-    rmSync(fx.site, { recursive: true });
   }
 });
 

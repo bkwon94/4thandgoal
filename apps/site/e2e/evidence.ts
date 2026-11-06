@@ -65,8 +65,6 @@ export type EvidenceTest = {
   widths: number[];
   themes: Theme[];
   clients: string[];
-  // prefix is true when the test names more than one client, so the shots of each client get distinct file names.
-  prefix: boolean;
 };
 
 export type RoundOptions = {
@@ -119,7 +117,6 @@ export function readSteps(file: string): Omit<EvidenceTest, "id" | "folder"> {
     widths: widths === undefined ? [...WIDTHS] : checkWidths(file, widths),
     themes: themes === undefined ? [...THEMES] : checkThemes(file, themes),
     clients: names,
-    prefix: names.length > 1,
   };
 }
 
@@ -227,7 +224,7 @@ async function scrollPass(page: Page): Promise<void> {
  * client overwrite the files of the first.
  */
 function shotFile(test: EvidenceTest, client: string, name: string, extension = "png"): string {
-  return join(test.folder, `${test.prefix ? `${client}-` : ""}${name}.${extension}`);
+  return join(test.folder, `${test.clients.length > 1 ? `${client}-` : ""}${name}.${extension}`);
 }
 
 /*
@@ -277,7 +274,7 @@ const shotCount = (test: EvidenceTest) =>
   test.widths.length * test.themes.length * Math.max(1, test.steps.filter((step) => "shot" in step).length);
 
 /* Takes the shots of one test for one client: its steps run once for each width and theme, each in a fresh page. */
-async function shoot(browser: Browser, url: string, test: EvidenceTest, client: string): Promise<void> {
+async function takeShots(browser: Browser, url: string, test: EvidenceTest, client: string): Promise<void> {
   for (const width of test.widths) {
     for (const theme of test.themes) {
       // A fresh page per width and theme, because openPage adds an init script that sets the theme, and a page keeps each one.
@@ -309,7 +306,7 @@ export async function runRound(options: RoundOptions): Promise<void> {
     try {
       for (const test of tests.filter((each) => each.clients.includes(client))) {
         const begin = Date.now();
-        await shoot(options.browser, server.url, test, client);
+        await takeShots(options.browser, server.url, test, client);
         const count = shotCount(test);
         options.log(`${test.id} ${test.route} ${client}: ${count} ${count === 1 ? "shot" : "shots"} in ${seconds(begin)}`);
       }
