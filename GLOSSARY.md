@@ -929,7 +929,7 @@ A player's points to date against his draft cost in his league's own draft: doll
 _Avoid_: Value (alone), ADP, Trade value (that is the chart worth of a player)
 
 **All-play wins**:
-The sum of a team's weekly all-play win rates, a tie counted as half. It is the number of head-to-head wins that the team's scores earned with an average schedule.
+The sum of a team's weekly all-play win rates, a tie counted as half. It is the number of head-to-head wins that the team's scores earned with an average schedule. The report page labels it "Wins if you played everyone", because readers do not know the term.
 _Avoid_: Expected wins (Expected points is a player term), projected wins
 
 **Schedule luck**:

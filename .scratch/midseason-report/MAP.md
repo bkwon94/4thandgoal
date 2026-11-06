@@ -36,10 +36,10 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - The spec `PRD.md` sets the packages `sim` and `midseason`, the build, the review, the publish, the takeover, the `roast` steps, and the trade lines. `decisions/11-spec-takeover-build-review-roast.md`.
 - The flow stays three acts, lean: each chapter is a headline, one visual, and 40 words of prose or fewer. Lineup choices and injury toll fold into Quick hits. The sim stays the finale, with a hero link to it. The page may stay long. `decisions/14-prototype-the-report-flow.md`.
 - Rows are Quiet text: tags are plain words with no box, cards have 8 px corners, the switch is an underline, and the awards are lines. Player points show 1 decimal place and team scores 2. "The one that got away" and Players to watch are cut. `decisions/15-prototype-the-rows-and-tags.md`.
+- The swap is a text list of each team's best and worst schedule, with no grid and no bar. The page says "Wins if you played everyone", never "All-play", with a worked example. Luck words: lucky, unlucky, and even under 0.5. `decisions/16-prototype-the-schedule-swap.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the schedule swap show on the page? `decisions/16-prototype-the-schedule-swap.md`.
 - How does the roast sit inside the prose of a chapter? `decisions/17-prototype-the-roast-in-prose.md`.
 - Where do the easter eggs of the report hide, and how does a finder win the prize? `decisions/18-grill-the-easter-eggs.md`.
 
