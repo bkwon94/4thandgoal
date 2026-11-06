@@ -1,5 +1,6 @@
 """
-The spread rule of the midseason report: each team gets 1 to 3 headlines. Arcs, awards, and the opener never move.
+The spread rule of the midseason report: each team gets 1 to 3 headlines. Arcs and awards never move. The opener is
+no headline.
 A callout moves to the next team of its ranking. PRD, "The spread rule", and decision ticket 09.
 """
 from collections.abc import Mapping, Sequence
@@ -33,7 +34,7 @@ CALLOUT_LABELS = {
     "lineup.bench": "the bench points",
 }
 
-HeadlineKind = Literal["opener", "arc", "award", "callout"]
+HeadlineKind = Literal["arc", "award", "callout"]
 
 
 class Headline(BaseModel):
@@ -41,8 +42,8 @@ class Headline(BaseModel):
     kind: HeadlineKind
     # The headline itself, such as "arc.collapse", "award.mvp", or "luck.most_better".
     key: str
-    # The key of the chapter that shows it. None for the opener, which sits above the acts.
-    chapter: str | None
+    # The key of the chapter that shows it.
+    chapter: str
     roster_id: int
     # The place of the team in the ranking of a callout. 1 when the callout names the #1 team.
     place: int = 1
@@ -59,10 +60,13 @@ class Callout(BaseModel):
 def spread_rule(fixed: Sequence[Headline], callouts: Sequence[Callout], teams: Sequence[int]) -> list[Headline]:
     """Every headline of the report: the fixed headlines as they are, then one per callout, in the order given.
 
-    The fixed headlines are the opener, the arcs, and the awards. Each is a fact about its team, so it never moves.
+    The fixed headlines are the arcs and the awards. Each is a fact about its team, so it never moves. The opener is
+    about the title race of the whole league, so it is no headline.
     Each callout names the first team of its ranking with fewer than 3 headlines, so it goes to the next team when the
     #1 team is full. Then each team with no headline, in the order of `teams`, takes the callout where it ranks best
-    from a team that keeps one or more. A callout that no team has room for names no team.
+    from a team that keeps one or more. When no such callout exists, the team takes a callout from a holder of 1
+    headline, and that holder takes another callout from a team that keeps one or more. A team can still keep no
+    headline, and `spread_warnings` names it. A callout that no team has room for names no team.
     """
     counts = {rid: 0 for rid in teams}
     for headline in fixed:
@@ -76,20 +80,53 @@ def spread_rule(fixed: Sequence[Headline], callouts: Sequence[Callout], teams: S
         holders[callout.key] = Headline(kind="callout", key=callout.key, chapter=callout.chapter, roster_id=holder,
                                         place=place)
         counts[holder] = counts.get(holder, 0) + 1
+    def give(callout: Callout, rid: int) -> None:
+        counts[holders[callout.key].roster_id] -= 1
+        holders[callout.key] = Headline(kind="callout", key=callout.key, chapter=callout.chapter, roster_id=rid,
+                                        place=callout.ranking.index(rid) + 1)
+        counts[rid] += 1
+
+    def spare(rid: int, skip: str) -> Callout | None:
+        """The callout where `rid` ranks best, other than `skip`, from a holder that keeps a headline after the move."""
+        options = [(callout.ranking.index(rid), index, callout) for index, callout in enumerate(callouts)
+                   if callout.key != skip and rid in callout.ranking and callout.key in holders
+                   and counts[holders[callout.key].roster_id] > 1]
+        return min(options, key=lambda option: option[:2])[2] if options else None
+
     for rid in teams:
         if counts[rid]:
             continue
         # The team takes the callout where it ranks best. A tie goes to the callout earlier on the page.
-        options = [(callout.ranking.index(rid), index, callout) for index, callout in enumerate(callouts)
-                   if rid in callout.ranking and callout.key in holders and counts[holders[callout.key].roster_id] > 1]
-        if not options:
+        callout = spare(rid, skip="")
+        if callout is not None:
+            give(callout, rid)
             continue
-        rank, _, callout = min(options, key=lambda option: option[:2])
-        counts[holders[callout.key].roster_id] -= 1
-        holders[callout.key] = Headline(kind="callout", key=callout.key, chapter=callout.chapter, roster_id=rid,
-                                        place=rank + 1)
-        counts[rid] += 1
+        # Else the team takes a callout whose holder has only that callout, when the holder can take another callout
+        # in its place, so the holder keeps one headline.
+        for callout in sorted((c for c in callouts if rid in c.ranking and c.key in holders),
+                              key=lambda c: c.ranking.index(rid)):
+            holder = holders[callout.key].roster_id
+            other = spare(holder, skip=callout.key)
+            if other is not None:
+                give(other, holder)
+                give(callout, rid)
+                break
     return [*fixed, *(holders[callout.key] for callout in callouts if callout.key in holders)]
+
+
+def spread_warnings(headlines: Sequence[Headline], teams: Sequence[int], names: Mapping[int, str]) -> list[str]:
+    """One plain line for each team that breaks the spread rule. The build does not fail on it, so Brian reads it in
+    the review file. A team breaks the rule when its arcs and awards alone are more than 3, because they never move,
+    or when no callout can reach it."""
+    out: list[str] = []
+    for rid in teams:
+        held = [h.key for h in headlines if h.roster_id == rid]
+        if not held:
+            out.append(f"Spread rule: {names[rid]} holds no headline. No callout ranks it with a holder to spare.")
+        elif len(held) > MAX_HEADLINES:
+            out.append(f"Spread rule: {names[rid]} holds {len(held)} headlines, more than {MAX_HEADLINES}: "
+                       f"{', '.join(held)}. Arcs and awards never move.")
+    return out
 
 
 def moved_off(headlines: Sequence[Headline], callouts: Sequence[Callout]) -> dict[str, set[int]]:

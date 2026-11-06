@@ -132,7 +132,7 @@ describe("the client build", () => {
   });
 
   it("writes the waiver route when the list takes waiver and a week has a waiver file", () => {
-    const repo = tempRepo(CPC_TOML.replace('"analyzer"]', '"analyzer", "waiver"]'));
+    const repo = tempRepo(CPC_TOML.replace('"sim"]', '"sim", "waiver"]'));
     published(repo.root, "cpc", "2026/week-06/page.json");
     published(repo.root, "cpc", "2026/week-06/waiver.json");
     buildClient(repo);
@@ -160,7 +160,7 @@ describe("the client build", () => {
 
     // A client that omits analyzer has no [values.analyzer] table, because a table of a package off the list fails.
     const omitted = tempRepo(
-      CPC_TOML.replace(', "analyzer"]', "]")
+      CPC_TOML.replace('"analyzer", ', "")
         .replace('  { package = "analyzer", label = "Trade Analyzer" },\n', "")
         .replace("[values.analyzer]\nfinder = false\n", ""),
     );
@@ -171,13 +171,14 @@ describe("the client build", () => {
   });
 
   it("lists the home chapter of each package of the client in the order of the home page", () => {
-    // The list puts week first, but the home page shows the rankings, then the weeks.
+    // The list puts week first, but the home page shows the midseason report, then the rankings, then the weeks.
     const repo = tempRepo();
     buildClient(repo);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
     const list = registry.slice(registry.indexOf("export const homeSections: HomeSections = ["));
-    expect(list.split("\n").slice(0, 4)).toEqual([
+    expect(list.split("\n").slice(0, 5)).toEqual([
       "export const homeSections: HomeSections = [",
+      "  midseasonHomeSection,",
       "  rankingsHomeSection,",
       "  weekHomeSection,",
       "];",
@@ -288,8 +289,17 @@ describe("the client build", () => {
     const toml = CPC_TOML.slice(0, CPC_TOML.indexOf("# Each item names"));
     const repo = tempRepo(toml);
     buildClient(repo);
+    // The menu values keep midseason and sim, but the shell gives them no menu item and no dock item.
     expect(clientValuesOf(repo.site).menu).toEqual({
-      items: [{ page: "home" }, { package: "week" }, { package: "rankings" }, { package: "managers" }, { package: "analyzer" }],
+      items: [
+        { page: "home" },
+        { package: "week" },
+        { package: "rankings" },
+        { package: "managers" },
+        { package: "analyzer" },
+        { package: "midseason" },
+        { package: "sim" },
+      ],
     });
   });
 
