@@ -18,7 +18,6 @@ finder = false
 
 # Each item names the home page or one package of the list. The order is the order of the menu.
 [menu]
-layout = "hamburger"
 items = [
   { page = "home", label = "Home" },
   { package = "week" },

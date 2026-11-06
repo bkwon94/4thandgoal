@@ -11,9 +11,13 @@ from pydantic import BaseModel, Field
 
 from league.files import write_bytes_atomic
 from league.models import Blurb
+from midseason.arcs import Arcs, ArcsChapter
 from midseason.draft import DraftValue
+from midseason.luck import LuckChapter, ScheduleLuck
 from midseason.prose import ROAST_SUFFIX
 from midseason.state import LeagueState
+from midseason.trades import TradeFacts
+from midseason.waivers import WaiverFacts
 
 # The season file has its own version, so a change to one file never breaks the reader of another.
 MIDSEASON_SCHEMA_VERSION = 1
@@ -42,9 +46,28 @@ class DraftChapter(BaseModel):
     roast: Blurb | None = None
 
 
+class WaiversChapter(BaseModel):
+    """Waiver hits and misses, in Act II: the top hits, the top misses, the top outbid claims, and the streamers."""
+    key: Literal["waivers"] = "waivers"
+    title: str = "Waiver hits and misses"
+    facts: WaiverFacts
+    blurb: Blurb | None = None
+    roast: Blurb | None = None
+
+
+class TradesChapter(BaseModel):
+    """The trade report card, in Act II: every trade with its Trade result."""
+    key: Literal["trades"] = "trades"
+    title: str = "The trade report card"
+    facts: TradeFacts
+    blurb: Blurb | None = None
+    roast: Blurb | None = None
+
+
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
-Chapter = Annotated[StateChapter | DraftChapter, Field(discriminator="key")]
+Chapter = Annotated[StateChapter | ArcsChapter | LuckChapter | DraftChapter | WaiversChapter | TradesChapter,
+                    Field(discriminator="key")]
 
 
 class Act(BaseModel):
@@ -66,16 +89,28 @@ class MidseasonReport(BaseModel):
 
 
 def midseason_report(
-    season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *, draft: DraftValue | None = None,
+    season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *, arcs: Arcs, luck: ScheduleLuck,
+    draft: DraftValue, waivers: WaiverFacts, trades: TradeFacts,
 ) -> MidseasonReport:
     """The report of `week` from the facts of each chapter and the blurbs by prose block key. Act I holds the state
-    of the league. Act II holds the draft steals and busts when the build has the draft."""
-    state_chapter = StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX))
-    acts = [Act(key="how-we-got-here", title="How we got here", chapters=[state_chapter])]
-    if draft is not None:
-        draft_chapter = DraftChapter(facts=draft, blurb=blurbs.get("draft"), roast=blurbs.get("draft" + ROAST_SUFFIX))
-        acts.append(Act(key="the-moves", title="The moves", chapters=[draft_chapter]))
-    return MidseasonReport(season=season, week=week, takeover_end_week=week + TAKEOVER_WEEKS, acts=acts)
+    of the league, the arcs, and Schedule luck. Act II holds the draft, the waivers, and the trades."""
+    act_one: list[Chapter] = [
+        StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX)),
+        ArcsChapter(facts=arcs, blurb=blurbs.get("arcs"), roast=blurbs.get("arcs" + ROAST_SUFFIX)),
+        LuckChapter(facts=luck, blurb=blurbs.get("luck"), roast=blurbs.get("luck" + ROAST_SUFFIX)),
+    ]
+    act_two: list[Chapter] = [
+        DraftChapter(facts=draft, blurb=blurbs.get("draft"), roast=blurbs.get("draft" + ROAST_SUFFIX)),
+        WaiversChapter(facts=waivers, blurb=blurbs.get("waivers"), roast=blurbs.get("waivers" + ROAST_SUFFIX)),
+        TradesChapter(facts=trades, blurb=blurbs.get("trades"), roast=blurbs.get("trades" + ROAST_SUFFIX)),
+    ]
+    return MidseasonReport(
+        season=season,
+        week=week,
+        takeover_end_week=week + TAKEOVER_WEEKS,
+        acts=[Act(key="how-we-got-here", title="How we got here", chapters=act_one),
+              Act(key="the-moves", title="The moves", chapters=act_two)],
+    )
 
 
 def report_blurbs(report: MidseasonReport) -> list[Blurb]:

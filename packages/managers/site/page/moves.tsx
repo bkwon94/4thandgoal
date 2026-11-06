@@ -5,7 +5,7 @@
 import { Fragment } from "react";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
-import { TeamName } from "@cpc/design/parts/team-name";
+import { Tile } from "@cpc/design/parts/tile";
 import { managerHrefOrNull } from "@cpc/league/hrefs";
 import type { Manager, ManagerEntry, ManagerPlayer, MoveAdd, MoveTrade, MoveWeek } from "../schema/manager-types";
 import { cn } from "@cpc/design/lib/utils";
@@ -13,7 +13,7 @@ import { Headshot } from "@cpc/league/headshot";
 import { sleeperHeadshot } from "@cpc/league/images";
 
 /* The quiet label of a group: small, uppercase, and mute, as the Gets label of the week page trade card. */
-const QUIET_LABEL = "text-label leading-tight font-bold tracking-wide text-mute uppercase";
+const QUIET_LABEL = "text-meta leading-tight font-bold tracking-wide text-mute uppercase";
 
 /* The position, then the detail. The players file can lack a player, so a null position drops out of the line.
    A trade row has no detail past the position, so an empty detail drops out too. */
@@ -54,6 +54,17 @@ function TradeSide({ label, players }: { label: string; players: ManagerPlayer[]
   );
 }
 
+/* The name of the other team of a trade, as a link to its manager page when the season has one.
+   The link is a full tap target, so it stands in a line of its own height and keeps the color of the label. */
+function TradeTeam({ name, href }: { name: string; href: string | null }) {
+  if (href === null) return name;
+  return (
+    <a href={href} className="inline-flex min-h-touch items-center text-inherit underline underline-offset-2">
+      {name}
+    </a>
+  );
+}
+
 /* A trade as a grey card with both sides, as the week page trade card sets it.
    The file carries the roster ids of the other sides, so the card looks each id up in the managers of the season.
    It names each team and links the name to its manager page. The group label is the same text as the visible one. */
@@ -68,7 +79,7 @@ function TradeRow({ trade, managers, managersHref }: { trade: MoveTrade; manager
           {others.map((entry, i) => (
             <Fragment key={entry.roster_id}>
               {i > 0 && " And "}
-              <TeamName name={entry.team.name} href={managerHrefOrNull(managersHref, entry.roster_id)} />
+              <TradeTeam name={entry.team.name} href={managerHrefOrNull(managersHref, entry.roster_id)} />
             </Fragment>
           ))}
         </div>
@@ -89,7 +100,7 @@ function Week({ week, first, managers, managersHref }: { week: MoveWeek; first: 
     <div role="group" aria-label={label} className={cn(!first && "mt-sp-6")}>
       <div className={cn(QUIET_LABEL, "mb-sp-2")}>{label}</div>
       {empty ? (
-        <p className="m-0 text-body text-mute">No moves.</p>
+        <div className="m-0 text-body text-mute">No moves.</div>
       ) : (
         <ul className="m-0 flex list-none flex-col gap-sp-3 p-0">
           {week.adds.map((add) => (
@@ -107,24 +118,14 @@ function Week({ week, first, managers, managersHref }: { week: MoveWeek; first: 
   );
 }
 
-/* The three season totals in one row. The count is the emphasis, and a zero count takes the quiet color. */
+/* The three season totals, a tile each, in one row. A zero is a count too, so it shows as a plain 0. */
 function Totals({ adds, drops, trades }: { adds: number; drops: number; trades: number }) {
-  const totals: [string, number][] = [
-    ["Adds", adds],
-    ["Drops", drops],
-    ["Trades", trades],
-  ];
   return (
-    <dl role="group" aria-label="Move Totals" className="m-0 mb-sp-6 grid grid-cols-3 gap-sp-3">
-      {totals.map(([label, count]) => (
-        <div key={label} className="flex flex-col">
-          <dt className={QUIET_LABEL}>{label}</dt>
-          <dd className={cn("m-0 mt-sp-1 text-stat leading-tight font-extrabold tabular-nums", count === 0 ? "text-mute" : "text-ink")}>
-            {count}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    <div role="group" aria-label="Move Totals" className="mb-sp-6 grid grid-cols-3 gap-sp-2">
+      <Tile label="Adds" value={adds} />
+      <Tile label="Drops" value={drops} />
+      <Tile label="Trades" value={trades} />
+    </div>
   );
 }
 
@@ -133,7 +134,8 @@ export function Moves({ manager, managers, managersHref }: { manager: Manager; m
   const { moves } = manager;
   return (
     <Chapter reveal id="moves">
-      <Label heading>Moves</Label>
+      {/* The meta size keeps the heading over the text floor of 11px on a phone. */}
+      <Label heading className="text-meta">Moves</Label>
       <Totals adds={moves.adds} drops={moves.drops} trades={moves.trades} />
       {moves.weeks.map((week, i) => (
         <Week key={week.week} week={week} first={i === 0} managers={managers} managersHref={managersHref} />

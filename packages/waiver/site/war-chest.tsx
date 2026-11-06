@@ -7,6 +7,7 @@
 import { type ComponentType, useEffect, useState } from "react";
 import { useMarkHydrated } from "@cpc/design/hooks/use-mark-hydrated";
 import { avatarSrc, sleeperHeadshot } from "@cpc/league/images";
+import { BarFill } from "@cpc/design/parts/bar-fill";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
 import { Avatar } from "@cpc/league/avatar";
@@ -68,10 +69,11 @@ function BudgetRing({
           />
           {/* The bar is a picture of the number under it, so it is hidden from a screen reader. */}
           <span aria-hidden className="relative mt-sp-1 block h-ring-bar w-ring-bar-w overflow-hidden rounded-sm bg-rule-dark">
-            <span
+            <BarFill
+              axis="y"
+              pct={(row.budget_left / top) * 100}
               data-viewer={row.roster_id === viewerId || undefined}
               className={cn("absolute inset-x-0 bottom-0 rounded-sm", row.roster_id === viewerId ? "bg-accent" : "bg-bar-off")}
-              style={{ height: `${(row.budget_left / top) * 100}%` }}
             />
           </span>
           <span className="mt-sp-0 text-label text-on-dark-muted tabular-nums">{`$${row.budget_left}`}</span>

@@ -7,17 +7,25 @@ A term sits in the section of the app that owns it. The workflow terms hold for 
 
 The public site of the Cornerstone Fantasy Football League. It renders the weekly report, the power rankings, and the trade analyzer that the pipeline publishes.
 
-**Masthead**:
-The black band at the top of every page with the brand link, the page line, the week line, and the menu.
-_Avoid_: Header, nav bar, top bar, banner
+**Top band**:
+The band at the top of every page with the brand mark, the week chip, and the theme button. On a desktop it also holds the pill bar.
+_Avoid_: Masthead, header, nav bar, top bar, banner
 
 **Menu**:
-The list of site destinations that opens from the menu button and reaches every page.
+The list of the destinations of a client. It shows as the dock on a phone and a tablet, and as the pill bar on a desktop.
 _Avoid_: Drawer, nav, hamburger, navigation
 
-**Menu button**:
-The control in the masthead that opens and closes the menu.
-_Avoid_: Hamburger, toggle, burger
+**Pill bar**:
+The row of destinations with full labels in the top band of a desktop.
+_Avoid_: Tab bar, nav bar, link row
+
+**Dock**:
+The bar of destinations that floats at the bottom of the viewport on a phone and a tablet, and stays on screen at every scroll.
+_Avoid_: Tab bar, bottom nav, footer
+
+**Week chip**:
+The control in the top band that shows the current week and opens the strip of the weeks of the season.
+_Avoid_: Week picker, week dropdown, week selector
 
 **Page column**:
 The centered column that holds every page's content.
@@ -31,24 +39,16 @@ _Avoid_: Breakpoint, screen size, device class
 The list of the weekly report's chapters that sits beside the content on a desktop and marks the chapter in view.
 _Avoid_: Sidebar, table of contents, TOC, outline
 
-**Compact bar**:
-The short black bar that shows at the top of the viewport once the masthead scrolls out, with the brand mark and the menu. Readers and screen readers know it as "Top bar".
-_Avoid_: Sticky header, mini header, app bar, toolbar
-
 **Chapter**:
-One part of a page, such as the awards of the weekly report or the tools of the home page. On a tablet and a desktop each chapter is a card on the grey body. "Card" names that look and nothing else.
-_Avoid_: Section, block, panel
+One part of a page under its heading, such as Awards of the week page. "Card" names a plain surface, and "Tile" names a small card with one number.
+_Avoid_: Section, block, panel, black chapter, dark chapter
 
 **Sheet**:
-The menu as it opens on a phone and a tablet, under the masthead, over the dimmed page. "Sheet" alone names this menu. The pipeline term is "Fact sheet".
+The short panel that rises from the bottom over the dimmed page, such as the team list and the player picker of the analyzer. The pipeline term is "Fact sheet".
 _Avoid_: Drawer, modal, overlay
 
-**Dark chapter**:
-A chapter that sits on the brand black, such as the standings or the rankings table. It keeps the name in the dark theme, where it lifts one step to grey.
-_Avoid_: Black card, dark section, dark card, panel, block
-
 **Page**:
-The surface behind the dark chapters. It is white in the light theme and black in the dark theme.
+The surface behind the cards. It is dark in the dark theme and light in the light theme.
 _Avoid_: Background, canvas, body
 
 **Theme**:
@@ -56,7 +56,7 @@ The light or dark set of surface and text colors, inside the brand of the client
 _Avoid_: Mode, scheme, skin, color mode
 
 **Theme button**:
-The control in the masthead and the compact bar that switches the theme.
+The control in the top band that switches the theme.
 _Avoid_: Toggle, switch, mode button, dark mode toggle
 
 **Side**:
@@ -88,7 +88,7 @@ The page that lists the twelve teams of a season and links to each manager page.
 _Avoid_: Roster list, team list, directory
 
 **Hero**:
-The top of a manager page: the avatar, the team name, the owner, the record, and the standing.
+The loud top surface of each page, with the grid texture and the brand glow. It stays dark in both themes. On a manager page it holds the avatar, the team name, the grade, and the record.
 _Avoid_: Header, banner, masthead, title block
 
 **Bench points**:
@@ -120,6 +120,14 @@ _Avoid_: Studs, stars, leaders
 The four numbers under the points line: the season high, the season low, the streak, and the record against the median.
 _Avoid_: Stats row, shelf, summary
 
+**Ladder**:
+The layout of the rankings page: a hero for the team at rank 1 and one card for each other team.
+_Avoid_: Rankings table, leaderboard, list
+
+**Stack**:
+The layout of the analyzer page: one scroll with the teams row and one card for each team of the trade.
+_Avoid_: Trade form layout, wizard, steps
+
 ### The code
 
 **Part**:
@@ -131,7 +139,7 @@ A shadcn control under the parts: a button, a select, a dialog, a popover. A pri
 _Avoid_: Base component, atom, ui element
 
 **Shell**:
-The parts that frame every page: the masthead, the menu, the compact bar, and the theme button.
+The parts that frame every page: the top band, the dock, the pill bar, the week chip, and the theme button.
 _Avoid_: Layout, chrome, frame, nav
 
 **Loader**:
@@ -997,8 +1005,20 @@ One league and its site, over every season. A client has one provider per season
 _Avoid_: League config, tenant, customer, instance, site
 
 **Brand**:
-The look of one client: the color roles, the fonts, the radii, the logo, and the copy. A brand gives a light set and a dark set of colors, or one set only. It lives in `brand.toml`.
-_Avoid_: Theme, skin, style, palette
+The identity of one client: the color roles, the logo, and the copy. A brand gives a light set and a dark set of colors. It paints the look. It lives in `brand.toml`.
+_Avoid_: Theme, skin, style, palette, look
+
+**Look**:
+The fonts, the radii, the layout, the components, and the motion that every client shares. Each brand paints the look with its colors.
+_Avoid_: Design system, shell, report look, style, skin
+
+**Readability floor**:
+The four rules that each page of the site meets in each client, each theme, and each width: the text size, the contrast, the tap targets, and no sideways scroll.
+_Avoid_: Floor (alone), a11y checks, quality bar
+
+**Prose**:
+Text that is a sentence, such as a blurb, a recap, or an error line. The readability floor holds prose to a larger size than other text.
+_Avoid_: Body text, copy, paragraph
 
 **Build folder**:
 The folder `clients/<slug>/build/` of one client: each page file and season file that its build writes. Publish copies one week of it into the published data of the client.

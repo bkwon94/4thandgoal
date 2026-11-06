@@ -1,6 +1,6 @@
 /**
  * Tests for the Season So Far chapter. They render fixture entries and spread variants of them.
- * They read the dots, the week labels, and the legend of the points line, the bench lines, and the four season stats.
+ * They read the dots, the week labels, and the legend of the points line, the bench lines, and the season tiles.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
@@ -24,20 +24,10 @@ function dots(result?: string) {
   return line.querySelectorAll(result ? `[data-result="${result}"]` : "[data-result]");
 }
 
-/* The label, the number, and the quiet line of each season stat, as a reader reads them. */
+/* The label, the number, and the note of each season tile, as a reader reads them. */
 function stats() {
   const group = screen.getByRole("group", { name: "Season Numbers" });
-  return [...group.querySelectorAll("dt")].map((term) => [
-    term.textContent,
-    term.nextElementSibling?.textContent,
-    term.nextElementSibling?.nextElementSibling?.textContent ?? null,
-  ]);
-}
-
-/* A fixture entry with its results swapped for the given ones, week 1 first. */
-function withResults(results: (boolean | null)[]): Manager {
-  const manager = managerOf(0);
-  return { ...manager, weeks: manager.weeks.map((week, i) => ({ ...week, won: results[i] })) };
+  return [...group.children].map((tile) => [...tile.children].map((line) => line.textContent));
 }
 
 describe("SeasonSoFar", () => {
@@ -106,30 +96,14 @@ describe("SeasonSoFar", () => {
     expect(screen.queryByText("46.54")).toBeNull();
   });
 
-  it("shows the season high, the season low, the streak, and the record against the median", () => {
-    // Brock 'N' Roll peaked in week 5, bottomed out in week 4, lost week 6, and beat the median in weeks 1, 2, 3, and 5.
+  it("shows three tiles: the points for, the record against the median, and the high week", () => {
+    // Brock 'N' Roll scored 685.01, peaked in week 5, and beat the median in weeks 1, 2, 3, and 5.
     render(<SeasonSoFar manager={managerOf(0)} />);
     expect(stats()).toEqual([
-      ["Season High", "158.91", "week 5"],
-      ["Season Low", "88.22", "week 4"],
-      ["Streak", "L1", null],
-      ["Against The Median", "4-2", "wins above the median"],
+      ["Points For", "685.01"],
+      ["Vs Median", "4-2"],
+      ["High Week", "158.91", "week 5"],
     ]);
-  });
-
-  it("counts the streak from the last week back to the first change of result", () => {
-    render(<SeasonSoFar manager={withResults([false, true, false, true, true, true])} />);
-    expect(stats()[2]).toEqual(["Streak", "W3", null]);
-  });
-
-  it("ends the streak at a week with no result", () => {
-    render(<SeasonSoFar manager={withResults([true, true, null, false, false, false])} />);
-    expect(stats()[2]).toEqual(["Streak", "L3", null]);
-  });
-
-  it("shows a dash for the streak when the last week has no result", () => {
-    render(<SeasonSoFar manager={withResults([true, true, true, true, true, null])} />);
-    expect(stats()[2]).toEqual(["Streak", "—", null]);
   });
 
   it("does not show the awards shelf", () => {
@@ -144,7 +118,7 @@ describe("SeasonSoFar", () => {
     expect(line.querySelectorAll("[data-median]")).toHaveLength(1);
   });
 
-  it("draws no median line, no median key, and no median stat for a league with no median game", () => {
+  it("draws no median line, no median key, and no median tile for a league with no median game", () => {
     const manager = managerOf(0);
     render(<SeasonSoFar manager={{ ...manager, weeks: manager.weeks.map((week) => ({ ...week, median: null })) }} />);
     const line = screen.getByRole("img", { name: "Points per week" });
@@ -153,6 +127,6 @@ describe("SeasonSoFar", () => {
     expect(line.textContent).not.toContain("median");
     const legend = screen.getByRole("list", { name: "Legend" });
     expect(within(legend).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["Points", "Win", "Loss"]);
-    expect(stats().map(([label]) => label)).toEqual(["Season High", "Season Low", "Streak"]);
+    expect(stats().map(([label]) => label)).toEqual(["Points For", "High Week"]);
   });
 });

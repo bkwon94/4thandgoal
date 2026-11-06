@@ -1,0 +1,2 @@
+"A press flex h-full min-h-touch flex-col gap-sp-3 ro text=[]"
+Tap at 329 386 on the card of Lil Fridge (375 px, dark). URL after the tap: http://localhost:4173/2026/managers/3/

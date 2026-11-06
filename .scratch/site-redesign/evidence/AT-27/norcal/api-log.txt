@@ -1,0 +1,19 @@
+The NorCal lines of the log of the local API on port 8090:
+INFO:     127.0.0.1:54339 - "OPTIONS /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54339 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54339 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54341 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54544 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54557 - "OPTIONS /clients/norcal/find HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54557 - "POST /clients/norcal/find HTTP/1.1" 200 OK

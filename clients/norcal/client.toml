@@ -18,6 +18,4 @@ chart = "1QB1.0PPR4pt"
 [values.analyzer]
 finder = true
 
-# With no items, the menu takes the home page, then the package list in its order.
-[menu]
-layout = "bar"
+# The file has no [menu], so the menu takes the home page, then the package list in its order.

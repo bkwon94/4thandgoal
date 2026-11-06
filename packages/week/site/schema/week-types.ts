@@ -32,4 +32,6 @@ export type WeekSummary = {
   number: number;
   dates: string;
   href: string;
+  // The two teams of the Matchup of the Week, winner first, as the home page lists them under the dates.
+  pickTeams: [string, string];
 };

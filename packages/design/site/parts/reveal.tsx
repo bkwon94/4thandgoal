@@ -28,6 +28,8 @@ type RevealProps = {
   // The stagger of a card in a list, in seconds.
   delay?: number;
   duration?: number;
+  // The curve of the motion. The rise of the look passes its own curve.
+  ease?: readonly [number, number, number, number];
   // The layout classes of the revealed box. Only opacity and transform animate, so the box keeps its size and place.
   className?: string;
 };
@@ -38,6 +40,7 @@ export function Reveal({
   rise = true,
   delay = 0,
   duration = DURATION.reveal,
+  ease = EASE_OUT,
   className,
 }: RevealProps) {
   const off = useMotionOff();
@@ -55,7 +58,7 @@ export function Reveal({
       className={className}
       initial={rise ? HIDDEN : FADE_HIDDEN}
       {...play}
-      transition={off ? INSTANT : { duration, ease: EASE_OUT, delay }}
+      transition={off ? INSTANT : { duration, ease, delay }}
     >
       {children}
     </motion.div>

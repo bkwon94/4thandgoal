@@ -1,0 +1,16 @@
+$ git diff --stat=200 main...transaction-history
+ .scratch/transaction-history/ACCEPTANCE.md                                       | 89 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ .scratch/transaction-history/PRD.md                                              | 76 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ .scratch/transaction-history/issues/01-each-build-writes-the-full-week-before.md | 18 ++++++++++++++++++
+ .scratch/transaction-history/issues/02-the-backfill-of-cpc-weeks-6-and-7.md      | 17 +++++++++++++++++
+ apps/pipeline/src/cornerstone/pipeline.py                                        | 15 ++++++++++++++-
+ apps/pipeline/tests/test_history.py                                              | 36 ++++++++++++++++++++++++++++++++++++
+ apps/pipeline/tests/test_pipeline.py                                             | 30 ++++++++++++++++++++++++++++++
+ clients/cpc/data/2026/history/week-06/transactions.json                          |  2 +-
+ clients/cpc/data/2026/history/week-07/transactions.json                          |  2 +-
+ docs/agents/state.md                                                             |  1 +
+ packages/league/python/src/league/history.py                                     | 16 +++++++++++++++-
+ 11 files changed, 298 insertions(+), 4 deletions(-)
+
+$ git diff --name-only main...transaction-history -- clients/norcal 'clients/*/published' packages/league/python/src/league/live.py | wc -l
+       0

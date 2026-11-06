@@ -1,0 +1,8 @@
+# A copy of clients/norcal under a temp CLIENT_ROOT, with these lines added by hand at the end of client.toml:
+#   [menu]
+#   layout = "tabs"
+# No file in the repo changed. The script is the first step of pnpm --dir apps/site build.
+$ CLIENT_ROOT=<temp copy> CLIENT=norcal pnpm --dir apps/site exec node scripts/client-build.mjs
+client build failed: <temp copy>/clients/norcal/client.toml breaks a rule:
+- menu.layout: is not a known key
+exit code: 1

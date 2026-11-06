@@ -1,6 +1,6 @@
 /**
  * Tests for the managers index route. Each test builds a temp public/ folder with a week page, the managers file, and the rankings file.
- * They read the static params, the title, and the twelve cards a reader sees, in standings order, each with its grade letter.
+ * They read the static params, the title, and the twelve cards a reader sees, in standings order, each with its grade box and grade text.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
@@ -54,11 +54,21 @@ describe("ManagersIndex", () => {
     expect(links.map((link) => link.getAttribute("href"))).toEqual(
       [3, 5, 6, 9, 2, 1, 8, 10, 12, 11, 7, 4].map((id) => `/2026/managers/${id}/`),
     );
-    // One card reads the name, the owner, and the record.
+    // One card reads the name and the record.
     const maye = links[3];
     expect(maye.textContent).toContain("Maye d'force B with U");
-    expect(maye.textContent).toContain(fixture.managers[8].team.owner);
     expect(maye.textContent).toContain("7-5");
+  });
+
+  it("shows the power rank, the playoff odds, the grade box, and the grade text on a card", async () => {
+    const { default: ManagersPage } = await routeOver(fixture);
+    render(await ManagersPage({ params: Promise.resolve({ season: "2026" }) }));
+    const maye = within(screen.getByRole("main")).getAllByRole("link")[3];
+    // Maye d'force B with U sits 4th in the power rankings with 71% playoff odds and a B grade.
+    expect(within(maye).getByText("Power #4")).toBeTruthy();
+    expect(within(maye).getByText("71% playoff")).toBeTruthy();
+    expect(within(maye).getByLabelText("Grade B").textContent).toBe("B");
+    expect(within(maye).getByText("Strong at QB and TE. Soft at WR. Thin at RB.")).toBeTruthy();
   });
 
   it("shows the grade letter on each card, and a dash with no grade", async () => {

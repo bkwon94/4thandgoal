@@ -1,49 +1,68 @@
 /**
- * Tests for the position leaders. They render the week 6 JSON and read each board and its rows.
- * They check what a reader sees, not the class names.
+ * Tests for Position leaders. They render the week 8 JSON of CPC, tap a position chip, and read the top three.
+ * They check what a reader sees and the chip state, not the class names.
  */
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { firstSentence, week6 } from "../fixtures/week-page";
+import { week8 } from "../fixtures/week-page";
 import { PositionLeaders } from "./position-leaders";
 
 afterEach(() => {
   cleanup();
 });
 
-function renderLeaders() {
-  return render(
-    <PositionLeaders leaders={week6.leaders} headshots={week6.headshots} blurb={week6.blurbs.position_leaders} />,
-  );
+function renderLeaders(leaders = week8.leaders) {
+  render(<PositionLeaders leaders={leaders} headshots={week8.headshots} blurb={week8.blurbs.position_leaders} />);
+  return screen.getByRole("region", { name: "Position leaders" });
 }
 
+/* The names of the rows that show now. */
+function names(chapter: HTMLElement) {
+  return within(within(chapter).getByRole("list", { name: /leaders$/ }))
+    .getAllByRole("listitem")
+    .map((row) => row.querySelector("[data-player]")?.textContent);
+}
+
+/* The chip of a position. */
+const chip = (chapter: HTMLElement, position: string) => within(chapter).getByRole("button", { name: position });
+
 describe("PositionLeaders", () => {
-  it("shows the label and one list per position", () => {
-    renderLeaders();
-    expect(screen.getByText("Position Leaders")).toBeTruthy();
-    for (const position of ["QB", "RB", "WR", "TE", "DEF"]) {
-      expect(screen.getByText(position)).toBeTruthy();
-    }
-    expect(screen.getAllByRole("list")).toHaveLength(5);
+  it("shows a chip for each position, with QB chosen first", () => {
+    const chapter = renderLeaders();
+    expect(chapter.id).toBe("leaders");
+    const chips = within(chapter).getAllByRole("button");
+    expect(chips.map((button) => button.textContent)).toEqual(["QB", "RB", "WR", "TE", "DEF"]);
+    expect(chips.map((button) => button.getAttribute("aria-pressed"))).toEqual(["true", "false", "false", "false", "false"]);
+    expect(names(chapter)).toEqual(["Joe Burrow", "Kirk Cousins", "Josh Allen"]);
   });
 
-  it("shows each leader's name, NFL team, fantasy team, and points", () => {
-    renderLeaders();
-    const qb = screen.getAllByRole("list")[0];
-    const first = within(qb).getAllByRole("listitem")[0];
-    expect(first.textContent).toContain("Trevor Lawrence");
-    expect(first.textContent).toContain("JAX");
-    expect(first.textContent).toContain("Amon-Ra Dawg Your Team");
-    expect(first.textContent).toContain("28.34");
-    expect(screen.getByText("Christian McCaffrey")).toBeTruthy();
-    expect(screen.getByText("Pittsburgh Steelers")).toBeTruthy();
+  it("shows the top three WR of week 8 after a tap on the chip WR (AT-18)", () => {
+    const chapter = renderLeaders();
+    fireEvent.click(chip(chapter, "WR"));
+    expect(chip(chapter, "WR").getAttribute("aria-pressed")).toBe("true");
+    expect(chip(chapter, "QB").getAttribute("aria-pressed")).toBe("false");
+    expect(names(chapter)).toEqual(["Tee Higgins", "Ja'Marr Chase", "Michael Wilson"]);
   });
 
-  it("shows only the positions it gets, so a league with no DEF slot shows no DEF card (AT-13)", () => {
-    const leaders = week6.leaders.filter((board) => board.position !== "DEF");
-    render(<PositionLeaders leaders={leaders} headshots={week6.headshots} />);
-    expect(screen.queryByText("DEF")).toBeNull();
-    expect(screen.getAllByRole("list")).toHaveLength(4);
+  it("shows the rank, the fantasy team, and the points of each row", () => {
+    const chapter = renderLeaders();
+    fireEvent.click(chip(chapter, "WR"));
+    const first = within(within(chapter).getByRole("list", { name: "WR leaders" })).getAllByRole("listitem")[0];
+    expect(first.textContent).toBe("1Tee HigginsTeehee32.5");
+  });
+
+  it("shows each player in a round photo frame, and the initials of a player with no headshot (AT-33)", () => {
+    const chapter = renderLeaders();
+    fireEvent.click(chip(chapter, "DEF"));
+    expect(within(chapter).getByRole("img", { name: "Jacksonville Jaguars" }).getAttribute("src")).toBe("headshots/JAX.png");
+    cleanup();
+    render(<PositionLeaders leaders={week8.leaders} headshots={{}} />);
+    expect(screen.getByRole("img", { name: "Joe Burrow" }).textContent).toBe("JB");
+  });
+
+  it("shows only the positions it gets, so a league with no DEF slot shows no DEF chip", () => {
+    const chapter = renderLeaders(week8.leaders.filter((board) => board.position !== "DEF"));
+    expect(within(chapter).queryByRole("button", { name: "DEF" })).toBeNull();
   });
 
   it("shows a note for a position with no starters", () => {
@@ -51,8 +70,32 @@ describe("PositionLeaders", () => {
     expect(screen.getByText("No starters this week")).toBeTruthy();
   });
 
-  it("shows the blurb", () => {
-    renderLeaders();
-    expect(screen.getByText(firstSentence(week6.blurbs.position_leaders), { exact: false })).toBeTruthy();
+  /* The prose under the list, or null when the chapter shows none. */
+  const prose = (chapter: HTMLElement) => chapter.querySelector("p")?.textContent ?? null;
+  /* The top player of a position in the week 8 data. */
+  const top = (position: string) => week8.leaders.find((board) => board.position === position)!.rows[0].player;
+
+  it("shows the sentences of the blurb on the chosen position as prose, so QB first shows the QB text", () => {
+    const chapter = renderLeaders();
+    expect(chapter.querySelector("p")?.tagName).toBe("P");
+    expect(prose(chapter)).toContain(top("QB"));
+    expect(week8.blurbs.position_leaders).toContain(prose(chapter));
+    expect(prose(chapter)).not.toContain(top("TE"));
+  });
+
+  it("changes the prose with the chip, so after a tap on WR it describes the WR leaders (AT-18)", () => {
+    const chapter = renderLeaders();
+    const qb = prose(chapter);
+    fireEvent.click(chip(chapter, "WR"));
+    expect(prose(chapter)).toContain(top("WR"));
+    expect(prose(chapter)).not.toContain(top("QB"));
+    expect(prose(chapter)).not.toContain(top("TE"));
+    expect(prose(chapter)).not.toBe(qb);
+  });
+
+  it("hides the prose for a position that no sentence of the blurb names, such as DEF (AT-18)", () => {
+    const chapter = renderLeaders();
+    fireEvent.click(chip(chapter, "DEF"));
+    expect(prose(chapter)).toBeNull();
   });
 });

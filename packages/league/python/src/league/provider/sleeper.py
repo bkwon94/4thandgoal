@@ -350,6 +350,7 @@ def league_settings(league: RawLeague) -> LeagueSettings:
         last_regular_week=settings.playoff_week_start - 1,
         reception_points=league.scoring_settings.get("rec", 0.0),
         median_game=settings.league_average_match == 1,
+        reseed=settings.playoff_seed_type == 1,
     )
 
 

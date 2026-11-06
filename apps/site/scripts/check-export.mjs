@@ -1,12 +1,13 @@
 /**
  * Checks that out/ holds a byte-identical copy of every file under public/, that each week page holds its text, that
- * each package the client omits is absent, and that the pages show the copy, the theme button, and the finder of the
- * client. Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
+ * each package the client omits is absent, that each page opens dark, and that the pages show the copy, the theme button,
+ * and the finder of the client, and that each page preloads the two font files of the look from its own origin, under
+ * their byte budget. Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ClientBuildError, clientRoot, readBrand, readClient, readCopy } from "./client-build.mjs";
-import { setsOf } from "@cpc/design/brand/brand.ts";
+import { ClientBuildError, clientRoot, readClient, readCopy } from "./client-build.mjs";
+import { FONT_CAPS, FONT_TOTAL } from "../src/app/fonts/budget.ts";
 
 function filesUnder(dir) {
   return readdirSync(dir, { withFileTypes: true })
@@ -87,16 +88,17 @@ for (const name of omitted) {
   const code = exported.find((file) => /\.(js|html)$/.test(file) && readFileSync(file, "utf8").includes(text));
   if (code) fail(`${code} holds the ${name} text "${text}", but the client ${process.env.CLIENT} omits ${name}`);
 }
-// The marks of the client values: the masthead text of copy.toml on the home page, the theme button only for a brand
-// with two sets, and the finder flag of the analyzer page. The flag sits in the page data of the static HTML, because
+// The marks of the client values: the top band text of copy.toml on the home page, the dark class on <html> of each
+// page and the theme button, because each brand gives both sets and dark is the default (ADR 0024), and the finder
+// flag of the analyzer page. The flag sits in the page data of the static HTML, because
 // the finder shows only after a reader picks two teams.
 const copy = readCopy(clientRoot(process.env), process.env.CLIENT);
 const home = readFileSync(join("out", "index.html"), "utf8");
-if (!home.includes(escapeHtml(copy.masthead))) fail(`out/index.html does not show the masthead text "${copy.masthead}"`);
-const themeButton = setsOf(readBrand(clientRoot(process.env), process.env.CLIENT)).length === 2;
-const themed = exported.find((file) => file.endsWith(".html") && readFileSync(file, "utf8").includes("Switch to"));
-if (themeButton && !themed) fail("no page shows the theme button, but the brand has two sets");
-if (!themeButton && themed) fail(`${themed} shows a theme button, but the brand has one set`);
+if (!home.includes(escapeHtml(copy.masthead))) fail(`out/index.html does not show the top band text "${copy.masthead}"`);
+const htmlPages = exported.filter((file) => file.endsWith(".html"));
+const light = htmlPages.find((file) => !/<html[^>]*\sclass="(?:[^"]*\s)?dark(?:\s[^"]*)?"/.test(readFileSync(file, "utf8")));
+if (light) fail(`${light} has no dark class on <html>, so it does not open dark`);
+if (!htmlPages.some((file) => readFileSync(file, "utf8").includes("Switch to"))) fail("no page shows the theme button");
 let finder = "no analyzer";
 if (values.packages.includes("analyzer")) {
   const finderOn = values.values?.analyzer?.finder ?? false;
@@ -104,8 +106,38 @@ if (values.packages.includes("analyzer")) {
   if (!analyze.includes(`finderOn\\":${finderOn}`)) fail(`out/analyze/index.html does not set the finder to ${finderOn}`);
   finder = finderOn ? "the finder" : "no finder";
 }
+// The fonts load from the site itself (AT-36). The media folder holds exactly the two font files, under the budget,
+// and each page preloads both of them from its own origin. No page and no stylesheet names an outside font host.
+const fontFiles = exported.filter((file) => file.startsWith("out/_next/static/media/") && file.endsWith(".woff2"));
+if (fontFiles.length !== 2) fail(`out/_next/static/media/ holds ${fontFiles.length} woff2 files, not 2`);
+const fontBytes = fontFiles.reduce((sum, file) => sum + readFileSync(file).length, 0);
+for (const file of fontFiles) {
+  const size = readFileSync(file).length;
+  if (size > Math.max(...Object.values(FONT_CAPS))) fail(`${file} is ${size} bytes, over the cap of each font`);
+}
+if (fontBytes > FONT_TOTAL) fail(`the font files cost ${fontBytes} bytes, over the budget of ${FONT_TOTAL}`);
+const fontPreload = /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="font")[^>]*>/g;
+const outsideHost = /fonts\.googleapis|fonts\.gstatic|use\.typekit/;
+// Next.js 16 writes no font preload into the not-found route, though its root layout loads the fonts through the CSS.
+// So the three files of the 404 page must hold the fonts with no preload, and every other page must preload both.
+const notFound = new Set(["out/404.html", "out/404/index.html", "out/_not-found/index.html"]);
+for (const file of exported.filter((name) => name.endsWith(".html") || name.endsWith(".css"))) {
+  const text = readFileSync(file, "utf8");
+  if (outsideHost.test(text)) fail(`${file} names an outside font host`);
+  if (!file.endsWith(".html")) continue;
+  if (notFound.has(file)) {
+    if (!/<html[^>]*\bclass="[^"]*_variable/.test(text)) fail(`${file} does not set the font variables on <html>`);
+    continue;
+  }
+  const preloads = text.match(fontPreload) ?? [];
+  if (preloads.length !== 2) fail(`${file} has ${preloads.length} font preloads, not 2`);
+  for (const link of preloads) {
+    if (!/\bhref="\/_next\/static\/media\/[^"]+\.woff2"/.test(link)) fail(`${file} preloads a font from elsewhere: ${link}`);
+  }
+}
 console.log(
   `check:export passed: ${sources.length} files are byte-identical; ${pages.length} week pages hold every team name; ` +
     `the client ${process.env.CLIENT} omits ${omitted.join(", ") || "no checked package"}, and the export holds none of it; ` +
-    `the pages show "${copy.masthead}", ${themeButton ? "the" : "no"} theme button, and ${finder}.`,
+    `${htmlPages.length} pages open dark; the pages show "${copy.masthead}", the theme button, and ${finder}; ` +
+    `each page but the 404 page preloads the ${fontFiles.length} font files of ${fontBytes} bytes from its own origin.`,
 );

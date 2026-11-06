@@ -46,7 +46,6 @@ def test_the_cpc_client_reads_the_values_of_the_spec():
     assert values.seasons[2026].league_id == "1386167364424318976"
     assert values.package(AnalyzerValues).finder is False
     assert values.package(LeagueValues).chart == "1QB0.5PPR4pt"
-    assert values.menu.layout == "hamburger"
     assert [item.package or item.page for item in values.menu.items] == [
         "home", "week", "rankings", "managers", "analyzer"]
 
@@ -120,8 +119,8 @@ def test_an_unknown_timezone_fails_with_the_value(tmp_path):
         read_client_values(folder, VALUE_MODELS)
 
 
-def test_a_bad_layout_fails_with_the_value(tmp_path):
-    folder = _copy(tmp_path, 'layout = "hamburger"', 'layout = "drawer"')
+def test_a_menu_layout_fails_because_the_look_owns_the_navigation(tmp_path):
+    folder = _copy(tmp_path, "[menu]\n", '[menu]\nlayout = "hamburger"\n')
     with pytest.raises(ClientError, match="layout"):
         read_client_values(folder, VALUE_MODELS)
 

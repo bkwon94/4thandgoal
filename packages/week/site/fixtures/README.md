@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The week 6 page of `clients/cpc/published/`, parsed with the schema, as `week6`.
+- The week 6 and week 8 pages of `clients/cpc/published/`, parsed with the schema, as `week6` and `week8`.
 - `firstSentence`, so a test finds a blurb on the page with no literal blurb text.
 
 ## Ports

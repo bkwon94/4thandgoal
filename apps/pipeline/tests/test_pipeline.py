@@ -664,6 +664,36 @@ def test_build_survives_a_history_save_failure(tmp_path, fixture_raw_dir, caplog
     assert "week 6 not saved to history" in caplog.text
 
 
+def test_build_writes_the_full_week_before_into_the_history(tmp_path, fixture_raw_dir, offline):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    rows = json.loads((week_dir(repo, 2026, 6) / "raw" / "transactions.json").read_text())
+    full = rows[:3]
+    (week_dir(repo, 2026, 6) / "raw" / "transactions_prev.json").write_text(json.dumps(full))
+    prev = history_dir(repo, 2026, 5)
+    prev.mkdir(parents=True)
+    (prev / "transactions.json").write_text("[]")
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
+    assert json.loads((prev / "transactions.json").read_text()) == full
+
+
+def test_build_survives_a_failed_write_of_the_week_before(tmp_path, fixture_raw_dir, caplog, offline):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    (week_dir(repo, 2026, 6) / "raw" / "transactions_prev.json").write_text("[]")
+    prev = history_dir(repo, 2026, 5)
+    prev.mkdir(parents=True)
+    (prev / "transactions.json").write_text("[]")
+    # A read-only directory makes the temp file of the atomic write raise an OSError.
+    prev.chmod(0o500)
+    try:
+        page = run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
+    finally:
+        prev.chmod(0o700)
+    assert page.exists()
+    # The log names the week that failed, so the failed write of week 5 does not read as a failure of week 6.
+    assert "week 5 not saved to history" in caplog.text
+    assert "week 6 not saved to history" not in caplog.text
+
+
 def test_rewrite_reads_the_version_1_verify_shape(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))

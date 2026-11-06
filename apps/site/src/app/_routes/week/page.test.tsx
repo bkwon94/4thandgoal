@@ -10,17 +10,18 @@ import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import WeekPage from "./page";
 
-/* The nine chapters in the report's order: the id each chapter sets and the words of its own label. */
+/* The hero and the eight chapters in the order of the spec (decision 05): the id each one sets and the words of its heading.
+   The hero holds the level 1 heading of the page, and each chapter opens with a level 2 heading. */
 const CHAPTERS = [
   { id: "motw", label: "Matchup of the Week" },
+  { id: "matchups", label: "Every game" },
   { id: "game-changer", label: "Game Changer" },
   { id: "awards", label: "Awards" },
-  { id: "leaders", label: "Position Leaders" },
+  { id: "leaders", label: "Position leaders" },
   { id: "trades", label: "Trades" },
-  { id: "matchups", label: "All Matchups" },
-  { id: "median", label: "The Median Game" },
+  { id: "median", label: "The median game" },
   { id: "standings", label: "Standings" },
-  { id: "next-week", label: "Next Week" },
+  { id: "next-week", label: "Next week" },
 ];
 
 /* The reduced-motion setting of the system. A test turns it on, and the stub tells Framer Motion of the change. */
@@ -135,15 +136,68 @@ describe("WeekPage chapters", () => {
     }
   });
 
-  it("opens each chapter with a level 2 heading in the report's order", async () => {
+  it("opens each chapter after the hero with a level 2 heading in the order of the spec", async () => {
     await renderWeek7();
     const headings = within(screen.getByRole("main")).getAllByRole("heading", { level: 2 });
-    // The matchup of the week heading also holds its reason tag, so each heading starts with the chapter label.
-    expect(headings).toHaveLength(CHAPTERS.length);
+    const chapters = CHAPTERS.slice(1);
+    expect(headings.map((heading) => heading.textContent)).toEqual(chapters.map(({ label }) => label));
     headings.forEach((heading, index) => {
-      expect(heading.textContent?.startsWith(CHAPTERS[index].label)).toBe(true);
-      expect(document.getElementById(CHAPTERS[index].id)?.contains(heading)).toBe(true);
+      expect(document.getElementById(chapters[index].id)?.contains(heading)).toBe(true);
     });
+  });
+});
+
+/* Renders the week 8 report of CPC, the week of the acceptance tests. */
+async function renderWeek8() {
+  render(await WeekPage({ params: Promise.resolve({ season: "2026", week: "week-08" }) }));
+}
+
+describe("WeekPage order of week 8 (AT-16)", () => {
+  it("shows one scroll with no tabs: the hero, the four numbers, every chapter, and the footer, in order", async () => {
+    await renderWeek8();
+    const main = screen.getByRole("main");
+    expect(within(main).queryByRole("tablist")).toBeNull();
+    expect(within(main).queryByRole("tab")).toBeNull();
+    const parts = [
+      screen.getByRole("region", { name: "Matchup of the Week" }),
+      screen.getByRole("region", { name: "The week in numbers" }),
+      ...CHAPTERS.slice(1).map(({ label }) => screen.getByRole("region", { name: label })),
+      screen.getByRole("navigation", { name: "Weeks" }),
+    ];
+    for (const part of parts) expect(main.contains(part)).toBe(true);
+    for (let index = 1; index < parts.length; index++) {
+      const order = parts[index - 1].compareDocumentPosition(parts[index]);
+      expect(order & Node.DOCUMENT_POSITION_FOLLOWING, `part ${index} follows part ${index - 1}`).toBeTruthy();
+    }
+  });
+
+  it("opens on the hero, which holds the one level 1 heading of the page, and no week line under the top band", async () => {
+    await renderWeek8();
+    const headings = screen.getAllByRole("heading", { level: 1 });
+    expect(headings.map((heading) => heading.textContent)).toEqual(["Week 08 // Matchup of the Week"]);
+    expect(screen.getByRole("region", { name: "Matchup of the Week" }).contains(headings[0])).toBe(true);
+  });
+
+  it("shows Joe Burrow at 42.48 in Game Changer", async () => {
+    await renderWeek8();
+    const chapter = screen.getByRole("region", { name: "Game Changer" });
+    expect(within(chapter).getByText("Joe Burrow")).toBeTruthy();
+    expect(within(chapter).getAllByRole("listitem")[0].textContent).toBe("Scored42.48");
+  });
+
+  it("links each open recap to one manager page of the season", async () => {
+    await renderWeek8();
+    const recap = document.getElementById("recap-3")!;
+    expect(recap.querySelectorAll("a")).toHaveLength(0);
+    act(() => {
+      screen
+        .getAllByRole("button")
+        .find((button) => button.getAttribute("aria-controls") === "recap-3")!
+        .click();
+    });
+    const links = within(recap).getAllByRole("link");
+    expect(links).toHaveLength(1);
+    expect(links[0].getAttribute("href")).toMatch(/^\/2026\/managers\/\d+\/$/);
   });
 });
 
@@ -182,13 +236,13 @@ describe("WeekPage chapter in view", () => {
     expect(currentLabels()).toEqual(["Standings"]);
   });
 
-  it("marks the chapter nearest the top when two chapters are in view", async () => {
+  it("marks the later chapter when two chapters are in view, as its heading is the one in the band (AT-18)", async () => {
     await renderWeek7();
     reportChapter("median", true);
     reportChapter("standings", true);
-    expect(currentLabels()).toEqual(["The Median Game"]);
-    reportChapter("median", false);
     expect(currentLabels()).toEqual(["Standings"]);
+    reportChapter("standings", false);
+    expect(currentLabels()).toEqual(["The median game"]);
   });
 });
 
@@ -281,8 +335,8 @@ describe("WeekPage week footer with a week on each side", () => {
     expect(within(prior).getByText("Oct 8 – Oct 12, 2026")).toBeTruthy();
     expect(within(next).getByText("Week 7")).toBeTruthy();
     expect(within(next).getByText("Oct 22 – Oct 26, 2026")).toBeTruthy();
-    // The number comes before the dates in the link.
-    expect(prior.textContent).toBe("Week 5Oct 8 – Oct 12, 2026");
+    // The side comes first, then the number, then the dates.
+    expect(prior.textContent).toBe("PreviousWeek 5Oct 8 – Oct 12, 2026");
   });
 
   it("gives every footer link a path from the root", async () => {
@@ -296,7 +350,10 @@ describe("WeekPage week footer with a week on each side", () => {
     await renderWeek6();
     // jsdom ignores opacity, so the test proves the links are there on the first render. The browser pass proves no motion.
     const links = within(screen.getByRole("navigation", { name: "Weeks" })).getAllByRole("link");
-    expect(links.map((link) => link.textContent)).toEqual(["Week 5Oct 8 – Oct 12, 2026", "Week 7Oct 22 – Oct 26, 2026"]);
+    expect(links.map((link) => link.textContent)).toEqual([
+      "PreviousWeek 5Oct 8 – Oct 12, 2026",
+      "NextWeek 7Oct 22 – Oct 26, 2026",
+    ]);
   });
 });
 
@@ -318,11 +375,11 @@ describe("WeekPage with no median game", () => {
   it("renders no Median Game chapter and no rail link to it", async () => {
     await renderWeekWithNoMedian();
     expect(document.getElementById("median")).toBeNull();
-    expect(screen.queryByText("The Median Game")).toBeNull();
+    expect(screen.queryByText("The median game")).toBeNull();
     const rail = within(screen.getByRole("navigation", { name: "Chapters" }));
-    expect(rail.queryByRole("link", { name: "The Median Game" })).toBeNull();
-    // The other chapters stay, so the rail still links the standings after all matchups.
+    expect(rail.queryByRole("link", { name: "The median game" })).toBeNull();
+    // The other chapters stay, so the rail still links the standings after the trades.
     const labels = rail.getAllByRole("link").map((link) => link.textContent);
-    expect(labels.slice(labels.indexOf("All Matchups"), labels.indexOf("All Matchups") + 2)).toEqual(["All Matchups", "Standings"]);
+    expect(labels.slice(labels.indexOf("Trades"), labels.indexOf("Trades") + 2)).toEqual(["Trades", "Standings"]);
   });
 });

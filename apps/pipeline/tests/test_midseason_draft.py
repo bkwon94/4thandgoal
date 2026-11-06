@@ -13,25 +13,27 @@ from test_midseason import CPC_PROVIDER, _call, _cpc_week_8, _report, prime_nflv
 from cornerstone.pipeline import run_midseason
 from cornerstone.value_models import VALUE_MODELS
 from league.client import Client, read_client_values
-from league.paths import client_dir, history_root, league_file, week_dir
+from league.paths import client_dir, history_root, league_file, nflverse_cache_dir, week_dir
 from league.provider.raw import RawLeague
 from league.provider.sleeper import league_settings
 
 NORCAL_DATA = client_dir(ROOT, "norcal") / "data" / "2026"
-NORCAL_PROVIDER = FixtureProvider(raw_dir=NORCAL_DATA / "week-08" / "raw", draft_dir=NORCAL_DRAFT_FIXTURES)
+NORCAL_PROVIDER = FixtureProvider(raw_dir=NORCAL_DATA / "week-08" / "raw", history_root=NORCAL_DATA / "history",
+                                  draft_dir=NORCAL_DRAFT_FIXTURES)
 # A bust was drafted as a starter, and a steal plays like a starter now. Decision ticket 02.
 STARTER_RANK = {"QB": 12, "TE": 12, "RB": 24, "WR": 24}
 
 
 def _norcal_week_8(tmp_path: Path) -> Client:
-    """A NorCal client folder in `tmp_path` with the saved history and the week 8 facts of the real NorCal data."""
+    """A NorCal client folder in `tmp_path` with the saved history and week 8 of the real NorCal data, and the NFL
+    schedule and the injury report in its NFL data."""
     settings = league_settings(RawLeague.model_validate_json(league_file(client_dir(ROOT, "norcal"), 2026).read_text()))
     client = Client(slug="norcal", folder=tmp_path, nfl_dir=tmp_path / "data",
                     values=read_client_values(client_dir(ROOT, "norcal"), VALUE_MODELS), settings=settings)
     shutil.copytree(NORCAL_DATA / "history", history_root(client.folder, 2026))
-    week_dir(client.folder, 2026, 8).mkdir(parents=True)
-    shutil.copy(NORCAL_DATA / "week-08" / "facts.json", week_dir(client.folder, 2026, 8) / "facts.json")
+    shutil.copytree(NORCAL_DATA / "week-08", week_dir(client.folder, 2026, 8))
     prime_nflverse(client.nfl_dir)
+    shutil.copy(Path(__file__).parent / "fixtures" / "nflverse" / "games.csv", nflverse_cache_dir(client.nfl_dir))
     return client
 
 
