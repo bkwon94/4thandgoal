@@ -1,6 +1,6 @@
 /**
  * The evidence run of one feature: it builds each client one time, serves its export, and takes the shots of its step lists.
- * Run it with pnpm evidence <slug> [AT-<n> ...]. The wrapper scripts/evidence.mjs passes the slug and the ids as env values.
+ * Run it with pnpm evidence <slug> [AT-<n> ...].
  */
 import { test } from "@playwright/test";
 import { execFileSync } from "node:child_process";
@@ -14,6 +14,7 @@ const SCRATCH = join(process.cwd(), "..", "..", ".scratch");
 const OUT = join(process.cwd(), "out");
 // Each client is a folder under clients/ at the repo root, with its client.toml.
 const CLIENTS = join(process.cwd(), "..", "..", "clients");
+// The wrapper scripts/evidence.mjs passes the slug and the ids as env values.
 const SLUG = process.env.EVIDENCE_SLUG ?? "";
 const IDS = (process.env.EVIDENCE_TESTS ?? "").split(/\s+/).filter(Boolean);
 

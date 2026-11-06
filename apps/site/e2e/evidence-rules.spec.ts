@@ -1,7 +1,6 @@
 /**
- * Proves the evidence runner on a small real folder in Chromium: the shot names, the themes, the scroll pass, the 404 page,
- * the six verbs, the narrowing, the clients, and the stop on a bad step list. Each test writes a real step list under a
- * temp scratch folder and runs the round.
+ * Proves the evidence runner in Chromium: the shot names, themes, scroll pass, 404 page, verbs, narrowing, clients, and bad step lists.
+ * Each test writes a real step list under a temp scratch folder and runs the round.
  */
 import { BOOT_SCRIPT, DARK_CLASS } from "@cpc/design/lib/theme";
 import { expect, test } from "@playwright/test";

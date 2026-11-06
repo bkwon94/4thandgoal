@@ -1,7 +1,6 @@
 /**
- * Playwright config of the readability floor. The project "rules" proves each scan of the floor on small real pages.
- * The project "floor" runs the floor on the static export in out/ of the current CLIENT.
- * The project "evidence" takes the shots of the acceptance tests of one feature. Run it with pnpm evidence <slug>.
+ * Playwright config of the readability floor and the evidence run. The projects check the floor, prove its rules, and take shots.
+ * Run the evidence project with pnpm evidence <slug>.
  */
 import { defineConfig, devices } from "@playwright/test";
 
@@ -18,7 +17,9 @@ export default defineConfig({
     reducedMotion: "reduce",
   },
   projects: [
+    // The project "rules" proves each scan of the floor, and each rule of the evidence runner, on small real pages.
     { name: "rules", testMatch: ["floor-rules.spec.ts", "evidence-rules.spec.ts"] },
+    // The project "floor" runs the floor on the static export in out/ of the current CLIENT.
     { name: "floor", testMatch: "floor.spec.ts" },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
     { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },
