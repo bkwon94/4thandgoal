@@ -559,7 +559,7 @@ def main(
         elif args.command == "rankings":
             print(run_rankings(repo, season, week, call, client=client))
         elif args.command == "midseason":
-            print(run_midseason(season, week, call, client=client))
+            print(run_midseason(season, week, call, client=client, provider=provider))
         elif args.command == "midseason-publish":
             answer = input(f"Publish the midseason report of week {week} of {client.slug}? [y/N] ")
             if answer not in ("y", "Y"):

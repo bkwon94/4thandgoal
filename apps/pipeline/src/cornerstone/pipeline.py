@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
+from cornerstone.midseason_chapters import ChaptersStopped, report_chapters
 from cornerstone.render import render_week
 from cornerstone.sheet import (
     build_bundle,
@@ -76,11 +77,14 @@ from league.trades import default_cutoff, trades_for_week
 from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from managers.render import render_managers
 from managers.season import saved_awards
+from midseason.injury import injury_prose
 from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
 from midseason.review import review_text, write_review
 from midseason.state import league_state
+from midseason.top10 import top10_prose
 from midseason.values import MidseasonValues
+from midseason.watch import watch_prose
 from rankings.published import render_rankings
 from waiver.board import waiver_board
 from waiver.price import bid_history
@@ -688,13 +692,16 @@ def midseason_values(client: Client) -> MidseasonValues:
     return MidseasonValues()
 
 
-def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -> Path:
+def run_midseason(
+    season: int, week: int, call: ClaudeCall, *, client: Client, provider: Provider | None = None,
+) -> Path:
     """Write the draft of the midseason report of `week` into the build folder of the season: midseason.json, the
     saved facts of its prose, and the review file. It reads the saved history of weeks 1 to `week` and the saved facts
     of `week`. It writes nothing to published/, so only the publish of the report puts it live.
 
     The app wires the odds into the report: the playoff odds of the saved week go in through the port of midseason.
-    Each prose block goes through the writer and the verifier of facts, with the roast setting of the client.
+    The rosters now come from `provider`; with none, the rosters of the saved raw week stand in. Each prose block goes
+    through the writer and the verifier of facts, with the roast setting of the client.
     """
     facts = week_dir(client.folder, season, week) / "facts.json"
     if not facts.exists():
@@ -708,15 +715,22 @@ def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -
     odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
     names = {rid: team.name for rid, team in bundle.data.teams.items()}
     state = league_state(history, week, names, playoff_odds=odds, median_game=client.settings.median_game)
+    try:
+        chapters = report_chapters(season, week, history, names, client=client, provider=provider)
+    except ChaptersStopped as err:
+        raise BuildStopped(str(err)) from err
     roast = midseason_values(client).roast
-    sheet = prose_sheet(week, state, roast)
+    blocks = [injury_prose(chapters.injuries), top10_prose(chapters.top10), watch_prose(chapters.watch)]
+    sheet = prose_sheet(week, state, roast, blocks)
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
     write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)
     command = f"make midseason-publish CLIENT={client.slug} WEEK={week}"
     review = write_review(review_text(season, week, roast, sheet, blurbs, results, command), season_build)
     log.info("review file: %s", review)
-    return write_midseason(midseason_report(season, week, state, blurbs), build_dir(client.folder))
+    report = midseason_report(season, week, state, blurbs, injuries=chapters.injuries, top10=chapters.top10,
+                              watch=chapters.watch)
+    return write_midseason(report, build_dir(client.folder))
 
 
 def run_history(season: int, through: int, force: bool = False, *, client: Client) -> list[int]:

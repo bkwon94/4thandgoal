@@ -8,7 +8,8 @@ from pathlib import Path
 
 import pytest
 from conftest import save_chart_read
-from cpc import cli_root
+from cpc import cli_root, cpc_client
+from midseason_inputs import copy_report_inputs, provider_now
 
 
 def _no_nflverse(season, week, player_ids, players):
@@ -716,9 +717,11 @@ def test_the_midseason_command_writes_the_report_to_the_build_folder(tmp_path, m
     shutil.copytree(data / "history", season / "history")
     (season / "week-08").mkdir()
     shutil.copy(data / "week-08" / "facts.json", season / "week-08" / "facts.json")
+    copy_report_inputs(cpc_client(root=tmp_path))
     monkeypatch.chdir(tmp_path)
 
-    assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]) == 0
+    command = ["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]
+    assert cli.main(command, provider=provider_now(tmp_path / "fixture")) == 0
     out = tmp_path / "clients" / "cpc" / "build" / "2026" / "midseason.json"
     assert str(out) in capsys.readouterr().out
     assert json.loads(out.read_text(encoding="utf-8"))["week"] == 8

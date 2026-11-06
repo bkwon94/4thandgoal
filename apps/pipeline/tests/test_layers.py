@@ -101,6 +101,7 @@ LAYER_OF: dict[str, str] = {
     "sim.values": "model",
     "midseason": "model",
     "midseason.values": "model",
+    "midseason.blocks": "model",
     # provider
     "league.provider": "provider",
     "league.provider.base": "provider",
@@ -155,6 +156,12 @@ LAYER_OF: dict[str, str] = {
     "managers.season": "facts",
     "rankings.power_rankings": "facts",
     "midseason.state": "facts",
+    "midseason.players": "facts",
+    "midseason.injury": "facts",
+    "midseason.top10": "facts",
+    "midseason.watch": "facts",
+    # The app wire of three chapters of the midseason report. It reads the provider and the nflverse files.
+    "midseason_chapters": "facts",
     "analyzer.trade_facts": "facts",
     "analyzer.week_line": "facts",
     "analyzer.finder": "facts",

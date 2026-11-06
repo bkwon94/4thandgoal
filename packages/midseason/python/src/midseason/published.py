@@ -5,14 +5,17 @@ chapters. The pipeline owns the shape (ADR 0011), and the site side of the packa
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from league.files import write_bytes_atomic
 from league.models import Blurb
+from midseason.injury import InjuryChapter, InjuryToll
 from midseason.prose import ROAST_SUFFIX
 from midseason.state import LeagueState
+from midseason.top10 import PositionTop10, Top10Chapter
+from midseason.watch import PlayersToWatch, WatchChapter
 
 # The season file has its own version, so a change to one file never breaks the reader of another.
 MIDSEASON_SCHEMA_VERSION = 1
@@ -34,7 +37,7 @@ class StateChapter(BaseModel):
 
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
-Chapter = StateChapter
+Chapter = Annotated[StateChapter | InjuryChapter | Top10Chapter | WatchChapter, Field(discriminator="key")]
 
 
 class Act(BaseModel):
@@ -55,16 +58,26 @@ class MidseasonReport(BaseModel):
     acts: list[Act]
 
 
-def midseason_report(season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb]) -> MidseasonReport:
+def midseason_report(
+    season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *,
+    injuries: InjuryToll | None = None, top10: PositionTop10 | None = None, watch: PlayersToWatch | None = None,
+) -> MidseasonReport:
     """The report of `week` from the facts of each chapter and the blurbs by prose block key. Act I holds the state
-    of the league."""
-    state_chapter = StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX))
-    return MidseasonReport(
-        season=season,
-        week=week,
-        takeover_end_week=week + TAKEOVER_WEEKS,
-        acts=[Act(key="how-we-got-here", title="How we got here", chapters=[state_chapter])],
-    )
+    of the league, the injury toll, and Position top 10. Act III holds the players to watch. A chapter with no facts
+    stays out."""
+    def roast(key: str) -> Blurb | None:
+        return blurbs.get(key + ROAST_SUFFIX)
+
+    act_one: list[Chapter] = [StateChapter(facts=state, blurb=blurbs.get("state"), roast=roast("state"))]
+    if injuries is not None:
+        act_one.append(InjuryChapter(facts=injuries, blurb=blurbs.get("injuries"), roast=roast("injuries")))
+    if top10 is not None:
+        act_one.append(Top10Chapter(facts=top10, blurb=blurbs.get("top10"), roast=roast("top10")))
+    acts = [Act(key="how-we-got-here", title="How we got here", chapters=act_one)]
+    if watch is not None:
+        acts.append(Act(key="what-comes-next", title="What comes next",
+                        chapters=[WatchChapter(facts=watch, blurb=blurbs.get("watch"), roast=roast("watch"))]))
+    return MidseasonReport(season=season, week=week, takeover_end_week=week + TAKEOVER_WEEKS, acts=acts)
 
 
 def report_blurbs(report: MidseasonReport) -> list[Blurb]:
