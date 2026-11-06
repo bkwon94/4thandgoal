@@ -183,13 +183,22 @@ def _record(n: Nums, record: WindowRecord) -> str:
     return n.record(record.wins, record.losses)
 
 
+# The length of an arc window as a word. The verifier takes a number word that the cited fact holds.
+COUNT_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"]
+
+
+def _count_word(window: WindowRecord) -> str:
+    return COUNT_WORDS[window.last_week - window.first_week + 1]
+
+
 def _arc_text(name: str, arc: Arc, n: Nums) -> str:
     """The plain sentence of one arc with the numbers behind it."""
     head = f"{name} has the {arc.kind} arc"
     if arc.start is not None and arc.now is not None:
         start, now = arc.start, arc.now
-        return (f"{head}: {_record(n, start)} in weeks {n(start.first_week)} to {n(start.last_week)} and "
-                f"{_record(n, now)} in weeks {n(now.first_week)} to {n(now.last_week)}.")
+        # The windows read as words, so the fact holds two numbers, as a sentence of the writer may.
+        return (f"{head}: {_record(n, start)} in the first {_count_word(start)} weeks and {_record(n, now)} in the "
+                f"last {_count_word(now)}.")
     if arc.kind == "Roller coaster":
         return (f"{head}: a head-to-head win streak of {n(arc.win_streak or 0)} and a head-to-head loss streak of "
                 f"{n(arc.loss_streak or 0)}.")

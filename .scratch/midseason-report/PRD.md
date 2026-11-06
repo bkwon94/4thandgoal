@@ -84,7 +84,7 @@ The sim replay
 45. As a league manager, I want the bracket to draw in and each winner to slide forward, so that I can follow the playoffs.
 46. As a league manager in CPC, I want the bracket to reseed after round 1, so that the replay follows our league's rules.
 47. As a league manager, I want a big champion card with the title odds of all runs, so that I know how likely that champion is.
-48. As a league manager, I want the odds of all 10,000 runs beside the replay, so that one run is not mistaken for the forecast.
+48. As a league manager, I want the odds of all 10,000 runs with the replay, so that one run is not mistaken for the forecast.
 49. As a league manager, I want to skip to the end, so that I can see the result now.
 50. As a league manager, I want to press again for a new run, so that I can see other endings.
 51. As a league manager who turns motion off, I want the replay to fade between beats with no movement, so that I can still follow it.

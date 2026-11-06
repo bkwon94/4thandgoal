@@ -327,7 +327,6 @@ name = "cpc-midseason"
 version = "0.1.0"
 source = { editable = "packages/midseason/python" }
 dependencies = [
-    { name = "anthropic" },
     { name = "cpc-facts" },
     { name = "cpc-league" },
     { name = "pydantic" },
@@ -342,7 +341,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", specifier = ">=1.15.0" },
     { name = "cpc-facts", editable = "packages/facts/python" },
     { name = "cpc-league", editable = "packages/league/python" },
     { name = "pydantic", specifier = ">=2.14.1" },

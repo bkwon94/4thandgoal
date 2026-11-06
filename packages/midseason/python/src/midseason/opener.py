@@ -90,11 +90,13 @@ def title_race(state: LeagueState, title_odds: Mapping[int, float]) -> TitleRace
 
 
 def _place(n: Nums, rank: int) -> str:
-    return "the best in the league" if rank == 1 else f"{n.ord(rank)} best in the league"
+    # "best" is a banned word of the vocabulary, so the fact says "top" and the writer can copy it.
+    return "the top in the league" if rank == 1 else f"{n.ord(rank)} in the league"
 
 
 def title_race_facts(race: TitleRace) -> list[Fact]:
-    """The facts of the opener: one fact per leader and one for the record leader."""
+    """The facts of the opener: one fact per leader, and the record and the title odds of the record leader. Each fact
+    holds two numbers at most, as a sentence of the writer may."""
     odds = {leader.roster_id: leader.title_odds for leader in race.leaders}
     facts = []
     for leader in race.leaders:
@@ -106,7 +108,8 @@ def title_race_facts(race: TitleRace) -> list[Fact]:
     if top.title_odds is not None and top.title_rank is not None:
         n = Nums()
         record = n.text(f"{top.wins}-{top.losses}-{top.ties}") if top.ties else n.record(top.wins, top.losses)
-        facts.append(fact("OP.record",
-                          f"{top.name} leads the standings at {record} and has {n(top.title_odds)}% title odds, "
+        facts.append(fact("OP.record", f"{top.name} leads the standings at {record}.", n, [top.name], []))
+        n = Nums()
+        facts.append(fact("OP.record.title", f"{top.name} has {n(top.title_odds)}% title odds, "
                           f"{_place(n, top.title_rank)}.", n, [top.name], []))
     return facts

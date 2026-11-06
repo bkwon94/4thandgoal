@@ -107,11 +107,11 @@ LUCK_ROAST = WriterOut(sentences=[
 # The blurbs of the opener and of the look ahead that pass the code check on the real CPC week 8 facts.
 OPENER_BLURB = WriterOut(sentences=[
     Sentence(text="London Cooking leads the race at 16.8% title odds.", fact_ids=["OP.5.title"]),
-    Sentence(text="All You Need Is Love leads at 11-5 with 9.7% title odds.", fact_ids=["OP.record"]),
+    Sentence(text="All You Need Is Love leads at 11-5 with 9.7% title odds.", fact_ids=["OP.record", "OP.record.title"]),
     Sentence(text="Nobody owns this race.", fact_ids=[]),
 ])
 OPENER_ROAST = WriterOut(sentences=[
-    Sentence(text="All You Need Is Love is 11-5 and only 6th in title odds.", fact_ids=["OP.record"]),
+    Sentence(text="All You Need Is Love is 11-5 and only 6th in title odds.", fact_ids=["OP.record", "OP.record.title"]),
     Sentence(text="Bo Girds has 16.3% title odds.", fact_ids=["OP.6.title"]),
 ])
 LOOK_BLURB = WriterOut(sentences=[
@@ -139,12 +139,13 @@ DRAFT_ROAST = WriterOut(sentences=[
 # The blurbs of the waivers and the trades of Act II, each in the shape that passes the code check.
 WAIVERS_BLURB = WriterOut(sentences=[
     Sentence(text="Ollie Gordon II went to Unsolicited Dak Picks for $40.", fact_ids=["WV.hit.1"]),
-    Sentence(text="The Blue Tent bid $36 on him and lost by $4.", fact_ids=["WV.outbid.1"]),
+    Sentence(text="The Blue Tent bid $36 on him and lost by $4.", fact_ids=["WV.outbid.1", "WV.outbid.1.margin"]),
     Sentence(text="Ouch.", fact_ids=[]),
 ])
 WAIVERS_ROAST = WriterOut(sentences=[
-    Sentence(text="To Infinity and Bijan paid $40 for Joe Mixon and got 0 starts.", fact_ids=["WV.miss.1"]),
-    Sentence(text="NFC Least paid $26 for Rico Dowdle and got 0 starts.", fact_ids=["WV.miss.3"]),
+    Sentence(text="To Infinity and Bijan paid $40 for Joe Mixon and got 0 starts.",
+             fact_ids=["WV.miss.1", "WV.miss.1.value"]),
+    Sentence(text="NFC Least paid $26 for Rico Dowdle and got 0 starts.", fact_ids=["WV.miss.3", "WV.miss.3.value"]),
 ])
 TRADES_BLURB = WriterOut(sentences=[
     Sentence(text="To Infinity and Bijan won the week 7 trade with Return of T Mac.", fact_ids=["TR.4"]),
@@ -153,8 +154,8 @@ TRADES_BLURB = WriterOut(sentences=[
 ])
 TRADES_ROAST = WriterOut(sentences=[
     Sentence(text="Return of T Mac has a net of -34.2 points over the line since the week 7 trade.",
-             fact_ids=["TR.4"]),
-    Sentence(text="Return of T Mac is 3-1 since that trade.", fact_ids=["TR.4"]),
+             fact_ids=["TR.4.8"]),
+    Sentence(text="Return of T Mac is 3-1 since that trade.", fact_ids=["TR.4.8.since"]),
 ])
 # The blurbs of the lineup choices and the record book, the last chapters of Act II. The spread rule moved the bench
 # callout to Lil Fridge, so the lineup block may not name the four teams ahead of it.
@@ -329,7 +330,7 @@ def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_n
     for roast in roasts:
         assert any(sentence["fact_ids"] for sentence in roast["sentences"])
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
-    assert "a second reaction sentence" in review.split("## state.roast")[1]
+    assert "the blurb cites no fact" in review.split("## state.roast")[1]
 
 
 def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_path):
@@ -337,10 +338,11 @@ def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_pa
     assert [[s["fact_ids"] for s in roast["sentences"]] for roast in _roasts(report)] == [
         [["ST.4.record"], ["ST.6.streak"]], [["ARC.6.snakebit"], ["ARC.8.turnaround"]], [["SW.most"], ["SL.4.against"]],
         [["IT.1"], ["IT.1.top"]], [["TOP.DEF.3"], ["TOP.WR.2"]],
-        [["DV.bust.5859"], ["DV.bust.5859.tag"]], [["WV.miss.1"], ["WV.miss.3"]], [["TR.4"], ["TR.4"]],
+        [["DV.bust.5859"], ["DV.bust.5859.tag"]], [["WV.miss.1", "WV.miss.1.value"], ["WV.miss.3", "WV.miss.3.value"]], [["TR.4.8"], ["TR.4.8.since"]],
         [["LC.9"], ["LC.9.7"]], [["RB.low"], ["AW.heartbreak"]], [["LA.10.rate"], ["LA.4.rate"]],
         [["PW.rise.1"], ["PW.grab.2"]]]
-    assert [s["fact_ids"] for s in report["opener"]["roast"]["sentences"]] == [["OP.record"], ["OP.6.title"]]
+    assert [s["fact_ids"] for s in report["opener"]["roast"]["sentences"]] == [["OP.record", "OP.record.title"],
+                                                                              ["OP.6.title"]]
 
 
 def test_with_the_roast_off_the_draft_has_no_roast_lines(tmp_path):

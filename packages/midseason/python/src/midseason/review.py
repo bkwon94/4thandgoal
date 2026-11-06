@@ -15,8 +15,8 @@ REVIEW_FILE = "midseason-review.md"
 def _verifier_lines(blurb: Blurb, results: list[VerifyResult]) -> list[str]:
     if not blurb.fallback:
         return [f"Verifier: passed on attempt {blurb.attempt}."]
-    lines = [f"Verifier: failed {len(results)} times. The blurb is the template sentence of one fact.",
-             "The publish refuses it until an edit fits the prose block."]
+    lines = [f"Verifier: failed {len(results)} times. The blurb is the template of the block.",
+             "It holds fact sentences, then a reaction. Edit it if it reads flat. The publish checks it again."]
     for attempt, result in enumerate(results, start=1):
         reasons = [*result.code_failures, *(f"[{v.index}] {v.reason}" for v in result.verdicts if not v.supported)]
         lines += [f"- Attempt {attempt}: {reason}" for reason in reasons]

@@ -191,34 +191,48 @@ def _streamers(pickups: Sequence[Pickup]) -> list[Streamer]:
 def waiver_prose_facts(facts: WaiverFacts) -> list[Fact]:
     """The facts that the waiver prose block cites: each hit, each miss, each outbid claim, and the streaming king."""
     out = []
+    # Each move is a few facts, so each fact holds two numbers at most, as a sentence of the writer may.
     for place, hit in enumerate(facts.hits, start=1):
         n = Nums()
-        out.append(fact(
-            f"WV.hit.{place}",
-            f"{hit.player} went to {hit.team} for ${n(hit.bid)} in week {n(hit.week)}: {n(hit.starts)} starts, "
-            f"{n(hit.points_over_line or 0.0)} points over the line, and {n(hit.swung_wins)} swung wins. "
-            f"He is the {n.ord(place)} waiver hit of the league.", n, [hit.team], [hit.player]))
+        out.append(fact(f"WV.hit.{place}", f"{hit.player} went to {hit.team} for ${n(hit.bid)} in week {n(hit.week)}.",
+                        n, [hit.team], [hit.player]))
+        n = Nums()
+        out.append(fact(f"WV.hit.{place}.value",
+                        f"{hit.player} has {n(hit.points_over_line or 0.0)} points over the line in {n(hit.starts)} "
+                        f"starts for {hit.team}.", n, [hit.team], [hit.player]))
+        n = Nums()
+        wins = "win" if hit.swung_wins == 1 else "wins"
+        out.append(fact(f"WV.hit.{place}.rank",
+                        f"{hit.player} swung {n(hit.swung_wins)} {wins} for {hit.team}, the {n.ord(place)} waiver hit "
+                        f"of the league.", n, [hit.team], [hit.player]))
         if hit.line is not None:
             out.append(fact(f"WV.hit.{place}.line", f"{hit.team} let {hit.player} go: {hit.line}.", Nums(), [hit.team],
                             [hit.player]))
     for place, miss in enumerate(facts.misses, start=1):
         n = Nums()
-        out.append(fact(
-            f"WV.miss.{place}",
-            f"{miss.team} paid ${n(miss.bid)} for {miss.player} in week {n(miss.week)} and got {n(miss.starts)} "
-            f"starts and {n(miss.points_over_line or 0.0)} points over the line. "
-            f"It is the {n.ord(place)} waiver miss of the league.", n, [miss.team], [miss.player]))
+        out.append(fact(f"WV.miss.{place}", f"{miss.team} paid ${n(miss.bid)} for {miss.player} in week {n(miss.week)}.",
+                        n, [miss.team], [miss.player]))
+        n = Nums()
+        out.append(fact(f"WV.miss.{place}.value",
+                        f"{miss.player} got {n(miss.starts)} starts and {n(miss.points_over_line or 0.0)} points over "
+                        f"the line for {miss.team}.", n, [miss.team], [miss.player]))
+        n = Nums()
+        out.append(fact(f"WV.miss.{place}.rank",
+                        f"The ${n(miss.bid)} of {miss.team} for {miss.player} is the {n.ord(place)} waiver miss of "
+                        f"the league.", n, [miss.team], [miss.player]))
     for place, lost in enumerate(facts.outbid, start=1):
         n = Nums()
-        out.append(fact(
-            f"WV.outbid.{place}",
-            f"{lost.team} bid ${n(lost.bid)} on {lost.player} and lost to the ${n(lost.winner_bid)} bid of "
-            f"{lost.winner}, by ${n(lost.margin)}.", n, [lost.team, lost.winner], [lost.player]))
+        out.append(fact(f"WV.outbid.{place}",
+                        f"{lost.team} bid ${n(lost.bid)} on {lost.player} and lost to the ${n(lost.winner_bid)} bid of "
+                        f"{lost.winner}.", n, [lost.team, lost.winner], [lost.player]))
+        n = Nums()
+        out.append(fact(f"WV.outbid.{place}.margin", f"{lost.team} lost {lost.player} to {lost.winner} by "
+                        f"${n(lost.margin)}.", n, [lost.team, lost.winner], [lost.player]))
     if facts.streamers:
         king = facts.streamers[0]
         n = Nums()
         out.append(fact(
             "WV.stream",
-            f"{king.team} started {n(king.players)} streamed QBs, kickers, and defenses {n(king.starts)} times for "
-            f"{n(king.points)} points, the most in the league.", n, [king.team], []))
+            f"{king.team} started streamed QBs, kickers, and defenses {n(king.starts)} times for {n(king.points)} "
+            f"points, the most in the league.", n, [king.team], []))
     return out
