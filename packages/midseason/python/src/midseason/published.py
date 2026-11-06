@@ -15,7 +15,9 @@ from midseason.arcs import Arcs, ArcsChapter
 from midseason.draft import DraftValue
 from midseason.injury import InjuryChapter, InjuryToll
 from midseason.lineups import LineupChapter, LineupChoices
+from midseason.look_ahead import LOOK_AHEAD, LookAhead, LookAheadChapter
 from midseason.luck import LuckChapter, ScheduleLuck
+from midseason.opener import OPENER, Opener, TitleRace
 from midseason.prose import ROAST_SUFFIX
 from midseason.records import RecordBook, RecordsChapter
 from midseason.spread import Headline
@@ -73,8 +75,8 @@ class TradesChapter(BaseModel):
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
 Chapter = Annotated[StateChapter | ArcsChapter | LuckChapter | InjuryChapter | Top10Chapter | DraftChapter
-                    | WaiversChapter | TradesChapter | LineupChapter | RecordsChapter | WatchChapter,
-                    Field(discriminator="key")]
+                    | WaiversChapter | TradesChapter | LineupChapter | RecordsChapter | LookAheadChapter
+                    | WatchChapter, Field(discriminator="key")]
 
 
 class Act(BaseModel):
@@ -92,6 +94,8 @@ class MidseasonReport(BaseModel):
     week: int
     # The last published week that still shows the takeover on the home page.
     takeover_end_week: int
+    # The top of the report, the title race. The takeover of the home page shows it too.
+    opener: Opener
     acts: list[Act]
     # Every headline of each team after the spread rule: the arcs, the awards, and the callouts.
     headlines: list[Headline]
@@ -100,11 +104,13 @@ class MidseasonReport(BaseModel):
 def midseason_report(
     season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *, arcs: Arcs, luck: ScheduleLuck,
     injuries: InjuryToll, top10: PositionTop10, draft: DraftValue, waivers: WaiverFacts, trades: TradeFacts,
-    lineups: LineupChoices, records: RecordBook, watch: PlayersToWatch, headlines: list[Headline],
+    lineups: LineupChoices, records: RecordBook, watch: PlayersToWatch, race: TitleRace, look: LookAhead,
+    headlines: list[Headline],
 ) -> MidseasonReport:
-    """The report of `week` from the facts of each chapter and the blurbs by prose block key. Act I holds the state
-    of the league, the arcs, Schedule luck, the injury toll, and Position top 10. Act II holds the draft, the waivers,
-    the trades, the lineup choices, and the record book with the awards. Act III holds the players to watch."""
+    """The report of `week` from the facts of each chapter and the blurbs by prose block key. The opener is the title
+    race. Act I holds the state of the league, the arcs, Schedule luck, the injury toll, and Position top 10. Act II
+    holds the draft, the waivers, the trades, the lineup choices, and the record book with the awards. Act III holds
+    the look ahead and the players to watch."""
     act_one: list[Chapter] = [
         StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX)),
         ArcsChapter(facts=arcs, blurb=blurbs.get("arcs"), roast=blurbs.get("arcs" + ROAST_SUFFIX)),
@@ -120,12 +126,14 @@ def midseason_report(
         RecordsChapter(facts=records, blurb=blurbs.get("records"), roast=blurbs.get("records" + ROAST_SUFFIX)),
     ]
     act_three: list[Chapter] = [
+        LookAheadChapter(facts=look, blurb=blurbs.get(LOOK_AHEAD), roast=blurbs.get(LOOK_AHEAD + ROAST_SUFFIX)),
         WatchChapter(facts=watch, blurb=blurbs.get("watch"), roast=blurbs.get("watch" + ROAST_SUFFIX)),
     ]
     return MidseasonReport(
         season=season,
         week=week,
         takeover_end_week=week + TAKEOVER_WEEKS,
+        opener=Opener(facts=race, blurb=blurbs.get(OPENER), roast=blurbs.get(OPENER + ROAST_SUFFIX)),
         acts=[Act(key="how-we-got-here", title="How we got here", chapters=act_one),
               Act(key="the-moves", title="The moves", chapters=act_two),
               Act(key="what-comes-next", title="What comes next", chapters=act_three)],
@@ -134,9 +142,10 @@ def midseason_report(
 
 
 def report_blurbs(report: MidseasonReport) -> list[Blurb]:
-    """Every blurb of the report in page order: each chapter's blurb, then its roast."""
-    return [blurb for act in report.acts for chapter in act.chapters
-            for blurb in (chapter.blurb, chapter.roast) if blurb is not None]
+    """Every blurb of the report in page order: the opener's blurb and its roast, then each chapter's."""
+    opener = [blurb for blurb in (report.opener.blurb, report.opener.roast) if blurb is not None]
+    return opener + [blurb for act in report.acts for chapter in act.chapters
+                     for blurb in (chapter.blurb, chapter.roast) if blurb is not None]
 
 
 def read_midseason(season_build: Path) -> MidseasonReport:

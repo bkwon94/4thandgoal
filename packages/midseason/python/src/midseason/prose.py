@@ -72,11 +72,12 @@ ChapterFacts = tuple[str, str, list[Fact]]
 
 
 def prose_sheet(
-    week: int, state: LeagueState, roast: Roast, later: Sequence[ChapterFacts] = (),
-    moved: Mapping[str, Collection[str]] | None = None,
+    week: int, state: LeagueState, roast: Roast, later: Sequence[ChapterFacts] = (), *,
+    first: Sequence[ChapterFacts] = (), moved: Mapping[str, Collection[str]] | None = None,
 ) -> FactSheet:
     """The fact sheet of the report: every fact and the prose blocks that cite them. Each chapter has one blurb block,
-    and a roast block unless the roast is off. `later` holds the facts of each chapter after the state.
+    and a roast block unless the roast is off. `first` holds the facts of each block before the state, such as the
+    opener, and `later` the facts of each chapter after the state.
 
     `moved` holds the names of the teams that the spread rule moved off a callout, by chapter key. The block of that
     chapter drops each fact that names one of them and takes them out of its scope. So the verifier fails a blurb that
@@ -87,7 +88,7 @@ def prose_sheet(
     week_fact = fact(WEEK_FACT, f"The report counts week {n(week)} and every week before it.", n, [], [])
     teams = [team.name for team in state.teams]
     # The week fact comes last in each block, so the template blurb of a failed block reads a team fact, not the week.
-    blocks = [("state", "The state of the league", _state_facts(state)), *later]
+    blocks = [*first, ("state", "The state of the league", _state_facts(state)), *later]
     facts: list[Fact] = []
     chapters: list[Chapter] = []
     for key, title, chapter_facts in blocks:

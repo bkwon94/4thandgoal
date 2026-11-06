@@ -17,6 +17,7 @@ from pydantic import TypeAdapter
 
 from cornerstone.midseason_chapters import ChaptersStopped, report_chapters
 from cornerstone.render import render_week
+from cornerstone.season_schedule import remaining_schedule
 from cornerstone.season_sim import week_sim
 from cornerstone.sheet import (
     build_bundle,
@@ -101,8 +102,10 @@ from midseason.draft import DraftPick, DraftValue, draft_facts, draft_value
 from midseason.draft_injuries import injured_games
 from midseason.injury import injury_facts
 from midseason.lineups import lineup_choices, lineup_facts
+from midseason.look_ahead import look_ahead, look_ahead_facts
 from midseason.luck import luck_facts, schedule_luck, with_swap_callouts
 from midseason.moves import PlayerInfo
+from midseason.opener import title_race, title_race_facts
 from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
 from midseason.records import record_book, records_facts
@@ -812,13 +815,18 @@ def run_midseason(
     if sim is not None:
         write_sim(sim_file(sim, names), build_dir(client.folder))
         odds = {rid: team.playoff for rid, team in sim.teams.items()}
+        title_odds = {rid: team.title for rid, team in sim.teams.items()}
     else:
         odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
+        # The weekly odds hold no title odds, so the opener names only the record leader.
+        title_odds = {}
     median_game = client.settings.median_game
     state = league_state(history, week, names, playoff_odds=odds, median_game=median_game)
     luck = schedule_luck(history, week, state, median_game=median_game)
     arcs = team_arcs(history, week, state, {team.roster_id: team.schedule_luck for team in luck.teams},
                      median_game=median_game)
+    race = title_race(state, title_odds)
+    look = look_ahead(state, remaining_schedule(season, week, client=client))
     players, league, nfl_state = _saved_week_inputs(raw_dir(client.folder, season, week))
     provider = provider or SleeperProvider(provider_cache_dir(client.nfl_dir))
     moves = season_transactions(provider, client.league_id(season), season, week)
@@ -850,8 +858,10 @@ def run_midseason(
              ("trades", "The trade report card", trade_prose_facts(trades)),
              ("lineup", "Lineup choices", lineup_facts(lineups)),
              ("records", "The record book", records_facts(records, waivers=waivers, lineups=lineups, state=state)),
+             ("look-ahead", "The look ahead", look_ahead_facts(look)),
              ("watch", "Players to watch", watch_facts(chapters.watch))]
-    sheet = prose_sheet(week, state, roast, later, moved=moved)
+    sheet = prose_sheet(week, state, roast, later, first=[("opener", "The title race", title_race_facts(race))],
+                        moved=moved)
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
     write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)
@@ -860,7 +870,7 @@ def run_midseason(
     log.info("review file: %s", review)
     report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck, injuries=chapters.injuries,
                               top10=chapters.top10, draft=draft, waivers=waivers, trades=trades, lineups=lineups,
-                              records=records, watch=chapters.watch, headlines=headlines)
+                              records=records, watch=chapters.watch, race=race, look=look, headlines=headlines)
     return write_midseason(report, build_dir(client.folder))
 
 

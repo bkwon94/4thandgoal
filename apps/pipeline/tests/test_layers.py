@@ -128,6 +128,7 @@ LAYER_OF: dict[str, str] = {
     "league.season_inputs": "load",
     "league.live": "load",
     "league.lineup": "load",
+    "season_schedule": "load",
     # facts
     "sheet": "facts",
     "rankings.chapter": "facts",
@@ -174,6 +175,8 @@ LAYER_OF: dict[str, str] = {
     "midseason.lineups": "facts",
     "midseason.records": "facts",
     "midseason.spread": "facts",
+    "midseason.opener": "facts",
+    "midseason.look_ahead": "facts",
     "analyzer.trade_facts": "facts",
     "analyzer.week_line": "facts",
     "analyzer.finder": "facts",

@@ -95,7 +95,8 @@ def test_a_blurb_that_the_claude_check_rejects_makes_the_publish_refuse(tmp_path
     root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
     rejected = VerifyOut(verdicts=[*_passed(2).verdicts, Verdict(index=2, supported=False, reason="No fact.")])
     with pytest.raises(PublishError, match=r"The blurb state fails the verifier: \[2\] No fact\."):
-        run_midseason_publish(pipeline, 2026, 8, _call(rejected, _passed(2)), client=client)
+        # The two blocks of the opener come first and pass.
+        run_midseason_publish(pipeline, 2026, 8, _call(_passed(3), _passed(2), rejected, _passed(2)), client=client)
     assert not _published(root).exists()
 
 

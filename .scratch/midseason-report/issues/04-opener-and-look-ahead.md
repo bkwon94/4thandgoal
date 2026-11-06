@@ -8,8 +8,8 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-24, and AT-25.
 
 **Blocked by:** 02 and 03.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
-- [ ] The opener names the title odds of the leaders and of All You Need Is Love, the record leader at 11-5.
-- [ ] Maye d'force B with U has the softest schedule at .44, and behold the lamb the hardest at .56.
-- [ ] The opener and the look ahead have their prose blocks in the review file.
+- [x] The opener names the title odds of the leaders and of All You Need Is Love, the record leader at 11-5.
+- [x] Maye d'force B with U has the softest schedule at .44, and behold the lamb the hardest at .56.
+- [x] The opener and the look ahead have their prose blocks in the review file.
