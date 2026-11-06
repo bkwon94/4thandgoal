@@ -269,7 +269,7 @@ App: site
 Stories: 48
 Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
 When: Open the report at `/midseason/2026` and scroll to the sim.
-Then: The playoff, bye, and title odds of all 10,000 runs show beside the replay on a desktop and below it on a phone.
+Then: The playoff, bye, and title odds of all 10,000 runs show below the replay at every width.
 Evidence: Screenshots of the sim chapter at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-34: Skip to the end

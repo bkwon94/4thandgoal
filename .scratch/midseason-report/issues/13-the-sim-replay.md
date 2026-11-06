@@ -13,5 +13,5 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-29, AT-30, AT-31, 
 - [x] A press plays a random sim run: a lower third each week, a red PLAYOFFS wipe, the final standings with the cut and the byes, the bracket, and a champion card with "Wins the title in N% of all 10,000 runs".
 - [x] "Skip to the end" shows the final state at once, and a press during a run starts a clean new run.
 - [x] With reduced motion, each beat fades with no movement.
-- [x] The odds of all runs show beside the replay on a desktop and below it on a phone.
+- [x] The odds of all runs show below the replay at every width.
 - [x] The replay has no control to pick a game's winner.

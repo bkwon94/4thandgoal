@@ -34,7 +34,7 @@ The motion of Broadcast, beat by beat:
 Rules for all beats:
 
 - A full run takes about 20 seconds. A "Skip to the end" control jumps to the final state at once. A press of the main button during a run starts a fresh run cleanly.
-- The odds of all 10,000 runs sit beside the stage on a desktop and below it on a phone, with a column for the seed of this run.
+- The odds of all 10,000 runs sit below the stage at every width, with a column for the seed of this run. Brian changed this on 2026-11-05: beside the stage, the bracket had only about 356 px on a desktop, and the team names did not fit.
 - The week strip has two labeled groups, the regular season and the playoffs, with a gap and a different style.
 - The motion reuses the redesign's `framer-motion`, its ease tokens, and its brand red. It adds no dependency. The trophy is from `lucide-react`.
 - Spring bounce stays at 0.3 or less. A step of a beat may run 0.4 to 0.8 seconds, past the 300 ms limit for controls, because the replay explains and the reader watches it.
