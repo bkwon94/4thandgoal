@@ -8,7 +8,7 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-14, AT-15, AT-16, AT-17,
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] On a throwaway copy of the evidence of `faster-evidence` at `197fb328`, the Judge gives PASS to each of the 14 tests (AT-14).
 - [ ] With the Observation of AT-2 of that copy made false, a fresh Judge gives FAIL to AT-2 with a reason that names the mismatch (AT-15).
