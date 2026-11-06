@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-15, and AT-16.
 
 **Blocked by:** 01 and 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The top hit is Ollie Gordon II at $40 to Unsolicited Dak Picks, and the top miss is Joe Mixon at $40.
 - [x] The outbid list has The Blue Tent's $36 bid on Ollie Gordon II.
