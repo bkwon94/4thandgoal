@@ -8,7 +8,7 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-6, AT-7, AT-8, and AT-9.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `pytest-xdist` is a dev dependency of the pipeline and of the API, and `uv.lock` holds it.
 - [x] `make -C apps/pipeline test` passes 1579 tests in 90 s or less. A serial run with `-p no:xdist` passes the same count (AT-6).
