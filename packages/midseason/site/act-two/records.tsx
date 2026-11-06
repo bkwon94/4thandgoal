@@ -4,7 +4,7 @@
  */
 import type { ReactNode } from "react";
 import { num } from "@cpc/design/format/format";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import type { Award, RecordsChapter } from "../schema/midseason-types";
@@ -38,7 +38,7 @@ function BookList({ book }: { book: Book }) {
   const onGame = (key: Award["key"]) => book.awards.find((award) => award.key === key && award.in_record_book);
   const { high, low, biggest_margin: big, closest } = book;
   return (
-    <Card className="py-sp-1">
+    <ReportCard className="py-sp-1">
       <ol aria-label="Records" className="m-0 list-none p-0">
         <Entry label="Highest score" value={teamScore(high.score)} line={`${high.team}, week ${high.week}`} />
         <Entry label="Lowest score" value={teamScore(low.score)} line={`${low.team}, week ${low.week}`} />
@@ -55,7 +55,7 @@ function BookList({ book }: { book: Book }) {
           award={onGame("heartbreak")}
         />
       </ol>
-    </Card>
+    </ReportCard>
   );
 }
 

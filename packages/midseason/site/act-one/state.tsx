@@ -3,7 +3,7 @@
  * and the playoff odds, in standings order. The table scrolls inside its own box on a phone, and the team column stays.
  */
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { fullRecord, teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import type { StateChapter, TeamState } from "../schema/midseason-types";
@@ -22,7 +22,7 @@ const streakText = (team: TeamState) => (team.streak ? `${team.streak.kind}${tea
 export function State({ chapter }: { chapter: StateChapter }) {
   return (
     <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
-      <Card className="overflow-x-auto p-0">
+      <ReportCard className="overflow-x-auto p-0">
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-rule">
@@ -52,7 +52,7 @@ export function State({ chapter }: { chapter: StateChapter }) {
             ))}
           </tbody>
         </table>
-      </Card>
+      </ReportCard>
     </ReportChapter>
   );
 }

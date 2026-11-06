@@ -2,7 +2,7 @@
  * The arcs chapter of Act I: each team's arcs, such as a Turnaround or a Collapse, with the numbers behind each one.
  * A team has at most 2 arcs, the biggest swing first, and a team with no arc says so.
  */
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { fullRecord, signedOne } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { WordTag } from "../report/word-tag";
@@ -27,7 +27,7 @@ export function Arcs({ chapter }: { chapter: ArcsChapter }) {
     <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
       <ul aria-label="Arcs" className="m-0 grid list-none grid-cols-1 gap-sp-2 p-0 desktop:grid-cols-2">
         {chapter.facts.teams.map((team) => (
-          <Card as="li" key={team.roster_id} className="flex flex-col gap-sp-2">
+          <ReportCard as="li" key={team.roster_id} className="flex flex-col gap-sp-2">
             <span className="text-body leading-tight font-bold">{team.name}</span>
             {team.arcs.length === 0 && <span className="text-meta text-mute">No arc yet</span>}
             {team.arcs.map((arc) => (
@@ -40,7 +40,7 @@ export function Arcs({ chapter }: { chapter: ArcsChapter }) {
                 ))}
               </div>
             ))}
-          </Card>
+          </ReportCard>
         ))}
       </ul>
     </ReportChapter>

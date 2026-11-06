@@ -3,7 +3,7 @@
  * each with its cost rank against its points rank at the position. A bust has a tag, hurt or just bad.
  */
 import { oneDecimal } from "@cpc/design/format/format";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { ReportChapter } from "../report/report-chapter";
 import { WordTag, type TagTone } from "../report/word-tag";
 import type { DraftChapter, DraftRow } from "../schema/midseason-types";
@@ -49,13 +49,13 @@ function List({ label, rows, type }: { label: string; rows: DraftRow[]; type: Dr
   return (
     <div className="flex flex-col gap-sp-2">
       <h4 className="m-0 text-body leading-tight font-bold">{label}</h4>
-      <Card className="py-sp-1">
+      <ReportCard className="py-sp-1">
         <ol aria-label={label} className="m-0 list-none p-0">
           {rows.map((row) => (
             <Row key={row.player_id} row={row} type={type} />
           ))}
         </ol>
-      </Card>
+      </ReportCard>
     </div>
   );
 }

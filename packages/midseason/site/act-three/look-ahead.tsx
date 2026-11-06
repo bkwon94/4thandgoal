@@ -3,7 +3,7 @@
  * opponent, and the win rate of all its opponents. The softest schedule comes first. The list shows 5 teams first.
  */
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { fullRecord } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
@@ -63,14 +63,14 @@ export function LookAhead({ chapter }: { chapter: LookAheadChapter }) {
       <p className="m-0 max-w-measure text-lead text-ink-2">
         The rate is the win rate of the opponents so far. A lower rate is a softer path.
       </p>
-      <Card className="py-sp-1">
+      <ReportCard className="py-sp-1">
         <ShowAll
           label="Schedules left"
           rows={teams.map((team) => (
             <Row key={team.roster_id} team={team} end={endOf(team.roster_id)} />
           ))}
         />
-      </Card>
+      </ReportCard>
     </ReportChapter>
   );
 }

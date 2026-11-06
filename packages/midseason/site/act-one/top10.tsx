@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { oneDecimal } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { ReportChapter } from "../report/report-chapter";
 import type { PositionBoard, Top10Chapter, TopPlayer } from "../schema/midseason-types";
 
@@ -78,13 +78,13 @@ export function Top10({ chapter }: { chapter: Top10Chapter }) {
         />
       </div>
       {board !== undefined && (
-        <Card className="py-sp-1">
+        <ReportCard className="py-sp-1">
           <ol aria-label={`${board.position} top 10`} className="m-0 list-none p-0">
             {board.players.map((player) => (
               <Row key={player.player_id} player={player} />
             ))}
           </ol>
-        </Card>
+        </ReportCard>
       )}
     </ReportChapter>
   );

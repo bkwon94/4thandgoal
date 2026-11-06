@@ -4,7 +4,7 @@
  */
 import { oneDecimal } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { fullRecord, signedOne } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
@@ -50,7 +50,7 @@ function Result({ trade }: { trade: TradeCard }) {
 
 function FullCard({ trade }: { trade: TradeCard }) {
   return (
-    <Card as="article" className="flex flex-col gap-sp-3">
+    <ReportCard as="article" className="flex flex-col gap-sp-3">
       <div className="flex flex-wrap items-baseline justify-between gap-sp-2">
         <span className="font-mono text-meta tracking-caps text-mute uppercase">Week {trade.week}</span>
         <Result trade={trade} />
@@ -77,7 +77,7 @@ function FullCard({ trade }: { trade: TradeCard }) {
           </div>
         ))}
       </div>
-    </Card>
+    </ReportCard>
   );
 }
 
@@ -117,14 +117,14 @@ export function Trades({ chapter }: { chapter: TradesChapter }) {
         ))}
       </div>
       {rest.length > 0 && (
-        <Card className="py-sp-1">
+        <ReportCard className="py-sp-1">
           <ShowAll
             label="Every other trade"
             rows={rest.map((trade) => (
               <ShortRow key={trade.transaction_id} trade={trade} />
             ))}
           />
-        </Card>
+        </ReportCard>
       )}
     </ReportChapter>
   );

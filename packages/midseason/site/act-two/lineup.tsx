@@ -3,7 +3,7 @@
  * that its best lineup would have won. The list shows 5 teams, then a "Show all" button.
  */
 import { num } from "@cpc/design/format/format";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
@@ -29,14 +29,14 @@ function Row({ team }: { team: TeamLineup }) {
 export function Lineup({ chapter, level }: { chapter: LineupChapter; level?: 3 | 4 }) {
   return (
     <ReportChapter id={chapter.key} title={chapter.title} level={level} note="Bench points" blurb={chapter.blurb}>
-      <Card className="py-sp-1">
+      <ReportCard className="py-sp-1">
         <ShowAll
           label="Bench points"
           rows={chapter.facts.teams.map((team) => (
             <Row key={team.roster_id} team={team} />
           ))}
         />
-      </Card>
+      </ReportCard>
     </ReportChapter>
   );
 }

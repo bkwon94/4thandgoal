@@ -4,7 +4,7 @@
  */
 import { gap, num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { fullRecord, signedTwo, teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { WordTag } from "../report/word-tag";
@@ -55,7 +55,7 @@ function LuckCard({ example }: { example: LuckExample }) {
     },
   ];
   return (
-    <Card>
+    <ReportCard>
       <section aria-labelledby="luck-card-0" className="flex flex-col gap-sp-3 p-sp-4">
         {steps.map((step, index) => (
           <div key={step.title} className="flex gap-sp-3">
@@ -71,13 +71,13 @@ function LuckCard({ example }: { example: LuckExample }) {
           </div>
         ))}
       </section>
-    </Card>
+    </ReportCard>
   );
 }
 
 function LuckTable({ teams }: { teams: TeamLuck[] }) {
   return (
-    <Card className="overflow-x-auto p-0">
+    <ReportCard className="overflow-x-auto p-0">
       <table aria-label="Schedule luck" className="w-full border-collapse">
         <thead>
           <tr className="border-b border-rule">
@@ -112,7 +112,7 @@ function LuckTable({ teams }: { teams: TeamLuck[] }) {
           ))}
         </tbody>
       </table>
-    </Card>
+    </ReportCard>
   );
 }
 

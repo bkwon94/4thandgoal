@@ -3,7 +3,7 @@
  * the claims lost by a few dollars, and the teams that streamed QB, K, and DEF, the streaming king first.
  */
 import { count, oneDecimal } from "@cpc/design/format/format";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { signedOne } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
@@ -40,13 +40,13 @@ function Pickups({ label, rows }: { label: string; rows: Pickup[] }) {
   return (
     <div className="flex flex-col gap-sp-2">
       <h4 className="m-0 text-body leading-tight font-bold">{label}</h4>
-      <Card className="py-sp-1">
+      <ReportCard className="py-sp-1">
         <ol aria-label={label} className="m-0 list-none p-0">
           {rows.map((pickup) => (
             <PickupRow key={`${pickup.player_id}-${pickup.roster_id}-${pickup.week}`} pickup={pickup} />
           ))}
         </ol>
-      </Card>
+      </ReportCard>
     </div>
   );
 }
@@ -55,7 +55,7 @@ function OutbidList({ outbid }: { outbid: Facts["outbid"] }) {
   return (
     <div className="flex flex-col gap-sp-2">
       <h4 className="m-0 text-body leading-tight font-bold">Outbid</h4>
-      <Card className="py-sp-1">
+      <ReportCard className="py-sp-1">
         <ol aria-label="Outbid" className="m-0 list-none p-0">
           {outbid.map((row) => (
             <li key={`${row.player_id}-${row.roster_id}`} className="border-b border-rule py-sp-2 text-meta leading-tight last:border-b-0">
@@ -68,7 +68,7 @@ function OutbidList({ outbid }: { outbid: Facts["outbid"] }) {
             </li>
           ))}
         </ol>
-      </Card>
+      </ReportCard>
     </div>
   );
 }
@@ -77,7 +77,7 @@ function Streamers({ streamers }: { streamers: Facts["streamers"] }) {
   return (
     <div className="flex flex-col gap-sp-2">
       <h4 className="m-0 text-body leading-tight font-bold">Streamers of QB, K, and DEF</h4>
-      <Card className="py-sp-1">
+      <ReportCard className="py-sp-1">
         <ShowAll
           label="Streamers"
           rows={streamers.map((row, index) => (
@@ -95,7 +95,7 @@ function Streamers({ streamers }: { streamers: Facts["streamers"] }) {
             </li>
           ))}
         />
-      </Card>
+      </ReportCard>
     </div>
   );
 }

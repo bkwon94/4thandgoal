@@ -6,6 +6,6 @@ import type { ComponentProps } from "react";
 import { cn } from "@cpc/design/lib/utils";
 import { Card as LookCard } from "@cpc/design/parts/card";
 
-export function Card({ className, ...props }: ComponentProps<typeof LookCard>) {
+export function ReportCard({ className, ...props }: ComponentProps<typeof LookCard>) {
   return <LookCard {...props} className={cn("rounded-report", className)} />;
 }

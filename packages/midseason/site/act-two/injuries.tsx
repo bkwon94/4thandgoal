@@ -3,14 +3,14 @@
  * its key starters who missed games and the count for each one.
  */
 import { count } from "@cpc/design/format/format";
-import { Card } from "../report/report-card";
+import { ReportCard } from "../report/report-card";
 import { ReportChapter } from "../report/report-chapter";
 import type { InjuryChapter } from "../schema/midseason-types";
 
 export function Injuries({ chapter, level }: { chapter: InjuryChapter; level?: 3 | 4 }) {
   return (
     <ReportChapter id={chapter.key} title={chapter.title} level={level} note="Starter games lost" blurb={chapter.blurb}>
-      <Card className="py-sp-1">
+      <ReportCard className="py-sp-1">
         <ol aria-label="Injury toll" className="m-0 list-none p-0">
           {chapter.facts.teams.map((team) => (
             <li
@@ -30,7 +30,7 @@ export function Injuries({ chapter, level }: { chapter: InjuryChapter; level?: 3
             </li>
           ))}
         </ol>
-      </Card>
+      </ReportCard>
     </ReportChapter>
   );
 }
