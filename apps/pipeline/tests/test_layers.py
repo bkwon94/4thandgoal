@@ -155,6 +155,8 @@ LAYER_OF: dict[str, str] = {
     "managers.season": "facts",
     "rankings.power_rankings": "facts",
     "midseason.state": "facts",
+    "midseason.draft": "facts",
+    "midseason.draft_injuries": "facts",
     "analyzer.trade_facts": "facts",
     "analyzer.week_line": "facts",
     "analyzer.finder": "facts",

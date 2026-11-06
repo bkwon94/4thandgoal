@@ -5,12 +5,13 @@ chapters. The pipeline owns the shape (ADR 0011), and the site side of the packa
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from league.files import write_bytes_atomic
 from league.models import Blurb
+from midseason.draft import DraftValue
 from midseason.prose import ROAST_SUFFIX
 from midseason.state import LeagueState
 
@@ -32,9 +33,18 @@ class StateChapter(BaseModel):
     roast: Blurb | None = None
 
 
+class DraftChapter(BaseModel):
+    """The draft steals and busts, the first chapter of Act II."""
+    key: Literal["draft"] = "draft"
+    title: str = "Draft steals and busts"
+    facts: DraftValue
+    blurb: Blurb | None = None
+    roast: Blurb | None = None
+
+
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
-Chapter = StateChapter
+Chapter = Annotated[StateChapter | DraftChapter, Field(discriminator="key")]
 
 
 class Act(BaseModel):
@@ -55,16 +65,17 @@ class MidseasonReport(BaseModel):
     acts: list[Act]
 
 
-def midseason_report(season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb]) -> MidseasonReport:
+def midseason_report(
+    season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *, draft: DraftValue | None = None,
+) -> MidseasonReport:
     """The report of `week` from the facts of each chapter and the blurbs by prose block key. Act I holds the state
-    of the league."""
+    of the league. Act II holds the draft steals and busts when the build has the draft."""
     state_chapter = StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX))
-    return MidseasonReport(
-        season=season,
-        week=week,
-        takeover_end_week=week + TAKEOVER_WEEKS,
-        acts=[Act(key="how-we-got-here", title="How we got here", chapters=[state_chapter])],
-    )
+    acts = [Act(key="how-we-got-here", title="How we got here", chapters=[state_chapter])]
+    if draft is not None:
+        draft_chapter = DraftChapter(facts=draft, blurb=blurbs.get("draft"), roast=blurbs.get("draft" + ROAST_SUFFIX))
+        acts.append(Act(key="the-moves", title="The moves", chapters=[draft_chapter]))
+    return MidseasonReport(season=season, week=week, takeover_end_week=week + TAKEOVER_WEEKS, acts=acts)
 
 
 def report_blurbs(report: MidseasonReport) -> list[Blurb]:

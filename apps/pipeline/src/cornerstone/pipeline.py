@@ -45,10 +45,20 @@ from league.models import (
     Week,
     week_lines,
 )
-from league.nflverse import nflverse_week
+from league.nflverse import (
+    FFIDS_URL,
+    INJURIES_URL,
+    cache_path,
+    download,
+    gsis_id,
+    nflverse_week,
+    read_id_map,
+    read_injuries,
+)
 from league.parse import parse_trades, parse_week
 from league.paths import (
     build_dir,
+    draft_dir,
     history_dir,
     history_root,
     nflverse_cache_dir,
@@ -76,6 +86,8 @@ from league.trades import default_cutoff, trades_for_week
 from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from managers.render import render_managers
 from managers.season import saved_awards
+from midseason.draft import DraftPick, DraftValue, draft_value
+from midseason.draft_injuries import injured_games
 from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
 from midseason.review import review_text, write_review
@@ -688,13 +700,51 @@ def midseason_values(client: Client) -> MidseasonValues:
     return MidseasonValues()
 
 
-def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -> Path:
+def _injury_report(season: int, week: int, player_ids: list[str], players: dict, client: Client,
+                   ) -> dict[str, dict[int, str]] | None:
+    """The nflverse injury report status by Sleeper player ID and week. None when the report cannot load."""
+    cache = nflverse_cache_dir(client.nfl_dir)
+    injuries_path = download(INJURIES_URL.format(season=season), cache_path(cache, INJURIES_URL, season))
+    ids_path = download(FFIDS_URL, cache_path(cache, FFIDS_URL, season))
+    injuries = read_injuries(injuries_path, week) if injuries_path else None
+    if injuries is None:
+        log.warning("No nflverse injury report through week %d, so no draft bust gets an injury tag", week)
+        return None
+    id_map = read_id_map(ids_path) if ids_path else {}
+    report = {}
+    for player_id in player_ids:
+        gsis = gsis_id(player_id, players, id_map)
+        if gsis is not None and gsis in injuries:
+            report[player_id] = injuries[gsis]
+    return report
+
+
+def _midseason_draft(season: int, week: int, history: History, names: dict[int, str], client: Client,
+                     provider: Provider) -> DraftValue:
+    """The draft steals and busts. The build fetches the draft again each run and saves it in the data folder."""
+    raw = provider.fetch_draft(client.league_id(season), draft_dir(client.folder, season))
+    picks = [DraftPick(player_id=pick.player_id, name=f"{pick.metadata.first_name} {pick.metadata.last_name}",
+                       position=pick.metadata.position, roster_id=pick.roster_id, pick_no=pick.pick_no,
+                       price=int(pick.metadata.amount) if pick.metadata.amount else None)
+             for pick in raw.picks]
+    # The rules read the draft type of the league, never the client: only an auction has a price.
+    draft_type = raw.type if raw.type in ("auction", "snake", "linear") else "snake"
+    ids = [pick.player_id for pick in picks]
+    report = _injury_report(season, week, ids, provider.fetch_players(), client)
+    missed = None if report is None else injured_games(ids, report, history, week)
+    return draft_value(picks, draft_type, history, week, names, missed)
+
+
+def run_midseason(
+    season: int, week: int, call: ClaudeCall, *, client: Client, provider: Provider | None = None,
+) -> Path:
     """Write the draft of the midseason report of `week` into the build folder of the season: midseason.json, the
     saved facts of its prose, and the review file. It reads the saved history of weeks 1 to `week` and the saved facts
     of `week`. It writes nothing to published/, so only the publish of the report puts it live.
 
     The app wires the odds into the report: the playoff odds of the saved week go in through the port of midseason.
     Each prose block goes through the writer and the verifier of facts, with the roast setting of the client.
+    A provider of None is the Sleeper adapter. The build fetches the draft through it.
     """
     facts = week_dir(client.folder, season, week) / "facts.json"
     if not facts.exists():
@@ -708,15 +758,17 @@ def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -
     odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
     names = {rid: team.name for rid, team in bundle.data.teams.items()}
     state = league_state(history, week, names, playoff_odds=odds, median_game=client.settings.median_game)
+    draft = _midseason_draft(season, week, history, names, client,
+                             provider or SleeperProvider(provider_cache_dir(client.nfl_dir)))
     roast = midseason_values(client).roast
-    sheet = prose_sheet(week, state, roast)
+    sheet = prose_sheet(week, state, roast, draft=draft)
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
     write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)
     command = f"make midseason-publish CLIENT={client.slug} WEEK={week}"
     review = write_review(review_text(season, week, roast, sheet, blurbs, results, command), season_build)
     log.info("review file: %s", review)
-    return write_midseason(midseason_report(season, week, state, blurbs), build_dir(client.folder))
+    return write_midseason(midseason_report(season, week, state, blurbs, draft=draft), build_dir(client.folder))
 
 
 def run_history(season: int, through: int, force: bool = False, *, client: Client) -> list[int]:

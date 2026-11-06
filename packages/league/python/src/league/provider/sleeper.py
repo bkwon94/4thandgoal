@@ -13,7 +13,15 @@ import httpx
 
 from league.files import write_bytes_atomic
 from league.league_settings import BENCH_SLOTS, LeagueSettings, bracket_byes, star_ranks
-from league.provider.raw import RawAheadWeek, RawLeague, RawPastWeek, RawState, RawTransaction, RawWeek
+from league.provider.raw import (
+    RawAheadWeek,
+    RawDraft,
+    RawLeague,
+    RawPastWeek,
+    RawState,
+    RawTransaction,
+    RawWeek,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +59,10 @@ PLAYERS_FILE = "players.json"
 # The positions the adapter asks Sleeper for. The pool of a league keeps only the positions of its roster slots,
 # so a position the league does not start leaves after the fetch, in the League settings.
 FETCH_POSITIONS = ("QB", "RB", "WR", "TE", "K", "DEF")
+# The two files of the draft of a season, saved as Sleeper sends them: the draft with its type and settings, and the
+# picks.
+DRAFT_FILE = "draft.json"
+PICKS_FILE = "picks.json"
 
 
 def _position_params() -> list[tuple[str, str]]:
@@ -283,6 +295,28 @@ def fetch_past_week(
     return RawPastWeek.model_validate(data)
 
 
+def fetch_draft(league_id: str, out_dir: Path, transport: httpx.BaseTransport | None = None) -> RawDraft:
+    """Save the draft of the season of `league_id` into `out_dir` as draft.json and picks.json, and give it back.
+
+    The league file names the one draft of the season, so the fetch reads it first.
+    """
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
+        draft_id = _get(client, f"{OFFICIAL_URL}/league/{league_id}")["draft_id"]
+        draft = _get(client, f"{OFFICIAL_URL}/draft/{draft_id}")
+        picks = _get(client, f"{OFFICIAL_URL}/draft/{draft_id}/picks")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    _write_json(out_dir / DRAFT_FILE, draft)
+    _write_json(out_dir / PICKS_FILE, picks)
+    return RawDraft.model_validate({**draft, "picks": picks})
+
+
+def load_draft(draft_dir: Path) -> RawDraft:
+    """The saved draft of `draft_dir`, as fetch_draft gave it."""
+    draft = json.loads((draft_dir / DRAFT_FILE).read_text(encoding="utf-8"))
+    picks = json.loads((draft_dir / PICKS_FILE).read_text(encoding="utf-8"))
+    return RawDraft.model_validate({**draft, "picks": picks})
+
+
 def load_raw(raw_dir: Path) -> RawWeek:
     raw: dict[str, object] = {}
     for name in RAW_FILES:
@@ -360,6 +394,9 @@ class SleeperProvider:
 
     def fetch_past_leg(self, league_id: str, season: int, week: int, out_dir: Path) -> RawPastWeek:
         return fetch_past_week(league_id, season, week, out_dir, self.transport)
+
+    def fetch_draft(self, league_id: str, out_dir: Path) -> RawDraft:
+        return fetch_draft(league_id, out_dir, self.transport)
 
     # The protocol needs this fetch. No pipeline caller reads it yet.
     def fetch_players(self) -> dict[str, dict]:

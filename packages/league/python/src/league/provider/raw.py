@@ -187,3 +187,35 @@ class RawWeek(RawPastWeek):
     schedule: list[RawScheduleWeek] | None = None
     projections_ahead: list[RawAheadWeek] | None = None
     trending: list[RawTrending] | None = None
+
+
+class RawDraftSettings(_Raw):
+    """The settings object of draft.json. An auction has a budget, and a snake has none."""
+    teams: int
+    rounds: int
+    budget: int | None = None
+
+
+class RawPickMetadata(_Raw):
+    """The metadata of one pick in picks.json: the player at the time of the draft and, in an auction, the price."""
+    first_name: str
+    last_name: str
+    position: str
+    # The price in dollars as a string. Only an auction pick has it.
+    amount: str | None = None
+
+
+class RawDraftPick(_Raw):
+    """One pick of picks.json. The roster id is the drafter, and in an auction the pick number is the order of sale."""
+    pick_no: int
+    round: int
+    roster_id: int
+    player_id: str
+    metadata: RawPickMetadata
+
+
+class RawDraft(_Raw):
+    """The draft of a season: the type and the settings of draft.json, and the picks of picks.json."""
+    type: str
+    settings: RawDraftSettings
+    picks: list[RawDraftPick]

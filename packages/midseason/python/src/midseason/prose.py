@@ -15,6 +15,7 @@ from facts.writer import ClaudeCall
 from league.claude_errors import RefusalError, WriterError
 from league.files import write_bytes_atomic
 from league.models import Blurb, Chapter, Fact, FactSheet, VerifyResult
+from midseason.draft import DraftValue, draft_facts
 from midseason.state import LeagueState
 from midseason.values import Roast
 
@@ -67,13 +68,14 @@ def _state_facts(state: LeagueState) -> list[Fact]:
     return facts
 
 
-def prose_sheet(week: int, state: LeagueState, roast: Roast) -> FactSheet:
+def prose_sheet(week: int, state: LeagueState, roast: Roast, *, draft: DraftValue | None = None) -> FactSheet:
     """The fact sheet of the report: every fact and the prose blocks that cite them. Each chapter has one blurb block,
-    and a roast block unless the roast is off."""
+    and a roast block unless the roast is off. The draft chapter has its blocks when the build has the draft."""
     n = Nums()
     week_fact = fact(WEEK_FACT, f"The report counts week {n(week)} and every week before it.", n, [], [])
     # The week fact comes last, so the template blurb of a failed block reads the first team fact, not the week.
-    facts = [*_state_facts(state), week_fact]
+    state_facts = _state_facts(state)
+    facts = [*state_facts, week_fact]
     ids = [f.id for f in facts]
     teams = [team.name for team in state.teams]
     chapters = [Chapter(key="state", title="The state of the league", fact_ids=ids, scope_teams=teams,
@@ -82,6 +84,19 @@ def prose_sheet(week: int, state: LeagueState, roast: Roast) -> FactSheet:
         # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
         chapters.append(Chapter(key="state" + ROAST_SUFFIX, title="The roast of the state of the league", fact_ids=ids,
                                 scope_teams=teams, scope_players=[], min_sentences=2, max_sentences=4))
+    if draft is not None:
+        dv_facts = draft_facts(draft)
+        # The draft facts go before the week fact, so the template blurb of a failed block reads a draft fact.
+        facts = [*state_facts, *dv_facts, week_fact]
+        dv_ids = [f.id for f in dv_facts] + [WEEK_FACT]
+        rows = draft.steals + draft.busts
+        dv_teams = list(dict.fromkeys(row.team for row in rows))
+        players = [row.name for row in rows]
+        chapters.append(Chapter(key="draft", title="Draft steals and busts", fact_ids=dv_ids, scope_teams=dv_teams,
+                                scope_players=players, min_sentences=2, max_sentences=5))
+        if roast != "off":
+            chapters.append(Chapter(key="draft" + ROAST_SUFFIX, title="The roast of the draft", fact_ids=dv_ids,
+                                    scope_teams=dv_teams, scope_players=players, min_sentences=2, max_sentences=4))
     return FactSheet(facts={f.id: f for f in facts}, chapters=chapters)
 
 

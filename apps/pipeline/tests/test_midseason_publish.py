@@ -12,13 +12,24 @@ import pytest
 from cpc import cli_root, cpc_client
 from fakes import FakeWriter
 from rule_report import clean_git_env, report
-from test_midseason import CPC_DATA, ROAST_BLURB, STATE_BLURB, _call, _passed
+from test_midseason import (
+    CPC_DATA,
+    CPC_PROVIDER,
+    DRAFT_BLURB,
+    DRAFT_ROAST,
+    ROAST_BLURB,
+    STATE_BLURB,
+    _call,
+    _clean_call,
+    _passed,
+    prime_nflverse,
+)
 from test_rule_publish import _outside_offenses
 
 from cornerstone.pipeline import run_midseason
 from cornerstone.publish import PublishError, run_midseason_publish
 from league.models import Verdict, VerifyOut
-from league.paths import build_dir, history_root, week_dir
+from league.paths import build_dir, history_root, nfl_dir, week_dir
 
 
 def _git(cwd: Path, *args: str) -> str:
@@ -40,7 +51,8 @@ def _drafted_repo(tmp_path: Path, monkeypatch):
     shutil.copytree(CPC_DATA / "history", history_root(client.folder, 2026))
     week_dir(client.folder, 2026, 8).mkdir(parents=True)
     shutil.copy(CPC_DATA / "week-08" / "facts.json", week_dir(client.folder, 2026, 8) / "facts.json")
-    run_midseason(2026, 8, _call(STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2)), client=client)
+    prime_nflverse(client.nfl_dir)
+    run_midseason(2026, 8, _clean_call(), client=client, provider=CPC_PROVIDER)
     # Ticket 03 writes the real sim.json. The publish copies the bytes as they are.
     (build_dir(client.folder) / "2026" / "sim.json").write_text('{"week": 8}\n', encoding="utf-8")
     _git(root, "init", "-b", "main")
@@ -59,7 +71,7 @@ def _published(root: Path) -> Path:
 def test_a_clean_publish_commits_midseason_json_and_sim_json_and_no_other_path(tmp_path, monkeypatch):
     # AT-43.
     root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
-    run_midseason_publish(pipeline, 2026, 8, _call(_passed(3), _passed(2)), client=client)
+    run_midseason_publish(pipeline, 2026, 8, _call(_passed(3), _passed(2), _passed(2), _passed(2)), client=client)
     assert _git(root, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").split() == [
         "clients/cpc/published/2026/midseason.json", "clients/cpc/published/2026/sim.json"]
     offenses = _outside_offenses(root, "HEAD")
@@ -100,7 +112,7 @@ def test_the_publish_refuses_a_draft_with_no_sim_json(tmp_path, monkeypatch):
     root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
     (build_dir(client.folder) / "2026" / "sim.json").unlink()
     with pytest.raises(PublishError, match="sim.json"):
-        run_midseason_publish(pipeline, 2026, 8, _call(_passed(3), _passed(2)), client=client)
+        run_midseason_publish(pipeline, 2026, 8, _call(_passed(3), _passed(2), _passed(2), _passed(2)), client=client)
     assert not _published(root).exists()
 
 
@@ -123,8 +135,11 @@ def test_the_midseason_publish_command_prints_the_refusal_and_names_the_blurb(tm
     (season / "week-08").mkdir()
     shutil.copy(CPC_DATA / "week-08" / "facts.json", season / "week-08" / "facts.json")
     monkeypatch.chdir(tmp_path)
-    clean = FakeWriter([STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2)])
-    assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"], writer=clean) == 0
+    prime_nflverse(nfl_dir(tmp_path))
+    clean = FakeWriter([STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), DRAFT_BLURB, _passed(2), DRAFT_ROAST,
+                        _passed(2)])
+    assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"], writer=clean,
+                    provider=CPC_PROVIDER) == 0
     build = tmp_path / "clients" / "cpc" / "build" / "2026"
     (build / "sim.json").write_text("{}\n", encoding="utf-8")
     draft = json.loads((build / "midseason.json").read_text(encoding="utf-8"))
