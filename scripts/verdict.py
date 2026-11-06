@@ -235,16 +235,21 @@ def latest_verdict_comment(comments: list[dict], owner: str) -> dict | None:
     return picked
 
 
+def _is_file(path: str | None) -> bool:
+    """Whether the path is set and names a file."""
+    return bool(path) and Path(path).is_file()
+
+
 def _read(path: str | None) -> str | None:
     """The text of a file, or None if the PR has no such file."""
-    return Path(path).read_text() if path and Path(path).is_file() else None
+    return Path(path).read_text() if _is_file(path) else None
 
 
 def _head_sha(given: str | None, path: str | None) -> str | None:
     """The given blob SHA, or the SHA of the local file. An empty SHA or no file means the PR has no such file."""
     if given is not None:
         return given or None
-    return blob_sha(Path(path).read_bytes()) if path and Path(path).is_file() else None
+    return blob_sha(Path(path).read_bytes()) if _is_file(path) else None
 
 
 def main(argv: list[str]) -> int:
