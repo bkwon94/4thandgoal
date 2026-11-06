@@ -19,7 +19,7 @@ help: ## List the targets
 install: ## Install the dependencies
 	uv sync --exact --package cornerstone
 
-# The tests share no state, so each CPU runs a share of them. See .scratch/fast-cycle/decisions/09-research-parallel-pytest.md.
+# The tests share no files or data, so they run in parallel. A test that measures wall time is marked serial and runs alone. See .scratch/fast-cycle/decisions/09-research-parallel-pytest.md.
 # The serial pass runs each serial test with its full assertion, alone, so no check gets weaker.
 # Each -m replaces the -m of addopts in pyproject.toml, so each pass also leaves out live.
 test: ## Run the tests

@@ -16,7 +16,7 @@ help: ## List the targets
 install: ## Install the dependencies
 	uv sync --exact --package cpc-api
 
-# The tests share no state, so each CPU runs a share of them. See .scratch/fast-cycle/decisions/09-research-parallel-pytest.md.
+# The tests share no files or data, so they run in parallel. A test that measures wall time is marked serial and runs alone. See .scratch/fast-cycle/decisions/09-research-parallel-pytest.md.
 test: ## Run the tests
 	$(RUN) pytest -q -n auto
 
