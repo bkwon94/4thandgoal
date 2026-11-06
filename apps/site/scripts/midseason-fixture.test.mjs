@@ -40,9 +40,13 @@ describe("the fixture client of the midseason report", () => {
   });
 
   it("leaves the real client folder as it is", () => {
-    const before = readFileSync(join(REPO_ROOT, "clients", "cpc", "client.toml"), "utf8");
+    const client = join(REPO_ROOT, "clients", "cpc");
+    const season = join(client, "published", "2026");
+    // A report may be published or not, so the test reads each file as it finds it.
+    const read = (path) => (existsSync(path) ? readFileSync(path, "utf8") : null);
+    const paths = [join(client, "client.toml"), join(season, "midseason.json"), join(season, "sim.json")];
+    const before = paths.map(read);
     temps.push(fixtureRoot("cpc"));
-    expect(readFileSync(join(REPO_ROOT, "clients", "cpc", "client.toml"), "utf8")).toBe(before);
-    expect(existsSync(join(REPO_ROOT, "clients", "cpc", "published", "2026", "midseason.json"))).toBe(false);
+    expect(paths.map(read)).toEqual(before);
   });
 });

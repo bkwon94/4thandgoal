@@ -71,9 +71,10 @@ describe("menuPages", () => {
 
 describe("shellProps of cpc", () => {
   it("keeps the items and the labels of the CPC menu, with the short labels of the dock (AT-9, AT-10)", () => {
-    const { menu } = shellProps();
-    expect(menu.items.map((item) => item.label)).toEqual(["Home", "Week 8", "Power Rankings", "Managers", "Trade Analyzer"]);
-    expect(menu.items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
+    // The report item shows once the season publishes a report, so this test leaves it out.
+    const items = shellProps().menu.items.filter((item) => item.kind !== "midseason");
+    expect(items.map((item) => item.label)).toEqual(["Home", "Week 8", "Power Rankings", "Managers", "Trade Analyzer"]);
+    expect(items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
   });
 
   it("lists every published week, newest first, for the week chip and the strip (AT-11)", () => {
