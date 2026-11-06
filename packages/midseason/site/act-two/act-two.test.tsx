@@ -66,6 +66,17 @@ describe("waiver hits and misses", () => {
     expect(missRows[0].textContent).toContain(`$${misses[0].bid}`);
   });
 
+  it("gives a hit that its team let go the one that got away line, and no other hit", () => {
+    renderReport();
+    const { hits } = chapterOf("waivers").facts;
+    const hitRows = chapterEl("waivers").getByRole("list", { name: "Hits" }).children;
+    const away = hits.flatMap((hit, index) => (hit.line !== null ? [index] : []));
+    expect(away.map((index) => hits[index].player)).toEqual(["Braelon Allen", "Emanuel Wilson"]);
+    for (const [index, row] of [...hitRows].entries()) {
+      expect(row.textContent?.includes("The one that got away")).toBe(away.includes(index));
+    }
+  });
+
   it("names the outbid claims with the margin, and the streaming king first", () => {
     renderReport();
     const { outbid, streamers } = chapterOf("waivers").facts;

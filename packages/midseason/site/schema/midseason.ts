@@ -237,6 +237,8 @@ export const pickupSchema = z.object({
   points_over_line: z.number().nullable(),
   swung_wins: z.number(),
   played: z.boolean(),
+  // "the one that got away" on a hit that its team let go before the report week. Null on any other pickup.
+  line: z.string().nullable(),
 });
 
 export const outbidSchema = z.object({

@@ -1,6 +1,7 @@
 /**
  * Waiver hits and misses, a chapter of Act II: the top hits by Points over the line, the top misses with their bids,
- * the claims lost by a few dollars, and the teams that streamed QB, K, and DEF, the streaming king first.
+ * the claims lost by a few dollars, and the teams that streamed QB, K, and DEF, the streaming king first. A hit that
+ * its team let go carries "the one that got away" line, as a draft steal does.
  */
 import { count, num } from "@cpc/design/format/format";
 import { Card } from "@cpc/design/parts/card";
@@ -25,6 +26,11 @@ function PickupRow({ pickup }: { pickup: Pickup }) {
         <span className="block text-meta leading-tight text-ink-2">
           {pickup.position} · {pickup.team} · week {pickup.week} · {bidText(pickup.bid)}
         </span>
+        {pickup.line !== null && (
+          <span className="block text-meta leading-tight font-semibold text-accent-ink">
+            {pickup.line.charAt(0).toUpperCase() + pickup.line.slice(1)}
+          </span>
+        )}
       </span>
       <span className="text-right">
         <span className="block font-mono text-body font-bold tabular-nums">

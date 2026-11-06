@@ -3273,7 +3273,8 @@
                 "points": 55.5,
                 "points_over_line": 30.3,
                 "swung_wins": 1,
-                "played": true
+                "played": true,
+                "line": null
               },
               {
                 "player_id": "11576",
@@ -3287,7 +3288,8 @@
                 "points": 36.2,
                 "points_over_line": 18.5,
                 "swung_wins": 1,
-                "played": true
+                "played": true,
+                "line": "the one that got away"
               },
               {
                 "player_id": "11435",
@@ -3301,7 +3303,8 @@
                 "points": 24.5,
                 "points_over_line": 17.5,
                 "swung_wins": 0,
-                "played": true
+                "played": true,
+                "line": "the one that got away"
               },
               {
                 "player_id": "7002",
@@ -3315,7 +3318,8 @@
                 "points": 54.5,
                 "points_over_line": 16.3,
                 "swung_wins": 1,
-                "played": true
+                "played": true,
+                "line": null
               },
               {
                 "player_id": "10213",
@@ -3329,7 +3333,8 @@
                 "points": 49.3,
                 "points_over_line": 16.0,
                 "swung_wins": 3,
-                "played": true
+                "played": true,
+                "line": null
               }
             ],
             "misses": [
@@ -3345,7 +3350,8 @@
                 "points": 0.0,
                 "points_over_line": 0.0,
                 "swung_wins": 0,
-                "played": true
+                "played": true,
+                "line": null
               },
               {
                 "player_id": "13276",
@@ -3359,7 +3365,8 @@
                 "points": 20.0,
                 "points_over_line": 13.6,
                 "swung_wins": 1,
-                "played": true
+                "played": true,
+                "line": null
               },
               {
                 "player_id": "7021",
@@ -3373,7 +3380,8 @@
                 "points": 0.0,
                 "points_over_line": 0.0,
                 "swung_wins": 0,
-                "played": true
+                "played": true,
+                "line": null
               },
               {
                 "player_id": "9511",
@@ -3387,7 +3395,8 @@
                 "points": 4.4,
                 "points_over_line": -0.8,
                 "swung_wins": 0,
-                "played": true
+                "played": true,
+                "line": null
               },
               {
                 "player_id": "11643",
@@ -3401,7 +3410,8 @@
                 "points": 0.0,
                 "points_over_line": 0.0,
                 "swung_wins": 0,
-                "played": true
+                "played": true,
+                "line": null
               }
             ],
             "outbid": [
