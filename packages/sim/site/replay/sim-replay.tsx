@@ -25,7 +25,7 @@ type Play = { run: number; take: number; step: number; still: boolean };
 /* A random run of the stored runs, so two managers see different endings. */
 const randomRun = (count: number) => Math.floor(Math.random() * count);
 
-const BUTTON = "min-h-touch rounded-pill px-sp-4 font-mono text-meta font-bold tracking-caps uppercase";
+const BUTTON = "min-h-touch rounded-report px-sp-4 font-mono text-meta font-bold tracking-caps uppercase";
 
 /* The week of the strip at a beat: the regular week, the last regular week through the split, then the bracket week. */
 function weekAt(season: ReplaySeason, beat: Beat): number {
@@ -185,7 +185,7 @@ export function SimReplay({
           aria-label="The replay"
           // The stage keeps a fixed least height, so the page does not jump when the table becomes the bracket. The rounds
           // stack on a phone, so the stage is taller there than from a tablet up.
-          className="relative flex min-h-[46rem] tablet:min-h-[40rem] flex-col gap-sp-4 overflow-hidden rounded-card border border-rule-dark bg-band p-sp-4 text-on-dark"
+          className="relative flex min-h-[46rem] tablet:min-h-[40rem] flex-col gap-sp-4 overflow-hidden rounded-report border border-rule-dark bg-band p-sp-4 text-on-dark"
         >
           <WeekStrip regular={regular} playoffs={sim.bracket_weeks} current={season && beat ? weekAt(season, beat) : null} />
           <p role="status" className="sr-only">

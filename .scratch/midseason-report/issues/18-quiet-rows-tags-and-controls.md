@@ -11,7 +11,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-55, AT-56, AT-57, 
 **Status:** in-review
 
 - [x] No tag in the report has a fill or a border, and the DEF #3 row reads "Free agent" in its second line.
-- [ ] Cards have 8 px corners, and no element of the report is a full pill.
+- [x] Cards have 8 px corners, and no element of the report is a full pill.
 - [x] The position switch and "Show all" match the board, with keyboard focus and reduced motion.
 - [x] Each award is one line, and no award is a card.
 - [x] The DEF #3 shows 77.8, and the highest score shows 158.96.

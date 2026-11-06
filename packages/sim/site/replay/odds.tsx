@@ -14,7 +14,7 @@ const CELL = "px-sp-1 py-sp-1 text-right font-mono text-meta tabular-nums whites
 export function Odds({ sim, seeds }: { sim: Sim; seeds: Map<number, number> | null }) {
   const teams = Object.values(sim.teams).sort((a, b) => b.mean_wins - a.mean_wins || a.roster_id - b.roster_id);
   return (
-    <Card className="p-sp-3">
+    <Card className="rounded-report p-sp-3">
       <table className="w-full table-fixed border-collapse">
         <caption className="pb-sp-2 text-left font-mono text-meta font-bold tracking-caps text-accent-ink uppercase">
           {`The Odds of All ${thousands(sim.runs)} Runs`}

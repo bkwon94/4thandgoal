@@ -65,7 +65,7 @@ export function Standings({
             {bye && (
               <motion.span
                 {...enter(pace, { x: 16 }, { delay: 0.5 })}
-                className="rounded-sm bg-accent px-sp-2 font-mono text-meta font-bold tracking-caps text-white"
+                className="rounded-report bg-accent px-sp-2 font-mono text-meta font-bold tracking-caps text-white"
               >
                 BYE
               </motion.span>

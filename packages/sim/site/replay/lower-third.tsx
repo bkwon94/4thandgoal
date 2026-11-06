@@ -32,7 +32,7 @@ export function LowerThird({ week, pace }: { week: ReplayWeek; pace: Pace }) {
         <motion.span
           aria-hidden="true"
           {...enter(pace, { scaleX: 0 }, { duration: 0.4 })}
-          className="absolute inset-0 origin-left rounded-sm bg-accent"
+          className="absolute inset-0 origin-left rounded-report bg-accent"
         />
         <motion.span
           {...enter(pace, {}, { duration: 0.3, delay: 0.25 })}

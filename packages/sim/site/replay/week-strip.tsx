@@ -17,7 +17,7 @@ function Group({ label, weeks, current, playoffs }: { label: string; weeks: numb
               key={week}
               aria-current={now ? "step" : undefined}
               className={cn(
-                "flex size-sp-6 items-center justify-center rounded-sm font-mono text-meta font-bold tabular-nums transition-colors duration-300",
+                "flex size-sp-6 items-center justify-center rounded-report font-mono text-meta font-bold tabular-nums transition-colors duration-300",
                 playoffs ? "border border-accent" : "border border-rule-dark",
                 now ? "bg-accent text-white" : played ? "text-on-dark" : "text-on-dark-muted",
               )}

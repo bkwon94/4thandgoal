@@ -39,7 +39,7 @@ function Chip({ team, flight, pace }: { team: { roster_id: number; seed: number 
     <motion.span
       layoutId={moving ? flight : undefined}
       transition={SPRING}
-      className="inline-flex size-sp-6 flex-none items-center justify-center rounded-sm bg-accent font-mono text-meta font-bold text-white"
+      className="inline-flex size-sp-6 flex-none items-center justify-center rounded-report bg-accent font-mono text-meta font-bold text-white"
     >
       {team.seed}
     </motion.span>
@@ -132,7 +132,7 @@ function Game({
       role="group"
       aria-label={`Seed ${high.seed} ${high.name} against seed ${low.seed} ${low.name}`}
       data-winner={decided ? winner : undefined}
-      className="relative rounded-tile border border-rule-dark bg-chip-dark px-sp-2 py-sp-1"
+      className="relative rounded-report border border-rule-dark bg-chip-dark px-sp-2 py-sp-1"
     >
       {[high, low].map((team) => (
         <TeamRow
@@ -214,7 +214,7 @@ export function Bracket({
                 {round.byes.map((team) => (
                   <div
                     key={team.roster_id}
-                    className="flex items-center gap-sp-2 rounded-tile border border-dashed border-rule-dark px-sp-2 py-sp-2 text-on-dark"
+                    className="flex items-center gap-sp-2 rounded-report border border-dashed border-rule-dark px-sp-2 py-sp-2 text-on-dark"
                   >
                     <Chip team={team} pace={pace} />
                     {/* A long name wraps between its words, so each name shows in full in the narrow columns of three rounds. */}
