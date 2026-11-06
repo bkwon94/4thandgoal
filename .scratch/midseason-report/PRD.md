@@ -195,6 +195,7 @@ The opener is the title race: the title odds of the leaders and the record leade
 Tickets 14 and 15 decided it, on the boards of the Design canvas. The report keeps the shared look of ADR 0024 and these rules:
 
 - **Lean chapters.** Each chapter is a headline, one visual or table, and 40 words of prose or fewer. The page may stay long, about 10,000 px on a phone. No chapter closes by default.
+- **Quick hits.** Each of the two parts of Quick Hits has 20 words or fewer.
 - **Tags.** A tag has no box and no fill. A fact that describes the player goes in the second line, such as "Free agent · QB · MIN". Any other tag is a small mono caps word in a muted color. "Just bad" and "hurt on arrival" use the accent color.
 - **Corners.** Cards have 8 px corners. The report has no full pill.
 - **The position switch** is plain text segments with a 2 px accent underline that slides to the chosen position.

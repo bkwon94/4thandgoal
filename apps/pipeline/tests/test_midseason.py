@@ -132,12 +132,13 @@ TRADES_BLURB = WriterOut(sentences=[
     Sentence(text="The gap is 68.4.", fact_ids=["TR.4"]),
     Sentence(text="Brutal.", fact_ids=[]),
 ])
-# The blurbs of the lineup choices and the record book, the last chapters of Act II. The spread rule moved the bench
+# The blurbs of the lineup choices and the record book, the last chapters of Act II. The lineup blurb holds 20 words
+# or fewer, as each part of Quick hits does. The spread rule moved the bench
 # callout to Lil Fridge, so the lineup block may not name the four teams ahead of it.
 LINEUP_BLURB = WriterOut(sentences=[
     Sentence(text="Lil Fridge left 85.02 points on the bench.", fact_ids=["LC.3"]),
-    Sentence(text="The Blue Tent lost to behold the lamb by 9.04 in week 2.", fact_ids=["LC.1.2"]),
     Sentence(text="Painful.", fact_ids=[]),
+    Sentence(text="Again.", fact_ids=[]),
 ])
 RECORDS_BLURB = WriterOut(sentences=[
     Sentence(text="Maye d'force B with U scored 158.96 in week 5.", fact_ids=["RB.high"]),
@@ -148,8 +149,8 @@ RECORDS_BLURB = WriterOut(sentences=[
 # check on the real CPC week 8 facts with the rosters now.
 INJURY_BLURB = WriterOut(sentences=[
     Sentence(text="behold the lamb lost 9 starter games to injury, 1st in the league.", fact_ids=["IT.10"]),
-    Sentence(text="Kyle Monangai missed 4 games as a starter of behold the lamb.", fact_ids=["IT.10.top"]),
     Sentence(text="Rough.", fact_ids=[]),
+    Sentence(text="Ouch.", fact_ids=[]),
 ])
 TOP10_BLURB = WriterOut(sentences=[
     Sentence(text="Josh Allen is the QB #1 with 189.32 points, rostered by behold the lamb.", fact_ids=["TOP.QB.1"]),
