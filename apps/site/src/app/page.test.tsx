@@ -175,8 +175,9 @@ async function homeOfClient(slug: string, skip: string[] = []) {
   return homeAt(root);
 }
 
-/* The cpc files with no report, so the tests of the plain home page hold whether or not the client has published one. */
-const homeOfCpcWithoutReport = () => homeOfClient("cpc", ["midseason.json", "sim.json"]);
+/* The files of a client with no report, so the tests of the plain home page hold whether or not it has published one. */
+const homeWithoutReport = (slug: string) => homeOfClient(slug, ["midseason.json", "sim.json"]);
+const homeOfCpcWithoutReport = () => homeWithoutReport("cpc");
 
 function tempRoot(): string {
   const root = mkdtempSync(join(tmpdir(), "home-page-"));
@@ -193,7 +194,7 @@ async function homeAt(root: string) {
 
 describe("HomePage of the NorCal data", () => {
   it("shows 10.62 as the big number, Mitseeker5000 first, and one row for week 8", async () => {
-    const Home = await homeOfClient("norcal");
+    const Home = await homeWithoutReport("norcal");
     render(<Home />);
     const hero = screen.getByRole("region", { name: "Matchup of the Week" });
     // NorCal week 8: kaiedmonds over The Mean Machine, 132.38 to 121.76.

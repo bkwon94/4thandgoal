@@ -31,10 +31,10 @@ describe("menuPages", () => {
     expect(pages.map((page) => page.kind)).toEqual(["home"]);
   });
 
-  it("lists the midseason report with the label of its item and the short label Report (AT-46)", () => {
+  it("lists no midseason item, because a sixth item overflows the pill bar of CPC at 1280px", () => {
     const links = { ...LINKS, midseason: () => ({ label: "Midseason Report", href: "/midseason/2026/" }) };
     const pages = menuPages([{ package: "rankings" }, { package: "midseason", label: "Midseason Report" }], links, "/");
-    expect(pages.at(-1)).toEqual({ kind: "midseason", label: "Midseason Report", short: "Report", href: "/midseason/2026/" });
+    expect(pages.map((page) => page.kind)).toEqual(["rankings"]);
   });
 
   it("lists no report when the season has no report", () => {
