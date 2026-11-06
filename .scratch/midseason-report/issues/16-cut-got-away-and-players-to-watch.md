@@ -8,8 +8,8 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance test AT-64. AT-14 and AT-23
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
-- [ ] A build of CPC week 8 has no "the one that got away" line and no Players to watch facts in `midseason.json`.
-- [ ] The report page has no Players to watch chapter and no Grab him now.
-- [ ] The rule tests and the fixtures of the two parts are gone, and no test still expects them.
+- [x] A build of CPC week 8 has no "the one that got away" line and no Players to watch facts in `midseason.json`.
+- [x] The report page has no Players to watch chapter and no Grab him now.
+- [x] The rule tests and the fixtures of the two parts are gone, and no test still expects them.

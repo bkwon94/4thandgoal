@@ -29,15 +29,14 @@ function chapterOf<K extends MidseasonChapter["key"]>(key: K): Extract<Midseason
 const chapterEl = (key: string) => within(document.getElementById(key)!);
 
 describe("draft steals and busts", () => {
-  it("lists the top 5 steals with the auction price, and the one that got away", () => {
+  it("lists the top 5 steals with the auction price", () => {
     renderReport();
     const { steals } = chapterOf("draft").facts;
     const rows = chapterEl("draft").getByRole("list", { name: "Steals" }).children;
     expect(rows).toHaveLength(steals.length);
     expect(rows[0].textContent).toContain(steals[0].name);
     expect(rows[0].textContent).toContain(`$${steals[0].cost}`);
-    const away = steals.findIndex((steal) => steal.line !== null);
-    expect(rows[away].textContent).toContain("The one that got away");
+    expect(document.getElementById("draft")!.textContent).not.toMatch(/one that got away/i);
   });
 
   it("tags each bust hurt or just bad", () => {
@@ -66,15 +65,9 @@ describe("waiver hits and misses", () => {
     expect(missRows[0].textContent).toContain(`$${misses[0].bid}`);
   });
 
-  it("gives a hit that its team let go the one that got away line, and no other hit", () => {
+  it("has no one that got away line on a hit", () => {
     renderReport();
-    const { hits } = chapterOf("waivers").facts;
-    const hitRows = chapterEl("waivers").getByRole("list", { name: "Hits" }).children;
-    const away = hits.flatMap((hit, index) => (hit.line !== null ? [index] : []));
-    expect(away.map((index) => hits[index].player)).toEqual(["Braelon Allen", "Emanuel Wilson"]);
-    for (const [index, row] of [...hitRows].entries()) {
-      expect(row.textContent?.includes("The one that got away")).toBe(away.includes(index));
-    }
+    expect(document.getElementById("waivers")!.textContent).not.toMatch(/one that got away/i);
   });
 
   it("names the outbid claims with the margin, and the streaming king first", () => {

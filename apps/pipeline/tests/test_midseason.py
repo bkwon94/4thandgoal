@@ -25,7 +25,7 @@ CPC_DATA = client_dir(ROOT, "cpc") / "data" / "2026"
 # The rosters of CPC from Sleeper on 2026-11-05, after the week 9 moves. A manager dropped the Buccaneers DEF by then.
 ROSTERS_NOW = Path(__file__).parent / "fixtures" / "midseason" / "cpc-rosters-now.json"
 # The provider of the report's fetch of each week's transactions: the saved CPC data with the full weeks of Sleeper.
-# Its live fetch gives the rosters now, which Position top 10 and the players to watch read.
+# Its live fetch gives the rosters now, which Position top 10 reads.
 CPC_PROVIDER = FixtureProvider(raw_dir=CPC_DATA / "week-08" / "raw", history_root=CPC_DATA / "history",
                                transactions=CPC_TRANSACTIONS, rosters_now=ROSTERS_NOW)
 # The count of sim runs of a test build. 500 runs keep each build fast. A test that reads a number of the full count
@@ -144,7 +144,7 @@ RECORDS_BLURB = WriterOut(sentences=[
     Sentence(text="Jahmyr Gibbs has 135.1 points over the line in his starts.", fact_ids=["AW.mvp"]),
     Sentence(text="Wild.", fact_ids=[]),
 ])
-# The blurbs of the injury toll, Position top 10, and the players to watch, each in the shape that passes the code
+# The blurbs of the injury toll and Position top 10, each in the shape that passes the code
 # check on the real CPC week 8 facts with the rosters now.
 INJURY_BLURB = WriterOut(sentences=[
     Sentence(text="behold the lamb lost 9 starter games to injury, 1st in the league.", fact_ids=["IT.10"]),
@@ -157,20 +157,12 @@ TOP10_BLURB = WriterOut(sentences=[
              fact_ids=["TOP.RB.1"]),
     Sentence(text="Not bad.", fact_ids=[]),
 ])
-WATCH_BLURB = WriterOut(sentences=[
-    Sentence(text="Jaxon Smith-Njigba of Lil Fridge scores 7.68 points per game over what his volume says.",
-             fact_ids=["PW.fall.1"]),
-    Sentence(text="Kyler Murray is a free agent with 92.93 projected points through the regular season.",
-             fact_ids=["PW.grab.1"]),
-    Sentence(text="Go get him.", fact_ids=[]),
-])
 # The writer answers of a clean build, in page order: each blurb, then the verdicts that pass it.
 CLEAN_BUILD = [*OPENER_BUILD, STATE_BLURB, _passed(3), ARCS_BLURB, _passed(3), LUCK_BLURB, _passed(3), INJURY_BLURB,
                _passed(3), TOP10_BLURB, _passed(3), DRAFT_BLURB, _passed(3), WAIVERS_BLURB, _passed(3), TRADES_BLURB,
-               _passed(3), LINEUP_BLURB, _passed(3), RECORDS_BLURB, _passed(3), LOOK_BLURB, _passed(3), WATCH_BLURB,
-               _passed(3)]
+               _passed(3), LINEUP_BLURB, _passed(3), RECORDS_BLURB, _passed(3), LOOK_BLURB, _passed(3)]
 # The verdicts of the recheck of the publish on a clean draft, in page order: one prose block per chapter.
-CLEAN_RECHECK = [_passed(3)] * 13
+CLEAN_RECHECK = [_passed(3)] * 12
 
 
 def _clean_call():
@@ -276,7 +268,7 @@ def test_each_chapter_has_one_prose_block_of_40_words_or_fewer_and_no_roast_fiel
     report = _report(build_week_8(_clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER,
                                   sim_runs=SIM_RUNS))
     chapters = _chapters(report)
-    assert len(chapters) == 13
+    assert len(chapters) == 12
     for chapter in chapters:
         assert "roast" not in chapter
         assert not chapter["blurb"]["fallback"] and _words(chapter["blurb"]) <= 40
@@ -313,7 +305,7 @@ def test_the_writer_of_each_block_hears_the_voice_of_the_roast_setting(tmp_path,
     report = _report(build_week_8(partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER,
                                   sim_runs=SIM_RUNS))
     # One write and one check per block.
-    assert len(writer.calls) == 26
+    assert len(writer.calls) == 24
     systems = [call.system or "" for call in writer.calls]
     assert all(f"Voice: {roast}." in system and "Never write about life outside fantasy" in system
                for system in systems)
@@ -437,7 +429,7 @@ def test_the_opener_and_the_look_ahead_have_their_prose_blocks_in_the_review_fil
     assert "## look-ahead: The Look Ahead" in review
     assert "London Cooking leads the race at 16.8% title odds. [OP.5.title]" in review
     assert "Maye d'force B with U gets the softest schedule at 0.44. [LA.9.rate]" in review
-    assert review.count("Verifier: passed on attempt 1.") == 13
+    assert review.count("Verifier: passed on attempt 1.") == 12
     assert report["opener"]["blurb"]["sentences"][0]["fact_ids"] == ["OP.5.title"]
     look = _chapter(report, "look-ahead")
     assert look["blurb"]["sentences"][0]["fact_ids"] == ["LA.9.rate"]
@@ -460,13 +452,13 @@ def test_position_top_10_ranks_every_nfl_player_in_the_league_scoring_with_the_m
         3, "Tampa Bay Buccaneers", "Free agent", None)
 
 
-def test_the_players_to_watch_name_3_players_each(tmp_path):
-    # AT-23.
-    watch = _chapter(_cpc_report(tmp_path), "watch")["facts"]
-    assert [len(watch[key]) for key in ("due_to_rise", "due_to_fall", "grab_him_now")] == [3, 3, 3]
-    assert "Jaxon Smith-Njigba" in [p["name"] for p in watch["due_to_fall"]]
-    assert "Kyler Murray" in [p["name"] for p in watch["grab_him_now"]]
-    assert all(p["games"] >= 4 for p in watch["due_to_rise"] + watch["due_to_fall"])
+def test_the_report_has_no_players_to_watch_chapter_and_no_watch_facts(tmp_path):
+    # AT-23 is retired: decision 15 removed the chapter.
+    report = _cpc_report(tmp_path)
+    assert "watch" not in [chapter["key"] for act in report["acts"] for chapter in act["chapters"]]
+    text = json.dumps(report)
+    for gone in ("due_to_rise", "due_to_fall", "grab_him_now", "Players to Watch"):
+        assert gone not in text
 
 
 def test_the_injury_toll_has_each_team_and_behold_the_lamb_lost_the_most_starter_games(tmp_path):
@@ -484,13 +476,13 @@ def test_the_acts_hold_the_chapters_in_page_order(tmp_path):
     report = _cpc_report(tmp_path)
     chapters = {act["key"]: [chapter["key"] for chapter in act["chapters"]] for act in report["acts"]}
     assert chapters["how-we-got-here"] == ["state", "arcs", "luck", "injuries", "top10"]
-    assert chapters["what-comes-next"] == ["look-ahead", "watch"]
+    assert chapters["what-comes-next"] == ["look-ahead"]
 
 
 def test_a_clean_build_keeps_the_blurb_of_the_writer_for_each_chapter(tmp_path):
     report = _report(build_week_8(_clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER,
                                  sim_runs=SIM_RUNS))
-    for key in ("injuries", "top10", "lineup", "records", "watch"):
+    for key in ("injuries", "top10", "lineup", "records"):
         chapter = _chapter(report, key)
         assert not chapter["blurb"]["fallback"]
 

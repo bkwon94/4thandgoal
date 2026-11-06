@@ -1,7 +1,6 @@
 """
 The waiver chapter of Act II: the top waiver hits by Points over the line, the top misses by the dollars spent, the
-top outbid claims, and the streaming king data. A hit that its team let go carries "the one that got away" line of
-the draft. It reads the transactions of each week that the app fetched again.
+top outbid claims, and the streaming king data. It reads the transactions of each week that the app fetched again.
 """
 from collections.abc import Mapping, Sequence
 
@@ -10,7 +9,6 @@ from pydantic import BaseModel
 from facts.tokens import Nums, fact
 from league.models import Fact, History
 from league.provider.raw import RawTransaction
-from midseason.draft import GOT_AWAY
 from midseason.moves import line_scores, stint
 from midseason.players import PlayerCard
 
@@ -46,8 +44,6 @@ class Pickup(BaseModel):
     swung_wins: int
     # False when the player sat on the roster in no week of the report, so no game came after the add.
     played: bool
-    # "the one that got away" on a hit that its team no longer has in the report week. None on any other pickup.
-    line: str | None = None
 
 
 class Outbid(BaseModel):
@@ -133,10 +129,6 @@ def waiver_facts(
 
     hits = sorted((p for p in pickups if p.position in HIT_POSITIONS and p.starts and (p.points_over_line or 0) > 0),
                   key=lambda p: (-(p.points_over_line or 0), -p.bid, p.player))[:HIT_COUNT]
-    # Decision ticket 03 takes the rule of the draft: the team that let a hit go before the report week gets the line.
-    held = history.weeks[through].rosters
-    hits = [hit.model_copy(update={"line": None if hit.player_id in held.get(hit.roster_id, []) else GOT_AWAY})
-            for hit in hits]
     misses = sorted((p for p in pickups if _is_miss(p, budget)),
                     key=lambda p: (-p.bid, p.points_over_line or 0, p.player))[:MISS_COUNT]
     return WaiverFacts(hits=hits, misses=misses, outbid=_outbid(transactions, hits, names),
@@ -205,9 +197,6 @@ def waiver_prose_facts(facts: WaiverFacts) -> list[Fact]:
         out.append(fact(f"WV.hit.{place}.rank",
                         f"{hit.player} swung {n(hit.swung_wins)} {wins} for {hit.team}, the {n.ord(place)} waiver hit "
                         f"of the league.", n, [hit.team], [hit.player]))
-        if hit.line is not None:
-            out.append(fact(f"WV.hit.{place}.line", f"{hit.team} let {hit.player} go: {hit.line}.", Nums(), [hit.team],
-                            [hit.player]))
     for place, miss in enumerate(facts.misses, start=1):
         n = Nums()
         out.append(fact(f"WV.miss.{place}", f"{miss.team} paid ${n(miss.bid)} for {miss.player} in week {n(miss.week)}.",

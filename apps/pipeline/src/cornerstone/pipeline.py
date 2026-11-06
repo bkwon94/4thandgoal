@@ -113,7 +113,6 @@ from midseason.top10 import top10_facts
 from midseason.trades import trade_facts, trade_prose_facts
 from midseason.values import MidseasonValues
 from midseason.waivers import waiver_facts, waiver_prose_facts
-from midseason.watch import watch_facts
 from rankings.published import render_rankings
 from sim.published import sim_file, write_sim
 from sim.tunables import SIM_RUNS
@@ -776,7 +775,7 @@ def run_midseason(
     the sim tunables, and a test build may pass a smaller count to run fast.
     Each prose block goes through the writer and the verifier of facts, in the voice of the roast setting of the client.
     The waivers and the trades read the transactions of each week that `provider` fetches again. The draft steals and
-    busts read the draft that `provider` fetches again. Position top 10 and the players to watch read the rosters now
+    busts read the draft that `provider` fetches again. Position top 10 reads the rosters now
     that `provider` fetches, so a player that a manager dropped after the report week is a free agent.
     """
     facts = week_dir(client.folder, season, week) / "facts.json"
@@ -838,8 +837,7 @@ def run_midseason(
              ("trades", "The Trade Report Card", trade_prose_facts(trades)),
              ("lineup", "Lineup Choices", lineup_facts(lineups)),
              ("records", "The Record Book", records_facts(records, waivers=waivers, lineups=lineups, state=state)),
-             (LOOK_AHEAD, "The Look Ahead", look_ahead_facts(look)),
-             ("watch", "Players to Watch", watch_facts(chapters.watch))]
+             (LOOK_AHEAD, "The Look Ahead", look_ahead_facts(look))]
     sheet = prose_sheet(week, state, later, first=[(OPENER, "The Title Race", title_race_facts(race))],
                         callouts=callout_facts(headlines, callouts, names))
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
@@ -851,7 +849,7 @@ def run_midseason(
     log.info("review file: %s", review)
     report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck, injuries=chapters.injuries,
                               top10=chapters.top10, draft=draft, waivers=waivers, trades=trades, lineups=lineups,
-                              records=records, watch=chapters.watch, race=race, look=look, headlines=headlines)
+                              records=records, race=race, look=look, headlines=headlines)
     return write_midseason(report, build_dir(client.folder))
 
 

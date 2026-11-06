@@ -38,7 +38,7 @@ def _check(built, key: str, sentences: list[Sentence]) -> list[str]:
 CITED = Sentence(text="NFC Least is 3-13, 12th in the standings.", fact_ids=["ST.4.record"])
 # The prose blocks of the report in page order. Each chapter has one block, and no block is a roast block.
 BLOCKS = ["opener", "state", "arcs", "luck", "injuries", "top10", "draft", "waivers", "trades", "lineup", "records",
-          "look-ahead", "watch"]
+          "look-ahead"]
 
 
 def test_each_chapter_has_one_prose_block_of_40_words_or_fewer(built):
@@ -113,7 +113,7 @@ def test_the_template_blurb_of_each_failed_block_passes_the_code_check_of_the_pu
     draft, out, voice = built
     chapters = {chapter.key: chapter for chapter in draft.sheet.chapters}
     blurbs = report_blurbs(read_midseason(out.parent))
-    assert len(blurbs) == 13 and all(blurb.fallback for blurb in blurbs)
+    assert len(blurbs) == 12 and all(blurb.fallback for blurb in blurbs)
     # A callout fact is a note to the writer, not prose, so no template reads it.
     assert not any(fid.startswith("CO.") for blurb in blurbs for sentence in blurb.sentences for fid in sentence.fact_ids)
     failures: dict[str, list[str]] = {}

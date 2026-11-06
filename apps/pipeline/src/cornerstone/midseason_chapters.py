@@ -1,5 +1,5 @@
 """
-The wire of three chapters of the midseason report: the injury toll, Position top 10, and the players to watch. It
+The wire of two chapters of the midseason report: the injury toll and Position top 10. It
 reads the saved raw week, the nflverse files, and the rosters now, and hands each chapter its ports as plain data.
 It also gives the injury ports to the build, so the draft tags read the one download of the injury report.
 """
@@ -14,7 +14,6 @@ from league.client import Client
 from league.models import History
 from league.nflverse import (
     FFIDS_URL,
-    FFOPPORTUNITY_URL,
     INJURIES_URL,
     SCHEDULES_URL,
     cache_path,
@@ -24,7 +23,6 @@ from league.nflverse import (
     read_injuries,
     read_schedules,
 )
-from league.nflverse_expected import read_expected
 from league.parse import player_name
 from league.paths import history_root, nflverse_cache_dir, raw_dir
 from league.provider.base import Provider
@@ -32,13 +30,11 @@ from league.provider.sleeper import load_raw
 from midseason.injury import OUT_STATUSES, InjuryToll, injury_toll
 from midseason.players import PlayerCard
 from midseason.top10 import PositionTop10, position_top10
-from midseason.watch import PlayersToWatch, players_to_watch
 
 log = logging.getLogger(__name__)
 
-# The nflverse files the three chapters read, by the name the stop line gives.
-NFLVERSE_FILES = {"injuries": INJURIES_URL, "id map": FFIDS_URL, "expected points": FFOPPORTUNITY_URL,
-                  "schedules": SCHEDULES_URL}
+# The nflverse files the two chapters read, by the name the stop line gives.
+NFLVERSE_FILES = {"injuries": INJURIES_URL, "id map": FFIDS_URL, "schedules": SCHEDULES_URL}
 # The Sleeper status of each week sits beside the history of that week. GLOSSARY.md, "Injury toll".
 SAVED_STATUS_FILE = "injuries.json"
 
@@ -60,7 +56,6 @@ class InjuryPorts(BaseModel):
 class ReportChapters(BaseModel):
     injuries: InjuryToll
     top10: PositionTop10
-    watch: PlayersToWatch
     injury_ports: InjuryPorts
 
 
@@ -101,7 +96,7 @@ def report_chapters(
     season: int, week: int, history: History, names: dict[int, str], *, client: Client,
     provider: Provider | None = None,
 ) -> ReportChapters:
-    """The facts of the three chapters of the report of `week`.
+    """The facts of the two chapters of the report of `week`.
 
     The rosters now come from `provider`, so a player a manager dropped after the report week is a free agent. With
     no provider, the rosters of the saved raw week stand in.
@@ -136,16 +131,4 @@ def report_chapters(
                            team_weeks=ports.team_weeks)
 
     top10 = position_top10(history, week, cards, scoring, client.settings.positions, owners, names)
-
-    expected = read_expected(files["expected points"], files["schedules"], season, week, scoring, sleeper_of_gsis,
-                             window=None)
-    if expected is None:
-        raise ChaptersStopped(f"The nflverse schedules have no game of week {week}, so the expected points cannot "
-                              "be read.")
-    if expected.through_week < week:
-        log.warning("The expected points file ends at week %s, so the players to watch read through it.",
-                    expected.through_week)
-    ahead = {entry.week: entry.projections for entry in raw.projections_ahead or []}
-    watch = players_to_watch(history, week, cards, scoring, expected.players, owners, names, ahead=ahead,
-                             last_regular_week=client.settings.last_regular_week, positions=client.settings.positions)
-    return ReportChapters(injuries=injuries, top10=top10, watch=watch, injury_ports=ports)
+    return ReportChapters(injuries=injuries, top10=top10, injury_ports=ports)

@@ -80,16 +80,3 @@ def test_a_lost_claim_pairs_with_the_won_claim_of_the_same_run_and_shows_the_mar
                    _add("10", 2, 1, bid=50, status="failed", when=2000,
                         note="This player was claimed by another owner."))
     assert [(o.team, o.bid, o.winner, o.winner_bid, o.margin) for o in facts.outbid] == [("Two", 36, "One", 40, 4)]
-
-
-def test_a_hit_that_its_team_let_go_before_the_report_week_carries_the_one_that_got_away_line():
-    # Decision ticket 03: the rule of the draft. Team One starts Back 10 in week 1 and drops him before week 2.
-    dropped = History(week=2, weeks={
-        1: HISTORY.weeks[1],
-        2: _week(2, {1: ["11"], 2: ["20", "21"]}, {1: ["11"], 2: ["20"]},
-                 {"10": 20.0, "11": 5.0, "12": 10.0, "20": 4.0, "21": 0.0, "22": 1.0}, {1: 5.0, 2: 4.0}),
-    })
-    facts = waiver_facts(dropped, 2, {1: [_add("10", 1, 1, bid=5)]}, PLAYERS, NAMES, LINES, budget=100)
-    assert [(hit.player_id, hit.line) for hit in facts.hits] == [("10", "the one that got away")]
-    # In HISTORY Team One keeps Back 10 through week 2, so his hit has no line.
-    assert [(hit.player_id, hit.line) for hit in _facts(_add("10", 1, 1, bid=5)).hits] == [("10", None)]

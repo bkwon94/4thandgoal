@@ -26,11 +26,6 @@ function Row({ row, type }: { row: DraftRow; type: DraftType }) {
         <span className="block text-meta leading-tight text-ink-2">
           {row.position} · {row.team} · {costText(row, type)}
         </span>
-        {row.line !== null && (
-          <span className="block text-meta leading-tight font-semibold text-accent-ink">
-            {row.line.charAt(0).toUpperCase() + row.line.slice(1)}
-          </span>
-        )}
       </span>
       <span className="text-right">
         <span className="block font-mono text-meta text-ink-2 tabular-nums">
