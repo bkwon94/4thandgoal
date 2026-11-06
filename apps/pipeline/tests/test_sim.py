@@ -1,6 +1,7 @@
 """
 Tests for the season sim in the build of the midseason report: sim.json in the build folder of the season, from the real
 saved CPC and NorCal data of 2026 week 8. The rules of the sim run on small leagues in packages/sim/python/tests.
+Each client and each build reads the fixture provider, so no test calls Sleeper (ADR 0015).
 """
 import gzip
 import json
@@ -10,8 +11,8 @@ from pathlib import Path
 
 import pytest
 from cpc import ROOT
-from fakes import FakeWriter
-from test_midseason import prime_nflverse
+from fakes import FakeWriter, FixtureProvider
+from test_midseason import CPC_PROVIDER, prime_nflverse
 
 from cornerstone.pipeline import run_midseason
 from cornerstone.season_sim import schedule_file, week_sim
@@ -22,7 +23,6 @@ from league.history import load_saved_weeks
 from league.models import History
 from league.nflverse import SCHEDULES_URL, cache_path
 from league.paths import build_dir, client_dir, history_root, nflverse_cache_dir, week_dir
-from league.provider.sleeper import fetch_settings
 
 # The nflverse schedule of 2026, the same games as the real cache, which git ignores.
 GAMES = Path(__file__).parent / "fixtures" / "nflverse" / "games.csv"
@@ -31,9 +31,10 @@ GAMES = Path(__file__).parent / "fixtures" / "nflverse" / "games.csv"
 def _client(slug: str, at: Path) -> Client:
     """The real client `slug` with its client data at `at`: a copy of the saved history, week 8, and the published
     rankings of 2026. The NFL data sits at `at`/data with the schedule of the fixtures. No test writes under clients/."""
-    real = load_client(ROOT, slug, 2026, fetch_settings, VALUE_MODELS)
+    data = client_dir(ROOT, slug) / "data" / "2026"
+    provider = FixtureProvider(raw_dir=data / "week-08" / "raw", history_root=data / "history")
+    real = load_client(ROOT, slug, 2026, provider.fetch_settings, VALUE_MODELS)
     client = real.model_copy(update={"folder": at, "nfl_dir": at / "data"})
-    data = real.folder / "data" / "2026"
     shutil.copytree(data / "history", history_root(client.folder, 2026))
     shutil.copytree(data / "week-08", week_dir(client.folder, 2026, 8))
     published = client.folder / "published" / "2026"
@@ -62,7 +63,7 @@ def _published_week_8_odds(slug: str) -> dict[int, int]:
 def cpc_sim(tmp_path_factory) -> tuple[Client, Path]:
     """One build of the CPC report of week 8, shared by the tests that only read its sim.json."""
     client = _client("cpc", tmp_path_factory.mktemp("cpc"))
-    run_midseason(2026, 8, _call(), client=client)
+    run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
     return client, build_dir(client.folder) / "2026" / "sim.json"
 
 
@@ -87,7 +88,7 @@ def test_two_builds_give_the_same_sim_json_byte_for_byte(cpc_sim):
     # AT-3.
     client, path = cpc_sim
     first = path.read_bytes()
-    run_midseason(2026, 8, _call(), client=client)
+    run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
     assert path.read_bytes() == first
 
 
