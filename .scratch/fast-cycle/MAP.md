@@ -17,6 +17,7 @@ A spec the size of `midseason-report` goes from the `cpc:implement` start to a g
 - The Judge gives each Test verdict from the evidence alone. One fix round, then BLOCKED and no PR. ADR 0026. `decisions/06-grill-judge.md`.
 - "Test verdict" now means the Judge's word. The glossary adds **Judge**. `decisions/07-grill-test-verdict-term.md`.
 - A FAIL from Brian in a PR comment overrides the Judge. `decisions/08-grill-brian-fail-override.md`.
+- PR #13 keeps the old verdict rule. `fast-cycle` merges after PR #13. `decisions/13-grill-open-pr-rule.md`.
 
 ## NOT YET SPECIFIED
 
@@ -24,7 +25,6 @@ A spec the size of `midseason-report` goes from the `cpc:implement` start to a g
 - Why do the midseason-report tests add about 6 min on CI? `decisions/10-research-midseason-test-time.md`.
 - What are the CI jobs, the Chromium cache key, and the deploy triggers? `decisions/11-spec-ci-jobs-and-cache.md`.
 - Where does the Judge write its verdicts, and how does the check read them? `decisions/12-spec-judge-record.md`.
-- Does open PR 13 keep the old verdict rule? `decisions/13-grill-open-pr-rule.md`.
 
 ## OUT OF SCOPE
 
