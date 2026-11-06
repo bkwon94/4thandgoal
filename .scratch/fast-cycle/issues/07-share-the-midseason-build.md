@@ -10,10 +10,10 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-8, AT-23, AT-24, and AT-
 
 **Status:** blocked
 
-- [ ] PR #13 has the state `MERGED` (AT-26).
-- [ ] `make -C apps/pipeline test` passes the same count on `fast-cycle` and on `main`, and takes less time on `fast-cycle` (AT-23).
-- [ ] The sim count of each of the three tests that need it matches `main` (AT-24).
-- [ ] The diff adds no `skip`, `xfail`, or deselect, and deletes no test (AT-8).
+- [x] PR #13 has the state `MERGED` (AT-26).
+- [x] `make -C apps/pipeline test` passes the same count on `fast-cycle` and on `main`, and takes less time on `fast-cycle` (AT-23).
+- [x] The sim count of each of the three tests that need it matches `main` (AT-24).
+- [x] The diff adds no `skip`, `xfail`, or deselect, and deletes no test (AT-8).
 
 ## Comments
 

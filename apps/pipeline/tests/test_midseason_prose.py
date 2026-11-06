@@ -2,29 +2,23 @@
 Tests for the prose blocks of the midseason report on the real saved CPC facts of week 8: the voice of each roast level,
 the facts text that the writer copies, and the template blurb of a failed block. Each one runs the code check of facts.
 """
-from functools import partial
 from pathlib import Path
 
 import pytest
-from cpc import cpc_client
-from fakes import FakeWriter
-from test_midseason import CPC_PROVIDER, build_week_8, copy_cpc_week_8
 
-from cornerstone.value_models import VALUE_MODELS
 from facts.verifier import build_verifier_prompt, code_check, page_words
-from facts.writer import build_writer_prompt, claude_call
+from facts.writer import build_writer_prompt
 from league.models import Blurb, Sentence
 from midseason.prose import ProseDraft, prose_terms, read_draft_facts
 from midseason.published import read_midseason, report_blurbs
 
 
 @pytest.fixture(scope="module")
-def built(tmp_path_factory) -> tuple[ProseDraft, Path, Path]:
+def built(cpc_midseason) -> tuple[ProseDraft, Path, Path]:
     """One build of the real CPC week 8 with a writer that fails each call: the saved facts, the draft, and the voice
-    folder of the client. Each prose block of the draft holds its template blurb."""
-    client = cpc_client(at=tmp_path_factory.mktemp("cpc"), models=VALUE_MODELS)
-    copy_cpc_week_8(client)
-    out = build_week_8(partial(claude_call, writer=FakeWriter()), client=client, provider=CPC_PROVIDER)
+    folder of the client. Each prose block of the draft holds its template blurb. The build is the shared one of the
+    fixture `cpc_midseason`."""
+    client, out = cpc_midseason
     return read_draft_facts(out.parent), out, client.voice_dir
 
 

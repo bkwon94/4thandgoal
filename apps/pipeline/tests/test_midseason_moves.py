@@ -3,21 +3,17 @@ Tests for the waivers and the trades of Act II of the midseason report, on the r
 full transactions of each week that the build fetches again. AT-15 and AT-16.
 """
 from collections import Counter
-from pathlib import Path
 
 import pytest
-from test_midseason import CPC_PROVIDER, _call, _clean_call, _cpc_week_8, _report, build_week_8
+from test_midseason import _report
 
 from league.paths import build_dir
-from sim.tunables import SIM_RUNS
 
 
 @pytest.fixture(scope="module")
-def moves(tmp_path_factory) -> dict[str, dict]:
-    """The chapters of Act II of the CPC week 8 report, by key."""
-    tmp_path: Path = tmp_path_factory.mktemp("moves")
-    report = _report(build_week_8(_clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER,
-                                  sim_runs=SIM_RUNS))
+def moves(cpc_midseason_clean) -> dict[str, dict]:
+    """The chapters of Act II of the clean CPC week 8 report at SIM_RUNS, by key, from the shared build."""
+    report = _report(cpc_midseason_clean[1])
     act = next(act for act in report["acts"] if act["key"] == "the-moves")
     return {chapter["key"]: chapter for chapter in act["chapters"]}
 
@@ -96,9 +92,8 @@ def test_each_chapter_of_act_two_has_one_blurb_through_the_writer(moves):
         assert "roast" not in chapter
 
 
-def test_the_review_file_shows_the_blurbs_of_act_two(tmp_path):
-    client = _cpc_week_8(tmp_path)
-    build_week_8(_call(), client=client, provider=CPC_PROVIDER)
+def test_the_review_file_shows_the_blurbs_of_act_two(cpc_midseason):
+    client, _ = cpc_midseason
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     assert "## waivers: Waiver Hits and Misses" in review
     assert "## trades: The Trade Report Card" in review

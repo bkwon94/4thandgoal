@@ -220,3 +220,44 @@ def week_8(tmp_path_factory):
     repo = saved_repo(tmp_path_factory.mktemp("repo"), 8)
     bundle, _ = make_bundle(2026, 8, news=no_news, client=cpc_client(at=repo))
     return bundle
+
+
+# The midseason build of CPC week 8 takes about 3 s, and most midseason tests only read what it writes. Each fixture
+# below builds once per session, or once per xdist worker, for one set of inputs, and the tests that only read the
+# build share it. A test that writes or changes the build folder keeps its own build in `tmp_path`.
+@pytest.fixture(scope="session")
+def cpc_midseason(tmp_path_factory):
+    """The client and the midseason.json of one CPC week 8 build with a writer that fails each call, at 500 runs."""
+    # The import sits here, not at the top: the API tests load this file, and the API env holds no midseason package.
+    from test_midseason import CPC_PROVIDER, _call, _cpc_week_8, build_week_8
+
+    client = _cpc_week_8(tmp_path_factory.mktemp("cpc-midseason"))
+    return client, build_week_8(_call(), client=client, provider=CPC_PROVIDER)
+
+
+@pytest.fixture(scope="session")
+def cpc_midseason_full(tmp_path_factory):
+    """The client and the midseason.json of one CPC week 8 build with a writer that fails each call, at SIM_RUNS."""
+    from test_midseason import CPC_PROVIDER, _call, _cpc_week_8, build_week_8
+
+    from sim.tunables import SIM_RUNS
+
+    client = _cpc_week_8(tmp_path_factory.mktemp("cpc-midseason-full"))
+    return client, build_week_8(_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
+
+
+@pytest.fixture(scope="session")
+def cpc_midseason_clean(tmp_path_factory):
+    """The client, the midseason.json, and the writer of one clean CPC week 8 build at SIM_RUNS. The writer gives the
+    answers of CLEAN_BUILD, so each prose block keeps the blurb of the writer. A test reads `writer.calls`."""
+    from functools import partial
+
+    from test_midseason import CLEAN_BUILD, CPC_PROVIDER, _cpc_week_8, build_week_8
+
+    from facts.writer import claude_call
+    from sim.tunables import SIM_RUNS
+
+    client = _cpc_week_8(tmp_path_factory.mktemp("cpc-midseason-clean"))
+    writer = FakeWriter(list(CLEAN_BUILD))
+    out = build_week_8(partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
+    return client, out, writer
