@@ -31,6 +31,8 @@ CPC_DRAFT_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "draft" / "cp
 NORCAL_DRAFT_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "draft" / "norcal"
 # The full transactions of CPC weeks 1 to 8, as Sleeper gave them on 2026-11-05, after the waiver run of each week.
 CPC_TRANSACTIONS = Path(__file__).parent / "fixtures" / "2026" / "cpc-transactions"
+# The full transactions of NorCal weeks 1 to 8, as Sleeper gave them on 2026-11-05.
+NORCAL_TRANSACTIONS = Path(__file__).parent / "fixtures" / "2026" / "norcal-transactions"
 # The recorded week 6 has no fetch time, so the live fetch gives this one.
 FIXTURE_FETCHED = datetime(2026, 10, 21, 9, 30, tzinfo=ZoneInfo("America/New_York"))
 
