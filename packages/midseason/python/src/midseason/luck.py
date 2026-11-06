@@ -200,7 +200,7 @@ def _end(cells: list[SwapCell], rate: float, own: SwapCell) -> SwapEnd:
 
 
 def _best_and_worst(row: SwapRow) -> BestAndWorst:
-    own = next(cell for cell in row.cells if cell.schedule_of == row.roster_id)
+    own = _own(row)
     others = [cell for cell in row.cells if cell.schedule_of != row.roster_id]
     rates = [_rate(cell) for cell in others]
     return BestAndWorst(roster_id=row.roster_id, name=row.name,
@@ -371,8 +371,7 @@ def luck_facts(luck: ScheduleLuck) -> list[Fact]:
         facts.append(fact(f"{prefix}.close",
                           f"{team.name} is {close} in close games, with a margin under {n(int(CLOSE_GAME_MARGIN))} points.",
                           n, [team.name], []))
-    own = {row.roster_id: next(cell for cell in row.cells if cell.schedule_of == row.roster_id)
-           for row in luck.swap.rows}
+    own = {row.roster_id: _own(row) for row in luck.swap.rows}
     for best in luck.swap.best_missed:
         name, other, mine = names[best.roster_id], names[best.schedule_of], own[best.roster_id]
         n = Nums()
