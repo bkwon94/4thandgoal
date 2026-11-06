@@ -70,6 +70,9 @@ class LeagueSettings(BaseModel):
     reception_points: float
     # True when the league scores a second game each week, against the median score. GLOSSARY.md, "Median game".
     median_game: bool
+    # True when the playoff bracket reseeds after each round: the top seed left meets the lowest seed left.
+    # False for a fixed bracket. A saved settings object of an old test has no value, so the default is fixed.
+    reseed: bool = False
 
     def model_post_init(self, context: object) -> None:
         unknown = sorted(set(self.roster_slots) - KNOWN_SLOTS)

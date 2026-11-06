@@ -31,6 +31,8 @@ class RawLeagueSettings(_Raw):
     playoff_week_start: int | None = None
     # 1 when the league scores a median game each week, else 0.
     league_average_match: int = 0
+    # 1 when the playoff bracket reseeds after each round, else 0 for a fixed bracket.
+    playoff_seed_type: int = 0
 
 
 class RawLeague(_Raw):

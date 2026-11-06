@@ -12,12 +12,11 @@ from cpc import cli_root, cpc_client
 from fakes import FakeWriter
 from rule_report import clean_git_env, report
 from test_midseason import (
+    CLEAN_BUILD,
+    CLEAN_RECHECK,
     CPC_PROVIDER,
-    MOVES_ANSWERS,
-    MOVES_VERDICTS,
-    ROAST_BLURB,
-    STATE_BLURB,
     _call,
+    _clean_call,
     _passed,
     copy_cpc_week_8,
 )
@@ -45,11 +44,8 @@ def _drafted_repo(tmp_path: Path, monkeypatch):
     pipeline = root / "apps" / "pipeline"
     pipeline.mkdir(parents=True)
     client = cpc_client(at=root / "clients" / "cpc")
-    copy_cpc_week_8(client.folder)
-    run_midseason(2026, 8, _call(STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), *MOVES_ANSWERS), client=client,
-                  provider=CPC_PROVIDER)
-    # Ticket 03 writes the real sim.json. The publish copies the bytes as they are.
-    (build_dir(client.folder) / "2026" / "sim.json").write_text('{"week": 8}\n', encoding="utf-8")
+    copy_cpc_week_8(client)
+    run_midseason(2026, 8, _clean_call(), client=client, provider=CPC_PROVIDER)
     _git(root, "init", "-b", "main")
     _git(root, "config", "user.email", "test@example.com")
     _git(root, "config", "user.name", "Test")
@@ -66,7 +62,7 @@ def _published(root: Path) -> Path:
 def test_a_clean_publish_commits_midseason_json_and_sim_json_and_no_other_path(tmp_path, monkeypatch):
     # AT-43.
     root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
-    run_midseason_publish(pipeline, 2026, 8, _call(_passed(3), _passed(2), *MOVES_VERDICTS), client=client)
+    run_midseason_publish(pipeline, 2026, 8, _call(*CLEAN_RECHECK), client=client)
     assert _git(root, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").split() == [
         "clients/cpc/published/2026/midseason.json", "clients/cpc/published/2026/sim.json"]
     offenses = _outside_offenses(root, "HEAD")
@@ -125,13 +121,12 @@ def test_the_midseason_publish_command_prints_the_refusal_and_names_the_blurb(tm
     for name in ("GIT_DIR", "GIT_INDEX_FILE", "GIT_WORK_TREE"):
         monkeypatch.delenv(name, raising=False)
     cli_root(tmp_path)
-    copy_cpc_week_8(tmp_path / "clients" / "cpc")
+    copy_cpc_week_8(cpc_client(root=tmp_path))
     monkeypatch.chdir(tmp_path)
-    clean = FakeWriter([STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), *MOVES_ANSWERS])
+    clean = FakeWriter(list(CLEAN_BUILD))
     assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"], writer=clean,
                     provider=CPC_PROVIDER) == 0
     build = tmp_path / "clients" / "cpc" / "build" / "2026"
-    (build / "sim.json").write_text("{}\n", encoding="utf-8")
     draft = json.loads((build / "midseason.json").read_text(encoding="utf-8"))
     draft["acts"][0]["chapters"][0]["blurb"]["sentences"][0]["text"] = "All You Need Is Love sits at 999."
     (build / "midseason.json").write_text(json.dumps(draft), encoding="utf-8")

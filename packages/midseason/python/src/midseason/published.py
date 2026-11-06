@@ -11,6 +11,8 @@ from pydantic import BaseModel, Field
 
 from league.files import write_bytes_atomic
 from league.models import Blurb
+from midseason.arcs import Arcs, ArcsChapter
+from midseason.luck import LuckChapter, ScheduleLuck
 from midseason.prose import ROAST_SUFFIX
 from midseason.state import LeagueState
 from midseason.trades import TradeFacts
@@ -54,7 +56,8 @@ class TradesChapter(BaseModel):
 
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
-Chapter = Annotated[StateChapter | WaiversChapter | TradesChapter, Field(discriminator="key")]
+Chapter = Annotated[StateChapter | ArcsChapter | LuckChapter | WaiversChapter | TradesChapter,
+                    Field(discriminator="key")]
 
 
 class Act(BaseModel):
@@ -76,22 +79,27 @@ class MidseasonReport(BaseModel):
 
 
 def midseason_report(
-    season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *,
-    waivers: WaiverFacts | None = None, trades: TradeFacts | None = None,
+    season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *, arcs: Arcs, luck: ScheduleLuck,
+    waivers: WaiverFacts, trades: TradeFacts,
 ) -> MidseasonReport:
     """The report of `week` from the facts of each chapter and the blurbs by prose block key. Act I holds the state
-    of the league. Act II holds the waivers and the trades, when the build gives them."""
-    state_chapter = StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX))
-    acts = [Act(key="how-we-got-here", title="How we got here", chapters=[state_chapter])]
-    moves: list[Chapter] = []
-    if waivers is not None:
-        moves.append(WaiversChapter(facts=waivers, blurb=blurbs.get("waivers"),
-                                    roast=blurbs.get("waivers" + ROAST_SUFFIX)))
-    if trades is not None:
-        moves.append(TradesChapter(facts=trades, blurb=blurbs.get("trades"), roast=blurbs.get("trades" + ROAST_SUFFIX)))
-    if moves:
-        acts.append(Act(key="the-moves", title="The moves", chapters=moves))
-    return MidseasonReport(season=season, week=week, takeover_end_week=week + TAKEOVER_WEEKS, acts=acts)
+    of the league, the arcs, and Schedule luck. Act II holds the waivers and the trades."""
+    act_one: list[Chapter] = [
+        StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX)),
+        ArcsChapter(facts=arcs, blurb=blurbs.get("arcs"), roast=blurbs.get("arcs" + ROAST_SUFFIX)),
+        LuckChapter(facts=luck, blurb=blurbs.get("luck"), roast=blurbs.get("luck" + ROAST_SUFFIX)),
+    ]
+    act_two: list[Chapter] = [
+        WaiversChapter(facts=waivers, blurb=blurbs.get("waivers"), roast=blurbs.get("waivers" + ROAST_SUFFIX)),
+        TradesChapter(facts=trades, blurb=blurbs.get("trades"), roast=blurbs.get("trades" + ROAST_SUFFIX)),
+    ]
+    return MidseasonReport(
+        season=season,
+        week=week,
+        takeover_end_week=week + TAKEOVER_WEEKS,
+        acts=[Act(key="how-we-got-here", title="How we got here", chapters=act_one),
+              Act(key="the-moves", title="The moves", chapters=act_two)],
+    )
 
 
 def report_blurbs(report: MidseasonReport) -> list[Blurb]:

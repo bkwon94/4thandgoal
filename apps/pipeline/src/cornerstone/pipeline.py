@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 from pydantic import TypeAdapter
 
 from cornerstone.render import render_week
+from cornerstone.season_sim import week_sim
 from cornerstone.sheet import (
     build_bundle,
     check_week_is_buildable,
@@ -84,8 +85,10 @@ from league.trades import default_cutoff, trades_for_week
 from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from managers.render import render_managers
 from managers.season import saved_awards
+from midseason.arcs import arcs_facts, team_arcs
+from midseason.luck import luck_facts, schedule_luck
 from midseason.moves import PlayerInfo
-from midseason.prose import ProseBlock, ProseDraft, prose_sheet, write_draft_facts, write_prose
+from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
 from midseason.review import review_text, write_review
 from midseason.state import league_state
@@ -93,6 +96,7 @@ from midseason.trades import trade_facts, trade_prose_facts
 from midseason.values import MidseasonValues
 from midseason.waivers import waiver_facts, waiver_prose_facts
 from rankings.published import render_rankings
+from sim.published import sim_file, write_sim
 from waiver.board import waiver_board
 from waiver.price import bid_history
 from waiver.research import SearchCall, research_board, search_call
@@ -731,7 +735,8 @@ def run_midseason(
     saved facts of its prose, and the review file. It reads the saved history of weeks 1 to `week` and the saved facts
     of `week`. It writes nothing to published/, so only the publish of the report puts it live.
 
-    The app wires the odds into the report: the playoff odds of the saved week go in through the port of midseason.
+    The app runs the sim of the rest of the season and writes sim.json beside the draft. The playoff odds of the sim go
+    into the report through the port of midseason.
     Each prose block goes through the writer and the verifier of facts, with the roast setting of the client.
     The waivers and the trades read the transactions of each week that `provider` fetches again.
     """
@@ -744,32 +749,39 @@ def run_midseason(
     # A gap would drop a week from each record, so the report waits for a complete history.
     if not history.complete():
         raise BuildStopped(HISTORY_GAP.format(week=week))
-    odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
     names = {rid: team.name for rid, team in bundle.data.teams.items()}
-    state = league_state(history, week, names, playoff_odds=odds, median_game=client.settings.median_game)
+    # The sim writes sim.json, and its playoff odds reach the report through the port of midseason. So the report and
+    # the replay give one number. The week odds stand in only when the week gives the sim no inputs.
+    sim = week_sim(season, week, history, client=client)
+    if sim is not None:
+        write_sim(sim_file(sim, names), build_dir(client.folder))
+        odds = {rid: team.playoff for rid, team in sim.teams.items()}
+    else:
+        odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
+    median_game = client.settings.median_game
+    state = league_state(history, week, names, playoff_odds=odds, median_game=median_game)
+    luck = schedule_luck(history, week, state, median_game=median_game)
+    arcs = team_arcs(history, week, state, {team.roster_id: team.schedule_luck for team in luck.teams},
+                     median_game=median_game)
     players, league, nfl_state = _saved_week_inputs(raw_dir(client.folder, season, week))
     provider = provider or SleeperProvider(provider_cache_dir(client.nfl_dir))
     moves = season_transactions(provider, client.league_id(season), season, week)
     lines = client.settings.lines
     waivers = waiver_facts(history, week, moves, players, names, lines, league.settings.waiver_budget)
-    trades = trade_facts(history, week, moves, players, names, lines, median_game=client.settings.median_game,
+    trades = trade_facts(history, week, moves, players, names, lines, median_game=median_game,
                          season_start=date.fromisoformat(nfl_state.season_start_date), tz=client.tz)
-    blocks = [
-        ProseBlock(key="waivers", title="Waiver hits and misses", facts=waiver_prose_facts(waivers),
-                   teams=sorted(names.values()), players=sorted({p.player for p in [*waivers.hits, *waivers.misses]})),
-        ProseBlock(key="trades", title="The trade report card", facts=trade_prose_facts(trades),
-                   teams=sorted(names.values()),
-                   players=sorted({p.player for card in trades.trades for side in card.sides for p in side.got})),
-    ]
     roast = midseason_values(client).roast
-    sheet = prose_sheet(week, state, roast, blocks)
+    later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule luck", luck_facts(luck)),
+             ("waivers", "Waiver hits and misses", waiver_prose_facts(waivers)),
+             ("trades", "The trade report card", trade_prose_facts(trades))]
+    sheet = prose_sheet(week, state, roast, later)
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
     write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)
     command = f"make midseason-publish CLIENT={client.slug} WEEK={week}"
     review = write_review(review_text(season, week, roast, sheet, blurbs, results, command), season_build)
     log.info("review file: %s", review)
-    report = midseason_report(season, week, state, blurbs, waivers=waivers, trades=trades)
+    report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck, waivers=waivers, trades=trades)
     return write_midseason(report, build_dir(client.folder))
 
 

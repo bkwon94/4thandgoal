@@ -35,15 +35,6 @@ ROAST_OFF = "Roast: off. Write no roast and no joke at a manager's expense. Stat
 WEEK_FACT = "W.week"
 
 
-class ProseBlock(BaseModel):
-    """The facts of one more chapter of the report, with the teams and the players that its blurb may name."""
-    key: str
-    title: str
-    facts: list[Fact]
-    teams: list[str]
-    players: list[str]
-
-
 class ProseDraft(BaseModel):
     """The saved facts of the draft: the roast step of the build and the fact sheet of every prose block."""
     roast: Roast
@@ -76,31 +67,33 @@ def _state_facts(state: LeagueState) -> list[Fact]:
     return facts
 
 
-def prose_sheet(week: int, state: LeagueState, roast: Roast, blocks: Sequence[ProseBlock] = ()) -> FactSheet:
+# The prose block of a later chapter: its key, its title, and its facts, in page order after the state.
+ChapterFacts = tuple[str, str, list[Fact]]
+
+
+def prose_sheet(week: int, state: LeagueState, roast: Roast, later: Sequence[ChapterFacts] = ()) -> FactSheet:
     """The fact sheet of the report: every fact and the prose blocks that cite them. Each chapter has one blurb block,
-    and a roast block unless the roast is off. `blocks` holds the facts of each chapter after the state of the
-    league, in page order."""
+    and a roast block unless the roast is off. `later` holds the facts of each chapter after the state."""
     n = Nums()
     week_fact = fact(WEEK_FACT, f"The report counts week {n(week)} and every week before it.", n, [], [])
-    # The week fact comes last, so the template blurb of a failed block reads the first team fact, not the week.
-    facts = [*_state_facts(state), week_fact]
-    ids = [f.id for f in facts]
     teams = [team.name for team in state.teams]
-    chapters = [Chapter(key="state", title="The state of the league", fact_ids=ids, scope_teams=teams,
-                        scope_players=[], min_sentences=3, max_sentences=6)]
-    if roast != "off":
-        # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
-        chapters.append(Chapter(key="state" + ROAST_SUFFIX, title="The roast of the state of the league", fact_ids=ids,
-                                scope_teams=teams, scope_players=[], min_sentences=2, max_sentences=4))
-    for block in blocks:
-        facts.extend(block.facts)
-        ids = [f.id for f in block.facts] + [WEEK_FACT]
-        chapters.append(Chapter(key=block.key, title=block.title, fact_ids=ids, scope_teams=block.teams,
-                                scope_players=block.players, min_sentences=3, max_sentences=6))
+    # The week fact comes last in each block, so the template blurb of a failed block reads a team fact, not the week.
+    blocks = [("state", "The state of the league", _state_facts(state)), *later]
+    facts: list[Fact] = []
+    chapters: list[Chapter] = []
+    for key, title, chapter_facts in blocks:
+        facts += chapter_facts
+        ids = [f.id for f in chapter_facts] + [week_fact.id]
+        # The players of the facts are the players that the blurb may name, such as the waiver hits.
+        players = sorted({p for f in chapter_facts for p in f.players})
+        chapters.append(Chapter(key=key, title=title, fact_ids=ids, scope_teams=teams, scope_players=players,
+                                min_sentences=3, max_sentences=6))
         if roast != "off":
-            chapters.append(Chapter(key=block.key + ROAST_SUFFIX, title=f"The roast of {block.title.lower()}",
-                                    fact_ids=ids, scope_teams=block.teams, scope_players=block.players,
-                                    min_sentences=2, max_sentences=4))
+            # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
+            chapters.append(Chapter(key=key + ROAST_SUFFIX, title=f"The roast of {title[0].lower() + title[1:]}",
+                                    fact_ids=ids, scope_teams=teams, scope_players=players, min_sentences=2,
+                                    max_sentences=4))
+    facts.append(week_fact)
     return FactSheet(facts={f.id: f for f in facts}, chapters=chapters)
 
 

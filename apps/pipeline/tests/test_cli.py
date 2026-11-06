@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 from conftest import save_chart_read
-from cpc import cli_root
+from cpc import cli_root, cpc_client
 
 
 def _no_nflverse(season, week, player_ids, players):
@@ -711,7 +711,7 @@ def test_the_midseason_command_writes_the_report_to_the_build_folder(tmp_path, m
     from cornerstone import cli
 
     cli_root(tmp_path)
-    copy_cpc_week_8(tmp_path / "clients" / "cpc")
+    copy_cpc_week_8(cpc_client(root=tmp_path))
     monkeypatch.chdir(tmp_path)
 
     args = ["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]

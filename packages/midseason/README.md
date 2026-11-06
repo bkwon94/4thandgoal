@@ -4,6 +4,7 @@
 
 - The state of the league in `state.py`: the full record, points for and against, the streak, and the playoff odds of each team.
 - The waivers in `waivers.py` and the trades with their Trade result in `trades.py`. `moves.py` holds the line scores and the stints that both read.
+- The arcs in `arcs.py`: at most 2 of the 8 arcs of decision ticket 05 per team, the biggest swing first. Schedule luck in `luck.py`: All-play wins, Schedule luck, points against, the close-game record, and the Schedule swap.
 - The shape of `midseason.json` and its writer in `published.py`, with the acts and the chapters (`cpc-midseason`, imported as `midseason`).
 - The prose in `prose.py`: the facts and the prose blocks of each chapter, a roast block per chapter unless the roast is off, and the roast terms of `prompts/roast.md`.
 - The review file in `review.py`: each blurb with its prose block, the facts it cites, and the verifier result.
