@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-3, AT-37, AT-38, a
 
 **Blocked by:** 01 and 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Two builds of CPC week 8 give the same `sim.json`, byte for byte.
 - [x] `sim.json` holds 200 sim runs and the odds of 10,000 runs, and its gzip size is 50 KB or less.
