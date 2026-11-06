@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-55, AT-56, AT-57, 
 
 **Blocked by:** 15, 17.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] No tag in the report has a fill or a border, and the DEF #3 row reads "Free agent" in its second line.
 - [ ] Cards have 8 px corners, and no element of the report is a full pill.
