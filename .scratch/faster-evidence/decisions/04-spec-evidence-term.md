@@ -6,7 +6,7 @@ Map: `.scratch/faster-evidence/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ Map: `.scratch/faster-evidence/MAP.md`.
 
 ## Decision
 
-None yet.
+The spec records it, approved by Brian on 2026-11-05. `GLOSSARY.md` gets **Evidence** in the Workflow section: the files and the observation that show what the finished work does for one acceptance test, with no Test verdict. A ticket of the spec writes it. See `PRD.md`, Implementation Decisions.

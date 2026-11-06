@@ -9,19 +9,22 @@ One spec makes the evidence stage of `cpc:implement` and `cpc:review` take one s
 
 The spec holds three parts:
 
-1. A script `apps/site/scripts/evidence-shots.mjs`. One Playwright run takes a test id, a route, and an optional action, and saves 3 widths x 2 themes.
+1. An evidence runner on Playwright. One run takes a test id, a route, and an optional action, and saves 3 widths x 2 themes.
 2. A fix to `.claude/plugin/skills/implement/evidence.md`. Light is `setItem('cpc.theme','light')`. A scroll pass comes before each full-page shot. The local server answers a missing path with `404.html`, as the Worker does.
 3. A setting for the rate limit of the local API, for evidence runs only. The API stays real, so this is no mock.
 
 ## DECISIONS SO FAR
 
 - A test names its steps in `evidence/AT-<n>/steps.json`: `route`, a list of six verbs, and optional `widths` and `themes`. `cpc:implement` writes it. `decisions/01-grill-action-form.md`.
+- The API reads `CORNERSTONE_RATE_LIMIT_PER_MINUTE`, default 10; `make api-evidence` sets 600. `decisions/02-spec-rate-limit-setting.md`.
+- The runner prints the time of each test, and `EVIDENCE.md` records the round time. `decisions/03-spec-measure-round-time.md`.
+- `GLOSSARY.md` gets the term Evidence. `decisions/04-spec-evidence-term.md`.
+- The runner is a Playwright project `evidence` of the site, not a plain script, to reuse the floor's server and page opener. `PRD.md`.
 
 ## NOT YET SPECIFIED
 
-- What is the name and the guard of the rate limit setting? `decisions/02-spec-rate-limit-setting.md`.
-- How do we measure the 15 minutes of a round? `decisions/03-spec-measure-round-time.md`.
-- What does the glossary term "Evidence" say? `decisions/04-spec-evidence-term.md`.
+None.
+
 
 ## OUT OF SCOPE
 

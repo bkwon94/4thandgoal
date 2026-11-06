@@ -6,7 +6,7 @@ Map: `.scratch/faster-evidence/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ The outcome sets 15 minutes or less for a full round of site evidence. The spec 
 
 ## Decision
 
-None yet.
+The spec records it, approved by Brian on 2026-11-05. The runner prints the time of each test and the total. `EVIDENCE.md` gets the line `Round time: <N> min for <M> site tests.` under `Built from`. See `PRD.md`, Implementation Decisions.
