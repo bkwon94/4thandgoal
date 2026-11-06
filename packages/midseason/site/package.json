@@ -6,6 +6,7 @@
   "description": "The site side of the midseason package: the report page with the opener, the three acts, and the chapter rail, the chapters of the three acts, the schema and the types of the midseason file, and its fixture. It ships TSX source with no build step.",
   "dependencies": {
     "@cpc/design": "workspace:*",
+    "@cpc/league": "workspace:*",
     "zod": "^4.6.7"
   },
   "peerDependencies": {

@@ -2,8 +2,9 @@
  * Tests for the chapters of Act I on the real build of CPC 2026 week 8 in the package fixture.
  * They read what a manager sees: the arcs and the Position top 10.
  */
-import { cleanup, render, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import { sleeperHeadshot } from "@cpc/league/images";
 import { midseason } from "../fixtures/midseason";
 import { MidseasonScreen } from "../report/midseason-screen";
 import type { ArcsChapter, MidseasonChapter } from "../schema/midseason-types";
@@ -51,5 +52,34 @@ describe("arcs", () => {
     const page = within(document.getElementById("arcs")!);
     expect(page.queryByRole("list", { name: "Arcs" })).toBeNull();
     expect(page.getByText("No team has an arc yet.")).toBeTruthy();
+  });
+});
+
+describe("position top 10", () => {
+  it("gives each row a small headshot of the player, with alt text, a fixed size, and lazy load", () => {
+    renderReport();
+    const rb = chapterOf("top10").facts.positions.find((board) => board.position === "RB")!;
+    const rows = [...chapterEl("top10").getByRole("list", { name: "RB top 10" }).children] as HTMLElement[];
+    expect(rows).toHaveLength(rb.players.length);
+    for (const [index, row] of rows.entries()) {
+      const player = rb.players[index];
+      const img = within(row).getByRole("img", { name: player.name });
+      expect(img.getAttribute("src")).toBe(sleeperHeadshot(player.player_id));
+      expect(img.getAttribute("loading")).toBe("lazy");
+      expect(img.parentElement!.className).toMatch(/(^|\s)size-avatar(\s|$)/);
+    }
+  });
+
+  it("gives each DEF row a frame of fixed size with the initials of the team, as the helper has no team logo", () => {
+    renderReport();
+    const chapter = chapterEl("top10");
+    fireEvent.click(chapter.getByRole("button", { name: "DEF" }));
+    const def = chapterOf("top10").facts.positions.find((board) => board.position === "DEF")!;
+    const rows = [...chapter.getByRole("list", { name: "DEF top 10" }).children] as HTMLElement[];
+    for (const [index, row] of rows.entries()) {
+      expect(row.querySelector("img")).toBeNull();
+      const frame = within(row).getByRole("img", { name: def.players[index].name });
+      expect(frame.className).toMatch(/(^|\s)size-avatar(\s|$)/);
+    }
   });
 });

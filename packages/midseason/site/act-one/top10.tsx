@@ -7,19 +7,29 @@
 import { useState } from "react";
 import { oneDecimal } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
+import { sleeperHeadshot } from "@cpc/league/images";
 import { ReportCard } from "../report/report-card";
+import { ReportPhoto } from "../report/report-photo";
 import { ReportChapter } from "../report/report-chapter";
 import type { PositionBoard, Top10Chapter, TopPlayer } from "../schema/midseason-types";
 
 /* The board that the chapter opens on (decision ticket 10). A league with no RB board opens on its first board. */
 export const FIRST_POSITION = "RB";
 
-/* One row: the rank, the player over his NFL team and the manager who has him, and the points. A player on the wire
+/* The Sleeper CDN has no headshot for a DEF, whose id is its NFL team, so a DEF frame shows the initials of the team. */
+const DEFENSE = "DEF";
+
+/* One row: the rank, a small headshot, the player over his NFL team and the manager who has him, and the points. A player on the wire
    has his tag, such as "Free agent", in the second line in place of a manager, as a fact about him (decision ticket 15). */
 function Row({ player }: { player: TopPlayer }) {
   return (
-    <li className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0">
+    <li className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0">
       <span className="font-mono text-meta text-mute tabular-nums">{String(player.rank).padStart(2, "0")}</span>
+      <ReportPhoto
+        src={player.position === DEFENSE ? null : sleeperHeadshot(player.player_id)}
+        name={player.name}
+        size="sm"
+      />
       <span className="min-w-0">
         <span className="block truncate text-body leading-tight font-bold">{player.name}</span>
         <span className="block truncate text-meta leading-tight text-ink-2">
