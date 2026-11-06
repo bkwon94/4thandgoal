@@ -1,0 +1,14 @@
+$ find .scratch/site-redesign/evidence/AT-6 -newer <round start> -type f | sort   # the files this round wrote
+AT-6/cpc-1280-dark.png
+AT-6/cpc-1280-light.png
+AT-6/cpc-375-dark.png
+AT-6/cpc-375-light.png
+AT-6/cpc-768-dark.png
+AT-6/cpc-768-light.png
+AT-6/norcal-1280-dark.png
+AT-6/norcal-1280-light.png
+AT-6/norcal-375-dark.png
+AT-6/norcal-375-light.png
+AT-6/norcal-768-dark.png
+AT-6/norcal-768-light.png
+steps.json is committed and sits in AT-6/ beside the shots.

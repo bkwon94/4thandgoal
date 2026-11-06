@@ -1,0 +1,2 @@
+AT-24 /analyze/ cpc: 12 shots in 62.0 s
+AT-25 /analyze/ cpc: 6 shots in 86.9 s

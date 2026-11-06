@@ -1,0 +1,86 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[type=submit]"
+    },
+    {
+      "wait": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "button[aria-label=\"Pick Team Two\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Teehee\")"
+    },
+    {
+      "click": "button[aria-label=\"Add a team\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Lil Fridge\")"
+    },
+    {
+      "click": "button:has-text(\"Add a player Team Three gets\")"
+    },
+    {
+      "wait": "ul[aria-label^=\"Players of\"]"
+    },
+    {
+      "click": "div[aria-label=\"From team\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "ul[aria-label^=\"Players of\"] button:has-text(\"Kenneth Walker III\")"
+    },
+    {
+      "click": "button:has-text(\"Done\")"
+    },
+    {
+      "click": "button:has-text(\"Add a player Team Two gets\")"
+    },
+    {
+      "wait": "ul[aria-label^=\"Players of\"]"
+    },
+    {
+      "click": "div[aria-label=\"From team\"] button:has-text(\"Lil Fridge\")"
+    },
+    {
+      "click": "ul[aria-label^=\"Players of\"] button:has-text(\"Caleb Williams\")"
+    },
+    {
+      "click": "button:has-text(\"Done\")"
+    },
+    {
+      "click": "button:has-text(\"Add a player Your Team gets\")"
+    },
+    {
+      "wait": "ul[aria-label^=\"Players of\"]"
+    },
+    {
+      "click": "div[aria-label=\"From team\"] button:has-text(\"Teehee\")"
+    },
+    {
+      "click": "ul[aria-label^=\"Players of\"] button:has-text(\"Tee Higgins\")"
+    },
+    {
+      "click": "button:has-text(\"Done\")"
+    },
+    {
+      "click": "button:has-text(\"Grade the Trade\")"
+    },
+    {
+      "wait": "text=Suggested Counters"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+$ pnpm --dir apps/site evidence site-redesign AT-32
+
+> cpcfantasyfootball-site@0.1.0 evidence /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site
+> node scripts/evidence.mjs site-redesign AT-32
+
+
+Running 1 test using 1 worker
+
+build cpc: 5.4 s
+AT-32 /2026/week-99/ cpc: 6 shots in 12.2 s
+build norcal: 3.8 s
+AT-32 /2026/week-99/ norcal: 6 shots in 12.0 s
+Total: 1 test of site-redesign in 33.4 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of site-redesign (33.4s)
+
+  1 passed (34.2s)
+$ git status --short .scratch/site-redesign/evidence/
+?? .scratch/site-redesign/evidence/AT-32/cpc-1280-dark.png
+?? .scratch/site-redesign/evidence/AT-32/cpc-1280-light.png
+?? .scratch/site-redesign/evidence/AT-32/cpc-375-dark.png
+?? .scratch/site-redesign/evidence/AT-32/cpc-375-light.png
+?? .scratch/site-redesign/evidence/AT-32/cpc-768-dark.png
+?? .scratch/site-redesign/evidence/AT-32/cpc-768-light.png
+?? .scratch/site-redesign/evidence/AT-32/norcal-1280-dark.png
+?? .scratch/site-redesign/evidence/AT-32/norcal-1280-light.png
+?? .scratch/site-redesign/evidence/AT-32/norcal-375-dark.png
+?? .scratch/site-redesign/evidence/AT-32/norcal-375-light.png
+?? .scratch/site-redesign/evidence/AT-32/norcal-768-dark.png
+?? .scratch/site-redesign/evidence/AT-32/norcal-768-light.png
