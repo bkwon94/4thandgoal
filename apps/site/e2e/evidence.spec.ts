@@ -39,7 +39,13 @@ test(`the evidence of ${SLUG || "no feature"}`, async ({ browser }) => {
     serve: async (client) => {
       const start = Date.now();
       // pnpm build runs the prebuild step too, which copies the published weeks of the client into public/.
-      execFileSync("pnpm", ["build"], { env: buildEnv(client), stdio: "ignore" });
+      // A good build stays quiet. A failed build prints its output in the error, because the guide tells the agent to give Brian the command and its error.
+      try {
+        execFileSync("pnpm", ["build"], { env: buildEnv(client), encoding: "utf8", stdio: "pipe" });
+      } catch (error) {
+        const { stdout, stderr } = error as { stdout?: string; stderr?: string };
+        throw new Error(`build ${client} failed:\n${stdout ?? ""}${stderr ?? ""}`);
+      }
       console.log(`build ${client}: ${((Date.now() - start) / 1000).toFixed(1)} s`);
       return serveDir(OUT, EVIDENCE_PORT);
     },
