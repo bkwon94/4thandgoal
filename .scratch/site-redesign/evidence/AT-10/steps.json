@@ -1,0 +1,11 @@
+{
+  "route": "/rankings/",
+  "widths": [
+    768,
+    1280
+  ],
+  "clients": [
+    "cpc",
+    "norcal"
+  ]
+}

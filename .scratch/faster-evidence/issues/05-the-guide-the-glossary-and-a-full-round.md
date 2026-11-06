@@ -10,9 +10,9 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-1, AT-8, AT-12, AT-
 
 **Status:** ready-for-agent
 
-- [ ] `evidence.md` teaches each item above, and no step of it uses `removeItem('cpc.theme')`.
-- [ ] `GLOSSARY.md` holds **Evidence**, and the tracker and glossary rules pass.
-- [ ] A `steps.json` for each covered screenshot test of site-redesign is committed, each narrowed to its Evidence line. The close comment names each skipped test and the reason.
-- [ ] One run of `pnpm --dir apps/site evidence site-redesign`, with `make api-evidence` running, prints a total of 15 min or less. The close comment records the total.
+- [x] `evidence.md` teaches each item above, and no step of it uses `removeItem('cpc.theme')`.
+- [x] `GLOSSARY.md` holds **Evidence**, and the tracker and glossary rules pass.
+- [x] A `steps.json` for each covered screenshot test of site-redesign is committed, each narrowed to its Evidence line. The close comment names each skipped test and the reason.
+- [x] One run of `pnpm --dir apps/site evidence site-redesign`, with `make api-evidence` running, prints a total of 15 min or less. The close comment records the total.
 - [ ] The analyzer tests AT-24 and AT-25 of site-redesign get no 429 and each take less than 61 s.
-- [ ] `git diff main -- .claude/plugin/skills/review` is empty.
+- [x] `git diff main -- .claude/plugin/skills/review` is empty.

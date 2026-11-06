@@ -1,0 +1,20 @@
+{
+  "route": "/",
+  "steps": [
+    {
+      "shot": "before"
+    },
+    {
+      "click": "button[aria-label=\"Switch to light theme\"]"
+    },
+    {
+      "shot": "after-tap"
+    }
+  ],
+  "themes": [
+    "dark"
+  ],
+  "clients": [
+    "norcal"
+  ]
+}

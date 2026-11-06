@@ -1,0 +1,68 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[type=submit]"
+    },
+    {
+      "wait": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "button[aria-label=\"Pick Team Two\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Teehee\")"
+    },
+    {
+      "click": "button:has-text(\"Add a player Your Team gets\")"
+    },
+    {
+      "wait": "ul[aria-label^=\"Players of\"]"
+    },
+    {
+      "click": "ul[aria-label^=\"Players of\"] button:has-text(\"Tee Higgins\")"
+    },
+    {
+      "click": "button:has-text(\"Done\")"
+    },
+    {
+      "click": "button:has-text(\"Add a player Team Two gets\")"
+    },
+    {
+      "wait": "ul[aria-label^=\"Players of\"]"
+    },
+    {
+      "click": "ul[aria-label^=\"Players of\"] button:has-text(\"Kenneth Walker III\")"
+    },
+    {
+      "click": "button:has-text(\"Done\")"
+    },
+    {
+      "click": "button:has-text(\"Grade the Trade\")"
+    },
+    {
+      "wait": "text=Grading the Trade"
+    },
+    {
+      "shot": "loading"
+    },
+    {
+      "wait": "text=Suggested Counters"
+    },
+    {
+      "shot": "result"
+    }
+  ]
+}

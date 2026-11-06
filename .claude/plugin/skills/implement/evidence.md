@@ -12,20 +12,66 @@ The evidence states what the instrument showed. It holds no PASS, no FAIL, and n
 
 ## A site test
 
-The instrument is the `agent-browser` CLI. Run `agent-browser skills get core` one time to learn its commands.
+The instrument is the evidence runner, a Playwright project of the site. One command takes every shot of every site test of the feature.
 
-1. Build the site from the Spec worktree: `pnpm --dir apps/site build`.
-2. Serve the export: `python3 -m http.server 4173 --directory apps/site/out`. Run it in the background.
-3. For each width of 375, 768, and 1280 px, and each theme of light and dark:
+1. Write `.scratch/<slug>/evidence/AT-<n>/steps.json` for each site test that asks for screenshots. See "The step list" below.
+2. If any test uses the analyzer, start the local API first: `make -C apps/api api-evidence`. Run it in the background. It allows 600 requests a minute, so a test does not wait on the limit. It stays real, with real Sleeper data and real Claude calls.
+3. Run the round from the Spec worktree: `pnpm --dir apps/site evidence <slug>`. Save the full output. It prints the build of each client, the time of each test, and the total.
+4. Look at each shot. Write one or two sentences of what it shows about the Then line.
+5. Stop the API when the round is done.
+
+To take the shots of only some tests again, name them: `pnpm --dir apps/site evidence <slug> AT-3 AT-7`.
+
+The runner builds each client one time per round and serves its export on `http://127.0.0.1:4173`. The build calls the local API at `http://localhost:8080`, never the production API. A missing path gets the `404.html` of the site, as the Worker gives it. The runner opens each page with `cpc.theme` set to `light` or `dark`, and scrolls the page to the end and back before each full-page shot.
+
+### The step list
+
+`steps.json` holds one object with these keys:
+
+- `route`: the path under the site root, such as `/2026/week-08/`. It is the only key you must give.
+- `steps`: an optional list. Each step has one verb. See the table below.
+- `widths`: optional. The default is `[375, 768, 1280]`.
+- `themes`: optional. The default is `["light", "dark"]`.
+- `clients`: optional. The default is `["cpc"]`. Write `["cpc", "norcal"]` for a test of each client.
+
+Narrow `widths`, `themes`, and `clients` only to match the Evidence line of the test. A test that names no client covers both clients.
+
+| Step | What it does |
+| --- | --- |
+| `{"click": "<selector>"}` | Taps the first element that matches. |
+| `{"fill": {"selector": "<selector>", "value": "<text>"}}` | Types the text into the first field that matches. |
+| `{"scroll": "<selector>"}` or `{"scroll": "end"}` | Scrolls the element into view, or scrolls to the end of the page. |
+| `{"wait": "<selector>"}`, `{"wait": "url"}`, or `{"wait": <ms>}` | Waits for the element to show, for the URL to change after the last click, or for a time. |
+| `{"shot": "<name>"}` | Takes a full-page shot with the name, such as `before`. |
+| `{"url": true}` | Writes the URL of the page to a file. |
+
+A selector is a Playwright selector, such as `button[aria-label="Add a team"]`, `button:has-text("Done")`, or `text=Suggested Counters`. Find each selector on the real built page.
+
+With no `shot` step, the runner takes one shot after the last step. A step list with only `route` gives one shot for each width and theme. An unknown key or verb stops the run before the first shot. The error names the file and the step.
+
+An analyzer test fills the passphrase sheet first: `{"fill": {"selector": "input[type=password]", "value": "localtest"}}`, then `{"click": "button[type=submit]"}`. Before a shot of a result, `wait` for text that only the result shows.
+
+The runner writes these files beside `steps.json`:
+
+- A shot is `<width>-<theme>.png`. A named shot is `<name>-<width>-<theme>.png`.
+- The `url` step writes `url-<width>-<theme>.txt`.
+- A test of more than one client puts the client first, such as `norcal-before-1280-dark.png`.
+
+### A test that no verb covers
+
+Use the `agent-browser` CLI for a test whose step no verb covers, such as a test with scripts off. Run `agent-browser skills get core` one time to learn its commands.
+
+1. Build the site from the Spec worktree: `pnpm --dir apps/site build`. For an analyzer test, set `NEXT_PUBLIC_API_URL=http://localhost:8080`, or the site calls the production API.
+2. Serve `apps/site/out` on `http://127.0.0.1:4173` with a server that answers a missing path with `404.html` and the status 404, as the Worker does. Run it in the background. `make -C apps/api api-evidence` allows only that origin.
+3. For each width and theme that the Evidence line names:
    1. Set the viewport: `agent-browser set viewport <width> 900`.
-   2. Open the page that the When line names, under `http://localhost:4173/`.
-   3. Set the theme. The site reads the key `cpc.theme` from local storage. Run `agent-browser eval "localStorage.setItem('cpc.theme','dark')"` for dark, or `removeItem('cpc.theme')` for light.
+   2. Open the page that the When line names.
+   3. Set the theme. The site reads the key `cpc.theme` from local storage. Run `agent-browser eval "localStorage.setItem('cpc.theme','light')"` for light, or `setItem('cpc.theme','dark')` for dark.
    4. Run `agent-browser reload`, then `agent-browser wait 1000`.
-   5. Take the screenshot: `agent-browser screenshot <absolute path of .scratch/<slug>/evidence/AT-<n>>/<width>-<theme>.png --full`. Put the path before `--full`. With `--full` first, the CLI ignores the path and saves the file under `~/.agent-browser/tmp/`.
-4. Look at each screenshot. Write one or two sentences of what it shows about the Then line.
-5. Stop the server and close the browser when the last site test is done.
-
-Each site test gets six files: `375-light.png`, `375-dark.png`, `768-light.png`, `768-dark.png`, `1280-light.png`, and `1280-dark.png`.
+   5. Scroll to the end and back to the top, so each section that reveals on scroll shows: `agent-browser eval "window.scrollTo(0, document.body.scrollHeight)"`, `agent-browser wait 1500`, then `agent-browser eval "window.scrollTo(0, 0)"`.
+   6. Take the screenshot: `agent-browser screenshot <absolute path of .scratch/<slug>/evidence/AT-<n>>/<width>-<theme>.png --full`. Put the path before `--full`. With `--full` first, the CLI ignores the path and saves the file under `~/.agent-browser/tmp/`.
+4. Write the steps you ran in `evidence/AT-<n>/steps.txt`, so a reader knows how each shot was made.
+5. Stop the server and close the browser when the last such test is done.
 
 ## A pipeline test
 
@@ -34,7 +80,7 @@ Each site test gets six files: `375-light.png`, `375-dark.png`, `768-light.png`,
 3. If the Then line names `page.json` fields, save the changed fields as `.scratch/<slug>/evidence/AT-<n>/fields.diff`. Make it with `git diff -- <the page.json path>`, or with `jq` on the named fields.
 4. Put back each tracked file of the week output with `git restore`. Only `publish` commits the week output (ADR 0019).
 
-A test of both apps gets the pipeline files and the six screenshots.
+A test of both apps gets the pipeline files and the shots of its `steps.json`.
 
 ## EVIDENCE.md
 
@@ -45,12 +91,13 @@ Write `.scratch/<slug>/EVIDENCE.md` in this shape:
 
 Spec: `.scratch/<slug>/PRD.md`. Acceptance tests: `.scratch/<slug>/ACCEPTANCE.md`.
 Built from: `<short sha>`, on <date>. The agent gives no Test verdict. Brian gives one for each test.
+Round time: <N> min for <M> site tests.
 
 ## AT-1: <title>
 
 App: site
 Then: <the Then line, copied>
-Files: `evidence/AT-1/375-light.png`, `evidence/AT-1/375-dark.png`, `evidence/AT-1/768-light.png`, `evidence/AT-1/768-dark.png`, `evidence/AT-1/1280-light.png`, `evidence/AT-1/1280-dark.png`
+Files: `evidence/AT-1/steps.json`, `evidence/AT-1/375-light.png`, `evidence/AT-1/375-dark.png`, `evidence/AT-1/768-light.png`, `evidence/AT-1/768-dark.png`, `evidence/AT-1/1280-light.png`, `evidence/AT-1/1280-dark.png`
 Observation: <what the files show, in one or two sentences>
 
 ## AT-2: <title>
@@ -61,6 +108,8 @@ Files: `evidence/AT-2/output.txt`, `evidence/AT-2/fields.diff`
 Observation: <what the output shows>
 ```
 
-A skipped test gets `Files: none` and the reason in its Observation line, such as "ticket 02 is blocked".
+`Round time` is the total that the runner prints, in whole minutes, and the count of tests with a `steps.json`.
+
+A skipped test gets `Files: none` and the reason in its Observation line, such as "ticket 02 is blocked". A screenshot test that no verb covers names its reason too, such as "scripts off", and gets its shots from `agent-browser`.
 
 **Stop rule of stage 3.** Commit `EVIDENCE.md` and `evidence/` on the Spec branch with the message `Record the evidence of <slug>`. The hook must pass. If a site build or a pipeline command fails, stop. Tell Brian the command and its error.

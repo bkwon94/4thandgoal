@@ -1,0 +1,44 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[type=submit]"
+    },
+    {
+      "wait": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Mitseeker5000\")"
+    },
+    {
+      "wait": "button:has-text(\"Find a Trade\")"
+    },
+    {
+      "shot": "page"
+    },
+    {
+      "click": "label:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "button:has-text(\"Find a Trade\")"
+    },
+    {
+      "wait": "text=See the Full Result"
+    },
+    {
+      "shot": "result"
+    }
+  ],
+  "clients": [
+    "norcal"
+  ]
+}
