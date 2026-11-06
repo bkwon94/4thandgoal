@@ -8,7 +8,7 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-1, AT-8, AT-12, AT-
 
 **Blocked by:** 01, 03, 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `evidence.md` teaches each item above, and no step of it uses `removeItem('cpc.theme')`.
 - [x] `GLOSSARY.md` holds **Evidence**, and the tracker and glossary rules pass.
