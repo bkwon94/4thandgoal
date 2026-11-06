@@ -355,11 +355,14 @@ def code_check(
     bares: list[str] = []
 
     for i, sentence in enumerate(blurb.sentences):
-        # A sentence with no fact IDs is the one reaction a blurb may hold.
+        # A sentence with no fact IDs is a reaction. A blurb may hold one, or as many as its chapter allows.
         if not sentence.fact_ids:
             reactions += 1
-            if reactions > 1:
+            if reactions > chapter.max_reactions and chapter.max_reactions == 1:
                 failures.append(f"[{i}] a second reaction sentence; a blurb may hold one, so cite a fact")
+            elif reactions > chapter.max_reactions:
+                failures.append(f"[{i}] reaction sentence {reactions}; a blurb may hold {chapter.max_reactions}, "
+                                "so cite a fact")
             failures += [f"[{i}] {m}" for m in reaction_failures(sentence.text, scope_names, in_scope_last)]
 
         valid_ids = []
@@ -467,6 +470,10 @@ def code_check(
     # The rankings chapter is twelve short team rows, and each row opens on a rank, so it skips the mix.
     if chapter.key != RANKINGS_CHAPTER:
         failures += numberless_failures(bares)
+
+    # A chapter with one reaction already needs a cited sentence once it has two. A chapter with more needs this line.
+    if chapter.max_reactions > 1 and blurb.sentences and reactions == len(blurb.sentences):
+        failures.append("[0] the blurb cites no fact; cite a fact in its first sentence")
 
     count = len(blurb.sentences)
     if not chapter.min_sentences <= count <= chapter.max_sentences:

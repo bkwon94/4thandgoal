@@ -330,7 +330,7 @@ def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_n
     for roast in roasts:
         assert any(sentence["fact_ids"] for sentence in roast["sentences"])
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
-    assert "a second reaction sentence" in review.split("## state.roast")[1]
+    assert "the blurb cites no fact" in review.split("## state.roast")[1]
 
 
 def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_path):

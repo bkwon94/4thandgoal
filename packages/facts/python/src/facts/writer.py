@@ -204,6 +204,11 @@ def build_writer_prompt(
     lines = [
         f"Chapter: {chapter.title}",
         f"Write {chapter.min_sentences} to {chapter.max_sentences} sentences.",
+    ]
+    # Rule 1 of the writer prompt allows one reaction. A chapter that allows more says so here, in the user prompt.
+    if chapter.max_reactions > 1:
+        lines.append(f"This block may hold up to {chapter.max_reactions} reaction sentences, after a cited sentence.")
+    lines += [
         "",
         "Facts:",
         *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.fact_ids),

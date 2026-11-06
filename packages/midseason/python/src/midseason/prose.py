@@ -20,6 +20,10 @@ from midseason.values import Roast
 # against them again. The publish never copies this file.
 FACTS_FILE = "midseason-facts.json"
 ROAST_RULES = Path(__file__).parent / "prompts" / "roast.md"
+# Two example roasts at hot heat. Only the hot step gets them, as warm softens each roast.
+ROAST_HOT_EXAMPLES = Path(__file__).parent / "prompts" / "roast-hot.md"
+# A roast block may hold two reaction sentences, so the reactions can carry the heat. The first sentence cites a fact.
+ROAST_REACTIONS = 2
 # The key of the roast prose block of a chapter is the chapter key with this suffix.
 ROAST_SUFFIX = ".roast"
 # The heat of each roast step, in the writer prompt after the roast rules. PRD, "The prose and the roast".
@@ -98,10 +102,11 @@ def prose_sheet(
         chapters.append(Chapter(key=key, title=title, fact_ids=ids, scope_teams=teams, scope_players=players,
                                 min_sentences=3, max_sentences=6))
         if roast != "off":
-            # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
+            # Two sentences at least. The code check fails a roast of reaction sentences only, so each roast cites a
+            # fact.
             chapters.append(Chapter(key=key + ROAST_SUFFIX, title=f"The roast of {title[0].lower() + title[1:]}",
                                     fact_ids=ids, scope_teams=teams, scope_players=players, min_sentences=2,
-                                    max_sentences=4))
+                                    max_sentences=4, max_reactions=ROAST_REACTIONS))
     facts.append(week_fact)
     return FactSheet(facts={f.id: f for f in facts}, chapters=chapters)
 
@@ -111,12 +116,15 @@ def is_roast(key: str) -> bool:
 
 
 def prose_terms(key: str, roast: Roast) -> list[str]:
-    """The extra writer and verifier terms of one prose block: the roast rules and the step on a roast block, and the
-    off line on every block when the roast is off."""
+    """The extra writer and verifier terms of one prose block: the roast rules and the step on a roast block, with
+    the example roasts at hot, and the off line on every block when the roast is off."""
     if roast == "off":
         return [ROAST_OFF]
     if is_roast(key):
-        return [ROAST_RULES.read_text(encoding="utf-8").strip(), ROAST_STEPS[roast]]
+        terms = [ROAST_RULES.read_text(encoding="utf-8").strip(), ROAST_STEPS[roast]]
+        if roast == "hot":
+            terms.append(ROAST_HOT_EXAMPLES.read_text(encoding="utf-8").strip())
+        return terms
     return []
 
 
