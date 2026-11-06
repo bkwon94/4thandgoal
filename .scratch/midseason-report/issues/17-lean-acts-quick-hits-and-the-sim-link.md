@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-53 and AT-54.
 
 **Blocked by:** 16.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `midseason.json` of CPC week 8 has the act order of the PRD, with Quick hits at the end of Act II.
 - [x] The page shows Quick hits with lineup choices and the injury toll.
