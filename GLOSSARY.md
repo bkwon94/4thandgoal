@@ -1023,3 +1023,7 @@ _Avoid_: Test case, QA step, check, criterion
 **Test verdict**:
 The word PASS, FAIL, or BLOCKED that Brian gives to one acceptance test. Only a test verdict counts toward a merge.
 _Avoid_: Verdict (alone; that is the answer of the analyzer), result, approval, sign-off, status
+
+**Evidence**:
+The files and the observation that show what the finished work does for one acceptance test. It holds no Test verdict.
+_Avoid_: Proof, result, QA output

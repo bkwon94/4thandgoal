@@ -1,0 +1,8 @@
+{
+  "route": "/rankings/",
+  "steps": [
+    {
+      "click": "button[aria-expanded]"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "route": "/2026/week-08/",
+  "steps": [
+    {
+      "click": "button:text-is(\"WR\")"
+    }
+  ],
+  "widths": [
+    375,
+    1280
+  ],
+  "themes": [
+    "dark"
+  ]
+}

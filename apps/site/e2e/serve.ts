@@ -30,8 +30,11 @@ function fileFor(dir: string, path: string): string | null {
   return existsSync(index) ? index : null;
 }
 
-/* Serves dir on a free port of 127.0.0.1. A missing path gets 404.html with the status 404, as the Worker does. */
-export async function serveDir(dir: string): Promise<{ url: string; close: () => Promise<void> }> {
+/*
+ * Serves dir on 127.0.0.1, on port, or on a free port when port is 0. A missing path gets 404.html with the status 404,
+ * as the Worker does.
+ */
+export async function serveDir(dir: string, port = 0): Promise<{ url: string; close: () => Promise<void> }> {
   const server = createServer((request, response) => {
     const path = new URL(request.url ?? "/", "http://localhost").pathname;
     const file = fileFor(dir, path);
@@ -42,10 +45,10 @@ export async function serveDir(dir: string): Promise<{ url: string; close: () =>
     response.setHeader("content-type", TYPES[extname(body)] ?? "application/octet-stream");
     createReadStream(body).pipe(response);
   });
-  await new Promise<void>((done) => server.listen(0, "127.0.0.1", done));
-  const { port } = server.address() as AddressInfo;
+  await new Promise<void>((done) => server.listen(port, "127.0.0.1", done));
+  const { port: open } = server.address() as AddressInfo;
   return {
-    url: `http://127.0.0.1:${port}`,
+    url: `http://127.0.0.1:${open}`,
     close: () => new Promise<void>((done) => server.close(() => done())),
   };
 }

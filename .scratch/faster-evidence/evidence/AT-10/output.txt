@@ -1,0 +1,28 @@
+$ pnpm --dir apps/site evidence tmp-fe-badstep
+
+> cpcfantasyfootball-site@0.1.0 evidence /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site
+> node scripts/evidence.mjs tmp-fe-badstep
+
+Error: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/.scratch/tmp-fe-badstep/evidence/AT-10/steps.json: step 1 {"tap":"text=Week 7"}: unknown verb "tap". The known verbs are click, fill, scroll, wait, shot, url.
+
+   at evidence.ts:129
+
+  127 |   const [verb] = verbs;
+  128 |   if (!(VERBS as readonly string[]).includes(verb)) {
+> 129 |     throw new Error(`${name}: unknown verb "${verb}". The known verbs are ${VERBS.join(", ")}.`);
+      |           ^
+  130 |   }
+  131 |   const value = (step as Record<string, unknown>)[verb];
+  132 |   const text = typeof value === "string" && value.length > 0;
+    at checkStep (/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site/e2e/evidence.ts:129:11)
+    at forEach (/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site/e2e/evidence.ts:104:18)
+    at readSteps (/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site/e2e/evidence.ts:103:32)
+    at map (/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site/e2e/evidence.ts:197:52)
+    at loadTests (/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site/e2e/evidence.ts:197:6)
+    at Object.<anonymous> (/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site/e2e/evidence.spec.ts:24:44)
+Error: No tests found
+
+ ELIFECYCLE  Command failed with exit code 1.
+exit code: 1
+$ ls -a .scratch/tmp-fe-badstep/evidence/AT-10/
+ steps.json

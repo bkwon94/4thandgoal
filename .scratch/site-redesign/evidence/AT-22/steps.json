@@ -1,0 +1,48 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[type=submit]"
+    },
+    {
+      "wait": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "button[aria-label=\"Pick Team Two\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Teehee\")"
+    },
+    {
+      "click": "button[aria-label=\"Add a team\"]"
+    },
+    {
+      "wait": "ul[aria-label=\"Teams\"]"
+    },
+    {
+      "shot": "sheet"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Lil Fridge\")"
+    },
+    {
+      "shot": "after"
+    }
+  ],
+  "widths": [
+    375,
+    1280
+  ]
+}
