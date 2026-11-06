@@ -39,13 +39,20 @@ The last round comment is the latest comment that holds the agent marker and sta
 
 ## The Test verdicts
 
-The verdict check reads the same comments, so use its script:
+The verdict check reads `VERDICTS.md` of the Judge and the same comments, so use its script:
 
 ```sh
-python3 scripts/verdict.py .scratch/<slug>/ACCEPTANCE.md --comments <scratchpad>/comments.json --owner "$(gh repo view --json owner --jq .owner.login)"
+python3 scripts/verdict.py .scratch/<slug>/ACCEPTANCE.md --verdicts .scratch/<slug>/VERDICTS.md --evidence .scratch/<slug>/EVIDENCE.md --comments <scratchpad>/comments.json --owner "$(gh repo view --json owner --jq .owner.login)"
 ```
 
-Each `verdict/not-pass` offense names a test with FAIL or BLOCKED, and its line in the comment holds the note of Brian. A `verdict/missing` offense means Brian has not judged the test yet. It needs no action. A `verdict/no-comment` offense means Brian has written no Test verdicts comment yet.
+Each offense names its rule:
+
+- `verdict/brian-fail` names a test with FAIL or BLOCKED from Brian. Its line in his latest Test verdicts comment holds his note. It needs an action.
+- `verdict/not-pass` names a test with FAIL or BLOCKED from the Judge. Its line in `VERDICTS.md` holds the reason of the Judge.
+- `verdict/stale-acceptance` or `verdict/stale-evidence` means the file changed after the Judge read it. Run a fresh Judge.
+- `verdict/missing`, `verdict/unknown`, `verdict/duplicate`, or `verdict/no-verdicts` means `VERDICTS.md` does not match `ACCEPTANCE.md`. Run a fresh Judge on those tests.
+
+A comment of Brian with no FAIL and no BLOCKED gives no offense. Brian never needs to post PASS.
 
 ## Replies
 

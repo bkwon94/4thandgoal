@@ -6,9 +6,9 @@ argument-hint: '<feature slug>'
 
 # Implement
 
-Build one spec and open its PR. The Spec branch `<slug>` holds the work. Each ticket builds on its own Ticket branch `<slug>-<NN>` and merges into the Spec branch. One PR goes from the Spec branch to `main`. Brian merges it on his Test verdicts (ADR 0019, ADR 0020).
+Build one spec and open its PR. The Spec branch `<slug>` holds the work. Each ticket builds on its own Ticket branch `<slug>-<NN>` and merges into the Spec branch. One PR goes from the Spec branch to `main`. Brian merges it when the check `verdict` is green (ADR 0019, ADR 0026).
 
-The agent records the evidence of each acceptance test. The agent never gives a Test verdict, because the agent wrote the code.
+The agent records the evidence of each acceptance test. The agent never gives a Test verdict, because the agent wrote the code. A fresh subagent, the Judge, gives each Test verdict.
 
 ## Before you start
 
@@ -25,14 +25,16 @@ Do the stages in order. Each stage has a stop rule. When a stop rule fires, do n
 1. **The build.** Make the worktrees, build each ticket with a subagent, and merge each ticket into the Spec branch. See [`build.md`](build.md).
 2. **The review.** Run `code-review` on the Spec branch against `main`, and fix the findings. See [`build.md`](build.md#stage-2-the-review).
 3. **The evidence.** Record the evidence of each `AT-<n>` and write `EVIDENCE.md`. See [`evidence.md`](evidence.md).
-4. **The PR.** Push the Spec branch and open one PR to `main`. See [`pr.md`](pr.md).
+4. **The Judge.** Start a fresh Judge, commit its `VERDICTS.md`, and do one fix round after a FAIL. See [`judge.md`](judge.md).
+5. **The PR.** Push the Spec branch and open one PR to `main`. See [`pr.md`](pr.md).
 
 ## The rules
 
 - Run each `git worktree` command in the main checkout. Commit only in a worktree, never on `main`.
 - Never use `--no-verify`. Never force-push. Never merge to `main`. Brian merges the PR.
 - Set a ticket to `in-review` after its merge into the Spec branch. Only Brian sets a ticket to `done`.
-- Never write a Test verdict. Never write the line `Test verdicts` in a PR comment. See [`pr.md`](pr.md#the-agent-marker).
+- Never write a Test verdict. Never change a line of `VERDICTS.md`: only the Judge writes it. See [`judge.md`](judge.md).
+- Never write the line `Test verdicts` in a PR comment. See [`pr.md`](pr.md#the-agent-marker).
 
 ## A second start
 
@@ -40,4 +42,6 @@ If the Spec branch already has an open PR, read [`pr.md`](pr.md#a-second-start).
 
 ## The end
 
-Give Brian the PR address. Tell Brian to write the Test verdicts comment, then to run `cpc:review <PR number>` for a round of feedback.
+Give Brian the PR address and the Test verdicts of the Judge. Brian needs to post no comment. He may check the work on the local dev server. A FAIL from Brian in a PR comment blocks the merge. Tell Brian to run `cpc:review <PR number>` for a FAIL or a review comment.
+
+If stage 4 ends with a BLOCKED test, no PR opens. Give Brian each BLOCKED test and the reason of the Judge.

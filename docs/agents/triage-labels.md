@@ -9,7 +9,7 @@ The skills speak in terms of five canonical triage roles. This file maps those r
 | `ready-for-agent`          | `ready-for-agent`    | Fully specified, ready for an AFK agent  |
 | `ready-for-human`          | `ready-for-human`    | Requires human implementation            |
 | `wontfix`                  | `wontfix`            | Will not be actioned                     |
-| none                       | `in-review`          | Merged into its spec branch; waits for the Test verdicts of Brian |
+| none                       | `in-review`          | Merged into its spec branch; waits for the Test verdicts of the Judge and the merge by Brian |
 | none                       | `blocked`            | `cpc:implement` could not build it; the comment says why |
 
 When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
