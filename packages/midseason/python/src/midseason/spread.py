@@ -94,6 +94,19 @@ def spread_rule(fixed: Sequence[Headline], callouts: Sequence[Callout], teams: S
     return [*fixed, *(holders[callout.key] for callout in callouts if callout.key in holders)]
 
 
+def spread_warnings(headlines: Sequence[Headline], teams: Sequence[int], names: Mapping[int, str]) -> list[str]:
+    """One plain line for each team that breaks the spread rule. The build does not fail on it, so Brian reads it in
+    the review file. A team breaks the rule only when its arcs and awards alone are more than 3, because they never
+    move."""
+    out: list[str] = []
+    for rid in teams:
+        held = [h.key for h in headlines if h.roster_id == rid]
+        if len(held) > MAX_HEADLINES:
+            out.append(f"Spread rule: {names[rid]} holds {len(held)} headlines, more than {MAX_HEADLINES}: "
+                       f"{', '.join(held)}. Arcs and awards never move.")
+    return out
+
+
 def moved_off(headlines: Sequence[Headline], callouts: Sequence[Callout]) -> dict[str, set[int]]:
     """The teams that the rule moved off a callout, by chapter key: each team ranked ahead of the holder."""
     holders: Mapping[str, Headline] = {h.key: h for h in headlines if h.kind == "callout"}
