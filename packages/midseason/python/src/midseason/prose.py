@@ -88,12 +88,14 @@ def prose_sheet(
     for key, title, chapter_facts in blocks:
         facts += chapter_facts
         ids = [f.id for f in chapter_facts] + [week_fact.id]
-        chapters.append(Chapter(key=key, title=title, fact_ids=ids, scope_teams=teams, scope_players=[],
+        # The players of the facts are the players that the blurb may name, such as the waiver hits.
+        players = sorted({p for f in chapter_facts for p in f.players})
+        chapters.append(Chapter(key=key, title=title, fact_ids=ids, scope_teams=teams, scope_players=players,
                                 min_sentences=3, max_sentences=6))
         if roast != "off":
             # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
             chapters.append(Chapter(key=key + ROAST_SUFFIX, title=f"The roast of {title[0].lower() + title[1:]}",
-                                    fact_ids=ids, scope_teams=teams, scope_players=[], min_sentences=2,
+                                    fact_ids=ids, scope_teams=teams, scope_players=players, min_sentences=2,
                                     max_sentences=4))
     facts.append(week_fact)
     return FactSheet(facts={f.id: f for f in facts}, chapters=chapters)

@@ -11,7 +11,7 @@
 
 ## Ports
 
-- `Provider` in `provider/base.py`: the six fetches that each provider gives, with `fetch_settings` for the League settings. `provider/sleeper.py` implements it.
+- `Provider` in `provider/base.py`: the seven fetches that each provider gives, with `fetch_settings` for the League settings and `fetch_draft` for the draft of the season. `provider/sleeper.py` implements it.
 
 ## Does not do
 

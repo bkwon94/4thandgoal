@@ -8,9 +8,9 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-15, and AT-16.
 
 **Blocked by:** 01 and 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
-- [ ] The top hit is Ollie Gordon II at $40 to Unsolicited Dak Picks, and the top miss is Joe Mixon at $40.
-- [ ] The outbid list has The Blue Tent's $36 bid on Ollie Gordon II.
-- [ ] The trade report card lists 20 trades. The week 1 trade of Maye d'force B with U and NFC Least is a Robbery, and the week 8 trade is Too soon.
-- [ ] Rule tests cover a $0 add that is never a miss and a claim with no game after it.
+- [x] The top hit is Ollie Gordon II at $40 to Unsolicited Dak Picks, and the top miss is Joe Mixon at $40.
+- [x] The outbid list has The Blue Tent's $36 bid on Ollie Gordon II.
+- [x] The trade report card lists 20 trades. The week 1 trade of Maye d'force B with U and NFC Least is a Robbery, and the week 8 trade is Too soon.
+- [x] Rule tests cover a $0 add that is never a miss and a claim with no game after it.

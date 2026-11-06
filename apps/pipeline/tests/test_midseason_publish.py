@@ -12,10 +12,9 @@ from cpc import cli_root, cpc_client
 from fakes import FakeWriter
 from rule_report import clean_git_env, report
 from test_midseason import (
+    CLEAN_BUILD,
     CLEAN_RECHECK,
-    OPENER_BUILD,
-    ROAST_BLURB,
-    STATE_BLURB,
+    CPC_PROVIDER,
     _call,
     _clean_call,
     _passed,
@@ -46,7 +45,7 @@ def _drafted_repo(tmp_path: Path, monkeypatch):
     pipeline.mkdir(parents=True)
     client = cpc_client(at=root / "clients" / "cpc")
     copy_cpc_week_8(client)
-    run_midseason(2026, 8, _clean_call(), client=client)
+    run_midseason(2026, 8, _clean_call(), client=client, provider=CPC_PROVIDER)
     _git(root, "init", "-b", "main")
     _git(root, "config", "user.email", "test@example.com")
     _git(root, "config", "user.name", "Test")
@@ -125,8 +124,9 @@ def test_the_midseason_publish_command_prints_the_refusal_and_names_the_blurb(tm
     cli_root(tmp_path)
     copy_cpc_week_8(cpc_client(root=tmp_path))
     monkeypatch.chdir(tmp_path)
-    clean = FakeWriter([*OPENER_BUILD, STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2)])
-    assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"], writer=clean) == 0
+    clean = FakeWriter(list(CLEAN_BUILD))
+    assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"], writer=clean,
+                    provider=CPC_PROVIDER) == 0
     build = tmp_path / "clients" / "cpc" / "build" / "2026"
     draft = json.loads((build / "midseason.json").read_text(encoding="utf-8"))
     draft["acts"][0]["chapters"][0]["blurb"]["sentences"][0]["text"] = "All You Need Is Love sits at 999."

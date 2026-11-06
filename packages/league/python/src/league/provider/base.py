@@ -1,5 +1,5 @@
 """
-The Provider protocol: the six fetches that every league data service gives.
+The Provider protocol: the seven fetches that every league data service gives.
 Each fetch returns the raw models or the League settings, so the rest of the pipeline never reads a provider field name.
 """
 from datetime import datetime
@@ -8,10 +8,10 @@ from typing import Protocol, runtime_checkable
 from zoneinfo import ZoneInfo
 
 from league.league_settings import LeagueSettings
-from league.provider.raw import RawAheadWeek, RawPastWeek, RawWeek
+from league.provider.raw import RawAheadWeek, RawDraft, RawPastWeek, RawWeek
 
 
-# runtime_checkable lets a test check a fake with isinstance. It checks only that the six names exist.
+# runtime_checkable lets a test check a fake with isinstance. It checks only that the seven names exist.
 # Each fetch takes the league id and not the client, because the provider sits under the client. Its one model import
 # is the League settings, which the adapter maps into. The caller reads the id from the client. The last regular week
 # the last season week, and the points key come the same way, as plain values from the League settings.
@@ -47,4 +47,9 @@ class Provider(Protocol):
     def fetch_projections(self, season: int, week: int, last_regular_week: int, points_key: str) -> list[RawAheadWeek]:
         """The projections at `points_key` of each week ahead of `week` that the trade grade reads, through
         `last_regular_week`."""
+        ...
+
+    def fetch_draft(self, league_id: str, out_dir: Path) -> RawDraft:
+        """Save the draft of the season of `league_id` into `out_dir` and give it back: the draft type, the
+        settings, and each pick with its drafter and, in an auction, its price."""
         ...

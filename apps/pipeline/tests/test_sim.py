@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 from cpc import ROOT
 from fakes import FakeWriter
+from test_midseason import prime_nflverse
 
 from cornerstone.pipeline import run_midseason
 from cornerstone.season_sim import week_sim
@@ -40,6 +41,8 @@ def _client(slug: str, at: Path) -> Client:
     cache = nflverse_cache_dir(client.nfl_dir)
     cache.mkdir(parents=True)
     shutil.copy(GAMES, cache / "games.csv")
+    # The report reads the injury report, the id map, and the expected points too. A fresh copy calls no network.
+    prime_nflverse(client.nfl_dir)
     return client
 
 

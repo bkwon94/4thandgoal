@@ -706,7 +706,7 @@ def test_the_check_client_command_names_sim_for_a_client_with_midseason_and_no_s
 
 
 def test_the_midseason_command_writes_the_report_to_the_build_folder(tmp_path, monkeypatch, capsys):
-    from test_midseason import copy_cpc_week_8
+    from test_midseason import CPC_PROVIDER, copy_cpc_week_8
 
     from cornerstone import cli
 
@@ -714,7 +714,8 @@ def test_the_midseason_command_writes_the_report_to_the_build_folder(tmp_path, m
     copy_cpc_week_8(cpc_client(root=tmp_path))
     monkeypatch.chdir(tmp_path)
 
-    assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]) == 0
+    args = ["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]
+    assert cli.main(args, provider=CPC_PROVIDER) == 0
     out = tmp_path / "clients" / "cpc" / "build" / "2026" / "midseason.json"
     assert str(out) in capsys.readouterr().out
     assert json.loads(out.read_text(encoding="utf-8"))["week"] == 8

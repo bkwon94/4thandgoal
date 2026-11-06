@@ -2,18 +2,19 @@
 
 ## Knows
 
-- The state of the league in `state.py`: the full record, points for and against, the streak, and the playoff odds of each team. The title race of the opener in `opener.py`, and the games left of each team in `look_ahead.py`.
-- The arcs in `arcs.py`: at most 2 of the 8 arcs of decision ticket 05 per team, the biggest swing first.
-- Schedule luck in `luck.py`: All-play wins, Schedule luck, points against, the close-game record, and the Schedule swap.
+- The state of the league in `state.py`: the full record, points for and against, the streak, and the playoff odds of each team. The title race of the opener in `opener.py`.
+- The draft steals and busts in `draft.py`: the cost rank at the position against the points rank, the top 5 of each, the "hurt" or "just bad" tag of a bust, and "the one that got away" line of a steal. `draft_injuries.py` counts the games each player missed with an injury.
+- The waivers in `waivers.py` and the trades with their Trade result in `trades.py`. `moves.py` holds the line scores and the stints that both read.
+- The arcs in `arcs.py`: at most 2 of the 8 arcs of decision ticket 05 per team, the biggest swing first. Schedule luck in `luck.py`: All-play wins, Schedule luck, points against, the close-game record, and the Schedule swap. The injury toll in `injury.py`, Position top 10 in `top10.py`, the games left of each team in `look_ahead.py`, and the players to watch in `watch.py`.
 - The shape of `midseason.json` and its writer in `published.py`, with the acts and the chapters (`cpc-midseason`, imported as `midseason`).
-- The prose in `prose.py`: the facts and the prose blocks of each chapter, a roast block per chapter unless the roast is off, and the roast terms of `prompts/roast.md`.
-- The review file in `review.py`: each blurb with its prose block, the facts it cites, and the verifier result.
-- The package values in `values.py`: `roast`, one of `off`, `warm`, and `hot`. The default is `hot`.
-- A client that takes `midseason` takes `sim` too. The client check of `league` fails a client with `midseason` and no `sim`.
+- The prose in `prose.py`: the prose blocks of each chapter, a roast block unless the roast is off, and the roast terms of `prompts/roast.md`. The review file in `review.py`: each blurb, its facts, and the verifier result.
+- The package values in `values.py`: `roast`, one of `off`, `warm`, and `hot`, default `hot`. A client that takes `midseason` takes `sim` too, and the client check of `league` fails one without it.
 
 ## Ports
 
-- `playoff_odds` of `league_state` and `title_odds` of `title_race` take the sim odds by roster ID from the app, and `look_ahead` takes the pairs left. The report imports no odds engine.
+- `playoff_odds` of `league_state` and `title_odds` of `title_race` take the sim odds by roster ID from the app. The report imports no odds engine.
+- The app hands in each chapter input: the draft picks to `draft_value`, the injury report to `injured_games` and `injury_toll`, and the rosters now, the expected points, and the projections to `position_top10` and `players_to_watch`. The pairs left go to `look_ahead`. The package fetches nothing.
+- `waiver_facts` and `trade_facts` take the transactions of each week from the app. The app fetches them again from the provider, because the saved history can miss the waiver run of the last week.
 - `write_prose` and `recheck_prose` take the Claude call from the app. Each blurb goes through the writer and the verifier of `facts`, so the package has no writer of its own.
 
 ## Does not do

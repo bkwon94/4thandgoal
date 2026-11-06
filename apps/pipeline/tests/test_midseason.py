@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 from cpc import ROOT, cpc_client
-from fakes import FakeWriter
+from fakes import CPC_TRANSACTIONS, FakeWriter, FixtureProvider
 
 from cornerstone.pipeline import BuildStopped, run_midseason
 from cornerstone.value_models import VALUE_MODELS
@@ -20,6 +20,13 @@ from league.paths import build_dir, client_dir, history_root, nflverse_cache_dir
 
 # The real saved data of CPC 2026. The tests copy it, so no test writes under clients/.
 CPC_DATA = client_dir(ROOT, "cpc") / "data" / "2026"
+# The provider of the report's fetch of each week's transactions: the saved CPC data with the full weeks of Sleeper.
+# The rosters of CPC from Sleeper on 2026-11-05, after the week 9 moves. A manager dropped the Buccaneers DEF by then.
+ROSTERS_NOW = Path(__file__).parent / "fixtures" / "midseason" / "cpc-rosters-now.json"
+# The provider of the report's fetch of each week's transactions: the saved CPC data with the full weeks of Sleeper.
+# Its live fetch gives the rosters now, which Position top 10 and the players to watch read.
+CPC_PROVIDER = FixtureProvider(raw_dir=CPC_DATA / "week-08" / "raw", history_root=CPC_DATA / "history",
+                               transactions=CPC_TRANSACTIONS, rosters_now=ROSTERS_NOW)
 
 
 def copy_cpc_week_8(client) -> None:
@@ -29,6 +36,22 @@ def copy_cpc_week_8(client) -> None:
     shutil.copytree(CPC_DATA / "week-08", week_dir(client.folder, 2026, 8))
     nflverse_cache_dir(client.nfl_dir).mkdir(parents=True, exist_ok=True)
     shutil.copy(Path(__file__).parent / "fixtures" / "nflverse" / "games.csv", nflverse_cache_dir(client.nfl_dir))
+    prime_nflverse(client.nfl_dir)
+
+
+# The real nflverse injury report of weeks 1 to 9 of 2026, as fetched on 2026-11-05, the rows of the ffverse id map
+# for the drafted players of CPC and NorCal and for each player on a CPC roster, and the ffopportunity expected points
+# cut to the columns that the reader reads.
+NFLVERSE_2026_11_05 = Path(__file__).parent / "fixtures" / "nflverse-2026-11-05"
+
+
+def prime_nflverse(nfl: Path) -> None:
+    """Put the recorded injury report and id map in the nflverse cache of the NFL data folder `nfl`. A fresh copy is a
+    fresh cache, so the build reads it and calls no network."""
+    cache = nflverse_cache_dir(nfl)
+    cache.mkdir(parents=True, exist_ok=True)
+    for f in NFLVERSE_2026_11_05.iterdir():
+        shutil.copy(f, cache / f.name)
 
 
 def _cpc_week_8(tmp_path: Path):
@@ -101,12 +124,79 @@ LOOK_ROAST = WriterOut(sentences=[
 ])
 # The writer answers of the opener, which the build writes first.
 OPENER_BUILD = [OPENER_BLURB, _passed(3), OPENER_ROAST, _passed(2)]
+# The blurbs of the draft steals and busts, the first chapter of Act II.
+DRAFT_BLURB = WriterOut(sentences=[
+    Sentence(text="Bo Girds drafted Matthew Golden for $2.", fact_ids=["DV.steal.12501"]),
+    Sentence(text="Matthew Golden is the 7th drafted WR by points, with 110 points.",
+             fact_ids=["DV.steal.12501.points"]),
+    Sentence(text="What a bargain.", fact_ids=[]),
+])
+DRAFT_ROAST = WriterOut(sentences=[
+    Sentence(text="Unsolicited Dak Picks drafted A.J. Brown for $39.", fact_ids=["DV.bust.5859"]),
+    Sentence(text="The bust of A.J. Brown is tagged just bad.", fact_ids=["DV.bust.5859.tag"]),
+])
+# The blurbs of the waivers and the trades of Act II, each in the shape that passes the code check.
+WAIVERS_BLURB = WriterOut(sentences=[
+    Sentence(text="Ollie Gordon II went to Unsolicited Dak Picks for $40.", fact_ids=["WV.hit.1"]),
+    Sentence(text="The Blue Tent bid $36 on him and lost by $4.", fact_ids=["WV.outbid.1"]),
+    Sentence(text="Ouch.", fact_ids=[]),
+])
+WAIVERS_ROAST = WriterOut(sentences=[
+    Sentence(text="To Infinity and Bijan paid $40 for Joe Mixon and got 0 starts.", fact_ids=["WV.miss.1"]),
+    Sentence(text="NFC Least paid $26 for Rico Dowdle and got 0 starts.", fact_ids=["WV.miss.3"]),
+])
+TRADES_BLURB = WriterOut(sentences=[
+    Sentence(text="Maye d'force B with U robbed NFC Least in week 1.", fact_ids=["TR.1"]),
+    Sentence(text="The gap is 165.8.", fact_ids=["TR.1"]),
+    Sentence(text="Brutal.", fact_ids=[]),
+])
+TRADES_ROAST = WriterOut(sentences=[
+    Sentence(text="NFC Least has a net of -82.9 points over the line since the week 1 trade.", fact_ids=["TR.1"]),
+    Sentence(text="NFC Least is 3-13 since that trade.", fact_ids=["TR.1"]),
+])
+# The blurbs of the injury toll, Position top 10, and the players to watch, each in the shape that passes the code
+# check on the real CPC week 8 facts with the rosters now.
+INJURY_BLURB = WriterOut(sentences=[
+    Sentence(text="behold the lamb lost 9 starter games to injury, 1st in the league.", fact_ids=["IT.10"]),
+    Sentence(text="Kyle Monangai missed 4 games as a starter of behold the lamb.", fact_ids=["IT.10.top"]),
+    Sentence(text="Rough.", fact_ids=[]),
+])
+INJURY_ROAST = WriterOut(sentences=[
+    Sentence(text="The Blue Tent lost 5 starter games to injury, 2nd in the league.", fact_ids=["IT.1"]),
+    Sentence(text="Davante Adams missed 2 games as a starter of The Blue Tent.", fact_ids=["IT.1.top"]),
+])
+TOP10_BLURB = WriterOut(sentences=[
+    Sentence(text="Josh Allen is the QB #1 with 189.32 points, rostered by behold the lamb.", fact_ids=["TOP.QB.1"]),
+    Sentence(text="Jahmyr Gibbs is the RB #1 with 178.8 points, rostered by Maye d'force B with U.",
+             fact_ids=["TOP.RB.1"]),
+    Sentence(text="Not bad.", fact_ids=[]),
+])
+TOP10_ROAST = WriterOut(sentences=[
+    Sentence(text="Tampa Bay Buccaneers is the DEF #3 with 77.75 points, a free agent.", fact_ids=["TOP.DEF.3"]),
+    Sentence(text="CeeDee Lamb is the WR #2 with 138.3 points, rostered by NFC Least.", fact_ids=["TOP.WR.2"]),
+])
+WATCH_BLURB = WriterOut(sentences=[
+    Sentence(text="Jaxon Smith-Njigba of Lil Fridge scores 7.68 points per game over what his volume says, over 8 "
+                  "games, so he is due to fall.", fact_ids=["PW.fall.1"]),
+    Sentence(text="Kyler Murray is a free agent with 92.93 projected points through the regular season.",
+             fact_ids=["PW.grab.1"]),
+    Sentence(text="Go get him.", fact_ids=[]),
+])
+WATCH_ROAST = WriterOut(sentences=[
+    Sentence(text="Michael Wilson of London Cooking scores 5.65 points per game under what his volume says, over 8 "
+                  "games, so he is due to rise.", fact_ids=["PW.rise.1"]),
+    Sentence(text="J.J. McCarthy is a free agent with 91.14 projected points through the regular season.",
+             fact_ids=["PW.grab.2"]),
+])
 # The writer answers of a clean build, in page order: each blurb, then the verdicts that pass it.
 CLEAN_BUILD = [*OPENER_BUILD, STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), ARCS_BLURB, _passed(3), ARCS_ROAST,
-               _passed(2), LUCK_BLURB, _passed(3), LUCK_ROAST, _passed(2), LOOK_BLURB, _passed(3), LOOK_ROAST, _passed(2)]
+               _passed(2), LUCK_BLURB, _passed(3), LUCK_ROAST, _passed(2), INJURY_BLURB, _passed(3), INJURY_ROAST,
+               _passed(2), TOP10_BLURB, _passed(3), TOP10_ROAST, _passed(2), DRAFT_BLURB, _passed(3), DRAFT_ROAST,
+               _passed(2), WAIVERS_BLURB, _passed(3), WAIVERS_ROAST, _passed(2),
+               TRADES_BLURB, _passed(3), TRADES_ROAST, _passed(2), LOOK_BLURB, _passed(3), LOOK_ROAST, _passed(2),
+               WATCH_BLURB, _passed(3), WATCH_ROAST, _passed(2)]
 # The verdicts of the recheck of the publish on a clean draft, in page order.
-CLEAN_RECHECK = [_passed(3), _passed(2), _passed(3), _passed(2), _passed(3), _passed(2), _passed(3), _passed(2),
-                 _passed(3), _passed(2)]
+CLEAN_RECHECK = [_passed(3), _passed(2)] * 11
 
 
 def _clean_call():
@@ -137,17 +227,17 @@ def _state_rows(report: dict) -> dict[str, dict]:
 def test_the_build_writes_midseason_json_to_the_build_folder_of_the_season_and_nothing_to_published(tmp_path):
     # AT-1: the report goes live only through its own publish.
     client = _cpc_week_8(tmp_path)
-    out = run_midseason(2026, 8, _call(), client=client)
+    out = run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
     assert out == build_dir(client.folder) / "2026" / "midseason.json"
     report = _report(out)
     assert (report["schema_version"], report["season"], report["week"], report["takeover_end_week"]) == (1, 2026, 8, 9)
-    assert [act["key"] for act in report["acts"]] == ["how-we-got-here", "what-comes-next"]
+    assert [act["key"] for act in report["acts"]] == ["how-we-got-here", "the-moves", "what-comes-next"]
     assert not (client.folder / "published").exists()
 
 
 def test_points_for_is_the_sum_of_the_weekly_scores(tmp_path):
     # AT-4: Sleeper says 901.65 after a stat correction. The standings sum says 900.65.
-    rows = _state_rows(_report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path))))
+    rows = _state_rows(_report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER)))
     assert rows["Maye d'force B with U"]["points_for"] == 900.65
     assert (rows["All You Need Is Love"]["wins"], rows["All You Need Is Love"]["losses"]) == (11, 5)
     assert rows["All You Need Is Love"]["rank"] == 1
@@ -156,7 +246,7 @@ def test_points_for_is_the_sum_of_the_weekly_scores(tmp_path):
 def test_each_row_has_the_playoff_odds_of_the_sim_within_2_points_of_the_week(tmp_path):
     client = _cpc_week_8(tmp_path)
     saved = json.loads((CPC_DATA / "week-08" / "facts.json").read_text(encoding="utf-8"))["odds"]["teams"]
-    rows = _state_rows(_report(run_midseason(2026, 8, _call(), client=client)))
+    rows = _state_rows(_report(run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)))
     sim = json.loads((build_dir(client.folder) / "2026" / "sim.json").read_text(encoding="utf-8"))
     assert len(rows) == 12
     assert {row["roster_id"]: row["playoff_odds"] for row in rows.values()} == {
@@ -167,15 +257,15 @@ def test_each_row_has_the_playoff_odds_of_the_sim_within_2_points_of_the_week(tm
 
 def test_a_rerun_gives_the_same_file(tmp_path):
     client = _cpc_week_8(tmp_path)
-    first = run_midseason(2026, 8, _call(), client=client).read_bytes()
-    assert run_midseason(2026, 8, _call(), client=client).read_bytes() == first
+    first = run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER).read_bytes()
+    assert run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER).read_bytes() == first
 
 
 def test_a_gap_in_the_history_stops_the_build_with_the_command_that_fills_it(tmp_path):
     client = _cpc_week_8(tmp_path)
     shutil.rmtree(history_root(client.folder, 2026) / "week-05")
     with pytest.raises(BuildStopped, match="cornerstone history --through 8"):
-        run_midseason(2026, 8, _call(), client=client)
+        run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
     assert not (build_dir(client.folder) / "2026" / "midseason.json").exists()
 
 
@@ -183,14 +273,14 @@ def test_a_week_with_no_saved_facts_stops_the_build_with_the_command_that_builds
     client = _cpc_week_8(tmp_path)
     (week_dir(client.folder, 2026, 8) / "facts.json").unlink()
     with pytest.raises(BuildStopped, match="make build CLIENT=cpc WEEK=8"):
-        run_midseason(2026, 8, _call(), client=client)
+        run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
 
 
 
 def test_the_review_file_shows_each_blurb_with_its_prose_block_its_facts_and_the_verifier_result(tmp_path):
     # AT-39.
     client = _cpc_week_8(tmp_path)
-    run_midseason(2026, 8, _clean_call(), client=client)
+    run_midseason(2026, 8, _clean_call(), client=client, provider=CPC_PROVIDER)
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     state, roast = review.split("## state.roast")
     assert "## state: The state of the league" in state
@@ -210,7 +300,8 @@ def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_n
     # AT-40. The roast gets two attempts of two reaction sentences each, so the verifier fails both.
     no_fact = WriterOut(sentences=[Sentence(text="Oh no.", fact_ids=[]), Sentence(text="Truly awful.", fact_ids=[])])
     client = _cpc_week_8(tmp_path)
-    report = _report(run_midseason(2026, 8, _call(*OPENER_BUILD, STATE_BLURB, _passed(3), no_fact, no_fact), client=client))
+    call = _call(*OPENER_BUILD, STATE_BLURB, _passed(3), no_fact, no_fact)
+    report = _report(run_midseason(2026, 8, call, client=client, provider=CPC_PROVIDER))
     roasts = _roasts(report)
     assert roasts
     for roast in roasts:
@@ -220,10 +311,12 @@ def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_n
 
 
 def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_path):
-    report = _report(run_midseason(2026, 8, _clean_call(), client=_cpc_week_8(tmp_path)))
+    report = _report(run_midseason(2026, 8, _clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
     assert [[s["fact_ids"] for s in roast["sentences"]] for roast in _roasts(report)] == [
         [["ST.4.record"], ["ST.6.streak"]], [["ARC.6.snakebit"], ["ARC.8.turnaround"]], [["SW.most"], ["SL.7.against"]],
-        [["LA.10.rate"], ["LA.4.rate"]]]
+        [["IT.1"], ["IT.1.top"]], [["TOP.DEF.3"], ["TOP.WR.2"]],
+        [["DV.bust.5859"], ["DV.bust.5859.tag"]], [["WV.miss.1"], ["WV.miss.3"]], [["TR.1"], ["TR.1"]],
+        [["LA.10.rate"], ["LA.4.rate"]], [["PW.rise.1"], ["PW.grab.2"]]]
     assert [s["fact_ids"] for s in report["opener"]["roast"]["sentences"]] == [["OP.record"], ["OP.6.title"]]
 
 
@@ -231,21 +324,23 @@ def test_with_the_roast_off_the_draft_has_no_roast_lines(tmp_path):
     # AT-41, on a local copy of client.toml.
     client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "off")
     writer = FakeWriter([OPENER_BLURB, _passed(3), STATE_BLURB, _passed(3), ARCS_BLURB, _passed(3), LUCK_BLURB,
-                         _passed(3), LOOK_BLURB, _passed(3)])
-    report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client))
+                         _passed(3), INJURY_BLURB, _passed(3), TOP10_BLURB, _passed(3), DRAFT_BLURB, _passed(3),
+                         WAIVERS_BLURB, _passed(3), TRADES_BLURB, _passed(3), LOOK_BLURB, _passed(3), WATCH_BLURB,
+                         _passed(3)])
+    report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER))
     assert _roasts(report) == [] and report["opener"]["roast"] is None
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     assert "Roast: off." in review and "roast" not in review.split("Roast: off.")[1].lower()
     # The writer of each prose block hears that the roast is off, so its blurb holds no roast either.
     assert "Roast: off. Write no roast" in (writer.calls[0].system or "")
-    assert len(writer.calls) == 10
+    assert len(writer.calls) == 22
 
 
 def test_with_the_roast_warm_the_roast_block_gets_the_roast_rules_and_the_soft_step(tmp_path):
     client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "warm")
     writer = FakeWriter(list(CLEAN_BUILD))
-    report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client))
-    assert len(_roasts(report)) == 4
+    report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER))
+    assert len(_roasts(report)) == 10
     # The calls of the state come after the four calls of the opener.
     roast_system = writer.calls[6].system or ""
     assert "Never roast life outside fantasy" in roast_system and "Roast: warm." in roast_system
@@ -253,12 +348,12 @@ def test_with_the_roast_warm_the_roast_block_gets_the_roast_rules_and_the_soft_s
 
 
 def _chapter(report: dict, key: str) -> dict:
-    act = next(act for act in report["acts"] if act["key"] == "how-we-got-here")
-    return next(chapter for chapter in act["chapters"] if chapter["key"] == key)
+    """The chapter `key` of any act. Each key is on one chapter only."""
+    return next(chapter for act in report["acts"] for chapter in act["chapters"] if chapter["key"] == key)
 
 
 def test_act_one_holds_the_state_then_the_arcs_then_schedule_luck(tmp_path):
-    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path)))
+    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
     keys = [chapter["key"] for chapter in report["acts"][0]["chapters"]]
     assert keys.index("state") < keys.index("arcs") < keys.index("luck")
 
@@ -266,7 +361,7 @@ def test_act_one_holds_the_state_then_the_arcs_then_schedule_luck(tmp_path):
 def test_the_arcs_of_return_of_t_mac_and_bo_girds(tmp_path):
     # AT-5. Return of T Mac also has an active streak of 5, a Heater, but the 2-arc limit drops it.
     teams = {team["name"]: team for team in
-             _chapter(_report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path))), "arcs")["facts"]["teams"]}
+             _chapter(_report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER)), "arcs")["facts"]["teams"]}
     assert len(teams) == 12
     mac = {arc["kind"]: arc for arc in teams["Return of T Mac"]["arcs"]}
     assert list(mac) == ["Roller coaster", "Turnaround"]
@@ -281,7 +376,7 @@ def test_the_arcs_of_return_of_t_mac_and_bo_girds(tmp_path):
 
 def test_schedule_luck_of_all_you_need_is_love_and_bo_girds_with_points_against_and_close_games(tmp_path):
     # AT-6.
-    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path)))
+    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
     luck = _chapter(report, "luck")["facts"]
     teams = {team["name"]: team for team in luck["teams"]}
     assert len(teams) == 12
@@ -301,7 +396,7 @@ def test_schedule_luck_of_all_you_need_is_love_and_bo_girds_with_points_against_
 
 def test_the_schedule_swap_diagonal_is_the_standings_and_bo_girds_is_14_2_with_maye_s_schedule(tmp_path):
     # AT-7.
-    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path)))
+    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
     swap = _chapter(report, "luck")["facts"]["swap"]
     state = _state_rows(report)
     ids = {row["name"]: row["roster_id"] for row in state.values()}
@@ -318,15 +413,10 @@ def test_the_schedule_swap_diagonal_is_the_standings_and_bo_girds_is_14_2_with_m
     assert swap["most_better"] == {"roster_id": ids["Bo Girds"], "count": 10}
 
 
-def _act_chapter(report: dict, act_key: str, key: str) -> dict:
-    act = next(act for act in report["acts"] if act["key"] == act_key)
-    return next(chapter for chapter in act["chapters"] if chapter["key"] == key)
-
-
 def test_the_look_ahead_has_maye_s_schedule_softest_and_behold_the_lamb_s_hardest(tmp_path):
     # AT-24.
-    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path)))
-    look = _act_chapter(report, "what-comes-next", "look-ahead")["facts"]
+    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
+    look = _chapter(report, "look-ahead")["facts"]
     teams = {team["name"]: team for team in look["teams"]}
     assert len(teams) == 12
     ids = {name: team["roster_id"] for name, team in teams.items()}
@@ -345,7 +435,7 @@ def test_the_look_ahead_has_maye_s_schedule_softest_and_behold_the_lamb_s_hardes
 def test_the_opener_is_the_title_race_with_the_leaders_and_all_you_need_is_love_at_11_5(tmp_path):
     # AT-25. The title odds come from the sim, so the opener and the replay give one number.
     client = _cpc_week_8(tmp_path)
-    report = _report(run_midseason(2026, 8, _call(), client=client))
+    report = _report(run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER))
     sim = json.loads((build_dir(client.folder) / "2026" / "sim.json").read_text(encoding="utf-8"))["teams"]
     title = {int(rid): team["title"] for rid, team in sim.items()}
     race = report["opener"]["facts"]
@@ -363,14 +453,65 @@ def test_the_opener_is_the_title_race_with_the_leaders_and_all_you_need_is_love_
 
 def test_the_opener_and_the_look_ahead_have_their_prose_blocks_in_the_review_file(tmp_path):
     client = _cpc_week_8(tmp_path)
-    report = _report(run_midseason(2026, 8, _clean_call(), client=client))
+    report = _report(run_midseason(2026, 8, _clean_call(), client=client, provider=CPC_PROVIDER))
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     # The opener is the top of the page, so its blocks come first in the review file.
     assert review.index("## opener: The title race") < review.index("## opener.roast") < review.index("## state:")
     assert "## look-ahead: The look ahead" in review and "## look-ahead.roast" in review
     assert "London Cooking leads the race at 16.8% title odds. [OP.5.title]" in review
     assert "Maye d'force B with U gets the softest schedule at 0.44. [LA.9.rate]" in review
-    assert review.count("Verifier: passed on attempt 1.") == 10
+    assert review.count("Verifier: passed on attempt 1.") == 22
     assert report["opener"]["blurb"]["sentences"][0]["fact_ids"] == ["OP.5.title"]
-    look = _act_chapter(report, "what-comes-next", "look-ahead")
+    look = _chapter(report, "look-ahead")
     assert look["blurb"]["sentences"][0]["fact_ids"] == ["LA.9.rate"]
+
+
+def _cpc_report(tmp_path: Path) -> dict:
+    return _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
+
+
+def test_position_top_10_ranks_every_nfl_player_in_the_league_scoring_with_the_manager_now(tmp_path):
+    # AT-10.
+    boards = {b["position"]: b["players"] for b in _chapter(_cpc_report(tmp_path), "top10")["facts"]["positions"]}
+    # CPC starts a DEF and no kicker, so the boards are the positions of its lineup.
+    assert list(boards) == ["QB", "RB", "WR", "TE", "DEF"]
+    assert all(len(players) == 10 for players in boards.values())
+    qb = boards["QB"][0]
+    assert (qb["rank"], qb["name"], qb["points"], qb["manager"]) == (1, "Josh Allen", 189.32, "behold the lamb")
+    defense = boards["DEF"][2]
+    assert (defense["rank"], defense["name"], defense["tag"], defense["roster_id"]) == (
+        3, "Tampa Bay Buccaneers", "Free agent", None)
+
+
+def test_the_players_to_watch_name_3_players_each(tmp_path):
+    # AT-23.
+    watch = _chapter(_cpc_report(tmp_path), "watch")["facts"]
+    assert [len(watch[key]) for key in ("due_to_rise", "due_to_fall", "grab_him_now")] == [3, 3, 3]
+    assert "Jaxon Smith-Njigba" in [p["name"] for p in watch["due_to_fall"]]
+    assert "Kyler Murray" in [p["name"] for p in watch["grab_him_now"]]
+    assert all(p["games"] >= 4 for p in watch["due_to_rise"] + watch["due_to_fall"])
+
+
+def test_the_injury_toll_has_each_team_and_behold_the_lamb_lost_the_most_starter_games(tmp_path):
+    # AT-9. Quinshon Judkins has no Out row in week 6, so the fallback of the roster status counts his game.
+    teams = _chapter(_cpc_report(tmp_path), "injuries")["facts"]["teams"]
+    assert len(teams) == 12
+    first = teams[0]
+    assert (first["name"], first["games"], first["rank"]) == ("behold the lamb", 9, 1)
+    assert teams[1]["games"] < 9
+    assert {(p["name"], p["games"]) for p in first["players"]} == {
+        ("Kyle Monangai", 4), ("Saquon Barkley", 2), ("Emeka Egbuka", 2), ("Quinshon Judkins", 1)}
+
+
+def test_the_acts_hold_the_chapters_in_page_order(tmp_path):
+    report = _cpc_report(tmp_path)
+    chapters = {act["key"]: [chapter["key"] for chapter in act["chapters"]] for act in report["acts"]}
+    assert chapters["how-we-got-here"] == ["state", "arcs", "luck", "injuries", "top10"]
+    assert chapters["what-comes-next"] == ["look-ahead", "watch"]
+
+
+def test_a_clean_build_keeps_the_blurb_of_the_writer_for_each_chapter(tmp_path):
+    report = _report(run_midseason(2026, 8, _clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
+    for key in ("injuries", "top10", "watch"):
+        chapter = _chapter(report, key)
+        assert not chapter["blurb"]["fallback"] and not chapter["roast"]["fallback"]

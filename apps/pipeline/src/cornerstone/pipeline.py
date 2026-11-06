@@ -6,6 +6,7 @@ import contextlib
 import json
 import logging
 import subprocess
+import tempfile
 from collections.abc import Callable
 from datetime import date, datetime
 from functools import partial
@@ -14,6 +15,7 @@ from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
+from cornerstone.midseason_chapters import ChaptersStopped, report_chapters
 from cornerstone.render import render_week
 from cornerstone.season_schedule import remaining_schedule
 from cornerstone.season_sim import week_sim
@@ -54,10 +56,20 @@ from league.models import (
     Week,
     week_lines,
 )
-from league.nflverse import nflverse_week
-from league.parse import parse_trades, parse_week
+from league.nflverse import (
+    FFIDS_URL,
+    INJURIES_URL,
+    cache_path,
+    download,
+    gsis_id,
+    nflverse_week,
+    read_id_map,
+    read_injuries,
+)
+from league.parse import parse_trades, parse_week, player_name
 from league.paths import (
     build_dir,
+    draft_dir,
     history_dir,
     history_root,
     nflverse_cache_dir,
@@ -68,7 +80,7 @@ from league.paths import (
     week_from_label,
 )
 from league.provider.base import Provider
-from league.provider.raw import RawState, RawWeek
+from league.provider.raw import RawLeague, RawState, RawTransaction, RawWeek
 from league.provider.sleeper import (
     PROJECTIONS_AHEAD_FILE,
     SleeperProvider,
@@ -86,14 +98,22 @@ from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from managers.render import render_managers
 from managers.season import saved_awards
 from midseason.arcs import arcs_facts, team_arcs
+from midseason.draft import DraftPick, DraftValue, draft_facts, draft_value
+from midseason.draft_injuries import injured_games
+from midseason.injury import injury_facts
 from midseason.look_ahead import look_ahead, look_ahead_facts
 from midseason.luck import luck_facts, schedule_luck
+from midseason.moves import PlayerInfo
 from midseason.opener import title_race, title_race_facts
 from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
 from midseason.review import review_text, write_review
 from midseason.state import league_state
+from midseason.top10 import top10_facts
+from midseason.trades import trade_facts, trade_prose_facts
 from midseason.values import MidseasonValues
+from midseason.waivers import waiver_facts, waiver_prose_facts
+from midseason.watch import watch_facts
 from rankings.published import render_rankings
 from sim.published import sim_file, write_sim
 from waiver.board import waiver_board
@@ -708,7 +728,63 @@ def midseason_values(client: Client) -> MidseasonValues:
     return MidseasonValues()
 
 
-def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -> Path:
+def _injury_report(season: int, week: int, player_ids: list[str], players: dict, client: Client,
+                   ) -> dict[str, dict[int, str]] | None:
+    """The nflverse injury report status by Sleeper player ID and week. None when the report cannot load."""
+    cache = nflverse_cache_dir(client.nfl_dir)
+    injuries_path = download(INJURIES_URL.format(season=season), cache_path(cache, INJURIES_URL, season))
+    ids_path = download(FFIDS_URL, cache_path(cache, FFIDS_URL, season))
+    injuries = read_injuries(injuries_path, week) if injuries_path else None
+    if injuries is None:
+        log.warning("No nflverse injury report through week %d, so no draft bust gets an injury tag", week)
+        return None
+    id_map = read_id_map(ids_path) if ids_path else {}
+    report = {}
+    for player_id in player_ids:
+        gsis = gsis_id(player_id, players, id_map)
+        if gsis is not None and gsis in injuries:
+            report[player_id] = injuries[gsis]
+    return report
+
+
+def _midseason_draft(season: int, week: int, history: History, names: dict[int, str], client: Client,
+                     provider: Provider) -> DraftValue:
+    """The draft steals and busts. The build fetches the draft again each run and saves it in the data folder."""
+    raw = provider.fetch_draft(client.league_id(season), draft_dir(client.folder, season))
+    picks = [DraftPick(player_id=pick.player_id, name=f"{pick.metadata.first_name} {pick.metadata.last_name}",
+                       position=pick.metadata.position, roster_id=pick.roster_id, pick_no=pick.pick_no,
+                       price=int(pick.metadata.amount) if pick.metadata.amount else None)
+             for pick in raw.picks]
+    # The rules read the draft type of the league, never the client: only an auction has a price.
+    draft_type = raw.type if raw.type in ("auction", "snake", "linear") else "snake"
+    ids = [pick.player_id for pick in picks]
+    report = _injury_report(season, week, ids, provider.fetch_players(), client)
+    missed = None if report is None else injured_games(ids, report, history, week)
+    return draft_value(picks, draft_type, history, week, names, missed)
+
+
+def season_transactions(provider: Provider, league_id: str, season: int, through: int) -> dict[int, list[RawTransaction]]:
+    """The transactions of weeks 1 to `through`, fetched again. The saved history misses the waiver run after each
+    weekly build, so the report never reads it. The fetch saves its files into a temporary folder only."""
+    with tempfile.TemporaryDirectory() as folder:
+        return {number: provider.fetch_past_leg(league_id, season, number, Path(folder) / str(number)).transactions
+                for number in range(1, through + 1)}
+
+
+def _saved_week_inputs(raw: Path) -> tuple[dict[str, PlayerInfo], RawLeague, RawState]:
+    """The players, the league, and the state of the saved raw files of a week. It reads only these three files of
+    the raw folder, because the others are large and the report needs none of them."""
+    players = json.loads((raw / "players.json").read_text(encoding="utf-8"))
+    info = {pid: PlayerInfo(name=player_name(pid, entry), position=entry.get("position") or "",
+                            nfl_team=entry.get("team"))
+            for pid, entry in players.items()}
+    league = RawLeague.model_validate_json((raw / "league.json").read_text(encoding="utf-8"))
+    return info, league, RawState.model_validate_json((raw / "state.json").read_text(encoding="utf-8"))
+
+
+def run_midseason(
+    season: int, week: int, call: ClaudeCall, *, client: Client, provider: Provider | None = None,
+) -> Path:
     """Write the draft of the midseason report of `week` into the build folder of the season: midseason.json, the
     saved facts of its prose, and the review file. It reads the saved history of weeks 1 to `week` and the saved facts
     of `week`. It writes nothing to published/, so only the publish of the report puts it live.
@@ -716,6 +792,9 @@ def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -
     The app runs the sim of the rest of the season and writes sim.json beside the draft. The playoff odds of the sim go
     into the report through the port of midseason.
     Each prose block goes through the writer and the verifier of facts, with the roast setting of the client.
+    The waivers and the trades read the transactions of each week that `provider` fetches again. The draft steals and
+    busts read the draft that `provider` fetches again. Position top 10 and the players to watch read the rosters now
+    that `provider` fetches, so a player that a manager dropped after the report week is a free agent.
     """
     facts = week_dir(client.folder, season, week) / "facts.json"
     if not facts.exists():
@@ -745,9 +824,27 @@ def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -
                      median_game=median_game)
     race = title_race(state, title_odds)
     look = look_ahead(state, remaining_schedule(season, week, client=client))
+    players, league, nfl_state = _saved_week_inputs(raw_dir(client.folder, season, week))
+    provider = provider or SleeperProvider(provider_cache_dir(client.nfl_dir))
+    moves = season_transactions(provider, client.league_id(season), season, week)
+    draft = _midseason_draft(season, week, history, names, client, provider)
+    try:
+        chapters = report_chapters(season, week, history, names, client=client, provider=provider)
+    except ChaptersStopped as err:
+        raise BuildStopped(str(err)) from err
+    lines = client.settings.lines
+    waivers = waiver_facts(history, week, moves, players, names, lines, league.settings.waiver_budget)
+    trades = trade_facts(history, week, moves, players, names, lines, median_game=median_game,
+                         season_start=date.fromisoformat(nfl_state.season_start_date), tz=client.tz)
     roast = midseason_values(client).roast
     later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule luck", luck_facts(luck)),
-             ("look-ahead", "The look ahead", look_ahead_facts(look))]
+             ("injuries", "The injury toll", injury_facts(chapters.injuries)),
+             ("top10", "Position top 10", top10_facts(chapters.top10)),
+             ("draft", "Draft steals and busts", draft_facts(draft)),
+             ("waivers", "Waiver hits and misses", waiver_prose_facts(waivers)),
+             ("trades", "The trade report card", trade_prose_facts(trades)),
+             ("look-ahead", "The look ahead", look_ahead_facts(look)),
+             ("watch", "Players to watch", watch_facts(chapters.watch))]
     sheet = prose_sheet(week, state, roast, later, first=[("opener", "The title race", title_race_facts(race))])
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
@@ -755,7 +852,9 @@ def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -
     command = f"make midseason-publish CLIENT={client.slug} WEEK={week}"
     review = write_review(review_text(season, week, roast, sheet, blurbs, results, command), season_build)
     log.info("review file: %s", review)
-    report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck, race=race, look=look)
+    report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck, injuries=chapters.injuries,
+                              top10=chapters.top10, draft=draft, waivers=waivers, trades=trades,
+                              watch=chapters.watch, race=race, look=look)
     return write_midseason(report, build_dir(client.folder))
 
 
