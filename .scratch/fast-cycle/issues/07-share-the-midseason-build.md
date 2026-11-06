@@ -8,9 +8,13 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-8, AT-23, AT-24, and AT-
 
 **Blocked by:** 01, and the merge of PR #13 into `main`. `fast-cycle` merges `main` first.
 
-**Status:** ready-for-agent
+**Status:** blocked
 
 - [ ] PR #13 has the state `MERGED` (AT-26).
 - [ ] `make -C apps/pipeline test` passes the same count on `fast-cycle` and on `main`, and takes less time on `fast-cycle` (AT-23).
 - [ ] The sim count of each of the three tests that need it matches `main` (AT-24).
 - [ ] The diff adds no `skip`, `xfail`, or deselect, and deletes no test (AT-8).
+
+## Comments
+
+Blocked on 2026-11-06: the midseason tests live on `midseason-report`, and PR #13 is still open. Build this ticket with the second start of `cpc:implement`, after PR #13 merges and `fast-cycle` merges `main`.
