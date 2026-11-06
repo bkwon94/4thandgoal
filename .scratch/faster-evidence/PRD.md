@@ -69,7 +69,7 @@ The agent narrows `widths`, `themes`, and `clients` only to match the Evidence l
 - For each client that a step list names, the runner builds the client one time, serves its export, and takes the shots of every test of that client. Then it builds the next client.
 - The server answers a missing path with `404.html`, as the Worker does.
 - The theme opens through the shipped boot script with `cpc.theme` set to `light` or `dark`. Light is `setItem('cpc.theme','light')`, never `removeItem`.
-- Before each full-page shot, the runner scrolls the page to the end and back to the top, so each section that reveals on scroll is shown.
+- Before each full-page shot, the runner scrolls the page to the end and back to the position where it started, so each section that reveals on scroll is shown and a shot after a `scroll` step keeps its scrolled state.
 - The runner prints the time of each test and the total of the round.
 
 **The evidence guide.** `.claude/plugin/skills/implement/evidence.md` teaches the step list and the one command for a site test. It keeps `agent-browser` as the fallback for a test whose step no verb covers, with the theme fix and the scroll pass. It tells the agent to start the local API with the evidence limit before an analyzer test.
