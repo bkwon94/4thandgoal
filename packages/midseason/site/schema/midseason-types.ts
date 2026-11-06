@@ -24,6 +24,7 @@ export type PositionBoard = z.infer<typeof schema.positionBoardSchema>;
 export type Top10Chapter = z.infer<typeof schema.top10ChapterSchema>;
 export type DraftRow = z.infer<typeof schema.draftRowSchema>;
 export type DraftChapter = z.infer<typeof schema.draftChapterSchema>;
+export type Letdown = z.infer<typeof schema.letdownSchema>;
 export type Pickup = z.infer<typeof schema.pickupSchema>;
 export type WaiversChapter = z.infer<typeof schema.waiversChapterSchema>;
 export type TradeCard = z.infer<typeof schema.tradeCardSchema>;

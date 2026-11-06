@@ -3005,6 +3005,23 @@
                 "swing": -30,
                 "tag": "just bad"
               }
+            ],
+            "letdowns": [
+              {
+                "player_id": "9509",
+                "name": "Bijan Robinson",
+                "position": "RB",
+                "roster_id": 7,
+                "team": "To Infinity and Bijan",
+                "cost": 81,
+                "cost_rank": 1,
+                "points": 138.8,
+                "points_rank": 3,
+                "swing": -2,
+                "tag": null,
+                "price_rank": 1,
+                "last_top_week": 4
+              }
             ]
           },
           "blurb": {
