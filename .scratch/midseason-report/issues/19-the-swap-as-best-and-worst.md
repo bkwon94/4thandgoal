@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-8, AT-59, and AT-6
 
 **Blocked by:** 18.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `midseason.json` of CPC week 8 gives Bo Girds a best of 14-2 on the schedule of Maye d'force B with U.
 - [x] The luck card shows the worked example of All You Need Is Love: 9 of 11 teams outscored in week 3, and 4.27 wins in all.
