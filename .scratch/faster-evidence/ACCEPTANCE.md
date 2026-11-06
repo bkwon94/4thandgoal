@@ -78,7 +78,7 @@ AT-9: Production keeps 10
 App: pipeline
 Stories: 9
 Given: The local API runs with `make -C apps/api api`, with `CORNERSTONE_RATE_LIMIT_PER_MINUTE` unset.
-When: The reader sends 11 requests to `/teams` within one minute from one address.
+When: The reader sends 11 requests to `/teams?season=2026` within one minute from one address.
 Then: Requests 1 to 10 answer 200, and request 11 answers 429. `apps/api/fly.toml` does not set `CORNERSTONE_RATE_LIMIT_PER_MINUTE`.
 Evidence: The command and the status code of each of the 11 requests, and the output of `grep -c CORNERSTONE_RATE_LIMIT_PER_MINUTE apps/api/fly.toml`.
 
@@ -153,4 +153,4 @@ Out of scope "The daily grade limit of the analyzer": no test. Reason: an agent 
 
 ## Revisions
 
-None yet.
+- 2026-11-05: AT-9 sends its requests to `/teams?season=2026`, not `/teams`. The route answers 422 with no season. Brian approved.
