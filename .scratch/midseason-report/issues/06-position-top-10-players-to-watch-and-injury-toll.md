@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-9, AT-10, and AT-2
 
 **Blocked by:** 01 and 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The QB #1 is Josh Allen with 189.32, and the DEF #3 is the Buccaneers with "Free agent".
 - [x] Due to fall has Jaxon Smith-Njigba, and Grab him now has Kyler Murray.
