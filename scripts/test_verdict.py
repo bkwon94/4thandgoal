@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from verdict import blob_sha, judge, latest_verdict_comment
+from verdict import blob_sha, check_verdicts, latest_verdict_comment
 
 HERE = Path(__file__).resolve().parent
 FIXTURES = HERE / "fixtures" / "verdict"
@@ -31,51 +31,51 @@ class TheVerdictRule(unittest.TestCase):
     """The lines under `Test verdicts` in VERDICTS.md. The fixtures hold the same lines that the Judge writes."""
 
     def test_all_pass_passes(self):
-        result = judge(ACCEPTANCE, comment("all-pass.md"))
+        result = check_verdicts(ACCEPTANCE, comment("all-pass.md"))
         self.assertTrue(result.passed, result.report())
         self.assertEqual(result.report(), "0 offenses. AT-1 and AT-2 have PASS.")
 
     def test_one_fail_fails(self):
-        result = judge(ACCEPTANCE, comment("one-fail.md"))
+        result = check_verdicts(ACCEPTANCE, comment("one-fail.md"))
         self.assertFalse(result.passed)
         self.assertEqual(rule_ids(result), ["verdict/not-pass"])
         self.assertIn("AT-2 has FAIL", result.report())
 
     def test_one_blocked_fails(self):
-        result = judge(ACCEPTANCE, comment("one-blocked.md"))
+        result = check_verdicts(ACCEPTANCE, comment("one-blocked.md"))
         self.assertFalse(result.passed)
         self.assertEqual(rule_ids(result), ["verdict/not-pass"])
         self.assertIn("AT-1 has BLOCKED", result.report())
 
     def test_a_missing_test_fails(self):
-        result = judge(ACCEPTANCE, comment("missing.md"))
+        result = check_verdicts(ACCEPTANCE, comment("missing.md"))
         self.assertFalse(result.passed)
         self.assertEqual(rule_ids(result), ["verdict/missing"])
         self.assertIn("AT-2 has no line", result.report())
 
     def test_an_unknown_test_fails(self):
-        result = judge(ACCEPTANCE, comment("unknown.md"))
+        result = check_verdicts(ACCEPTANCE, comment("unknown.md"))
         self.assertFalse(result.passed)
         self.assertEqual(rule_ids(result), ["verdict/unknown"])
         self.assertIn("AT-7", result.report())
 
     def test_verdicts_with_no_heading_fail(self):
-        result = judge(ACCEPTANCE, comment("no-heading.md"))
+        result = check_verdicts(ACCEPTANCE, comment("no-heading.md"))
         self.assertFalse(result.passed)
         self.assertEqual(rule_ids(result), ["verdict/no-verdicts"])
 
     def test_no_verdicts_file_fails(self):
-        result = judge(ACCEPTANCE, None)
+        result = check_verdicts(ACCEPTANCE, None)
         self.assertFalse(result.passed)
         self.assertEqual(rule_ids(result), ["verdict/no-verdicts"])
 
     def test_a_retired_test_needs_no_line(self):
         # AT-3 of the fixture is retired, and all-pass.md gives it no line.
-        self.assertTrue(judge(ACCEPTANCE, comment("all-pass.md")).passed)
+        self.assertTrue(check_verdicts(ACCEPTANCE, comment("all-pass.md")).passed)
 
     def test_two_lines_for_one_test_fail(self):
         text = "Test verdicts\nAT-1: PASS\nAT-2: PASS\nAT-2: FAIL\n"
-        self.assertEqual(rule_ids(judge(ACCEPTANCE, text)), ["verdict/duplicate"])
+        self.assertEqual(rule_ids(check_verdicts(ACCEPTANCE, text)), ["verdict/duplicate"])
 
 
 class TheLatestComment(unittest.TestCase):

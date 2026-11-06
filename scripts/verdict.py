@@ -117,7 +117,7 @@ def verdict_lines(text: str | None) -> list[tuple[int, re.Match]] | None:
     return [(number, match) for number, line in numbered if (match := VERDICT_LINE.match(line))]
 
 
-def judge(acceptance: str, verdicts: str | None, acceptance_path: str = "ACCEPTANCE.md",
+def check_verdicts(acceptance: str, verdicts: str | None, acceptance_path: str = "ACCEPTANCE.md",
           verdicts_path: str = "VERDICTS.md") -> Result:
     """Check the lines of VERDICTS.md. It fails if a live test has no line, a line is not PASS, or a line names no
     live test."""
@@ -258,7 +258,7 @@ def main(argv: list[str]) -> int:
 
     acceptance = Path(args.acceptance).read_text()
     verdicts = _read(args.verdicts)
-    result = judge(acceptance, verdicts, acceptance_path=args.acceptance, verdicts_path=args.verdicts)
+    result = check_verdicts(acceptance, verdicts, acceptance_path=args.acceptance, verdicts_path=args.verdicts)
     if verdicts is not None:
         head_shas = {
             "ACCEPTANCE.md": _head_sha(args.acceptance_sha, args.acceptance),
