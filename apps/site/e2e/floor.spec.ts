@@ -339,3 +339,38 @@ test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, asyn
   await expect(chapter.getByRole("list")).toHaveCount(1);
   await expect(chapter.getByRole("list", { name: "RB top 10" })).toBeVisible();
 });
+
+/* AT-33: the odds of all runs sit beside the replay on a desktop and below it on a phone. A report with no sim file
+   has no replay, so the check skips it too. */
+for (const width of REPORT_WIDTHS) {
+  test(`sim odds: ${CLIENT} ${MIDSEASON_ROUTE} beside the replay on a desktop, below it on a phone, ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const stage = page.getByRole("region", { name: "The replay" });
+    test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
+    const box = (await stage.boundingBox())!;
+    const odds = (await page.getByRole("table", { name: /^The odds of all/ }).boundingBox())!;
+    if (width >= 1024) {
+      expect(odds.x).toBeGreaterThanOrEqual(box.x + box.width);
+      expect(odds.y).toBeLessThan(box.y + box.height);
+    } else {
+      expect(odds.y).toBeGreaterThanOrEqual(box.y + box.height);
+    }
+  });
+}
+
+/* AT-32 and AT-34: a press plays a run, and a skip shows the champion card at once, with the title odds of all runs. */
+test(`sim replay: ${CLIENT} ${MIDSEASON_ROUTE} plays a run and skips to the champion at 375px`, async ({ page }) => {
+  test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+  await page.setViewportSize({ width: 375, height: 900 });
+  await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+  const stage = page.getByRole("region", { name: "The replay" });
+  test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
+  await page.getByRole("button", { name: "Sim the season" }).click();
+  await expect(stage.getByRole("group", { name: "Week 9 final" })).toBeVisible();
+  await page.getByRole("button", { name: "Skip to the end" }).click();
+  const card = stage.getByRole("dialog", { name: "Champion of this run" });
+  await expect(card).toContainText(/Wins the title in [\d.]+% of all [\d,]+ runs/);
+  expect(await scanScroll(page)).toEqual([]);
+});

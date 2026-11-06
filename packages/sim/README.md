@@ -6,7 +6,7 @@
 - The sim in `season.py`: the draw of the weekly odds over the rest of the regular season, then the bracket of the playoff weeks. The bracket reseeds after each round when `reseed` of the League settings is on. It counts the playoff, the bye, the final, the title, each seed, and each final win total over 10,000 runs, and keeps the first 200 runs.
 - The numbers of the draw in `tunables.py`.
 - The shape of `sim.json` and its writer in `published.py`.
-- The site part, the replay, comes with ticket 13. It reads `sim.json` and nothing of the report.
+- The site part in `site/`: the replay of one stored run beside the odds of all runs. It reads `sim.json` and nothing of the report.
 
 ## Ports
 

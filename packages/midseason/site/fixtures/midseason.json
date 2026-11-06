@@ -6407,6 +6407,11 @@
       ]
     }
   ],
+  "tile": {
+    "label": "Title favorite",
+    "value": "16.8%",
+    "note": "London Cooking"
+  },
   "headlines": [
     {
       "kind": "arc",

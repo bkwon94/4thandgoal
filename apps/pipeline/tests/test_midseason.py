@@ -543,6 +543,12 @@ def test_a_clean_build_keeps_the_blurb_of_the_writer_for_each_chapter(tmp_path):
         assert not chapter["blurb"]["fallback"] and not chapter["roast"]["fallback"]
 
 
+def test_the_report_tile_shows_the_title_odds_of_the_title_favorite(tmp_path):
+    # AT-45. The home tile shows one big fact of the title race: London Cooking leads at 16.8% title odds.
+    tile = _cpc_report(tmp_path)["tile"]
+    assert tile == {"label": "Title favorite", "value": "16.8%", "note": "London Cooking"}
+
+
 def test_london_cooking_lost_week_2_by_1_67_with_27_54_points_on_the_bench(tmp_path):
     # AT-18.
     teams = {team["name"]: team for team in _chapter(_cpc_report(tmp_path), "lineup")["facts"]["teams"]}
@@ -620,4 +626,3 @@ def test_a_team_moved_off_a_callout_keeps_its_facts_in_the_prose_block(tmp_path)
     assert "London Cooking" in sheet["lineup"]["scope_teams"]
     assert "LC.5" in sheet["lineup"]["fact_ids"]
     assert "London Cooking" in sheet["facts"]["CO.lineup.bench"]["text"]
-

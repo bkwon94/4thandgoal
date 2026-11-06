@@ -215,6 +215,17 @@ describe("the client build", () => {
     expect(registry).toContain('import { menuLink as simMenuLink } from "@/app/_routes/sim/menu";');
   });
 
+  it("lists the home part of midseason first, so its takeover and its tile reach the home page", () => {
+    const toml = ['packages = ["week", "rankings", "midseason"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const repo = tempRepo(toml, "report");
+    buildClient(repo);
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { homeSection as midseasonHomeSection } from "@/app/_routes/midseason/home";');
+    // The tile sits in the middle place, so it comes before the Power Rankings chapter.
+    const list = registry.slice(registry.indexOf("export const homeSections: HomeSections = ["));
+    expect(list.split("\n").slice(1, 4)).toEqual(["  midseasonHomeSection,", "  rankingsHomeSection,", "  weekHomeSection,"]);
+  });
+
   it("gives a client with no home section an empty list with its type", () => {
     const toml = ['packages = ["waiver"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
     const repo = tempRepo(toml, "waiver-only");

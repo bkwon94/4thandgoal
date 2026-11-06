@@ -1,6 +1,7 @@
 """
-The shape of midseason.json and its writer: the week of the report, the takeover end week, and the acts with their
-chapters. The pipeline owns the shape (ADR 0011), and the site side of the package reads it with its own schema.
+The shape of midseason.json and its writer: the week of the report, the takeover end week, the acts with their
+chapters, and the report tile. The pipeline owns the shape (ADR 0011), and the site side of the package reads it with
+its own schema.
 """
 import json
 from collections.abc import Mapping
@@ -17,7 +18,7 @@ from midseason.injury import InjuryChapter, InjuryToll
 from midseason.lineups import LineupChapter, LineupChoices
 from midseason.look_ahead import LOOK_AHEAD, LookAhead, LookAheadChapter
 from midseason.luck import LuckChapter, ScheduleLuck
-from midseason.opener import OPENER, Opener, TitleRace
+from midseason.opener import OPENER, Opener, ReportTile, TitleRace, report_tile
 from midseason.prose import ROAST_SUFFIX
 from midseason.records import RecordBook, RecordsChapter
 from midseason.spread import Headline
@@ -97,6 +98,8 @@ class MidseasonReport(BaseModel):
     # The top of the report, the title race. The takeover of the home page shows it too.
     opener: Opener
     acts: list[Act]
+    # The one big fact of the home tile, which the home page shows after the takeover ends.
+    tile: ReportTile
     # Every headline of each team after the spread rule: the arcs, the awards, and the callouts.
     headlines: list[Headline]
 
@@ -137,6 +140,7 @@ def midseason_report(
         acts=[Act(key="how-we-got-here", title="How we got here", chapters=act_one),
               Act(key="the-moves", title="The moves", chapters=act_two),
               Act(key="what-comes-next", title="What comes next", chapters=act_three)],
+        tile=report_tile(race),
         headlines=headlines,
     )
 

@@ -37,4 +37,5 @@ export type GrabPlayer = z.infer<typeof schema.grabPlayerSchema>;
 export type WatchChapter = z.infer<typeof schema.watchChapterSchema>;
 export type MidseasonChapter =z.infer<typeof schema.chapterSchema>;
 export type Act = z.infer<typeof schema.actSchema>;
+export type ReportTile = z.infer<typeof schema.reportTileSchema>;
 export type Midseason = z.infer<typeof schema.midseasonSchema>;

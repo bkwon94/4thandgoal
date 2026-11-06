@@ -28,6 +28,7 @@
     "@cpc/managers": "workspace:*",
     "@cpc/midseason": "workspace:*",
     "@cpc/rankings": "workspace:*",
+    "@cpc/sim": "workspace:*",
     "@cpc/waiver": "workspace:*",
     "@cpc/week": "workspace:*",
     "class-variance-authority": "^0.7.1",

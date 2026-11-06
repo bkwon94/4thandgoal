@@ -65,6 +65,6 @@ export function listWeekSummaries(): WeekSummary[] {
 }
 
 /* The number in a folder name such as week-06. */
-function weekNumberOf(week: string): number {
+export function weekNumberOf(week: string): number {
   return Number(week.slice("week-".length));
 }

@@ -458,6 +458,9 @@ export const actSchema = z.object({
   chapters: z.array(chapterSchema),
 });
 
+/* The one big fact of the home tile, which the home page shows after the takeover ends. */
+export const reportTileSchema = z.object({ label: z.string(), value: z.string(), note: z.string() });
+
 export const midseasonSchema = z.object({
   schema_version: z.literal(1),
   season: z.number(),
@@ -467,4 +470,5 @@ export const midseasonSchema = z.object({
   takeover_end_week: z.number(),
   opener: openerSchema,
   acts: z.array(actSchema),
+  tile: reportTileSchema,
 });

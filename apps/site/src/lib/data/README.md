@@ -2,7 +2,7 @@
 
 ## Knows
 
-- One loader per published file: the week page file, the rankings file, the managers file, `waiver.json`, and `midseason.json`.
+- One loader per published file: the week page file, the rankings file, the managers file, `waiver.json`, `midseason.json`, and `sim.json`.
 - Where each file sits under `public/`, and which week folders hold `waiver.json`.
 - The join of the managers file with the last week of the rankings file.
 - Whether the waiver route and the managers route are on. `next.config.ts` builds each one only when its file exists.
