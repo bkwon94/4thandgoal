@@ -34,10 +34,10 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - The top performers chapter is the Position top 10: QB, RB, WR, TE, and DEF in CPC, by total league points, every NFL player, one position at a time. Seven awards from one fact each: MVP, Streaming king, Bench crime, Heartbreak, Beatdown, Most active, and Set and forget. Players to watch: Due to rise, Due to fall, and Grab him now. `decisions/10-grill-awards-and-players.md`.
 - The report is three acts with a chapter rail, and its hero is the title race. Schedule luck merges with the swap, and the record book with the awards. The sim is the finale. A spread rule gives each team 1 to 3 headlines. `decisions/09-prototype-the-chapters.md`.
 - The spec `PRD.md` sets the packages `sim` and `midseason`, the build, the review, the publish, the takeover, the `roast` steps, and the trade lines. `decisions/11-spec-takeover-build-review-roast.md`.
+- The flow stays three acts, lean: each chapter is a headline, one visual, and 40 words of prose or fewer. Lineup choices and injury toll fold into Quick hits. The sim stays the finale, with a hero link to it. The page may stay long. `decisions/14-prototype-the-report-flow.md`.
 
 ## NOT YET SPECIFIED
 
-- What is the flow of the report page, and how much text does each chapter hold? `decisions/14-prototype-the-report-flow.md`.
 - How do the list rows, the tags, and the controls of the report look? `decisions/15-prototype-the-rows-and-tags.md`.
 - How does the schedule swap show on the page? `decisions/16-prototype-the-schedule-swap.md`.
 - How does the roast sit inside the prose of a chapter? `decisions/17-prototype-the-roast-in-prose.md`.
