@@ -37,13 +37,15 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - The flow stays three acts, lean: each chapter is a headline, one visual, and 40 words of prose or fewer. Lineup choices and injury toll fold into Quick hits. The sim stays the finale, with a hero link to it. The page may stay long. `decisions/14-prototype-the-report-flow.md`.
 - Rows are Quiet text: tags are plain words with no box, cards have 8 px corners, the switch is an underline, and the awards are lines. Player points show 1 decimal place and team scores 2. "The one that got away" and Players to watch are cut. `decisions/15-prototype-the-rows-and-tags.md`.
 - The swap is a text list of each team's best and worst schedule, with no grid and no bar. The page says "Wins if you played everyone", never "All-play", with a worked example. Luck words: lucky, unlucky, and even under 0.5. `decisions/16-prototype-the-schedule-swap.md`.
+- The roast setting is the voice of the whole paragraph, at four levels: off, warm, hot, and savage. One prose block per chapter, no roast block. The writer gets facts from the whole report and names the unit of each number. `decisions/17-prototype-the-roast-in-prose.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the roast sit inside the prose of a chapter? `decisions/17-prototype-the-roast-in-prose.md`.
+None.
 
 ## OUT OF SCOPE
 
+- The four voice levels for all the writing of the site, such as the weekly recaps. Brian likes the idea. It changes the weekly writer, so it is its own spec.
 - Easter eggs in the report, one with an Amazon gift card as the prize. Brian does them another time. Never put the gift card code on the site or in the repo: the repo is public and the site is static. The first finder texts Brian, and he sends the card by hand.
 - Players to watch, with Grab him now. Its picks were weak, all bench quarterbacks. A later spec can bring it back with a better rule.
 - A weekly rebuild of the report. Brian wants one edited moment per season, and the build can run again by hand.

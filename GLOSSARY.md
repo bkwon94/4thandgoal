@@ -940,6 +940,10 @@ _Avoid_: Luck (alone), overachiever (a prose word only), expected gap (that is a
 A team's record with another team's schedule and its own scores. In the week that the other team played it, the team plays the other team. A median game keeps its own result, so the real schedule gives the real record.
 _Avoid_: Schedule strength, what-if record
 
+**Roast setting**:
+The voice of a client's report prose: `off`, `warm`, `hot`, or `savage`. It sets the voice of the whole paragraph, not one sentence. Every level keeps to football and cites real facts.
+_Avoid_: Heat, roast level, tone
+
 **Injury toll**:
 The starter games that a team lost to injury, by NFL week. It is a cost, not a chance.
 _Avoid_: Injury luck
