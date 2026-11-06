@@ -133,7 +133,11 @@ export const bestMissedSchema = swapCellSchema.extend({ roster_id: z.number() })
 export const swapRecordSchema = z.object({ wins: z.number(), losses: z.number(), ties: z.number() });
 
 /* The best or the worst record of one team with the other schedules, and each schedule that gives it, in standings order. */
-export const swapEndSchema = swapRecordSchema.extend({ schedules: z.array(z.number()) });
+export const swapEndSchema = swapRecordSchema.extend({
+  schedules: z.array(z.number()),
+  // The wins of this end minus the real wins. A tie counts half.
+  change: z.number(),
+});
 
 /* One text row of the swap: the real record, the best, and the worst. */
 export const bestAndWorstSchema = z.object({
@@ -178,6 +182,8 @@ export const luckChapterSchema = z.object({
     example: luckExampleSchema.nullable(),
     // The count of weeks played: each team's count of head-to-head games.
     weeks: z.number(),
+    // The count of median games of each team: one a week in a league with a median game, else 0.
+    median_games: z.number(),
   }),
   ...prose,
 });

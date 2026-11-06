@@ -1731,7 +1731,8 @@
                     "ties": 0,
                     "schedules": [
                       9
-                    ]
+                    ],
+                    "change": 5.0
                   },
                   "worst": {
                     "wins": 8,
@@ -1739,7 +1740,8 @@
                     "ties": 0,
                     "schedules": [
                       7
-                    ]
+                    ],
+                    "change": -1.0
                   }
                 },
                 {
@@ -1757,7 +1759,8 @@
                     "schedules": [
                       9,
                       12
-                    ]
+                    ],
+                    "change": 3.0
                   },
                   "worst": {
                     "wins": 4,
@@ -1765,7 +1768,8 @@
                     "ties": 0,
                     "schedules": [
                       4
-                    ]
+                    ],
+                    "change": -3.0
                   }
                 },
                 {
@@ -1782,7 +1786,8 @@
                     "ties": 0,
                     "schedules": [
                       9
-                    ]
+                    ],
+                    "change": 4.0
                   },
                   "worst": {
                     "wins": 4,
@@ -1791,7 +1796,8 @@
                     "schedules": [
                       11,
                       4
-                    ]
+                    ],
+                    "change": -2.0
                   }
                 },
                 {
@@ -1808,7 +1814,8 @@
                     "ties": 0,
                     "schedules": [
                       9
-                    ]
+                    ],
+                    "change": 4.0
                   },
                   "worst": {
                     "wins": 8,
@@ -1817,7 +1824,8 @@
                     "schedules": [
                       6,
                       11
-                    ]
+                    ],
+                    "change": -1.0
                   }
                 },
                 {
@@ -1834,7 +1842,8 @@
                     "ties": 0,
                     "schedules": [
                       12
-                    ]
+                    ],
+                    "change": 3.0
                   },
                   "worst": {
                     "wins": 4,
@@ -1842,7 +1851,8 @@
                     "ties": 0,
                     "schedules": [
                       6
-                    ]
+                    ],
+                    "change": -2.0
                   }
                 },
                 {
@@ -1859,7 +1869,8 @@
                     "ties": 0,
                     "schedules": [
                       9
-                    ]
+                    ],
+                    "change": 0.0
                   },
                   "worst": {
                     "wins": 7,
@@ -1869,7 +1880,8 @@
                       5,
                       11,
                       10
-                    ]
+                    ],
+                    "change": -4.0
                   }
                 },
                 {
@@ -1888,7 +1900,8 @@
                       2,
                       9,
                       12
-                    ]
+                    ],
+                    "change": 2.0
                   },
                   "worst": {
                     "wins": 7,
@@ -1896,7 +1909,8 @@
                     "ties": 0,
                     "schedules": [
                       11
-                    ]
+                    ],
+                    "change": -2.0
                   }
                 },
                 {
@@ -1913,7 +1927,8 @@
                     "ties": 0,
                     "schedules": [
                       9
-                    ]
+                    ],
+                    "change": 3.0
                   },
                   "worst": {
                     "wins": 7,
@@ -1922,7 +1937,8 @@
                     "schedules": [
                       1,
                       11
-                    ]
+                    ],
+                    "change": -1.0
                   }
                 },
                 {
@@ -1941,7 +1957,8 @@
                       2,
                       9,
                       1
-                    ]
+                    ],
+                    "change": 1.0
                   },
                   "worst": {
                     "wins": 8,
@@ -1949,7 +1966,8 @@
                     "ties": 0,
                     "schedules": [
                       8
-                    ]
+                    ],
+                    "change": -2.0
                   }
                 },
                 {
@@ -1966,7 +1984,8 @@
                     "ties": 0,
                     "schedules": [
                       9
-                    ]
+                    ],
+                    "change": 1.0
                   },
                   "worst": {
                     "wins": 7,
@@ -1976,7 +1995,8 @@
                       7,
                       10,
                       4
-                    ]
+                    ],
+                    "change": -2.0
                   }
                 },
                 {
@@ -1993,7 +2013,8 @@
                     "ties": 0,
                     "schedules": [
                       9
-                    ]
+                    ],
+                    "change": 2.0
                   },
                   "worst": {
                     "wins": 2,
@@ -2002,7 +2023,8 @@
                     "schedules": [
                       3,
                       11
-                    ]
+                    ],
+                    "change": -1.0
                   }
                 },
                 {
@@ -2021,7 +2043,8 @@
                       2,
                       5,
                       8
-                    ]
+                    ],
+                    "change": 0.0
                   },
                   "worst": {
                     "wins": 7,
@@ -2030,7 +2053,8 @@
                     "schedules": [
                       1,
                       4
-                    ]
+                    ],
+                    "change": -2.0
                   }
                 }
               ]
@@ -2049,7 +2073,8 @@
               "head_to_head_wins": 7.0,
               "schedule_luck": 2.73
             },
-            "weeks": 8
+            "weeks": 8,
+            "median_games": 8
           },
           "blurb": {
             "chapter": "luck",

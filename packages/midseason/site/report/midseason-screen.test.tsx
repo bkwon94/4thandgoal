@@ -180,6 +180,20 @@ describe("MidseasonScreen", () => {
     expect(chapter.getByText(/These records count all 16 games, 8 head to head and 8 median games, as in the standings\./)).toBeTruthy();
   });
 
+  it("reads the count of median games and the change of each end from the file, and computes neither", () => {
+    // The pipeline owns each fact (ADR 0013), so a changed count or change shows on the page as the file says.
+    const report = structuredClone(midseason);
+    const luck = report.acts.flatMap((act) => act.chapters).find((chapter) => chapter.key === "luck")!;
+    if (luck.key !== "luck") throw new Error("no luck chapter");
+    luck.facts.median_games = 0;
+    luck.facts.swap.best_and_worst[0].best.change = 2;
+    render(<MidseasonScreen report={report} shell={SHELL} pageHref="/midseason/2026/" />);
+    const chapter = within(document.getElementById("luck")!);
+    expect(chapter.getByText(/These records count all 8 head-to-head games, as in the standings\./)).toBeTruthy();
+    const bo = within(chapter.getByRole("list", { name: "Schedule swap" })).getAllByRole("listitem")[0];
+    expect(bo.textContent).toContain("Best 14-2 on the schedule of Maye d'force B with U+2");
+  });
+
   it("shows the swap as one text row per team with the best and the worst, and no grid and no bar", () => {
     // AT-59.
     renderReport();

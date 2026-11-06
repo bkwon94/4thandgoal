@@ -405,6 +405,16 @@ def test_the_swap_gives_bo_girds_a_best_of_14_2_on_maye_s_schedule_and_each_team
     assert spreads == sorted(spreads, reverse=True)
 
 
+def test_the_luck_chapter_publishes_the_median_games_and_the_change_of_each_best_and_worst(tmp_path):
+    # The site reads these counts, so it computes no fact of its own (ADR 0013).
+    report = _report(build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
+    luck = _chapter(report, "luck")["facts"]
+    assert (luck["weeks"], luck["median_games"]) == (8, 8)
+    rows = {row["name"]: row for row in luck["swap"]["best_and_worst"]}
+    assert (rows["Bo Girds"]["best"]["change"], rows["Bo Girds"]["worst"]["change"]) == (5, -1)
+    assert (rows["All You Need Is Love"]["best"]["change"], rows["All You Need Is Love"]["worst"]["change"]) == (0, -4)
+
+
 def test_the_luck_card_works_the_example_of_all_you_need_is_love_in_week_3(tmp_path):
     # AT-8.
     report = _report(build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
