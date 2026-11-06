@@ -13,10 +13,10 @@ The round time counts the runner total only, as the runner prints it. The time o
 AT-1: A full round in 15 minutes
 App: site
 Stories: 1, 7, 10
-Given: A `steps.json` for each of the 21 site-redesign tests that ask for screenshots, each narrowed to its Evidence line.
+Given: A `steps.json` for each site-redesign test that asks for screenshots and that the six verbs cover, each narrowed to its Evidence line.
 When: The agent runs `pnpm --dir apps/site evidence site-redesign` one time.
-Then: The runner writes the shots of all 21 tests and prints a total of 15 min or less. `EVIDENCE.md` of this feature records the line `Round time: <N> min for 21 site tests.`
-Evidence: The full command output with the time of each test and the total, the list of the 21 `steps.json` paths, and the `Round time` line.
+Then: The runner writes the shots of each of those tests and prints a total of 15 min or less. `EVIDENCE.md` of this feature records the line `Round time: <N> min for <M> site tests.`, and names each skipped screenshot test with the reason, such as AT-2 with scripts off.
+Evidence: The full command output with the time of each test and the total, the list of the `steps.json` paths, the list of the skipped tests, and the `Round time` line.
 
 AT-2: The light shot is light
 App: site
@@ -45,7 +45,7 @@ Evidence: Shots of the 404 page at 375, 768, and 1280 px, each in the light them
 AT-5: Named shots, a tap, and the URL
 App: site
 Stories: 5, 13, 14
-Given: The `steps.json` of site-redesign AT-10, with a `shot` named `before`, a `click` on week 7 in the strip, a `wait` for the URL, a `shot` named `after-tap`, and a `url` step.
+Given: The `steps.json` of site-redesign AT-11, with a `shot` named `before`, a `click` on week 7 in the strip, a `wait` for the URL, a `shot` named `after-tap`, and a `url` step.
 When: The runner takes its shots.
 Then: The folder holds `before-<width>-<theme>.png` and `after-tap-<width>-<theme>.png` for each width and theme. Each `url-<width>-<theme>.txt` holds a URL that ends in `/2026/week-07/`. The `steps.json` sits beside the shots.
 Evidence: The file list of the folder, the `steps.json`, one `url-*.txt`, and `before-1280-dark.png` and `after-tap-1280-dark.png`.
@@ -53,7 +53,7 @@ Evidence: The file list of the folder, the `steps.json`, one `url-*.txt`, and `b
 AT-6: A narrowed list takes only its shots
 App: site
 Stories: 6
-Given: The `steps.json` of site-redesign AT-9 with `widths: [768, 1280]`.
+Given: The `steps.json` of site-redesign AT-10 with `widths: [768, 1280]`.
 When: The runner takes its shots.
 Then: The folder holds 4 PNG files for each shot: 768 and 1280, each in light and dark. It holds no file with 375 in its name.
 Evidence: The file list of the folder and the `steps.json`.
@@ -69,10 +69,10 @@ Evidence: The build lines of the command output, the file list, and `cpc-1280-da
 AT-8: Analyzer tests do not wait on the limit
 App: both
 Stories: 8, 15
-Given: The local API runs with `make -C apps/api api-evidence`. The `steps.json` of site-redesign AT-20 and AT-21 each `wait` for the verdict before the shot.
-When: The runner takes the shots of AT-20 and then AT-21, back to back.
+Given: The local API runs with `make -C apps/api api-evidence`. The `steps.json` of site-redesign AT-24 and AT-25 each `wait` for the verdict before the shot.
+When: The runner takes the shots of AT-24 and then AT-25, back to back.
 Then: No request gets a 429. Each shot shows a real verdict from the API. Each test takes less than 61 s in the output.
-Evidence: The output lines of AT-20 and AT-21 with their times, the API log with no 429, and one verdict shot of each test.
+Evidence: The output lines of AT-24 and AT-25 with their times, the API log with no 429, and one verdict shot of each test.
 
 AT-9: Production keeps 10
 App: pipeline
@@ -154,3 +154,4 @@ Out of scope "The daily grade limit of the analyzer": no test. Reason: an agent 
 ## Revisions
 
 - 2026-11-05: AT-9 sends its requests to `/teams?season=2026`, not `/teams`. The route answers 422 with no season. Brian approved.
+- 2026-11-05: AT-1 covers each site-redesign screenshot test that the six verbs cover, not 21, and names each skipped test. AT-5 uses redesign AT-11, AT-6 uses redesign AT-10, and AT-8 uses redesign AT-24 and AT-25. The old ids named the wrong tests. Brian approved.
