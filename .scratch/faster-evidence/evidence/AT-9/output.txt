@@ -1,0 +1,18 @@
+$ echo "${CORNERSTONE_RATE_LIMIT_PER_MINUTE:-unset}"
+unset
+$ make -C apps/api api   # in the background
+$ for i in $(seq 1 11); do curl -s -o /dev/null -w "request $i: %{http_code}
+" -H 'X-League-Passphrase: localtest' 'http://localhost:8080/teams?season=2026'; done
+request 1: 200
+request 2: 200
+request 3: 200
+request 4: 200
+request 5: 200
+request 6: 200
+request 7: 200
+request 8: 200
+request 9: 200
+request 10: 200
+request 11: 429
+$ grep -c CORNERSTONE_RATE_LIMIT_PER_MINUTE apps/api/fly.toml
+0

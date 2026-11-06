@@ -1,0 +1,55 @@
+$ time pnpm --dir apps/site evidence site-redesign
+
+> cpcfantasyfootball-site@0.1.0 evidence /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site
+> node scripts/evidence.mjs site-redesign
+
+
+Running 1 test using 1 worker
+
+build cpc: 4.7 s
+AT-3 / cpc: 1 shot in 2.4 s
+AT-5 /2026/week-08/ cpc: 3 shots in 8.6 s
+AT-6 / cpc: 6 shots in 14.1 s
+AT-9 /2026/week-08/ cpc: 4 shots in 11.0 s
+AT-10 /rankings/ cpc: 8 shots in 15.4 s
+AT-11 / cpc: 12 shots in 27.3 s
+AT-12 /2026/week-08/ cpc: 2 shots in 5.8 s
+AT-14 / cpc: 6 shots in 13.1 s
+AT-16 /2026/week-08/ cpc: 6 shots in 16.9 s
+AT-17 /2026/week-08/ cpc: 6 shots in 17.3 s
+AT-18 /2026/week-08/ cpc: 2 shots in 5.7 s
+AT-19 /analyze/ cpc: 6 shots in 12.4 s
+AT-20 /analyze/ cpc: 12 shots in 28.8 s
+AT-22 /analyze/ cpc: 8 shots in 19.0 s
+AT-24 /analyze/ cpc: 12 shots in 62.0 s
+AT-25 /analyze/ cpc: 6 shots in 86.9 s
+AT-28 /rankings/ cpc: 6 shots in 13.4 s
+AT-29 /rankings/ cpc: 6 shots in 13.8 s
+AT-30 /2026/managers/ cpc: 6 shots in 13.6 s
+AT-31 /2026/managers/ cpc: 6 shots in 25.1 s
+AT-32 /2026/week-99/ cpc: 6 shots in 12.1 s
+AT-38 /2026/week-08/waiver/ cpc: 1 shot in 2.0 s
+build norcal: 4.2 s
+AT-3 / norcal: 1 shot in 2.1 s
+AT-4 / norcal: 6 shots in 11.3 s
+AT-5 /2026/week-08/ norcal: 3 shots in 8.0 s
+AT-6 / norcal: 6 shots in 12.9 s
+AT-9 /2026/week-08/ norcal: 4 shots in 9.8 s
+AT-10 /rankings/ norcal: 8 shots in 15.3 s
+AT-12 /2026/week-08/ norcal: 2 shots in 5.5 s
+AT-15 / norcal: 6 shots in 12.9 s
+AT-16 /2026/week-08/ norcal: 6 shots in 16.1 s
+AT-19 /analyze/ norcal: 6 shots in 12.2 s
+AT-27 /analyze/ norcal: 12 shots in 65.3 s
+AT-28 /rankings/ norcal: 6 shots in 13.3 s
+AT-31 /2026/managers/ norcal: 6 shots in 22.4 s
+AT-32 /2026/week-99/ norcal: 6 shots in 12.1 s
+AT-33 /2026/week-08/ norcal: 2 shots in 5.5 s
+AT-38 /2026/week-08/waiver/ norcal: 1 shot in 2.0 s
+Total: 26 tests of site-redesign in 662.5 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of site-redesign (11.0m)
+
+  Slow test file: [evidence] › e2e/evidence.spec.ts (11.0m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 passed (11.1m)
+pnpm --dir apps/site evidence site-redesign  186.99s user 35.10s system 33% cpu 11:04.15 total

@@ -1,0 +1,16 @@
+{
+  "route": "/rankings/",
+  "steps": [
+    { "shot": "top" },
+    { "scroll": "end" },
+    { "shot": "scrolled" }
+  ],
+  "widths": [
+    768,
+    1280
+  ],
+  "clients": [
+    "cpc",
+    "norcal"
+  ]
+}

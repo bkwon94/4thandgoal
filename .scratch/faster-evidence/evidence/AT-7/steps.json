@@ -1,0 +1,7 @@
+{
+  "route": "/",
+  "clients": [
+    "cpc",
+    "norcal"
+  ]
+}

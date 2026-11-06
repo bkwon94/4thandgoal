@@ -1,0 +1,14 @@
+$ pnpm --dir apps/site evidence tmp-fe-week8
+
+> cpcfantasyfootball-site@0.1.0 evidence /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence/apps/site
+> node scripts/evidence.mjs tmp-fe-week8
+
+
+Running 1 test using 1 worker
+
+build cpc: 6.8 s
+AT-3 /2026/week-08/ cpc: 6 shots in 17.0 s
+Total: 1 test of tmp-fe-week8 in 23.8 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of tmp-fe-week8 (23.8s)
+
+  1 passed (24.9s)

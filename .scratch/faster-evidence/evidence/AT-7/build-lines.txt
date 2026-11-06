@@ -1,0 +1,2 @@
+build cpc: 4.7 s
+build norcal: 4.2 s

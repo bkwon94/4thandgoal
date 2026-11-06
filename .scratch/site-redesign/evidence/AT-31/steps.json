@@ -1,0 +1,15 @@
+{
+  "route": "/2026/managers/",
+  "steps": [
+    {
+      "click": "a[href^=\"/2026/managers/\"]:has-text(\"To Infinity and Bijan\"), a[href^=\"/2026/managers/\"]:has-text(\"The Mean Machine\")"
+    },
+    {
+      "wait": "url"
+    }
+  ],
+  "clients": [
+    "cpc",
+    "norcal"
+  ]
+}
