@@ -26,6 +26,8 @@ from league.provider.sleeper import league_settings, load_raw
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 RAW_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw"
 HISTORY_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "history"
+# The full transactions of CPC weeks 1 to 8, as Sleeper gave them on 2026-11-05, after the waiver run of each week.
+CPC_TRANSACTIONS = Path(__file__).parent / "fixtures" / "2026" / "cpc-transactions"
 # The recorded week 6 has no fetch time, so the live fetch gives this one.
 FIXTURE_FETCHED = datetime(2026, 10, 21, 9, 30, tzinfo=ZoneInfo("America/New_York"))
 
@@ -68,13 +70,16 @@ class FixtureProvider:
     """A provider that reads the recorded week 6 files and the week 1 to 5 history. It never calls the network.
 
     The league id, the season, and the points key do not change what it gives, because the fixtures hold one league.
+    With `transactions`, a past leg gives the file week-NN.json of that folder as its transactions, so a test reads
+    the full week that Sleeper gives after the waiver run.
     """
 
     def __init__(self, raw_dir: Path = RAW_FIXTURES, history_root: Path = HISTORY_FIXTURES,
-                 fetched: datetime = FIXTURE_FETCHED):
+                 fetched: datetime = FIXTURE_FETCHED, transactions: Path | None = None):
         self.raw_dir = raw_dir
         self.history_root = history_root
         self.fetched = fetched
+        self.transactions = transactions
 
     def fetch_week(
             self, league_id: str, season: int, week: int, raw_dir: Path, tz: ZoneInfo,
@@ -91,8 +96,11 @@ class FixtureProvider:
     def fetch_past_leg(self, league_id: str, season: int, week: int, out_dir: Path) -> RawPastWeek:
         saved = self.history_root / f"week-{week:02d}"
         shutil.copytree(saved, out_dir, dirs_exist_ok=True)
-        return RawPastWeek.model_validate({f.stem: json.loads(f.read_text(encoding="utf-8"))
-                                           for f in saved.glob("*.json")})
+        files = {f.stem: json.loads(f.read_text(encoding="utf-8")) for f in saved.glob("*.json")}
+        if self.transactions is not None:
+            shutil.copy(self.transactions / f"week-{week:02d}.json", out_dir / "transactions.json")
+            files["transactions"] = json.loads((out_dir / "transactions.json").read_text(encoding="utf-8"))
+        return RawPastWeek.model_validate(files)
 
     def fetch_players(self) -> dict[str, dict]:
         return load_raw(self.raw_dir).players

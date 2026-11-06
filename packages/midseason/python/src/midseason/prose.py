@@ -3,7 +3,7 @@ The prose of the midseason report: the facts and the prose blocks of each chapte
 the write and the check of each blurb through the writer and the verifier of facts. The report has no writer of its own.
 """
 import json
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from pathlib import Path
 
 import anthropic
@@ -33,6 +33,15 @@ ROAST_STEPS: dict[Roast, str] = {
 ROAST_OFF = "Roast: off. Write no roast and no joke at a manager's expense. State the facts plainly."
 # The week fact lets a blurb name the report week and the week after it, as the verifier allows on a weekly page.
 WEEK_FACT = "W.week"
+
+
+class ProseBlock(BaseModel):
+    """The facts of one more chapter of the report, with the teams and the players that its blurb may name."""
+    key: str
+    title: str
+    facts: list[Fact]
+    teams: list[str]
+    players: list[str]
 
 
 class ProseDraft(BaseModel):
@@ -67,9 +76,10 @@ def _state_facts(state: LeagueState) -> list[Fact]:
     return facts
 
 
-def prose_sheet(week: int, state: LeagueState, roast: Roast) -> FactSheet:
+def prose_sheet(week: int, state: LeagueState, roast: Roast, blocks: Sequence[ProseBlock] = ()) -> FactSheet:
     """The fact sheet of the report: every fact and the prose blocks that cite them. Each chapter has one blurb block,
-    and a roast block unless the roast is off."""
+    and a roast block unless the roast is off. `blocks` holds the facts of each chapter after the state of the
+    league, in page order."""
     n = Nums()
     week_fact = fact(WEEK_FACT, f"The report counts week {n(week)} and every week before it.", n, [], [])
     # The week fact comes last, so the template blurb of a failed block reads the first team fact, not the week.
@@ -82,6 +92,15 @@ def prose_sheet(week: int, state: LeagueState, roast: Roast) -> FactSheet:
         # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
         chapters.append(Chapter(key="state" + ROAST_SUFFIX, title="The roast of the state of the league", fact_ids=ids,
                                 scope_teams=teams, scope_players=[], min_sentences=2, max_sentences=4))
+    for block in blocks:
+        facts.extend(block.facts)
+        ids = [f.id for f in block.facts] + [WEEK_FACT]
+        chapters.append(Chapter(key=block.key, title=block.title, fact_ids=ids, scope_teams=block.teams,
+                                scope_players=block.players, min_sentences=3, max_sentences=6))
+        if roast != "off":
+            chapters.append(Chapter(key=block.key + ROAST_SUFFIX, title=f"The roast of {block.title.lower()}",
+                                    fact_ids=ids, scope_teams=block.teams, scope_players=block.players,
+                                    min_sentences=2, max_sentences=4))
     return FactSheet(facts={f.id: f for f in facts}, chapters=chapters)
 
 

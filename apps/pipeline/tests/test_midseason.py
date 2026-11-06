@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 from cpc import ROOT, cpc_client
-from fakes import FakeWriter
+from fakes import CPC_TRANSACTIONS, FakeWriter, FixtureProvider
 
 from cornerstone.pipeline import BuildStopped, run_midseason
 from cornerstone.value_models import VALUE_MODELS
@@ -20,15 +20,26 @@ from league.paths import build_dir, client_dir, history_root, week_dir
 
 # The real saved data of CPC 2026. The tests copy it, so no test writes under clients/.
 CPC_DATA = client_dir(ROOT, "cpc") / "data" / "2026"
+# The provider of the report's fetch of each week's transactions: the saved CPC data with the full weeks of Sleeper.
+CPC_PROVIDER = FixtureProvider(raw_dir=CPC_DATA / "week-08" / "raw", history_root=CPC_DATA / "history",
+                               transactions=CPC_TRANSACTIONS)
 
 
 def _cpc_week_8(tmp_path: Path):
-    """A CPC client folder in `tmp_path` with the saved history and the week 8 facts of the real CPC data."""
+    """A CPC client folder in `tmp_path` with the saved history, the week 8 facts, and the week 8 raw files of the real
+    CPC data."""
     client = cpc_client(at=tmp_path)
-    shutil.copytree(CPC_DATA / "history", history_root(client.folder, 2026))
-    week_dir(client.folder, 2026, 8).mkdir(parents=True)
-    shutil.copy(CPC_DATA / "week-08" / "facts.json", week_dir(client.folder, 2026, 8) / "facts.json")
+    copy_cpc_week_8(client.folder)
     return client
+
+
+def copy_cpc_week_8(folder: Path) -> None:
+    """Copy the saved CPC history and the week 8 facts into the client folder `folder`. The raw files of week 8 are a
+    link, because the build only reads them and they are large."""
+    shutil.copytree(CPC_DATA / "history", history_root(folder, 2026))
+    week_dir(folder, 2026, 8).mkdir(parents=True)
+    shutil.copy(CPC_DATA / "week-08" / "facts.json", week_dir(folder, 2026, 8) / "facts.json")
+    (week_dir(folder, 2026, 8) / "raw").symlink_to(CPC_DATA / "week-08" / "raw")
 
 
 def _call(*answers):
@@ -54,8 +65,33 @@ ROAST_BLURB = WriterOut(sentences=[
 ])
 
 
+# The blurbs of the waivers and the trades of Act II, each in the shape that passes the code check.
+WAIVERS_BLURB = WriterOut(sentences=[
+    Sentence(text="Ollie Gordon II went to Unsolicited Dak Picks for $40.", fact_ids=["WV.hit.1"]),
+    Sentence(text="The Blue Tent bid $36 on him and lost by $4.", fact_ids=["WV.outbid.1"]),
+    Sentence(text="Ouch.", fact_ids=[]),
+])
+WAIVERS_ROAST = WriterOut(sentences=[
+    Sentence(text="To Infinity and Bijan paid $40 for Joe Mixon and got 0 starts.", fact_ids=["WV.miss.1"]),
+    Sentence(text="NFC Least paid $26 for Rico Dowdle and got 0 starts.", fact_ids=["WV.miss.3"]),
+])
+TRADES_BLURB = WriterOut(sentences=[
+    Sentence(text="Maye d'force B with U robbed NFC Least in week 1.", fact_ids=["TR.1"]),
+    Sentence(text="The gap is 165.8.", fact_ids=["TR.1"]),
+    Sentence(text="Brutal.", fact_ids=[]),
+])
+TRADES_ROAST = WriterOut(sentences=[
+    Sentence(text="NFC Least has a net of -82.9 points over the line since the week 1 trade.", fact_ids=["TR.1"]),
+    Sentence(text="NFC Least is 3-13 since that trade.", fact_ids=["TR.1"]),
+])
+# The writer answers of the prose blocks of Act II, after the state of the league, and the verdicts of their recheck.
+MOVES_ANSWERS = [WAIVERS_BLURB, _passed(3), WAIVERS_ROAST, _passed(2), TRADES_BLURB, _passed(3), TRADES_ROAST,
+                 _passed(2)]
+MOVES_VERDICTS = [_passed(3), _passed(2), _passed(3), _passed(2)]
+
+
 def _clean_call():
-    return _call(STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2))
+    return _call(STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), *MOVES_ANSWERS)
 
 
 def _with_roast(client, tmp_path: Path, roast: str):
@@ -82,17 +118,17 @@ def _state_rows(report: dict) -> dict[str, dict]:
 def test_the_build_writes_midseason_json_to_the_build_folder_of_the_season_and_nothing_to_published(tmp_path):
     # AT-1: the report goes live only through its own publish.
     client = _cpc_week_8(tmp_path)
-    out = run_midseason(2026, 8, _call(), client=client)
+    out = run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
     assert out == build_dir(client.folder) / "2026" / "midseason.json"
     report = _report(out)
     assert (report["schema_version"], report["season"], report["week"], report["takeover_end_week"]) == (1, 2026, 8, 9)
-    assert [act["key"] for act in report["acts"]] == ["how-we-got-here"]
+    assert [act["key"] for act in report["acts"]] == ["how-we-got-here", "the-moves"]
     assert not (client.folder / "published").exists()
 
 
 def test_points_for_is_the_sum_of_the_weekly_scores(tmp_path):
     # AT-4: Sleeper says 901.65 after a stat correction. The standings sum says 900.65.
-    rows = _state_rows(_report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path))))
+    rows = _state_rows(_report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER)))
     assert rows["Maye d'force B with U"]["points_for"] == 900.65
     assert (rows["All You Need Is Love"]["wins"], rows["All You Need Is Love"]["losses"]) == (11, 5)
     assert rows["All You Need Is Love"]["rank"] == 1
@@ -101,7 +137,7 @@ def test_points_for_is_the_sum_of_the_weekly_scores(tmp_path):
 def test_each_row_has_the_playoff_odds_of_the_week(tmp_path):
     client = _cpc_week_8(tmp_path)
     saved = json.loads((CPC_DATA / "week-08" / "facts.json").read_text(encoding="utf-8"))["odds"]["teams"]
-    rows = _state_rows(_report(run_midseason(2026, 8, _call(), client=client)))
+    rows = _state_rows(_report(run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)))
     assert len(rows) == 12
     assert {row["roster_id"]: row["playoff_odds"] for row in rows.values()} == {
         int(rid): odds["playoff"] for rid, odds in saved.items()}
@@ -109,15 +145,15 @@ def test_each_row_has_the_playoff_odds_of_the_week(tmp_path):
 
 def test_a_rerun_gives_the_same_file(tmp_path):
     client = _cpc_week_8(tmp_path)
-    first = run_midseason(2026, 8, _call(), client=client).read_bytes()
-    assert run_midseason(2026, 8, _call(), client=client).read_bytes() == first
+    first = run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER).read_bytes()
+    assert run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER).read_bytes() == first
 
 
 def test_a_gap_in_the_history_stops_the_build_with_the_command_that_fills_it(tmp_path):
     client = _cpc_week_8(tmp_path)
     shutil.rmtree(history_root(client.folder, 2026) / "week-05")
     with pytest.raises(BuildStopped, match="cornerstone history --through 8"):
-        run_midseason(2026, 8, _call(), client=client)
+        run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
     assert not (build_dir(client.folder) / "2026" / "midseason.json").exists()
 
 
@@ -125,14 +161,14 @@ def test_a_week_with_no_saved_facts_stops_the_build_with_the_command_that_builds
     client = _cpc_week_8(tmp_path)
     (week_dir(client.folder, 2026, 8) / "facts.json").unlink()
     with pytest.raises(BuildStopped, match="make build CLIENT=cpc WEEK=8"):
-        run_midseason(2026, 8, _call(), client=client)
+        run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
 
 
 
 def test_the_review_file_shows_each_blurb_with_its_prose_block_its_facts_and_the_verifier_result(tmp_path):
     # AT-39.
     client = _cpc_week_8(tmp_path)
-    run_midseason(2026, 8, _clean_call(), client=client)
+    run_midseason(2026, 8, _clean_call(), client=client, provider=CPC_PROVIDER)
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     state, roast = review.split("## state.roast")
     assert "## state: The state of the league" in state
@@ -152,7 +188,7 @@ def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_n
     # AT-40. The roast gets two attempts of two reaction sentences each, so the verifier fails both.
     no_fact = WriterOut(sentences=[Sentence(text="Oh no.", fact_ids=[]), Sentence(text="Truly awful.", fact_ids=[])])
     client = _cpc_week_8(tmp_path)
-    report = _report(run_midseason(2026, 8, _call(STATE_BLURB, _passed(3), no_fact, no_fact), client=client))
+    report = _report(run_midseason(2026, 8, _call(STATE_BLURB, _passed(3), no_fact, no_fact), client=client, provider=CPC_PROVIDER))
     roasts = _roasts(report)
     assert roasts
     for roast in roasts:
@@ -162,29 +198,29 @@ def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_n
 
 
 def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_path):
-    report = _report(run_midseason(2026, 8, _clean_call(), client=_cpc_week_8(tmp_path)))
+    report = _report(run_midseason(2026, 8, _clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
     assert [[s["fact_ids"] for s in roast["sentences"]] for roast in _roasts(report)] == [
-        [["ST.4.record"], ["ST.6.streak"]]]
+        [["ST.4.record"], ["ST.6.streak"]], [["WV.miss.1"], ["WV.miss.3"]], [["TR.1"], ["TR.1"]]]
 
 
 def test_with_the_roast_off_the_draft_has_no_roast_lines(tmp_path):
     # AT-41, on a local copy of client.toml.
     client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "off")
-    writer = FakeWriter([STATE_BLURB, _passed(3)])
-    report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client))
+    writer = FakeWriter([STATE_BLURB, _passed(3), WAIVERS_BLURB, _passed(3), TRADES_BLURB, _passed(3)])
+    report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER))
     assert _roasts(report) == []
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     assert "Roast: off." in review and "roast" not in review.split("Roast: off.")[1].lower()
-    # The writer of the one prose block hears that the roast is off, so its blurb holds no roast either.
+    # The writer of each prose block hears that the roast is off, so its blurb holds no roast either.
     assert "Roast: off. Write no roast" in (writer.calls[0].system or "")
-    assert len(writer.calls) == 2
+    assert len(writer.calls) == 6
 
 
 def test_with_the_roast_warm_the_roast_block_gets_the_roast_rules_and_the_soft_step(tmp_path):
     client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "warm")
-    writer = FakeWriter([STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2)])
-    report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client))
-    assert len(_roasts(report)) == 1
+    writer = FakeWriter([STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), *MOVES_ANSWERS])
+    report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER))
+    assert len(_roasts(report)) == 3
     roast_system = writer.calls[2].system or ""
     assert "Never roast life outside fantasy" in roast_system and "Roast: warm." in roast_system
     assert "Roast:" not in (writer.calls[0].system or "")

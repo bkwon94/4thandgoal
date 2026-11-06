@@ -5,14 +5,16 @@ chapters. The pipeline owns the shape (ADR 0011), and the site side of the packa
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from league.files import write_bytes_atomic
 from league.models import Blurb
 from midseason.prose import ROAST_SUFFIX
 from midseason.state import LeagueState
+from midseason.trades import TradeFacts
+from midseason.waivers import WaiverFacts
 
 # The season file has its own version, so a change to one file never breaks the reader of another.
 MIDSEASON_SCHEMA_VERSION = 1
@@ -32,9 +34,27 @@ class StateChapter(BaseModel):
     roast: Blurb | None = None
 
 
+class WaiversChapter(BaseModel):
+    """Waiver hits and misses, in Act II: the top hits, the top misses, the top outbid claims, and the streamers."""
+    key: Literal["waivers"] = "waivers"
+    title: str = "Waiver hits and misses"
+    facts: WaiverFacts
+    blurb: Blurb | None = None
+    roast: Blurb | None = None
+
+
+class TradesChapter(BaseModel):
+    """The trade report card, in Act II: every trade with its Trade result."""
+    key: Literal["trades"] = "trades"
+    title: str = "The trade report card"
+    facts: TradeFacts
+    blurb: Blurb | None = None
+    roast: Blurb | None = None
+
+
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
-Chapter = StateChapter
+Chapter = Annotated[StateChapter | WaiversChapter | TradesChapter, Field(discriminator="key")]
 
 
 class Act(BaseModel):
@@ -55,16 +75,23 @@ class MidseasonReport(BaseModel):
     acts: list[Act]
 
 
-def midseason_report(season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb]) -> MidseasonReport:
+def midseason_report(
+    season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *,
+    waivers: WaiverFacts | None = None, trades: TradeFacts | None = None,
+) -> MidseasonReport:
     """The report of `week` from the facts of each chapter and the blurbs by prose block key. Act I holds the state
-    of the league."""
+    of the league. Act II holds the waivers and the trades, when the build gives them."""
     state_chapter = StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX))
-    return MidseasonReport(
-        season=season,
-        week=week,
-        takeover_end_week=week + TAKEOVER_WEEKS,
-        acts=[Act(key="how-we-got-here", title="How we got here", chapters=[state_chapter])],
-    )
+    acts = [Act(key="how-we-got-here", title="How we got here", chapters=[state_chapter])]
+    moves: list[Chapter] = []
+    if waivers is not None:
+        moves.append(WaiversChapter(facts=waivers, blurb=blurbs.get("waivers"),
+                                    roast=blurbs.get("waivers" + ROAST_SUFFIX)))
+    if trades is not None:
+        moves.append(TradesChapter(facts=trades, blurb=blurbs.get("trades"), roast=blurbs.get("trades" + ROAST_SUFFIX)))
+    if moves:
+        acts.append(Act(key="the-moves", title="The moves", chapters=moves))
+    return MidseasonReport(season=season, week=week, takeover_end_week=week + TAKEOVER_WEEKS, acts=acts)
 
 
 def report_blurbs(report: MidseasonReport) -> list[Blurb]:
