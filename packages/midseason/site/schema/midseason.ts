@@ -248,6 +248,14 @@ export const draftRowSchema = z.object({
   tag: z.enum(["hurt", "just bad"]).nullable(),
 });
 
+/* A letdown: a pick of a top 10 price that is not a bust, with no top 17 week at his position in his last 4 weeks. */
+export const letdownSchema = draftRowSchema.extend({
+  // The rank of the price among all picks of the draft. In a snake it is the pick number.
+  price_rank: z.number(),
+  // The last week in the top 17 of the position. Null when he has no such week.
+  last_top_week: z.number().nullable(),
+});
+
 export const draftChapterSchema = z.object({
   key: z.literal("draft"),
   title: z.string(),
@@ -255,6 +263,7 @@ export const draftChapterSchema = z.object({
     draft_type: z.enum(["auction", "snake", "linear"]),
     steals: z.array(draftRowSchema),
     busts: z.array(draftRowSchema),
+    letdowns: z.array(letdownSchema),
   }),
   ...prose,
 });

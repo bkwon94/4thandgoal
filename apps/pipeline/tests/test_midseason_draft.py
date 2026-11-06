@@ -125,3 +125,38 @@ def test_the_draft_has_one_prose_block_in_the_review_file(tmp_path):
     review = (out.parent / "midseason-review.md").read_text(encoding="utf-8")
     assert "## draft: Draft Steals and Busts" in review
     assert "## draft." not in review
+
+
+def test_a_cpc_letdown_is_bijan_robinson_at_81_dollars_with_no_top_17_rb_week_since_week_4(tmp_path):
+    # AT-65. He cost $81, the top price of the draft, and he is RB3 for the season. His RB ranks of weeks 5 to 8 are
+    # 18, 31, 19, and 28 by the half PPR points of CPC, so his last week in the top 17 is week 4, at RB5.
+    draft = _cpc_draft(tmp_path)
+    bijan = _by_name(draft["letdowns"])["Bijan Robinson"]
+    assert (bijan["cost"], bijan["price_rank"], bijan["position"], bijan["points_rank"], bijan["last_top_week"]) == (
+        81, 1, "RB", 3, 4)
+    assert bijan["team"]
+
+
+def test_a_dear_pick_with_a_top_17_week_in_his_last_4_weeks_played_is_not_a_letdown(tmp_path):
+    # Jahmyr Gibbs cost $80, the second price of the draft, and he is not a bust. He had a bye in week 6, so his last 4
+    # weeks played are weeks 4, 5, 7, and 8, at RB14, RB1, RB18, and RB5.
+    draft = _cpc_draft(tmp_path)
+    assert "Jahmyr Gibbs" not in _by_name(draft["busts"])
+    assert "Jahmyr Gibbs" not in _by_name(draft["letdowns"])
+
+
+def test_no_player_is_both_a_bust_and_a_letdown(tmp_path):
+    # Saquon Barkley cost $58, the seventh price, and his RB ranks of his last 4 weeks played are 26, 73, 20, and 21.
+    # He has no top 17 week there, but he is a bust, so he is not a letdown.
+    draft = _cpc_draft(tmp_path)
+    assert "Saquon Barkley" in _by_name(draft["busts"])
+    assert not set(_by_name(draft["busts"])) & set(_by_name(draft["letdowns"]))
+    assert all(row["price_rank"] <= 10 for row in draft["letdowns"])
+
+
+def test_the_writer_can_cite_the_price_the_season_rank_and_the_last_top_week_of_a_letdown(tmp_path):
+    out = build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER)
+    facts = json.loads((out.parent / "midseason-facts.json").read_text(encoding="utf-8"))["sheet"]["facts"]
+    assert facts["DV.letdown.9509"]["text"] == "To Infinity and Bijan drafted Bijan Robinson for $81, the 1st price of the draft."
+    assert facts["DV.letdown.9509.points"]["text"] == "Bijan Robinson is the 3rd drafted RB by points."
+    assert facts["DV.letdown.9509.week"]["text"] == "Bijan Robinson was last in the top 17 RBs in week 4."

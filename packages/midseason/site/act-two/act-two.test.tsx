@@ -57,6 +57,21 @@ describe("draft steals and busts", () => {
       if (bust.tag !== null) expect(rows[index].textContent).toContain(bust.tag === "hurt" ? "Hurt" : "Just bad");
     }
   });
+
+  it("shows each letdown under the busts with the word tag, the price, the season rank, and the last top 17 week", () => {
+    renderReport();
+    const { letdowns } = chapterOf("draft").facts;
+    const chapter = document.getElementById("draft")!;
+    const lists = within(chapter).getAllByRole("list").map((list) => list.getAttribute("aria-label"));
+    expect(lists.indexOf("Letdowns")).toBe(lists.indexOf("Busts") + 1);
+    const rows = within(chapter).getByRole("list", { name: "Letdowns" }).children;
+    expect(rows).toHaveLength(letdowns.length);
+    const bijan = Array.from(rows).find((row) => row.textContent!.includes("Bijan Robinson"))!;
+    expect(within(bijan as HTMLElement).getByText("Letdown").getAttribute("data-tag")).toBe("mute");
+    expect(bijan.textContent).toContain("$81");
+    expect(bijan.textContent).toContain("RB3 points");
+    expect(bijan.textContent).toContain("Last top 17 wk 4");
+  });
 });
 
 describe("waiver hits and misses", () => {
