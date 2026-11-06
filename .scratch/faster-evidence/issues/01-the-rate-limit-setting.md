@@ -8,7 +8,7 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-9 and AT-8.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A test sets the value to a count, and the app allows that count in one minute, then answers 429.
 - [x] A test with the value unset proves the limit of 10.
