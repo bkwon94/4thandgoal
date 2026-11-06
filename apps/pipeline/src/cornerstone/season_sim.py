@@ -6,7 +6,7 @@ from pathlib import Path
 
 from league.client import Client
 from league.models import History
-from league.nflverse import SCHEDULES_URL, download, read_schedules
+from league.nflverse import SCHEDULES_URL, cache_path, download, read_schedules
 from league.parse import parse_week
 from league.paths import nflverse_cache_dir, raw_dir
 from league.provider.sleeper import load_raw
@@ -15,15 +15,14 @@ from rankings.chapter import odds_inputs
 from sim.season import SimResult, season_sim
 from week.sheet import projected_totals
 
-SCHEDULE_FILE = "games.csv"
 
-
-def schedule_file(nfl: Path) -> Path | None:
-    """The cached NFL schedule of the NFL data `nfl`. Git ignores the cache, so a fresh worktree fetches it once.
+def schedule_file(nfl: Path, season: int) -> Path | None:
+    """The cached NFL schedule of the NFL data `nfl`, at the cache path of each nflverse reader, so the report and the
+    sim read one copy. Git ignores the cache, so a fresh worktree fetches it once.
 
     A saved file stands as it is: the bye weeks of a season do not change, so one input gives one output.
     """
-    path = nflverse_cache_dir(nfl) / SCHEDULE_FILE
+    path = cache_path(nflverse_cache_dir(nfl), SCHEDULES_URL, season)
     if path.exists():
         return path
     return download(SCHEDULES_URL, path)
@@ -41,7 +40,7 @@ def week_sim(season: int, week: int, history: History, *, client: Client) -> Sim
     if inputs is None:
         return None
     scores, remaining = inputs
-    path = schedule_file(client.nfl_dir)
+    path = schedule_file(client.nfl_dir, season)
     schedules = read_schedules(path, season) if path is not None else None
     bye_weeks = {team: s.bye_week for team, s in schedules.items() if s.bye_week is not None} if schedules else None
     projected = projected_totals(parsed, client, bye_weeks, through=client.settings.last_season_week)

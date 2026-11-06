@@ -14,12 +14,13 @@ from fakes import FakeWriter
 from test_midseason import prime_nflverse
 
 from cornerstone.pipeline import run_midseason
-from cornerstone.season_sim import week_sim
+from cornerstone.season_sim import schedule_file, week_sim
 from cornerstone.value_models import VALUE_MODELS
 from facts.writer import claude_call
 from league.client import Client, load_client
 from league.history import load_saved_weeks
 from league.models import History
+from league.nflverse import SCHEDULES_URL, cache_path
 from league.paths import build_dir, client_dir, history_root, nflverse_cache_dir, week_dir
 from league.provider.sleeper import fetch_settings
 
@@ -134,3 +135,11 @@ def test_the_playoff_odds_of_the_sim_are_within_2_points_of_the_published_week_8
     gaps = {rid: abs(sim.teams[rid].playoff - odds) for rid, odds in published.items()}
     print(f"{slug}: largest gap {max(gaps.values())} points, roster {max(gaps, key=gaps.__getitem__)}")
     assert max(gaps.values()) <= 2
+
+
+def test_the_sim_reads_the_schedule_at_the_one_cache_path_of_the_nflverse_readers(tmp_path):
+    # The chapters of the report read the same file through cache_path, so the build keeps one copy of it.
+    cache = nflverse_cache_dir(tmp_path)
+    cache.mkdir(parents=True)
+    shutil.copy(GAMES, cache_path(cache, SCHEDULES_URL, 2026))
+    assert schedule_file(tmp_path, 2026) == cache_path(cache, SCHEDULES_URL, 2026)
