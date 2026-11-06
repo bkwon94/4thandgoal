@@ -2,7 +2,7 @@
 
 ## Knows
 
-- `SimReplay`: each press plays one random run of the stored runs, beside the odds of all runs.
+- `SimReplay`: each press plays one random run of the stored runs, above the odds of all runs.
 - The season of a run in `season.ts`: the standings after each week, the seeds, the bracket, and the champion.
 - The beats of the Broadcast motion and their holds in `beats.ts` (decision 13 of `midseason-report`).
 - The parts of the stage: the week strip, the standings, the lower third, the bracket, and the champion card.

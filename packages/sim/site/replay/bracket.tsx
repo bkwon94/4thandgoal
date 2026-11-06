@@ -25,7 +25,7 @@ function Score({ value, live }: { value: number; live: boolean }) {
     return () => controls.stop();
   }, [live, value]);
   return (
-    <span ref={box} className="font-mono text-meta font-bold tabular-nums">
+    <span ref={box} data-score className="font-mono text-meta font-bold tabular-nums">
       {oneDecimal(value)}
     </span>
   );
@@ -65,7 +65,10 @@ function TeamRow({
   return (
     <div className={cn("relative flex items-center gap-sp-2 py-sp-1", decided && !won ? "text-on-dark-muted" : "text-on-dark")}>
       <Chip team={team} flight={flight} pace={pace} />
-      <span className="min-w-0 flex-1 truncate text-meta leading-tight font-semibold">{team.name}</span>
+      {/* A long name wraps between its words, so each name shows in full in the narrow columns of three rounds. */}
+      <span data-team-name className="min-w-0 flex-1 text-meta leading-tight font-semibold">
+        {team.name}
+      </span>
       {decided ? <Score value={team.score} live={live} /> : <span className="font-mono text-meta text-on-dark-muted">–</span>}
       {decided && won && (
         // The red bar sweeps under the winner after the count-up.
@@ -80,7 +83,8 @@ function TeamRow({
 }
 
 /* The line out of a card toward the next round: to the right when the stage is wide enough for three columns, and down
-   when the rounds stack. It draws in with its card and lights red once the game has a winner. */
+   when the rounds stack. It spans the whole gap to the next card, where the winner chip waits. It draws in with its
+   card and lights red once the game has a winner. */
 function Line({ lit, last, pace }: { lit: boolean; last: boolean; pace: Pace }) {
   if (last) return null;
   const color = lit ? "bg-accent" : "bg-rule-dark";
@@ -89,12 +93,12 @@ function Line({ lit, last, pace }: { lit: boolean; last: boolean; pace: Pace }) 
       <motion.span
         aria-hidden="true"
         {...enter(pace, { scaleX: 0 }, { duration: 0.4, delay: 0.3 })}
-        className={cn("absolute top-1/2 left-full hidden h-0.5 w-sp-3 origin-left transition-colors duration-300 @xl:block", color)}
+        className={cn("absolute top-1/2 left-full hidden h-0.5 w-sp-6 origin-left transition-colors duration-300 @xl:block", color)}
       />
       <motion.span
         aria-hidden="true"
         {...enter(pace, { scaleY: 0 }, { duration: 0.4, delay: 0.3 })}
-        className={cn("absolute top-full left-1/2 h-sp-2 w-0.5 origin-top transition-colors duration-300 @xl:hidden", color)}
+        className={cn("absolute top-full left-1/2 h-sp-6 w-0.5 origin-top transition-colors duration-300 @xl:hidden", color)}
       />
     </>
   );
@@ -142,8 +146,13 @@ function Game({
         />
       ))}
       {decided && departed && (
-        // The winner chip waits at the edge of the card until the next round draws in, then flies to its seat there.
-        <span className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2" aria-hidden="true">
+        // The winner chip waits in the gap past the card until the next round draws in, then flies to its seat there.
+        // The gap is as wide as the chip, so the chip covers no name or score.
+        <span
+          data-departed
+          aria-hidden="true"
+          className="absolute top-full left-1/2 -translate-x-1/2 @xl:top-1/2 @xl:left-full @xl:translate-x-0 @xl:-translate-y-1/2"
+        >
           <Chip team={winner === high.roster_id ? high : low} flight={`seat-${round}-${winner}`} pace={pace} />
         </span>
       )}
@@ -168,10 +177,11 @@ export function Bracket({
   live: boolean;
   pace: Pace;
 }) {
-  // The stage sits beside the odds on a desktop, so the rounds take columns by the width of the stage, not of the page.
+  // The rounds take columns by the width of the stage, not of the page. Each gap between cards fits the chip of a
+  // winner, so the waiting chip covers no card.
   return (
     <div className="@container">
-      <ol aria-label="Bracket" className="m-0 grid list-none gap-sp-4 p-0 @xl:grid-cols-3 @xl:gap-sp-3">
+      <ol aria-label="Bracket" className="m-0 grid list-none gap-sp-6 p-0 @xl:grid-cols-3">
         {rounds.slice(0, shown).map((round, r) => {
           const last = r === rounds.length - 1;
           const arrived = new Set(r === 0 ? [] : rounds[r - 1].games.map((game) => game.winner));
@@ -187,7 +197,7 @@ export function Bracket({
                 <span className="font-mono text-meta text-on-dark-muted">{`Wk ${round.week}`}</span>
               </div>
               {/* The cards of a later round sit between the cards of the round before, as in a printed bracket. */}
-              <div className="flex flex-1 flex-col justify-around gap-sp-3">
+              <div className="flex flex-1 flex-col justify-around gap-sp-6 @xl:gap-sp-3">
                 {round.games.map((game) => (
                   <Game
                     key={`${game.high.roster_id}-${game.low.roster_id}`}
@@ -207,7 +217,10 @@ export function Bracket({
                     className="flex items-center gap-sp-2 rounded-tile border border-dashed border-rule-dark px-sp-2 py-sp-2 text-on-dark"
                   >
                     <Chip team={team} pace={pace} />
-                    <span className="min-w-0 flex-1 truncate text-meta leading-tight font-semibold">{team.name}</span>
+                    {/* A long name wraps between its words, so each name shows in full in the narrow columns of three rounds. */}
+      <span data-team-name className="min-w-0 flex-1 text-meta leading-tight font-semibold">
+        {team.name}
+      </span>
                     <span className="font-mono text-meta font-bold tracking-caps text-on-dark-2">BYE</span>
                   </div>
                 ))}

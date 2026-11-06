@@ -358,10 +358,11 @@ test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, asyn
   await expect(chapter.getByRole("list", { name: "RB top 10" })).toBeVisible();
 });
 
-/* AT-33: the odds of all runs sit beside the replay on a desktop and below it on a phone. A report with no sim file
-   has no replay, so the check skips it too. */
+/* AT-33: the odds of all runs sit below the replay at every width, and the stage takes the full width of the column.
+   Beside the odds on a laptop, the stage had room for one letter of each team name. A report with no sim file has no
+   replay, so the check skips it too. */
 for (const width of REPORT_WIDTHS) {
-  test(`sim odds: ${CLIENT} ${MIDSEASON_ROUTE} beside the replay on a desktop, below it on a phone, ${width}px`, async ({ page }) => {
+  test(`sim odds: ${CLIENT} ${MIDSEASON_ROUTE} below the replay at full width, ${width}px`, async ({ page }) => {
     test.skip(!hasReport, `${CLIENT} builds no midseason report`);
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
@@ -369,12 +370,41 @@ for (const width of REPORT_WIDTHS) {
     test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
     const box = (await stage.boundingBox())!;
     const odds = (await page.getByRole("table", { name: /^The odds of all/ }).boundingBox())!;
-    if (width >= 1024) {
-      expect(odds.x).toBeGreaterThanOrEqual(box.x + box.width);
-      expect(odds.y).toBeLessThan(box.y + box.height);
-    } else {
-      expect(odds.y).toBeGreaterThanOrEqual(box.y + box.height);
-    }
+    expect(odds.y).toBeGreaterThanOrEqual(box.y + box.height);
+    const column = (await stage.evaluate((el) => el.parentElement!.getBoundingClientRect().width))!;
+    expect(box.width).toBeCloseTo(column, 0);
+  });
+}
+
+/* The text boxes of the bracket that a chip or a cut must never hide: each team name and each score. */
+const bracketText = (page: Page) => page.locator('ol[aria-label="Bracket"] [data-team-name], ol[aria-label="Bracket"] [data-score]');
+
+/* Each team name of the bracket shows in full at each width of the report, and the seed chip that waits at the edge of
+   a decided card covers no name or score. */
+for (const width of REPORT_WIDTHS) {
+  test(`sim bracket: ${CLIENT} ${MIDSEASON_ROUTE} shows full team names and no chip on a card, ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const stage = page.getByRole("region", { name: "The replay" });
+    test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
+    await page.getByRole("button", { name: "Sim the season" }).click();
+    // Mid-run, after the results of round 1: the winner chips wait at the edge of their cards.
+    await expect(stage.getByRole("status")).toHaveText("Round 1 results", { timeout: 30_000 });
+    const chips = await stage.locator("[data-departed]").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+    expect(chips.length).toBeGreaterThan(0);
+    const texts = await bracketText(page).evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+    const overlaps = chips.flatMap((chip) =>
+      texts.filter((text) => chip.left < text.right && text.left < chip.right && chip.top < text.bottom && text.top < chip.bottom),
+    );
+    expect(overlaps, `a waiting chip covers a name or a score at ${width}px`).toEqual([]);
+    // At rest, after a skip and a close of the champion card, every name of every round shows in full.
+    await page.getByRole("button", { name: "Skip to the end" }).click();
+    await stage.getByRole("button", { name: "See the bracket" }).click();
+    const cut = await stage
+      .locator("[data-team-name]")
+      .evaluateAll((els) => els.filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.textContent));
+    expect(cut, `the bracket cuts a team name at ${width}px`).toEqual([]);
   });
 }
 
