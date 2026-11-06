@@ -3,7 +3,7 @@ The prose of the midseason report: the facts and the prose blocks of each chapte
 the write and the check of each blurb through the writer and the verifier of facts. The report has no writer of its own.
 """
 import json
-from collections.abc import Collection, Sequence
+from collections.abc import Collection, Mapping, Sequence
 from pathlib import Path
 
 import anthropic
@@ -73,11 +73,17 @@ ChapterFacts = tuple[str, str, list[Fact]]
 
 def prose_sheet(
     week: int, state: LeagueState, roast: Roast, later: Sequence[ChapterFacts] = (), *,
-    first: Sequence[ChapterFacts] = (),
+    first: Sequence[ChapterFacts] = (), callouts: Mapping[str, Sequence[Fact]] | None = None,
 ) -> FactSheet:
     """The fact sheet of the report: every fact and the prose blocks that cite them. Each chapter has one blurb block,
     and a roast block unless the roast is off. `first` holds the facts of each block before the state, such as the
-    opener, and `later` the facts of each chapter after the state."""
+    opener, and `later` the facts of each chapter after the state.
+
+    `callouts` holds the callout facts of the spread rule by chapter key. Each one joins the end of its chapter's
+    block. It names the team that holds the callout and each team that the rule moved off it. A moved team keeps its
+    facts and its place in the scope, so the blurb can name it, but not as the headline of the callout.
+    """
+    callouts = callouts or {}
     n = Nums()
     week_fact = fact(WEEK_FACT, f"The report counts week {n(week)} and every week before it.", n, [], [])
     teams = [team.name for team in state.teams]
@@ -86,6 +92,7 @@ def prose_sheet(
     facts: list[Fact] = []
     chapters: list[Chapter] = []
     for key, title, chapter_facts in blocks:
+        chapter_facts = [*chapter_facts, *callouts.get(key, ())]
         facts += chapter_facts
         ids = [f.id for f in chapter_facts] + [week_fact.id]
         # The players of the facts are the players that the blurb may name, such as the waiver hits.

@@ -3,7 +3,7 @@ The rules of Schedule luck and the Schedule swap, on small hand-built leagues: A
 self-meet rule of the swap, the median game of the swap, points against, and the close-game record.
 """
 from league.models import History, PastWeek
-from midseason.luck import SwapCell, schedule_luck
+from midseason.luck import SwapCell, schedule_luck, swap_rankings, with_swap_callouts
 from midseason.state import league_state
 
 
@@ -111,6 +111,26 @@ def test_the_team_with_the_most_records_better_than_its_own_is_called_out():
     # Team 2 is 1-1 for real and 2-0 with the schedule of team 3 and of team 4.
     assert luck.swap.most_better is not None
     assert (luck.swap.most_better.roster_id, luck.swap.most_better.count) == (2, 2)
+
+
+def test_the_biggest_miss_is_the_team_with_the_most_wins_to_gain_from_its_best_schedule():
+    _, luck = _luck(median_game=False)
+    # Teams 2 and 1 are each 1-1 for real and 2-0 with their best schedule. Team 2 sits higher in the standings.
+    # Team 3 gains nothing from its best schedule, so it is in no ranking of the biggest miss.
+    most_better, biggest_miss = swap_rankings(luck.swap)
+    assert biggest_miss == [2, 1]
+    assert most_better[0] == 2
+    assert luck.swap.biggest_miss is not None
+    assert (luck.swap.biggest_miss.roster_id, luck.swap.biggest_miss.gain, luck.swap.biggest_miss.place) == (2, 1, 1)
+
+
+def test_the_spread_rule_moves_a_swap_callout_to_the_next_team_with_its_place():
+    _, luck = _luck(median_game=False)
+    moved = with_swap_callouts(luck, most_better=(1, 2), biggest_miss=(1, 2))
+    assert moved.swap.most_better is not None and moved.swap.biggest_miss is not None
+    assert (moved.swap.most_better.roster_id, moved.swap.most_better.place) == (1, 2)
+    assert (moved.swap.biggest_miss.roster_id, moved.swap.biggest_miss.schedule_of) == (1, 2)
+    assert with_swap_callouts(luck, most_better=None, biggest_miss=None).swap.most_better is None
 
 
 def test_each_team_has_points_against_with_its_rank_most_first():
