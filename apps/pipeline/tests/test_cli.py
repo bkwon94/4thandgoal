@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 from conftest import save_chart_read
-from cpc import cli_root
+from cpc import cli_root, cpc_client
 
 
 def _no_nflverse(season, week, player_ids, players):
@@ -706,16 +706,12 @@ def test_the_check_client_command_names_sim_for_a_client_with_midseason_and_no_s
 
 
 def test_the_midseason_command_writes_the_report_to_the_build_folder(tmp_path, monkeypatch, capsys):
-    import shutil
+    from test_midseason import copy_cpc_week_8
 
     from cornerstone import cli
 
     cli_root(tmp_path)
-    data = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026"
-    season = tmp_path / "clients" / "cpc" / "data" / "2026"
-    shutil.copytree(data / "history", season / "history")
-    (season / "week-08").mkdir()
-    shutil.copy(data / "week-08" / "facts.json", season / "week-08" / "facts.json")
+    copy_cpc_week_8(cpc_client(root=tmp_path))
     monkeypatch.chdir(tmp_path)
 
     assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]) == 0

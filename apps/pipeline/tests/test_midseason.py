@@ -16,18 +16,25 @@ from cornerstone.value_models import VALUE_MODELS
 from facts.writer import claude_call
 from league.client import read_client_values
 from league.models import Sentence, Verdict, VerifyOut, WriterOut
-from league.paths import build_dir, client_dir, history_root, week_dir
+from league.paths import build_dir, client_dir, history_root, nflverse_cache_dir, week_dir
 
 # The real saved data of CPC 2026. The tests copy it, so no test writes under clients/.
 CPC_DATA = client_dir(ROOT, "cpc") / "data" / "2026"
 
 
-def _cpc_week_8(tmp_path: Path):
-    """A CPC client folder in `tmp_path` with the saved history and the week 8 facts of the real CPC data."""
-    client = cpc_client(at=tmp_path)
+def copy_cpc_week_8(client) -> None:
+    """Copy the saved history and week 8 of the real CPC data into the client folder, and the NFL schedule of the
+    fixtures into its NFL data. The sim reads the raw week and the schedule, which git ignores in the real cache."""
     shutil.copytree(CPC_DATA / "history", history_root(client.folder, 2026))
-    week_dir(client.folder, 2026, 8).mkdir(parents=True)
-    shutil.copy(CPC_DATA / "week-08" / "facts.json", week_dir(client.folder, 2026, 8) / "facts.json")
+    shutil.copytree(CPC_DATA / "week-08", week_dir(client.folder, 2026, 8))
+    nflverse_cache_dir(client.nfl_dir).mkdir(parents=True, exist_ok=True)
+    shutil.copy(Path(__file__).parent / "fixtures" / "nflverse" / "games.csv", nflverse_cache_dir(client.nfl_dir))
+
+
+def _cpc_week_8(tmp_path: Path):
+    """A CPC client folder in `tmp_path` with the saved history and week 8 of the real CPC data."""
+    client = cpc_client(at=tmp_path)
+    copy_cpc_week_8(client)
     return client
 
 
@@ -98,13 +105,16 @@ def test_points_for_is_the_sum_of_the_weekly_scores(tmp_path):
     assert rows["All You Need Is Love"]["rank"] == 1
 
 
-def test_each_row_has_the_playoff_odds_of_the_week(tmp_path):
+def test_each_row_has_the_playoff_odds_of_the_sim_within_2_points_of_the_week(tmp_path):
     client = _cpc_week_8(tmp_path)
     saved = json.loads((CPC_DATA / "week-08" / "facts.json").read_text(encoding="utf-8"))["odds"]["teams"]
     rows = _state_rows(_report(run_midseason(2026, 8, _call(), client=client)))
+    sim = json.loads((build_dir(client.folder) / "2026" / "sim.json").read_text(encoding="utf-8"))
     assert len(rows) == 12
     assert {row["roster_id"]: row["playoff_odds"] for row in rows.values()} == {
-        int(rid): odds["playoff"] for rid, odds in saved.items()}
+        int(rid): team["playoff"] for rid, team in sim["teams"].items()}
+    for row in rows.values():
+        assert abs(row["playoff_odds"] - saved[str(row["roster_id"])]["playoff"]) <= 2
 
 
 def test_a_rerun_gives_the_same_file(tmp_path):

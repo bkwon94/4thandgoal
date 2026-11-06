@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 from pydantic import TypeAdapter
 
 from cornerstone.render import render_week
+from cornerstone.season_sim import week_sim
 from cornerstone.sheet import (
     build_bundle,
     check_week_is_buildable,
@@ -82,6 +83,7 @@ from midseason.review import review_text, write_review
 from midseason.state import league_state
 from midseason.values import MidseasonValues
 from rankings.published import render_rankings
+from sim.published import sim_file, write_sim
 from waiver.board import waiver_board
 from waiver.price import bid_history
 from waiver.research import SearchCall, research_board, search_call
@@ -693,7 +695,8 @@ def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -
     saved facts of its prose, and the review file. It reads the saved history of weeks 1 to `week` and the saved facts
     of `week`. It writes nothing to published/, so only the publish of the report puts it live.
 
-    The app wires the odds into the report: the playoff odds of the saved week go in through the port of midseason.
+    The app runs the sim of the rest of the season and writes sim.json beside the draft. The playoff odds of the sim go
+    into the report through the port of midseason.
     Each prose block goes through the writer and the verifier of facts, with the roast setting of the client.
     """
     facts = week_dir(client.folder, season, week) / "facts.json"
@@ -705,8 +708,15 @@ def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -
     # A gap would drop a week from each record, so the report waits for a complete history.
     if not history.complete():
         raise BuildStopped(HISTORY_GAP.format(week=week))
-    odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
     names = {rid: team.name for rid, team in bundle.data.teams.items()}
+    # The sim writes sim.json, and its playoff odds reach the report through the port of midseason. So the report and
+    # the replay give one number. The week odds stand in only when the week gives the sim no inputs.
+    sim = week_sim(season, week, history, client=client)
+    if sim is not None:
+        write_sim(sim_file(sim, names), build_dir(client.folder))
+        odds = {rid: team.playoff for rid, team in sim.teams.items()}
+    else:
+        odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
     state = league_state(history, week, names, playoff_odds=odds, median_game=client.settings.median_game)
     roast = midseason_values(client).roast
     sheet = prose_sheet(week, state, roast)

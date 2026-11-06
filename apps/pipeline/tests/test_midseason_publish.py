@@ -4,7 +4,6 @@ commits only midseason.json and sim.json of the season. Each test builds a real 
 """
 import io
 import json
-import shutil
 import subprocess
 from pathlib import Path
 
@@ -12,13 +11,13 @@ import pytest
 from cpc import cli_root, cpc_client
 from fakes import FakeWriter
 from rule_report import clean_git_env, report
-from test_midseason import CPC_DATA, ROAST_BLURB, STATE_BLURB, _call, _passed
+from test_midseason import ROAST_BLURB, STATE_BLURB, _call, _passed, copy_cpc_week_8
 from test_rule_publish import _outside_offenses
 
 from cornerstone.pipeline import run_midseason
 from cornerstone.publish import PublishError, run_midseason_publish
 from league.models import Verdict, VerifyOut
-from league.paths import build_dir, history_root, week_dir
+from league.paths import build_dir
 
 
 def _git(cwd: Path, *args: str) -> str:
@@ -37,12 +36,8 @@ def _drafted_repo(tmp_path: Path, monkeypatch):
     pipeline = root / "apps" / "pipeline"
     pipeline.mkdir(parents=True)
     client = cpc_client(at=root / "clients" / "cpc")
-    shutil.copytree(CPC_DATA / "history", history_root(client.folder, 2026))
-    week_dir(client.folder, 2026, 8).mkdir(parents=True)
-    shutil.copy(CPC_DATA / "week-08" / "facts.json", week_dir(client.folder, 2026, 8) / "facts.json")
+    copy_cpc_week_8(client)
     run_midseason(2026, 8, _call(STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2)), client=client)
-    # Ticket 03 writes the real sim.json. The publish copies the bytes as they are.
-    (build_dir(client.folder) / "2026" / "sim.json").write_text('{"week": 8}\n', encoding="utf-8")
     _git(root, "init", "-b", "main")
     _git(root, "config", "user.email", "test@example.com")
     _git(root, "config", "user.name", "Test")
@@ -118,15 +113,11 @@ def test_the_midseason_publish_command_prints_the_refusal_and_names_the_blurb(tm
     for name in ("GIT_DIR", "GIT_INDEX_FILE", "GIT_WORK_TREE"):
         monkeypatch.delenv(name, raising=False)
     cli_root(tmp_path)
-    season = tmp_path / "clients" / "cpc" / "data" / "2026"
-    shutil.copytree(CPC_DATA / "history", season / "history")
-    (season / "week-08").mkdir()
-    shutil.copy(CPC_DATA / "week-08" / "facts.json", season / "week-08" / "facts.json")
+    copy_cpc_week_8(cpc_client(root=tmp_path))
     monkeypatch.chdir(tmp_path)
     clean = FakeWriter([STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2)])
     assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"], writer=clean) == 0
     build = tmp_path / "clients" / "cpc" / "build" / "2026"
-    (build / "sim.json").write_text("{}\n", encoding="utf-8")
     draft = json.loads((build / "midseason.json").read_text(encoding="utf-8"))
     draft["acts"][0]["chapters"][0]["blurb"]["sentences"][0]["text"] = "All You Need Is Love sits at 999."
     (build / "midseason.json").write_text(json.dumps(draft), encoding="utf-8")
