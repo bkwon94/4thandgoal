@@ -25,7 +25,7 @@ The site evidence runner does not use `uv run`, so it runs at the same time. A p
 Before the push, read the result of the run.
 
 - A green run needs no more work. The push does not wait on a run that is already green.
-- A red run gets fixed before the push. Run again only the check of the failed member: `make -C apps/<app> check`. Do not run the full check again.
+- Fix a red run before the push. Run again only the check of the failed member: `make -C apps/<app> check`. Do not run the full check again.
 - If a test of the spec covers the background check, record the start time, the end time, and the last lines of the log in its evidence.
 
 ## A site test
