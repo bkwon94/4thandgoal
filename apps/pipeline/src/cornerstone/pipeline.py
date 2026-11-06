@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 from pydantic import TypeAdapter
 
 from cornerstone.render import render_week
+from cornerstone.season_schedule import remaining_schedule
 from cornerstone.season_sim import week_sim
 from cornerstone.sheet import (
     build_bundle,
@@ -85,7 +86,9 @@ from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from managers.render import render_managers
 from managers.season import saved_awards
 from midseason.arcs import arcs_facts, team_arcs
+from midseason.look_ahead import look_ahead, look_ahead_facts
 from midseason.luck import luck_facts, schedule_luck
+from midseason.opener import title_race, title_race_facts
 from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
 from midseason.review import review_text, write_review
@@ -730,23 +733,29 @@ def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -
     if sim is not None:
         write_sim(sim_file(sim, names), build_dir(client.folder))
         odds = {rid: team.playoff for rid, team in sim.teams.items()}
+        title_odds = {rid: team.title for rid, team in sim.teams.items()}
     else:
         odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
+        # The weekly odds hold no title odds, so the opener names only the record leader.
+        title_odds = {}
     median_game = client.settings.median_game
     state = league_state(history, week, names, playoff_odds=odds, median_game=median_game)
     luck = schedule_luck(history, week, state, median_game=median_game)
     arcs = team_arcs(history, week, state, {team.roster_id: team.schedule_luck for team in luck.teams},
                      median_game=median_game)
+    race = title_race(state, title_odds)
+    look = look_ahead(state, remaining_schedule(season, week, client=client))
     roast = midseason_values(client).roast
-    later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule luck", luck_facts(luck))]
-    sheet = prose_sheet(week, state, roast, later)
+    later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule luck", luck_facts(luck)),
+             ("look-ahead", "The look ahead", look_ahead_facts(look))]
+    sheet = prose_sheet(week, state, roast, later, first=[("opener", "The title race", title_race_facts(race))])
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
     write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)
     command = f"make midseason-publish CLIENT={client.slug} WEEK={week}"
     review = write_review(review_text(season, week, roast, sheet, blurbs, results, command), season_build)
     log.info("review file: %s", review)
-    report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck)
+    report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck, race=race, look=look)
     return write_midseason(report, build_dir(client.folder))
 
 

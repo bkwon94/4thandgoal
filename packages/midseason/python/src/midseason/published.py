@@ -12,7 +12,9 @@ from pydantic import BaseModel, Field
 from league.files import write_bytes_atomic
 from league.models import Blurb
 from midseason.arcs import Arcs, ArcsChapter
+from midseason.look_ahead import LOOK_AHEAD, LookAhead, LookAheadChapter
 from midseason.luck import LuckChapter, ScheduleLuck
+from midseason.opener import OPENER, Opener, TitleRace
 from midseason.prose import ROAST_SUFFIX
 from midseason.state import LeagueState
 
@@ -36,7 +38,7 @@ class StateChapter(BaseModel):
 
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
-Chapter = Annotated[StateChapter | ArcsChapter | LuckChapter, Field(discriminator="key")]
+Chapter = Annotated[StateChapter | ArcsChapter | LuckChapter | LookAheadChapter, Field(discriminator="key")]
 
 
 class Act(BaseModel):
@@ -54,31 +56,40 @@ class MidseasonReport(BaseModel):
     week: int
     # The last published week that still shows the takeover on the home page.
     takeover_end_week: int
+    # The top of the report, the title race. The takeover of the home page shows it too.
+    opener: Opener
     acts: list[Act]
 
 
 def midseason_report(
     season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *, arcs: Arcs, luck: ScheduleLuck,
+    race: TitleRace, look: LookAhead,
 ) -> MidseasonReport:
-    """The report of `week` from the facts of each chapter and the blurbs by prose block key. Act I holds the state
-    of the league, the arcs, and Schedule luck."""
+    """The report of `week` from the facts of each chapter and the blurbs by prose block key. The opener is the title
+    race. Act I holds the state of the league, the arcs, and Schedule luck. Act III holds the look ahead."""
     act_one: list[Chapter] = [
         StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX)),
         ArcsChapter(facts=arcs, blurb=blurbs.get("arcs"), roast=blurbs.get("arcs" + ROAST_SUFFIX)),
         LuckChapter(facts=luck, blurb=blurbs.get("luck"), roast=blurbs.get("luck" + ROAST_SUFFIX)),
     ]
+    act_three: list[Chapter] = [
+        LookAheadChapter(facts=look, blurb=blurbs.get(LOOK_AHEAD), roast=blurbs.get(LOOK_AHEAD + ROAST_SUFFIX)),
+    ]
     return MidseasonReport(
         season=season,
         week=week,
         takeover_end_week=week + TAKEOVER_WEEKS,
-        acts=[Act(key="how-we-got-here", title="How we got here", chapters=act_one)],
+        opener=Opener(facts=race, blurb=blurbs.get(OPENER), roast=blurbs.get(OPENER + ROAST_SUFFIX)),
+        acts=[Act(key="how-we-got-here", title="How we got here", chapters=act_one),
+              Act(key="what-comes-next", title="What comes next", chapters=act_three)],
     )
 
 
 def report_blurbs(report: MidseasonReport) -> list[Blurb]:
-    """Every blurb of the report in page order: each chapter's blurb, then its roast."""
-    return [blurb for act in report.acts for chapter in act.chapters
-            for blurb in (chapter.blurb, chapter.roast) if blurb is not None]
+    """Every blurb of the report in page order: the opener's blurb and its roast, then each chapter's."""
+    opener = [blurb for blurb in (report.opener.blurb, report.opener.roast) if blurb is not None]
+    return opener + [blurb for act in report.acts for chapter in act.chapters
+                     for blurb in (chapter.blurb, chapter.roast) if blurb is not None]
 
 
 def read_midseason(season_build: Path) -> MidseasonReport:

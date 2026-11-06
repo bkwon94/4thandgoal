@@ -80,11 +80,33 @@ LUCK_ROAST = WriterOut(sentences=[
     Sentence(text="Bo Girds does better with 10 other schedules than with its own.", fact_ids=["SW.most"]),
     Sentence(text="To Infinity and Bijan has 947.27 points against.", fact_ids=["SL.7.against"]),
 ])
+# The blurbs of the opener and of the look ahead that pass the code check on the real CPC week 8 facts.
+OPENER_BLURB = WriterOut(sentences=[
+    Sentence(text="London Cooking leads the race at 16.8% title odds.", fact_ids=["OP.5.title"]),
+    Sentence(text="All You Need Is Love leads at 11-5 with 9.7% title odds.", fact_ids=["OP.record"]),
+    Sentence(text="Nobody owns this race.", fact_ids=[]),
+])
+OPENER_ROAST = WriterOut(sentences=[
+    Sentence(text="All You Need Is Love is 11-5 and only 6th in title odds.", fact_ids=["OP.record"]),
+    Sentence(text="Bo Girds has 16.3% title odds.", fact_ids=["OP.6.title"]),
+])
+LOOK_BLURB = WriterOut(sentences=[
+    Sentence(text="Maye d'force B with U gets the softest schedule at 0.44.", fact_ids=["LA.9.rate"]),
+    Sentence(text="behold the lamb gets the hardest at 0.56.", fact_ids=["LA.10.rate"]),
+    Sentence(text="Good luck.", fact_ids=[]),
+])
+LOOK_ROAST = WriterOut(sentences=[
+    Sentence(text="behold the lamb faces a 0.56 win rate.", fact_ids=["LA.10.rate"]),
+    Sentence(text="NFC Least faces a 0.54 win rate too.", fact_ids=["LA.4.rate"]),
+])
+# The writer answers of the opener, which the build writes first.
+OPENER_BUILD = [OPENER_BLURB, _passed(3), OPENER_ROAST, _passed(2)]
 # The writer answers of a clean build, in page order: each blurb, then the verdicts that pass it.
-CLEAN_BUILD = [STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), ARCS_BLURB, _passed(3), ARCS_ROAST, _passed(2),
-               LUCK_BLURB, _passed(3), LUCK_ROAST, _passed(2)]
+CLEAN_BUILD = [*OPENER_BUILD, STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), ARCS_BLURB, _passed(3), ARCS_ROAST,
+               _passed(2), LUCK_BLURB, _passed(3), LUCK_ROAST, _passed(2), LOOK_BLURB, _passed(3), LOOK_ROAST, _passed(2)]
 # The verdicts of the recheck of the publish on a clean draft, in page order.
-CLEAN_RECHECK = [_passed(3), _passed(2), _passed(3), _passed(2), _passed(3), _passed(2)]
+CLEAN_RECHECK = [_passed(3), _passed(2), _passed(3), _passed(2), _passed(3), _passed(2), _passed(3), _passed(2),
+                 _passed(3), _passed(2)]
 
 
 def _clean_call():
@@ -119,7 +141,7 @@ def test_the_build_writes_midseason_json_to_the_build_folder_of_the_season_and_n
     assert out == build_dir(client.folder) / "2026" / "midseason.json"
     report = _report(out)
     assert (report["schema_version"], report["season"], report["week"], report["takeover_end_week"]) == (1, 2026, 8, 9)
-    assert [act["key"] for act in report["acts"]] == ["how-we-got-here"]
+    assert [act["key"] for act in report["acts"]] == ["how-we-got-here", "what-comes-next"]
     assert not (client.folder / "published").exists()
 
 
@@ -188,7 +210,7 @@ def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_n
     # AT-40. The roast gets two attempts of two reaction sentences each, so the verifier fails both.
     no_fact = WriterOut(sentences=[Sentence(text="Oh no.", fact_ids=[]), Sentence(text="Truly awful.", fact_ids=[])])
     client = _cpc_week_8(tmp_path)
-    report = _report(run_midseason(2026, 8, _call(STATE_BLURB, _passed(3), no_fact, no_fact), client=client))
+    report = _report(run_midseason(2026, 8, _call(*OPENER_BUILD, STATE_BLURB, _passed(3), no_fact, no_fact), client=client))
     roasts = _roasts(report)
     assert roasts
     for roast in roasts:
@@ -200,30 +222,34 @@ def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_n
 def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_path):
     report = _report(run_midseason(2026, 8, _clean_call(), client=_cpc_week_8(tmp_path)))
     assert [[s["fact_ids"] for s in roast["sentences"]] for roast in _roasts(report)] == [
-        [["ST.4.record"], ["ST.6.streak"]], [["ARC.6.snakebit"], ["ARC.8.turnaround"]], [["SW.most"], ["SL.7.against"]]]
+        [["ST.4.record"], ["ST.6.streak"]], [["ARC.6.snakebit"], ["ARC.8.turnaround"]], [["SW.most"], ["SL.7.against"]],
+        [["LA.10.rate"], ["LA.4.rate"]]]
+    assert [s["fact_ids"] for s in report["opener"]["roast"]["sentences"]] == [["OP.record"], ["OP.6.title"]]
 
 
 def test_with_the_roast_off_the_draft_has_no_roast_lines(tmp_path):
     # AT-41, on a local copy of client.toml.
     client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "off")
-    writer = FakeWriter([STATE_BLURB, _passed(3), ARCS_BLURB, _passed(3), LUCK_BLURB, _passed(3)])
+    writer = FakeWriter([OPENER_BLURB, _passed(3), STATE_BLURB, _passed(3), ARCS_BLURB, _passed(3), LUCK_BLURB,
+                         _passed(3), LOOK_BLURB, _passed(3)])
     report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client))
-    assert _roasts(report) == []
+    assert _roasts(report) == [] and report["opener"]["roast"] is None
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     assert "Roast: off." in review and "roast" not in review.split("Roast: off.")[1].lower()
     # The writer of each prose block hears that the roast is off, so its blurb holds no roast either.
     assert "Roast: off. Write no roast" in (writer.calls[0].system or "")
-    assert len(writer.calls) == 6
+    assert len(writer.calls) == 10
 
 
 def test_with_the_roast_warm_the_roast_block_gets_the_roast_rules_and_the_soft_step(tmp_path):
     client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "warm")
     writer = FakeWriter(list(CLEAN_BUILD))
     report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client))
-    assert len(_roasts(report)) == 3
-    roast_system = writer.calls[2].system or ""
+    assert len(_roasts(report)) == 4
+    # The calls of the state come after the four calls of the opener.
+    roast_system = writer.calls[6].system or ""
     assert "Never roast life outside fantasy" in roast_system and "Roast: warm." in roast_system
-    assert "Roast:" not in (writer.calls[0].system or "")
+    assert "Roast:" not in (writer.calls[4].system or "")
 
 
 def _chapter(report: dict, key: str) -> dict:
@@ -290,3 +316,61 @@ def test_the_schedule_swap_diagonal_is_the_standings_and_bo_girds_is_14_2_with_m
     best = {callout["roster_id"]: callout for callout in swap["best_missed"]}
     assert best[ids["Bo Girds"]]["schedule_of"] == ids["Maye d'force B with U"]
     assert swap["most_better"] == {"roster_id": ids["Bo Girds"], "count": 10}
+
+
+def _act_chapter(report: dict, act_key: str, key: str) -> dict:
+    act = next(act for act in report["acts"] if act["key"] == act_key)
+    return next(chapter for chapter in act["chapters"] if chapter["key"] == key)
+
+
+def test_the_look_ahead_has_maye_s_schedule_softest_and_behold_the_lamb_s_hardest(tmp_path):
+    # AT-24.
+    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path)))
+    look = _act_chapter(report, "what-comes-next", "look-ahead")["facts"]
+    teams = {team["name"]: team for team in look["teams"]}
+    assert len(teams) == 12
+    ids = {name: team["roster_id"] for name, team in teams.items()}
+    assert look["softest"] == ids["Maye d'force B with U"]
+    assert teams["Maye d'force B with U"]["opponents_rate"] == 0.44
+    assert look["hardest"] == ids["behold the lamb"]
+    assert teams["behold the lamb"]["opponents_rate"] == 0.56
+    # Each team has the 6 games of weeks 9 to 14, each with the opponent's full record of the standings.
+    state = _state_rows(report)
+    for team in teams.values():
+        assert [game["week"] for game in team["games"]] == list(range(9, 15))
+        for game in team["games"]:
+            assert (game["wins"], game["losses"]) == (state[game["name"]]["wins"], state[game["name"]]["losses"])
+
+
+def test_the_opener_is_the_title_race_with_the_leaders_and_all_you_need_is_love_at_11_5(tmp_path):
+    # AT-25. The title odds come from the sim, so the opener and the replay give one number.
+    client = _cpc_week_8(tmp_path)
+    report = _report(run_midseason(2026, 8, _call(), client=client))
+    sim = json.loads((build_dir(client.folder) / "2026" / "sim.json").read_text(encoding="utf-8"))["teams"]
+    title = {int(rid): team["title"] for rid, team in sim.items()}
+    race = report["opener"]["facts"]
+    assert report["opener"]["title"] == "The title race"
+    best = sorted(title, key=lambda rid: -title[rid])[:3]
+    assert [(leader["roster_id"], leader["title_odds"]) for leader in race["leaders"]] == [
+        (rid, title[rid]) for rid in best]
+    leader = race["record_leader"]
+    assert (leader["name"], leader["wins"], leader["losses"]) == ("All You Need Is Love", 11, 5)
+    assert leader["title_odds"] == title[leader["roster_id"]]
+    # No team owns the title, and the record leader is not the favorite.
+    assert race["leaders"][0]["title_odds"] < 50
+    assert leader["roster_id"] not in best
+
+
+def test_the_opener_and_the_look_ahead_have_their_prose_blocks_in_the_review_file(tmp_path):
+    client = _cpc_week_8(tmp_path)
+    report = _report(run_midseason(2026, 8, _clean_call(), client=client))
+    review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
+    # The opener is the top of the page, so its blocks come first in the review file.
+    assert review.index("## opener: The title race") < review.index("## opener.roast") < review.index("## state:")
+    assert "## look-ahead: The look ahead" in review and "## look-ahead.roast" in review
+    assert "London Cooking leads the race at 16.8% title odds. [OP.5.title]" in review
+    assert "Maye d'force B with U gets the softest schedule at 0.44. [LA.9.rate]" in review
+    assert review.count("Verifier: passed on attempt 1.") == 10
+    assert report["opener"]["blurb"]["sentences"][0]["fact_ids"] == ["OP.5.title"]
+    look = _act_chapter(report, "what-comes-next", "look-ahead")
+    assert look["blurb"]["sentences"][0]["fact_ids"] == ["LA.9.rate"]

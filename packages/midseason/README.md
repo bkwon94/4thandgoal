@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The state of the league in `state.py`: the full record, points for and against, the streak, and the playoff odds of each team.
+- The state of the league in `state.py`: the full record, points for and against, the streak, and the playoff odds of each team. The title race of the opener in `opener.py`, and the games left of each team in `look_ahead.py`.
 - The arcs in `arcs.py`: at most 2 of the 8 arcs of decision ticket 05 per team, the biggest swing first.
 - Schedule luck in `luck.py`: All-play wins, Schedule luck, points against, the close-game record, and the Schedule swap.
 - The shape of `midseason.json` and its writer in `published.py`, with the acts and the chapters (`cpc-midseason`, imported as `midseason`).
@@ -13,7 +13,7 @@
 
 ## Ports
 
-- `playoff_odds` of `league_state` in `state.py` takes the playoff odds by roster ID from the app. The report imports no odds engine.
+- `playoff_odds` of `league_state` and `title_odds` of `title_race` take the sim odds by roster ID from the app, and `look_ahead` takes the pairs left. The report imports no odds engine.
 - `write_prose` and `recheck_prose` take the Claude call from the app. Each blurb goes through the writer and the verifier of `facts`, so the package has no writer of its own.
 
 ## Does not do
