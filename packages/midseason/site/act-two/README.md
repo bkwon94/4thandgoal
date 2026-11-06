@@ -2,7 +2,7 @@
 
 ## Knows
 
-- Draft steals and busts: the cost against the points at the position, the tag of each bust, and the one that got away.
+- Draft steals and busts: the cost against the points at the position and the tag of each bust.
 - Waiver hits and misses: the hits by Points over the line, the misses, the outbid claims, and the streamers.
 - The trade report card: the top 3 trades as full cards with the record of each team since the trade, then every
   other trade as a short row. A player out in the first week after his trade has the tag "Hurt on arrival".

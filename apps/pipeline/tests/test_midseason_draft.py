@@ -74,12 +74,11 @@ def test_the_hurt_tag_reads_the_missed_game_rule_of_the_injury_toll(tmp_path):
     assert busts["De'Von Achane"]["tag"] == "just bad"
 
 
-def test_a_steal_that_its_drafter_let_go_carries_the_one_that_got_away_line(tmp_path):
-    # AT-14: Bo Girds bought Tyler Allgeier for $2 and traded him in week 2. Golden stayed, so he has no line.
+def test_a_steal_has_no_one_that_got_away_line(tmp_path):
+    # AT-14 is retired: decision 15 removed the line. Tyler Allgeier left Bo Girds, and his row has no line.
     steals = _by_name(_cpc_draft(tmp_path)["steals"])
-    allgeier = steals["Tyler Allgeier"]
-    assert (allgeier["cost"], allgeier["team"], allgeier["line"]) == (2, "Bo Girds", "the one that got away")
-    assert steals["Matthew Golden"]["line"] is None
+    assert steals["Tyler Allgeier"]["team"] == "Bo Girds"
+    assert all("line" not in row for row in steals.values())
 
 
 def test_the_lists_hold_the_top_5_by_swing_with_starters_only_and_no_kicker_or_defense(tmp_path):

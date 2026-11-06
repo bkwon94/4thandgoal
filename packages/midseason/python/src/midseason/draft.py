@@ -1,6 +1,6 @@
 """
 The draft steals and busts of the midseason report, the first chapter of Act II: each pick's cost rank at its position
-against its points rank, with the injury tag of a bust and "the one that got away" line of a steal. Decision ticket 02.
+against its points rank, with the injury tag of a bust. Decision ticket 02.
 """
 from collections.abc import Mapping, Sequence
 from decimal import Decimal
@@ -22,7 +22,6 @@ STARTER_RANK: dict[str, int] = {"QB": 12, "TE": 12, "RB": 24, "WR": 24}
 LIST_SIZE = 5
 # A bust who missed this many games with an injury is "hurt". The tag changes the roast, not the rank.
 HURT_GAMES = 2
-GOT_AWAY = "the one that got away"
 
 
 class DraftPick(BaseModel):
@@ -56,8 +55,6 @@ class DraftRow(BaseModel):
     swing: int
     # The injury tag of a bust. None on a steal, and None on a bust when the build has no injury report.
     tag: InjuryTag | None = None
-    # "the one that got away" on a steal that its drafter no longer has. None on any other row.
-    line: str | None = None
 
 
 class DraftValue(BaseModel):
@@ -98,7 +95,6 @@ def draft_value(
                 cost=pick.price if draft_type == "auction" and pick.price is not None else pick.pick_no,
                 cost_rank=cost_rank, points=points[pick.player_id], points_rank=points_rank,
                 swing=cost_rank - points_rank))
-    held = history.weeks[through].rosters
     # A tie in swing goes to the cheaper pick for a steal and to the dearer pick for a bust.
     steals = sorted((row for row in rows if row.swing > 0 and row.points_rank <= STARTER_RANK[row.position]),
                     key=lambda row: (-row.swing, -row.cost_rank))[:LIST_SIZE]
@@ -106,8 +102,7 @@ def draft_value(
                    key=lambda row: (row.swing, row.cost_rank))[:LIST_SIZE]
     return DraftValue(
         draft_type=draft_type,
-        steals=[row.model_copy(update={"line": None if row.player_id in held.get(row.roster_id, []) else GOT_AWAY})
-                for row in steals],
+        steals=steals,
         busts=[row.model_copy(update={"tag": None if injured_games is None else
                                       "hurt" if injured_games.get(row.player_id, 0) >= HURT_GAMES else "just bad"})
                for row in busts],
@@ -122,7 +117,7 @@ def _cost_text(draft: DraftValue, row: DraftRow, n: Nums) -> str:
 
 
 def draft_facts(draft: DraftValue) -> list[Fact]:
-    """The facts of the draft steals and busts: the pick and the points of each row, and its tag or its line.
+    """The facts of the draft steals and busts: the pick and the points of each row, and its tag.
 
     Each fact holds two numbers at most, so its text fits one sentence of a blurb.
     """
@@ -139,8 +134,5 @@ def draft_facts(draft: DraftValue) -> list[Fact]:
                               f"{n(row.points)} points.", n, [], [row.name]))
             if row.tag is not None:
                 facts.append(fact(f"{prefix}.tag", f"The bust of {row.name} is tagged {row.tag}.", Nums(), [row.team],
-                                  [row.name]))
-            if row.line is not None:
-                facts.append(fact(f"{prefix}.line", f"{row.team} let {row.name} go: {row.line}.", Nums(), [row.team],
                                   [row.name]))
     return facts

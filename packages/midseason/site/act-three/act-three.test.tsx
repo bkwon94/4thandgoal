@@ -1,9 +1,8 @@
 /**
  * Tests for the chapters of Act III on the real build of CPC 2026 week 8 in the package fixture.
- * They read what a manager sees: each team's games left with the opponents' records, and the players to watch.
+ * They read what a manager sees: each team's games left with the opponents' records.
  */
 import { cleanup, fireEvent, render, within } from "@testing-library/react";
-import { oneDecimal } from "@cpc/design/format/format";
 import { afterEach, describe, expect, it } from "vitest";
 import { midseason } from "../fixtures/midseason";
 import { MidseasonScreen } from "../report/midseason-screen";
@@ -63,34 +62,10 @@ describe("the look ahead", () => {
   });
 });
 
-describe("players to watch", () => {
-  it("shows Due to rise, Due to fall, and Grab him now, 3 players each", () => {
+describe("no players to watch", () => {
+  it("has no Players to watch chapter and no Grab him now", () => {
     renderReport();
-    const facts = chapterOf("watch").facts;
-    const chapter = chapterEl("watch");
-    const lists = [
-      ["Due to Rise", facts.due_to_rise],
-      ["Due to Fall", facts.due_to_fall],
-      ["Grab Him Now", facts.grab_him_now],
-    ] as const;
-    for (const [name, players] of lists) {
-      const rows = chapter.getByRole("list", { name }).children;
-      expect(rows).toHaveLength(3);
-      expect([...rows].map((row) => row.textContent)).toEqual(players.map((p) => expect.stringContaining(p.name)));
-    }
-  });
-
-  it("gives the Expected gap a game of each rise and fall, and the projection and Free agent tag of each grab", () => {
-    renderReport();
-    const facts = chapterOf("watch").facts;
-    const chapter = chapterEl("watch");
-    const rise = chapter.getByRole("list", { name: "Due to Rise" }).children[0];
-    expect(rise.textContent).toContain(facts.due_to_rise[0].manager);
-    expect(rise.textContent).toContain(`${oneDecimal(-facts.due_to_rise[0].gap)} a game under`);
-    const fall = chapter.getByRole("list", { name: "Due to Fall" }).children[0];
-    expect(fall.textContent).toContain(`${oneDecimal(facts.due_to_fall[0].gap)} a game over`);
-    const grab = chapter.getByRole("list", { name: "Grab Him Now" }).children[0];
-    expect(grab.textContent).toContain("Free agent");
-    expect(grab.textContent).toContain(`${Math.round(facts.grab_him_now[0].projection)} projected`);
+    expect(document.getElementById("watch")).toBeNull();
+    expect(document.body.textContent).not.toMatch(/Players to Watch|Grab Him Now/i);
   });
 });

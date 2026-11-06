@@ -25,7 +25,7 @@ CPC_DATA = client_dir(ROOT, "cpc") / "data" / "2026"
 # The rosters of CPC from Sleeper on 2026-11-05, after the week 9 moves. A manager dropped the Buccaneers DEF by then.
 ROSTERS_NOW = Path(__file__).parent / "fixtures" / "midseason" / "cpc-rosters-now.json"
 # The provider of the report's fetch of each week's transactions: the saved CPC data with the full weeks of Sleeper.
-# Its live fetch gives the rosters now, which Position top 10 and the players to watch read.
+# Its live fetch gives the rosters now, which Position top 10 reads.
 CPC_PROVIDER = FixtureProvider(raw_dir=CPC_DATA / "week-08" / "raw", history_root=CPC_DATA / "history",
                                transactions=CPC_TRANSACTIONS, rosters_now=ROSTERS_NOW)
 # The count of sim runs of a test build. 500 runs keep each build fast. A test that reads a number of the full count
@@ -187,7 +187,7 @@ RECORDS_ROAST = WriterOut(sentences=[
     Sentence(text="To Infinity and Bijan scored 46.08 in week 6.", fact_ids=["RB.low"]),
     Sentence(text="The Blue Tent lost to All You Need Is Love by 0.4 in week 3.", fact_ids=["AW.heartbreak"]),
 ])
-# The blurbs of the injury toll, Position top 10, and the players to watch, each in the shape that passes the code
+# The blurbs of the injury toll and Position top 10, each in the shape that passes the code
 # check on the real CPC week 8 facts with the rosters now.
 INJURY_BLURB = WriterOut(sentences=[
     Sentence(text="behold the lamb lost 9 starter games to injury, 1st in the league.", fact_ids=["IT.10"]),
@@ -208,29 +208,15 @@ TOP10_ROAST = WriterOut(sentences=[
     Sentence(text="Tampa Bay Buccaneers is the DEF #3 with 77.75 points, a free agent.", fact_ids=["TOP.DEF.3"]),
     Sentence(text="CeeDee Lamb is the WR #2 with 138.3 points, rostered by NFC Least.", fact_ids=["TOP.WR.2"]),
 ])
-WATCH_BLURB = WriterOut(sentences=[
-    Sentence(text="Jaxon Smith-Njigba of Lil Fridge scores 7.68 points per game over what his volume says, over 8 "
-                  "games, so he is due to fall.", fact_ids=["PW.fall.1"]),
-    Sentence(text="Kyler Murray is a free agent with 92.93 projected points through the regular season.",
-             fact_ids=["PW.grab.1"]),
-    Sentence(text="Go get him.", fact_ids=[]),
-])
-WATCH_ROAST = WriterOut(sentences=[
-    Sentence(text="Michael Wilson of London Cooking scores 5.65 points per game under what his volume says, over 8 "
-                  "games, so he is due to rise.", fact_ids=["PW.rise.1"]),
-    Sentence(text="J.J. McCarthy is a free agent with 91.14 projected points through the regular season.",
-             fact_ids=["PW.grab.2"]),
-])
 # The writer answers of a clean build, in page order: each blurb, then the verdicts that pass it.
 CLEAN_BUILD = [*OPENER_BUILD, STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), ARCS_BLURB, _passed(3), ARCS_ROAST,
                _passed(2), LUCK_BLURB, _passed(3), LUCK_ROAST, _passed(2), INJURY_BLURB, _passed(3), INJURY_ROAST,
                _passed(2), TOP10_BLURB, _passed(3), TOP10_ROAST, _passed(2), DRAFT_BLURB, _passed(3), DRAFT_ROAST,
                _passed(2), WAIVERS_BLURB, _passed(3), WAIVERS_ROAST, _passed(2),
                TRADES_BLURB, _passed(3), TRADES_ROAST, _passed(2), LINEUP_BLURB, _passed(3), LINEUP_ROAST, _passed(2),
-               RECORDS_BLURB, _passed(3), RECORDS_ROAST, _passed(2), LOOK_BLURB, _passed(3), LOOK_ROAST, _passed(2),
-               WATCH_BLURB, _passed(3), WATCH_ROAST, _passed(2)]
+               RECORDS_BLURB, _passed(3), RECORDS_ROAST, _passed(2), LOOK_BLURB, _passed(3), LOOK_ROAST, _passed(2)]
 # The verdicts of the recheck of the publish on a clean draft, in page order.
-CLEAN_RECHECK = [_passed(3), _passed(2)] * 13
+CLEAN_RECHECK = [_passed(3), _passed(2)] * 12
 
 
 def _clean_call():
@@ -351,8 +337,7 @@ def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_pa
         [["ST.4.record"], ["ST.6.streak"]], [["ARC.6.snakebit"], ["ARC.8.turnaround"]], [["SW.most"], ["SL.4.against"]],
         [["IT.1"], ["IT.1.top"]], [["TOP.DEF.3"], ["TOP.WR.2"]],
         [["DV.bust.5859"], ["DV.bust.5859.tag"]], [["WV.miss.1", "WV.miss.1.value"], ["WV.miss.3", "WV.miss.3.value"]], [["TR.4.8"], ["TR.4.8.since"]],
-        [["LC.9"], ["LC.9.7"]], [["RB.low"], ["AW.heartbreak"]], [["LA.10.rate"], ["LA.4.rate"]],
-        [["PW.rise.1"], ["PW.grab.2"]]]
+        [["LC.9"], ["LC.9.7"]], [["RB.low"], ["AW.heartbreak"]], [["LA.10.rate"], ["LA.4.rate"]]]
     assert [s["fact_ids"] for s in report["opener"]["roast"]["sentences"]] == [["OP.record", "OP.record.title"],
                                                                               ["OP.6.title"]]
 
@@ -363,7 +348,7 @@ def test_with_the_roast_off_the_draft_has_no_roast_lines(tmp_path):
     writer = FakeWriter([OPENER_BLURB, _passed(3), STATE_BLURB, _passed(3), ARCS_BLURB, _passed(3), LUCK_BLURB,
                          _passed(3), INJURY_BLURB, _passed(3), TOP10_BLURB, _passed(3), DRAFT_BLURB, _passed(3),
                          WAIVERS_BLURB, _passed(3), TRADES_BLURB, _passed(3), LINEUP_BLURB, _passed(3), RECORDS_BLURB,
-                         _passed(3), LOOK_BLURB, _passed(3), WATCH_BLURB, _passed(3)])
+                         _passed(3), LOOK_BLURB, _passed(3)])
     report = _report(build_week_8(partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER,
                                   sim_runs=SIM_RUNS))
     assert _roasts(report) == [] and report["opener"]["roast"] is None
@@ -371,7 +356,7 @@ def test_with_the_roast_off_the_draft_has_no_roast_lines(tmp_path):
     assert "Roast: off." in review and "roast" not in review.split("Roast: off.")[1].lower()
     # The writer of each prose block hears that the roast is off, so its blurb holds no roast either.
     assert "Roast: off. Write no roast" in (writer.calls[0].system or "")
-    assert len(writer.calls) == 26
+    assert len(writer.calls) == 24
 
 
 def test_with_the_roast_warm_the_roast_block_gets_the_roast_rules_and_the_soft_step(tmp_path):
@@ -379,7 +364,7 @@ def test_with_the_roast_warm_the_roast_block_gets_the_roast_rules_and_the_soft_s
     writer = FakeWriter(list(CLEAN_BUILD))
     report = _report(build_week_8(partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER,
                                   sim_runs=SIM_RUNS))
-    assert len(_roasts(report)) == 12
+    assert len(_roasts(report)) == 11
     # The calls of the state come after the four calls of the opener.
     roast_system = writer.calls[6].system or ""
     assert "Never roast life outside fantasy" in roast_system and "Roast: warm." in roast_system
@@ -501,7 +486,7 @@ def test_the_opener_and_the_look_ahead_have_their_prose_blocks_in_the_review_fil
     assert "## look-ahead: The Look Ahead" in review and "## look-ahead.roast" in review
     assert "London Cooking leads the race at 16.8% title odds. [OP.5.title]" in review
     assert "Maye d'force B with U gets the softest schedule at 0.44. [LA.9.rate]" in review
-    assert review.count("Verifier: passed on attempt 1.") == 26
+    assert review.count("Verifier: passed on attempt 1.") == 24
     assert report["opener"]["blurb"]["sentences"][0]["fact_ids"] == ["OP.5.title"]
     look = _chapter(report, "look-ahead")
     assert look["blurb"]["sentences"][0]["fact_ids"] == ["LA.9.rate"]
@@ -524,13 +509,13 @@ def test_position_top_10_ranks_every_nfl_player_in_the_league_scoring_with_the_m
         3, "Tampa Bay Buccaneers", "Free agent", None)
 
 
-def test_the_players_to_watch_name_3_players_each(tmp_path):
-    # AT-23.
-    watch = _chapter(_cpc_report(tmp_path), "watch")["facts"]
-    assert [len(watch[key]) for key in ("due_to_rise", "due_to_fall", "grab_him_now")] == [3, 3, 3]
-    assert "Jaxon Smith-Njigba" in [p["name"] for p in watch["due_to_fall"]]
-    assert "Kyler Murray" in [p["name"] for p in watch["grab_him_now"]]
-    assert all(p["games"] >= 4 for p in watch["due_to_rise"] + watch["due_to_fall"])
+def test_the_report_has_no_players_to_watch_chapter_and_no_watch_facts(tmp_path):
+    # AT-23 is retired: decision 15 removed the chapter.
+    report = _cpc_report(tmp_path)
+    assert "watch" not in [chapter["key"] for act in report["acts"] for chapter in act["chapters"]]
+    text = json.dumps(report)
+    for gone in ("due_to_rise", "due_to_fall", "grab_him_now", "Players to Watch"):
+        assert gone not in text
 
 
 def test_the_injury_toll_has_each_team_and_behold_the_lamb_lost_the_most_starter_games(tmp_path):
@@ -548,13 +533,13 @@ def test_the_acts_hold_the_chapters_in_page_order(tmp_path):
     report = _cpc_report(tmp_path)
     chapters = {act["key"]: [chapter["key"] for chapter in act["chapters"]] for act in report["acts"]}
     assert chapters["how-we-got-here"] == ["state", "arcs", "luck", "injuries", "top10"]
-    assert chapters["what-comes-next"] == ["look-ahead", "watch"]
+    assert chapters["what-comes-next"] == ["look-ahead"]
 
 
 def test_a_clean_build_keeps_the_blurb_of_the_writer_for_each_chapter(tmp_path):
     report = _report(build_week_8(_clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER,
                                  sim_runs=SIM_RUNS))
-    for key in ("injuries", "top10", "lineup", "records", "watch"):
+    for key in ("injuries", "top10", "lineup", "records"):
         chapter = _chapter(report, key)
         assert not chapter["blurb"]["fallback"] and not chapter["roast"]["fallback"]
 

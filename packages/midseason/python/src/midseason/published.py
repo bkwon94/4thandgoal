@@ -26,7 +26,6 @@ from midseason.state import LeagueState
 from midseason.top10 import PositionTop10, Top10Chapter
 from midseason.trades import TradeFacts
 from midseason.waivers import WaiverFacts
-from midseason.watch import PlayersToWatch, WatchChapter
 
 # The season file has its own version, so a change to one file never breaks the reader of another.
 MIDSEASON_SCHEMA_VERSION = 1
@@ -76,8 +75,8 @@ class TradesChapter(BaseModel):
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
 Chapter = Annotated[StateChapter | ArcsChapter | LuckChapter | InjuryChapter | Top10Chapter | DraftChapter
-                    | WaiversChapter | TradesChapter | LineupChapter | RecordsChapter | LookAheadChapter
-                    | WatchChapter, Field(discriminator="key")]
+                    | WaiversChapter | TradesChapter | LineupChapter | RecordsChapter | LookAheadChapter,
+                    Field(discriminator="key")]
 
 
 class Act(BaseModel):
@@ -107,13 +106,13 @@ class MidseasonReport(BaseModel):
 def midseason_report(
     season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *, arcs: Arcs, luck: ScheduleLuck,
     injuries: InjuryToll, top10: PositionTop10, draft: DraftValue, waivers: WaiverFacts, trades: TradeFacts,
-    lineups: LineupChoices, records: RecordBook, watch: PlayersToWatch, race: TitleRace, look: LookAhead,
+    lineups: LineupChoices, records: RecordBook, race: TitleRace, look: LookAhead,
     headlines: list[Headline],
 ) -> MidseasonReport:
     """The report of `week` from the facts of each chapter and the blurbs by prose block key. The opener is the title
     race. Act I holds the state of the league, the arcs, Schedule luck, the injury toll, and Position top 10. Act II
     holds the draft, the waivers, the trades, the lineup choices, and the record book with the awards. Act III holds
-    the look ahead and the players to watch."""
+    the look ahead."""
     act_one: list[Chapter] = [
         StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX)),
         ArcsChapter(facts=arcs, blurb=blurbs.get("arcs"), roast=blurbs.get("arcs" + ROAST_SUFFIX)),
@@ -130,7 +129,6 @@ def midseason_report(
     ]
     act_three: list[Chapter] = [
         LookAheadChapter(facts=look, blurb=blurbs.get(LOOK_AHEAD), roast=blurbs.get(LOOK_AHEAD + ROAST_SUFFIX)),
-        WatchChapter(facts=watch, blurb=blurbs.get("watch"), roast=blurbs.get("watch" + ROAST_SUFFIX)),
     ]
     return MidseasonReport(
         season=season,

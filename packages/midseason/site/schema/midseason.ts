@@ -207,8 +207,6 @@ export const draftRowSchema = z.object({
   swing: z.number(),
   // "hurt" or "just bad" on a bust. Null on a steal.
   tag: z.enum(["hurt", "just bad"]).nullable(),
-  // "the one that got away" on a steal that its drafter dropped.
-  line: z.string().nullable(),
 });
 
 export const draftChapterSchema = z.object({
@@ -237,8 +235,6 @@ export const pickupSchema = z.object({
   points_over_line: z.number().nullable(),
   swung_wins: z.number(),
   played: z.boolean(),
-  // "the one that got away" on a hit that its team let go before the report week. Null on any other pickup.
-  line: z.string().nullable(),
 });
 
 export const outbidSchema = z.object({
@@ -403,40 +399,6 @@ export const lookAheadChapterSchema = z.object({
   ...prose,
 });
 
-/* Players to watch: Due to rise and Due to fall from the Expected gap, and Grab him now from the projections. */
-export const gapPlayerSchema = z.object({
-  player_id: z.string(),
-  name: z.string(),
-  position: z.string(),
-  nfl_team: z.string().nullable(),
-  // The Expected gap per game. Under zero is under expected.
-  gap: z.number(),
-  games: z.number(),
-  roster_id: z.number(),
-  manager: z.string(),
-});
-
-export const grabPlayerSchema = z.object({
-  player_id: z.string(),
-  name: z.string(),
-  position: z.string(),
-  nfl_team: z.string().nullable(),
-  // The sum of his projections for the weeks left of the regular season.
-  projection: z.number(),
-  roster_id: z.null(),
-});
-
-export const watchChapterSchema = z.object({
-  key: z.literal("watch"),
-  title: z.string(),
-  facts: z.object({
-    due_to_rise: z.array(gapPlayerSchema),
-    due_to_fall: z.array(gapPlayerSchema),
-    grab_him_now: z.array(grabPlayerSchema),
-  }),
-  ...prose,
-});
-
 /* Each chapter has a fixed key, so the page picks the part of a chapter by its key. */
 export const chapterSchema = z.discriminatedUnion("key", [
   stateChapterSchema,
@@ -450,7 +412,6 @@ export const chapterSchema = z.discriminatedUnion("key", [
   lineupChapterSchema,
   recordsChapterSchema,
   lookAheadChapterSchema,
-  watchChapterSchema,
 ]);
 
 /* One of the three acts of the report, each opened by a dark title page. */

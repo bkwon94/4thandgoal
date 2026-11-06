@@ -3031,8 +3031,7 @@
                 "points": 110.0,
                 "points_rank": 7,
                 "swing": 37,
-                "tag": null,
-                "line": null
+                "tag": null
               },
               {
                 "player_id": "11646",
@@ -3045,8 +3044,7 @@
                 "points": 64.9,
                 "points_rank": 24,
                 "swing": 34,
-                "tag": null,
-                "line": "the one that got away"
+                "tag": null
               },
               {
                 "player_id": "2449",
@@ -3059,8 +3057,7 @@
                 "points": 68.7,
                 "points_rank": 23,
                 "swing": 28,
-                "tag": null,
-                "line": "the one that got away"
+                "tag": null
               },
               {
                 "player_id": "4199",
@@ -3073,8 +3070,7 @@
                 "points": 70.3,
                 "points_rank": 22,
                 "swing": 28,
-                "tag": null,
-                "line": null
+                "tag": null
               },
               {
                 "player_id": "8132",
@@ -3087,8 +3083,7 @@
                 "points": 73.6,
                 "points_rank": 20,
                 "swing": 24,
-                "tag": null,
-                "line": "the one that got away"
+                "tag": null
               }
             ],
             "busts": [
@@ -3103,8 +3098,7 @@
                 "points": 13.6,
                 "points_rank": 60,
                 "swing": -53,
-                "tag": "just bad",
-                "line": null
+                "tag": "just bad"
               },
               {
                 "player_id": "9226",
@@ -3117,8 +3111,7 @@
                 "points": 21.1,
                 "points_rank": 50,
                 "swing": -40,
-                "tag": "just bad",
-                "line": null
+                "tag": "just bad"
               },
               {
                 "player_id": "13286",
@@ -3131,8 +3124,7 @@
                 "points": 16.7,
                 "points_rank": 53,
                 "swing": -32,
-                "tag": "just bad",
-                "line": null
+                "tag": "just bad"
               },
               {
                 "player_id": "4866",
@@ -3145,8 +3137,7 @@
                 "points": 46.0,
                 "points_rank": 33,
                 "swing": -30,
-                "tag": "hurt",
-                "line": null
+                "tag": "hurt"
               },
               {
                 "player_id": "11635",
@@ -3159,8 +3150,7 @@
                 "points": 43.1,
                 "points_rank": 45,
                 "swing": -30,
-                "tag": "just bad",
-                "line": null
+                "tag": "just bad"
               }
             ]
           },
@@ -3168,10 +3158,9 @@
             "chapter": "draft",
             "sentences": [
               {
-                "text": "NFC Least landed Jalen Coker for $1 and then let him walk: the one that got away.",
+                "text": "NFC Least landed Jalen Coker for $1.",
                 "fact_ids": [
                   "DV.steal.11646",
-                  "DV.steal.11646.line",
                   "CO.draft.steal"
                 ],
                 "roster_id": null
@@ -3229,20 +3218,18 @@
                 "roster_id": null
               },
               {
-                "text": "The Blue Tent paid $46 for De'Von Achane, got 21.1 points, and then let Stefon Diggs go.",
+                "text": "The Blue Tent paid $46 for De'Von Achane, got 21.1 points.",
                 "fact_ids": [
                   "DV.bust.9226",
-                  "DV.bust.9226.points",
-                  "DV.steal.2449.line"
+                  "DV.bust.9226.points"
                 ],
                 "roster_id": null
               },
               {
-                "text": "NFC Least landed the steal of the draft in Jalen Coker and let him go anyway.",
+                "text": "NFC Least landed the steal of the draft in Jalen Coker.",
                 "fact_ids": [
                   "CO.draft.steal",
-                  "DV.steal.11646",
-                  "DV.steal.11646.line"
+                  "DV.steal.11646"
                 ],
                 "roster_id": null
               },
@@ -3273,8 +3260,7 @@
                 "points": 55.5,
                 "points_over_line": 30.3,
                 "swung_wins": 1,
-                "played": true,
-                "line": null
+                "played": true
               },
               {
                 "player_id": "11576",
@@ -3288,8 +3274,7 @@
                 "points": 36.2,
                 "points_over_line": 18.5,
                 "swung_wins": 1,
-                "played": true,
-                "line": "the one that got away"
+                "played": true
               },
               {
                 "player_id": "11435",
@@ -3303,8 +3288,7 @@
                 "points": 24.5,
                 "points_over_line": 17.5,
                 "swung_wins": 0,
-                "played": true,
-                "line": "the one that got away"
+                "played": true
               },
               {
                 "player_id": "7002",
@@ -3318,8 +3302,7 @@
                 "points": 54.5,
                 "points_over_line": 16.3,
                 "swung_wins": 1,
-                "played": true,
-                "line": null
+                "played": true
               },
               {
                 "player_id": "10213",
@@ -3333,8 +3316,7 @@
                 "points": 49.3,
                 "points_over_line": 16.0,
                 "swung_wins": 3,
-                "played": true,
-                "line": null
+                "played": true
               }
             ],
             "misses": [
@@ -3350,8 +3332,7 @@
                 "points": 0.0,
                 "points_over_line": 0.0,
                 "swung_wins": 0,
-                "played": true,
-                "line": null
+                "played": true
               },
               {
                 "player_id": "13276",
@@ -3365,8 +3346,7 @@
                 "points": 20.0,
                 "points_over_line": 13.6,
                 "swung_wins": 1,
-                "played": true,
-                "line": null
+                "played": true
               },
               {
                 "player_id": "7021",
@@ -3380,8 +3360,7 @@
                 "points": 0.0,
                 "points_over_line": 0.0,
                 "swung_wins": 0,
-                "played": true,
-                "line": null
+                "played": true
               },
               {
                 "player_id": "9511",
@@ -3395,8 +3374,7 @@
                 "points": 4.4,
                 "points_over_line": -0.8,
                 "swung_wins": 0,
-                "played": true,
-                "line": null
+                "played": true
               },
               {
                 "player_id": "11643",
@@ -3410,8 +3388,7 @@
                 "points": 0.0,
                 "points_over_line": 0.0,
                 "swung_wins": 0,
-                "played": true,
-                "line": null
+                "played": true
               }
             ],
             "outbid": [
@@ -6233,184 +6210,6 @@
               }
             ],
             "attempt": 1,
-            "fallback": false
-          }
-        },
-        {
-          "key": "watch",
-          "title": "Players to Watch",
-          "facts": {
-            "due_to_rise": [
-              {
-                "player_id": "10232",
-                "name": "Michael Wilson",
-                "position": "WR",
-                "nfl_team": "ARI",
-                "gap": -5.65,
-                "games": 8,
-                "roster_id": 5,
-                "manager": "London Cooking"
-              },
-              {
-                "player_id": "13286",
-                "name": "Jadarian Price",
-                "position": "RB",
-                "nfl_team": "SEA",
-                "gap": -4.27,
-                "games": 4,
-                "roster_id": 1,
-                "manager": "The Blue Tent"
-              },
-              {
-                "player_id": "5846",
-                "name": "DK Metcalf",
-                "position": "WR",
-                "nfl_team": "PIT",
-                "gap": -3.63,
-                "games": 8,
-                "roster_id": 5,
-                "manager": "London Cooking"
-              }
-            ],
-            "due_to_fall": [
-              {
-                "player_id": "9488",
-                "name": "Jaxon Smith-Njigba",
-                "position": "WR",
-                "nfl_team": "SEA",
-                "gap": 7.68,
-                "games": 8,
-                "roster_id": 3,
-                "manager": "Lil Fridge"
-              },
-              {
-                "player_id": "13296",
-                "name": "Caleb Douglas",
-                "position": "WR",
-                "nfl_team": "MIA",
-                "gap": 4.02,
-                "games": 4,
-                "roster_id": 11,
-                "manager": "Unsolicited Dak Picks"
-              },
-              {
-                "player_id": "4993",
-                "name": "Mike Gesicki",
-                "position": "TE",
-                "nfl_team": "CIN",
-                "gap": 3.98,
-                "games": 6,
-                "roster_id": 5,
-                "manager": "London Cooking"
-              }
-            ],
-            "grab_him_now": [
-              {
-                "player_id": "5849",
-                "name": "Kyler Murray",
-                "position": "QB",
-                "nfl_team": "MIN",
-                "projection": 92.93,
-                "roster_id": null
-              },
-              {
-                "player_id": "11565",
-                "name": "J.J. McCarthy",
-                "position": "QB",
-                "nfl_team": "NYG",
-                "projection": 91.14,
-                "roster_id": null
-              },
-              {
-                "player_id": "6797",
-                "name": "Justin Herbert",
-                "position": "QB",
-                "nfl_team": "LAC",
-                "projection": 88.87,
-                "roster_id": null
-              }
-            ]
-          },
-          "blurb": {
-            "chapter": "watch",
-            "sentences": [
-              {
-                "text": "Michael Wilson is scoring 5.65 points per game under what his volume says over 8 games, so London Cooking should see him rise.",
-                "fact_ids": [
-                  "PW.rise.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "DK Metcalf, on the same roster, is due to rise too.",
-                "fact_ids": [
-                  "PW.rise.3"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Mike Gesicki is the catch on that roster, running 3.98 points per game over his volume and due to fall.",
-                "fact_ids": [
-                  "PW.fall.3"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Jaxon Smith-Njigba is beating what his volume says by 7.68 points per game, so Lil Fridge should enjoy it while it lasts.",
-                "fact_ids": [
-                  "PW.fall.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Jadarian Price of The Blue Tent is 4.27 points per game under his volume through 4 games and due to rise.",
-                "fact_ids": [
-                  "PW.rise.2"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Kyler Murray is sitting in free agency with 92.93 projected points through the regular season.",
-                "fact_ids": [
-                  "PW.grab.1"
-                ],
-                "roster_id": null
-              }
-            ],
-            "attempt": 1,
-            "fallback": false
-          },
-          "roast": {
-            "chapter": "watch.roast",
-            "sentences": [
-              {
-                "text": "London Cooking should hold onto Michael Wilson, who scores 5.65 points per game under what his volume says and is due to rise.",
-                "fact_ids": [
-                  "PW.rise.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Lil Fridge is riding Jaxon Smith-Njigba at 7.68 points per game over what his volume says, and he is due to fall.",
-                "fact_ids": [
-                  "PW.fall.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Enjoy it while it lasts.",
-                "fact_ids": [],
-                "roster_id": null
-              },
-              {
-                "text": "Meanwhile Kyler Murray sits in free agency with 92.93 projected points through the regular season.",
-                "fact_ids": [
-                  "PW.grab.1"
-                ],
-                "roster_id": null
-              }
-            ],
-            "attempt": 2,
             "fallback": false
           }
         }

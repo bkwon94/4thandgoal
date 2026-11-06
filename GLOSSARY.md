@@ -956,18 +956,6 @@ _Avoid_: Injury luck
 The 10 players with the most points at one position, weeks 1 to the report week, in the league's own scoring. Every NFL player counts, rostered or not. It is the league-wide list of the midseason report.
 _Avoid_: Top performers (that is a team's own starters on the manager page), Position leader (that is the top 3 of one week)
 
-**Due to rise**:
-A rostered QB, RB, WR, or TE whose Expected gap over the whole season is the furthest under zero, with 4 games or more. His volume says he should score more.
-_Avoid_: buy low, regression candidate
-
-**Due to fall**:
-A rostered QB, RB, WR, or TE whose Expected gap over the whole season is the furthest over zero, with 4 games or more. He scores past his volume.
-_Avoid_: sell high, fluke
-
-**Grab him now**:
-The free agent with the highest projection for the rest of the regular season.
-_Avoid_: Top pickups (that is the waiver bucket of the pool), sleeper
-
 **Opener**:
 The top of the midseason report: the title race, with the title odds of the leaders and of the record leader.
 _Avoid_: Hero (that is the top of a manager page), cover, banner
