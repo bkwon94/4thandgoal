@@ -31,7 +31,7 @@ Brian decided it on 2026-11-06, after five phone boards with the real CPC week 8
 - **The writer gets facts from the whole report** for each paragraph, so it can make a callback across chapters, such as a lineup fact in the luck chapter. The fact check covers the borrowed facts too.
 - **The writer names the unit of each number.** For example, "34.2" in a trade is points over the line, not raw points.
 - **No count mix:** head-to-head numbers go with head-to-head records. The 11-5 record of CPC counts the median games.
-- **Each chapter has one prose block of 40 words or fewer.** The `roast` block, "The roast" heading, and the `roast` field of each chapter in `published.py` go. The `roast` setting of each client takes the value `savage` too.
+- **Each chapter has one prose block of 40 words or fewer.** The `roast` block, "The roast" heading, and the `roast` field of each chapter in `published.py` go. The `roast` setting of each client takes the value `savage` too. The default is `savage`, set by Brian during the spec.
 
 The bar for the writer is the P4 Voice board. Its best lines: "One auction, no survivors." "Remove the gifts and first place is a rumor." "That is losing with a head start."
 

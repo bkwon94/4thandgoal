@@ -944,6 +944,10 @@ _Avoid_: Schedule strength, what-if record
 The voice of a client's report prose: `off`, `warm`, `hot`, or `savage`. It sets the voice of the whole paragraph, not one sentence. Every level keeps to football and cites real facts.
 _Avoid_: Heat, roast level, tone
 
+**Quick hits**:
+The block at the end of Act II of the midseason report that holds lineup choices and the injury toll.
+_Avoid_: Odds and ends, misc, extras
+
 **Injury toll**:
 The starter games that a team lost to injury, by NFL week. It is a cost, not a chance.
 _Avoid_: Injury luck
