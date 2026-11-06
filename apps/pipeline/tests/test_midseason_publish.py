@@ -36,8 +36,8 @@ def _git(cwd: Path, *args: str) -> str:
 
 def _drafted_repo(tmp_path: Path, monkeypatch):
     """A git repo with the pipeline at apps/pipeline and a clean draft of the CPC week 8 report in the build folder,
-    with a sim.json beside it. The prek hook sets GIT_DIR, and the publish calls git with the process env, so the test
-    clears it."""
+    with a sim.json beside it. A bare repo in the temp folder is its remote, so the push of the publish stays local.
+    The prek hook sets GIT_DIR, and the publish calls git with the process env, so the test clears it."""
     for name in ("GIT_DIR", "GIT_INDEX_FILE", "GIT_WORK_TREE"):
         monkeypatch.delenv(name, raising=False)
     root = tmp_path / "one"
@@ -52,6 +52,9 @@ def _drafted_repo(tmp_path: Path, monkeypatch):
     (root / "README.md").write_text("one\n")
     _git(root, "add", "README.md")
     _git(root, "commit", "-m", "Start")
+    _git(tmp_path, "init", "--bare", "-b", "main", "remote.git")
+    _git(root, "remote", "add", "origin", str(tmp_path / "remote.git"))
+    _git(root, "push", "-u", "origin", "main")
     return root, pipeline, client
 
 
@@ -68,6 +71,8 @@ def test_a_clean_publish_commits_midseason_json_and_sim_json_and_no_other_path(t
     offenses = _outside_offenses(root, "HEAD")
     assert not offenses, report(offenses)
     assert _git(root, "log", "-1", "--format=%s").strip() == "Midseason report week 8"
+    # The publish pushes, as the weekly publish does, so the commit reaches the remote.
+    assert _git(tmp_path / "remote.git", "log", "-1", "--format=%s", "main").strip() == "Midseason report week 8"
     build = build_dir(client.folder) / "2026"
     assert (_published(root) / "midseason.json").read_bytes() == (build / "midseason.json").read_bytes()
     assert (_published(root) / "sim.json").read_bytes() == (build / "sim.json").read_bytes()

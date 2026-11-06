@@ -94,7 +94,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     midseason_publish = sub.add_parser(
         "midseason-publish", parents=[named],
-        help="check each blurb of the midseason draft again, then commit midseason.json and sim.json")
+        help="check each blurb of the midseason draft again, then commit and push midseason.json and sim.json")
     midseason_publish.add_argument("--week", type=int)
     midseason_publish.add_argument("--season", type=int)
 
@@ -566,7 +566,7 @@ def main(
                 print("Not published.")
                 return 0
             print(run_midseason_publish(repo, season, week, call, client=client))
-            print("Committed. Run make push to put the report live.")
+            print("Committed and pushed. The report is live after the site deploys.")
         elif args.command == "rewrite":
             page = run_rewrite(repo, season, week, args.chapter, call, client=client)
             print(page)

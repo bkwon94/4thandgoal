@@ -64,8 +64,8 @@ midseason: need-client need-week ## Write the midseason report of a saved week (
 	$(RUN) cornerstone midseason --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
 # It checks each blurb of the draft again and refuses on a failure. It commits only midseason.json and sim.json of the
-# published season folder, and it does not push.
-midseason-publish: need-client need-week ## Check the midseason draft, then commit it to published (CLIENT and WEEK required)
+# published season folder, then pushes the repo, as the weekly publish does.
+midseason-publish: need-client need-week ## Check the midseason draft, then commit it to published and push it (CLIENT and WEEK required)
 	$(RUN) cornerstone midseason-publish --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
 # Example: make analyze CLIENT=cpc SIDES="4:7569@12 12:10236@7 7:11628@4" ASKER=4

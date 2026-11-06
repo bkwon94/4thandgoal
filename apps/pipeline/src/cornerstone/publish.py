@@ -1,7 +1,7 @@
 """
 Publish a built week into the published data of its client, clients/<slug>/published/, in the same repo.
 It commits the season folders of the build and the data, copies the week folder and the season files, then commits the published season folder and pushes.
-The publish of the midseason report checks each blurb of the draft again, then commits midseason.json and sim.json.
+The publish of the midseason report checks each blurb of the draft again, then commits midseason.json and sim.json and pushes.
 """
 import logging
 import shutil
@@ -43,6 +43,12 @@ def _commit_if_staged(cwd: Path, message: str, *paths: str) -> None:
         return
     # The pathspec keeps any other staged change out of this commit.
     _git(cwd, "commit", "-m", message, "--", *paths)
+
+
+def _push(site_repo: Path) -> None:
+    # Why: the site deploys from the remote, so a publish puts its page live only with this push. ADR 0019
+    # allows the push to main because each publish stages only the season folders of its client.
+    _git(site_repo, "push")
 
 
 def _repo_root(repo: Path) -> Path:
@@ -106,7 +112,7 @@ def run_publish(
     _git(site_repo, "add", "--", published)
     _commit_if_staged(site_repo, f"Week {week}", published)
     if push:
-        _git(site_repo, "push")
+        _push(site_repo)
     return site_page_url(slug, season, week)
 
 
@@ -120,12 +126,14 @@ def midseason_page_url(slug: str, season: int) -> str:
 
 
 def run_midseason_publish(
-        repo: Path, season: int, week: int, call: ClaudeCall, *, client: Client, site_repo: Path | None = None) -> str:
+        repo: Path, season: int, week: int, call: ClaudeCall, *, client: Client, site_repo: Path | None = None,
+        push: bool = True) -> str:
     """Publish the draft of the midseason report of `week`. The verifier checks each blurb of the draft again, so an
     edit cannot add an uncited number or claim. On a failure, nothing is copied and nothing is committed.
 
     Why: the publish rule of ADR 0019 lets a publish stage only the season folders of the client. This publish stages
-    only its two files in the published season folder. It does not push, so Brian pushes with make push.
+    only its two files in the published season folder. It then pushes, as the weekly publish does, so the report goes
+    live with no second step.
     """
     season_build = season_dir(build_dir(client.folder), season)
     missing = [name for name in MIDSEASON_FILES if not (season_build / name).exists()]
@@ -151,4 +159,6 @@ def run_midseason_publish(
     paths = [str((public_dir / name).relative_to(site_repo)) for name in MIDSEASON_FILES]
     _git(site_repo, "add", "--", *paths)
     _commit_if_staged(site_repo, f"Midseason report week {week}", *paths)
+    if push:
+        _push(site_repo)
     return midseason_page_url(client.slug, season)
