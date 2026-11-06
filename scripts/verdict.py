@@ -18,6 +18,7 @@ import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import NamedTuple
 
 ADR = "docs/adr/0026-the-judge-gives-the-test-verdicts.md"
 RULE = "every acceptance test has a PASS Test verdict from the Judge and no FAIL from Brian"
@@ -171,6 +172,12 @@ def blob_sha(data: bytes) -> str:
     return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
 
 
+class NamedSha(NamedTuple):
+    """The first line of VERDICTS.md that names a file, and the blob SHA on that line."""
+    line: int
+    sha: str
+
+
 def stale_files(verdicts: str, head_shas: dict[str, str | None], verdicts_path: str = "VERDICTS.md") -> list[Offense]:
     """An offense for each file whose blob SHA at the PR head is not the SHA that VERDICTS.md names.
 
@@ -180,7 +187,7 @@ def stale_files(verdicts: str, head_shas: dict[str, str | None], verdicts_path: 
     for number, line in enumerate(verdicts.splitlines(), start=1):
         match = SHA_LINE.match(line)
         if match:
-            named.setdefault(match.group(1), (number, match.group(2)))
+            named.setdefault(match.group(1), NamedSha(number, match.group(2)))
     offenses = []
     fix = "record the evidence again, and run a fresh Judge on each test."
     for name, rule_id in READ_FILES.items():
@@ -188,11 +195,11 @@ def stale_files(verdicts: str, head_shas: dict[str, str | None], verdicts_path: 
         if name not in named:
             offenses.append(Offense(verdicts_path, 0, rule_id, f"VERDICTS.md names no blob SHA of {name}.", fix))
         elif head is None:
-            offenses.append(Offense(verdicts_path, named[name][0], rule_id, f"The PR head has no {name}.", fix))
-        elif head != named[name][1]:
+            offenses.append(Offense(verdicts_path, named[name].line, rule_id, f"The PR head has no {name}.", fix))
+        elif head != named[name].sha:
             offenses.append(Offense(
-                verdicts_path, named[name][0], rule_id,
-                f"{name} is stale: it changed after the Judge read it ({named[name][1][:7]} to {head[:7]}).", fix,
+                verdicts_path, named[name].line, rule_id,
+                f"{name} is stale: it changed after the Judge read it ({named[name].sha[:7]} to {head[:7]}).", fix,
             ))
     return offenses
 
