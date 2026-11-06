@@ -39,7 +39,7 @@ def _copy(tmp_path: Path, old: str, new: str) -> Path:
 
 def test_the_cpc_client_reads_the_values_of_the_spec():
     values = read_client_values(CPC, VALUE_MODELS)
-    assert values.packages == ["week", "rankings", "managers", "analyzer"]
+    assert values.packages == ["week", "rankings", "managers", "analyzer", "midseason", "sim"]
     assert values.timezone == "America/New_York"
     assert values.usage_code == "cpcfantasy"
     assert values.seasons[2026].provider == "sleeper"
@@ -93,7 +93,7 @@ def test_a_menu_item_for_an_omitted_package_fails_with_the_item_and_the_package(
 
 def test_a_client_with_midseason_and_no_sim_fails_and_names_sim(tmp_path):
     # AT-48: the report ends on the sim, so a client that takes midseason takes sim too.
-    folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer"]',
+    folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim"]',
                    'packages = ["week", "rankings", "managers", "analyzer", "midseason"]')
     with pytest.raises(ClientError) as err:
         read_client_values(folder, VALUE_MODELS)
@@ -102,7 +102,7 @@ def test_a_client_with_midseason_and_no_sim_fails_and_names_sim(tmp_path):
 
 
 def test_a_client_with_midseason_and_sim_passes(tmp_path):
-    folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer"]',
+    folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim"]',
                    'packages = ["week", "rankings", "managers", "analyzer", "sim", "midseason"]')
     assert read_client_values(folder, VALUE_MODELS).packages[-2:] == ["sim", "midseason"]
 

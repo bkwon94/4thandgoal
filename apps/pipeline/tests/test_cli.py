@@ -699,7 +699,7 @@ def test_the_check_client_command_names_sim_for_a_client_with_midseason_and_no_s
 
     cli_root(tmp_path)
     path = tmp_path / "clients" / "cpc" / "client.toml"
-    path.write_text(path.read_text(encoding="utf-8").replace('"analyzer"]', '"analyzer", "midseason"]', 1))
+    path.write_text(path.read_text(encoding="utf-8").replace('"midseason", "sim"]', '"midseason"]', 1))
     assert cli.main(["check-client", str(path.parent)]) == 2
     out = capsys.readouterr().out
     assert "The midseason package needs the sim package. Add sim to the package list." in out
