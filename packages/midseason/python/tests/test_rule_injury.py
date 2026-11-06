@@ -1,9 +1,9 @@
 """
-The rules of the injury toll, on small hand-built leagues: a missed game, the key starter at the start of an absence,
-the fallback for a missing injury row, and the order of the teams.
+The rules of the injury toll and of the missed games of one player, on small hand-built leagues: a missed game, the
+key starter at the start of an absence, the fallback for a missing injury row, and the order of the teams.
 """
 from league.models import History, PastWeek
-from midseason.injury import injury_toll
+from midseason.injury import injury_toll, missed_games
 from midseason.players import PlayerCard
 
 NAMES = {1: "One", 2: "Two"}
@@ -109,3 +109,19 @@ def test_the_teams_are_in_order_of_the_most_starter_games_lost_and_each_team_has
     history = _history({"rb": {5, 6}}, {"rb": {1, 2, 3, 4}})
     toll = injury_toll(history, 8, NAMES, PLAYERS, report_out={"rb": {5, 6}}, roster_out={}, team_weeks=TEAM_WEEKS)
     assert [(team.name, team.games, team.rank) for team in toll.teams] == [("One", 2, 1), ("Two", 0, 2)]
+
+
+def test_the_missed_games_of_a_player_count_each_week_out_with_no_snaps_and_no_bye_on_any_roster_or_none():
+    # The draft tag reads this count. The WR is out weeks 5 to 8 by the injury report, and SF has its bye in week 6.
+    # The RB misses week 5 with only a roster status of out. The bench RB plays week 7 with an Out row: no missed game.
+    history = _history({"wr": {5, 6, 7, 8}, "rb": {5}}, {})
+    missed = missed_games(["wr", "rb", "bench", "nobody"], history, 8, PLAYERS,
+                          report_out={"wr": {5, 6, 7, 8}, "bench": {7}}, roster_out={5: {"rb"}},
+                          team_weeks=TEAM_WEEKS)
+    assert missed == {"wr": 3, "rb": 1, "bench": 0, "nobody": 0}
+
+
+def test_a_player_with_no_snaps_and_no_out_status_misses_no_game():
+    # A healthy scratch is no injury, so the bust of a benched player is "just bad".
+    history = _history({"rb": {5, 6}}, {})
+    assert missed_games(["rb"], history, 8, PLAYERS, report_out={}, roster_out={}, team_weeks=TEAM_WEEKS) == {"rb": 0}

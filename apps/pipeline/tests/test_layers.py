@@ -165,7 +165,6 @@ LAYER_OF: dict[str, str] = {
     # The app wire of three chapters of the midseason report. It reads the provider and the nflverse files.
     "midseason_chapters": "facts",
     "midseason.draft": "facts",
-    "midseason.draft_injuries": "facts",
     "midseason.trades": "facts",
     "midseason.waivers": "facts",
     "sim.season": "facts",

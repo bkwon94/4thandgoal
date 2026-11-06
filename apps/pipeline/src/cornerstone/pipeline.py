@@ -15,7 +15,7 @@ from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
-from cornerstone.midseason_chapters import ChaptersStopped, player_cards, report_chapters
+from cornerstone.midseason_chapters import ChaptersStopped, InjuryPorts, player_cards, report_chapters
 from cornerstone.render import render_week
 from cornerstone.season_schedule import remaining_schedule
 from cornerstone.season_sim import week_sim
@@ -56,16 +56,7 @@ from league.models import (
     Week,
     week_lines,
 )
-from league.nflverse import (
-    FFIDS_URL,
-    INJURIES_URL,
-    cache_path,
-    download,
-    gsis_id,
-    nflverse_week,
-    read_id_map,
-    read_injuries,
-)
+from league.nflverse import nflverse_week
 from league.parse import parse_trades, parse_week
 from league.paths import (
     build_dir,
@@ -99,8 +90,7 @@ from managers.render import render_managers
 from managers.season import saved_awards
 from midseason.arcs import arcs_facts, team_arcs
 from midseason.draft import DraftPick, DraftValue, draft_facts, draft_value
-from midseason.draft_injuries import injured_games
-from midseason.injury import injury_facts
+from midseason.injury import injury_facts, missed_games
 from midseason.lineups import lineup_choices, lineup_facts
 from midseason.look_ahead import look_ahead, look_ahead_facts
 from midseason.luck import luck_facts, schedule_luck, with_swap_callouts
@@ -731,28 +721,12 @@ def midseason_values(client: Client) -> MidseasonValues:
     return MidseasonValues()
 
 
-def _injury_report(season: int, week: int, player_ids: list[str], players: dict, client: Client,
-                   ) -> dict[str, dict[int, str]] | None:
-    """The nflverse injury report status by Sleeper player ID and week. None when the report cannot load."""
-    cache = nflverse_cache_dir(client.nfl_dir)
-    injuries_path = download(INJURIES_URL.format(season=season), cache_path(cache, INJURIES_URL, season))
-    ids_path = download(FFIDS_URL, cache_path(cache, FFIDS_URL, season))
-    injuries = read_injuries(injuries_path, week) if injuries_path else None
-    if injuries is None:
-        log.warning("No nflverse injury report through week %d, so no draft bust gets an injury tag", week)
-        return None
-    id_map = read_id_map(ids_path) if ids_path else {}
-    report = {}
-    for player_id in player_ids:
-        gsis = gsis_id(player_id, players, id_map)
-        if gsis is not None and gsis in injuries:
-            report[player_id] = injuries[gsis]
-    return report
-
-
 def _midseason_draft(season: int, week: int, history: History, names: dict[int, str], client: Client,
-                     provider: Provider) -> DraftValue:
-    """The draft steals and busts. The build fetches the draft again each run and saves it in the data folder."""
+                     provider: Provider, players: dict[str, PlayerCard], ports: InjuryPorts) -> DraftValue:
+    """The draft steals and busts. The build fetches the draft again each run and saves it in the data folder.
+
+    The "hurt" tag of a bust reads the missed games by the rule of the injury toll, from the same injury ports.
+    """
     raw = provider.fetch_draft(client.league_id(season), draft_dir(client.folder, season))
     picks = [DraftPick(player_id=pick.player_id, name=f"{pick.metadata.first_name} {pick.metadata.last_name}",
                        position=pick.metadata.position, roster_id=pick.roster_id, pick_no=pick.pick_no,
@@ -761,8 +735,8 @@ def _midseason_draft(season: int, week: int, history: History, names: dict[int, 
     # The rules read the draft type of the league, never the client: only an auction has a price.
     draft_type = raw.type if raw.type in ("auction", "snake", "linear") else "snake"
     ids = [pick.player_id for pick in picks]
-    report = _injury_report(season, week, ids, provider.fetch_players(), client)
-    missed = None if report is None else injured_games(ids, report, history, week)
+    missed = missed_games(ids, history, week, players, report_out=ports.report_out, roster_out=ports.roster_out,
+                          team_weeks=ports.team_weeks)
     return draft_value(picks, draft_type, history, week, names, missed)
 
 
@@ -827,11 +801,11 @@ def run_midseason(
     players, league, nfl_state = _saved_week_inputs(raw_dir(client.folder, season, week))
     provider = provider or SleeperProvider(provider_cache_dir(client.nfl_dir))
     moves = season_transactions(provider, client.league_id(season), season, week)
-    draft = _midseason_draft(season, week, history, names, client, provider)
     try:
         chapters = report_chapters(season, week, history, names, client=client, provider=provider)
     except ChaptersStopped as err:
         raise BuildStopped(str(err)) from err
+    draft = _midseason_draft(season, week, history, names, client, provider, players, chapters.injury_ports)
     lines = client.settings.lines
     waivers = waiver_facts(history, week, moves, players, names, lines, league.settings.waiver_budget)
     trades = trade_facts(history, week, moves, players, names, lines, median_game=median_game,

@@ -66,6 +66,15 @@ def test_a_bust_who_missed_two_games_out_with_an_injury_is_hurt(tmp_path):
     assert (barkley["cost"], barkley["tag"]) == (58, "hurt")
 
 
+def test_the_hurt_tag_reads_the_missed_game_rule_of_the_injury_toll(tmp_path):
+    # Jadarian Price has no snaps in week 4 with an Out row of the injury report, and no snaps in week 6 with a
+    # Sleeper status of out, so he missed 2 games. De'Von Achane has no nflverse row and no Sleeper out status in any
+    # week, so the rule finds no missed game, and his bust is "just bad".
+    busts = _by_name(_cpc_draft(tmp_path)["busts"])
+    assert (busts["Jadarian Price"]["cost"], busts["Jadarian Price"]["tag"]) == (20, "hurt")
+    assert busts["De'Von Achane"]["tag"] == "just bad"
+
+
 def test_a_steal_that_its_drafter_let_go_carries_the_one_that_got_away_line(tmp_path):
     # AT-14: Bo Girds bought Tyler Allgeier for $2 and traded him in week 2. Golden stayed, so he has no line.
     steals = _by_name(_cpc_draft(tmp_path)["steals"])

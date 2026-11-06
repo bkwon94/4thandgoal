@@ -1,6 +1,7 @@
 """
 The wire of three chapters of the midseason report: the injury toll, Position top 10, and the players to watch. It
 reads the saved raw week, the nflverse files, and the rosters now, and hands each chapter its ports as plain data.
+It also gives the injury ports to the build, so the draft tags read the one download of the injury report.
 """
 import json
 import logging
@@ -46,10 +47,21 @@ class ChaptersStopped(Exception):
     """A chapter input is missing. The message is the plain line for Brian."""
 
 
+class InjuryPorts(BaseModel):
+    """The ports of the missed-game rule of the injury toll, as `injury_toll` and `missed_games` take them."""
+    # The weeks the nflverse injury report lists each player Out, by Sleeper ID.
+    report_out: dict[str, set[int]]
+    # The players with a Sleeper status of out, by week.
+    roster_out: dict[int, set[str]]
+    # The weeks each NFL team plays.
+    team_weeks: dict[str, set[int]]
+
+
 class ReportChapters(BaseModel):
     injuries: InjuryToll
     top10: PositionTop10
     watch: PlayersToWatch
+    injury_ports: InjuryPorts
 
 
 def player_cards(entries: Mapping[str, dict]) -> dict[str, PlayerCard]:
@@ -119,8 +131,9 @@ def report_chapters(
                   for gsis, weeks in report.items() if gsis in sleeper_of_gsis}
     schedules = read_schedules(files["schedules"], season) or {}
     team_weeks = {team: set(schedule.games) for team, schedule in schedules.items()}
-    injuries = injury_toll(history, week, names, cards, report_out=report_out,
-                           roster_out=_roster_out(client, season, week), team_weeks=team_weeks)
+    ports = InjuryPorts(report_out=report_out, roster_out=_roster_out(client, season, week), team_weeks=team_weeks)
+    injuries = injury_toll(history, week, names, cards, report_out=ports.report_out, roster_out=ports.roster_out,
+                           team_weeks=ports.team_weeks)
 
     top10 = position_top10(history, week, cards, scoring, client.settings.positions, owners, names)
 
@@ -135,4 +148,4 @@ def report_chapters(
     ahead = {entry.week: entry.projections for entry in raw.projections_ahead or []}
     watch = players_to_watch(history, week, cards, scoring, expected.players, owners, names, ahead=ahead,
                              last_regular_week=client.settings.last_regular_week, positions=client.settings.positions)
-    return ReportChapters(injuries=injuries, top10=top10, watch=watch)
+    return ReportChapters(injuries=injuries, top10=top10, watch=watch, injury_ports=ports)

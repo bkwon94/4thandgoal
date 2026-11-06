@@ -1,6 +1,7 @@
 """
 The injury toll, a chapter of Act I: the starter games that each team lost to injury, by NFL week. GLOSSARY.md,
-"Injury toll". It reads the saved history and the injury statuses that the app hands in.
+"Injury toll". It reads the saved history and the injury statuses that the app hands in. The missed-game rule here
+also gives the "hurt" tag of a draft bust.
 """
 from collections.abc import Collection, Mapping
 from typing import Literal
@@ -8,7 +9,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from facts.tokens import Nums, fact
-from league.models import Blurb, Fact, History
+from league.models import Blurb, Fact, History, PastWeek
 from midseason.players import SKILL_POSITIONS, PlayerCard
 
 # The Key starter rule of GLOSSARY.md, "Key starter": 3 starts in the last 4 completed weeks, or 2 starts with fewer
@@ -66,6 +67,42 @@ def _key_starter(history: History, roster_id: int, player_id: str, week: int) ->
     return starts >= bar
 
 
+def _missed_game(
+    past: PastWeek, number: int, card: PlayerCard, *, report_out: Mapping[str, Collection[int]],
+    roster_out: Mapping[int, Collection[str]], team_weeks: Mapping[str, Collection[int]],
+) -> bool | None:
+    """True when the player missed the game of his NFL team in week `number` with an injury, False when he played or
+    sat with no injury, and None when his NFL team had no game, such as a bye.
+
+    He misses a game when he has no offensive snap and the injury report lists him Out or, with no Out row, his
+    roster status is out. The fallback covers a missing row of the injury report (PRD, "Missing injury rows").
+    """
+    if card.nfl_team is None or number not in team_weeks.get(card.nfl_team, ()):
+        return None
+    if past.stats.get(card.player_id, {}).get("off_snp", 0.0) > 0:
+        return False
+    return number in report_out.get(card.player_id, ()) or card.player_id in roster_out.get(number, ())
+
+
+def missed_games(
+    player_ids: Collection[str], history: History, through: int, players: Mapping[str, PlayerCard], *,
+    report_out: Mapping[str, Collection[int]], roster_out: Mapping[int, Collection[str]],
+    team_weeks: Mapping[str, Collection[int]],
+) -> dict[str, int]:
+    """The count of weeks 1 to `through` in which each player missed a game with an injury, on any roster or none.
+
+    The rule and the ports are those of the injury toll. A player with no card misses no game.
+    """
+    counts: dict[str, int] = {}
+    for pid in player_ids:
+        card = players.get(pid)
+        counts[pid] = 0 if card is None else sum(
+            _missed_game(history.weeks[number], number, card, report_out=report_out, roster_out=roster_out,
+                         team_weeks=team_weeks) is True
+            for number in range(1, through + 1))
+    return counts
+
+
 def injury_toll(
     history: History, through: int, names: Mapping[int, str], players: Mapping[str, PlayerCard], *,
     report_out: Mapping[str, Collection[int]], roster_out: Mapping[int, Collection[str]],
@@ -73,8 +110,7 @@ def injury_toll(
 ) -> InjuryToll:
     """The injury toll of weeks 1 to `through`.
 
-    A player misses a game in a week that his NFL team plays and he has no offensive snap, when the injury report
-    lists him Out or, with no Out row, his roster status is out. The ports come from the app: `report_out` holds the
+    A player misses a game by the rule of `_missed_game`. The ports come from the app: `report_out` holds the
     weeks the nflverse injury report lists each player Out, `roster_out` the players with a Sleeper status of out
     each week, and `team_weeks` the weeks each NFL team plays. The fallback of `roster_out` covers a missing row of
     the injury report (PRD, "Missing injury rows").
@@ -92,11 +128,11 @@ def injury_toll(
                 card = players.get(pid)
                 if card is None or card.position not in SKILL_POSITIONS:
                     continue
-                if card.nfl_team is None or number not in team_weeks.get(card.nfl_team, ()):
+                missed = _missed_game(week, number, card, report_out=report_out, roster_out=roster_out,
+                                      team_weeks=team_weeks)
+                if missed is None:
                     continue
-                snaps = week.stats.get(pid, {}).get("off_snp", 0.0) > 0
-                out = number in report_out.get(pid, ()) or pid in roster_out.get(number, ())
-                if snaps or not out:
+                if not missed:
                     absent.pop(pid, None)
                     continue
                 if pid not in absent:
