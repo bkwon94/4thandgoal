@@ -6,17 +6,18 @@ from collections import Counter
 from pathlib import Path
 
 import pytest
-from test_midseason import CPC_PROVIDER, _call, _clean_call, _cpc_week_8, _report
+from test_midseason import CPC_PROVIDER, _call, _clean_call, _cpc_week_8, _report, build_week_8
 
-from cornerstone.pipeline import run_midseason
 from league.paths import build_dir
+from sim.tunables import SIM_RUNS
 
 
 @pytest.fixture(scope="module")
 def moves(tmp_path_factory) -> dict[str, dict]:
     """The chapters of Act II of the CPC week 8 report, by key."""
     tmp_path: Path = tmp_path_factory.mktemp("moves")
-    report = _report(run_midseason(2026, 8, _clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
+    report = _report(build_week_8(_clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER,
+                                  sim_runs=SIM_RUNS))
     act = next(act for act in report["acts"] if act["key"] == "the-moves")
     return {chapter["key"]: chapter for chapter in act["chapters"]}
 
@@ -94,7 +95,7 @@ def test_each_chapter_of_act_two_has_its_blurb_and_its_roast_through_the_writer(
 
 def test_the_review_file_shows_the_blurbs_of_act_two(tmp_path):
     client = _cpc_week_8(tmp_path)
-    run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
+    build_week_8(_call(), client=client, provider=CPC_PROVIDER)
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     assert "## waivers: Waiver hits and misses" in review
     assert "## trades: The trade report card" in review

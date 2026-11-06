@@ -116,6 +116,7 @@ from midseason.waivers import waiver_facts, waiver_prose_facts
 from midseason.watch import watch_facts
 from rankings.published import render_rankings
 from sim.published import sim_file, write_sim
+from sim.tunables import SIM_RUNS
 from waiver.board import waiver_board
 from waiver.price import bid_history
 from waiver.research import SearchCall, research_board, search_call
@@ -764,13 +765,15 @@ def _saved_week_inputs(raw: Path) -> tuple[dict[str, PlayerCard], RawLeague, Raw
 
 def run_midseason(
     season: int, week: int, call: ClaudeCall, *, client: Client, provider: Provider | None = None,
+    sim_runs: int = SIM_RUNS,
 ) -> Path:
     """Write the draft of the midseason report of `week` into the build folder of the season: midseason.json, the
     saved facts of its prose, and the review file. It reads the saved history of weeks 1 to `week` and the saved facts
     of `week`. It writes nothing to published/, so only the publish of the report puts it live.
 
     The app runs the sim of the rest of the season and writes sim.json beside the draft. The playoff odds of the sim go
-    into the report through the port of midseason.
+    into the report through the port of midseason. The sim draws `sim_runs` seasons. The real build keeps the default of
+    the sim tunables, and a test build may pass a smaller count to run fast.
     Each prose block goes through the writer and the verifier of facts, with the roast setting of the client.
     The waivers and the trades read the transactions of each week that `provider` fetches again. The draft steals and
     busts read the draft that `provider` fetches again. Position top 10 and the players to watch read the rosters now
@@ -788,7 +791,7 @@ def run_midseason(
     names = {rid: team.name for rid, team in bundle.data.teams.items()}
     # The sim writes sim.json, and its playoff odds reach the report through the port of midseason. So the report and
     # the replay give one number. The week odds stand in only when the week gives the sim no inputs.
-    sim = week_sim(season, week, history, client=client)
+    sim = week_sim(season, week, history, client=client, runs=sim_runs)
     if sim is not None:
         write_sim(sim_file(sim, names), build_dir(client.folder))
         odds = {rid: team.playoff for rid, team in sim.teams.items()}

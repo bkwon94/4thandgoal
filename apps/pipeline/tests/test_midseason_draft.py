@@ -8,9 +8,8 @@ from pathlib import Path
 
 from cpc import ROOT
 from fakes import NORCAL_DRAFT_FIXTURES, FixtureProvider
-from test_midseason import CPC_PROVIDER, _call, _cpc_week_8, _report, prime_nflverse
+from test_midseason import CPC_PROVIDER, _call, _cpc_week_8, _report, build_week_8, prime_nflverse
 
-from cornerstone.pipeline import run_midseason
 from cornerstone.value_models import VALUE_MODELS
 from league.client import Client, read_client_values
 from league.paths import client_dir, history_root, league_file, nflverse_cache_dir, week_dir
@@ -47,7 +46,7 @@ def _by_name(rows: list[dict]) -> dict[str, dict]:
 
 
 def _cpc_draft(tmp_path: Path) -> dict:
-    return _draft(_report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER)))
+    return _draft(_report(build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER)))
 
 
 def test_a_cpc_steal_is_matthew_golden_at_2_dollars_and_a_bust_is_aj_brown_at_39_and_just_bad(tmp_path):
@@ -100,7 +99,7 @@ def test_the_lists_hold_the_top_5_by_swing_with_starters_only_and_no_kicker_or_d
 def test_in_norcal_each_pick_cost_is_its_pick_number_and_no_pick_shows_a_dollar_amount(tmp_path):
     # AT-13.
     client = _norcal_week_8(tmp_path)
-    out = run_midseason(2026, 8, _call(), client=client, provider=NORCAL_PROVIDER)
+    out = build_week_8(_call(), client=client, provider=NORCAL_PROVIDER)
     draft = _draft(_report(out))
     assert draft["draft_type"] == "snake"
     picks = json.loads((NORCAL_DRAFT_FIXTURES / "picks.json").read_text(encoding="utf-8"))
@@ -116,14 +115,14 @@ def test_in_norcal_each_pick_cost_is_its_pick_number_and_no_pick_shows_a_dollar_
 
 def test_the_build_saves_the_draft_that_the_provider_gives_in_the_data_folder_of_the_season(tmp_path):
     client = _cpc_week_8(tmp_path)
-    run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
+    build_week_8(_call(), client=client, provider=CPC_PROVIDER)
     saved = json.loads((client.folder / "data" / "2026" / "draft" / "picks.json").read_text(encoding="utf-8"))
     assert len(saved) == 168
 
 
 def test_the_draft_has_a_prose_block_and_a_roast_block_in_the_review_file(tmp_path):
     client = _cpc_week_8(tmp_path)
-    out = run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
+    out = build_week_8(_call(), client=client, provider=CPC_PROVIDER)
     review = (out.parent / "midseason-review.md").read_text(encoding="utf-8")
     assert "## draft: Draft steals and busts" in review
     assert "## draft.roast:" in review

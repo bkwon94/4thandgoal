@@ -8,9 +8,8 @@ from pathlib import Path
 import pytest
 from cpc import cpc_client
 from fakes import FakeWriter
-from test_midseason import CPC_PROVIDER, copy_cpc_week_8
+from test_midseason import CPC_PROVIDER, build_week_8, copy_cpc_week_8
 
-from cornerstone.pipeline import run_midseason
 from cornerstone.value_models import VALUE_MODELS
 from facts.verifier import code_check, page_words
 from facts.writer import build_writer_prompt, claude_call
@@ -25,7 +24,7 @@ def built(tmp_path_factory) -> tuple[ProseDraft, Path, Path]:
     folder of the client. Each prose block of the draft holds its template blurb."""
     client = cpc_client(at=tmp_path_factory.mktemp("cpc"), models=VALUE_MODELS)
     copy_cpc_week_8(client)
-    out = run_midseason(2026, 8, partial(claude_call, writer=FakeWriter()), client=client, provider=CPC_PROVIDER)
+    out = build_week_8(partial(claude_call, writer=FakeWriter()), client=client, provider=CPC_PROVIDER)
     return read_draft_facts(out.parent), out, client.voice_dir
 
 

@@ -13,6 +13,7 @@ from league.provider.sleeper import load_raw
 from league.standings_table import season_records
 from rankings.chapter import odds_inputs
 from sim.season import SimResult, season_sim
+from sim.tunables import SIM_RUNS
 from week.sheet import projected_totals
 
 
@@ -28,11 +29,14 @@ def schedule_file(nfl: Path, season: int) -> Path | None:
     return download(SCHEDULES_URL, path)
 
 
-def week_sim(season: int, week: int, history: History, *, client: Client) -> SimResult | None:
+def week_sim(
+    season: int, week: int, history: History, *, client: Client, runs: int = SIM_RUNS,
+) -> SimResult | None:
     """The sim of the rest of the season after `week`, from the saved raw data of the week and the saved history.
 
     The scores and the remaining pairs come from odds_inputs of the weekly odds. The projected totals run through
     the last bracket week, with the bye weeks of the NFL schedule. None when the week gives no odds inputs.
+    The sim draws `runs` seasons. The real build keeps the default of the sim tunables.
     """
     raw = load_raw(raw_dir(client.folder, season, week))
     parsed = parse_week(raw, week=week, team_count=client.settings.team_count, points_key=client.settings.points_key)
@@ -46,4 +50,4 @@ def week_sim(season: int, week: int, history: History, *, client: Client) -> Sim
     projected = projected_totals(parsed, client, bye_weeks, through=client.settings.last_season_week)
     records = season_records(history, week, median_game=client.settings.median_game)
     return season_sim(scores, records, remaining, season=season, week=week, settings=client.settings,
-                      projected=projected)
+                      projected=projected, runs=runs)

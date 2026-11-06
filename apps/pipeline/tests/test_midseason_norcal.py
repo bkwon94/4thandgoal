@@ -7,10 +7,8 @@ from pathlib import Path
 
 import pytest
 from fakes import NORCAL_DRAFT_FIXTURES, NORCAL_TRANSACTIONS, FixtureProvider
-from test_midseason import _call, _report
+from test_midseason import _call, _report, build_week_8
 from test_midseason_draft import NORCAL_DATA, _norcal_week_8
-
-from cornerstone.pipeline import run_midseason
 
 # The provider of the NorCal build: the saved NorCal week 8, its history, its snake draft, and the full transactions.
 NORCAL_PROVIDER = FixtureProvider(raw_dir=NORCAL_DATA / "week-08" / "raw", history_root=NORCAL_DATA / "history",
@@ -21,7 +19,7 @@ NORCAL_PROVIDER = FixtureProvider(raw_dir=NORCAL_DATA / "week-08" / "raw", histo
 def norcal_build(tmp_path_factory) -> Path:
     """The midseason.json of one NorCal build. The build takes some seconds, so the tests of this file share it."""
     client = _norcal_week_8(tmp_path_factory.mktemp("norcal"))
-    return run_midseason(2026, 8, _call(), client=client, provider=NORCAL_PROVIDER)
+    return build_week_8(_call(), client=client, provider=NORCAL_PROVIDER)
 
 
 def _chapter(report: dict, key: str) -> dict:

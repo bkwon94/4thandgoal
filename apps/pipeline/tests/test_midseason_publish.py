@@ -18,15 +18,16 @@ from test_midseason import (
     _call,
     _clean_call,
     _passed,
+    build_week_8,
     copy_cpc_week_8,
 )
 from test_rule_publish import _outside_offenses
 
-from cornerstone.pipeline import run_midseason
 from cornerstone.publish import PublishError, run_midseason_publish
 from cornerstone.value_models import VALUE_MODELS
 from league.models import Verdict, VerifyOut
 from league.paths import build_dir
+from sim.tunables import SIM_RUNS
 
 
 def _git(cwd: Path, *args: str) -> str:
@@ -46,7 +47,7 @@ def _drafted_repo(tmp_path: Path, monkeypatch):
     pipeline.mkdir(parents=True)
     client = cpc_client(at=root / "clients" / "cpc", models=VALUE_MODELS)
     copy_cpc_week_8(client)
-    run_midseason(2026, 8, _clean_call(), client=client, provider=CPC_PROVIDER)
+    build_week_8(_clean_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
     _git(root, "init", "-b", "main")
     _git(root, "config", "user.email", "test@example.com")
     _git(root, "config", "user.name", "Test")
