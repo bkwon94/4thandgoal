@@ -9,35 +9,35 @@ Round time: 0 min for 0 site tests. This spec has no screenshot test.
 App: both
 Then: The gate job `check` is green, and the run takes 10 min or less from the start of the first job to the end of `check`.
 Files: `evidence/AT-1/run.json`, `evidence/AT-1/times.txt`
-Observation: CI_PENDING
+Observation: Run 2 of `Check`, 42271914935, ran on the push of `03e003db` to PR #14, after run 1 filled the Chromium cache. Its conclusion is `success`, and the job `check` is `success`. The first job started at 18:34:24 and `check` ended at 18:39:26, 5 min 2 s in all. The job `site` is the slowest, at 296 s. Run 1 took 5 min 11 s.
 
 ## AT-2: The jobs of each member run at the same time
 
 App: both
 Then: The jobs `scripts`, `site`, `pipeline`, `api`, and `packages` each start within 1 min of the first job, and the job `check` lists all five under `needs`.
 Files: `evidence/AT-2/times.txt`, `evidence/AT-2/needs.txt`
-Observation: CI_PENDING
+Observation: In run 2, the jobs `scripts`, `site`, `pipeline`, `api`, and `packages` each start at 18:34:24, 0 s after the first job. The job `check` starts at 18:39:22, after the last of them. Line 175 of `check.yml` is `needs: [scripts, site, pipeline, api, packages]`.
 
 ## AT-3: A red member turns the gate red
 
 App: both
 Then: The job `api` fails, the job `check` fails, and the conclusion of the run of `Check` is `failure`.
 Files: `evidence/AT-3/run.json`, `evidence/AT-3/planted-test.txt`, `evidence/AT-3/cleanup.txt`
-Observation: CI_PENDING
+Observation: The throwaway branch `fast-cycle-at3` adds `tests/test_planted_failure.py` to the API, with `assert count == 2` where count is 1. Its run 42271358817 on draft PR #15 gives `api` the conclusion `failure` ("FAILED tests/test_planted_failure.py::test_the_planted_failure - assert 1 == 2"), `check` the conclusion `failure`, and the run the conclusion `failure`. The other four jobs are `success`. PR #15 is closed, and `git ls-remote` finds no branch `fast-cycle-at3` on `origin`.
 
 ## AT-4: Chromium comes from the cache
 
 App: site
 Then: The cache step reports a hit, and the Chromium step takes 2 min or less. The last run before this spec took 6 min 17 s.
 Files: `evidence/AT-4/steps.txt`
-Observation: CI_PENDING
+Observation: Run 1 logged "Cache not found for input keys: Linux-playwright-1.64.1", ran "Install Chromium for the readability floor" in 20 s, and logged "Cache saved with key: Linux-playwright-1.64.1". Run 2 logged "Cache hit for: Linux-playwright-1.64.1", skipped the Chromium install, and ran "Install the system packages of Chromium" in 11 s. `pnpm-lock.yaml` has 0 changed lines between the two runs. The cold install of run 1 took 20 s, not 6 min 17 s, so the 6 min 17 s of the last run before this spec did not come from the install alone.
 
 ## AT-5: The deploy triggers do not change
 
 App: both
 Then: The diff is empty. The run of AT-1 has the conclusion `success`, and the run of AT-3 has the conclusion `failure`, so `workflow_run` of `Check` still carries the result of every job.
 Files: `evidence/AT-5/diff.txt`, `evidence/AT-1/run.json`, `evidence/AT-3/run.json`
-Observation: The diff of `deploy-sites.yml` and `deploy-api.yml` against `origin/main` has 0 lines. CI_PENDING
+Observation: The diff of `deploy-sites.yml` and `deploy-api.yml` against `origin/main` has 0 lines. The run of AT-1 has the conclusion `success`, and the run of AT-3 has the conclusion `failure`.
 
 ## AT-6: The pipeline tests run in parallel
 
@@ -191,7 +191,7 @@ Observation: `gh pr view 13` gives `{"mergedAt":null,"state":"OPEN"}`. Ticket 07
 App: both
 Then: All five jobs run their check. No job skips its member because of the changed paths.
 Files: `evidence/AT-27/run.json`, `evidence/AT-27/steps.txt`, `evidence/AT-27/cleanup.txt`
-Observation: CI_PENDING
+Observation: The throwaway branch `fast-cycle-at27` changes one file, `docs/agents/triage-labels.md`, with 2 added lines. Its run 42271188880 on draft PR #16 has the conclusion `success`. Each of the five jobs ran its check step: "Run the check of the root scripts" 1 s, "Run the check of the site" 259 s, "Run the check of the pipeline" 152 s, "Run the check of the API" 44 s, and "Run the check of each package" 30 s. No step is skipped except the system-packages step of a cache miss. PR #16 is closed, and `git ls-remote` finds no branch `fast-cycle-at27` on `origin`.
 
 ## AT-28: The spec adds no ruleset
 

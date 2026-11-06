@@ -1,0 +1,7 @@
+$ grep -n -B2 -A3 "needs:" .github/workflows/check.yml
+173-  check:
+174-    if: always()
+175:    needs: [scripts, site, pipeline, api, packages]
+176-    runs-on: ubuntu-latest
+177-    timeout-minutes: 2
+178-    steps:

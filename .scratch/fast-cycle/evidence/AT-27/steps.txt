@@ -1,0 +1,52 @@
+$ git diff fa2cf3d5 origin/fast-cycle-at27 --stat   # fa2cf3d5 is the fast-cycle head the branch starts from
+ docs/agents/triage-labels.md | 2 ++
+ 1 file changed, 2 insertions(+)
+== scripts
+  Set up job                                              success     1 s
+  Check out the repository                                success     7 s
+  Run the check of the root scripts                       success     1 s
+  Post Check out the repository                           success     1 s
+  Complete job                                            success     0 s
+== site
+  Set up job                                              success     2 s
+  Check out the repository                                success     6 s
+  Set up pnpm                                             success     5 s
+  Set up Node                                             success     5 s
+  Install the site dependencies                           success     2 s
+  Read the Playwright version                             success     0 s
+  Restore the Playwright browsers                         success     0 s
+  Install Chromium for the readability floor              success    21 s
+  Install the system packages of Chromium                 skipped     0 s
+  Run the check of the site                               success   259 s
+  Post Restore the Playwright browsers                    success     4 s
+  Post Set up Node                                        success     0 s
+  Post Set up pnpm                                        success     0 s
+  Post Check out the repository                           success     1 s
+  Complete job                                            success     0 s
+== pipeline
+  Set up job                                              success     2 s
+  Check out the repository                                success     7 s
+  Set up uv                                               success     1 s
+  Install the Python dependencies                         success     1 s
+  Run the check of the pipeline                           success   152 s
+  Post Set up uv                                          success     1 s
+  Post Check out the repository                           success     0 s
+  Complete job                                            success     0 s
+== api
+  Set up job                                              success     2 s
+  Check out the repository                                success     7 s
+  Set up uv                                               success     1 s
+  Install the Python dependencies                         success     2 s
+  Run the check of the API                                success    44 s
+  Post Set up uv                                          success     1 s
+  Post Check out the repository                           success     1 s
+  Complete job                                            success     0 s
+== packages
+  Set up job                                              success     0 s
+  Check out the repository                                success     7 s
+  Set up uv                                               success     1 s
+  Install the Python dependencies                         success     2 s
+  Run the check of each package                           success    30 s
+  Post Set up uv                                          success     1 s
+  Post Check out the repository                           success     1 s
+  Complete job                                            success     0 s
