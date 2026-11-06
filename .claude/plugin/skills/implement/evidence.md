@@ -14,7 +14,7 @@ The evidence states what the instrument showed. It holds no PASS, no FAIL, and n
 
 Decision 05 sets one full check for each spec. It adds no wall time, because the evidence stage takes longer than the check.
 
-1. Start it first, before the first test. Run `make check` in the Spec worktree with the Bash tool `run_in_background`. Write the output to a log file, such as `make check > .scratch/<slug>/check.log 2>&1`.
+1. Start it first, before the first test. Run `make check` in the Spec worktree with the Bash tool `run_in_background`. Write the output to a log file outside the repo, such as `make check > <scratchpad>/<slug>-check.log 2>&1`. Use the session scratchpad if one exists, else `/tmp/<slug>-check.log`. A log in the repo is an untracked file, so the first step of stage 4 fails and the log can get into an evidence commit.
 2. Write down the start time.
 3. Do not start the evidence of a test until the run is live.
 
