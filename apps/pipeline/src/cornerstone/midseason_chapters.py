@@ -4,6 +4,7 @@ reads the saved raw week, the nflverse files, and the rosters now, and hands eac
 """
 import json
 import logging
+from collections.abc import Mapping
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -51,6 +52,14 @@ class ReportChapters(BaseModel):
     watch: PlayersToWatch
 
 
+def player_cards(entries: Mapping[str, dict]) -> dict[str, PlayerCard]:
+    """The card of each player of the Sleeper players file `entries`, by Sleeper ID. A player with no position gets an
+    empty one, so no chapter of a position counts him."""
+    return {pid: PlayerCard(player_id=pid, name=player_name(pid, entry), position=entry.get("position") or "",
+                            nfl_team=entry.get("team"))
+            for pid, entry in entries.items()}
+
+
 def _nflverse(client: Client, season: int) -> dict[str, Path]:
     """The path of each nflverse file, fetched when the cache is stale. A file with no cache and no fetch stops."""
     cache = nflverse_cache_dir(client.nfl_dir)
@@ -93,9 +102,7 @@ def report_chapters(
     scoring = raw.league.scoring_settings
     rosters = provider.fetch_live(client.league_id(season))[0].rosters if provider is not None else raw.rosters
     owners = {pid: roster.roster_id for roster in rosters for pid in roster.players or []}
-    cards = {pid: PlayerCard(player_id=pid, name=player_name(pid, entry), position=entry.get("position") or "?",
-                             nfl_team=entry.get("team"))
-             for pid, entry in raw.players.items()}
+    cards = player_cards(raw.players)
 
     files = _nflverse(client, season)
     id_map = read_id_map(files["id map"])

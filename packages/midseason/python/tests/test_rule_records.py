@@ -5,14 +5,14 @@ loss and the biggest margin as Heartbreak and Beatdown, the MVP by Points over t
 from league.models import History, PastWeek
 from league.provider.raw import RawTransaction
 from midseason.lineups import LineupChoices, LostWeek, TeamLineup
-from midseason.moves import PlayerInfo
+from midseason.players import PlayerCard
 from midseason.records import record_book
 from midseason.state import league_state
 from midseason.waivers import Streamer, WaiverFacts
 
 NAMES = {1: "One", 2: "Two", 3: "Three", 4: "Four"}
 LINES = {"RB": 2}
-PLAYERS = {f"p{rid}": PlayerInfo(name=f"Back {rid}", position="RB") for rid in NAMES}
+PLAYERS = {f"p{rid}": PlayerCard(player_id=f"p{rid}", name=f"Back {rid}", position="RB") for rid in NAMES}
 
 
 def _week(number: int, scores: dict[int, float], pairs: list[tuple[int, int]]) -> PastWeek:

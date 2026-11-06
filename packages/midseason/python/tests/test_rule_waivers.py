@@ -4,13 +4,13 @@ big bid and a game after it, a $0 add is never a miss, and a lost claim pairs wi
 """
 from league.models import History, PastWeek
 from league.provider.raw import RawTransaction
-from midseason.moves import PlayerInfo
+from midseason.players import PlayerCard
 from midseason.waivers import waiver_facts
 
 # The line is the 2nd RB, so a small pool of 3 RBs sets it each week.
 LINES = {"RB": 2}
 NAMES = {1: "One", 2: "Two"}
-PLAYERS = {pid: PlayerInfo(name=f"Back {pid}", position="RB") for pid in ("10", "11", "12", "20", "21", "22")}
+PLAYERS = {pid: PlayerCard(player_id=pid, name=f"Back {pid}", position="RB") for pid in ("10", "11", "12", "20", "21", "22")}
 
 
 def _week(number: int, rosters: dict[int, list[str]], starters: dict[int, list[str]], points: dict[str, float],

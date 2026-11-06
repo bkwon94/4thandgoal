@@ -15,7 +15,7 @@ from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
-from cornerstone.midseason_chapters import ChaptersStopped, report_chapters
+from cornerstone.midseason_chapters import ChaptersStopped, player_cards, report_chapters
 from cornerstone.render import render_week
 from cornerstone.season_schedule import remaining_schedule
 from cornerstone.season_sim import week_sim
@@ -66,7 +66,7 @@ from league.nflverse import (
     read_id_map,
     read_injuries,
 )
-from league.parse import parse_trades, parse_week, player_name
+from league.parse import parse_trades, parse_week
 from league.paths import (
     build_dir,
     draft_dir,
@@ -104,8 +104,8 @@ from midseason.injury import injury_facts
 from midseason.lineups import lineup_choices, lineup_facts
 from midseason.look_ahead import look_ahead, look_ahead_facts
 from midseason.luck import luck_facts, schedule_luck, with_swap_callouts
-from midseason.moves import PlayerInfo
 from midseason.opener import title_race, title_race_facts
+from midseason.players import PlayerCard
 from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
 from midseason.records import record_book, records_facts
@@ -774,15 +774,12 @@ def season_transactions(provider: Provider, league_id: str, season: int, through
                 for number in range(1, through + 1)}
 
 
-def _saved_week_inputs(raw: Path) -> tuple[dict[str, PlayerInfo], RawLeague, RawState]:
+def _saved_week_inputs(raw: Path) -> tuple[dict[str, PlayerCard], RawLeague, RawState]:
     """The players, the league, and the state of the saved raw files of a week. It reads only these three files of
     the raw folder, because the others are large and the report needs none of them."""
     players = json.loads((raw / "players.json").read_text(encoding="utf-8"))
-    info = {pid: PlayerInfo(name=player_name(pid, entry), position=entry.get("position") or "",
-                            nfl_team=entry.get("team"))
-            for pid, entry in players.items()}
     league = RawLeague.model_validate_json((raw / "league.json").read_text(encoding="utf-8"))
-    return info, league, RawState.model_validate_json((raw / "state.json").read_text(encoding="utf-8"))
+    return player_cards(players), league, RawState.model_validate_json((raw / "state.json").read_text(encoding="utf-8"))
 
 
 def run_midseason(

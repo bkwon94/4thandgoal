@@ -15,7 +15,8 @@ from league.models import Blurb, Fact, History
 from league.numbers import r2
 from league.provider.raw import RawTransaction
 from midseason.lineups import LineupChoices
-from midseason.moves import PlayerInfo, line_scores
+from midseason.moves import line_scores
+from midseason.players import PlayerCard
 from midseason.state import LeagueState
 from midseason.waivers import WaiverFacts
 
@@ -111,7 +112,7 @@ def _scores(history: History, through: int, names: Mapping[int, str]) -> list[Te
             for number in range(1, through + 1) for rid, score in sorted(history.weeks[number].scores.items())]
 
 
-def _mvp(history: History, through: int, names: Mapping[int, str], players: Mapping[str, PlayerInfo],
+def _mvp(history: History, through: int, names: Mapping[int, str], players: Mapping[str, PlayerCard],
          lines: Mapping[str, int]) -> Award | None:
     """The started QB, RB, WR, or TE with the most Points over the line, and the team that got the most of them."""
     line_at = line_scores(history, lines, through)
@@ -155,7 +156,7 @@ def _award(key: AwardKey, roster_id: int, names: Mapping[int, str], value: float
 
 
 def record_book(
-    history: History, through: int, names: Mapping[int, str], *, players: Mapping[str, PlayerInfo],
+    history: History, through: int, names: Mapping[int, str], *, players: Mapping[str, PlayerCard],
     lines: Mapping[str, int], transactions: Mapping[int, Sequence[RawTransaction]], waivers: WaiverFacts,
     lineups: LineupChoices, state: LeagueState,
 ) -> RecordBook:

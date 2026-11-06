@@ -19,7 +19,7 @@ class PlayerCard(BaseModel):
     name: str
     position: str
     # None for a free agent of the NFL.
-    nfl_team: str | None
+    nfl_team: str | None = None
 
 
 def league_points(stats: Mapping[str, float], scoring: Mapping[str, float]) -> Decimal:

@@ -1,6 +1,6 @@
 """
 The shared reads of the waiver and the trade chapters: the score at the line of each position each week, the starts
-of one stint of a player on a roster, and the plain models of a player. GLOSSARY.md, "Points over the line".
+of one stint of a player on a roster. GLOSSARY.md, "Points over the line".
 """
 from collections.abc import Mapping
 from decimal import Decimal
@@ -10,13 +10,6 @@ from pydantic import BaseModel
 from league.history import player_points
 from league.models import History, PastWeek
 from league.numbers import r2
-
-
-class PlayerInfo(BaseModel):
-    """The name, the position, and the NFL team of one player, from the players file."""
-    name: str
-    position: str
-    nfl_team: str | None = None
 
 
 class Stint(BaseModel):

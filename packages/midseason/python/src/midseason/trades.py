@@ -16,7 +16,8 @@ from league.numbers import r2
 from league.provider.raw import RawTransaction
 from league.standings_table import week_median
 from league.trades import default_cutoff
-from midseason.moves import PlayerInfo, line_scores, stint
+from midseason.moves import line_scores, stint
+from midseason.players import PlayerCard
 
 TradeResult = Literal["Robbery", "Clear win", "Slight edge", "Push", "Too soon"]
 # The tunables of the Trade result, PRD "The report: chapters and rules". A gap at or above a line takes its label.
@@ -118,7 +119,7 @@ def _record(history: History, roster_id: int, start: int, through: int, median_g
     return Record(wins=wins, losses=losses, ties=ties)
 
 
-def _hurt_on_arrival(history: History, player_id: str, info: PlayerInfo, week: int) -> bool:
+def _hurt_on_arrival(history: History, player_id: str, info: PlayerCard, week: int) -> bool:
     """True when the player played no game in `week` while his NFL team played one. No injury source has a date, so a
     missed game of his team is the test. PRD, "Missing injury rows"."""
     past = history.weeks.get(week)
@@ -132,7 +133,7 @@ def _hurt_on_arrival(history: History, player_id: str, info: PlayerInfo, week: i
 
 def trade_facts(
     history: History, through: int, transactions: Mapping[int, Sequence[RawTransaction]],
-    players: Mapping[str, PlayerInfo], names: Mapping[int, str], lines: Mapping[str, int], *,
+    players: Mapping[str, PlayerCard], names: Mapping[int, str], lines: Mapping[str, int], *,
     season_start: date, tz: ZoneInfo, median_game: bool = True,
 ) -> TradeFacts:
     """The Trade result of each complete trade of weeks 1 to `through`.
@@ -151,7 +152,7 @@ def trade_facts(
         over: dict[str, float] = {}
         got: dict[int, list[TradePlayer]] = {rid: [] for rid in row.roster_ids}
         for player_id, roster_id in adds.items():
-            info = players.get(player_id) or PlayerInfo(name=player_id, position="")
+            info = players.get(player_id) or PlayerCard(player_id=player_id, name=player_id, position="")
             run = stint(history, line_at, player_id, info.position, roster_id, week, through)
             over[player_id] = run.points_over_line or 0.0
             got.setdefault(roster_id, []).append(TradePlayer(

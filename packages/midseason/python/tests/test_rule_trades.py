@@ -9,7 +9,7 @@ import pytest
 
 from league.models import History, PastWeek
 from league.provider.raw import RawTransaction
-from midseason.moves import PlayerInfo
+from midseason.players import PlayerCard
 from midseason.trades import trade_facts, trade_result, trade_week
 
 ET = ZoneInfo("America/New_York")
@@ -18,7 +18,7 @@ SEASON_START = date(2026, 9, 9)
 # The line is the 4th RB, Back 99, who scores 0 each week.
 LINES = {"RB": 4}
 NAMES = {1: "One", 2: "Two", 3: "Three"}
-PLAYERS = {pid: PlayerInfo(name=f"Back {pid}", position="RB") for pid in ("10", "20", "30", "99")}
+PLAYERS = {pid: PlayerCard(player_id=pid, name=f"Back {pid}", position="RB") for pid in ("10", "20", "30", "99")}
 
 
 @pytest.mark.parametrize(("gap", "weeks", "label"), [

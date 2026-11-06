@@ -9,7 +9,8 @@ from pydantic import BaseModel
 from facts.tokens import Nums, fact
 from league.models import Fact, History
 from league.provider.raw import RawTransaction
-from midseason.moves import PlayerInfo, line_scores, stint
+from midseason.moves import line_scores, stint
+from midseason.players import PlayerCard
 
 # Decision ticket 03. The hits list reads these positions. QB, K, and DEF adds feed the streaming king.
 HIT_POSITIONS = ("RB", "WR", "TE")
@@ -101,7 +102,7 @@ def _adds(transactions: Mapping[int, Sequence[RawTransaction]]) -> list[RawTrans
 
 def waiver_facts(
     history: History, through: int, transactions: Mapping[int, Sequence[RawTransaction]],
-    players: Mapping[str, PlayerInfo], names: Mapping[int, str], lines: Mapping[str, int], budget: int,
+    players: Mapping[str, PlayerCard], names: Mapping[int, str], lines: Mapping[str, int], budget: int,
 ) -> WaiverFacts:
     """The waiver facts of weeks 1 to `through` from the transactions of each week by week.
 
