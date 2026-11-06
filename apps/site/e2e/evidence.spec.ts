@@ -6,7 +6,7 @@ import { test } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { loadTests, runRound } from "./evidence";
+import { buildEnv, EVIDENCE_PORT, loadTests, runRound } from "./evidence";
 import { serveDir } from "./serve";
 
 // pnpm runs each script of the site in apps/site, so the tracker sits two folders up.
@@ -39,9 +39,9 @@ test(`the evidence of ${SLUG || "no feature"}`, async ({ browser }) => {
     serve: async (client) => {
       const start = Date.now();
       // pnpm build runs the prebuild step too, which copies the published weeks of the client into public/.
-      execFileSync("pnpm", ["build"], { env: { ...process.env, CLIENT: client }, stdio: "ignore" });
+      execFileSync("pnpm", ["build"], { env: buildEnv(client), stdio: "ignore" });
       console.log(`build ${client}: ${((Date.now() - start) / 1000).toFixed(1)} s`);
-      return serveDir(OUT);
+      return serveDir(OUT, EVIDENCE_PORT);
     },
     log: (line) => console.log(line),
   });

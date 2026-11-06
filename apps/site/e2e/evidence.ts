@@ -25,6 +25,25 @@ const SETTLE_MS = 1200;
 const CLIENT = "cpc";
 
 /*
+ * The local API of make -C apps/api api-evidence. The build bakes the API URL into the export, and with no value the
+ * site calls the production API. An evidence run must never call production, so the build always sets this URL.
+ */
+export const LOCAL_API = "http://localhost:8080";
+
+/*
+ * The fixed port of the evidence server. The API answers only the origins it allows, and a free port changes each run.
+ * make -C apps/api api-evidence allows EVIDENCE_ORIGIN, so the analyzer tests of a round reach the local API.
+ */
+export const EVIDENCE_PORT = 4173;
+export const EVIDENCE_ORIGIN = `http://127.0.0.1:${EVIDENCE_PORT}`;
+
+/* The env of the build of one client in an evidence run: the caller env, the client, and always the local API. */
+export function buildEnv(client: string, env: Partial<NodeJS.ProcessEnv> = process.env): NodeJS.ProcessEnv {
+  // The types of Next mark NODE_ENV as required, but a build of the site sets it itself.
+  return { ...env, CLIENT: client, NEXT_PUBLIC_API_URL: LOCAL_API } as NodeJS.ProcessEnv;
+}
+
+/*
  * One step of a step list. Each step is an object with one verb as its key:
  * {"click": "<selector>"}, {"fill": {"selector": "<selector>", "value": "<text>"}}, {"scroll": "<selector>" or "end"},
  * {"wait": "<selector>", "url", or a time in ms}, {"shot": "<name>"}, and {"url": true}.

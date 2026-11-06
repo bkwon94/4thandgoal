@@ -46,8 +46,10 @@ api: ## Run the API on port 8080 with the test passphrase localtest for each cli
 
 # Evidence runs only: an analyzer test of an evidence run makes many requests, and the default limit of 10 would
 # make it wait 61 s. The API stays real. Fly never sets the value, so production keeps 10.
+# The evidence runner serves the site at http://127.0.0.1:4173, EVIDENCE_ORIGIN of apps/site/e2e/evidence.ts. The API
+# answers only the origins it allows, so this target allows that one origin.
 api-evidence: ## Run the API like api, with a limit of 600 requests per minute, for evidence runs only
-	$(PASSPHRASES) CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_REPO=$(ROOT) $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
+	$(PASSPHRASES) CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:4173 CORNERSTONE_REPO=$(ROOT) $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
 
 image: ## Build the image of the API with the local Docker
 	docker build -f $(ROOT)/apps/api/Dockerfile -t cpcfantasy-api $(ROOT)
