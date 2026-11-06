@@ -5,7 +5,7 @@ Date: 2026-11-06
 Apps: both. The pipeline and the API run their tests in parallel. The site check gets its own CI job with a cached Chromium. The root CI, `scripts/verdict.py`, and the `cpc` skills change for both apps.
 Spec branch: `fast-cycle`.
 Source: the map `.scratch/fast-cycle/MAP.md` and decision tickets 01 to 13. ADR 0026 supersedes ADR 0020.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 07, in `issues/`.
 
 ## Problem Statement
 
