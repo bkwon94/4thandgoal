@@ -446,9 +446,8 @@ for (const width of REPORT_WIDTHS) {
       texts.filter((text) => chip.left < text.right && text.left < chip.right && chip.top < text.bottom && text.top < chip.bottom),
     );
     expect(overlaps, `a waiting chip covers a name or a score at ${width}px`).toEqual([]);
-    // At rest, after a skip and a close of the champion card, every name of every round shows in full.
+    // At rest, after a skip, every name of every round shows in full.
     await page.getByRole("button", { name: "Skip to the end" }).click();
-    await stage.getByRole("button", { name: "See the bracket" }).click();
     const cut = await stage
       .locator("[data-team-name]")
       .evaluateAll((els) => els.filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.textContent));
@@ -456,22 +455,34 @@ for (const width of REPORT_WIDTHS) {
   });
 }
 
-/* AT-32 and AT-34: a press plays a run, and a skip shows the champion card at once, with the title odds of all runs. */
-test(`sim replay: ${CLIENT} ${MIDSEASON_ROUTE} plays a run and skips to the champion at 375px`, async ({ page }) => {
-  test.skip(!hasReport, `${CLIENT} builds no midseason report`);
-  await page.setViewportSize({ width: 375, height: 900 });
-  await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
-  const stage = page.getByRole("region", { name: "The replay" });
-  test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
-  await page.getByRole("button", { name: "Sim the season" }).click();
-  await expect(stage.getByRole("group", { name: "Week 9 final" })).toBeVisible();
-  await page.getByRole("button", { name: "Skip to the end" }).click();
-  const card = stage.getByRole("dialog", { name: "Champion of this run" });
-  await expect(card).toContainText(/Wins the title in [\d.]+% of all [\d,]+ runs/);
-  expect(await scanScroll(page)).toEqual([]);
-  // The trophy sits centered over the avatar of the champion.
-  const trophy = (await card.locator("[data-trophy]").boundingBox())!;
-  const avatar = (await card.locator("[data-avatar]").boundingBox())!;
-  expect(trophy.x + trophy.width / 2).toBeCloseTo(avatar.x + avatar.width / 2, 0);
-  expect(trophy.y + trophy.height).toBeLessThanOrEqual(avatar.y + 1);
-});
+/* AT-32 and AT-34: a press plays a run, and a skip shows the final state at once: the champion card with the title odds
+   of all runs, and the complete bracket below it, with no part of the bracket under the card. */
+for (const width of [375, 1280]) {
+  test(`sim replay: ${CLIENT} ${MIDSEASON_ROUTE} plays a run and skips to the champion and the bracket at ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const stage = page.getByRole("region", { name: "The replay" });
+    test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
+    await page.getByRole("button", { name: "Sim the season" }).click();
+    await expect(stage.getByRole("group", { name: "Week 9 final" })).toBeVisible();
+    await page.getByRole("button", { name: "Skip to the end" }).click();
+    const card = stage.getByRole("group", { name: "Champion of this run" });
+    await expect(card).toContainText(/Wins the title in [\d.]+% of all [\d,]+ runs/);
+    expect(await scanScroll(page)).toEqual([]);
+    const rounds = stage.getByRole("list", { name: "Bracket" }).getByRole("listitem");
+    await expect(rounds).toHaveCount(3);
+    for (const round of await rounds.all()) await expect(round).toBeVisible();
+    const cardBox = (await card.boundingBox())!;
+    const bracketBox = (await stage.getByRole("list", { name: "Bracket" }).boundingBox())!;
+    expect(bracketBox.y, `the champion card covers the bracket at ${width}px`).toBeGreaterThanOrEqual(cardBox.y + cardBox.height);
+    // The stage clips its parts, so the whole bracket must sit inside the stage.
+    const stageBox = (await stage.boundingBox())!;
+    expect(bracketBox.y + bracketBox.height).toBeLessThanOrEqual(stageBox.y + stageBox.height);
+    // The trophy sits centered over the avatar of the champion.
+    const trophy = (await card.locator("[data-trophy]").boundingBox())!;
+    const avatar = (await card.locator("[data-avatar]").boundingBox())!;
+    expect(trophy.x + trophy.width / 2).toBeCloseTo(avatar.x + avatar.width / 2, 0);
+    expect(trophy.y + trophy.height).toBeLessThanOrEqual(avatar.y + 1);
+  });
+}

@@ -20,7 +20,7 @@ import { Standings } from "./standings";
 import { WeekStrip } from "./week-strip";
 
 /* The run on the stage. A new press gives a new take, so the stage mounts fresh and no part of the old run stays. */
-type Play = { run: number; take: number; step: number; still: boolean; card: boolean };
+type Play = { run: number; take: number; step: number; still: boolean };
 
 /* A random run of the stored runs, so two managers see different endings. */
 const randomRun = (count: number) => Math.floor(Math.random() * count);
@@ -78,18 +78,14 @@ function PlayoffsBand({ pace }: { pace: Pace }) {
 function Stage({
   season,
   beat,
-  play,
   runs,
   pace,
-  onClose,
 }: {
   season: ReplaySeason;
   beat: Beat;
-  play: Play;
   // The count of all runs of the sim.
   runs: number;
   pace: Pace;
-  onClose: () => void;
 }) {
   const spots = season.seeds.length;
   const final = season.weeks.at(-1)!.standings;
@@ -112,13 +108,12 @@ function Stage({
   }
   const shown = beat.kind === "champion" ? season.rounds.length : beat.index + 1;
   const decided = beat.kind === "draw" ? beat.index : shown;
+  // The final state shows the champion card above the complete bracket, so the card covers no game.
   return (
-    <>
+    <div className="flex flex-col gap-sp-4">
+      {beat.kind === "champion" && <ChampionCard champion={season.champion} runs={runs} pace={pace} />}
       <Bracket rounds={season.rounds} shown={shown} decided={decided} live={beat.kind === "result" && !pace.still} pace={pace} />
-      {beat.kind === "champion" && play.card && (
-        <ChampionCard champion={season.champion} runs={runs} pace={pace} onClose={onClose} />
-      )}
-    </>
+    </div>
   );
 }
 
@@ -149,10 +144,9 @@ export function SimReplay({
 
   const press = () => {
     const next = pick(sim.sample.length);
-    setPlay((now) => ({ run: next, take: (now?.take ?? 0) + 1, step: 0, still: false, card: true }));
+    setPlay((now) => ({ run: next, take: (now?.take ?? 0) + 1, step: 0, still: false }));
   };
   const skip = () => setPlay((now) => (now === null ? now : { ...now, step: beats.length - 1, still: true }));
-  const closeCard = () => setPlay((now) => (now === null ? now : { ...now, card: false }));
 
   const regular = sim.weeks.filter((week) => !sim.bracket_weeks.includes(week));
   const seeds =
@@ -203,9 +197,8 @@ export function SimReplay({
               <Standings rows={replaySeason(sim, 0).start} label="Standings" pace={{ off, still: true }} />
             </div>
           ) : (
-            // The champion card fills the whole stage, so this box sets no position of its own.
             <div key={play.take} className="flex flex-1 flex-col">
-              <Stage season={season} beat={beat} play={play} runs={sim.runs} pace={pace} onClose={closeCard} />
+              <Stage season={season} beat={beat} runs={sim.runs} pace={pace} />
             </div>
           )}
         </section>

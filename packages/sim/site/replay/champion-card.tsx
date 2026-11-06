@@ -1,6 +1,6 @@
 /**
- * The champion card that ends a replay: it fills the stage, the avatar scales up on a spring, the trophy drops in, and
- * the rays and a ring burst once. It names the title odds of the team over all runs. "See the bracket" hides it.
+ * The champion card that ends a replay: it sits above the complete bracket, the avatar scales up on a spring, the trophy
+ * drops in, and the rays and a ring burst once. It names the title odds of the team over all runs.
  */
 import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
@@ -16,22 +16,21 @@ export function ChampionCard({
   champion,
   runs,
   pace,
-  onClose,
 }: {
   champion: Champion;
   // The count of all runs of the sim.
   runs: number;
   pace: Pace;
-  onClose: () => void;
 }) {
   // The burst moves and scales, so it plays only with full motion and never after a skip.
   const burst = !pace.off && !pace.still;
   return (
     <motion.div
-      role="dialog"
+      role="group"
       aria-label="Champion of this run"
       {...enter(pace, { scale: 0.96 }, { duration: 0.4 })}
-      className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-sp-3 bg-band px-sp-4 text-center"
+      // The card sits in the flow of the stage above the bracket, so the final state shows both. It clips the rays.
+      className="relative flex flex-col items-center gap-sp-3 overflow-hidden px-sp-4 text-center"
     >
       <div className="relative flex items-center justify-center p-sp-6">
         {burst && (
@@ -71,13 +70,6 @@ export function ChampionCard({
         <span className="text-score leading-tight font-bold text-on-dark">{champion.name}</span>
         <span className="text-body text-on-dark-2">{`Wins the title in ${champion.title}% of all ${thousands(runs)} runs`}</span>
       </motion.div>
-      <button
-        type="button"
-        onClick={onClose}
-        className="min-h-touch px-sp-3 font-mono text-meta font-bold tracking-caps text-on-dark underline underline-offset-4 uppercase"
-      >
-        See the bracket
-      </button>
     </motion.div>
   );
 }

@@ -80,7 +80,7 @@ describe("the sim replay with reduced motion", () => {
       "Final results",
       "Lil Fridge wins the title in this run",
     ]);
-    expect(within(stage).getByRole("dialog", { name: "Champion of this run" }).textContent).toContain(
+    expect(within(stage).getByRole("group", { name: "Champion of this run" }).textContent).toContain(
       "Wins the title in 14.4% of all 10,000 runs",
     );
   });
