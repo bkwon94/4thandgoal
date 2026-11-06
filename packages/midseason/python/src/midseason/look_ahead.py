@@ -92,13 +92,15 @@ def look_ahead_facts(look: LookAhead) -> list[Fact]:
         weeks = [game.week for game in team.games]
         n = Nums()
         head = (f"{team.name} faces opponents with a {n(team.opponents_rate)} win rate in weeks {n(min(weeks))} to "
-                f"{n(max(weeks))}, the")
-        if team.roster_id == look.softest:
+                f"{n(max(weeks))},")
+        # A shared rate shares the place, and the text says so. The place reads the rate, never the roster ID, so
+        # a team tied for the hardest schedule is never a middle place.
+        shared = "tied for the" if rates.count(team.opponents_rate) > 1 else "the"
+        if team.opponents_rate == min(rates):
             place = "softest schedule"
-        elif team.roster_id == look.hardest:
+        elif team.opponents_rate == max(rates):
             place = "hardest schedule"
         else:
-            # A shared rate shares the place.
             place = f"{n.ord(1 + sum(1 for rate in rates if rate < team.opponents_rate))} softest schedule"
-        facts.append(fact(f"LA.{team.roster_id}.rate", f"{head} {place}.", n, [team.name], []))
+        facts.append(fact(f"LA.{team.roster_id}.rate", f"{head} {shared} {place}.", n, [team.name], []))
     return facts

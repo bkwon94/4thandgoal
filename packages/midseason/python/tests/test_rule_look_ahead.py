@@ -60,3 +60,18 @@ def test_the_facts_name_the_rate_of_each_team_and_the_softest_and_the_hardest_sc
     assert facts["LA.1.rate"].text == "One faces opponents with a 0 win rate in weeks 3 to 4, the softest schedule."
     assert facts["LA.4.rate"].text == "Four faces opponents with a 1 win rate in weeks 3 to 4, the hardest schedule."
     assert "2nd softest" in facts["LA.2.rate"].text or "2nd softest" in facts["LA.3.rate"].text
+
+
+def test_teams_that_tie_at_an_end_share_the_softest_or_the_hardest_schedule():
+    # Teams 1 and 2 each face 1 win in 4 games, and teams 3 and 4 each face 3 wins in 4 games.
+    facts = {f.id: f.text for f in look_ahead_facts(_look({3: [(1, 4), (2, 3)], 4: [(2, 4), (1, 3)]}))}
+    assert facts["LA.1.rate"].endswith(", tied for the softest schedule.")
+    assert facts["LA.2.rate"].endswith(", tied for the softest schedule.")
+    assert facts["LA.3.rate"].endswith(", tied for the hardest schedule.")
+    assert facts["LA.4.rate"].endswith(", tied for the hardest schedule.")
+
+
+def test_teams_that_tie_between_the_ends_share_a_place_and_say_so():
+    facts = {f.id: f.text for f in look_ahead_facts(_look())}
+    assert facts["LA.2.rate"].endswith(", tied for the 2nd softest schedule.")
+    assert facts["LA.3.rate"].endswith(", tied for the 2nd softest schedule.")
