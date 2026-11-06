@@ -35,7 +35,7 @@ The agent never writes a Test verdict. The Judge, a fresh subagent, gives each T
 | A change request | One correction commit, and a reply with the commit id. |
 | A question | A reply with the answer. No change. |
 | A conflict with the spec, an ADR, or an approved test | A reply that names the conflict. No change. |
-| A FAIL from Brian | One finding. A correction commit, built with `tdd` when it changes behavior. Then new evidence for that test with [`../implement/evidence.md`](../implement/evidence.md), committed. Then a fresh Judge on that test, with the lines of "Some tests only" and "After a fix" of [`../implement/judge.md`](../implement/judge.md#some-tests-only), committed. A reply with the commit ids, the new evidence link, and the new word of the Judge in a sentence, such as "The Judge now gives PASS to AT-2." |
+| A FAIL from Brian | One finding. A correction commit, built with `tdd` when it changes behavior. Then new evidence for that test with [`../implement/evidence.md`](../implement/evidence.md), committed. Then a fresh Judge on that test, with the lines of "Some tests only" and "After a fix" of [`../implement/judge.md`](../implement/judge.md#some-tests-only). Copy its reply into `VERDICTS.md` as that section shows, and commit it. A reply with the commit ids, the new evidence link, and the new word of the Judge in a sentence, such as "The Judge now gives PASS to AT-2." |
 | A BLOCKED from Brian | A reply that names what the test needs. If the agent can supply it, such as a missing evidence file, supply it, run a fresh Judge on that test as for a FAIL, and reply with the link. |
 | A FAIL or BLOCKED from the Judge | A reply in the round comment that names the test and the reason of the Judge. Tell Brian. The agent gives the test no third round. |
 | A stale `VERDICTS.md` | A fresh Judge on each test, with [`../implement/judge.md`](../implement/judge.md), committed. |
@@ -46,7 +46,7 @@ The agent never writes a Test verdict. The Judge, a fresh subagent, gives each T
 ## The rules
 
 - Record new evidence only for the tests that get a fix, or that Brian names.
-- Never change a line of `VERDICTS.md`. Only a fresh Judge writes it, and each of its rounds is one commit `Record the Test verdicts of the Judge`.
+- Never write a Test verdict of your own in `VERDICTS.md`. Only a fresh Judge gives one. On some tests only, copy the reply lines of the Judge word for word, as [`../implement/judge.md`](../implement/judge.md#some-tests-only) shows. Each round is one commit `Record the Test verdicts of the Judge`.
 - Run the Judge after the last commit that changes `EVIDENCE.md` in the round, so its SHAs match the head.
 - Never write the line `Test verdicts`, and never write `AT-<n>: PASS`, `FAIL`, or `BLOCKED`, in a comment or a reply.
 - Brian resolves each thread. The agent does not.

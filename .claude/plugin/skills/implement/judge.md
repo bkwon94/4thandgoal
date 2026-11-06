@@ -2,7 +2,7 @@
 
 Stage 4 of `cpc:implement`. A fresh subagent, the Judge, gives the Test verdict of each acceptance test `AT-<n>`. It writes `.scratch/<slug>/VERDICTS.md`. The check `verdict` reads that file (ADR 0026).
 
-The orchestrator built the work, so it never gives a Test verdict and never changes a line of `VERDICTS.md`. The Judge did not build the work. It reads only the acceptance tests and the evidence.
+The orchestrator built the work, so it never writes a Test verdict of its own in `VERDICTS.md`. It only copies the lines of the Judge. The Judge did not build the work. It reads only the acceptance tests and the evidence.
 
 ## Before the first round
 
@@ -66,18 +66,18 @@ Then reply with the full text of VERDICTS.md.
 2. Commit the file alone: `git add .scratch/<slug>/VERDICTS.md`, then `git commit -m "Record the Test verdicts of the Judge"`. The hook must pass.
 3. Run `git show --stat HEAD`. The commit must change only `VERDICTS.md`.
 
-Each round is one new commit, so each change to a Test verdict leaves a trace. Never amend a round. Never edit `VERDICTS.md` by hand.
+Each round is one new commit, so each change to a Test verdict leaves a trace. Never amend a round. Never write a Test verdict by hand. In a round on some tests only, copy the lines of the Judge, as "Some tests only" shows.
 
 The check reads each offense:
 
 - `0 offenses.` Each test has PASS. Go to stage 5.
-- `verdict/not-pass` names a test with FAIL. Do the fix round below.
+- `verdict/not-pass` names a test with FAIL. In the first round, do the fix round below. After the fix round, stop, as "The hard stop" shows.
 - `verdict/missing`, `verdict/unknown`, `verdict/duplicate`, or `verdict/no-verdicts` means the Judge broke the shape. Start a fresh Judge on those tests, with the lines of "Some tests only". This is not a FAIL round.
 - `verdict/stale-acceptance` or `verdict/stale-evidence` means a file changed after you got its SHA. Get the SHAs again, and start a fresh Judge on each test.
 
 ## The fix round
 
-A FAIL gets one fix round.
+A FAIL gets one fix round. There is never a second fix round.
 
 1. Read the reason of the Judge for each failed test.
 2. Fix the cause on the Spec branch, in its own commit. Use `tdd` when the fix changes behavior. The hook must pass.
@@ -86,7 +86,8 @@ A FAIL gets one fix round.
 5. Commit `EVIDENCE.md` and the changed files of `evidence/` with the message `Record the evidence of <slug> again`. The hook must pass.
 6. Get the two SHAs again with `git hash-object`.
 7. Start a fresh Judge. Never send the brief to the first Judge again. Give it the brief of the first round, with the new SHAs. Add the lines of "Some tests only" at its end, then the line of "After a fix".
-8. Check and commit the round, as above.
+8. Copy the reply of the Judge into `VERDICTS.md`, as "Some tests only" shows.
+9. Check and commit the round, as above.
 
 ### Some tests only
 
@@ -95,8 +96,15 @@ Add these lines to the brief when the Judge checks only some tests:
 ````text
 Judge only these tests: AT-<n>, AT-<m>. These lines replace the steps above where they differ.
 
-VERDICTS.md exists. Change only its two SHA lines and the line of each test above. Keep each other line as it is.
+Write no file. Reply with only the line AT-<n>: ... of each test above, in the order of ACCEPTANCE.md. Write no other word.
 ````
+
+The Judge of such a round does not see the old lines of `VERDICTS.md`, so an old FAIL reason does not steer it. The orchestrator writes its reply into the file:
+
+1. Copy each line `AT-<n>: ...` of the reply word for word into `VERDICTS.md`. Replace the line of that test.
+2. Set the two SHA lines to the new SHAs.
+3. Change no other line.
+4. Run `git diff -U0 .scratch/<slug>/VERDICTS.md`. Only the two SHA lines and the lines of the named tests may change.
 
 ### After a fix
 
@@ -106,8 +114,16 @@ Add this line too when the tests had a FAIL and got a fix. A second FAIL then sh
 A test above that does not pass gets BLOCKED, not FAIL, with one sentence of reason.
 ````
 
+### The hard stop
+
+After the fix round, a test that does not have PASS stops stage 4. If the Judge wrote FAIL, not BLOCKED, treat the test as BLOCKED all the same:
+
+1. Push nothing.
+2. Open no PR.
+3. Tell Brian the test and the reason of the Judge, quoted from `VERDICTS.md`.
+
 Never change `ACCEPTANCE.md` to make a test pass. An acceptance test changes only with `cpc:to-acceptance` and Brian.
 
 A test that `evidence.md` skipped, because its ticket is `blocked`, gets no fix round. Its FAIL stays until the ticket builds. Then [`pr.md`](pr.md#a-second-start) runs the Judge on it.
 
-**Stop rule of stage 4.** Go to stage 5 when each test has PASS, or when each FAIL names a test of a `blocked` ticket. If a test has BLOCKED after the fix round, stop. Push nothing and open no PR. Tell Brian each BLOCKED test and the reason of the Judge, quoted from `VERDICTS.md`.
+**Stop rule of stage 4.** Go to stage 5 when each test has PASS, or when each FAIL names a test of a `blocked` ticket. If a test has no PASS after the fix round, stop, even if the Judge wrote FAIL. Push nothing and open no PR. Tell Brian each such test and the reason of the Judge, quoted from `VERDICTS.md`.

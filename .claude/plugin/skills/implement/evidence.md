@@ -12,21 +12,21 @@ The evidence states what the instrument showed. It holds no PASS, no FAIL, and n
 
 ## The background check
 
-Decision 05 sets one full check for each spec. It adds no wall time, because the evidence stage takes longer than the check.
+Run one full check for each spec (`.scratch/fast-cycle/decisions/05-grill-local-full-check.md`). It adds no wall time, because the evidence stage takes longer than the check.
 
-1. Start it first, before the first test. Run `make check` in the Spec worktree with the Bash tool `run_in_background`. Write the output to a log file, such as `make check > .scratch/<slug>/check.log 2>&1`.
+1. Start it first, before the first test. Run `make check` in the Spec worktree with the Bash tool `run_in_background`. Write the output to a log file outside the repo, such as `make check > <scratchpad>/<slug>-check.log 2>&1`. Use the session scratchpad if one exists, else `/tmp/<slug>-check.log`. A log in the repo is an untracked file, so the first step of stage 4 fails and the log can get into an evidence commit.
 2. Write down the start time.
 3. Do not start the evidence of a test until the run is live.
 
-**One `uv run` for each checkout.** Run no other `uv run --exact --package` in the Spec worktree while the check is live. Two members share one `.venv` and break each other (decision 09). If you do, a run fails at random with a broken environment.
+**One `uv run` for each checkout.** Run no other `uv run --exact --package` in the Spec worktree while the check is live. Two members share one `.venv` and break each other (`.scratch/fast-cycle/decisions/09-research-parallel-pytest.md`). If you do, a run fails at random with a broken environment.
 
 The site evidence runner does not use `uv run`, so it runs at the same time. A pipeline test that needs `uv run` has two choices. Run it in a detached worktree of its own, or wait for the background run to end.
 
 Before the push, read the result of the run.
 
 - A green run needs no more work. The push does not wait on a run that is already green.
-- A red run gets fixed before the push. Run again only the check of the failed member: `make -C apps/<app> check`. Do not run the full check again.
-- Record the start time, the end time, and the last lines of the log in the evidence of AT-22.
+- Fix a red run before the push. Run again only the check of the failed member: `make -C apps/<app> check`. Do not run the full check again.
+- If a test of the spec covers the background check, record the start time, the end time, and the last lines of the log in its evidence.
 
 ## A site test
 
