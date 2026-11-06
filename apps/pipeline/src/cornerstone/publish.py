@@ -13,6 +13,7 @@ from league.client import Client
 from league.paths import build_dir, season_dir, site_week_dir, week_label
 from midseason.prose import read_draft_facts, recheck_prose
 from midseason.published import MIDSEASON_FILE, read_midseason, report_blurbs
+from sim.published import SIM_FILE
 
 # Each client serves at its own subdomain, from the Cloudflare Worker named by its slug.
 SITE_DOMAIN = "4thandgoal.app"
@@ -116,8 +117,9 @@ def run_publish(
     return site_page_url(slug, season, week)
 
 
-# The two season files of the midseason report. Ticket 03 of the report writes sim.json.
-MIDSEASON_FILES = (MIDSEASON_FILE, "sim.json")
+# The two season files of the midseason report. The report ends on the sim replay, so the two go live together. The
+# app names the sim file, because the midseason package never imports sim.
+MIDSEASON_FILES = (MIDSEASON_FILE, SIM_FILE)
 
 
 def midseason_page_url(slug: str, season: int) -> str:
