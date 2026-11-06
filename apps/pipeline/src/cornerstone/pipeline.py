@@ -92,9 +92,9 @@ from midseason.arcs import arcs_facts, team_arcs
 from midseason.draft import DraftPick, DraftValue, draft_facts, draft_value
 from midseason.injury import injury_facts, missed_games
 from midseason.lineups import lineup_choices, lineup_facts
-from midseason.look_ahead import look_ahead, look_ahead_facts
+from midseason.look_ahead import LOOK_AHEAD, look_ahead, look_ahead_facts
 from midseason.luck import luck_facts, schedule_luck, with_swap_callouts
-from midseason.opener import title_race, title_race_facts
+from midseason.opener import OPENER, title_race, title_race_facts
 from midseason.players import PlayerCard
 from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
@@ -827,9 +827,9 @@ def run_midseason(
              ("trades", "The trade report card", trade_prose_facts(trades)),
              ("lineup", "Lineup choices", lineup_facts(lineups)),
              ("records", "The record book", records_facts(records, waivers=waivers, lineups=lineups, state=state)),
-             ("look-ahead", "The look ahead", look_ahead_facts(look)),
+             (LOOK_AHEAD, "The look ahead", look_ahead_facts(look)),
              ("watch", "Players to watch", watch_facts(chapters.watch))]
-    sheet = prose_sheet(week, state, roast, later, first=[("opener", "The title race", title_race_facts(race))],
+    sheet = prose_sheet(week, state, roast, later, first=[(OPENER, "The title race", title_race_facts(race))],
                         callouts=callout_facts(headlines, callouts, names))
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
