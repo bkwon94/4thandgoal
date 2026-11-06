@@ -1007,6 +1007,26 @@ def test_past_the_rate_limit_the_route_is_429_with_a_retry_after(settings, sourc
     assert client.get("/health").status_code == 200
 
 
+def test_the_rate_limit_comes_from_the_environment(settings, sources, monkeypatch):
+    monkeypatch.setenv("CORNERSTONE_PASSPHRASE_CPC", PASSPHRASE)
+    monkeypatch.setenv("CORNERSTONE_RATE_LIMIT_PER_MINUTE", "25")
+    from_env = Settings.from_env(["cpc"])
+    client = _client(dataclasses.replace(settings, rate_limit_per_minute=from_env.rate_limit_per_minute), sources)
+    for _ in range(25):
+        assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
+    assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 429
+
+
+def test_with_no_rate_limit_value_the_limit_is_10(settings, sources, monkeypatch):
+    monkeypatch.setenv("CORNERSTONE_PASSPHRASE_CPC", PASSPHRASE)
+    monkeypatch.delenv("CORNERSTONE_RATE_LIMIT_PER_MINUTE", raising=False)
+    from_env = Settings.from_env(["cpc"])
+    client = _client(dataclasses.replace(settings, rate_limit_per_minute=from_env.rate_limit_per_minute), sources)
+    for _ in range(10):
+        assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
+    assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 429
+
+
 def test_each_fly_client_address_has_its_own_rate_limit(settings, sources):
     from cornerstone_api.app import RATE_LIMIT_PER_MINUTE
 

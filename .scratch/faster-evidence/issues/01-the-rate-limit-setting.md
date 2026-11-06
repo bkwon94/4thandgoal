@@ -10,8 +10,8 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-9 and AT-8.
 
 **Status:** ready-for-agent
 
-- [ ] A test sets the value to a count, and the app allows that count in one minute, then answers 429.
-- [ ] A test with the value unset proves the limit of 10.
-- [ ] `make -C apps/api api-evidence` starts the API, and 11 requests to `/teams` in one minute all answer 200.
-- [ ] `apps/api/fly.toml` does not set `CORNERSTONE_RATE_LIMIT_PER_MINUTE`.
-- [ ] `make check-fast` of the API passes.
+- [x] A test sets the value to a count, and the app allows that count in one minute, then answers 429.
+- [x] A test with the value unset proves the limit of 10.
+- [x] `make -C apps/api api-evidence` starts the API, and 11 requests to `/teams` in one minute all answer 200.
+- [x] `apps/api/fly.toml` does not set `CORNERSTONE_RATE_LIMIT_PER_MINUTE`.
+- [x] `make check-fast` of the API passes.

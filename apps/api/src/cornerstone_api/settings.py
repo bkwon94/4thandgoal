@@ -29,6 +29,8 @@ class Settings:
     # The directory of the result cache. It sits on the data volume, so a cached result survives a restart.
     result_cache_dir: Path
     allowed_origins: tuple[str, ...] = DEFAULT_ORIGINS
+    # The count of requests per minute and address. None means the default of the app. Only an evidence run sets it.
+    rate_limit_per_minute: int | None = None
 
     @classmethod
     def from_env(cls, slugs: Iterable[str]) -> "Settings":
@@ -46,11 +48,13 @@ class Settings:
         repo = repo_from_env()
         cache = os.environ.get("CORNERSTONE_RESULT_CACHE_DIR")
         origins = os.environ.get("CORNERSTONE_ALLOWED_ORIGINS")
+        limit = os.environ.get("CORNERSTONE_RATE_LIMIT_PER_MINUTE")
         return cls(
             passphrases=passphrases,
             repo=repo,
             result_cache_dir=Path(cache) if cache else results_cache_dir(repo),
             allowed_origins=tuple(o.strip() for o in origins.split(",")) if origins else DEFAULT_ORIGINS,
+            rate_limit_per_minute=int(limit) if limit else None,
         )
 
 

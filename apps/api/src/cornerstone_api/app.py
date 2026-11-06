@@ -43,6 +43,7 @@ CLIENT_PREFIX = "/clients/{slug}"
 
 # The API service: the count of requests one address may make in a fixed one-minute window, over every client.
 # Past it the route answers 429, so one browser cannot loop the API and run up the Claude bill.
+# This is the default. CORNERSTONE_RATE_LIMIT_PER_MINUTE changes it, and Fly never sets it.
 RATE_LIMIT_PER_MINUTE = 10
 
 PASSPHRASE_HEADER = "X-League-Passphrase"
@@ -132,7 +133,7 @@ def create_app(
     app.state.sources = {client.slug: given.get(client.slug) or _real_sources(client) for client in clients}
     app.state.served = {client.slug: _served(settings, client, app.state.sources[client.slug]) for client in clients}
     app.state.default_slug = DEFAULT_SLUG
-    app.state.limiter = RateLimiter(RATE_LIMIT_PER_MINUTE)
+    app.state.limiter = RateLimiter(settings.rate_limit_per_minute or RATE_LIMIT_PER_MINUTE)
     # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
     app.state.analyzer = analyzer or analyze
     # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
