@@ -329,6 +329,24 @@ for (const theme of THEMES) {
   }
 }
 
+/* The home page in the takeover: the opener of the report in place of the usual top, through the takeover end week.
+   Only a client with a report shows it, and after the end week the home page shows the tile, so the check skips both. */
+for (const theme of THEMES) {
+  for (const width of REPORT_WIDTHS) {
+    test(`midseason takeover: ${CLIENT} / ${theme} ${width}px`, async ({ page }) => {
+      test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+      const label = `${CLIENT} / takeover ${theme} ${width}px`;
+      await page.setViewportSize({ width, height: 900 });
+      await openPage(page, `${server.url}/`, theme);
+      const takeover = page.getByRole("region", { name: `${SEASON} Midseason Report` });
+      test.skip((await takeover.count()) === 0, `${CLIENT} is past the takeover end week`);
+      const failures = await textFloor(page, label, Date.now());
+      failures.push(...(await scanTargets(page)).failures, ...(await scanWords(page)), ...(await scanContrast(page)));
+      expect(failures, `${label} breaks the readability floor`).toEqual([]);
+    });
+  }
+}
+
 /* AT-11: Position top 10 opens on RB and shows one position. */
 test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, async ({ page }) => {
   test.skip(!hasReport, `${CLIENT} builds no midseason report`);
