@@ -347,30 +347,23 @@ for (const theme of THEMES) {
   }
 }
 
-/* The 12 columns of the schedule swap fit the column of the report on a laptop. On a phone the grid scrolls inside its
-   own box, and the team column stays in place. */
+/* AT-59 and AT-8: the schedule swap is one text row per team with no grid and no bar, and the page never says
+   "All-play" (decision ticket 16). */
 for (const width of REPORT_WIDTHS) {
-  test(`midseason swap grid: ${CLIENT} ${MIDSEASON_ROUTE} fits or keeps the team column, ${width}px`, async ({ page }) => {
+  test(`midseason swap rows: ${CLIENT} ${MIDSEASON_ROUTE} text rows and no All-play, ${width}px`, async ({ page }) => {
     test.skip(!hasReport, `${CLIENT} builds no midseason report`);
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
-    const table = page.getByRole("table", { name: "Schedule swap" });
-    const box = table.locator("..");
-    const scroll = await box.evaluate((el) => ({ wide: el.scrollWidth, shown: el.clientWidth }));
-    if (width >= 1024) {
-      expect(scroll.wide, `the swap grid runs past its box at ${width}px`).toBeLessThanOrEqual(scroll.shown);
-      return;
-    }
-    const firstRow = table.locator("tbody tr").first().locator("th");
-    const before = (await firstRow.boundingBox())!;
-    await box.evaluate((el) => el.scrollTo({ left: el.scrollWidth }));
-    const after = (await firstRow.boundingBox())!;
-    expect(after.x).toBeCloseTo(before.x, 0);
+    const swap = page.getByRole("list", { name: "Schedule swap" });
+    await expect(swap.getByRole("listitem")).not.toHaveCount(0);
+    await expect(swap.locator("table, svg, [role=meter], [role=progressbar]")).toHaveCount(0);
+    await expect(page.getByRole("table", { name: "Schedule swap" })).toHaveCount(0);
+    expect(await page.locator("body").innerText()).not.toMatch(/all-play/i);
   });
 }
 
 /* AT-28: on a phone, each shown table of the report fits its card, or its card scrolls it and the first cell of each
-   row stays in place, as the swap grid does. The page itself never scrolls sideways. */
+   row stays in place. The page itself never scrolls sideways. */
 test(`midseason tables: ${CLIENT} ${MIDSEASON_ROUTE} fit their cards or scroll with the team column fixed, 375px`, async ({ page }) => {
   test.skip(!hasReport, `${CLIENT} builds no midseason report`);
   await page.setViewportSize({ width: 375, height: 900 });

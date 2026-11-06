@@ -164,3 +164,55 @@ def test_a_week_with_no_score_for_a_team_does_not_count():
     assert teams[2].all_play_wins == 0.67
     # Team 1 meets only team 3 in week 2, so that week is one all-play game.
     assert teams[1].all_play_wins == 1.0
+
+
+def _ends(swap, roster_id: int):
+    row = next(row for row in swap.best_and_worst if row.roster_id == roster_id)
+    return row.best, row.worst
+
+
+def test_each_team_gets_its_best_and_worst_schedule_and_a_tie_keeps_every_schedule_in_standings_order():
+    _, luck = _luck(median_game=False)
+    # The standings order is 2, 3, 1, 4. Team 2 is 1-1 for real, 2-0 with the schedules of teams 3 and 4, and 1-1
+    # with the schedule of team 1.
+    best, worst = _ends(luck.swap, 2)
+    assert (best.schedules, best.wins, best.losses, best.ties) == ([3, 4], 2, 0, 0)
+    assert (worst.schedules, worst.wins, worst.losses, worst.ties) == ([1], 1, 1, 0)
+    # Team 3 is 1-1 with the schedule of team 1 and of team 2. With the schedule of team 4, it ties team 4 in week 1
+    # and loses to team 2 in week 2.
+    best, worst = _ends(luck.swap, 3)
+    assert (best.schedules, best.wins, best.losses) == ([2, 1], 1, 1)
+    assert (worst.schedules, worst.wins, worst.losses, worst.ties) == ([4], 0, 1, 1)
+
+
+def test_the_rows_of_best_and_worst_sort_by_the_spread_most_first_and_a_tie_keeps_the_standings_order():
+    _, luck = _luck(median_game=False)
+    # Teams 2 and 1 each have a spread of 1 win, and teams 3 and 4 a spread of half a win. The standings order is
+    # 2, 3, 1, 4.
+    assert [row.roster_id for row in luck.swap.best_and_worst] == [2, 1, 3, 4]
+
+
+def test_the_worked_example_is_the_luckiest_team_in_its_week_with_the_most_teams_outscored():
+    _, luck = _luck()
+    example = luck.example
+    assert example is not None
+    # Team 3 has the most Schedule luck. It ties team 4 in week 1, then outscores teams 1 and 4 in week 2.
+    assert (example.roster_id, example.name, example.week, example.score) == (3, "Three", 2, 110.0)
+    assert (example.outscored, example.others, example.week_wins) == (2, 3, 0.67)
+    # Over the 2 weeks, a tie counts half: 0.5 + 2 of 6.
+    assert (example.season_outscored, example.season_games) == (2.5, 6)
+    assert (example.all_play_wins, example.head_to_head_wins, example.schedule_luck) == (0.83, 1.5, 0.67)
+
+
+def test_a_tie_of_weeks_in_the_worked_example_goes_to_the_first_week():
+    history = History(week=2, weeks={
+        1: _week(1, {1: 100.0, 2: 90.0, 3: 80.0, 4: 70.0}, [(1, 2), (3, 4)]),
+        2: _week(2, {1: 100.0, 2: 90.0, 3: 80.0, 4: 70.0}, [(1, 3), (2, 4)]),
+    })
+    _, luck = _luck(history=history)
+    assert luck.example is not None and luck.example.week == 1
+
+
+def test_schedule_luck_counts_the_weeks_of_its_head_to_head_games():
+    # The page says the count of games of each table in plain words.
+    assert _luck()[1].weeks == 2

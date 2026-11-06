@@ -130,19 +130,75 @@ describe("MidseasonScreen", () => {
     expect(last.textContent).toContain("700.97");
   });
 
-  it("explains the All-play record in one plain sentence beside the luck table", () => {
+  it("explains luck in a card above the table with the worked example of All You Need Is Love", () => {
+    // AT-8.
     renderReport();
-    const luck = within(document.getElementById("luck")!);
-    const sentence = luck.getByText(/All-play wins count each week as a game against every other team/);
-    expect(sentence.textContent!.split(". ")[0].split(" ").length).toBeLessThanOrEqual(25);
-    expect(luck.getByRole("table", { name: "Schedule swap" })).toBeTruthy();
+    const chapter = document.getElementById("luck")!;
+    const card = within(chapter).getByRole("region", { name: 'What "wins if you played everyone" means' });
+    expect(card.textContent).toContain("All You Need Is Love scored 114.33 and outscored 9 of 11 teams");
+    expect(card.textContent).toContain("Over 8 weeks it outscored 47 of 88: 4.27 wins");
+    expect(card.textContent).toContain("It won 7 real games, 2.73 more than 4.27");
+    const table = within(chapter).getByRole("table", { name: "Schedule luck" });
+    expect(card.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it("shows Bo Girds at 14-2 with the schedule that it missed", () => {
+  it("never says All-play on the page", () => {
+    // AT-8 and AT-59.
+    renderReport(<div>The sim</div>);
+    expect(document.body.textContent).not.toMatch(/all-play/i);
+  });
+
+  it("heads the luck table with plain words and puts a word under each luck number", () => {
+    // AT-60.
     renderReport();
-    const missed = within(screen.getByRole("list", { name: "Best schedule missed" }));
-    const bo = missed.getAllByRole("listitem").find((item) => item.textContent?.startsWith("Bo Girds"));
-    expect(bo?.textContent).toContain("14-2");
+    const table = screen.getByRole("table", { name: "Schedule luck" });
+    expect(within(table).getAllByRole("columnheader").map((head) => head.textContent)).toEqual([
+      "Team",
+      "Real wins",
+      "Wins if you played everyone",
+      "Luck (gap)",
+      "PA",
+      "Close",
+    ]);
+    const row = (name: string) => within(table).getByRole("rowheader", { name }).closest("tr")!;
+    const luckCell = (name: string) => row(name).querySelector("[data-luck]")!;
+    const word = (name: string) => luckCell(name).querySelector("[data-tag]")!;
+    expect(luckCell("All You Need Is Love").textContent).toBe("+2.73lucky");
+    expect(word("All You Need Is Love").getAttribute("data-tag")).toBe("accent");
+    expect(luckCell("The Blue Tent").textContent).toBe("−0.09even");
+    expect(word("The Blue Tent").getAttribute("data-tag")).toBe("mute");
+    expect(luckCell("Maye d'force B with U").textContent).toBe("+0.91lucky");
+    expect(word("Maye d'force B with U").getAttribute("data-tag")).toBe("mute");
+    expect(luckCell("Bo Girds").textContent).toBe("−2.18unlucky");
+    expect(word("Bo Girds").getAttribute("data-tag")).toBe("accent");
+  });
+
+  it("says the count of games of each table in plain words", () => {
+    renderReport();
+    const chapter = within(document.getElementById("luck")!);
+    expect(chapter.getByText(/These count the 8 head-to-head games only\. The median game is out\./)).toBeTruthy();
+    expect(chapter.getByText(/These records count all 16 games, 8 head to head and 8 median games, as in the standings\./)).toBeTruthy();
+  });
+
+  it("shows the swap as one text row per team with the best and the worst, and no grid and no bar", () => {
+    // AT-59.
+    renderReport();
+    const chapter = document.getElementById("luck")!;
+    expect(within(chapter).queryByRole("table", { name: "Schedule swap" })).toBeNull();
+    const swap = within(chapter).getByRole("list", { name: "Schedule swap" });
+    expect(swap.querySelector("table, svg, [role=meter], [role=progressbar]")).toBeNull();
+    const rows = within(swap).getAllByRole("listitem");
+    expect(rows).toHaveLength(12);
+    const bo = rows[0];
+    expect(within(bo).getByRole("heading", { level: 5 }).textContent).toBe("Bo Girds");
+    expect(bo.textContent).toContain("Real 9-7");
+    expect(bo.textContent).toContain("Best 14-2 on the schedule of Maye d'force B with U+5");
+    expect(bo.textContent).toContain("Worst 8-8 on the schedule of To Infinity and Bijan−1");
+    const text = (name: string) => rows.find((row) => row.querySelector("h5")?.textContent === name)!.textContent;
+    // A tie of 2 schedules reads "or", a tie of more reads "and N others", and no change reads "same".
+    expect(text("To Infinity and Bijan")).toContain("Best 10-6 on the schedule of Maye d'force B with U or Teehee+3");
+    expect(text("All You Need Is Love")).toContain("Best 11-5 on the schedule of Maye d'force B with Usame");
+    expect(text("All You Need Is Love")).toContain("Worst 7-9 on the schedule of London Cooking and 2 others−4");
   });
 
   it("opens Position top 10 on RB, shows one position, and switches to QB with Josh Allen first", () => {

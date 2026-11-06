@@ -1715,8 +1715,341 @@
                 "schedule_of": 9,
                 "gain": 4.0,
                 "place": 3
-              }
-            }
+              },
+              "best_and_worst": [
+                {
+                  "roster_id": 6,
+                  "name": "Bo Girds",
+                  "real": {
+                    "wins": 9,
+                    "losses": 7,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 14,
+                    "losses": 2,
+                    "ties": 0,
+                    "schedules": [
+                      9
+                    ]
+                  },
+                  "worst": {
+                    "wins": 8,
+                    "losses": 8,
+                    "ties": 0,
+                    "schedules": [
+                      7
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 7,
+                  "name": "To Infinity and Bijan",
+                  "real": {
+                    "wins": 7,
+                    "losses": 9,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 10,
+                    "losses": 6,
+                    "ties": 0,
+                    "schedules": [
+                      9,
+                      12
+                    ]
+                  },
+                  "worst": {
+                    "wins": 4,
+                    "losses": 12,
+                    "ties": 0,
+                    "schedules": [
+                      4
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 10,
+                  "name": "behold the lamb",
+                  "real": {
+                    "wins": 6,
+                    "losses": 10,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 10,
+                    "losses": 6,
+                    "ties": 0,
+                    "schedules": [
+                      9
+                    ]
+                  },
+                  "worst": {
+                    "wins": 4,
+                    "losses": 12,
+                    "ties": 0,
+                    "schedules": [
+                      11,
+                      4
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 5,
+                  "name": "London Cooking",
+                  "real": {
+                    "wins": 9,
+                    "losses": 7,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 13,
+                    "losses": 3,
+                    "ties": 0,
+                    "schedules": [
+                      9
+                    ]
+                  },
+                  "worst": {
+                    "wins": 8,
+                    "losses": 8,
+                    "ties": 0,
+                    "schedules": [
+                      6,
+                      11
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 11,
+                  "name": "Unsolicited Dak Picks",
+                  "real": {
+                    "wins": 6,
+                    "losses": 10,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 9,
+                    "losses": 7,
+                    "ties": 0,
+                    "schedules": [
+                      12
+                    ]
+                  },
+                  "worst": {
+                    "wins": 4,
+                    "losses": 12,
+                    "ties": 0,
+                    "schedules": [
+                      6
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 2,
+                  "name": "All You Need Is Love",
+                  "real": {
+                    "wins": 11,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 11,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      9
+                    ]
+                  },
+                  "worst": {
+                    "wins": 7,
+                    "losses": 9,
+                    "ties": 0,
+                    "schedules": [
+                      5,
+                      11,
+                      10
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 1,
+                  "name": "The Blue Tent",
+                  "real": {
+                    "wins": 9,
+                    "losses": 7,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 11,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      2,
+                      9,
+                      12
+                    ]
+                  },
+                  "worst": {
+                    "wins": 7,
+                    "losses": 9,
+                    "ties": 0,
+                    "schedules": [
+                      11
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 12,
+                  "name": "Teehee",
+                  "real": {
+                    "wins": 8,
+                    "losses": 8,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 11,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      9
+                    ]
+                  },
+                  "worst": {
+                    "wins": 7,
+                    "losses": 9,
+                    "ties": 0,
+                    "schedules": [
+                      1,
+                      11
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 3,
+                  "name": "Lil Fridge",
+                  "real": {
+                    "wins": 10,
+                    "losses": 6,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 11,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      2,
+                      9,
+                      1
+                    ]
+                  },
+                  "worst": {
+                    "wins": 8,
+                    "losses": 8,
+                    "ties": 0,
+                    "schedules": [
+                      8
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 8,
+                  "name": "Return of T Mac",
+                  "real": {
+                    "wins": 9,
+                    "losses": 7,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 10,
+                    "losses": 6,
+                    "ties": 0,
+                    "schedules": [
+                      9
+                    ]
+                  },
+                  "worst": {
+                    "wins": 7,
+                    "losses": 9,
+                    "ties": 0,
+                    "schedules": [
+                      7,
+                      10,
+                      4
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 4,
+                  "name": "NFC Least",
+                  "real": {
+                    "wins": 3,
+                    "losses": 13,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 5,
+                    "losses": 11,
+                    "ties": 0,
+                    "schedules": [
+                      9
+                    ]
+                  },
+                  "worst": {
+                    "wins": 2,
+                    "losses": 14,
+                    "ties": 0,
+                    "schedules": [
+                      3,
+                      11
+                    ]
+                  }
+                },
+                {
+                  "roster_id": 9,
+                  "name": "Maye d'force B with U",
+                  "real": {
+                    "wins": 9,
+                    "losses": 7,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 9,
+                    "losses": 7,
+                    "ties": 0,
+                    "schedules": [
+                      2,
+                      5,
+                      8
+                    ]
+                  },
+                  "worst": {
+                    "wins": 7,
+                    "losses": 9,
+                    "ties": 0,
+                    "schedules": [
+                      1,
+                      4
+                    ]
+                  }
+                }
+              ]
+            },
+            "example": {
+              "roster_id": 2,
+              "name": "All You Need Is Love",
+              "week": 3,
+              "score": 114.33,
+              "outscored": 9.0,
+              "others": 11,
+              "week_wins": 0.82,
+              "season_outscored": 47.0,
+              "season_games": 88,
+              "all_play_wins": 4.27,
+              "head_to_head_wins": 7.0,
+              "schedule_luck": 2.73
+            },
+            "weeks": 8
           },
           "blurb": {
             "chapter": "luck",
@@ -1730,7 +2063,7 @@
                 "roster_id": null
               },
               {
-                "text": "Bo Girds has scored like a team with 5.18 all-play wins and has just 3 head-to-head wins to show for it.",
+                "text": "Bo Girds has scored like a team with 5.18 wins if it played everyone and has just 3 head-to-head wins to show for it.",
                 "fact_ids": [
                   "SL.6.luck"
                 ],

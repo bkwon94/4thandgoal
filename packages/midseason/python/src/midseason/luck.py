@@ -1,6 +1,7 @@
 """
-Schedule luck and the Schedule swap, the second chapter of Act I: All-play wins, Schedule luck, points against, the
-close-game record, and the 12 by 12 grid of each team's record under every schedule. Decision ticket 06 sets the rules.
+Schedule luck and the Schedule swap, a chapter of Act I: All-play wins, Schedule luck, points against, the close-game
+record, the worked example of the luck card, and each team's record under every schedule, with its best and its worst.
+Decision tickets 06 and 16 set the rules.
 """
 from collections.abc import Iterator
 from decimal import Decimal
@@ -78,19 +79,66 @@ class BiggestMiss(BaseModel):
     place: int = 1
 
 
+class SwapRecord(BaseModel):
+    wins: int
+    losses: int
+    ties: int
+
+
+class SwapEnd(SwapRecord):
+    """The best or the worst record of one team with the 11 other schedules, and each schedule that gives it. A tie
+    keeps each schedule, in standings order."""
+    schedules: list[int]
+
+
+class BestAndWorst(BaseModel):
+    """One text row of the swap on the page: the real record, the best, and the worst (decision ticket 16)."""
+    roster_id: int
+    name: str
+    real: SwapRecord
+    best: SwapEnd
+    worst: SwapEnd
+
+
 class ScheduleSwap(BaseModel):
-    """The grid: a row is a team, a column is a schedule, both in standings order."""
+    """The grid: a row is a team, a column is a schedule, both in standings order. The page shows only the best and
+    the worst of each team, sorted by the spread between them."""
     rows: list[SwapRow]
     best_missed: list[BestMissed]
     most_better: MostBetter | None
     # None when no team gains a win from another schedule.
     biggest_miss: BiggestMiss | None = None
+    # The most spread between the best and the worst first. sorted is stable, so a tie keeps the standings order.
+    best_and_worst: list[BestAndWorst] = []
+
+
+class LuckExample(BaseModel):
+    """The worked example of the luck card: the team with the most Schedule luck, in its week with the most teams
+    outscored, the first week on a tie. A tie of scores counts half in each count (decision ticket 16)."""
+    roster_id: int
+    name: str
+    week: int
+    score: float
+    outscored: float
+    # The count of the other teams with a score that week.
+    others: int
+    # The all-play win rate of the week: outscored over others.
+    week_wins: float
+    season_outscored: float
+    season_games: int
+    all_play_wins: float
+    head_to_head_wins: float
+    schedule_luck: float
 
 
 class ScheduleLuck(BaseModel):
-    """The facts of the Schedule luck chapter: the table, most luck first, and the swap."""
+    """The facts of the Schedule luck chapter: the table, most luck first, the swap, and the worked example."""
     teams: list[TeamLuck]
     swap: ScheduleSwap
+    # None only when no week gives the luckiest team another team.
+    example: LuckExample | None = None
+    # The count of weeks played through the report week: each team's count of head-to-head games.
+    weeks: int = 0
 
 
 class LuckChapter(BaseModel):
@@ -135,8 +183,24 @@ def _swap_cell(history: History, through: int, row: int, schedule_of: int, media
     return SwapCell(schedule_of=schedule_of, wins=tally[1], losses=tally[-1], ties=tally[0])
 
 
-def _rate(cell: SwapCell) -> float:
+def _rate(cell: SwapRecord | SwapCell) -> float:
     return cell.wins + cell.ties / 2
+
+
+def _end(cells: list[SwapCell], rate: float) -> SwapEnd:
+    """The record of `rate` and each schedule that gives it. The cells are in standings order."""
+    tied = [cell for cell in cells if _rate(cell) == rate]
+    return SwapEnd(schedules=[cell.schedule_of for cell in tied], wins=tied[0].wins, losses=tied[0].losses,
+                   ties=tied[0].ties)
+
+
+def _best_and_worst(row: SwapRow) -> BestAndWorst:
+    own = next(cell for cell in row.cells if cell.schedule_of == row.roster_id)
+    others = [cell for cell in row.cells if cell.schedule_of != row.roster_id]
+    rates = [_rate(cell) for cell in others]
+    return BestAndWorst(roster_id=row.roster_id, name=row.name,
+                        real=SwapRecord(wins=own.wins, losses=own.losses, ties=own.ties),
+                        best=_end(others, max(rates)), worst=_end(others, min(rates)))
 
 
 def _swap(history: History, through: int, state: LeagueState, median_game: bool) -> ScheduleSwap:
@@ -151,7 +215,9 @@ def _swap(history: History, through: int, state: LeagueState, median_game: bool)
         best = max(others, key=_rate)
         best_missed.append(BestMissed(roster_id=row.roster_id, schedule_of=best.schedule_of, wins=best.wins,
                                       losses=best.losses, ties=best.ties))
-    swap = ScheduleSwap(rows=rows, best_missed=best_missed, most_better=None)
+    ends = [_best_and_worst(row) for row in rows]
+    ends.sort(key=lambda row: _rate(row.worst) - _rate(row.best))
+    swap = ScheduleSwap(rows=rows, best_missed=best_missed, most_better=None, best_and_worst=ends)
     most, biggest = swap_rankings(swap)
     return _with_callouts(swap, (most[0], 1) if most else None, (biggest[0], 1) if biggest else None)
 
@@ -242,7 +308,31 @@ def schedule_luck(history: History, through: int, state: LeagueState, *, median_
     ]
     # sorted is stable, so a tie keeps the standings order.
     teams.sort(key=lambda team: -team.schedule_luck)
-    return ScheduleLuck(teams=teams, swap=_swap(history, through, state, median_game))
+    example = _example(history, through, teams[0]) if teams else None
+    return ScheduleLuck(teams=teams, swap=_swap(history, through, state, median_game), example=example,
+                        weeks=sum(1 for _ in _weeks(history, through)))
+
+
+def _example(history: History, through: int, team: TeamLuck) -> LuckExample | None:
+    """The worked example of the luck card for `team`, the luckiest team. None when no week gives it another team."""
+    weeks = []
+    for week in _weeks(history, through):
+        scores = _scores(week)
+        if team.roster_id not in scores or len(scores) < 2:
+            continue
+        mine = scores[team.roster_id]
+        others = [theirs for other, theirs in scores.items() if other != team.roster_id]
+        outscored = sum(Decimal(_result(mine, theirs) + 1) / 2 for theirs in others)
+        weeks.append((week.week, mine, outscored, len(others)))
+    if not weeks:
+        return None
+    # max keeps the first of a tie, so the first week wins a tie.
+    number, score, outscored, others = max(weeks, key=lambda week: week[2])
+    return LuckExample(roster_id=team.roster_id, name=team.name, week=number, score=float(score),
+                       outscored=float(outscored), others=others, week_wins=r2(float(outscored / others)),
+                       season_outscored=float(sum(week[2] for week in weeks)),
+                       season_games=sum(week[3] for week in weeks), all_play_wins=team.all_play_wins,
+                       head_to_head_wins=team.head_to_head_wins, schedule_luck=team.schedule_luck)
 
 
 def _cell_record(n: Nums, wins: int, losses: int, ties: int) -> str:
@@ -257,14 +347,15 @@ def luck_facts(luck: ScheduleLuck) -> list[Fact]:
     for team in luck.teams:
         prefix = f"SL.{team.roster_id}"
         n = Nums()
-        # The luck and its two parts are two facts, so each holds two numbers at most, as a sentence may.
+        # The luck and its two parts are two facts, so each holds two numbers at most, as a sentence may. The page
+        # never says "All-play", so the facts say "wins if it played everyone" (decision ticket 16).
         facts.append(fact(f"{prefix}.luck",
                           f"{team.name} has a Schedule luck of {n.text(f'{team.schedule_luck:+.2f}')}, its "
-                          f"head-to-head wins minus its All-play wins.", n, [team.name], []))
+                          f"head-to-head wins minus its wins if it played everyone each week.", n, [team.name], []))
         n = Nums()
         facts.append(fact(f"{prefix}.wins",
                           f"{team.name} has {n(team.head_to_head_wins)} head-to-head wins and {n(team.all_play_wins)} "
-                          f"All-play wins.", n, [team.name], []))
+                          f"wins if it played everyone each week.", n, [team.name], []))
         n = Nums()
         facts.append(fact(f"{prefix}.against",
                           f"{team.name} has {n(team.points_against)} points against, "

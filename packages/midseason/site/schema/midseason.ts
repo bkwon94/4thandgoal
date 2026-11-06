@@ -101,7 +101,8 @@ export const arcsChapterSchema = z.object({
   ...prose,
 });
 
-/* Schedule luck: head-to-head wins minus All-play wins, most luck first. A tie counts half in each count. */
+/* Schedule luck: head-to-head wins minus All-play wins, most luck first. A tie counts half in each count. The page
+   labels All-play wins "Wins if you played everyone" and never says "All-play" (decision ticket 16). */
 export const teamLuckSchema = z.object({
   roster_id: z.number(),
   name: z.string(),
@@ -129,17 +130,55 @@ export const swapRowSchema = z.object({ roster_id: z.number(), name: z.string(),
 /* The best schedule other than its own for one team, with the record that it gives. */
 export const bestMissedSchema = swapCellSchema.extend({ roster_id: z.number() });
 
+export const swapRecordSchema = z.object({ wins: z.number(), losses: z.number(), ties: z.number() });
+
+/* The best or the worst record of one team with the other schedules, and each schedule that gives it, in standings order. */
+export const swapEndSchema = swapRecordSchema.extend({ schedules: z.array(z.number()) });
+
+/* One text row of the swap: the real record, the best, and the worst. */
+export const bestAndWorstSchema = z.object({
+  roster_id: z.number(),
+  name: z.string(),
+  real: swapRecordSchema,
+  best: swapEndSchema,
+  worst: swapEndSchema,
+});
+
 export const scheduleSwapSchema = z.object({
   // A row is a team and a column is a schedule, both in standings order.
   rows: z.array(swapRowSchema),
   best_missed: z.array(bestMissedSchema),
   most_better: z.object({ roster_id: z.number(), count: z.number() }).nullable(),
+  // The most spread between the best and the worst first. The page shows the swap from these rows.
+  best_and_worst: z.array(bestAndWorstSchema),
+});
+
+/* The worked example of the luck card: the luckiest team in its week with the most teams outscored. A tie counts half. */
+export const luckExampleSchema = z.object({
+  roster_id: z.number(),
+  name: z.string(),
+  week: z.number(),
+  score: z.number(),
+  outscored: z.number(),
+  others: z.number(),
+  week_wins: z.number(),
+  season_outscored: z.number(),
+  season_games: z.number(),
+  all_play_wins: z.number(),
+  head_to_head_wins: z.number(),
+  schedule_luck: z.number(),
 });
 
 export const luckChapterSchema = z.object({
   key: z.literal("luck"),
   title: z.string(),
-  facts: z.object({ teams: z.array(teamLuckSchema), swap: scheduleSwapSchema }),
+  facts: z.object({
+    teams: z.array(teamLuckSchema),
+    swap: scheduleSwapSchema,
+    example: luckExampleSchema.nullable(),
+    // The count of weeks played: each team's count of head-to-head games.
+    weeks: z.number(),
+  }),
   ...prose,
 });
 

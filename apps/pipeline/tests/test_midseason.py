@@ -388,6 +388,33 @@ def test_the_schedule_swap_diagonal_is_the_standings_and_bo_girds_is_14_2_with_m
     assert swap["most_better"] == {"roster_id": ids["Teehee"], "count": 5, "place": 4}
 
 
+def test_the_swap_gives_bo_girds_a_best_of_14_2_on_maye_s_schedule_and_each_team_a_best_and_a_worst(tmp_path):
+    # AT-7 and AT-59.
+    report = _report(build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
+    swap = _chapter(report, "luck")["facts"]["swap"]
+    ids = {row["name"]: row["roster_id"] for row in _state_rows(report).values()}
+    rows = {row["name"]: row for row in swap["best_and_worst"]}
+    assert len(rows) == 12
+    bo = rows["Bo Girds"]
+    assert (bo["real"]["wins"], bo["real"]["losses"]) == (9, 7)
+    assert (bo["best"]["wins"], bo["best"]["losses"], bo["best"]["schedules"]) == (14, 2, [ids["Maye d'force B with U"]])
+    assert (bo["worst"]["wins"], bo["worst"]["losses"]) == (8, 8)
+    # A tie of schedules keeps each one: To Infinity and Bijan is 10-6 with two schedules.
+    assert len(rows["To Infinity and Bijan"]["best"]["schedules"]) == 2
+    spreads = [row["best"]["wins"] - row["worst"]["wins"] for row in swap["best_and_worst"]]
+    assert spreads == sorted(spreads, reverse=True)
+
+
+def test_the_luck_card_works_the_example_of_all_you_need_is_love_in_week_3(tmp_path):
+    # AT-8.
+    report = _report(build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
+    example = _chapter(report, "luck")["facts"]["example"]
+    assert (example["name"], example["week"], example["score"]) == ("All You Need Is Love", 3, 114.33)
+    assert (example["outscored"], example["others"], example["week_wins"]) == (9, 11, 0.82)
+    assert (example["season_outscored"], example["season_games"]) == (47, 88)
+    assert (example["all_play_wins"], example["head_to_head_wins"], example["schedule_luck"]) == (4.27, 7, 2.73)
+
+
 def test_the_look_ahead_has_maye_s_schedule_softest_and_behold_the_lamb_s_hardest(tmp_path):
     # AT-24.
     report = _report(build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))

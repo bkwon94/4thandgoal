@@ -5,7 +5,7 @@
 - The state of the league: the full record, points for and against, the streak, and the playoff odds of each team.
 - On a phone, the state and the luck tables scroll inside their cards, and the team column stays in place.
 - The arcs of each team with the numbers behind each arc.
-- Schedule luck with the one sentence on the All-play record, the Schedule swap grid, and the best schedule missed.
+- Schedule luck with a card that works one real team, the luck table with a word under each luck number, and the Schedule swap as one text row per team with its best and its worst. The page never says "All-play".
 - Position top 10: one position at a time with a switch, opening on RB, and the "Free agent" tag.
 
 ## Ports
