@@ -2,6 +2,7 @@
  * Schedule luck with the Schedule swap, a chapter of Act I: a card that works one real example, the luck table with a
  * word under each luck number, then the swap as one text row per team with its best and its worst schedule.
  */
+import type { ReactNode } from "react";
 import { gap, num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
 import { Card } from "../report/report-card";
@@ -129,14 +130,23 @@ const change = (end: SwapEnd) => (end.change === 0 ? "same" : gap(end.change));
 
 const LABEL = "font-mono text-label font-bold tracking-caps text-mute uppercase";
 
-function SwapEndLine({ label, end, names }: { label: string; end: SwapEnd; names: Map<number, string> }) {
+/* One line of a swap row: the label and the record, then the rest of the line for a best or a worst. */
+function SwapLine({ label, record, children }: { label: string; record: BestAndWorst["real"]; children?: ReactNode }) {
   return (
     <p className="m-0 text-body leading-tight">
       <span className={LABEL}>{label}</span>{" "}
-      <span className="font-mono font-bold tabular-nums">{fullRecord(end.wins, end.losses, end.ties)}</span>
+      <span className="font-mono font-bold tabular-nums">{fullRecord(record.wins, record.losses, record.ties)}</span>
+      {children}
+    </p>
+  );
+}
+
+function SwapEndLine({ label, end, names }: { label: string; end: SwapEnd; names: Map<number, string> }) {
+  return (
+    <SwapLine label={label} record={end}>
       <span className="text-ink-2"> on the schedule of {scheduleNames(end, names)}</span>
       <span className="ml-sp-2 font-mono text-meta text-mute tabular-nums">{change(end)}</span>
-    </p>
+    </SwapLine>
   );
 }
 
@@ -148,10 +158,7 @@ function SwapRows({ rows }: { rows: BestAndWorst[] }) {
       {rows.map((row) => (
         <li key={row.roster_id} className="flex flex-col gap-sp-1 border-b border-rule py-sp-3 last:border-b-0">
           <h5 className="m-0 text-body leading-tight font-semibold">{row.name}</h5>
-          <p className="m-0 text-body leading-tight">
-            <span className={LABEL}>Real</span>{" "}
-            <span className="font-mono font-bold tabular-nums">{fullRecord(row.real.wins, row.real.losses, row.real.ties)}</span>
-          </p>
+          <SwapLine label="Real" record={row.real} />
           <SwapEndLine label="Best" end={row.best} names={names} />
           <SwapEndLine label="Worst" end={row.worst} names={names} />
         </li>
