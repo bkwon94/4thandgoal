@@ -29,7 +29,7 @@ The motion of Broadcast, beat by beat:
 2. **The split.** A red PLAYOFFS band wipes across the full width, holds, and wipes off. Behind it, the cut line draws under seed 6, BYE plates slide in for seeds 1 and 2, and seeds 7 to 12 dim.
 3. **The bracket builds.** The game cards slide in from the left, one round at a time, and the bracket lines draw. The rounds are Round 1, the semifinal, and the final, with the week number small beside each.
 4. **Each winner.** The scores count up. A red bar sweeps under the winner. The bracket line lights red, and the winner chip slides along it into its next slot.
-5. **The champion.** A full card fills the stage. The avatar scales up on a spring, the trophy drops in, and rays and a ring burst once. The card says "Champion of this run", the team name, and "Wins the title in N% of all 10,000 runs". A "See the bracket" link hides the card.
+5. **The champion.** The card shows above the complete bracket, inside the stage. The avatar scales up on a spring, the trophy drops in, and rays and a ring burst once. The card says "Champion of this run", the team name, and "Wins the title in N% of all 10,000 runs". The card first filled the stage and hid the bracket. Brian changed this on 2026-11-05 for AT-34, so the final state shows the bracket and the card together.
 
 Rules for all beats:
 
