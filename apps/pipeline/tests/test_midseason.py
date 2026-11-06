@@ -595,8 +595,29 @@ def test_the_spread_rule_gives_each_team_1_to_3_headlines_and_moves_both_swap_ca
     for key, field in (("luck.most_better", "most_better"), ("luck.biggest_miss", "biggest_miss")):
         assert swap[field]["roster_id"] != bo
         assert (callouts[key]["roster_id"], callouts[key]["place"]) == (swap[field]["roster_id"], swap[field]["place"])
-    # The prose block of Schedule luck may not name Bo Girds, so no blurb names a team that lost its callout there.
+    # The prose block of Schedule luck keeps Bo Girds in its scope, and its callout fact says that Bo Girds is not the
+    # headline of the callout.
+    sheet = _prose_blocks(client)
+    assert "Bo Girds" in sheet["luck"]["scope_teams"]
+    note = sheet["facts"]["CO.luck.most_better"]["text"]
+    assert note.startswith("The callout of the most schedules better than its own names Teehee. Bo Girds and ")
+    assert note.endswith(" are not the headline of this callout.")
+
+
+def _prose_blocks(client) -> dict:
+    """The prose blocks of the saved facts of the draft by key, and the facts by id under "facts"."""
     draft = json.loads((build_dir(client.folder) / "2026" / "midseason-facts.json").read_text(encoding="utf-8"))
-    luck = next(chapter for chapter in draft["sheet"]["chapters"] if chapter["key"] == "luck")
-    assert "Bo Girds" not in luck["scope_teams"]
+    return {**{chapter["key"]: chapter for chapter in draft["sheet"]["chapters"]}, "facts": draft["sheet"]["facts"]}
+
+
+def test_a_team_moved_off_a_callout_keeps_its_facts_in_the_prose_block(tmp_path):
+    # Brian chose the loose rule: the trades block holds both Robberies, and the lineup block names London Cooking.
+    client = _cpc_week_8(tmp_path)
+    run_midseason(2026, 8, _call(), client=client, provider=CPC_PROVIDER)
+    sheet = _prose_blocks(client)
+    robberies = [fid for fid in sheet["trades"]["fact_ids"] if "The Trade result is Robbery" in sheet["facts"][fid]["text"]]
+    assert robberies == ["TR.1", "TR.2"]
+    assert "London Cooking" in sheet["lineup"]["scope_teams"]
+    assert "LC.5" in sheet["lineup"]["fact_ids"]
+    assert "London Cooking" in sheet["facts"]["CO.lineup.bench"]["text"]
 

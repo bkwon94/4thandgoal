@@ -4,7 +4,7 @@ headlines passes a callout to the next team, arcs and awards never move, and a t
 """
 from facts.tokens import Nums, fact
 from midseason.prose import prose_sheet
-from midseason.spread import Callout, Headline, moved_off, spread_rule
+from midseason.spread import Callout, Headline, callout_facts, moved_off, spread_rule
 from midseason.state import LeagueState, TeamState
 
 TEAMS = [1, 2, 3, 4]
@@ -62,17 +62,20 @@ def test_a_callout_that_no_team_has_room_for_names_no_team():
     assert _holders(headlines) == {}
 
 
-def test_the_prose_block_of_a_chapter_cannot_name_a_team_that_the_rule_moved_off_its_callout():
+def test_a_moved_team_stays_in_the_scope_and_the_facts_of_its_block_and_the_sheet_names_the_holder():
     state = LeagueState(teams=[TeamState(roster_id=rid, name=name, rank=rid, wins=1, losses=1, ties=0, points_for=1.0,
                                          points_against=1.0, streak=None, playoff_odds=None)
                                for rid, name in ((1, "One"), (2, "Two"))])
+    callouts = [Callout(key="luck.most_better", chapter="luck", ranking=[1, 2])]
+    headlines = [Headline(kind="callout", key="luck.most_better", chapter="luck", roster_id=2, place=2)]
+    notes = callout_facts(headlines, callouts, {1: "One", 2: "Two"})
     later = [("luck", "Schedule luck", [fact("SW.1", "One is lucky.", Nums(), ["One"], []),
-                                        fact("SW.2", "Two is lucky.", Nums(), ["Two"], []),
-                                        fact("SW.both", "One met Two.", Nums(), ["One", "Two"], [])]),
-             ("arcs", "Arcs", [fact("ARC.1", "One has an arc.", Nums(), ["One"], [])])]
-    sheet = prose_sheet(1, state, "off", later, moved={"luck": {"One"}})
-    blocks = {chapter.key: chapter for chapter in sheet.chapters}
-    assert blocks["luck"].fact_ids == ["SW.2", "W.week"]
-    assert blocks["luck"].scope_teams == ["Two"]
-    # The rule moves only the callouts of its chapter, so the arcs still name the team.
-    assert "ARC.1" in blocks["arcs"].fact_ids and "One" in blocks["arcs"].scope_teams
+                                        fact("SW.2", "Two is lucky.", Nums(), ["Two"], [])])]
+    sheet = prose_sheet(1, state, "off", later, callouts=notes)
+    luck = next(chapter for chapter in sheet.chapters if chapter.key == "luck")
+    assert luck.fact_ids == ["SW.1", "SW.2", "CO.luck.most_better", "W.week"]
+    assert luck.scope_teams == ["One", "Two"]
+    note = sheet.facts["CO.luck.most_better"]
+    assert note.text == ("The callout of the most schedules better than its own names Two. One is not the headline of "
+                         "this callout.")
+    assert note.teams == ["Two", "One"]

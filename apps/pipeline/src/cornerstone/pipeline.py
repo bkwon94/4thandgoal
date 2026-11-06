@@ -110,7 +110,7 @@ from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_pr
 from midseason.published import midseason_report, write_midseason
 from midseason.records import record_book, records_facts
 from midseason.review import review_text, write_review
-from midseason.spread import Headline, arc_and_award_headlines, moved_off, report_callouts, spread_rule
+from midseason.spread import Headline, arc_and_award_headlines, callout_facts, report_callouts, spread_rule
 from midseason.state import league_state
 from midseason.top10 import top10_facts
 from midseason.trades import trade_facts, trade_prose_facts
@@ -843,12 +843,11 @@ def run_midseason(
                              {pid: info.position for pid, info in players.items()})
     records = record_book(history, week, names, players=players, lines=lines, transactions=moves, waivers=waivers,
                           lineups=lineups, state=state)
-    # The spread rule runs before the writer, so a blurb never names a team that the rule moved off a callout.
+    # The spread rule runs before the writer, so the fact sheet names the holder of each callout before a blurb.
     callouts = report_callouts(luck, chapters.injuries, draft, waivers, trades, lineups)
     headlines = spread_rule(arc_and_award_headlines(arcs, records), callouts, [team.roster_id for team in state.teams])
     luck = with_swap_callouts(luck, most_better=_held(headlines, "luck.most_better"),
                               biggest_miss=_held(headlines, "luck.biggest_miss"))
-    moved = {key: {names[rid] for rid in rids} for key, rids in moved_off(headlines, callouts).items()}
     roast = midseason_values(client).roast
     later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule luck", luck_facts(luck)),
              ("injuries", "The injury toll", injury_facts(chapters.injuries)),
@@ -861,7 +860,7 @@ def run_midseason(
              ("look-ahead", "The look ahead", look_ahead_facts(look)),
              ("watch", "Players to watch", watch_facts(chapters.watch))]
     sheet = prose_sheet(week, state, roast, later, first=[("opener", "The title race", title_race_facts(race))],
-                        moved=moved)
+                        callouts=callout_facts(headlines, callouts, names))
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
     write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)

@@ -7,6 +7,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from facts.tokens import Nums, fact
+from league.models import Fact
 from midseason.arcs import Arcs
 from midseason.draft import DraftValue
 from midseason.injury import InjuryToll
@@ -18,6 +20,18 @@ from midseason.waivers import WaiverFacts
 
 # The most headlines that one team holds. GLOSSARY.md, "Spread rule".
 MAX_HEADLINES = 3
+# The words of each callout in its fact, by key.
+CALLOUT_LABELS = {
+    "luck.most_better": "the most schedules better than its own",
+    "luck.biggest_miss": "the biggest gain from another schedule",
+    "injuries.toll": "the injury toll",
+    "draft.steal": "the steal of the draft",
+    "draft.bust": "the bust of the draft",
+    "waivers.hit": "the waiver hit",
+    "waivers.miss": "the waiver miss",
+    "trades.top": "the trade winner",
+    "lineup.bench": "the bench points",
+}
 
 HeadlineKind = Literal["opener", "arc", "award", "callout"]
 
@@ -79,8 +93,7 @@ def spread_rule(fixed: Sequence[Headline], callouts: Sequence[Callout], teams: S
 
 
 def moved_off(headlines: Sequence[Headline], callouts: Sequence[Callout]) -> dict[str, set[int]]:
-    """The teams that the rule moved off a callout, by chapter key: each team ranked ahead of the holder. The prose
-    block of the chapter may not name them, so a blurb never names a team that lost its headline there."""
+    """The teams that the rule moved off a callout, by chapter key: each team ranked ahead of the holder."""
     holders: Mapping[str, Headline] = {h.key: h for h in headlines if h.kind == "callout"}
     out: dict[str, set[int]] = {}
     for callout in callouts:
@@ -88,6 +101,28 @@ def moved_off(headlines: Sequence[Headline], callouts: Sequence[Callout]) -> dic
         ahead = callout.ranking if holder is None else callout.ranking[:holder.place - 1]
         if ahead:
             out.setdefault(callout.chapter, set()).update(ahead)
+    return out
+
+
+def callout_facts(headlines: Sequence[Headline], callouts: Sequence[Callout],
+                  names: Mapping[int, str]) -> dict[str, list[Fact]]:
+    """One fact per callout with a holder, by chapter key: it names the holder and each team that the rule moved off.
+
+    The prose block of the chapter keeps the facts and the scope of a moved team, so the blurb can name it. This fact
+    tells the writer and the verifier that the moved team is not the headline of the callout. PRD, "The spread rule".
+    """
+    holders = {h.key: h for h in headlines if h.kind == "callout"}
+    out: dict[str, list[Fact]] = {}
+    for callout in callouts:
+        holder = holders.get(callout.key)
+        if holder is None:
+            continue
+        moved = [names[rid] for rid in callout.ranking[:holder.place - 1]]
+        text = f"The callout of {CALLOUT_LABELS.get(callout.key, callout.key)} names {names[holder.roster_id]}."
+        if moved:
+            text += f" {' and '.join(moved)} {'is' if len(moved) == 1 else 'are'} not the headline of this callout."
+        out.setdefault(callout.chapter, []).append(
+            fact(f"CO.{callout.key}", text, Nums(), [names[holder.roster_id], *moved], []))
     return out
 
 
