@@ -62,7 +62,7 @@ function List({ label, rows, type }: { label: string; rows: DraftRow[]; type: Dr
 export function Draft({ chapter }: { chapter: DraftChapter }) {
   const { draft_type: type, steals, busts } = chapter.facts;
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note="Cost rank against points rank" blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} note="Cost rank against points rank" blurb={chapter.blurb}>
       <div className="grid gap-sp-4 desktop:grid-cols-2">
         <List label="Steals" rows={steals} type={type} />
         <List label="Busts" rows={busts} type={type} />

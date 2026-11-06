@@ -13,7 +13,7 @@ league_id = "1386167364424318976"
 [values.league]
 chart = "1QB0.5PPR4pt"
 
-# midseason takes its default roast, "hot", so the file has no [values.midseason]. sim has no values.
+# midseason takes its default roast, "savage", so the file has no [values.midseason]. sim has no values.
 
 [values.analyzer]
 finder = false

@@ -47,7 +47,6 @@ class Opener(BaseModel):
     title: str = "The Title Race"
     facts: TitleRace
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 class ReportTile(BaseModel):

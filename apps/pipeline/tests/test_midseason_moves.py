@@ -87,10 +87,10 @@ def test_the_week_8_trade_is_too_soon_and_comes_last(moves):
     assert trades[-1] == week_8[0]
 
 
-def test_each_chapter_of_act_two_has_its_blurb_and_its_roast_through_the_writer(moves):
+def test_each_chapter_of_act_two_has_one_blurb_through_the_writer(moves):
     for chapter in moves.values():
         assert chapter["blurb"]["chapter"] == chapter["key"]
-        assert chapter["roast"]["chapter"] == chapter["key"] + ".roast"
+        assert "roast" not in chapter
 
 
 def test_the_review_file_shows_the_blurbs_of_act_two(tmp_path):

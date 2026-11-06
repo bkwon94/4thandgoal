@@ -1,13 +1,14 @@
 {
   "additionalProperties": false,
-  "description": "The package values of midseason: the heat of the roast. \"off\" drops the roast lines, \"warm\" softens each\nroast, and \"hot\" has no limit on heat for football decisions.",
+  "description": "The package values of midseason: the voice of the prose of the report. \"off\" is a sharp, clean sports writer,\n\"warm\" a funny friend in the group chat, \"hot\" a mean columnist, and \"savage\" a full roast. Brian chose savage as\nthe default.",
   "properties": {
     "roast": {
-      "default": "hot",
+      "default": "savage",
       "enum": [
         "off",
         "warm",
-        "hot"
+        "hot",
+        "savage"
       ],
       "title": "Roast",
       "type": "string"

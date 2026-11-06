@@ -24,7 +24,7 @@ export function arcNumbers(arc: Arc): string[] {
 
 export function Arcs({ chapter }: { chapter: ArcsChapter }) {
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
       <ul aria-label="Arcs" className="m-0 grid list-none grid-cols-1 gap-sp-2 p-0 desktop:grid-cols-2">
         {chapter.facts.teams.map((team) => (
           <Card as="li" key={team.roster_id} className="flex flex-col gap-sp-2">

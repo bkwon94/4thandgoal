@@ -68,7 +68,7 @@ function List({ label, note, children }: { label: string; note: string; children
 export function Watch({ chapter }: { chapter: WatchChapter }) {
   const { due_to_rise: rise, due_to_fall: fall, grab_him_now: grab } = chapter.facts;
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
       <div className="grid gap-sp-4 desktop:grid-cols-3">
         <List label="Due to Rise" note="Points a game under his expected points.">
           {rise.map((player) => <GapRow key={player.player_id} player={player} />)}

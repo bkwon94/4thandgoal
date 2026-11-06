@@ -51,7 +51,6 @@ class Top10Chapter(BaseModel):
     title: str = "Position Top 10"
     facts: PositionTop10
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 def season_points(

@@ -22,7 +22,7 @@ const streakText = (team: TeamState) => (team.streak ? `${team.streak.kind}${tea
 
 export function State({ chapter }: { chapter: StateChapter }) {
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
       <Card className="overflow-x-auto p-0">
         <table className="w-full border-collapse">
           <thead>

@@ -9,7 +9,7 @@ import type { InjuryChapter } from "../schema/midseason-types";
 
 export function Injuries({ chapter }: { chapter: InjuryChapter }) {
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note="Starter games lost" blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} note="Starter games lost" blurb={chapter.blurb}>
       <Card className="py-sp-1">
         <ol aria-label="Injury toll" className="m-0 list-none p-0">
           {chapter.facts.teams.map((team) => (

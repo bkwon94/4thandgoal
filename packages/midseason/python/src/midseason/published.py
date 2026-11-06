@@ -19,7 +19,6 @@ from midseason.lineups import LineupChapter, LineupChoices
 from midseason.look_ahead import LOOK_AHEAD, LookAhead, LookAheadChapter
 from midseason.luck import LuckChapter, ScheduleLuck
 from midseason.opener import OPENER, Opener, ReportTile, TitleRace, report_tile
-from midseason.prose import ROAST_SUFFIX
 from midseason.records import RecordBook, RecordsChapter
 from midseason.spread import Headline
 from midseason.state import LeagueState
@@ -42,8 +41,6 @@ class StateChapter(BaseModel):
     facts: LeagueState
     # The blurb of the writer. Brian may edit its sentences in the draft before the publish.
     blurb: Blurb | None = None
-    # The roast blurb. None when the roast setting of the client is off.
-    roast: Blurb | None = None
 
 
 class DraftChapter(BaseModel):
@@ -52,7 +49,6 @@ class DraftChapter(BaseModel):
     title: str = "Draft Steals and Busts"
     facts: DraftValue
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 class WaiversChapter(BaseModel):
@@ -61,7 +57,6 @@ class WaiversChapter(BaseModel):
     title: str = "Waiver Hits and Misses"
     facts: WaiverFacts
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 class TradesChapter(BaseModel):
@@ -70,7 +65,6 @@ class TradesChapter(BaseModel):
     title: str = "The Trade Report Card"
     facts: TradeFacts
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
@@ -115,28 +109,28 @@ def midseason_report(
     holds the draft, the waivers, the trades, the lineup choices, and the record book with the awards. Act III holds
     the look ahead and the players to watch."""
     act_one: list[Chapter] = [
-        StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX)),
-        ArcsChapter(facts=arcs, blurb=blurbs.get("arcs"), roast=blurbs.get("arcs" + ROAST_SUFFIX)),
-        LuckChapter(facts=luck, blurb=blurbs.get("luck"), roast=blurbs.get("luck" + ROAST_SUFFIX)),
-        InjuryChapter(facts=injuries, blurb=blurbs.get("injuries"), roast=blurbs.get("injuries" + ROAST_SUFFIX)),
-        Top10Chapter(facts=top10, blurb=blurbs.get("top10"), roast=blurbs.get("top10" + ROAST_SUFFIX)),
+        StateChapter(facts=state, blurb=blurbs.get("state")),
+        ArcsChapter(facts=arcs, blurb=blurbs.get("arcs")),
+        LuckChapter(facts=luck, blurb=blurbs.get("luck")),
+        InjuryChapter(facts=injuries, blurb=blurbs.get("injuries")),
+        Top10Chapter(facts=top10, blurb=blurbs.get("top10")),
     ]
     act_two: list[Chapter] = [
-        DraftChapter(facts=draft, blurb=blurbs.get("draft"), roast=blurbs.get("draft" + ROAST_SUFFIX)),
-        WaiversChapter(facts=waivers, blurb=blurbs.get("waivers"), roast=blurbs.get("waivers" + ROAST_SUFFIX)),
-        TradesChapter(facts=trades, blurb=blurbs.get("trades"), roast=blurbs.get("trades" + ROAST_SUFFIX)),
-        LineupChapter(facts=lineups, blurb=blurbs.get("lineup"), roast=blurbs.get("lineup" + ROAST_SUFFIX)),
-        RecordsChapter(facts=records, blurb=blurbs.get("records"), roast=blurbs.get("records" + ROAST_SUFFIX)),
+        DraftChapter(facts=draft, blurb=blurbs.get("draft")),
+        WaiversChapter(facts=waivers, blurb=blurbs.get("waivers")),
+        TradesChapter(facts=trades, blurb=blurbs.get("trades")),
+        LineupChapter(facts=lineups, blurb=blurbs.get("lineup")),
+        RecordsChapter(facts=records, blurb=blurbs.get("records")),
     ]
     act_three: list[Chapter] = [
-        LookAheadChapter(facts=look, blurb=blurbs.get(LOOK_AHEAD), roast=blurbs.get(LOOK_AHEAD + ROAST_SUFFIX)),
-        WatchChapter(facts=watch, blurb=blurbs.get("watch"), roast=blurbs.get("watch" + ROAST_SUFFIX)),
+        LookAheadChapter(facts=look, blurb=blurbs.get(LOOK_AHEAD)),
+        WatchChapter(facts=watch, blurb=blurbs.get("watch")),
     ]
     return MidseasonReport(
         season=season,
         week=week,
         takeover_end_week=week + TAKEOVER_WEEKS,
-        opener=Opener(facts=race, blurb=blurbs.get(OPENER), roast=blurbs.get(OPENER + ROAST_SUFFIX)),
+        opener=Opener(facts=race, blurb=blurbs.get(OPENER)),
         acts=[Act(key="how-we-got-here", title="How We Got Here", chapters=act_one),
               Act(key="the-moves", title="The Moves", chapters=act_two),
               Act(key="what-comes-next", title="What Comes Next", chapters=act_three)],
@@ -146,10 +140,9 @@ def midseason_report(
 
 
 def report_blurbs(report: MidseasonReport) -> list[Blurb]:
-    """Every blurb of the report in page order: the opener's blurb and its roast, then each chapter's."""
-    opener = [blurb for blurb in (report.opener.blurb, report.opener.roast) if blurb is not None]
-    return opener + [blurb for act in report.acts for chapter in act.chapters
-                     for blurb in (chapter.blurb, chapter.roast) if blurb is not None]
+    """Every blurb of the report in page order: the opener's blurb, then each chapter's."""
+    blurbs = [report.opener.blurb, *(chapter.blurb for act in report.acts for chapter in act.chapters)]
+    return [blurb for blurb in blurbs if blurb is not None]
 
 
 def read_midseason(season_build: Path) -> MidseasonReport:

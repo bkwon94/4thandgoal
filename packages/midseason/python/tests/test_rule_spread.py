@@ -114,7 +114,7 @@ def test_a_moved_team_stays_in_the_scope_and_the_facts_of_its_block_and_the_shee
     notes = callout_facts(headlines, callouts, {1: "One", 2: "Two"})
     later = [("luck", "Schedule Luck", [fact("SW.1", "One is lucky.", Nums(), ["One"], []),
                                         fact("SW.2", "Two is lucky.", Nums(), ["Two"], [])])]
-    sheet = prose_sheet(1, state, "off", later, callouts=notes)
+    sheet = prose_sheet(1, state, later, callouts=notes)
     luck = next(chapter for chapter in sheet.chapters if chapter.key == "luck")
     assert luck.fact_ids == ["SW.1", "SW.2", "CO.luck.most_better", "W.week"]
     assert luck.scope_teams == ["One", "Two"]

@@ -43,7 +43,7 @@ export function Top10({ chapter }: { chapter: Top10Chapter }) {
   );
   const board = boards.find((item) => item.position === chosen) ?? boards[0];
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note="Total league points" blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} note="Total league points" blurb={chapter.blurb}>
       {/* Each chip is a 44px pill. The chosen chip is filled, and aria-pressed tells a screen reader which one. */}
       <div role="group" aria-label="Position" className="flex gap-sp-2">
         {boards.map(({ position }) => {

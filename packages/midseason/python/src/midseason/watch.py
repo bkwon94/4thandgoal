@@ -57,7 +57,6 @@ class WatchChapter(BaseModel):
     title: str = "Players to Watch"
     facts: PlayersToWatch
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 def _season_gaps(

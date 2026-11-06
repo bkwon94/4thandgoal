@@ -109,7 +109,7 @@ function Streamers({ streamers }: { streamers: Facts["streamers"] }) {
 export function Waivers({ chapter }: { chapter: WaiversChapter }) {
   const { hits, misses, outbid, streamers } = chapter.facts;
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note="Points over the line" blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} note="Points over the line" blurb={chapter.blurb}>
       <div className="grid gap-sp-4 desktop:grid-cols-2">
         <Pickups label="Hits" rows={hits} />
         <Pickups label="Misses" rows={misses} />

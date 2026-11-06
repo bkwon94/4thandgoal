@@ -50,7 +50,6 @@ class LineupChapter(BaseModel):
     title: str = "Lineup Choices"
     facts: LineupChoices
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 def best_score(past: PastWeek, roster_id: int, slots: Sequence[str], positions: Mapping[str, str]) -> Decimal:

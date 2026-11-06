@@ -59,7 +59,7 @@ export function LookAhead({ chapter }: { chapter: LookAheadChapter }) {
   const weeks = teams[0]?.games ?? [];
   const note = weeks.length > 0 ? `Weeks ${weeks[0].week} to ${weeks[weeks.length - 1].week}` : undefined;
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note={note} blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} note={note} blurb={chapter.blurb}>
       <p className="m-0 max-w-measure text-lead text-ink-2">
         The rate is the win rate of the opponents so far. A lower rate is a softer path.
       </p>

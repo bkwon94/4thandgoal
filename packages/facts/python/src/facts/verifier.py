@@ -334,7 +334,8 @@ def code_check(
 ) -> list[str]:
     """The code rules on one blurb. `used_words` are the once-per-page words that another chapter already said."""
     failures: list[str] = []
-    in_chapter = set(chapter.fact_ids)
+    # A callback fact of another chapter is a fact of this blurb too.
+    in_chapter = {*chapter.fact_ids, *chapter.callback_ids}
     league_teams = {t for f in sheet.facts.values() for t in f.teams}
     league_players = {p for c in sheet.chapters for p in c.scope_players}
     scope_names = [*chapter.scope_teams, *chapter.scope_players]
@@ -475,6 +476,10 @@ def code_check(
     if chapter.max_reactions > 1 and blurb.sentences and reactions == len(blurb.sentences):
         failures.append("[0] the blurb cites no fact; cite a fact in its first sentence")
 
+    words = sum(len(sentence.text.split()) for sentence in blurb.sentences)
+    if chapter.max_words is not None and words > chapter.max_words:
+        failures.append(f"[0] the blurb has {words} words; the limit is {chapter.max_words}")
+
     count = len(blurb.sentences)
     if not chapter.min_sentences <= count <= chapter.max_sentences:
         failures.append(
@@ -496,6 +501,9 @@ def build_verifier_prompt(
         "",
         "Chapter facts:",
         *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.fact_ids if fid in sheet.facts),
+        *(["", "Facts of the other chapters, for a callback:",
+           *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.callback_ids if fid in sheet.facts)]
+          if chapter.callback_ids else []),
         "",
         "Sentences. Give one verdict per sentence, in order:",
         *(

@@ -13,7 +13,6 @@ export function ReportChapter({
   title,
   note,
   blurb = null,
-  roast = null,
   children,
 }: {
   // The id of the chapter, from its key, so a link can jump to it.
@@ -22,7 +21,6 @@ export function ReportChapter({
   // A short line beside the heading, such as "Weeks 1 to 8".
   note?: string;
   blurb?: Blurb | null;
-  roast?: Blurb | null;
   children?: ReactNode;
 }) {
   const heading = `${id}-heading`;
@@ -38,7 +36,7 @@ export function ReportChapter({
           )}
         </div>
         {children}
-        <ChapterProse blurb={blurb} roast={roast} />
+        <ChapterProse blurb={blurb} />
       </Reveal>
     </section>
   );

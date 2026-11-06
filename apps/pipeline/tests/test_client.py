@@ -21,6 +21,7 @@ from league.client import (
     schema_file,
 )
 from league.values import LeagueValues
+from midseason.values import MidseasonValues
 from week.values import WeekValues
 
 ROOT = Path(__file__).parents[3]
@@ -105,6 +106,22 @@ def test_a_client_with_midseason_and_sim_passes(tmp_path):
     folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim"]',
                    'packages = ["week", "rankings", "managers", "analyzer", "sim", "midseason"]')
     assert read_client_values(folder, VALUE_MODELS).packages[-2:] == ["sim", "midseason"]
+
+
+def test_a_roast_outside_the_four_levels_fails_and_names_them(tmp_path):
+    # AT-62: the roast setting of midseason takes four levels only.
+    folder = _copy(tmp_path, "[values.analyzer]", '[values.midseason]\nroast = "nuclear"\n\n[values.analyzer]')
+    with pytest.raises(ClientError) as err:
+        read_client_values(folder, VALUE_MODELS)
+    message = str(err.value)
+    assert "values.midseason.roast" in message
+    for level in ("'off'", "'warm'", "'hot'", "'savage'"):
+        assert level in message
+
+
+def test_a_client_with_no_roast_value_takes_savage(tmp_path):
+    # AT-41: savage is the default of the roast setting.
+    assert read_client_values(CPC, VALUE_MODELS).package(MidseasonValues).roast == "savage"
 
 
 def test_a_missing_timezone_fails_with_the_key(tmp_path):

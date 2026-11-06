@@ -125,6 +125,18 @@ describe("MidseasonScreen", () => {
     }
   });
 
+  it("shows the prose of each chapter as one paragraph with no roast block", () => {
+    // AT-61. The roast is the voice of the paragraph, so the page has no "The roast" heading.
+    renderReport();
+    expect(screen.queryByText(/the roast/i)).toBeNull();
+    for (const chapter of midseason.acts.flatMap((act) => act.chapters)) {
+      expect(chapter).not.toHaveProperty("roast");
+      if (chapter.blurb === null) continue;
+      const text = chapter.blurb.sentences.map((sentence) => sentence.text).join(" ");
+      expect(within(document.getElementById(chapter.key)!).getByText(text)).toBeTruthy();
+    }
+  });
+
   it("puts the finale that the app passes at the end of the last act", () => {
     renderReport(<div data-testid="finale">The sim</div>);
     const last = document.getElementById("what-comes-next")!;

@@ -48,7 +48,6 @@ class LookAheadChapter(BaseModel):
     title: str = "The Look Ahead"
     facts: LookAhead
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 def _game(week: int, opponent: TeamState) -> Game:

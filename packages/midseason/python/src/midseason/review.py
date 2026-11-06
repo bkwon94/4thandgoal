@@ -39,11 +39,13 @@ def review_text(
     for chapter in sheet.chapters:
         blurb = blurbs[chapter.key]
         cited = list(dict.fromkeys(fid for s in blurb.sentences for fid in s.fact_ids))
+        words = f", {chapter.max_words} words or fewer" if chapter.max_words is not None else ""
         lines += [
             "",
             f"## {chapter.key}: {chapter.title}",
             "",
-            f"Prose block: {chapter.min_sentences} to {chapter.max_sentences} sentences, {len(chapter.fact_ids)} facts.",
+            (f"Prose block: {chapter.min_sentences} to {chapter.max_sentences} sentences{words}, "
+             f"{len(chapter.fact_ids)} facts."),
             "",
             "Blurb:",
             *(f"{i}. {s.text} [{', '.join(s.fact_ids) or 'reaction'}]"

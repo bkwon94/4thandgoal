@@ -27,7 +27,7 @@ function Row({ team }: { team: TeamLineup }) {
 
 export function Lineup({ chapter }: { chapter: LineupChapter }) {
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note="Bench points" blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} note="Bench points" blurb={chapter.blurb}>
       <Card className="py-sp-1">
         <ShowAll
           label="Bench points"

@@ -397,6 +397,11 @@ class Chapter(BaseModel):
     required: list[str] = []
     # The reaction sentences a blurb may hold. A chapter that allows more than one still needs a cited sentence.
     max_reactions: int = 1
+    # The word limit of the whole blurb. None has no limit.
+    max_words: int | None = None
+    # The fact IDs of other chapters that a blurb may cite too, so a paragraph can call back across chapters. A
+    # template blurb reads only fact_ids, so it stays on its own chapter.
+    callback_ids: list[str] = []
 
 
 class WeekData(BaseModel):

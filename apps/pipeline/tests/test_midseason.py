@@ -87,11 +87,6 @@ STATE_BLURB = WriterOut(sentences=[
     Sentence(text="Nobody saw that coming.", fact_ids=[]),
     Sentence(text="Lil Fridge has 909.55 points for.", fact_ids=["ST.3.points"]),
 ])
-# A roast blurb of the state of the league. Each sentence cites a fact.
-ROAST_BLURB = WriterOut(sentences=[
-    Sentence(text="NFC Least is 3-13, 12th in the standings.", fact_ids=["ST.4.record"]),
-    Sentence(text="Bo Girds has lost 4 head-to-head games in a row.", fact_ids=["ST.6.streak"]),
-])
 
 
 # The blurbs of the arcs and of Schedule luck that pass the code check on the real CPC week 8 facts.
@@ -100,19 +95,11 @@ ARCS_BLURB = WriterOut(sentences=[
     Sentence(text="Bo Girds has the Collapse arc.", fact_ids=["ARC.6.collapse"]),
     Sentence(text="Nobody saw that coming.", fact_ids=[]),
 ])
-ARCS_ROAST = WriterOut(sentences=[
-    Sentence(text="Bo Girds is Snakebit at -2.18.", fact_ids=["ARC.6.snakebit"]),
-    Sentence(text="Return of T Mac started 2-6.", fact_ids=["ARC.8.turnaround"]),
-])
 LUCK_BLURB = WriterOut(sentences=[
     Sentence(text="All You Need Is Love has a Schedule luck of +2.73.", fact_ids=["SL.2.luck"]),
     Sentence(text="behold the lamb would gain 4 wins with the schedule of Maye d'force B with U.",
              fact_ids=["SW.biggest"]),
     Sentence(text="That is cruel.", fact_ids=[]),
-])
-LUCK_ROAST = WriterOut(sentences=[
-    Sentence(text="Teehee does better with 5 other schedules than with its own.", fact_ids=["SW.most"]),
-    Sentence(text="NFC Least has 898 points against.", fact_ids=["SL.4.against"]),
 ])
 # The blurbs of the opener and of the look ahead that pass the code check on the real CPC week 8 facts.
 OPENER_BLURB = WriterOut(sentences=[
@@ -120,21 +107,13 @@ OPENER_BLURB = WriterOut(sentences=[
     Sentence(text="All You Need Is Love leads at 11-5 with 9.7% title odds.", fact_ids=["OP.record", "OP.record.title"]),
     Sentence(text="Nobody owns this race.", fact_ids=[]),
 ])
-OPENER_ROAST = WriterOut(sentences=[
-    Sentence(text="All You Need Is Love is 11-5 and only 6th in title odds.", fact_ids=["OP.record", "OP.record.title"]),
-    Sentence(text="Bo Girds has 16.3% title odds.", fact_ids=["OP.6.title"]),
-])
 LOOK_BLURB = WriterOut(sentences=[
     Sentence(text="Maye d'force B with U gets the softest schedule at 0.44.", fact_ids=["LA.9.rate"]),
     Sentence(text="behold the lamb gets the hardest at 0.56.", fact_ids=["LA.10.rate"]),
     Sentence(text="Good luck.", fact_ids=[]),
 ])
-LOOK_ROAST = WriterOut(sentences=[
-    Sentence(text="behold the lamb faces a 0.56 win rate.", fact_ids=["LA.10.rate"]),
-    Sentence(text="NFC Least faces a 0.54 win rate too.", fact_ids=["LA.4.rate"]),
-])
 # The writer answers of the opener, which the build writes first.
-OPENER_BUILD = [OPENER_BLURB, _passed(3), OPENER_ROAST, _passed(2)]
+OPENER_BUILD = [OPENER_BLURB, _passed(3)]
 # The blurbs of the draft steals and busts, the first chapter of Act II.
 DRAFT_BLURB = WriterOut(sentences=[
     Sentence(text="NFC Least drafted Jalen Coker for $1.", fact_ids=["DV.steal.11646"]),
@@ -142,30 +121,16 @@ DRAFT_BLURB = WriterOut(sentences=[
              fact_ids=["DV.steal.11646.points"]),
     Sentence(text="What a bargain.", fact_ids=[]),
 ])
-DRAFT_ROAST = WriterOut(sentences=[
-    Sentence(text="Unsolicited Dak Picks drafted A.J. Brown for $39.", fact_ids=["DV.bust.5859"]),
-    Sentence(text="The bust of A.J. Brown is tagged just bad.", fact_ids=["DV.bust.5859.tag"]),
-])
 # The blurbs of the waivers and the trades of Act II, each in the shape that passes the code check.
 WAIVERS_BLURB = WriterOut(sentences=[
     Sentence(text="Ollie Gordon II went to Unsolicited Dak Picks for $40.", fact_ids=["WV.hit.1"]),
     Sentence(text="The Blue Tent bid $36 on him and lost by $4.", fact_ids=["WV.outbid.1", "WV.outbid.1.margin"]),
     Sentence(text="Ouch.", fact_ids=[]),
 ])
-WAIVERS_ROAST = WriterOut(sentences=[
-    Sentence(text="To Infinity and Bijan paid $40 for Joe Mixon and got 0 starts.",
-             fact_ids=["WV.miss.1", "WV.miss.1.value"]),
-    Sentence(text="NFC Least paid $26 for Rico Dowdle and got 0 starts.", fact_ids=["WV.miss.3", "WV.miss.3.value"]),
-])
 TRADES_BLURB = WriterOut(sentences=[
     Sentence(text="To Infinity and Bijan won the week 7 trade with Return of T Mac.", fact_ids=["TR.4"]),
     Sentence(text="The gap is 68.4.", fact_ids=["TR.4"]),
     Sentence(text="Brutal.", fact_ids=[]),
-])
-TRADES_ROAST = WriterOut(sentences=[
-    Sentence(text="Return of T Mac has a net of -34.2 points over the line since the week 7 trade.",
-             fact_ids=["TR.4.8"]),
-    Sentence(text="Return of T Mac is 3-1 since that trade.", fact_ids=["TR.4.8.since"]),
 ])
 # The blurbs of the lineup choices and the record book, the last chapters of Act II. The spread rule moved the bench
 # callout to Lil Fridge, so the lineup block may not name the four teams ahead of it.
@@ -174,18 +139,10 @@ LINEUP_BLURB = WriterOut(sentences=[
     Sentence(text="The Blue Tent lost to behold the lamb by 9.04 in week 2.", fact_ids=["LC.1.2"]),
     Sentence(text="Painful.", fact_ids=[]),
 ])
-LINEUP_ROAST = WriterOut(sentences=[
-    Sentence(text="Maye d'force B with U left 83.48 points on the bench.", fact_ids=["LC.9"]),
-    Sentence(text="Maye d'force B with U lost to The Blue Tent by 4.68 in week 7.", fact_ids=["LC.9.7"]),
-])
 RECORDS_BLURB = WriterOut(sentences=[
     Sentence(text="Maye d'force B with U scored 158.96 in week 5.", fact_ids=["RB.high"]),
     Sentence(text="Jahmyr Gibbs has 135.1 points over the line in his starts.", fact_ids=["AW.mvp"]),
     Sentence(text="Wild.", fact_ids=[]),
-])
-RECORDS_ROAST = WriterOut(sentences=[
-    Sentence(text="To Infinity and Bijan scored 46.08 in week 6.", fact_ids=["RB.low"]),
-    Sentence(text="The Blue Tent lost to All You Need Is Love by 0.4 in week 3.", fact_ids=["AW.heartbreak"]),
 ])
 # The blurbs of the injury toll, Position top 10, and the players to watch, each in the shape that passes the code
 # check on the real CPC week 8 facts with the rosters now.
@@ -194,43 +151,26 @@ INJURY_BLURB = WriterOut(sentences=[
     Sentence(text="Kyle Monangai missed 4 games as a starter of behold the lamb.", fact_ids=["IT.10.top"]),
     Sentence(text="Rough.", fact_ids=[]),
 ])
-INJURY_ROAST = WriterOut(sentences=[
-    Sentence(text="The Blue Tent lost 5 starter games to injury, 2nd in the league.", fact_ids=["IT.1"]),
-    Sentence(text="Davante Adams missed 2 games as a starter of The Blue Tent.", fact_ids=["IT.1.top"]),
-])
 TOP10_BLURB = WriterOut(sentences=[
     Sentence(text="Josh Allen is the QB #1 with 189.32 points, rostered by behold the lamb.", fact_ids=["TOP.QB.1"]),
     Sentence(text="Jahmyr Gibbs is the RB #1 with 178.8 points, rostered by Maye d'force B with U.",
              fact_ids=["TOP.RB.1"]),
     Sentence(text="Not bad.", fact_ids=[]),
 ])
-TOP10_ROAST = WriterOut(sentences=[
-    Sentence(text="Tampa Bay Buccaneers is the DEF #3 with 77.75 points, a free agent.", fact_ids=["TOP.DEF.3"]),
-    Sentence(text="CeeDee Lamb is the WR #2 with 138.3 points, rostered by NFC Least.", fact_ids=["TOP.WR.2"]),
-])
 WATCH_BLURB = WriterOut(sentences=[
-    Sentence(text="Jaxon Smith-Njigba of Lil Fridge scores 7.68 points per game over what his volume says, over 8 "
-                  "games, so he is due to fall.", fact_ids=["PW.fall.1"]),
+    Sentence(text="Jaxon Smith-Njigba of Lil Fridge scores 7.68 points per game over what his volume says.",
+             fact_ids=["PW.fall.1"]),
     Sentence(text="Kyler Murray is a free agent with 92.93 projected points through the regular season.",
              fact_ids=["PW.grab.1"]),
     Sentence(text="Go get him.", fact_ids=[]),
 ])
-WATCH_ROAST = WriterOut(sentences=[
-    Sentence(text="Michael Wilson of London Cooking scores 5.65 points per game under what his volume says, over 8 "
-                  "games, so he is due to rise.", fact_ids=["PW.rise.1"]),
-    Sentence(text="J.J. McCarthy is a free agent with 91.14 projected points through the regular season.",
-             fact_ids=["PW.grab.2"]),
-])
 # The writer answers of a clean build, in page order: each blurb, then the verdicts that pass it.
-CLEAN_BUILD = [*OPENER_BUILD, STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), ARCS_BLURB, _passed(3), ARCS_ROAST,
-               _passed(2), LUCK_BLURB, _passed(3), LUCK_ROAST, _passed(2), INJURY_BLURB, _passed(3), INJURY_ROAST,
-               _passed(2), TOP10_BLURB, _passed(3), TOP10_ROAST, _passed(2), DRAFT_BLURB, _passed(3), DRAFT_ROAST,
-               _passed(2), WAIVERS_BLURB, _passed(3), WAIVERS_ROAST, _passed(2),
-               TRADES_BLURB, _passed(3), TRADES_ROAST, _passed(2), LINEUP_BLURB, _passed(3), LINEUP_ROAST, _passed(2),
-               RECORDS_BLURB, _passed(3), RECORDS_ROAST, _passed(2), LOOK_BLURB, _passed(3), LOOK_ROAST, _passed(2),
-               WATCH_BLURB, _passed(3), WATCH_ROAST, _passed(2)]
-# The verdicts of the recheck of the publish on a clean draft, in page order.
-CLEAN_RECHECK = [_passed(3), _passed(2)] * 13
+CLEAN_BUILD = [*OPENER_BUILD, STATE_BLURB, _passed(3), ARCS_BLURB, _passed(3), LUCK_BLURB, _passed(3), INJURY_BLURB,
+               _passed(3), TOP10_BLURB, _passed(3), DRAFT_BLURB, _passed(3), WAIVERS_BLURB, _passed(3), TRADES_BLURB,
+               _passed(3), LINEUP_BLURB, _passed(3), RECORDS_BLURB, _passed(3), LOOK_BLURB, _passed(3), WATCH_BLURB,
+               _passed(3)]
+# The verdicts of the recheck of the publish on a clean draft, in page order: one prose block per chapter.
+CLEAN_RECHECK = [_passed(3)] * 13
 
 
 def _clean_call():
@@ -316,74 +256,70 @@ def test_the_review_file_shows_each_blurb_with_its_prose_block_its_facts_and_the
     client = _cpc_week_8(tmp_path)
     build_week_8(_clean_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
-    state, roast = review.split("## state.roast")
-    assert "## state: The State of the League" in state
-    assert "3 to 6 sentences" in state
+    state = review.split("## state: The State of the League")[1].split("## arcs:")[0]
+    assert "2 to 5 sentences, 40 words or fewer" in state
     assert "All You Need Is Love sits at 11-5. [ST.2.record]" in state
     assert "- ST.2.record: All You Need Is Love is 11-5, 1st in the standings." in state
     assert "Verifier: passed on attempt 1." in state
-    assert "NFC Least is 3-13, 12th in the standings. [ST.4.record]" in roast
-    assert "Verifier: passed on attempt 1." in roast
 
 
-def _roasts(report: dict) -> list[dict]:
-    return [chapter["roast"] for act in report["acts"] for chapter in act["chapters"] if chapter["roast"] is not None]
+def _chapters(report: dict) -> list[dict]:
+    return [report["opener"], *(chapter for act in report["acts"] for chapter in act["chapters"])]
 
 
-def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_none(tmp_path):
-    # AT-40. The roast gets two attempts of two reaction sentences each, so the verifier fails both.
+def _words(blurb: dict) -> int:
+    return sum(len(sentence["text"].split()) for sentence in blurb["sentences"])
+
+
+def test_each_chapter_has_one_prose_block_of_40_words_or_fewer_and_no_roast_field(tmp_path):
+    # AT-52 and AT-61.
+    report = _report(build_week_8(_clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER,
+                                  sim_runs=SIM_RUNS))
+    chapters = _chapters(report)
+    assert len(chapters) == 13
+    for chapter in chapters:
+        assert "roast" not in chapter
+        assert not chapter["blurb"]["fallback"] and _words(chapter["blurb"]) <= 40
+
+
+def test_each_prose_block_cites_a_fact_even_when_the_writer_gives_a_blurb_with_none(tmp_path):
+    # AT-40. The state block gets two attempts of two reaction sentences each, so the verifier fails both, and the
+    # template of the block cites a fact.
     no_fact = WriterOut(sentences=[Sentence(text="Oh no.", fact_ids=[]), Sentence(text="Truly awful.", fact_ids=[])])
     client = _cpc_week_8(tmp_path)
-    call = _call(*OPENER_BUILD, STATE_BLURB, _passed(3), no_fact, no_fact)
+    call = _call(*OPENER_BUILD, no_fact, no_fact)
     report = _report(build_week_8(call, client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS))
-    roasts = _roasts(report)
-    assert roasts
-    for roast in roasts:
-        assert any(sentence["fact_ids"] for sentence in roast["sentences"])
+    for chapter in _chapters(report):
+        assert any(sentence["fact_ids"] for sentence in chapter["blurb"]["sentences"])
+        assert _words(chapter["blurb"]) <= 40
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
-    assert "the blurb cites no fact" in review.split("## state.roast")[1]
+    assert "the blurb cites no fact" in review.split("## state:")[1].split("## arcs:")[0]
 
 
-def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_path):
-    report = _report(build_week_8(_clean_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER,
-                                 sim_runs=SIM_RUNS))
-    assert [[s["fact_ids"] for s in roast["sentences"]] for roast in _roasts(report)] == [
-        [["ST.4.record"], ["ST.6.streak"]], [["ARC.6.snakebit"], ["ARC.8.turnaround"]], [["SW.most"], ["SL.4.against"]],
-        [["IT.1"], ["IT.1.top"]], [["TOP.DEF.3"], ["TOP.WR.2"]],
-        [["DV.bust.5859"], ["DV.bust.5859.tag"]], [["WV.miss.1", "WV.miss.1.value"], ["WV.miss.3", "WV.miss.3.value"]], [["TR.4.8"], ["TR.4.8.since"]],
-        [["LC.9"], ["LC.9.7"]], [["RB.low"], ["AW.heartbreak"]], [["LA.10.rate"], ["LA.4.rate"]],
-        [["PW.rise.1"], ["PW.grab.2"]]]
-    assert [s["fact_ids"] for s in report["opener"]["roast"]["sentences"]] == [["OP.record", "OP.record.title"],
-                                                                              ["OP.6.title"]]
-
-
-def test_with_the_roast_off_the_draft_has_no_roast_lines(tmp_path):
-    # AT-41, on a local copy of client.toml.
-    client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "off")
-    writer = FakeWriter([OPENER_BLURB, _passed(3), STATE_BLURB, _passed(3), ARCS_BLURB, _passed(3), LUCK_BLURB,
-                         _passed(3), INJURY_BLURB, _passed(3), TOP10_BLURB, _passed(3), DRAFT_BLURB, _passed(3),
-                         WAIVERS_BLURB, _passed(3), TRADES_BLURB, _passed(3), LINEUP_BLURB, _passed(3), RECORDS_BLURB,
-                         _passed(3), LOOK_BLURB, _passed(3), WATCH_BLURB, _passed(3)])
-    report = _report(build_week_8(partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER,
-                                  sim_runs=SIM_RUNS))
-    assert _roasts(report) == [] and report["opener"]["roast"] is None
+def test_with_no_roast_value_the_build_runs_at_savage_and_the_review_file_names_it(tmp_path):
+    # AT-41. The CPC client.toml has no [values.midseason], so the build takes the default.
+    client = _cpc_week_8(tmp_path)
+    writer = FakeWriter(list(CLEAN_BUILD))
+    build_week_8(partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
-    assert "Roast: off." in review and "roast" not in review.split("Roast: off.")[1].lower()
-    # The writer of each prose block hears that the roast is off, so its blurb holds no roast either.
-    assert "Roast: off. Write no roast" in (writer.calls[0].system or "")
-    assert len(writer.calls) == 26
+    assert review.splitlines()[2].startswith("Roast: savage.")
+    assert "Voice: savage." in (writer.calls[0].system or "")
 
 
-def test_with_the_roast_warm_the_roast_block_gets_the_roast_rules_and_the_soft_step(tmp_path):
-    client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "warm")
+@pytest.mark.parametrize("roast", ["off", "warm", "hot"])
+def test_the_writer_of_each_block_hears_the_voice_of_the_roast_setting(tmp_path, roast):
+    client = _with_roast(_cpc_week_8(tmp_path), tmp_path, roast)
     writer = FakeWriter(list(CLEAN_BUILD))
     report = _report(build_week_8(partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER,
                                   sim_runs=SIM_RUNS))
-    assert len(_roasts(report)) == 12
-    # The calls of the state come after the four calls of the opener.
-    roast_system = writer.calls[6].system or ""
-    assert "Never roast life outside fantasy" in roast_system and "Roast: warm." in roast_system
-    assert "Roast:" not in (writer.calls[4].system or "")
+    # One write and one check per block.
+    assert len(writer.calls) == 26
+    systems = [call.system or "" for call in writer.calls]
+    assert all(f"Voice: {roast}." in system and "Never write about life outside fantasy" in system
+               for system in systems)
+    assert all("roast" not in chapter for chapter in _chapters(report))
+    review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
+    assert f"Roast: {roast}." in review
 
 
 def _chapter(report: dict, key: str) -> dict:
@@ -497,11 +433,11 @@ def test_the_opener_and_the_look_ahead_have_their_prose_blocks_in_the_review_fil
     report = _report(build_week_8(_clean_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS))
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     # The opener is the top of the page, so its blocks come first in the review file.
-    assert review.index("## opener: The Title Race") < review.index("## opener.roast") < review.index("## state:")
-    assert "## look-ahead: The Look Ahead" in review and "## look-ahead.roast" in review
+    assert review.index("## opener: The Title Race") < review.index("## state:")
+    assert "## look-ahead: The Look Ahead" in review
     assert "London Cooking leads the race at 16.8% title odds. [OP.5.title]" in review
     assert "Maye d'force B with U gets the softest schedule at 0.44. [LA.9.rate]" in review
-    assert review.count("Verifier: passed on attempt 1.") == 26
+    assert review.count("Verifier: passed on attempt 1.") == 13
     assert report["opener"]["blurb"]["sentences"][0]["fact_ids"] == ["OP.5.title"]
     look = _chapter(report, "look-ahead")
     assert look["blurb"]["sentences"][0]["fact_ids"] == ["LA.9.rate"]
@@ -556,7 +492,7 @@ def test_a_clean_build_keeps_the_blurb_of_the_writer_for_each_chapter(tmp_path):
                                  sim_runs=SIM_RUNS))
     for key in ("injuries", "top10", "lineup", "records", "watch"):
         chapter = _chapter(report, key)
-        assert not chapter["blurb"]["fallback"] and not chapter["roast"]["fallback"]
+        assert not chapter["blurb"]["fallback"]
 
 
 def test_the_report_tile_shows_the_title_odds_of_the_title_favorite(tmp_path):
