@@ -11,15 +11,25 @@ import { weekPageJson } from "@/fixtures/week-page-json";
 const roots: string[] = [];
 
 /* A temp public/ folder with the week pages of 2026 from week 6 to `latest`, and the midseason file and the sim file
-   when each is given. The readers read the working folder when they load, so the module cache resets, and the next
+   when each is given. The latest week holds the given avatars. The readers read the working folder when they load, so the module cache resets, and the next
    import of a route or a part reads the temp folder. */
-export function publicOver({ latest = 8, report, sim }: { latest?: number; report?: unknown; sim?: unknown }): void {
+export function publicOver({
+  latest = 8,
+  report,
+  sim,
+  avatars = {},
+}: {
+  latest?: number;
+  report?: unknown;
+  sim?: unknown;
+  avatars?: Record<string, string>;
+}): void {
   const root = mkdtempSync(join(tmpdir(), "midseason-public-"));
   roots.push(root);
   for (let week = 6; week <= latest; week++) {
     const folder = join(root, "public", "2026", `week-${String(week).padStart(2, "0")}`);
     mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, "page.json"), weekPageJson({ week, avatars: {} }));
+    writeFileSync(join(folder, "page.json"), weekPageJson({ week, avatars: week === latest ? avatars : {} }));
   }
   if (report !== undefined) writeFileSync(join(root, "public", "2026", "midseason.json"), JSON.stringify(report));
   if (sim !== undefined) writeFileSync(join(root, "public", "2026", "sim.json"), JSON.stringify(sim));

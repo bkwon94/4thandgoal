@@ -127,7 +127,7 @@ The redesign
 70. As a league manager, I want a "See the sim" link in the opener, so that I can jump to the finale.
 71. As a league manager, I want a tag as a small plain word with no box, so that tags do not take over a row.
 72. As a league manager, I want cards with small corners and no full pills, so that the report looks like the rest of the site.
-73. As a league manager, I want the awards as lines, "MVP — player, team — fact", so that I read them at a glance.
+73. As a league manager, I want each award as a small card with a headshot or a team avatar, and the words "MVP — player, team — fact", so that I read them at a glance.
 74. As a league manager, I want player points with 1 decimal place and team scores with 2, so that the numbers are consistent.
 75. As a league manager, I want the roast in the voice of the whole paragraph, not in a block or a last line, so that the writing reads naturally.
 76. As a league manager in a league that sets `savage`, I want a full roast from the first word to the last, so that the report is merciless.
@@ -200,7 +200,7 @@ Tickets 14 and 15 decided it, on the boards of the Design canvas. The report kee
 - **Corners.** Cards have 8 px corners. The report has no full pill.
 - **The position switch** is plain text segments with a 2 px accent underline that slides to the chosen position.
 - **"Show all"** is a mono text control with a chevron and no border. It changes to "Show top 5", and the chevron turns.
-- **The awards** are lines: "MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts."
+- **The awards** are small cards in a grid that wraps: 1 column at 375 px, 2 on a tablet, 3 on a desktop. A player award shows the headshot of the player. A team award shows the avatar of the team. The words stay: "MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts."
 - **Decimals.** Player points show 1 decimal place. Team scores show 2.
 
 ### The spread rule

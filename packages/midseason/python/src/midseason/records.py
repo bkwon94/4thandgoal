@@ -67,6 +67,8 @@ class Award(BaseModel):
     value: float
     # The player of the MVP. None on any other award.
     player: str | None = None
+    # The player id of the MVP, so the page shows his headshot. None on any other award.
+    player_id: str | None = None
     # The week of a game award. None on a season award.
     week: int | None = None
     # True for Heartbreak and Beatdown, which the page shows on their game of the record book.
@@ -136,7 +138,7 @@ def _mvp(history: History, through: int, names: Mapping[int, str], players: Mapp
     best = min(over, key=lambda pid: (-sum(over[pid].values()), name[pid]))
     team = min(over[best], key=lambda rid: (-over[best][rid], rid))
     return Award(key="mvp", title=AWARD_TITLES["mvp"], roster_id=team, team=names[team],
-                 value=r2(float(sum(over[best].values()))), player=name[best])
+                 value=r2(float(sum(over[best].values()))), player=name[best], player_id=best)
 
 
 def move_counts(transactions: Mapping[int, Sequence[RawTransaction]], names: Mapping[int, str]) -> dict[int, int]:

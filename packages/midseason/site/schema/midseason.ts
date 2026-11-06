@@ -409,6 +409,8 @@ export const awardSchema = z.object({
   team: z.string(),
   value: z.number(),
   player: z.string().nullable(),
+  // The player id of the MVP, for his headshot. Null on any other award.
+  player_id: z.string().nullable(),
   week: z.number().nullable(),
   // True for Heartbreak and Beatdown, which the page shows on their game of the record book.
   in_record_book: z.boolean(),

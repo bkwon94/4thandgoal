@@ -15,7 +15,10 @@ import { Waivers } from "../act-two/waivers";
 import type { MidseasonChapter } from "../schema/midseason-types";
 import { ReportChapter } from "./report-chapter";
 
-export function ChapterPart({ chapter }: { chapter: MidseasonChapter }) {
+/* The avatar of each team by roster id, with the base path. The route of the app reads it from the latest week. */
+export type Avatars = Readonly<Record<string, string>>;
+
+export function ChapterPart({ chapter, avatars }: { chapter: MidseasonChapter; avatars: Avatars }) {
   switch (chapter.key) {
     case "state":
       return <State chapter={chapter} />;
@@ -32,7 +35,7 @@ export function ChapterPart({ chapter }: { chapter: MidseasonChapter }) {
     case "trades":
       return <Trades chapter={chapter} />;
     case "records":
-      return <Records chapter={chapter} />;
+      return <Records chapter={chapter} avatars={avatars} />;
     case "quick-hits":
       return <QuickHits chapter={chapter} />;
     case "look-ahead":

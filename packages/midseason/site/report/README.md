@@ -13,7 +13,7 @@
 
 ## Ports
 
-- The route of the app, in `apps/site/src/app/_routes/midseason/`, reads the file and passes the report in.
+- The route of the app, in `apps/site/src/app/_routes/midseason/`, passes the report and the latest avatars in.
 - The children of `MidseasonScreen`: the finale at the end of the last act, where the app mounts the sim replay. The
   screen wraps it in a frame with the id `sim`, the target of "See the sim".
 

@@ -4,6 +4,7 @@
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import { sleeperHeadshot } from "@cpc/league/images";
 import { midseason } from "../fixtures/midseason";
 import { MidseasonScreen } from "../report/midseason-screen";
 import type { MidseasonChapter, QuickHitsChapter } from "../schema/midseason-types";
@@ -16,8 +17,16 @@ const SHELL = {
   menu: { items: [{ kind: "home" as const, label: "Home", short: "Home", href: "/" }], weeks: [] },
 };
 
+/* The avatars of the latest week of CPC 2026, week 8, with the week folder in front, as the route passes them in. */
+const AVATARS = Object.fromEntries(
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((id) => [
+    String(id),
+    `/2026/week-08/avatars/${id}.${[2, 8, 11].includes(id) ? "webp" : "jpg"}`,
+  ]),
+);
+
 const renderReport = () =>
-  render(<MidseasonScreen report={midseason} shell={SHELL} pageHref="/midseason/2026/" />);
+  render(<MidseasonScreen report={midseason} shell={SHELL} pageHref="/midseason/2026/" avatars={AVATARS} />);
 
 /* A chapter with its own prose: each chapter of an act but Quick hits, and each part of Quick hits. */
 type ProseChapter = Exclude<MidseasonChapter, { key: "quick-hits" }> | QuickHitsChapter["chapters"][number];
@@ -257,25 +266,31 @@ describe("the record book", () => {
       expect(book.getByText(title)).toBeTruthy();
     }
     const listed = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
-    expect(listed.map((item) => item.firstElementChild!.textContent)).toEqual(
+    expect(listed.map((item) => item.querySelector("b")!.textContent)).toEqual(
       awards.filter((award) => !award.in_record_book).map((award) => award.title),
     );
     for (const award of awards) expect(screen.getAllByText(award.short_fact)).toHaveLength(1);
   });
 
-  it("shows each award as one line, title, then winner, then short fact, and no award as a card", () => {
-    // AT-57.
+  it("shows each award as a small card, title, then winner, then short fact, with an image", () => {
     renderReport();
     const { awards } = chapterOf("records").facts;
-    const lines = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
-    expect(lines[0].textContent).toBe("MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts.");
+    const cards = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
+    expect(cards[0].textContent).toBe("MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts.");
     const listed = awards.filter((award) => !award.in_record_book);
-    expect(lines.map((line) => line.textContent)).toEqual(
+    expect(cards.map((card) => card.textContent)).toEqual(
       listed.map((award) => `${award.title} — ${award.player !== null ? `${award.player}, ` : ""}${award.team} — ${award.short_fact}`),
     );
-    for (const line of lines) {
-      expect(line.closest(".bg-card")).toBeNull();
-      expect(line.querySelector("h5, p, div")).toBeNull();
+    for (const [index, card] of cards.entries()) {
+      const award = listed[index];
+      expect(card.className).toMatch(/(^|\s)bg-card(\s|$)/);
+      expect(card.className).toMatch(/(^|\s)rounded-report(\s|$)/);
+      const img = within(card).getByRole("img", { name: award.player ?? award.team });
+      expect(img.getAttribute("src")).toBe(
+        award.player_id !== null ? sleeperHeadshot(award.player_id) : AVATARS[String(award.roster_id)],
+      );
+      expect(img.getAttribute("loading")).toBe("lazy");
+      expect(img.parentElement!.className).toMatch(/(^|\s)size-photo(\s|$)/);
     }
     const book = within(chapterEl("records").getByRole("list", { name: "Records" }));
     // The awards on a game of the book read the same way: title, winner, then short fact.
@@ -285,6 +300,15 @@ describe("the record book", () => {
     expect(book.getByText(/^Beat /).parentElement!.textContent).toBe(
       "Beatdown of the year — Maye d'force B with U — Beat To Infinity and Bijan by 92.14 in week 5.",
     );
+  });
+
+  it("lays the award cards in a grid that wraps: 1 column on a phone, 2 on a tablet, 3 on a desktop", () => {
+    renderReport();
+    const grid = chapterEl("records").getByRole("list", { name: "Awards" });
+    expect(grid.className).toMatch(/(^|\s)grid(\s|$)/);
+    expect(grid.className).toMatch(/(^|\s)grid-cols-1(\s|$)/);
+    expect(grid.className).toMatch(/(^|\s)tablet:grid-cols-2(\s|$)/);
+    expect(grid.className).toMatch(/(^|\s)desktop:grid-cols-3(\s|$)/);
   });
 
   it("shows team scores with 2 decimal places, with the highest score at 158.96", () => {

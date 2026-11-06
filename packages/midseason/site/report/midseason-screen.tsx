@@ -6,6 +6,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { TopBand } from "@cpc/design/shell/top-band";
 import type { Midseason } from "../schema/midseason-types";
+import type { Avatars } from "./chapter-part";
 import { ActRail } from "./act-rail";
 import { ActSection } from "./act-section";
 import { Opener } from "./opener";
@@ -20,12 +21,15 @@ export function MidseasonScreen({
   report,
   shell,
   pageHref,
+  avatars = {},
   children,
 }: {
   report: Midseason;
   shell: ShellValues;
   // The href of this page.
   pageHref: string;
+  // The avatar of each team by roster id, with the base path, from the latest week. A team with none gets the default.
+  avatars?: Avatars;
   // The finale at the end of the last act. The app mounts the sim replay here, so the report imports no sim.
   children?: ReactNode;
 }) {
@@ -51,7 +55,13 @@ export function MidseasonScreen({
               finaleHref={finale === undefined ? undefined : `#${FINALE_ID}`}
             />
             {report.acts.map((act, index) => (
-              <ActSection key={act.key} act={act} index={index} finale={index === last ? finale : undefined} />
+              <ActSection
+                key={act.key}
+                act={act}
+                index={index}
+                avatars={avatars}
+                finale={index === last ? finale : undefined}
+              />
             ))}
           </div>
         </PageColumn>

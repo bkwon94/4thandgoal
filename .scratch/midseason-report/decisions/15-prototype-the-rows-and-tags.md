@@ -31,3 +31,7 @@ Brian also cut two parts of the report in this session:
 
 - **"The one that got away" goes,** in the draft and in the waiver hits. This removes PRD story 26 and AT-14, and changes decision 02, decision 03, and ticket 07.
 - **The Players to watch chapter goes:** Due to rise, Due to fall, and Grab him now. Brian: Grab him now must be good, and it recommended only bench quarterbacks. This removes PRD story 39 and AT-23, and changes decision 10 and ticket 06. Act III holds the look ahead and the sim.
+
+## Later change
+
+- 2026-11-06, Brian: the awards are cards with a headshot or an avatar, not lines.

@@ -81,6 +81,12 @@ def test_the_mvp_is_the_started_player_with_the_most_points_over_the_line():
     assert (mvp.player, mvp.team, mvp.value) == ("Back 3", "Three", 60.2)
 
 
+def test_the_mvp_names_the_player_id_for_the_headshot_and_no_other_award_has_one():
+    awards = _awards()
+    assert awards["mvp"].player_id == "p3"
+    assert all(award.player_id is None for key, award in awards.items() if key != "mvp")
+
+
 def test_most_active_counts_adds_and_trades_and_set_and_forget_has_the_fewest_moves():
     awards = _awards()
     assert (awards["most-active"].team, awards["most-active"].value) == ("One", 3)

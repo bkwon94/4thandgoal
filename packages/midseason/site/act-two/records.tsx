@@ -1,10 +1,14 @@
 /**
  * The record book with the awards, the last chapter of Act II: the high, the low, the biggest margin, and the closest
- * game, then the awards as lines. Heartbreak and Beatdown sit on their game in the book, so each game shows once.
+ * game, then the awards as small cards, each with a headshot or a team avatar. Heartbreak and Beatdown sit on their
+ * game in the book, so each game shows once.
  */
 import type { ReactNode } from "react";
 import { num } from "@cpc/design/format/format";
+import { avatarSrc, sleeperHeadshot } from "@cpc/league/images";
+import type { Avatars } from "../report/chapter-part";
 import { ReportCard } from "../report/report-card";
+import { ReportPhoto } from "../report/report-photo";
 import { teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import type { Award, RecordsChapter } from "../schema/midseason-types";
@@ -70,26 +74,33 @@ function BookList({ book }: { book: Book }) {
   );
 }
 
-/* The awards as lines, not cards (decision ticket 15): "MVP — Jahmyr Gibbs, Maye d'force B with U — short fact". */
-function Awards({ awards }: { awards: Award[] }) {
+/* The awards as small cards in a grid that wraps (decision ticket 15, later change): the headshot of the player for a
+   player award, else the avatar of the team, then "MVP — Jahmyr Gibbs, Maye d'force B with U — short fact". */
+function Awards({ awards, avatars }: { awards: Award[]; avatars: Avatars }) {
   return (
-    <ul aria-label="Awards" className="m-0 flex list-none flex-col p-0">
+    <ul aria-label="Awards" className="m-0 grid list-none grid-cols-1 gap-sp-2 p-0 tablet:grid-cols-2 desktop:grid-cols-3">
       {awards.map((award) => (
-        <li key={award.key} className="border-t border-rule py-sp-3 text-body leading-normal text-ink-2">
-          <AwardWords award={award} />
-        </li>
+        <ReportCard as="li" key={award.key} className="flex items-start gap-sp-3">
+          <ReportPhoto
+            src={award.player_id !== null ? sleeperHeadshot(award.player_id) : avatarSrc(avatars, award.roster_id)}
+            name={award.player ?? award.team}
+          />
+          <span className="min-w-0 text-meta leading-normal text-ink-2">
+            <AwardWords award={award} />
+          </span>
+        </ReportCard>
       ))}
     </ul>
   );
 }
 
-export function Records({ chapter }: { chapter: RecordsChapter }) {
+export function Records({ chapter, avatars }: { chapter: RecordsChapter; avatars: Avatars }) {
   const book = chapter.facts;
   return (
     <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
       <BookList book={book} />
       <h4 className="m-0 mt-sp-3 text-body leading-tight font-bold">The Awards</h4>
-      <Awards awards={book.awards.filter((award) => !award.in_record_book)} />
+      <Awards awards={book.awards.filter((award) => !award.in_record_book)} avatars={avatars} />
     </ReportChapter>
   );
 }
