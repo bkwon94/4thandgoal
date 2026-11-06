@@ -8,7 +8,7 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, AT-
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The root Makefile has one target per member, and `make check` still runs them all in sequence.
 - [ ] A push of `fast-cycle` gives a green `check` in 10 min or less, after one run that fills the cache (AT-1).
