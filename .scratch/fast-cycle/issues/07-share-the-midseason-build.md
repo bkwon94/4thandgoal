@@ -8,7 +8,7 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-8, AT-23, AT-24, and AT-
 
 **Blocked by:** 01, and the merge of PR #13 into `main`. `fast-cycle` merges `main` first.
 
-**Status:** blocked
+**Status:** in-review
 
 - [x] PR #13 has the state `MERGED` (AT-26).
 - [x] `make -C apps/pipeline test` passes the same count on `fast-cycle` and on `main`, and takes less time on `fast-cycle` (AT-23).
