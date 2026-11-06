@@ -41,10 +41,10 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 ## NOT YET SPECIFIED
 
 - How does the roast sit inside the prose of a chapter? `decisions/17-prototype-the-roast-in-prose.md`.
-- Where do the easter eggs of the report hide, and how does a finder win the prize? `decisions/18-grill-the-easter-eggs.md`.
 
 ## OUT OF SCOPE
 
+- Easter eggs in the report, one with an Amazon gift card as the prize. Brian does them another time. Never put the gift card code on the site or in the repo: the repo is public and the site is static. The first finder texts Brian, and he sends the card by hand.
 - Players to watch, with Grab him now. Its picks were weak, all bench quarterbacks. A later spec can bring it back with a better rule.
 - A weekly rebuild of the report. Brian wants one edited moment per season, and the build can run again by hand.
 - A dock item for the report. The dock has five fixed items, and the takeover and the tile are enough.
