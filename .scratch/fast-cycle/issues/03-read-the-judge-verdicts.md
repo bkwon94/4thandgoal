@@ -10,9 +10,9 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, and AT
 
 **Status:** ready-for-agent
 
-- [ ] A full PASS with matched SHAs exits 0 (AT-10).
-- [ ] A changed `EVIDENCE.md` exits 1 with a rule id that names `EVIDENCE.md` as stale. A changed `ACCEPTANCE.md` does the same for its file (AT-11).
-- [ ] A comment of Brian with `AT-2: FAIL` exits 1 over a Judge PASS (AT-12).
-- [ ] A newer comment of Brian with no FAIL for AT-2 exits 0 (AT-13).
-- [ ] A PR with no `ACCEPTANCE.md` still passes, and the unit tests of the old rule that still apply still pass.
-- [ ] `verdict.yml` passes the blob SHAs of the two files at the PR head to the script, read through the API as data.
+- [x] A full PASS with matched SHAs exits 0 (AT-10).
+- [x] A changed `EVIDENCE.md` exits 1 with a rule id that names `EVIDENCE.md` as stale. A changed `ACCEPTANCE.md` does the same for its file (AT-11).
+- [x] A comment of Brian with `AT-2: FAIL` exits 1 over a Judge PASS (AT-12).
+- [x] A newer comment of Brian with no FAIL for AT-2 exits 0 (AT-13).
+- [x] A PR with no `ACCEPTANCE.md` still passes, and the unit tests of the old rule that still apply still pass.
+- [x] `verdict.yml` passes the blob SHAs of the two files at the PR head to the script, read through the API as data.
