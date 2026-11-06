@@ -12,9 +12,8 @@ from facts.tokens import Nums, fact
 from league.history import player_points
 from league.models import Fact, History
 from league.numbers import r2
+from league.provider.raw import DraftType
 
-# The draft types of Sleeper. Only an auction has a price, so the cost of a snake or a linear pick is its pick number.
-DraftType = Literal["auction", "snake", "linear"]
 InjuryTag = Literal["hurt", "just bad"]
 # A bust was drafted as a starter, and a steal plays like a starter now: the top 12 at QB and TE, the top 24 at RB
 # and WR. Kickers and defenses are out. Decision ticket 02.

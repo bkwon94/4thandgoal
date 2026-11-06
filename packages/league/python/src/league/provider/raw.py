@@ -2,6 +2,8 @@
 The raw provider shapes: one pydantic model per raw file, at the HTTP call.
 The protocol and the Sleeper adapter both read them, so the protocol does not depend on the adapter.
 """
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -191,6 +193,10 @@ class RawWeek(RawPastWeek):
     trending: list[RawTrending] | None = None
 
 
+# The draft types of Sleeper. Only an auction has a price, so the cost of a snake or a linear pick is its pick number.
+DraftType = Literal["auction", "snake", "linear"]
+
+
 class RawDraftSettings(_Raw):
     """The settings object of draft.json. An auction has a budget, and a snake has none."""
     teams: int
@@ -218,6 +224,7 @@ class RawDraftPick(_Raw):
 
 class RawDraft(_Raw):
     """The draft of a season: the type and the settings of draft.json, and the picks of picks.json."""
-    type: str
+    # A type that the rules do not know fails the load, so the build never guesses the cost of a pick.
+    type: DraftType
     settings: RawDraftSettings
     picks: list[RawDraftPick]

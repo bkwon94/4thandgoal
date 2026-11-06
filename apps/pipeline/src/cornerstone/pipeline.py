@@ -732,12 +732,11 @@ def _midseason_draft(season: int, week: int, history: History, names: dict[int, 
                        position=pick.metadata.position, roster_id=pick.roster_id, pick_no=pick.pick_no,
                        price=int(pick.metadata.amount) if pick.metadata.amount else None)
              for pick in raw.picks]
-    # The rules read the draft type of the league, never the client: only an auction has a price.
-    draft_type = raw.type if raw.type in ("auction", "snake", "linear") else "snake"
     ids = [pick.player_id for pick in picks]
     missed = missed_games(ids, history, week, players, report_out=ports.report_out, roster_out=ports.roster_out,
                           team_weeks=ports.team_weeks)
-    return draft_value(picks, draft_type, history, week, names, missed)
+    # The rules read the draft type of the league, never the client: only an auction has a price.
+    return draft_value(picks, raw.type, history, week, names, missed)
 
 
 def season_transactions(provider: Provider, league_id: str, season: int, through: int) -> dict[int, list[RawTransaction]]:
