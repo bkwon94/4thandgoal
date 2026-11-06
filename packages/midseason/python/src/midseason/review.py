@@ -2,7 +2,7 @@
 The review file of the midseason report: each blurb with its prose block, the facts it cites, and the verifier result.
 Brian reads it in the build folder of the season before the publish. The publish never copies it.
 """
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from league.files import write_bytes_atomic
@@ -25,15 +25,17 @@ def _verifier_lines(blurb: Blurb, results: list[VerifyResult]) -> list[str]:
 
 def review_text(
     season: int, week: int, roast: Roast, sheet: FactSheet, blurbs: Mapping[str, Blurb],
-    results: Mapping[str, list[VerifyResult]], publish_command: str,
+    results: Mapping[str, list[VerifyResult]], publish_command: str, *, warnings: Sequence[str] = (),
 ) -> str:
-    """The review file as markdown, one section per prose block in page order."""
+    """The review file as markdown: the warnings of the build, then one section per prose block in page order."""
     lines = [
         f"# Midseason report {season}, week {week}: review",
         "",
         f"Roast: {roast}. Edit a blurb in midseason.json, then run {publish_command}.",
         "The publish checks each blurb again.",
     ]
+    if warnings:
+        lines += ["", *(f"- Warning. {warning}" for warning in warnings)]
     for chapter in sheet.chapters:
         blurb = blurbs[chapter.key]
         cited = list(dict.fromkeys(fid for s in blurb.sentences for fid in s.fact_ids))

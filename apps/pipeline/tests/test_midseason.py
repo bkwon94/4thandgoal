@@ -56,7 +56,7 @@ def prime_nflverse(nfl: Path) -> None:
 
 def _cpc_week_8(tmp_path: Path):
     """A CPC client folder in `tmp_path` with the saved history and week 8 of the real CPC data."""
-    client = cpc_client(at=tmp_path)
+    client = cpc_client(at=tmp_path, models=VALUE_MODELS)
     copy_cpc_week_8(client)
     return client
 
@@ -228,12 +228,11 @@ def _clean_call():
 
 
 def _with_roast(client, tmp_path: Path, roast: str):
-    """The client with the values of a local copy of the CPC client.toml that takes sim and midseason and sets
-    `roast`. The real file never changes."""
+    """The client with the values of a local copy of the CPC client.toml that sets `roast`. The real file never
+    changes."""
     folder = tmp_path / "toml"
     folder.mkdir()
     text = (client_dir(ROOT, "cpc") / "client.toml").read_text(encoding="utf-8")
-    text = text.replace('"analyzer"]', '"analyzer", "sim", "midseason"]', 1)
     (folder / "client.toml").write_text(text + f'\n[values.midseason]\nroast = "{roast}"\n', encoding="utf-8")
     return client.model_copy(update={"values": read_client_values(folder, VALUE_MODELS)})
 

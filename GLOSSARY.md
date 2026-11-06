@@ -969,11 +969,11 @@ One of the three parts of the midseason report, each opened by a dark title page
 _Avoid_: Section, part
 
 **Spread rule**:
-Each team gets at least one and at most three headlines in the midseason report: the opener, a callout, an award, or an arc.
+Each team gets at least one and at most three headlines in the midseason report: a callout, an award, or an arc.
 _Avoid_: Fairness rule, balance
 
 **Headline**:
-One mention of a team as the subject of the midseason report: the opener, a callout, an award, or an arc. A table row is no headline.
+One mention of a team as the subject of the midseason report: a callout, an award, or an arc. The opener and a table row are not headlines.
 _Avoid_: Mention, feature
 
 **Callout**:
