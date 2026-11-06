@@ -1,14 +1,15 @@
 /**
- * Tests for the home page. Most render the page with the real public/ data and read what a reader sees.
- * The week 6 JSON is the fixture, so these tests break if the publish layout changes. The rankings tests build a temp public/ folder.
+ * Tests for the home page. Most render the page with the real public/ data of cpc and read what a reader sees.
+ * The NorCal test copies the published files of norcal, and the registry tests build a temp public/ folder from week 6.
  */
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
+import { week8 } from "@cpc/week/fixtures/week-page";
 import { season } from "@/lib/config";
 import HomePage from "./page";
 
@@ -25,40 +26,100 @@ afterEach(() => {
 });
 
 describe("HomePage", () => {
-  it("names the league and the page", () => {
+  it("opens the hero on the Matchup of the Week of the latest week, with the margin as the big number", () => {
     render(<HomePage />);
-    expect(screen.getByText("Cornerstone Fantasy Football League")).toBeTruthy();
-    expect(screen.queryByText("League Weekly")).toBeNull();
-    // The label and the red season number are separate text nodes.
-    expect(screen.getByText("SEASON")).toBeTruthy();
-    expect(screen.getByText(String(season)).className).toContain("text-accent");
-    expect(screen.getByText("Weekly Reports")).toBeTruthy();
+    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
+    // CPC week 8: The Blue Tent over London Cooking, 100.31 to 98.88.
+    expect(within(hero).getByText("Week 08 // Matchup of the Week")).toBeTruthy();
+    expect(within(hero).getByText("Closest Finish · Margin")).toBeTruthy();
+    expect(within(hero).getByText("1.43")).toBeTruthy();
+    expect(within(hero).getByText("The Blue Tent")).toBeTruthy();
+    expect(within(hero).getByText("100.31")).toBeTruthy();
+    expect(within(hero).getByText("London Cooking")).toBeTruthy();
+    expect(within(hero).getByText("98.88")).toBeTruthy();
+    // The hero shows the first sentence of the blurb only. The pipeline rewrites blurbs, so the test reads the fixture.
+    const sentence = hero.querySelector("p")!.textContent!;
+    expect(week8.blurbs.motw.startsWith(sentence)).toBe(true);
+    expect(sentence.length).toBeLessThan(week8.blurbs.motw.length);
+    expect(sentence.endsWith(".")).toBe(true);
+    const read = within(hero).getByRole("link", { name: "Read Week 8" });
+    expect(read.getAttribute("href")).toBe("/2026/week-08/");
   });
 
-  it("links week 6 with its dates", () => {
+  it("names the season and the league in the intro", () => {
     render(<HomePage />);
-    const link = screen.getAllByRole("link").find((item) => item.getAttribute("href") === "/2026/week-06/");
-    expect(link).toBeTruthy();
-    expect(screen.getByText("Week 6")).toBeTruthy();
-    expect(screen.getByText("Oct 15 – Oct 19, 2026")).toBeTruthy();
+    expect(screen.getByText(`${season} // League Weekly`)).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Cornerstone Fantasy Football League");
+  });
+
+  it("shows the parts in the order of the Front page", () => {
+    render(<HomePage />);
+    const main = screen.getByRole("main");
+    const order = [
+      screen.getByRole("heading", { level: 1 }),
+      within(main).getByRole("region", { name: "Matchup of the Week" }),
+      ...within(main).getAllByRole("heading", { level: 2 }),
+    ];
+    expect(order.slice(2).map((heading) => heading.textContent)).toEqual([
+      "Week 8 in four numbers",
+      "Power Rankings",
+      "Tools",
+      "Weekly Reports",
+    ]);
+    for (let index = 1; index < order.length; index++) {
+      expect(order[index - 1].compareDocumentPosition(order[index]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    }
+  });
+
+  it("shows the four numbers of the latest week", () => {
+    render(<HomePage />);
+    const numbers = screen.getByRole("region", { name: "The week in numbers" });
+    const labels = within(numbers)
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+    expect(labels).toHaveLength(4);
+    expect(labels[2]).toContain("Closest1.43");
+  });
+
+  it("shows the top three of Power Rankings, led by All You Need Is Love, and a link to all teams", () => {
+    render(<HomePage />);
+    const top = screen.getByRole("list", { name: "Top three" });
+    const rows = within(top).getAllByRole("listitem");
+    expect(rows).toHaveLength(3);
+    expect(rows[0].textContent).toContain("01");
+    expect(rows[0].textContent).toContain("All You Need Is Love");
+    expect(rows[0].textContent).toMatch(/11.5/);
+    expect(rows[0].textContent).toContain("Up4");
+    expect(rows[0].textContent).toContain("Playoff odds 81%");
+    // Each row shows the avatar of its team from the latest week folder, since the home page sits outside it.
+    expect(rows[0].querySelector("img")!.getAttribute("src")).toMatch(/^\/2026\/week-08\//);
+    const all = within(screen.getByRole("main")).getByRole("link", { name: "All 12 teams" });
+    expect(all.getAttribute("href")).toBe("/rankings/");
+  });
+
+  it("shows a tile for each tool, each with one line", () => {
+    render(<HomePage />);
+    const tools = screen.getByRole("region", { name: "Tools" });
+    const links = within(tools).getAllByRole("link");
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/analyze/", "/2026/managers/"]);
+    expect(links[0].textContent).toBe("Trade AnalyzerGrade a trade offer before you send it.");
+    expect(links[0].querySelector("svg")).toBeTruthy();
+  });
+
+  it("shows a row for each published week, newest first, with its dates and its Matchup of the Week", () => {
+    render(<HomePage />);
+    const weeks = screen.getByRole("region", { name: "Weekly Reports" });
+    expect(within(weeks).getByText("3 weeks")).toBeTruthy();
+    const links = within(weeks).getAllByRole("link");
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/2026/week-08/", "/2026/week-07/", "/2026/week-06/"]);
+    expect(links[2].textContent).toContain("Week 6");
+    expect(links[2].textContent).toContain("Oct 15 – Oct 19, 2026");
+    expect(links[0].textContent).toContain("The Blue Tent vs London Cooking");
   });
 
   it("shows no empty-list blurb when weeks exist", () => {
     render(<HomePage />);
     expect(screen.queryByText("No weeks are published yet.")).toBeNull();
-  });
-
-  it("links the trade analyzer", () => {
-    render(<HomePage />);
-    const link = within(screen.getByRole("main")).getByRole("link", { name: /Trade Analyzer/ });
-    expect(link.getAttribute("href")).toMatch(/\/analyze\/$/);
-  });
-
-  it("puts the trade analyzer before the weeks", () => {
-    render(<HomePage />);
-    const analyzer = within(screen.getByRole("main")).getByRole("link", { name: /Trade Analyzer/ });
-    const week = screen.getAllByRole("link").find((item) => item.getAttribute("href") === "/2026/week-06/")!;
-    expect(analyzer.compareDocumentPosition(week) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("fetches the teams in the background and stores them when a passphrase is stored", async () => {
@@ -85,8 +146,7 @@ describe("HomePage", () => {
 
 /* A temp public/ folder with the week 5 and week 6 pages, the rankings file when one is given, and the managers file when asked. */
 async function homeOver(rankings?: unknown, managers = false) {
-  const root = mkdtempSync(join(tmpdir(), "home-page-"));
-  roots.push(root);
+  const root = tempRoot();
   for (const week of [5, 6]) {
     const folder = join(root, "public", "2026", `week-0${week}`);
     mkdirSync(folder, { recursive: true });
@@ -96,59 +156,76 @@ async function homeOver(rankings?: unknown, managers = false) {
     writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
   }
   if (managers) {
-    // The card only reads that the file exists, so an empty season is enough.
+    // The tile only reads that the file exists, so an empty season is enough.
     writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify({ schema_version: 1, season: 2026, through: 6, managers: [] }));
   }
+  return homeAt(root);
+}
+
+/* A temp public/ folder with the published files of one client, as its client build copies them. */
+async function homeOfClient(slug: string) {
+  const root = tempRoot();
+  cpSync(join(process.cwd(), "..", "..", "clients", slug, "published"), join(root, "public"), { recursive: true });
+  return homeAt(root);
+}
+
+function tempRoot(): string {
+  const root = mkdtempSync(join(tmpdir(), "home-page-"));
+  roots.push(root);
+  return root;
+}
+
+async function homeAt(root: string) {
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
   vi.resetModules();
   return (await import("./page")).default;
 }
 
-describe("HomePage power rankings", () => {
-  it("opens each chapter with a level-two heading, in order", async () => {
+describe("HomePage of the NorCal data", () => {
+  it("shows 10.62 as the big number, Mitseeker5000 first, and one row for week 8", async () => {
+    const Home = await homeOfClient("norcal");
+    render(<Home />);
+    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
+    // NorCal week 8: kaiedmonds over The Mean Machine, 132.38 to 121.76.
+    expect(within(hero).getByText("10.62")).toBeTruthy();
+    expect(within(hero).getByText("kaiedmonds")).toBeTruthy();
+    expect(within(hero).getByText("The Mean Machine")).toBeTruthy();
+    const rows = within(screen.getByRole("list", { name: "Top three" })).getAllByRole("listitem");
+    expect(rows[0].textContent).toContain("Mitseeker5000");
+    const weeks = within(screen.getByRole("region", { name: "Weekly Reports" })).getAllByRole("link");
+    expect(weeks.map((link) => link.getAttribute("href"))).toEqual(["/2026/week-08/"]);
+    expect(within(screen.getByRole("region", { name: "Weekly Reports" })).getByText("1 week")).toBeTruthy();
+  });
+});
+
+describe("HomePage parts from the registry", () => {
+  it("shows the top three of the fixture week, with the playoff odds as a word once a team is in", async () => {
     const Home = await homeOver(fixture);
     render(<Home />);
-    const headings = within(screen.getByRole("main"))
-      .getAllByRole("heading", { level: 2 })
-      .map((heading) => heading.textContent);
-    expect(headings).toEqual(["Tools", "Power Rankings", "Weekly Reports"]);
+    const rows = within(screen.getByRole("list", { name: "Top three" })).getAllByRole("listitem");
+    expect(rows[0].textContent).toContain("London Cooking");
+    expect(rows[1].textContent).toContain("Lil Fridge");
+    expect(rows[1].textContent).toContain("Playoff odds In");
+    expect(rows[2].textContent).toContain("Bo Girds");
   });
 
-  it("shows the top three, the biggest mover, and the link to the rankings", async () => {
-    const Home = await homeOver(fixture);
-    render(<Home />);
-    // The menu row in the banner has a Power Rankings link too, so the test reads the chapter in the page content.
-    expect(within(screen.getByRole("main")).getByText("Power Rankings")).toBeTruthy();
-    const link = screen.getByRole("link", { name: /Top Three/ });
-    expect(link.getAttribute("href")).toBe("/rankings/");
-    const top = Array.from(link.querySelectorAll("li")).map((item) => item.textContent);
-    expect(top).toEqual(["1London Cooking", "2Lil Fridge", "3Bo Girds"]);
-    // London Cooking moved up four places, the largest movement in the fixture week.
-    expect(link.textContent).toContain("Biggest mover: ▲Up4 London Cooking");
-  });
-
-  it("puts the chapter after the analyzer and before the weeks", async () => {
-    const Home = await homeOver(fixture);
-    render(<Home />);
-    // The masthead link to the home page sits in the banner, above every chapter.
-    const links = screen
-      .getAllByRole("link")
-      .filter((link) => !link.closest("header"))
-      .map((link) => link.getAttribute("href"));
-    expect(links).toEqual(["/analyze/", "/rankings/", "/2026/week-06/", "/2026/week-05/"]);
-  });
-
-  it("hides the chapter when the file is missing and still lists the weeks", async () => {
+  it("hides the Power Rankings chapter when the file is missing and still lists the weeks", async () => {
     const Home = await homeOver();
     render(<Home />);
-    expect(within(screen.getByRole("main")).queryByText("Power Rankings")).toBeNull();
     const headings = within(screen.getByRole("main"))
       .getAllByRole("heading", { level: 2 })
       .map((heading) => heading.textContent);
-    expect(headings).toEqual(["Tools", "Weekly Reports"]);
-    expect(screen.queryByRole("link", { name: /Top Three/ })).toBeNull();
-    expect(within(screen.getByRole("main")).getByRole("link", { name: /Week 6/ })).toBeTruthy();
+    expect(headings).toEqual(["Week 6 in four numbers", "Tools", "Weekly Reports"]);
+    expect(screen.queryByRole("list", { name: "Top three" })).toBeNull();
+    expect(within(screen.getByRole("region", { name: "Weekly Reports" })).getByRole("link", { name: /Week 6/ })).toBeTruthy();
+  });
+
+  it("opens the hero on the latest week of the folder", async () => {
+    const Home = await homeOver(fixture);
+    render(<Home />);
+    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
+    expect(within(hero).getByRole("link", { name: "Read Week 6" }).getAttribute("href")).toBe("/2026/week-06/");
   });
 
   it("links the managers index from the tools only when the managers file exists", async () => {

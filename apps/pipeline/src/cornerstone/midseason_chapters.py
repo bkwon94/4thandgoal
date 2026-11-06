@@ -56,7 +56,8 @@ def _nflverse(client: Client, season: int) -> dict[str, Path]:
     cache = nflverse_cache_dir(client.nfl_dir)
     paths = {}
     for name, url in NFLVERSE_FILES.items():
-        path = download(url, cache_path(cache, url, season))
+        # Some URLs hold the season field, so the fetch fills it in, as the cache name does.
+        path = download(url.format(season=season), cache_path(cache, url, season))
         if path is None:
             raise ChaptersStopped(f"The nflverse {name} file is not in {cache} and the fetch failed. "
                                   "Check the network, then run the build again.")

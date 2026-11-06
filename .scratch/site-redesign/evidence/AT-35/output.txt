@@ -1,0 +1,424 @@
+$ git diff -- packages/rankings/site/chapters/power-rankings.tsx
+diff --git a/packages/rankings/site/chapters/power-rankings.tsx b/packages/rankings/site/chapters/power-rankings.tsx
+index 92ef4f96..00c2792f 100644
+--- a/packages/rankings/site/chapters/power-rankings.tsx
++++ b/packages/rankings/site/chapters/power-rankings.tsx
+@@ -139,7 +139,7 @@ function TopHero({ row, week }: { row: RankingsRow; week: number }) {
+       </Rise>
+       {row.blurb.length > 0 && (
+         <Rise step={4}>
+-          <p className="plate mt-sp-5 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2">{blurbText(row)}</p>
++          <p className="plate mt-sp-5 mb-0 w-fit max-w-measure text-[14px] leading-body text-on-dark-2">{blurbText(row)}</p>
+         </Rise>
+       )}
+     </Hero>
+
+$ cd apps/site && node scripts/build-each-client.mjs
+==> site build: cpc
+
+> cpcfantasyfootball-site@0.1.0 prebuild /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site
+> node scripts/client-build.mjs
+
+
+> cpcfantasyfootball-site@0.1.0 build /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+✓ Running next.config.ts took 43ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 820ms
+  Running TypeScript ...
+  Finished TypeScript in 557ms ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/21) ...
+  Generating static pages using 9 workers (5/21) 
+  Generating static pages using 9 workers (10/21) 
+  Generating static pages using 9 workers (15/21) 
+✓ Generating static pages using 9 workers (21/21) in 870ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├   /[season]/[week]
+│ ├ ● /2026/week-06
+│ ├ ● /2026/week-07
+│ └ ● /2026/week-08
+├   /[season]/managers
+│ └ ● /2026/managers
+├   /[season]/managers/[roster]
+│ ├ ● /2026/managers/2
+│ ├ ● /2026/managers/3
+│ ├ ● /2026/managers/6
+│ └ ● [+9 more paths]
+├ ○ /analyze
+└ ○ /rankings
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
+==> site check:export: cpc
+
+> cpcfantasyfootball-site@0.1.0 check:export /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site
+> node scripts/check-export.mjs
+
+(node:64255) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/src/app/fonts/budget.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+check:export passed: 129 files are byte-identical; 3 week pages hold every team name; the client cpc omits waiver, and the export holds none of it; 22 pages open dark; the pages show "Cornerstone Fantasy Football League", the theme button, and no finder; each page but the 404 page preloads the 2 font files of 53660 bytes from its own origin.
+==> site check:floor: cpc
+
+> cpcfantasyfootball-site@0.1.0 check:floor /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site
+> playwright test --project=floor
+
+
+Running 58 tests using 2 workers
+
+  ✓   1 [floor] › e2e/floor.spec.ts:103:5 › each page of the full floor is a built page (2ms)
+cpc /analyze/ light 1280px: prose 3, other text 26, in 176 ms
+  ✓   3 [floor] › e2e/floor.spec.ts:109:5 › no waiver page is built, and its URL shows the 404 page (308ms)
+cpc /404-floor-check/ dark 390px: prose 1, other text 14, in 89 ms
+  ✓   2 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /analyze/ light 1280px (605ms)
+  ✓   4 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /404-floor-check/ dark 390px (387ms)
+cpc /2026/week-08/ dark 390px: prose 6, other text 267, in 112 ms
+cpc /404-floor-check/ dark 1280px: prose 1, other text 14, in 85 ms
+  ✓   6 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /404-floor-check/ dark 1280px (380ms)
+  ✓   5 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ dark 390px (554ms)
+cpc /404-floor-check/ light 390px: prose 1, other text 14, in 91 ms
+cpc /2026/week-08/ dark 1280px: prose 6, other text 276, in 104 ms
+  ✓   7 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /404-floor-check/ light 390px (372ms)
+cpc /404-floor-check/ light 1280px: prose 1, other text 14, in 94 ms
+  ✓   8 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ dark 1280px (561ms)
+  ✓   9 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /404-floor-check/ light 1280px (378ms)
+cpc /2026/week-08/ light 390px: prose 6, other text 267, in 104 ms
+cpc /rankings/ dark 390px: prose 14, other text 220, in 95 ms
+  ✓  10 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ light 390px (525ms)
+  ✘  11 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ dark 390px (465ms)
+cpc /2026/week-08/ light 1280px: prose 6, other text 276, in 102 ms
+  ✓  12 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ light 1280px (527ms)
+cpc /rankings/ dark 1280px: prose 14, other text 220, in 120 ms
+cpc /2026/week-08/ tap button[aria-controls="recap-3"] dark 390px: prose 7, other text 270, in 163 ms
+  ✘  13 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ dark 1280px (497ms)
+  ✓  14 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"] dark 390px (580ms)
+cpc /2026/week-08/ tap button[aria-controls="recap-3"] dark 1280px: prose 7, other text 279, in 155 ms
+cpc /rankings/ light 390px: prose 14, other text 220, in 113 ms
+  ✓  15 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"] dark 1280px (594ms)
+  ✘  16 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ light 390px (510ms)
+cpc /2026/week-08/ tap button[aria-controls="recap-3"] light 390px: prose 7, other text 270, in 156 ms
+  ✓  17 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"] light 390px (575ms)
+cpc /rankings/ light 1280px: prose 14, other text 220, in 118 ms
+cpc /2026/week-08/ tap button[aria-controls="recap-3"] light 1280px: prose 7, other text 279, in 160 ms
+  ✘  18 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ light 1280px (494ms)
+  ✓  19 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"] light 1280px (589ms)
+cpc / dark 390px: prose 1, other text 79, in 95 ms
+  ✓  20 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / dark 390px (423ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 390px: prose 14, other text 220, in 241 ms
+cpc / dark 1280px: prose 1, other text 79, in 91 ms
+  ✓  22 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / dark 1280px (423ms)
+  ✘  21 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 390px (649ms)
+cpc / light 390px: prose 1, other text 79, in 89 ms
+  ✓  23 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / light 390px (403ms)
+cpc / light 1280px: prose 1, other text 79, in 96 ms
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 1280px: prose 14, other text 220, in 163 ms
+  ✓  25 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / light 1280px (444ms)
+  ✘  24 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 1280px (589ms)
+cpc / tap header details > summary dark 390px: prose 1, other text 79, in 161 ms
+  ✓  26 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / tap header details > summary dark 390px (435ms)
+cpc / tap header details > summary dark 1280px: prose 1, other text 79, in 154 ms
+  ✓  28 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / tap header details > summary dark 1280px (435ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 390px: prose 14, other text 220, in 377 ms
+cpc / tap header details > summary light 390px: prose 1, other text 79, in 160 ms
+  ✓  29 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / tap header details > summary light 390px (476ms)
+  ✘  27 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 390px (822ms)
+cpc / tap header details > summary light 1280px: prose 1, other text 79, in 125 ms
+  ✓  30 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / tap header details > summary light 1280px (401ms)
+cpc /2026/managers/1/ dark 390px: prose 1, other text 246, in 154 ms
+  ✓  32 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/1/ dark 390px (191ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 1280px: prose 14, other text 220, in 179 ms
+cpc /2026/managers/10/ dark 390px: prose 1, other text 251, in 126 ms
+  ✓  33 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/10/ dark 390px (165ms)
+cpc /2026/managers/11/ dark 390px: prose 1, other text 240, in 105 ms
+  ✓  34 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/11/ dark 390px (140ms)
+  ✘  31 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 1280px (590ms)
+cpc /2026/managers/12/ dark 390px: prose 1, other text 241, in 107 ms
+  ✓  35 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/12/ dark 390px (142ms)
+cpc /2026/managers/2/ dark 390px: prose 1, other text 200, in 104 ms
+  ✓  36 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/2/ dark 390px (140ms)
+cpc /2026/managers/3/ dark 390px: prose 1, other text 212, in 113 ms
+  ✓  37 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/3/ dark 390px (149ms)
+cpc /2026/managers/5/ dark 390px: prose 1, other text 149, in 133 ms
+  ✓  39 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/5/ dark 390px (176ms)
+cpc /2026/managers/ dark 390px: prose 0, other text 108, in 142 ms
+cpc /2026/managers/6/ dark 390px: prose 1, other text 327, in 126 ms
+  ✓  40 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/6/ dark 390px (164ms)
+  ✓  38 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/ dark 390px (557ms)
+cpc /2026/managers/ dark 1280px: prose 0, other text 108, in 86 ms
+  ✓  42 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/ dark 1280px (432ms)
+cpc /2026/managers/ light 390px: prose 0, other text 108, in 85 ms
+cpc /2026/managers/8/ dark 390px: prose 1, other text 275, in 924 ms
+  ✓  41 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/8/ dark 390px (974ms)
+  ✓  43 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/ light 390px (426ms)
+cpc /2026/managers/9/ dark 390px: prose 1, other text 276, in 121 ms
+  ✓  44 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/9/ dark 390px (161ms)
+cpc /2026/managers/ light 1280px: prose 0, other text 108, in 97 ms
+cpc /2026/week-06/ dark 390px: prose 6, other text 269, in 109 ms
+  ✓  46 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/week-06/ dark 390px (150ms)
+cpc /2026/week-07/ dark 390px: prose 6, other text 254, in 113 ms
+  ✓  47 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/week-07/ dark 390px (151ms)
+  ✓  45 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/ light 1280px (451ms)
+cpc /2026/managers/7/ dark 390px: prose 1, other text 359, in 114 ms
+  ✓  48 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/7/ dark 390px (581ms)
+cpc /2026/managers/7/ dark 1280px: prose 1, other text 364, in 118 ms
+  ✓  49 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/7/ dark 1280px (586ms)
+cpc /2026/managers/7/ light 390px: prose 1, other text 359, in 136 ms
+  ✓  50 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/7/ light 390px (610ms)
+cpc /2026/managers/7/ light 1280px: prose 1, other text 364, in 115 ms
+  ✓  51 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/7/ light 1280px (583ms)
+cpc /2026/managers/4/ dark 390px: prose 1, other text 326, in 115 ms
+  ✓  52 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/4/ dark 390px (556ms)
+cpc /2026/managers/4/ dark 1280px: prose 1, other text 331, in 105 ms
+  ✓  53 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/4/ dark 1280px (547ms)
+cpc /2026/managers/4/ light 390px: prose 1, other text 326, in 735 ms
+  ✓  54 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/4/ light 390px (1.2s)
+cpc /2026/managers/4/ light 1280px: prose 1, other text 331, in 109 ms
+  ✓  55 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/4/ light 1280px (591ms)
+cpc /analyze/ dark 390px: prose 3, other text 26, in 117 ms
+  ✓  56 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /analyze/ dark 390px (390ms)
+cpc /analyze/ dark 1280px: prose 3, other text 26, in 110 ms
+  ✓  57 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /analyze/ dark 1280px (402ms)
+cpc /analyze/ light 390px: prose 3, other text 26, in 112 ms
+  ✓  58 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /analyze/ light 390px (392ms)
+
+
+  1) [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ dark 390px ────────────────────
+
+    Error: cpc /rankings/ dark 390px breaks the readability floor
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "p.plate \"All You Need Is Love climbs 4 places to \" is 14px, under the prose floor of 16px",
+    + ]
+
+      141 |         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
+      142 |         failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+    > 143 |         expect(failures, `${label} breaks the readability floor`).toEqual([]);
+          |                                                                   ^
+      144 |       });
+      145 |     }
+      146 |   }
+        at /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/e2e/floor.spec.ts:143:67
+
+    Error Context: test-results/floor-full-floor-cpc-rankings-dark-390px-floor/error-context.md
+
+    Error Context: test-results/floor-full-floor-cpc-rankings-dark-390px-floor/error-context.md
+
+  2) [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ dark 1280px ───────────────────
+
+    Error: cpc /rankings/ dark 1280px breaks the readability floor
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "p.plate \"All You Need Is Love climbs 4 places to \" is 14px, under the prose floor of 16px",
+    + ]
+
+      141 |         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
+      142 |         failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+    > 143 |         expect(failures, `${label} breaks the readability floor`).toEqual([]);
+          |                                                                   ^
+      144 |       });
+      145 |     }
+      146 |   }
+        at /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/e2e/floor.spec.ts:143:67
+
+    Error Context: test-results/floor-full-floor-cpc-rankings-dark-1280px-floor/error-context.md
+
+    Error Context: test-results/floor-full-floor-cpc-rankings-dark-1280px-floor/error-context.md
+
+  3) [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ light 390px ───────────────────
+
+    Error: cpc /rankings/ light 390px breaks the readability floor
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "p.plate \"All You Need Is Love climbs 4 places to \" is 14px, under the prose floor of 16px",
+    + ]
+
+      141 |         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
+      142 |         failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+    > 143 |         expect(failures, `${label} breaks the readability floor`).toEqual([]);
+          |                                                                   ^
+      144 |       });
+      145 |     }
+      146 |   }
+        at /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/e2e/floor.spec.ts:143:67
+
+    Error Context: test-results/floor-full-floor-cpc-rankings-light-390px-floor/error-context.md
+
+    Error Context: test-results/floor-full-floor-cpc-rankings-light-390px-floor/error-context.md
+
+  4) [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ light 1280px ──────────────────
+
+    Error: cpc /rankings/ light 1280px breaks the readability floor
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "p.plate \"All You Need Is Love climbs 4 places to \" is 14px, under the prose floor of 16px",
+    + ]
+
+      141 |         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
+      142 |         failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+    > 143 |         expect(failures, `${label} breaks the readability floor`).toEqual([]);
+          |                                                                   ^
+      144 |       });
+      145 |     }
+      146 |   }
+        at /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/e2e/floor.spec.ts:143:67
+
+    Error Context: test-results/floor-full-floor-cpc-rankings-light-1280px-floor/error-context.md
+
+    Error Context: test-results/floor-full-floor-cpc-rankings-light-1280px-floor/error-context.md
+
+  5) [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 390px 
+
+    Error: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 390px breaks the readability floor
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "p.plate \"All You Need Is Love climbs 4 places to \" is 14px, under the prose floor of 16px",
+    + ]
+
+      141 |         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
+      142 |         failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+    > 143 |         expect(failures, `${label} breaks the readability floor`).toEqual([]);
+          |                                                                   ^
+      144 |       });
+      145 |     }
+      146 |   }
+        at /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/e2e/floor.spec.ts:143:67
+
+    Error Context: test-results/floor-full-floor-cpc-ranki-f1075-on-aria-expanded-dark-390px-floor/error-context.md
+
+    Error Context: test-results/floor-full-floor-cpc-ranki-f1075-on-aria-expanded-dark-390px-floor/error-context.md
+
+  6) [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 1280px 
+
+    Error: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 1280px breaks the readability floor
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "p.plate \"All You Need Is Love climbs 4 places to \" is 14px, under the prose floor of 16px",
+    + ]
+
+      141 |         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
+      142 |         failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+    > 143 |         expect(failures, `${label} breaks the readability floor`).toEqual([]);
+          |                                                                   ^
+      144 |       });
+      145 |     }
+      146 |   }
+        at /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/e2e/floor.spec.ts:143:67
+
+    Error Context: test-results/floor-full-floor-cpc-ranki-138f2-n-aria-expanded-dark-1280px-floor/error-context.md
+
+    Error Context: test-results/floor-full-floor-cpc-ranki-138f2-n-aria-expanded-dark-1280px-floor/error-context.md
+
+  7) [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 390px 
+
+    Error: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 390px breaks the readability floor
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "p.plate \"All You Need Is Love climbs 4 places to \" is 14px, under the prose floor of 16px",
+    + ]
+
+      141 |         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
+      142 |         failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+    > 143 |         expect(failures, `${label} breaks the readability floor`).toEqual([]);
+          |                                                                   ^
+      144 |       });
+      145 |     }
+      146 |   }
+        at /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/e2e/floor.spec.ts:143:67
+
+    Error Context: test-results/floor-full-floor-cpc-ranki-eebf0-n-aria-expanded-light-390px-floor/error-context.md
+
+    Error Context: test-results/floor-full-floor-cpc-ranki-eebf0-n-aria-expanded-light-390px-floor/error-context.md
+
+  8) [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 1280px 
+
+    Error: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 1280px breaks the readability floor
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "p.plate \"All You Need Is Love climbs 4 places to \" is 14px, under the prose floor of 16px",
+    + ]
+
+      141 |         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
+      142 |         failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+    > 143 |         expect(failures, `${label} breaks the readability floor`).toEqual([]);
+          |                                                                   ^
+      144 |       });
+      145 |     }
+      146 |   }
+        at /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site/e2e/floor.spec.ts:143:67
+
+    Error Context: test-results/floor-full-floor-cpc-ranki-3ba6e--aria-expanded-light-1280px-floor/error-context.md
+
+    Error Context: test-results/floor-full-floor-cpc-ranki-3ba6e--aria-expanded-light-1280px-floor/error-context.md
+
+  8 failed
+    [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ dark 390px ─────────────────────
+    [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ dark 1280px ────────────────────
+    [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ light 390px ────────────────────
+    [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ light 1280px ───────────────────
+    [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 390px 
+    [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 1280px 
+    [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 390px 
+    [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 1280px 
+  50 passed (18.6s)
+ ELIFECYCLE  Command failed with exit code 1.
+The site check:floor of the client cpc failed.
+exit=1

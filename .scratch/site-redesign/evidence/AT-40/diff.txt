@@ -1,0 +1,24 @@
+$ diff AT-40/text-main.txt AT-40/text-site-redesign.txt
+1,15c1,3
+< PICK THE TEAMS
+< YOUR TEAM
+< Bo Girds
+< BO GIRDS GIVES
+< 1 Player
+< Kenneth Walker III
+< RB KC
+< TEAM TWO
+< Teehee
+< TEEHEE GIVES
+< 1 Player
+< Tee Higgins
+< WR CIN
+< Add a Team
+< Grade the Trade
+---
+> FOR
+> Kenneth Walker III for Tee Higgins
+> Edit
+23d10
+< 
+exit=1

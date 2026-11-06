@@ -7,14 +7,15 @@ import { type TargetAndTransition, type Transition } from "framer-motion";
 /* The brand ease-out from --ease-out in globals.css. Framer Motion needs the curve as numbers, not as a CSS value. */
 export const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
+/* The curve of the rise of the look (ADR 0024). It starts fast and settles long, so the content lands softly.
+   --ease-rise in globals.css holds the same curve for the CSS motion of the hero. */
+export const RISE_EASE = [0.16, 1, 0.3, 1] as const;
+
 /* A transition that ends at once. A component uses it for every animation when motion is off. */
 export const INSTANT: Transition = { duration: 0 };
 
 /* A short rise for content that enters. Framer Motion accepts a CSS variable for y, so the distance comes from the spacing token. */
 export const RISE = "var(--spacing-sp-2)";
-
-/* A short drop for content that enters from above, such as the menu sheet under the masthead. It mirrors the rise. */
-export const DROP = "calc(var(--spacing-sp-2) * -1)";
 
 /* The ease of the loading sweep. The bar travels both ways, so it eases in and out. */
 export const SWEEP_EASE = "easeInOut";
@@ -24,20 +25,18 @@ export const DRIFT_EASE = "easeInOut";
 
 /* Durations in seconds. The page enter is short, so the content is ready to tap almost at once. */
 export const DURATION = {
+  // The content of a page in the look rises in once, in a stagger (ADR 0024).
+  rise: 0.7,
+  // A recap of a game card opens (ADR 0024).
+  recap: 0.3,
   // The content of the route fades and rises in once.
   page: 0.3,
   // A picker list opens or closes. A layout change needs a little more time than a press.
   collapse: 0.24,
-  // The menu sheet leaves. It is faster than its entry, so a back-out feels instant.
-  sheetExit: 0.16,
-  // The menu button icon turns from three lines into a cross. It is short, because it only confirms the tap.
-  iconMorph: 0.16,
-  // The Past weeks popover scales in from its trigger. It is short, because the reader asked for it with a click.
+  // A popover, such as the grade popover, scales in from its trigger. It is short, because the reader asked for it with a click.
   popover: 0.16,
-  // The Past weeks popover leaves. It is faster than its entry, so a back-out feels instant, as the sheet exit does.
+  // A popover leaves. It is faster than its entry, so a back-out feels instant.
   popoverExit: 0.1,
-  // The compact bar slides in from above or leaves. It takes the press timing, so the bar answers the scroll at once.
-  bar: 0.14,
   // The decision word lands. It is a little slower than the rest, so the call lands with a beat.
   decision: 0.36,
   // The fairness line lands under the decision. It is a little faster than the decision word, so the decision stays the lead.

@@ -1,0 +1,6 @@
+$ uv run --exact --package cornerstone pytest -v apps/pipeline/tests/test_pipeline.py -k failed_write
+apps/pipeline/tests/test_pipeline.py::test_build_survives_a_failed_write_of_the_week_before 
+WARNING  cornerstone.pipeline:pipeline.py:272 no fetch time for week 6: the fetch time falls back to the write time of /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-3767/test_build_survives_a_failed_w0/data/2026/week-06/raw/transactions.json, 2026-11-05T15:31:57.281328-05:00
+WARNING  cornerstone.pipeline:pipeline.py:435 week 5 not saved to history: [Errno 13] Permission denied: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-3767/test_build_survives_a_failed_w0/data/2026/history/week-05/tmpua91xvmn.tmp'
+PASSED                                                                   [100%]
+======================= 1 passed, 77 deselected in 0.27s =======================

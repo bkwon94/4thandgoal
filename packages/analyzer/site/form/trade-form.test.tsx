@@ -1,28 +1,29 @@
 /**
- * Tests for the trade form: the team and player pickers, the submit gate, the post body, and each error state.
- * fetch is a test stub, and each test reads the screen. A test opens a picker with a click on its trigger.
+ * Tests for the trade form, the Stack: the teams row, the cards, the sheets, the grade bar, the post body, and each error state.
+ * fetch is a test stub, and each test reads the screen. A test opens a sheet with a click on its button.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { apiTarget, analyzeResponse as fixtureJson } from "../lib/fixtures/api";
 import { findResponse as findJson } from "../lib/fixtures/api";
 import type { Team } from "../lib/api";
+import { addPlayer, chooseTeam, pickPlayers, pickTeam, pickTrade, slot, type SideTitle } from "./form-steps";
 import { TradeForm } from "./trade-form";
 
 // The finder flag is a prop from the page, so each render passes the flag the test sets.
 let finderOn = false;
 
-const player = (id: string, name: string) => ({
+const player = (id: string, name: string, position = "WR") => ({
   player_id: id,
   name,
-  position: "WR",
+  position,
   nfl_team: "NYJ",
   headshot: `https://cdn.test/${id}.png`,
 });
 
 const TEAMS: Team[] = [
-  { roster_id: 4, team: "Pukancun on 3", manager: "Ana", avatar: "https://cdn.test/ana.png", players: [player("p1", "Ana One"), player("p2", "Ana Two")] },
-  { roster_id: 12, team: "Blitz Bakers", manager: "Ben", avatar: null, players: [player("p3", "Ben One"), player("p4", "Ben Two")] },
+  { roster_id: 4, team: "Pukancun on 3", manager: "Ana", avatar: "https://cdn.test/ana.png", players: [player("p1", "Ana One"), player("p2", "Ana Two", "QB")] },
+  { roster_id: 12, team: "Blitz Bakers", manager: "Ben", avatar: null, players: [player("p3", "Ben One", "RB"), player("p4", "Ben Two")] },
   { roster_id: 7, team: "Punt Punks", manager: "Cy", avatar: null, players: [player("p5", "Cy One")] },
 ];
 
@@ -33,60 +34,29 @@ function answer(status: number, body: unknown = {}, headers: Record<string, stri
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers }));
 }
 
-const group = (name: string) => screen.getByRole("group", { name });
-type SideTitle = "Your Team" | "Team Two" | "Team Three" | "Team Four";
-/* The team picker of a side is named by the side's heading. */
-const teamTrigger = (side: SideTitle) => screen.getByRole("combobox", { name: side });
-const playerTrigger = (team: string) => screen.getByRole("combobox", { name: `${team} Gives` });
+/* The card of a side, named by its heading. */
+const card = (side: SideTitle) => screen.getByRole("region", { name: `${side} gets` });
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
+const sheet = () => screen.getByRole("dialog");
+/* A result folds the form, so a test taps Edit to change the trade under it. */
+const edit = () => fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
 
-/* Opens a picker and returns its list. The popup renders in a portal, so the test finds it on the screen. */
-async function openPicker(trigger: HTMLElement) {
-  fireEvent.click(trigger);
-  return screen.findByRole("listbox");
-}
-
-/* Base UI commits a mouse pick only for a press that starts on the item, so the test sends the pointer down first. */
-function choose(option: HTMLElement) {
-  fireEvent.pointerDown(option, { pointerType: "mouse" });
-  fireEvent.click(option);
-}
-
-async function closePicker(list: HTMLElement) {
-  fireEvent.keyDown(list, { key: "Escape" });
-  await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
-}
-
-async function pickTeam(side: SideTitle, team: string) {
-  const list = await openPicker(teamTrigger(side));
-  choose(within(list).getByRole("option", { name: new RegExp(team) }));
-  await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
-}
-
-async function pickPlayers(team: string, ...names: string[]) {
-  const list = await openPicker(playerTrigger(team));
-  for (const name of names) choose(within(list).getByRole("option", { name: new RegExp(name) }));
-  await closePicker(list);
+/* Adds a side with a team through "+". */
+async function addTeam(team: string) {
+  fireEvent.click(screen.getByRole("button", { name: "Add a team" }));
+  await chooseTeam(team);
 }
 
 const removeButton = (name: string) => screen.getByRole("button", { name: `Remove ${name}` }) as HTMLButtonElement;
 
-const addButton = () => screen.queryByRole("button", { name: "Add a Team" });
+/* The text of each row of a card. */
+const rowsOf = (side: SideTitle) =>
+  within(screen.getByRole("list", { name: `Players ${side} gets` }))
+    .queryAllByRole("listitem")
+    .map((item) => item.textContent);
 
-/* The row of a picked player, found by the list of the team that gives him. */
-const row = (team: string, name: string) =>
-  within(screen.getByRole("list", { name: `Players ${team} Gives` }))
-    .getAllByRole("listitem")
-    .find((item) => item.textContent!.includes(name))!;
-const toTrigger = (team: string, name: string) => within(row(team, name)).getByRole("combobox", { name: "To" });
-
-/* Picks my team and the other team, then one player on each side. */
-async function pickTrade() {
-  await pickTeam("Your Team", "Pukancun on 3");
-  await pickTeam("Team Two", "Blitz Bakers");
-  await pickPlayers("Pukancun on 3", "Ana One");
-  await pickPlayers("Blitz Bakers", "Ben Two");
-}
+/* The main trade of p1 for p4: my team gets Ben Two, and the other team gets Ana One. */
+const TRADE = { mine: "Pukancun on 3", other: "Blitz Bakers", mineGets: "Ben Two", otherGets: "Ana One" };
 
 beforeEach(() => {
   fetchStub.mockReset();
@@ -102,123 +72,171 @@ afterEach(() => {
 });
 
 describe("TradeForm", () => {
-  it("shows each team with its avatar and name in the team picker", async () => {
-    expect(teamTrigger("Your Team").textContent).toContain("Pick a Team");
-    const list = await openPicker(teamTrigger("Your Team"));
-    const options = within(list).getAllByRole("option");
-    expect(options.map((o) => o.textContent)).toEqual(["Pukancun on 3Ana", "Blitz BakersBen", "Punt PunksCy"]);
-    expect(options[0].querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/ana.png");
+  it("shows the empty Stack: the title, two slots, 2 of 4, two empty cards, the line, and the bar turned off", () => {
+    expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
+    expect(screen.getByText("Who gets what?")).toBeTruthy();
+    const row = screen.getByRole("list", { name: "Teams in the trade" });
+    expect(within(row).getByRole("button", { name: "Pick Your Team" })).toBeTruthy();
+    expect(within(row).getByRole("button", { name: "Pick Team Two" })).toBeTruthy();
+    expect(within(row).getByRole("button", { name: "Add a team" })).toBeTruthy();
+    expect(within(row).getByText("2 of 4")).toBeTruthy();
+    expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual(["Your Team gets", "Team Two gets"]);
+    expect(rowsOf("Your Team")).toEqual([]);
+    expect(rowsOf("Team Two")).toEqual([]);
+    expect(screen.getByText("Each team gives and gets at least one player.")).toBeTruthy();
+    expect(submit().disabled).toBe(true);
+    // No card can add a player before both sides have a team.
+    expect(addPlayer("Your Team").disabled).toBe(true);
+  });
+
+  it("shows each team with its avatar, name, and manager in the team sheet", async () => {
+    fireEvent.click(slot("Your Team"));
+    const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
+    expect(rows.map((r) => r.textContent)).toEqual(["Pukancun on 3Ana", "Blitz BakersBen", "Punt PunksCy"]);
+    expect(rows[0].querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/ana.png");
     // A team with no avatar shows the default image.
-    expect(options[1].querySelector("img")!.getAttribute("src")).toContain("/images/avatar-default.svg");
+    expect(rows[1].querySelector("img")!.getAttribute("src")).toContain("/images/avatar-default.svg");
   });
 
-  it("shows the picked team's avatar and name in the trigger", async () => {
+  it("shows the picked team's avatar in its slot and its name on its card", async () => {
     await pickTeam("Your Team", "Pukancun on 3");
-    const trigger = teamTrigger("Your Team");
-    expect(trigger.textContent).toContain("Pukancun on 3");
-    expect(trigger.querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/ana.png");
-  });
-
-  it("closes the player list on Escape and keeps the picks", async () => {
-    await pickTeam("Your Team", "Pukancun on 3");
-    const list = await openPicker(playerTrigger("Pukancun on 3"));
-    choose(within(list).getByRole("option", { name: /Ana One/ }));
-    choose(within(list).getByRole("option", { name: /Ana Two/ }));
-    // A pick keeps the multi-select open, so Escape is one way out.
-    expect(screen.getByRole("listbox")).toBeTruthy();
-    fireEvent.keyDown(list, { key: "Escape" });
-    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
-    expect(playerTrigger("Pukancun on 3").textContent).toContain("2 Players");
-    expect(row("Pukancun on 3", "Ana One")).toBeTruthy();
-    expect(row("Pukancun on 3", "Ana Two")).toBeTruthy();
+    expect(slot("Your Team").getAttribute("aria-label")).toBe("Your Team: Pukancun on 3. Change the team");
+    expect(slot("Your Team").querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/ana.png");
+    expect(within(card("Your Team")).getByText("Pukancun on 3")).toBeTruthy();
   });
 
   it("swaps a failed avatar to the default image once", async () => {
     await pickTeam("Your Team", "Pukancun on 3");
-    const img = teamTrigger("Your Team").querySelector("img")!;
+    const img = slot("Your Team").querySelector("img")!;
     fireEvent.error(img);
     expect(img.getAttribute("src")).toContain("/images/avatar-default.svg");
   });
 
-  it("leaves a team picked on one side out of the other side's picker", async () => {
+  it("dims a team that is in the trade in the team sheet", async () => {
     await pickTeam("Your Team", "Pukancun on 3");
-    const list = await openPicker(teamTrigger("Team Two"));
-    const names = within(list).getAllByRole("option").map((o) => o.textContent);
-    expect(names).toEqual(["Blitz BakersBen", "Punt PunksCy"]);
+    fireEvent.click(slot("Team Two"));
+    const list = within(await screen.findByRole("list", { name: "Teams" }));
+    expect((list.getByRole("button", { name: /Pukancun on 3/ }) as HTMLButtonElement).disabled).toBe(true);
+    expect(list.getByRole("button", { name: /Pukancun on 3/ }).textContent).toContain("In the trade");
+    expect((list.getByRole("button", { name: /Blitz Bakers/ }) as HTMLButtonElement).disabled).toBe(false);
   });
 
-  it("titles each side in title case, with my side first", () => {
-    const headings = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
-    expect(headings).toEqual(["Your Team", "Team Two"]);
-    expect(group("Your Team")).toBeTruthy();
-    expect(group("Team Two")).toBeTruthy();
+  it("opens the picker with a tab for each other team, a search field, and the position chips", async () => {
+    await pickTeam("Your Team", "Pukancun on 3");
+    await pickTeam("Team Two", "Blitz Bakers");
+    fireEvent.click(addPlayer("Your Team"));
+    const open = within(await screen.findByRole("dialog"));
+    expect(open.getByRole("heading", { name: "Your Team gets" })).toBeTruthy();
+    expect(open.getAllByRole("tab").map((t) => t.textContent)).toEqual(["Blitz Bakers"]);
+    expect(open.getByRole("searchbox", { name: "Search players" })).toBeTruthy();
+    expect(within(open.getByRole("group", { name: "Position" })).getAllByRole("button").map((b) => b.textContent)).toEqual([
+      "All", "QB", "RB", "WR", "TE", "DEF",
+    ]);
+    const rows = open.getAllByRole("checkbox");
+    expect(rows.map((r) => r.textContent)).toEqual(["Ben OneRB NYJ", "Ben TwoWR NYJ"]);
+    expect(rows[0].querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/p3.png");
   });
 
-  it("shows the player picker once the side has a team, with each player's headshot, name, position, and NFL team", async () => {
-    expect(screen.queryByRole("combobox", { name: "Pukancun on 3 Gives" })).toBeNull();
+  it("filters the players by the search and by a position chip", async () => {
     await pickTeam("Your Team", "Pukancun on 3");
-    expect(playerTrigger("Pukancun on 3").textContent).toContain("Pick Players");
-    const list = await openPicker(playerTrigger("Pukancun on 3"));
-    const options = within(list).getAllByRole("option");
-    expect(options.map((o) => o.textContent)).toEqual(["Ana OneWR NYJ", "Ana TwoWR NYJ"]);
-    expect(options[0].querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/p1.png");
+    await pickTeam("Team Two", "Blitz Bakers");
+    fireEvent.click(addPlayer("Team Two"));
+    const open = within(await screen.findByRole("dialog"));
+    fireEvent.click(open.getByRole("button", { name: "QB" }));
+    expect(open.getAllByRole("checkbox").map((r) => r.textContent)).toEqual(["Ana TwoQB NYJ"]);
+    fireEvent.click(open.getByRole("button", { name: "All" }));
+    fireEvent.change(open.getByRole("searchbox"), { target: { value: "one" } });
+    expect(open.getAllByRole("checkbox").map((r) => r.textContent)).toEqual(["Ana OneWR NYJ"]);
   });
 
-  it("swaps a failed headshot to the default image once", async () => {
+  it("toggles a check with a tap on a row, and the Done button counts the picks", async () => {
     await pickTeam("Your Team", "Pukancun on 3");
-    const list = await openPicker(playerTrigger("Pukancun on 3"));
-    const img = within(list).getAllByRole("option")[0].querySelector("img")!;
-    fireEvent.error(img);
-    expect(img.getAttribute("src")).toContain("/images/headshot-default.svg");
+    await pickTeam("Team Two", "Blitz Bakers");
+    fireEvent.click(addPlayer("Your Team"));
+    const open = within(await screen.findByRole("dialog"));
+    const benOne = open.getByRole("checkbox", { name: /Ben One/ });
+    fireEvent.click(benOne);
+    fireEvent.click(open.getByRole("checkbox", { name: /Ben Two/ }));
+    expect(benOne.getAttribute("aria-checked")).toBe("true");
+    expect(open.getByRole("button", { name: "Done · 2" })).toBeTruthy();
+    fireEvent.click(benOne);
+    expect(benOne.getAttribute("aria-checked")).toBe("false");
+    expect(open.getByRole("button", { name: "Done · 1" })).toBeTruthy();
   });
 
-  it("shows the picked players as rows with a remove control, and the count in the trigger", async () => {
+  it("lists each picked player on the card with a from tag, after Done", async () => {
     await pickTeam("Your Team", "Pukancun on 3");
-    await pickPlayers("Pukancun on 3", "Ana Two", "Ana One");
-    expect(playerTrigger("Pukancun on 3").textContent).toContain("2 Players");
-    const rows = within(screen.getByRole("list", { name: "Players Pukancun on 3 Gives" })).getAllByRole("listitem");
-    expect(rows.map((r) => r.textContent)).toEqual(["Ana TwoWR NYJ", "Ana OneWR NYJ"]);
-    expect(rows[0].querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/p2.png");
+    await pickTeam("Team Two", "Blitz Bakers");
+    await pickPlayers("Your Team", "Blitz Bakers", "Ben Two", "Ben One");
+    expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers", "Ben OneRB NYJ · from Blitz Bakers"]);
+  });
 
-    fireEvent.click(removeButton("Ana Two"));
+  it("closes the picker with the close button and keeps the picks", async () => {
+    await pickTeam("Your Team", "Pukancun on 3");
+    await pickTeam("Team Two", "Blitz Bakers");
+    fireEvent.click(addPlayer("Your Team"));
+    fireEvent.click(within(await screen.findByRole("dialog")).getByRole("checkbox", { name: /Ben Two/ }));
+    fireEvent.click(within(sheet()).getByRole("button", { name: "Close" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
+  });
+
+  it("closes the picker with a tap on the dim page and keeps the picks", async () => {
+    await pickTeam("Your Team", "Pukancun on 3");
+    await pickTeam("Team Two", "Blitz Bakers");
+    fireEvent.click(addPlayer("Your Team"));
+    fireEvent.click(within(await screen.findByRole("dialog")).getByRole("checkbox", { name: /Ben Two/ }));
+    const dim = document.querySelector<HTMLElement>('[data-slot="sheet-backdrop"]')!;
+    fireEvent.pointerDown(dim);
+    fireEvent.mouseDown(dim);
+    fireEvent.click(dim);
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
+  });
+
+  it("removes a player from a card with its remove control", async () => {
+    await pickTeam("Your Team", "Pukancun on 3");
+    await pickTeam("Team Two", "Blitz Bakers");
+    await pickPlayers("Your Team", "Blitz Bakers", "Ben Two", "Ben One");
+    fireEvent.click(removeButton("Ben Two"));
     // The row animates out, so it leaves the page a moment after the click.
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ana Two" })).toBeNull());
-    expect(playerTrigger("Pukancun on 3").textContent).toContain("1 Player");
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ben Two" })).toBeNull());
+    expect(rowsOf("Your Team")).toEqual(["Ben OneRB NYJ · from Blitz Bakers"]);
   });
 
-  it("keeps submit off until each side gives a player", async () => {
+  it("keeps the bar off until each team gives and gets a player", async () => {
     expect(submit().disabled).toBe(true);
     await pickTeam("Your Team", "Pukancun on 3");
     await pickTeam("Team Two", "Blitz Bakers");
-    await pickPlayers("Pukancun on 3", "Ana One");
+    await pickPlayers("Your Team", "Blitz Bakers", "Ben Two");
     expect(submit().disabled).toBe(true);
-    await pickPlayers("Blitz Bakers", "Ben Two");
+    await pickPlayers("Team Two", "Pukancun on 3", "Ana One");
     expect(submit().disabled).toBe(false);
     fireEvent.click(removeButton("Ben Two"));
     expect(submit().disabled).toBe(true);
   });
 
-  it("clears the picks of a side when its team changes, and keeps the other side's picks", async () => {
-    await pickTrade();
+  it("drops the players a side gives when its team changes, and keeps the players it gets", async () => {
+    await pickTrade(TRADE);
     await pickTeam("Team Two", "Punt Punks");
     expect(submit().disabled).toBe(true);
     await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ben Two" })).toBeNull());
-    expect(playerTrigger("Punt Punks").textContent).toContain("Pick Players");
-    expect(removeButton("Ana One")).toBeTruthy();
+    expect(rowsOf("Team Two")).toEqual(["Ana OneWR NYJ · from Pukancun on 3"]);
   });
 
   it("clears the result when a side's team changes", async () => {
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Not as is");
+    edit();
     await pickTeam("Your Team", "Punt Punks");
     expect(screen.queryByText("Not as is")).toBeNull();
   });
 
-  it("posts the asker first, with the destination of each player", async () => {
+  it("posts the asker first, with the destination of each player, as main does", async () => {
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Not as is");
 
@@ -237,26 +255,11 @@ describe("TradeForm", () => {
     });
   });
 
-  it("points my picks at the other side's new team", async () => {
-    answer(200, fixtureJson);
-    await pickTeam("Your Team", "Pukancun on 3");
-    await pickTeam("Team Two", "Blitz Bakers");
-    await pickPlayers("Pukancun on 3", "Ana One");
-    await pickTeam("Team Two", "Punt Punks");
-    await pickPlayers("Punt Punks", "Cy One");
-    fireEvent.click(submit());
-    await screen.findByText("Not as is");
-    expect(JSON.parse(fetchStub.mock.calls[0][1].body).sides).toEqual([
-      { roster_id: 4, gives: [{ player_id: "p1", to: 7 }] },
-      { roster_id: 7, gives: [{ player_id: "p5", to: 4 }] },
-    ]);
-  });
-
   it("counts a grade event on submit", async () => {
     const count = vi.fn();
     window.goatcounter = { count };
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Not as is");
     expect(count).toHaveBeenCalledWith({ path: "analyze-grade", event: true });
@@ -265,64 +268,117 @@ describe("TradeForm", () => {
 
   it("shows the loading line while the grade runs", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("Grading the Trade")).toBeTruthy();
-    expect(screen.getByText("This can take up to a minute early in the week.")).toBeTruthy();
+    expect(screen.getByText("This can take up to a minute.")).toBeTruthy();
     expect(screen.queryByText(/chart/i)).toBeNull();
     const busy = screen.getByRole("button", { name: "Grading…" }) as HTMLButtonElement;
     expect(busy.disabled).toBe(true);
     expect(busy.getAttribute("aria-busy")).toBe("true");
   });
 
-  it("locks the pickers and the remove controls while the grade runs, and unlocks them on the result", async () => {
+  it("folds the form to a line of faces and puts the grading hero in place of the title while the grade runs", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(within(hero).getByRole("status").getAttribute("aria-busy")).toBe("true");
+    expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
+    const fold = screen.getByRole("group", { name: "The trade" });
+    expect(fold.textContent).toContain("Ana One for Ben Two");
+    // One face for each team of the trade.
+    expect(fold.querySelectorAll("img")).toHaveLength(2);
+    expect(fold.compareDocumentPosition(hero) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(fold).queryByRole("button", { name: "Edit the trade" })).toBeNull();
+  });
+
+  it("fills the hero with the verdict and the fairness block, and keeps the form folded with an Edit button", async () => {
+    answer(200, fixtureJson);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const verdict = await screen.findByRole("region", { name: "The Verdict" });
+    expect(within(verdict).getByRole("heading", { level: 2, name: "Decision for Pukancun on 3" })).toBeTruthy();
+    expect(within(verdict).getByText("Not as is")).toBeTruthy();
+    expect(within(verdict).getByText("Fairness")).toBeTruthy();
+    // The verdict is the hero, so the title hero and the grading hero are gone.
+    expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Grading the Trade" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Grade the Trade" })).toBeNull();
+    const fold = screen.getByRole("group", { name: "The trade" });
+    expect(fold.compareDocumentPosition(verdict) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
+    expect(verdict.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("opens the form again with Edit and keeps the result under it", async () => {
+    answer(200, fixtureJson);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    await screen.findByText("Not as is");
+    fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
+    expect(screen.getByRole("region", { name: "Who gets what" })).toBeTruthy();
+    expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
+    expect(submit().disabled).toBe(false);
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    expect(screen.getByRole("region", { name: "The Verdict" })).toBeTruthy();
+  });
+
+  it("locks the slots, the add buttons, and the remove controls while the grade runs, and unlocks them on the result", async () => {
     let finish!: (response: Response) => void;
     fetchStub.mockReturnValueOnce(new Promise<Response>((resolve) => (finish = resolve)));
-    await pickTrade();
+    await pickTrade(TRADE);
+    // The grade folds the form out of view, so the test holds each control before the tap.
+    const controls = [slot("Your Team"), slot("Team Two"), addPlayer("Your Team"), addPlayer("Team Two")];
+    const removeAnaOne = removeButton("Ana One");
     fireEvent.click(submit());
     await screen.findByText("Grading the Trade");
 
-    const triggers = [teamTrigger("Your Team"), teamTrigger("Team Two"), playerTrigger("Pukancun on 3"), playerTrigger("Blitz Bakers")];
-    expect(triggers.every((t) => (t as HTMLButtonElement).disabled)).toBe(true);
-    fireEvent.click(playerTrigger("Pukancun on 3"));
-    expect(screen.queryByRole("listbox")).toBeNull();
-    expect(removeButton("Ana One").disabled).toBe(true);
-    fireEvent.click(removeButton("Ana One"));
-    expect(removeButton("Ana One")).toBeTruthy();
+    expect(controls.every((c) => c.disabled)).toBe(true);
+    fireEvent.click(controls[2]);
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(removeAnaOne.disabled).toBe(true);
+    fireEvent.click(removeAnaOne);
+    expect(removeAnaOne.isConnected).toBe(true);
 
     await act(async () => finish(new Response(JSON.stringify(fixtureJson), { status: 200 })));
     await screen.findByText("Not as is");
-    expect(triggers.some((t) => (t as HTMLButtonElement).disabled)).toBe(false);
+    edit();
+    expect(controls.some((c) => c.disabled)).toBe(false);
     expect(submit().hasAttribute("aria-busy")).toBe(false);
-    await pickPlayers("Pukancun on 3", "Ana Two");
+    await pickPlayers("Team Two", "Pukancun on 3", "Ana Two");
     expect(removeButton("Ana Two")).toBeTruthy();
   });
 
-  it("unlocks the pickers after a 422, so a tap fixes the trade", async () => {
+  it("unlocks the form after a 422, so a tap fixes the trade", async () => {
     answer(422, { detail: { message: "Player p1 is not on the giving roster.", player_id: "p1" } });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Player p1 is not on the giving roster.");
     expect(removeButton("Ana One").disabled).toBe(false);
     fireEvent.click(removeButton("Ana One"));
     await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ana One" })).toBeNull());
-    expect((teamTrigger("Team Two") as HTMLButtonElement).disabled).toBe(false);
+    expect(slot("Team Two").disabled).toBe(false);
   });
 
-  it("unlocks the pickers after a 429", async () => {
+  it("unlocks the form after a 429", async () => {
     answer(429, { detail: "slow down" }, { "Retry-After": "12" });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Too many requests. Try again in 12 seconds.");
-    await pickPlayers("Pukancun on 3", "Ana Two");
+    await pickPlayers("Team Two", "Pukancun on 3", "Ana Two");
     expect(removeButton("Ana Two")).toBeTruthy();
   });
 
   it("clears the old result when a new submit starts", async () => {
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Not as is");
+    edit();
 
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     fireEvent.click(submit());
@@ -332,43 +388,70 @@ describe("TradeForm", () => {
 
   it("shows the API message on a 422", async () => {
     answer(422, { detail: { message: "Player p1 is not on the giving roster.", player_id: "p1" } });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("Player p1 is not on the giving roster.")).toBeTruthy();
   });
 
+  it.each([
+    ["a 422", 422, { detail: { message: "Player p1 is not on the giving roster.", player_id: "p1" } }, {}, "Player p1 is not on the giving roster."],
+    ["a 429", 429, { detail: "slow down" }, { "Retry-After": "12" }, "Too many requests. Try again in 12 seconds."],
+    ["a 502", 502, { detail: "bad shape" }, {}, "The API sent an answer the site cannot read."],
+  ])("shows Try Again under the line of toErrorLine on %s", async (_name, status, body, headers, line) => {
+    answer(status, body, headers);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const box = await screen.findByRole("group", { name: "The grade failed" });
+    expect(within(box).getByRole("alert").textContent).toBe(line);
+    expect(within(box).getByRole("button", { name: "Try Again" })).toBeTruthy();
+  });
+
   it("shows the wait time on a 429", async () => {
     answer(429, { detail: "slow down" }, { "Retry-After": "12" });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("Too many requests. Try again in 12 seconds.")).toBeTruthy();
   });
 
   it("shows the down line and a retry button on a 503 with no detail", async () => {
     answer(503);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("The analyzer is down for the moment. Try again in a few minutes.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Try Again" })).toBeTruthy();
   });
 
+  it("unlocks the form and puts the message, the alert icon, and Try Again in one box above the bar", async () => {
+    answer(500);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const box = await screen.findByRole("group", { name: "The grade failed" });
+    expect(within(box).getByRole("alert").textContent).toBe("The API did not answer. Try again.");
+    expect(box.querySelector("svg[aria-hidden='true']")).not.toBeNull();
+    expect(within(box).getByRole("button", { name: "Try Again" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    expect(slot("Your Team").disabled).toBe(false);
+    expect(box.compareDocumentPosition(submit()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("shows the API reason on a 503 with a detail", async () => {
     answer(503, { detail: "The trade value chart is not ready." });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("The trade value chart is not ready.")).toBeTruthy();
   });
 
   it("asks for the passphrase again on a 401", async () => {
     answer(401, { detail: "bad passphrase" });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await waitFor(() => expect(onUnauthorized).toHaveBeenCalledTimes(1));
   });
 
   it("shows a retry button on another failure, and the button posts again", async () => {
     answer(500);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("The API did not answer. Try again.")).toBeTruthy();
 
@@ -379,7 +462,7 @@ describe("TradeForm", () => {
   });
 
   it("aborts after 60 seconds, shows the timeout line, and the retry posts again", async () => {
-    await pickTrade();
+    await pickTrade(TRADE);
     // Only the timeout is fake. A fake clock for frames would leave Framer Motion on a stale time, so a later exit would stall.
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     fetchStub.mockImplementationOnce(
@@ -408,7 +491,7 @@ describe("TradeForm", () => {
           signal.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")));
         }),
     );
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Grading the Trade");
 
@@ -433,131 +516,109 @@ describe("TradeForm with three or four sides", () => {
     render(<TradeForm teams={FOUR_TEAMS} target={apiTarget} finderOn={finderOn} passphrase="localtest" onUnauthorized={onUnauthorized} />);
   });
 
-  /* Picks a team on each of the first three sides and one player on each. */
-  async function pickThreeSides() {
+  async function pickTwoTeams() {
     await pickTeam("Your Team", "Pukancun on 3");
     await pickTeam("Team Two", "Blitz Bakers");
-    fireEvent.click(addButton()!);
-    await pickTeam("Team Three", "Punt Punks");
-    await pickPlayers("Pukancun on 3", "Ana One");
-    await pickPlayers("Blitz Bakers", "Ben Two");
-    await pickPlayers("Punt Punks", "Cy One");
   }
 
-  async function pickDestination(team: string, name: string, destination: string) {
-    const list = await openPicker(toTrigger(team, name));
-    choose(within(list).getByRole("option", { name: new RegExp(destination) }));
-    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
-  }
+  it("adds a third team from the team sheet, with a card, a remove button, and 3 of 4", async () => {
+    await pickTwoTeams();
+    fireEvent.click(screen.getByRole("button", { name: "Add a team" }));
+    const list = within(await screen.findByRole("list", { name: "Teams" }));
+    // Every team shows, and the two teams of the trade are dimmed.
+    expect(list.getAllByRole("button").map((b) => (b as HTMLButtonElement).disabled)).toEqual([true, true, false, false]);
+    expect(within(sheet()).getByRole("heading", { name: "Pick Team Three" })).toBeTruthy();
+    await chooseTeam("Punt Punks");
+    expect(within(card("Team Three")).getByText("Punt Punks")).toBeTruthy();
+    expect(removeButton("Team Three")).toBeTruthy();
+    expect(screen.getByText("3 of 4")).toBeTruthy();
+  });
 
-  it("shows Add a Team only when every side has a team and the trade has fewer than four sides", async () => {
-    expect(addButton()).toBeNull();
-    await pickTeam("Your Team", "Pukancun on 3");
-    expect(addButton()).toBeNull();
-    await pickTeam("Team Two", "Blitz Bakers");
-    fireEvent.click(addButton()!);
-    expect(group("Team Three")).toBeTruthy();
-    expect(addButton()).toBeNull();
-    await pickTeam("Team Three", "Punt Punks");
-    fireEvent.click(addButton()!);
-    expect(group("Team Four")).toBeTruthy();
-    await pickTeam("Team Four", "Draft Dodgers");
-    expect(addButton()).toBeNull();
-    const headings = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
-    expect(headings).toEqual(["Your Team", "Team Two", "Team Three", "Team Four"]);
+  it("adds a fourth team, then shows no + slot", async () => {
+    await pickTwoTeams();
+    await addTeam("Punt Punks");
+    await addTeam("Draft Dodgers");
+    expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([
+      "Your Team gets", "Team Two gets", "Team Three gets", "Team Four gets",
+    ]);
+    expect(screen.queryByRole("button", { name: "Add a team" })).toBeNull();
+    expect(removeButton("Team Four")).toBeTruthy();
   });
 
   it("gives a remove control to the third and fourth sides only", async () => {
-    await pickTeam("Your Team", "Pukancun on 3");
-    await pickTeam("Team Two", "Blitz Bakers");
-    fireEvent.click(addButton()!);
-    await pickTeam("Team Three", "Punt Punks");
-    fireEvent.click(addButton()!);
-    expect(removeButton("Team Three")).toBeTruthy();
-    expect(removeButton("Team Four")).toBeTruthy();
+    await pickTwoTeams();
+    await addTeam("Punt Punks");
     expect(screen.queryByRole("button", { name: "Remove Your Team" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Remove Team Two" })).toBeNull();
-
-    fireEvent.click(removeButton("Team Four"));
-    await waitFor(() => expect(screen.queryByRole("group", { name: "Team Four" })).toBeNull());
-    expect(addButton()).toBeTruthy();
+    expect(removeButton("Team Three")).toBeTruthy();
   });
 
-  it("shows no To picker at two sides", async () => {
-    await pickTrade();
-    expect(screen.queryByRole("combobox", { name: "To" })).toBeNull();
+  it("shows a tab for each other team in the picker", async () => {
+    await pickTwoTeams();
+    await addTeam("Punt Punks");
+    fireEvent.click(addPlayer("Team Three"));
+    const open = within(await screen.findByRole("dialog"));
+    expect(open.getAllByRole("tab").map((t) => t.textContent)).toEqual(["Pukancun on 3", "Blitz Bakers"]);
+    fireEvent.click(open.getByRole("tab", { name: "Pukancun on 3" }));
+    expect(open.getAllByRole("checkbox").map((r) => r.textContent)).toEqual(["Ana OneWR NYJ", "Ana TwoQB NYJ"]);
   });
 
-  it("shows a To picker on each row at three sides, with the next side as the default", async () => {
-    await pickThreeSides();
-    expect(toTrigger("Pukancun on 3", "Ana One").textContent).toContain("Blitz Bakers");
-    expect(toTrigger("Blitz Bakers", "Ben Two").textContent).toContain("Punt Punks");
-    // The last side sends to the first side.
-    expect(toTrigger("Punt Punks", "Cy One").textContent).toContain("Pukancun on 3");
-    expect(row("Pukancun on 3", "Ana One").textContent).toContain("To");
-
-    const list = await openPicker(toTrigger("Pukancun on 3", "Ana One"));
-    expect(within(list).getAllByRole("option").map((o) => o.textContent)).toEqual(["Blitz Bakers", "Punt Punks"]);
+  it("dims a player that another team already gets", async () => {
+    await pickTwoTeams();
+    await addTeam("Punt Punks");
+    await pickPlayers("Team Two", "Pukancun on 3", "Ana One");
+    fireEvent.click(addPlayer("Team Three"));
+    const open = within(await screen.findByRole("dialog"));
+    fireEvent.click(open.getByRole("tab", { name: "Pukancun on 3" }));
+    const anaOne = open.getByRole("checkbox", { name: /Ana One/ }) as HTMLButtonElement;
+    expect(anaOne.disabled).toBe(true);
+    expect(anaOne.textContent).toContain("to Blitz Bakers");
   });
 
-  it("points every pick at the next side when a third side joins, so the grade button turns on", async () => {
-    await pickTrade();
-    fireEvent.click(addButton()!);
-    await pickTeam("Team Three", "Punt Punks");
-    expect(toTrigger("Pukancun on 3", "Ana One").textContent).toContain("Blitz Bakers");
-    expect(toTrigger("Blitz Bakers", "Ben Two").textContent).toContain("Punt Punks");
+  it("takes a removed team and the players it gives out of the trade, and the slot reads 2 of 4 again", async () => {
+    await pickTwoTeams();
+    await addTeam("Punt Punks");
+    await pickPlayers("Your Team", "Punt Punks", "Cy One");
+    fireEvent.click(removeButton("Team Three"));
+    await waitFor(() => expect(screen.queryByRole("region", { name: "Team Three gets" })).toBeNull());
+    expect(rowsOf("Your Team")).toEqual([]);
+    expect(screen.getByText("2 of 4")).toBeTruthy();
+  });
+
+  it("keeps the bar off until every team gives and gets a player", async () => {
+    await pickTwoTeams();
+    await addTeam("Punt Punks");
+    await pickPlayers("Your Team", "Blitz Bakers", "Ben Two");
+    await pickPlayers("Team Two", "Pukancun on 3", "Ana One");
     expect(submit().disabled).toBe(true);
-    await pickPlayers("Punt Punks", "Cy One");
+    await pickPlayers("Team Three", "Pukancun on 3", "Ana Two");
+    expect(submit().disabled).toBe(true);
+    await pickPlayers("Your Team", "Punt Punks", "Cy One");
     expect(submit().disabled).toBe(false);
   });
 
-  it("keeps a destination when that side changes its team", async () => {
-    await pickThreeSides();
-    await pickDestination("Pukancun on 3", "Ana One", "Punt Punks");
-    await pickTeam("Team Three", "Draft Dodgers");
-    expect(toTrigger("Pukancun on 3", "Ana One").textContent).toContain("Draft Dodgers");
+  it("folds a trade of three teams to one line with a face for each team", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTwoTeams();
+    await addTeam("Punt Punks");
+    await pickPlayers("Team Two", "Pukancun on 3", "Ana One");
+    await pickPlayers("Team Three", "Pukancun on 3", "Ana Two");
+    await pickPlayers("Team Three", "Blitz Bakers", "Ben Two");
+    await pickPlayers("Your Team", "Punt Punks", "Cy One");
+    fireEvent.click(submit());
+    const fold = await screen.findByRole("group", { name: "The trade" });
+    expect(fold.textContent).toContain("Ana One and Ana Two for Cy One");
+    expect(fold.querySelectorAll("img")).toHaveLength(3);
   });
 
-  it("drops a removed side's players and sends the players bound for it to the default", async () => {
-    await pickTeam("Your Team", "Pukancun on 3");
-    await pickTeam("Team Two", "Blitz Bakers");
-    fireEvent.click(addButton()!);
-    await pickTeam("Team Three", "Punt Punks");
-    fireEvent.click(addButton()!);
-    await pickTeam("Team Four", "Draft Dodgers");
-    await pickPlayers("Pukancun on 3", "Ana One");
-    await pickPlayers("Punt Punks", "Cy One");
-    await pickPlayers("Draft Dodgers", "Dee One");
-    await pickDestination("Pukancun on 3", "Ana One", "Draft Dodgers");
-    // Team Three sends to Team Four by default.
-    expect(toTrigger("Punt Punks", "Cy One").textContent).toContain("Draft Dodgers");
-
-    fireEvent.click(removeButton("Team Four"));
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Dee One" })).toBeNull());
-    expect(toTrigger("Pukancun on 3", "Ana One").textContent).toContain("Blitz Bakers");
-    expect(toTrigger("Punt Punks", "Cy One").textContent).toContain("Pukancun on 3");
-  });
-
-  it("keeps the grade button off until every side gives and gets a player", async () => {
-    await pickTeam("Your Team", "Pukancun on 3");
-    await pickTeam("Team Two", "Blitz Bakers");
-    fireEvent.click(addButton()!);
-    await pickTeam("Team Three", "Punt Punks");
-    await pickPlayers("Pukancun on 3", "Ana One");
-    await pickPlayers("Blitz Bakers", "Ben Two");
-    expect(submit().disabled).toBe(true);
-    await pickPlayers("Punt Punks", "Cy One");
-    expect(submit().disabled).toBe(false);
-    // Punt Punks now gets no player.
-    await pickDestination("Blitz Bakers", "Ben Two", "Pukancun on 3");
-    expect(submit().disabled).toBe(true);
-  });
-
-  it("posts every side in order with the destination of each player", async () => {
+  it("posts every side in order with the destination of each player, as main does", async () => {
     answer(200, fixtureJson);
-    await pickThreeSides();
-    await pickPlayers("Pukancun on 3", "Ana Two");
-    await pickDestination("Pukancun on 3", "Ana Two", "Punt Punks");
+    await pickTwoTeams();
+    await addTeam("Punt Punks");
+    await pickPlayers("Team Two", "Pukancun on 3", "Ana One");
+    await pickPlayers("Team Three", "Pukancun on 3", "Ana Two");
+    await pickPlayers("Team Three", "Blitz Bakers", "Ben Two");
+    await pickPlayers("Your Team", "Punt Punks", "Cy One");
     fireEvent.click(submit());
     await screen.findByText("Not as is");
     expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual({
@@ -579,14 +640,18 @@ describe("TradeForm with the finder", () => {
   });
 
   const [first] = findJson.trades;
-  const pairTeams: Team[] = first.sides.map((side) => ({
-    roster_id: side.roster_id,
-    team: side.team,
-    manager: `Manager ${side.roster_id}`,
-    avatar: null,
-    // Every player of the fixture trades is on the roster of the side that gives him.
-    players: findJson.trades.flatMap((t) => t.sides.find((s) => s.roster_id === side.roster_id)!.gives),
-  }));
+  const pairTeams: Team[] = [
+    ...first.sides.map((side) => ({
+      roster_id: side.roster_id,
+      team: side.team,
+      manager: `Manager ${side.roster_id}`,
+      avatar: null,
+      // Every player of the fixture trades is on the roster of the side that gives him.
+      players: findJson.trades.flatMap((t) => t.sides.find((s) => s.roster_id === side.roster_id)!.gives),
+    })),
+    // A third team lets a test add a third side.
+    { roster_id: 99, team: "Third Wheel", manager: "Tess", avatar: null, players: [player("p99", "Tess One")] },
+  ];
 
   beforeEach(() => {
     cleanup();
@@ -599,11 +664,10 @@ describe("TradeForm with the finder", () => {
     expect(screen.getByRole("group", { name: "Trade Partner" })).toBeTruthy();
   });
 
-  it("titles the finder in title case and puts it after the grade button", async () => {
+  it("titles the finder in title case and puts it after the cards", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
     const heading = screen.getByRole("heading", { level: 2, name: "Find a Trade" });
-    const grade = screen.getByRole("button", { name: "Grade the Trade" });
-    expect(grade.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(card("Team Two").compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("hides the finder when the flag is off, with my team picked", async () => {
@@ -617,7 +681,7 @@ describe("TradeForm with the finder", () => {
   it("hides the finder once the trade has a third side, and shows it again at two", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
     await pickTeam("Team Two", "Lil Fridge");
-    fireEvent.click(screen.getByRole("button", { name: "Add a Team" }));
+    await addTeam("Third Wheel");
     expect(screen.queryByRole("group", { name: "Trade Partner" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Remove Team Three" }));
     await waitFor(() => expect(screen.getByRole("group", { name: "Trade Partner" })).toBeTruthy());
@@ -633,7 +697,7 @@ describe("TradeForm with the finder", () => {
   async function openCard(finderDoc: unknown, index: number) {
     await pickTeam("Your Team", "All You Need Is Love");
     answer(200, finderDoc);
-    fireEvent.click(within(group("Trade Partner")).getByRole("radio", { name: /Lil Fridge/ }));
+    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: /Lil Fridge/ }));
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     const cards = await screen.findAllByRole("article");
     answer(200, fixtureJson);
@@ -644,13 +708,13 @@ describe("TradeForm with the finder", () => {
   it("resets the partner and the cards when my team changes", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
     answer(200, findJson);
-    fireEvent.click(within(group("Trade Partner")).getByRole("radio", { name: /Lil Fridge/ }));
+    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: /Lil Fridge/ }));
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     await screen.findAllByRole("article");
 
     await pickTeam("Your Team", "Lil Fridge");
     expect(screen.queryAllByRole("article")).toHaveLength(0);
-    const partners = within(group("Trade Partner")).getAllByRole("radio") as HTMLInputElement[];
+    const partners = within(screen.getByRole("group", { name: "Trade Partner" })).getAllByRole("radio") as HTMLInputElement[];
     expect(partners.every((p) => !p.checked)).toBe(true);
     expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(true);
   });
@@ -674,7 +738,7 @@ describe("TradeForm with the finder", () => {
     Element.prototype.scrollIntoView = vi.fn();
     await pickTeam("Your Team", "All You Need Is Love");
     answer(200, findJson);
-    fireEvent.click(within(group("Trade Partner")).getByRole("radio", { name: /Lil Fridge/ }));
+    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: /Lil Fridge/ }));
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     const cards = await screen.findAllByRole("article");
     expect(cards).toHaveLength(3);
@@ -694,8 +758,9 @@ describe("TradeForm with the finder", () => {
       ],
     });
     // The form shows the trade of the card, so the picks match the result.
-    expect(teamTrigger("Team Two").textContent).toContain("Lil Fridge");
-    expect(within(group("Your Team")).getByRole("button", { name: "Remove Ashton Jeanty" })).toBeTruthy();
-    expect(within(group("Team Two")).getByRole("button", { name: "Remove Caleb Williams" })).toBeTruthy();
+    edit();
+    expect(slot("Team Two").getAttribute("aria-label")).toContain("Lil Fridge");
+    expect(within(card("Team Two")).getByRole("button", { name: "Remove Ashton Jeanty" })).toBeTruthy();
+    expect(within(card("Your Team")).getByRole("button", { name: "Remove Caleb Williams" })).toBeTruthy();
   });
 });

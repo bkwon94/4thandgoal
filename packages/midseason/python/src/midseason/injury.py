@@ -8,8 +8,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from facts.tokens import Nums, fact
-from league.models import Blurb, History
-from midseason.blocks import ProseBlock
+from league.models import Blurb, Fact, History
 from midseason.players import SKILL_POSITIONS, PlayerCard
 
 # The Key starter rule of GLOSSARY.md, "Key starter": 3 starts in the last 4 completed weeks, or 2 starts with fewer
@@ -118,7 +117,7 @@ def injury_toll(
     ])
 
 
-def injury_prose(toll: InjuryToll) -> ProseBlock:
+def injury_facts(toll: InjuryToll) -> list[Fact]:
     """The facts of the injury toll: the starter games each team lost, and the player who cost it the most."""
     facts = []
     for team in toll.teams:
@@ -132,6 +131,4 @@ def injury_prose(toll: InjuryToll) -> ProseBlock:
             missed = "game" if top.games == 1 else "games"
             facts.append(fact(f"IT.{team.roster_id}.top", f"{top.name} missed {n(top.games)} {missed} as a starter of "
                               f"{team.name}.", n, [team.name], [top.name]))
-    return ProseBlock(key="injuries", title="The injury toll", facts=facts,
-                      teams=[team.name for team in toll.teams],
-                      players=[p.name for team in toll.teams for p in team.players])
+    return facts

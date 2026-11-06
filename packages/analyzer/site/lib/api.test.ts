@@ -93,8 +93,8 @@ describe("response parse", () => {
 });
 
 describe("toErrorLine for a wrong body", () => {
-  it("offers no retry for a 502", () => {
+  it("gives the plain line for a 502", () => {
     const line = toErrorLine(new ApiError(502, "wrong body"), false, "timed out");
-    expect(line).toEqual({ message: "The API sent an answer the site cannot read.", retry: false });
+    expect(line).toEqual({ message: "The API sent an answer the site cannot read." });
   });
 });

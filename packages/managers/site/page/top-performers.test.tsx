@@ -43,7 +43,7 @@ describe("TopPerformers", () => {
     ]);
   });
 
-  it("shows a headshot from the Sleeper CDN for each performer", () => {
+  it("shows a headshot from the Sleeper CDN in a round photo frame for each performer", () => {
     render(<TopPerformers manager={manager} />);
     const images = within(screen.getByRole("list")).getAllByRole("presentation");
     expect(images[0].getAttribute("src")).toBe("https://sleepercdn.com/content/nfl/players/8183.jpg");

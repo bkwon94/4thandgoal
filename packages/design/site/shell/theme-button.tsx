@@ -1,6 +1,6 @@
 /**
  * The theme button: a 44px icon button that switches the light and the dark theme, and stores the choice.
- * The masthead, the compact bar, and the desktop row each render one, and every copy shows the same theme.
+ * The top band renders it on every page. Every copy on a page shows the same theme.
  */
 "use client";
 
@@ -10,7 +10,7 @@ import { DARK_CLASS, storeTheme } from "../lib/theme";
 import { countEvent } from "../lib/usage";
 import { cn } from "../lib/utils";
 
-/* The copies of the button on the page. A press tells each copy, so the masthead, the bar, and the row never disagree. */
+/* The copies of the button on the page. A press tells each copy, so two copies never disagree. */
 const listeners = new Set<() => void>();
 
 function subscribe(listener: () => void) {
@@ -23,9 +23,10 @@ function rootIsDark() {
   return document.documentElement.classList.contains(DARK_CLASS);
 }
 
-/* The server renders the light theme, because it cannot know the choice. React reads the root class right after hydration. */
+/* The server renders the dark theme, the default that the export ships (ADR 0024). It cannot know a stored choice,
+   so React reads the root class right after hydration. */
 function serverIsDark() {
-  return false;
+  return true;
 }
 
 function switchTheme() {
@@ -49,7 +50,7 @@ export function ThemeButton({ className }: { className: string }) {
       type="button"
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
       onClick={switchTheme}
-      className={cn("press flex size-touch flex-none items-center justify-center text-on-dark hover-fine:text-accent-text", className)}
+      className={cn("press flex size-touch flex-none items-center justify-center text-ink hover-fine:text-accent-ink", className)}
     >
       <Icon aria-hidden className="size-sp-5" />
     </button>

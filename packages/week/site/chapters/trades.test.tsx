@@ -1,67 +1,73 @@
 /**
- * Tests for the trades chapter. They render the week 6 JSON and read the teams, the players, and the For tag.
+ * Tests for the Trades chapter. They render the week 8 JSON of CPC and read each side and the players it gets.
  * A copy of the JSON with no trades checks that the chapter is left out.
  */
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { week6 } from "../fixtures/week-page";
+import { week8 } from "../fixtures/week-page";
 import { Trades } from "./trades";
 
 afterEach(() => {
   cleanup();
 });
 
+function renderTrades(trades = week8.trades, managersHref: string | null = "/2026/managers/") {
+  render(<Trades trades={trades} avatars={week8.avatars} managersHref={managersHref} />);
+  return screen.getByRole("region", { name: "Trades" });
+}
+
+/* The players that a side gets, by the name of the side. */
+function gets(chapter: HTMLElement, team: string) {
+  return within(within(chapter).getByRole("list", { name: `${team} gets` }))
+    .getAllByRole("listitem")
+    .map((item) => item.textContent);
+}
+
 describe("Trades", () => {
-  it("shows the label and both teams of the first trade", () => {
-    render(<Trades trades={week6.trades} avatars={week6.avatars} />);
-    expect(screen.getByText("Trades")).toBeTruthy();
-    expect(screen.getAllByText("Pukancun on 3").length).toBe(2);
-    expect(screen.getAllByText("Amon-Ra Dawg Your Team").length).toBe(3);
+  it("shows a card for the trade of week 8 with the count of the week", () => {
+    const chapter = renderTrades();
+    expect(chapter.id).toBe("trades");
+    expect(within(chapter).getByText("1 this week")).toBeTruthy();
+    expect(within(chapter).getAllByRole("article")).toHaveLength(1);
   });
 
-  it("shows each player a side gets", () => {
-    render(<Trades trades={week6.trades} avatars={week6.avatars} />);
-    for (const name of ["Jacory Croskey-Merritt", "David Montgomery", "Omarion Hampton", "Tony Pollard", "Lamar Jackson"]) {
-      expect(screen.getByText(name)).toBeTruthy();
-    }
+  it("shows each side and the players it gets, each in a round photo frame", () => {
+    const chapter = renderTrades();
+    expect(gets(chapter, "NFC Least")).toEqual(["Saquon Barkley", "CeeDee Lamb"]);
+    expect(gets(chapter, "behold the lamb")).toEqual(["Omar Cooper Jr.", "Puka Nacua"]);
+    // The name sits beside the frame, so the photo is decorative and a screen reader hears the name once.
+    const saquon = within(within(chapter).getByRole("list", { name: "NFC Least gets" })).getAllByRole("listitem")[0];
+    expect(saquon.querySelector("img")?.getAttribute("src")).toBe("headshots/4866.png");
   });
 
-  it("puts one For tag and two Gets labels on each two-side trade", () => {
-    render(<Trades trades={week6.trades} avatars={week6.avatars} />);
-    expect(screen.getAllByText("For").length).toBe(week6.trades.length);
-    expect(screen.getAllByText("Gets").length).toBe(week6.trades.length * 2);
+  it("makes the whole team row of a side the link to its manager page", () => {
+    const chapter = renderTrades();
+    const link = within(chapter).getByRole("link", { name: "NFC Least" });
+    expect(link.getAttribute("href")).toMatch(/^\/2026\/managers\/\d+\/$/);
+    expect(link.querySelector("img")).not.toBeNull();
   });
 
-  it("shows picks as plain lines and gives a three-side trade no For tag", () => {
-    const [a, b] = week6.trades[0].sides;
-    const third = { ...a, players: [], picks: ["2027 1st round"] };
-    render(<Trades trades={[{ sides: [a, b, third] }]} avatars={week6.avatars} />);
-    expect(screen.getByText("2027 1st round")).toBeTruthy();
-    expect(screen.queryByText("For")).toBeNull();
+  it("shows the team names as plain text when the season has no managers file", () => {
+    const chapter = renderTrades(week8.trades, null);
+    expect(within(chapter).queryByRole("link")).toBeNull();
+    expect(within(chapter).getByText("NFC Least")).toBeTruthy();
   });
 
-  it("gives a four-side trade no For tag and shows all four teams", () => {
-    const [a, b] = week6.trades[0].sides;
-    const c = { ...a, team: { ...a.team, roster_id: 901, name: "Third Team" }, players: [], picks: ["2027 2nd round"] };
-    const d = { ...b, team: { ...b.team, roster_id: 902, name: "Fourth Team" }, players: [], picks: ["2028 1st round"] };
-    render(<Trades trades={[{ sides: [a, b, c, d] }]} avatars={week6.avatars} />);
-    expect(screen.queryByText("For")).toBeNull();
-    for (const name of [a.team.name, b.team.name, "Third Team", "Fourth Team"]) {
-      expect(screen.getAllByText(name).length).toBeGreaterThan(0);
-    }
+  it("shows picks as plain lines and all sides of a trade of three", () => {
+    const [a, b] = week8.trades[0].sides;
+    const third = { ...a, team: { ...a.team, roster_id: 901, name: "Third Team" }, players: [], picks: ["2027 1st round"] };
+    const chapter = renderTrades([{ sides: [a, b, third] }]);
+    expect(gets(chapter, "Third Team")).toEqual(["2027 1st round"]);
+    expect(within(chapter).getByText("1 this week")).toBeTruthy();
+  });
+
+  it("counts two trades as 2 this week", () => {
+    const chapter = renderTrades([week8.trades[0], week8.trades[0]]);
+    expect(within(chapter).getByText("2 this week")).toBeTruthy();
   });
 
   it("leaves the chapter out when the week has no trades", () => {
-    const copy = { ...week6, trades: [] };
-    const { container } = render(<Trades trades={copy.trades} avatars={copy.avatars} />);
+    const { container } = render(<Trades trades={[]} avatars={week8.avatars} />);
     expect(container.innerHTML).toBe("");
-    expect(screen.queryByText("Trades")).toBeNull();
-  });
-
-  it("links a side's team name to its manager page only when the season has the managers file", () => {
-    const { rerender } = render(<Trades trades={week6.trades} avatars={week6.avatars} managersHref="/2026/managers/" />);
-    expect(screen.getAllByRole("link", { name: "Pukancun on 3" })[0].getAttribute("href")).toBe("/2026/managers/4/");
-    rerender(<Trades trades={week6.trades} avatars={week6.avatars} />);
-    expect(screen.queryByRole("link", { name: "Pukancun on 3" })).toBeNull();
   });
 });

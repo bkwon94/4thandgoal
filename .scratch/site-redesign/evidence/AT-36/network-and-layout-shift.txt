@@ -1,0 +1,66 @@
+== week 8 load at 375 px, fonts allowed
+{
+  "url": "http://localhost:4173/2026/week-08/?cache=21743",
+  "viewport": 375,
+  "fonts": [
+    {
+      "url": "http://localhost:4173/_next/static/media/space_grotesk_latin_variable-s.p.2cyn07wtgehh0.woff2",
+      "transferSize": 0,
+      "encodedBodySize": 22320,
+      "initiator": "link"
+    },
+    {
+      "url": "http://localhost:4173/_next/static/media/jetbrains_mono_latin_variable.p.1bkzbscqrt8rl.woff2",
+      "transferSize": 0,
+      "encodedBodySize": 31340,
+      "initiator": "link"
+    }
+  ],
+  "fontCount": 2,
+  "fontBytes": 53660,
+  "requestOrigins": [
+    "http://localhost:4173",
+    "https://gc.zgo.at"
+  ],
+  "cls": 0,
+  "shifts": [],
+  "fontsStatus": [
+    "spaceGrotesk:loaded",
+    "spaceGrotesk Fallback:unloaded",
+    "jetbrainsMono:loaded",
+    "JetBrains Mono Fallback:unloaded"
+  ]
+}
+== week 8 load at 1280 px, fonts allowed
+{
+  "url": "http://localhost:4173/2026/week-08/?cache=14536",
+  "viewport": 1280,
+  "fonts": [
+    {
+      "url": "http://localhost:4173/_next/static/media/jetbrains_mono_latin_variable.p.1bkzbscqrt8rl.woff2",
+      "transferSize": 0,
+      "encodedBodySize": 31340,
+      "initiator": "link"
+    },
+    {
+      "url": "http://localhost:4173/_next/static/media/space_grotesk_latin_variable-s.p.2cyn07wtgehh0.woff2",
+      "transferSize": 0,
+      "encodedBodySize": 22320,
+      "initiator": "link"
+    }
+  ],
+  "fontCount": 2,
+  "fontBytes": 53660,
+  "requestOrigins": [
+    "http://localhost:4173",
+    "https://gc.zgo.at"
+  ],
+  "cls": 0,
+  "shifts": [],
+  "fontsStatus": [
+    "spaceGrotesk:loaded",
+    "spaceGrotesk Fallback:unloaded",
+    "jetbrainsMono:loaded",
+    "JetBrains Mono Fallback:unloaded"
+  ]
+}

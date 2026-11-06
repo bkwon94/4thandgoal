@@ -3,12 +3,14 @@
 ## Knows
 
 - The package values in `values.py` (`cpc-sim`, imported as `sim`). It has no values.
-- The draw of the rest of the regular season, the playoff bracket, and the writer of `sim.json` come with ticket 03 of `.scratch/midseason-report/`.
+- The sim in `season.py`: the draw of the weekly odds over the rest of the regular season, then the bracket of the playoff weeks. The bracket reseeds after each round when `reseed` of the League settings is on. It counts the playoff, the bye, the final, the title, each seed, and each final win total over 10,000 runs, and keeps the first 200 runs.
+- The numbers of the draw in `tunables.py`.
+- The shape of `sim.json` and its writer in `published.py`.
 - The site part, the replay, comes with ticket 13. It reads `sim.json` and nothing of the report.
 
 ## Ports
 
-- It declares no port. An app runs the sim and hands the result to the report through the port of `midseason`.
+- It declares no port. `season_sim` takes the scores, the records, the pairs left, and the projected totals as data. An app loads them, runs the sim, and hands the result to the report through the port of `midseason`.
 
 ## Does not do
 

@@ -9,9 +9,8 @@ from typing import Literal
 from pydantic import BaseModel
 
 from facts.tokens import Nums, fact
-from league.models import Blurb, History
+from league.models import Blurb, Fact, History
 from league.numbers import r2
-from midseason.blocks import ProseBlock
 from midseason.players import PlayerCard, league_points
 
 BOARD_SIZE = 10
@@ -103,7 +102,7 @@ def position_top10(
 PROSE_RANKS = 3
 
 
-def top10_prose(top: PositionTop10) -> ProseBlock:
+def top10_facts(top: PositionTop10) -> list[Fact]:
     """The facts of Position top 10: the top rows of each board, with the manager now or the free agent tag. A fact
     holds 2 numbers, the most a sentence may hold, so the points per game stay on the page only."""
     facts = []
@@ -114,6 +113,4 @@ def top10_prose(top: PositionTop10) -> ProseBlock:
             facts.append(fact(f"TOP.{board.position}.{row.rank}",
                               f"{row.name} is the {board.position} #{n(row.rank)} with {n(row.points)} points, {who}.",
                               n, [row.manager] if row.manager else [], [row.name]))
-    return ProseBlock(key="top10", title="Position top 10", facts=facts,
-                      teams=sorted({f.teams[0] for f in facts if f.teams}),
-                      players=[f.players[0] for f in facts])
+    return facts

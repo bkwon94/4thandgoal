@@ -1,0 +1,15 @@
+$ uv run --exact --package cpc-league python history_step.py <copy of clients/cpc/data/2026 with week 7 from main>
+Uninstalled 2 packages in 0.91ms
+before rows 32 sha256 8167a8b224cd85bc
+after  rows 59 sha256 d1f530820aaf4fba
+week-08/raw/transactions_prev.json present: True
+cmp with week-08/raw/transactions_prev.json:
+identical
+
+$ uv run --exact --package cornerstone pytest -q apps/pipeline/tests/test_history.py apps/pipeline/tests/test_pipeline.py -k 'week_before or prev'
+apps/pipeline/tests/test_history.py::test_the_full_week_before_replaces_the_short_history_file PASSED [ 20%]
+apps/pipeline/tests/test_history.py::test_no_prev_file_leaves_the_history_as_it_is PASSED [ 40%]
+apps/pipeline/tests/test_pipeline.py::test_build_writes_the_full_week_before_into_the_history PASSED [ 60%]
+apps/pipeline/tests/test_pipeline.py::test_build_survives_a_failed_write_of_the_week_before PASSED [ 80%]
+apps/pipeline/tests/test_pipeline.py::test_window_reads_the_fresh_transactions_of_the_week_before PASSED [100%]
+====================== 5 passed, 102 deselected in 1.02s =======================

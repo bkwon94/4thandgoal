@@ -42,6 +42,11 @@ def raw_dir(client: Path, season: int, week: int) -> Path:
     return week_dir(client, season, week) / "raw"
 
 
+def draft_dir(client: Path, season: int) -> Path:
+    """The saved draft of the season: draft.json and picks.json, as the provider sent them."""
+    return _season_root(client, season) / "draft"
+
+
 def history_root(client: Path, season: int) -> Path:
     return _season_root(client, season) / "history"
 

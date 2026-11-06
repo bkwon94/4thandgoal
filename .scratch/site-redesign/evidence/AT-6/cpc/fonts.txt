@@ -1,0 +1,1 @@
+"{\"h1\":\"spaceGrotesk, \\\"spaceGrotesk Fallback\\\"\",\"big\":\"jetbrainsMono, \\\"JetBrains Mono Fallback\\\", Menlo, \\\"Courier New\\\", monospace\",\"loaded\":[\"spaceGrotesk\",\"jetbrainsMono\"],\"accent\":\"rgba(0, 0, 0, 0)\",\"logo\":\"/brand/logo.png\"}"

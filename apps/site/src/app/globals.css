@@ -1,11 +1,11 @@
 /**
  * Tailwind entry, the design tokens, and the shadcn theme variables for the app routes. The brand of the client adds
- * the color roles, the fonts, and the radii. Pages in public/ do not load this file. Every other hex color and pixel size lives here.
+ * the color roles. The fonts and the radii belong to the look, so they live here (ADR 0024). Pages in public/ do not load this file. Every other hex color and pixel size lives here.
  */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-/* The brand of the client: the color roles of each set, the fonts, and the radii. The client build writes it. */
+/* The brand of the client: the color roles of each set. The client build writes it. */
 @import "../generated/brand.css";
 /* Tailwind scans the app only. The site side of each package holds its own class names, so each one is a source too.
    A glob over packages/ finds no file, so each package takes its own line. */
@@ -33,7 +33,7 @@
 /* The brand tokens, ported from the source stylesheet. Static keeps every token on :root,
    so the shadcn variables below can point at any token, even one without a utility. */
 @theme static {
-    /* The color roles, the fonts, and the radii come from the brand of the client. The client build writes them
+    /* The color roles come from the brand of the client. The client build writes them
        into src/generated/brand.css from clients/$CLIENT/brand.toml, and the import at the top adds them.
        The stylesheet calls the grey text "muted". The token is "mute", because shadcn owns "muted". */
 
@@ -43,6 +43,21 @@
        The arrow shape and the screen reader text also carry the direction, so the color is never the only sign. */
     --color-move-up: #3987e5;
     --color-move-down: #e05a4f;
+
+    /* The fonts of the look, the same for every client (ADR 0024). The root layout puts the two font variables on
+       <html> from src/app/fonts/fonts.ts. Space Grotesk sets text and headings. JetBrains Mono sets numbers, scores,
+       and small uppercase labels. Each variable already holds its fallback faces. */
+    --font-sans: var(--font-space-grotesk);
+    --font-heading: var(--font-sans);
+    --font-mono: var(--font-jetbrains-mono);
+
+    /* The radii of the look: the hero, a card, a tile, and a full pill for a button and a bar.
+       rounded-sm paints the tags and the bars, so it takes the pill. */
+    --radius-hero: 24px;
+    --radius-card: 20px;
+    --radius-tile: 18px;
+    --radius-pill: 9999px;
+    --radius-sm: var(--radius-pill);
 
     /* Spacing scale. Every padding, margin, and gap comes from this list. */
     --spacing-sp-0: 2px;
@@ -60,6 +75,23 @@
     --spacing-divider: 28px;
     --spacing-avatar: 28px;
     --spacing-touch: 44px;
+    /* An item of the dock: the 20px icon, a 4px gap, and the 12px label, with room above and below for a thumb. */
+    --spacing-dock: 56px;
+    /* The open strip of weeks: a 44px chip row, 12px above and below, and its 1px rule on top. The top band grows by
+       the same space while the strip is open, so the strip covers no part of the page. */
+    --spacing-strip: calc(var(--spacing-touch) + 2 * var(--spacing-sp-3) + 1px);
+    /* The space the dock takes at the bottom of a phone: the item, the 4px inset of the dock, its 1px edges, and its
+       12px offset from the bottom edge. The body keeps it free, so the dock never covers the end of the page. */
+    --spacing-dock-space: calc(var(--spacing-dock) + 2 * var(--spacing-sp-1) + 2px + var(--spacing-sp-3));
+    /* The inner space of the hero: 28px on top and bottom, and 24px on the sides (ADR 0024). */
+    --spacing-hero-y: 28px;
+    --spacing-hero-x: var(--spacing-sp-6);
+    /* The cell of the grid texture of the hero. */
+    --spacing-hero-grid: 24px;
+    /* The arm of a corner bracket of the hero. */
+    --spacing-bracket: 16px;
+    /* The round photo frame of an award tile (ADR 0024). The row frame takes the avatar token, and the hero frame the headshot token. */
+    --spacing-photo: 44px;
     /* The smallest pointer target that WCAG 2.2 AA allows, for a link in a list that a mouse or a trackpad reaches. */
     --spacing-target: 24px;
     /* The player cutout on a trade chip. 64px keeps a column of chips short at 390. */
@@ -76,39 +108,15 @@
     --spacing-pick-chip: 52px;
     /* The chevron on a recap button: a small square turned 45 degrees, so it reads as an arrow. */
     --spacing-chevron: 6px;
-    /* The median chart: the bar height, and the score column on the right. The plot box ends where the
-       score column starts, so the median line and the bars share one percent scale. */
-    --spacing-median-bar: 14px;
-    --spacing-val-col: 52px;
-    /* The median bar from the tablet tier up. A bar that spans a 640px column reads as a thin line at 14px,
-       so a taller bar keeps each team's bar easy to tell apart from the next. */
-    --spacing-median-bar-wide: 20px;
-    /* The standings columns: rank, W-L, and points. The points column fits 000.00 at the row size. */
+    /* The rank column and the value column of a row of the waiver war chest. The value column fits 000.00 at the row size. */
     --spacing-standings-rank: 24px;
-    --spacing-standings-record: 44px;
-    --spacing-standings-points: 56px;
+    --spacing-val-col: 52px;
     /* The chapter rail on a desktop and the gap between it and the page column. 184px fits the longest chapter label,
        Matchup of the Week at the desktop label size, on one line. */
     --spacing-rail: 184px;
     --spacing-rail-gap: var(--spacing-sp-6);
-    /* The standings columns from the tablet tier up. The phone tokens pack the numbers against the names,
-       so the wide row gives each number column more room and the eye can follow a row across the width. */
-    --spacing-standings-rank-wide: 40px;
-    --spacing-standings-record-wide: 72px;
-    --spacing-standings-points-wide: 96px;
     /* The power rankings columns for movement, the record, the playoff odds, and each component rank. 40px fits a five-letter column name in caps. */
     --spacing-rankings-col: 40px;
-    /* The power rankings columns from the tablet tier up. A team name stays on one line there, so the team track must hold
-       the avatar 28px, its gap 8px, and the longest full name. "Amon-Ra Dawg Your Team" is 168.5px at the 14px tablet row
-       and 180.6px at the 15px desktop row, so the track needs 205px and 217px. The numbers spread only with the width left.
-       The chapter content is the page column minus two 16px gutters, and the row has nine gaps of 8px.
-       A component column must also hold its header on one line. "SCHED" in caps is 43px at the 11px tablet label
-       and 46.9px at the 12px desktop label. On a tablet only the four component columns take 44px; the movement,
-       the record, and the playoff odds keep 40px.
-       Tablet: 640 - 32 = 608px. The phone rank 24 + 6 + 3 × 40 + 4 × 44 + 9 × 8 = 398px, so the team gets 210px.
-       Desktop: 720 - 32 = 688px. The wide rank 40 + 6 + 7 × 48 + 9 × 8 = 454px, so the team gets 234px. */
-    --spacing-rankings-col-tablet: 44px;
-    --spacing-rankings-col-desktop: 48px;
 
     /* The three tiers the site designs for, on Tailwind's default sm and lg values. A phone is any width under the tablet tier.
        The phone token starts at zero, so the set names every tier; max-tablet: is the variant for a phone only. */
@@ -124,6 +132,9 @@
     --container-page-phone: 100%;
     --container-page-tablet: 640px;
     --container-page-desktop: 720px;
+    /* The top band: wider than the page column, so the brand mark, the pill bar, the week chip, and the theme button
+       share one row from the rail tier up. */
+    --container-band: 1200px;
     /* The page column that max-w-page reads. A rule in the base layer switches it to the token of the tier. */
     --container-page: var(--container-page-phone);
     /* The viewport where a wide table has room for every column. Under it, a wide table folds part of each row under the row.
@@ -134,10 +145,6 @@
     --container-measure: 68ch;
     /* The gap between two chapter cards on the grey body, from the tablet tier up. */
     --spacing-card-gap: var(--spacing-sp-4);
-    /* The game changer hero height from the tablet tier up. A set height lets a long name and a short name give the same hero,
-       and the cutout fills it without a push. The desktop hero is taller, because its points and its column are bigger. */
-    --spacing-hero-tablet: 360px;
-    --spacing-hero-desktop: 420px;
 
     /* Type scale: label, meta, row, body, lead, stat, score, headline. Row is for dense lists,
        so names and scores stay on one line. A size sets no line height, so text keeps the inherited body leading.
@@ -177,6 +184,8 @@
 
     /* The press easing. A strong ease-out gives instant feedback on a tap. packages/design/site/lib/motion.ts holds the same curve as numbers. */
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    /* The curve of the rise of the look and the scan line of the hero (ADR 0024). RISE_EASE in motion.ts holds the same curve. */
+    --ease-rise: cubic-bezier(0.16, 1, 0.3, 1);
 }
 /*---break---
  */
@@ -255,11 +264,12 @@
     --sidebar-border: var(--color-rule);
     --sidebar-ring: var(--color-accent);
 
-    /* The light theme is the report look and the default. The .dark block below holds the dark theme. See ADR 0007. */
+    /* The light set paints here. The .dark block below holds the dark theme, which is the default. See ADR 0007 and ADR 0024. */
     color-scheme: light;
 }
 /* The dark theme: the .dark class on <html> turns it on, and src/generated/brand.css re-points each color role in its own
-   .dark block, so no component changes a class. See ADR 0007. A brand with one dark set puts the class on <html> at build time. */
+   .dark block, so no component changes a class. See ADR 0007. The build puts the class on <html> for every client, so dark is
+   the default, and the boot script removes it for a stored light choice (ADR 0024). */
 .dark {
     /* The shadcn button paints in --primary, the masthead black, which equals the dark page and the dialog. The button then has no edge,
        so the dark theme inverts it: a white button with page-black text, 18.4 to 1. */
@@ -289,7 +299,7 @@
 @utility press {
     transition: var(--press);
     &:active {
-        transform: scale(0.985);
+        transform: scale(0.98);
     }
     @media (prefers-reduced-motion: reduce) {
         transition: none;
@@ -344,10 +354,18 @@
       --text-headline: 46px;
     }
     }
-  /* The compact bar is fixed over the top 44px of the viewport. The padding keeps a focused element or an anchor target clear of it. */
+  /* The top band is sticky over the top of the viewport: one 44px row and 8px above and below at every tier.
+     The padding keeps a focused element or an anchor target clear of it. */
   html {
     @apply font-sans;
-    scroll-padding-top: var(--spacing-touch);
+    scroll-padding-top: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2));
+    }
+  /* The dock is fixed over the bottom of a phone and a tablet, so the body keeps its space free under the page. */
+  body {
+    padding-bottom: calc(var(--spacing-dock-space) + env(safe-area-inset-bottom));
+    @variant desktop {
+      padding-bottom: 0;
+    }
     }
   :focus-visible {
     outline: 2px solid var(--color-accent);
@@ -355,39 +373,80 @@
     }
 }
 
-/* The game changer stage. Two layered gradients cannot be Tailwind classes cleanly, so they live here.
-   On a phone the image and the text share one grid cell, so the taller of the two, most often the image, sets the stage height.
-   From the tablet tier up the text and the image are two columns, and the hero height token sets the stage height. */
+/* The glow of the waiver page. A radial gradient cannot be a Tailwind class cleanly, so it lives here. */
 @layer components {
-    /* The red glow sits behind the head, so the cutout lifts off the black card.
-       The glow is an element and not a pseudo-element, so the hero can fade it in on its own. */
     /* The red glow under the waiver drift field. It sits a little below the middle, behind the top add. */
     .field-glow {
         position: absolute;
         inset: 0;
         background: radial-gradient(circle at 50% 45%, var(--color-accent-glow), transparent 60%);
     }
-    .stage-glow {
-        position: absolute;
-        z-index: 0;
-        right: -10%;
-        top: 0;
-        width: 90%;
-        height: 90%;
-        background: radial-gradient(closest-side, var(--color-accent-glow), transparent);
+}
+
+/* The text plate of the hero: the band color under the text and a soft edge of the same color around it.
+   The grid and the glow then never sit under a letter, so the contrast of hero text is the contrast of its role pair,
+   and axe can read it. A box-shadow is no background for axe, and the edge hides the end of the plate on the glow.
+   The plate reaches past the text on each side, because tight leading and wide tracking put the glyph boxes past the
+   box of the element, and axe needs the plate to hold every glyph box. A glyph box is about 1.3 em tall, so a line
+   with no extra leading needs 0.2 em above and below. The negative margin keeps the text in line with the hero. */
+@utility plate {
+    background-color: var(--color-band);
+    box-shadow: 0 0 var(--spacing-sp-3) var(--spacing-sp-2) var(--color-band);
+    padding: max(var(--spacing-sp-1), 0.2em) var(--spacing-sp-1);
+    margin-inline: calc(var(--spacing-sp-1) * -1);
+}
+
+@layer components {
+    /* The art of the hero: the brand glow in the lower right corner, over the 24px grid of the grid color.
+       Three layers of one background cannot be Tailwind classes cleanly, so they live here. */
+    .hero-texture {
+        background-image:
+            radial-gradient(ellipse 70% 90% at 100% 100%, var(--color-accent-glow), transparent 70%),
+            linear-gradient(var(--color-grid) 1px, transparent 1px),
+            linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+        background-size:
+            100% 100%,
+            var(--spacing-hero-grid) var(--spacing-hero-grid),
+            var(--spacing-hero-grid) var(--spacing-hero-grid);
     }
-    /* The left-to-right gradient darkens the face under the text, so the name and points stay legible.
-       The bottom fade turns the cut edge of the chest crop into the black card color. */
-    /* The stage sits on the black card, so both gradients read --color-card-band. In the dark theme the card lifts,
-       and the fade must end in the black card color, or a black band shows at the card edge. */
-    .stage::after {
+    /* The scan line of the hero: a thin line in the accent text color that sweeps from the top to the bottom once on
+       entry, then fades out. The box spans the hero and only its transform and its opacity move. */
+    .hero-scan {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        animation: hero-scan 1.4s var(--ease-rise) 0.1s 1 both;
+    }
+    .hero-scan::before {
         content: "";
         position: absolute;
-        z-index: 2;
-        inset: 0;
-        background:
-            linear-gradient(to right, var(--color-card-band) 0%, color-mix(in srgb, var(--color-card-band) 85%, transparent) 30%, transparent 62%),
-            linear-gradient(to top, var(--color-card-band) 0%, transparent 30%);
+        inset-inline: 0;
+        top: 0;
+        height: var(--spacing-sp-0);
+        background: linear-gradient(90deg, transparent, var(--color-accent-text), transparent);
+    }
+    /* The ground of a photo in its round frame: the brand glow over the raised surface. Initials never sit on it. */
+    .photo-ground {
+        background: radial-gradient(circle at 50% 65%, var(--color-accent-glow), transparent 70%) var(--color-raised);
+    }
+}
+@keyframes hero-scan {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+/* Reduced motion turns the scan line off. The rise and the tap scale stop through the rules below and useMotionOff. */
+@media (prefers-reduced-motion: reduce) {
+    .hero-scan {
+        display: none;
     }
 }
 

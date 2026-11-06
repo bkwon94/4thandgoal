@@ -9,9 +9,8 @@ from typing import Literal
 from pydantic import BaseModel
 
 from facts.tokens import Nums, fact
-from league.models import Blurb, ExpectedGame, History
+from league.models import Blurb, ExpectedGame, Fact, History
 from league.numbers import r2
-from midseason.blocks import ProseBlock
 from midseason.players import SKILL_POSITIONS, PlayerCard, league_points
 
 # Each list names 3 players.
@@ -117,7 +116,7 @@ def players_to_watch(
     )
 
 
-def watch_prose(watch: PlayersToWatch) -> ProseBlock:
+def watch_facts(watch: PlayersToWatch) -> list[Fact]:
     """The facts of the players to watch: each player of the three lists with the number behind him."""
     facts = []
     for label, rows in (("rise", watch.due_to_rise), ("fall", watch.due_to_fall)):
@@ -134,6 +133,4 @@ def watch_prose(watch: PlayersToWatch) -> ProseBlock:
         facts.append(fact(f"PW.grab.{place}",
                           f"{row.name} is a free agent with {n(row.projection)} projected points through the regular "
                           "season.", n, [], [row.name]))
-    return ProseBlock(key="watch", title="Players to watch", facts=facts,
-                      teams=sorted({team for f in facts for team in f.teams}),
-                      players=[f.players[0] for f in facts])
+    return facts

@@ -1,5 +1,5 @@
 /**
- * The analyzer page body: the passphrase dialog, the teams fetch, and the trade form.
+ * The analyzer page body: the passphrase dialog, the teams fetch, and the Stack of the trade form.
  * It owns the passphrase, so a 401 from any call asks again. Stored teams show at once while a fresh fetch runs.
  */
 "use client";
@@ -8,10 +8,8 @@ import { useEffect, useState } from "react";
 import { ErrorLine } from "@cpc/design/parts/error-line";
 import { PassphraseDialog } from "./passphrase-dialog";
 import { Reveal } from "@cpc/design/parts/reveal";
-import { TeamsSkeleton } from "./teams-skeleton";
 import { TradeForm } from "./trade-form";
 import { Button } from "@cpc/design/ui/button";
-import { Chapter } from "@cpc/design/parts/chapter";
 import { useRequest } from "./use-request";
 import { ApiError, type ApiTarget, retryText, type Team } from "../lib/api";
 import { DURATION } from "@cpc/design/lib/motion";
@@ -26,6 +24,9 @@ type TeamsState =
   | { status: "failed" };
 
 const WRONG_PASSPHRASE = "That passphrase is wrong.";
+
+/* The teams of the empty Stack before the fetch answers. One constant, so the form sees no change of list on each render. */
+const NO_TEAMS: Team[] = [];
 
 /* The API target and the finder flag come from the page, so the analyzer and the form under it import no config. */
 export function Analyzer({ target, finderOn }: { target: ApiTarget; finderOn: boolean }) {
@@ -98,15 +99,23 @@ export function Analyzer({ target, finderOn }: { target: ApiTarget; finderOn: bo
     setPassphraseState(value);
   }
 
-  /* The form and every state of the fetch sit in one chapter, so from the tablet tier they read as one white card.
-     The chapter carries the gutter and the vertical padding. */
+  /* The lines of the fetch sit between the hero and the form. The empty Stack shows under them from the first paint,
+     with each control off until the teams arrive, so the page does not jump when they do. */
   const states = (
     <>
       <PassphraseDialog open={passphrase === null} error={authError} onSubmit={handleSubmit} />
-      {teams.status === "loading" && <TeamsSkeleton />}
-      {teams.status === "rate-limited" && <ErrorLine>{retryText(teams.retryAfter)}</ErrorLine>}
+      {teams.status === "loading" && (
+        <p role="status" className="mt-sp-4 mb-0 text-lead text-mute">
+          Loading the teams…
+        </p>
+      )}
+      {teams.status === "rate-limited" && (
+        <div className="mt-sp-4">
+          <ErrorLine>{retryText(teams.retryAfter)}</ErrorLine>
+        </div>
+      )}
       {teams.status === "failed" && (
-        <div className="flex flex-col gap-sp-3">
+        <div className="mt-sp-4 flex flex-col gap-sp-3">
           <ErrorLine>The API did not answer. Try again.</ErrorLine>
           <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => setAttempt((n) => n + 1)}>
             Try Again
@@ -116,20 +125,25 @@ export function Analyzer({ target, finderOn }: { target: ApiTarget; finderOn: bo
     </>
   );
 
-  if (teams.status !== "ready" || !passphrase) return <Chapter>{states}</Chapter>;
+  const ready = teams.status === "ready" && passphrase;
 
   return (
-    <TradeForm teams={teams.teams} target={target} finderOn={finderOn} passphrase={passphrase} onUnauthorized={handleUnauthorized} onRostersStale={handleStaleRosters}>
-      {/* The result sits after the chapter, not inside it, so its own chapters read as cards under the form card. */}
-      {({ form, result }) => (
+    <TradeForm
+      teams={ready ? teams.teams : NO_TEAMS}
+      target={target}
+      finderOn={finderOn}
+      passphrase={passphrase ?? ""}
+      onUnauthorized={handleUnauthorized}
+      onRostersStale={handleStaleRosters}
+    >
+      {({ hero, form, result }) => (
         <>
-          <Chapter>
-            {states}
-            {/* The form is the content of the route, so it fades and rises in once when it first shows. With motion off it shows at rest. */}
-            <Reveal trigger="mount" duration={DURATION.page}>
-              {form}
-            </Reveal>
-          </Chapter>
+          {hero}
+          {states}
+          {/* The form is the content of the route, so it fades and rises in once when it first shows. With motion off it shows at rest. */}
+          <Reveal trigger="mount" duration={DURATION.page}>
+            {form}
+          </Reveal>
           {result}
         </>
       )}

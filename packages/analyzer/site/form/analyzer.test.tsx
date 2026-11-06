@@ -1,11 +1,12 @@
 /**
- * Tests for the analyzer: the passphrase dialog, the teams fetch, and the two sides of the form.
+ * Tests for the analyzer: the passphrase dialog, the teams fetch, and the empty Stack under them.
  * fetch is a test stub. Each test reads the screen, the stored passphrase, and the stored teams.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { apiTarget } from "../lib/fixtures/api";
 import { Analyzer } from "./analyzer";
+import { pickTeam, pickTrade, slot, type SideTitle } from "./form-steps";
 
 const TEAMS = {
   teams: [
@@ -50,48 +51,23 @@ const ROSTERS = [
 
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
 
-/* The team picker of a side is named by the side's heading. */
-const teamTrigger = (side: "Your Team" | "Team Two") => screen.getByRole("combobox", { name: side });
-
-/* Opens a picker and returns its list. The popup renders in a portal, so the test finds it on the screen. */
-async function openPicker(trigger: HTMLElement) {
-  fireEvent.click(trigger);
-  return screen.findByRole("listbox");
+/* The teams arrive when the slots turn on. */
+async function formReady() {
+  await waitFor(() => expect(slot("Your Team").disabled).toBe(false));
 }
 
-async function closePicker(list: HTMLElement) {
-  fireEvent.keyDown(list, { key: "Escape" });
-  await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
-}
-
-/* The names in a side's team picker. The test opens the picker, reads the names, and closes it. */
-async function teamNames(side: "Your Team" | "Team Two") {
-  const list = await openPicker(teamTrigger(side));
-  const names = within(list).getAllByRole("option").map((o) => o.textContent);
-  await closePicker(list);
+/* The rows of the team sheet of a side. The test opens the sheet, reads each row, and closes it. */
+async function teamNames(side: SideTitle) {
+  fireEvent.click(slot(side));
+  const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
+  const names = rows.filter((r) => !(r as HTMLButtonElement).disabled).map((r) => r.textContent);
+  fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Close" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   return names;
 }
 
-/* Base UI commits a mouse pick only for a press that starts on the item, so the test sends the pointer down first. */
-async function choose(trigger: HTMLElement, name: string) {
-  const list = await openPicker(trigger);
-  const option = within(list).getByRole("option", { name: new RegExp(name) });
-  fireEvent.pointerDown(option, { pointerType: "mouse" });
-  fireEvent.click(option);
-  if (screen.queryByRole("listbox")) await closePicker(list);
-}
-
-/* Picks both teams, then Ana One or Ana Two on my side and Ben One on the other side. */
-async function pickTrade() {
-  await choose(teamTrigger("Your Team"), "Gridiron Ghosts");
-  await choose(teamTrigger("Team Two"), "Blitz Bakers");
-  const mine = screen.getByRole("combobox", { name: "Gridiron Ghosts Gives" });
-  const list = await openPicker(mine);
-  const hasAnaOne = within(list).queryByRole("option", { name: /Ana One/ }) !== null;
-  await closePicker(list);
-  await choose(mine, hasAnaOne ? "Ana One" : "Ana Two");
-  await choose(screen.getByRole("combobox", { name: "Blitz Bakers Gives" }), "Ben One");
-}
+/* Both teams of ROSTERS, with Ben One for my side and Ana Two for the other side. */
+const TRADE = { mine: "Gridiron Ghosts", other: "Blitz Bakers", mineGets: "Ben One", otherGets: "Ana Two" };
 
 beforeEach(() => {
   localStorage.clear();
@@ -111,10 +87,14 @@ async function submitPassphrase(value: string) {
 }
 
 describe("Analyzer", () => {
-  it("shows the dialog and no pickers on first load", async () => {
+  it("shows the dialog over the empty Stack on first load, with each control off", async () => {
     render(<Analyzer target={apiTarget} finderOn={false} />);
     expect(await screen.findByRole("dialog")).toBeTruthy();
-    expect(screen.queryByText("Your Team")).toBeNull();
+    // The modal dialog hides the page from the accessibility tree, so these queries take hidden elements too.
+    expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer", hidden: true })).toBeTruthy();
+    expect(screen.getByText("2 of 4")).toBeTruthy();
+    expect((screen.getByRole("button", { name: "Pick Your Team", hidden: true }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole("button", { name: "Grade the Trade", hidden: true }) as HTMLButtonElement).disabled).toBe(true);
     expect(fetchStub).not.toHaveBeenCalled();
   });
 
@@ -123,13 +103,13 @@ describe("Analyzer", () => {
     render(<Analyzer target={apiTarget} finderOn={false} />);
     await submitPassphrase("localtest");
 
-    expect(await screen.findByText("Pick the Teams")).toBeTruthy();
+    await formReady();
     const [url, init] = fetchStub.mock.calls[0];
     expect(url).toBe("https://api.example.test/clients/cpc/teams?season=2026");
     expect(init.headers["X-League-Passphrase"]).toBe("localtest");
     expect(localStorage.getItem("cpc.passphrase")).toBe("localtest");
-    expect(teamTrigger("Your Team").textContent).toContain("Pick a Team");
-    expect(teamTrigger("Team Two").textContent).toContain("Pick a Team");
+    expect(slot("Your Team").getAttribute("aria-label")).toBe("Pick Your Team");
+    expect(slot("Team Two").getAttribute("aria-label")).toBe("Pick Team Two");
     expect(await teamNames("Your Team")).toEqual(["Gridiron GhostsAna", "Blitz BakersBen", "Punt PunksCy"]);
     expect(screen.queryByRole("dialog")).toBeNull();
   });
@@ -139,7 +119,7 @@ describe("Analyzer", () => {
     answer(200, TEAMS);
     render(<Analyzer target={apiTarget} finderOn={false} />);
 
-    expect(await screen.findByText("Pick the Teams")).toBeTruthy();
+    await formReady();
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(fetchStub.mock.calls[0][1].headers["X-League-Passphrase"]).toBe("localtest");
   });
@@ -155,7 +135,7 @@ describe("Analyzer", () => {
 
     answer(200, TEAMS);
     await submitPassphrase("localtest");
-    expect(await screen.findByText("Pick the Teams")).toBeTruthy();
+    await formReady();
     expect(fetchStub).toHaveBeenCalledTimes(2);
   });
 
@@ -173,17 +153,17 @@ describe("Analyzer", () => {
     expect(await screen.findByText("Too many requests. Try again in 14 hours.")).toBeTruthy();
   });
 
-  it("shows skeleton rows before the teams arrive, then the pickers", async () => {
+  it("shows the loading line and the Stack off before the teams arrive, then turns the Stack on", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     const release = answerLater(TEAMS);
     render(<Analyzer target={apiTarget} finderOn={false} />);
 
-    expect(await screen.findByRole("status", { name: "Loading teams" })).toBeTruthy();
-    expect(screen.queryByText("Pick the Teams")).toBeNull();
+    expect(await screen.findByText("Loading the teams…")).toBeTruthy();
+    expect(slot("Your Team").disabled).toBe(true);
 
     release();
-    expect(await screen.findByText("Pick the Teams")).toBeTruthy();
-    expect(screen.queryByRole("status", { name: "Loading teams" })).toBeNull();
+    await formReady();
+    expect(screen.queryByText("Loading the teams…")).toBeNull();
     expect(JSON.parse(sessionStorage.getItem(STORE_KEY)!).teams).toHaveLength(3);
   });
 
@@ -194,9 +174,9 @@ describe("Analyzer", () => {
     render(<Analyzer target={apiTarget} finderOn={false} />);
 
     // The fetch has not answered, so the pickers come from the store.
-    expect(await screen.findByText("Pick the Teams")).toBeTruthy();
+    await formReady();
     expect(await teamNames("Your Team")).toEqual(["Stored SlidersDee"]);
-    expect(screen.queryByRole("status", { name: "Loading teams" })).toBeNull();
+    expect(screen.queryByText("Loading the teams…")).toBeNull();
     expect(fetchStub).toHaveBeenCalledTimes(1);
 
     release();
@@ -211,11 +191,11 @@ describe("Analyzer", () => {
     const release = answerLater(TEAMS);
     render(<Analyzer target={apiTarget} finderOn={false} />);
 
-    expect(await screen.findByRole("status", { name: "Loading teams" })).toBeTruthy();
+    expect(await screen.findByText("Loading the teams…")).toBeTruthy();
     expect(screen.queryByText("Stored Sliders")).toBeNull();
 
     release();
-    expect(await screen.findByText("Pick the Teams")).toBeTruthy();
+    await formReady();
     expect(screen.queryByText("Stored Sliders")).toBeNull();
   });
 
@@ -225,7 +205,7 @@ describe("Analyzer", () => {
     answer(500);
     render(<Analyzer target={apiTarget} finderOn={false} />);
 
-    expect(await screen.findByText("Pick the Teams")).toBeTruthy();
+    await formReady();
     await waitFor(() => expect(fetchStub).toHaveBeenCalledTimes(1));
     // The failed answer settles in a later task, so the test lets it land before it reads the screen.
     await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
@@ -256,9 +236,10 @@ describe("Analyzer", () => {
     );
     const release = answerLater({ teams: ROSTERS });
     render(<Analyzer target={apiTarget} finderOn={false} />);
-    await screen.findByText("Pick the Teams");
+    await formReady();
 
-    await pickTrade();
+    // The stored roster still has Ana One, so the other side gets her.
+    await pickTrade({ ...TRADE, otherGets: "Ana One" });
     expect(screen.getByRole("button", { name: "Remove Ana One" })).toBeTruthy();
     expect(submit().disabled).toBe(false);
 
@@ -275,10 +256,10 @@ describe("Analyzer", () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(200, { teams: ROSTERS });
     render(<Analyzer target={apiTarget} finderOn={false} />);
-    await screen.findByText("Pick the Teams");
+    await formReady();
     expect(sessionStorage.getItem(STORE_KEY)).not.toBeNull();
 
-    await pickTrade();
+    await pickTrade(TRADE);
     answer(422, { detail: { message: "Ana Two is not on that roster.", player_id: "p2" } });
     const release = answerLater({ teams: ROSTERS });
     fireEvent.click(submit());
@@ -302,25 +283,24 @@ describe("Analyzer", () => {
 
     answer(200, TEAMS);
     fireEvent.click(screen.getByRole("button", { name: "Try Again" }));
-    expect(await screen.findByText("Pick the Teams")).toBeTruthy();
+    await formReady();
   });
 
-  it("puts the sides in order, each with its pickers, and the grade button after the sides", async () => {
+  it("puts the hero, the teams row, the cards in order, and the line before the grade bar", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(200, { teams: ROSTERS });
     render(<Analyzer target={apiTarget} finderOn={false} />);
-    await screen.findByText("Pick the Teams");
-    await choose(teamTrigger("Your Team"), "Gridiron Ghosts");
-    await choose(teamTrigger("Team Two"), "Blitz Bakers");
+    await formReady();
+    await pickTeam("Your Team", "Gridiron Ghosts");
+    await pickTeam("Team Two", "Blitz Bakers");
 
-    // The two-column grid of the tablet tier places one side per column, so the document order stays the phone order.
+    // The two-column grid of the tablet tier places one card per column, so the document order stays the phone order.
     const parts = [
-      screen.getByRole("group", { name: "Your Team" }),
-      teamTrigger("Your Team"),
-      screen.getByRole("combobox", { name: "Gridiron Ghosts Gives" }),
-      screen.getByRole("group", { name: "Team Two" }),
-      teamTrigger("Team Two"),
-      screen.getByRole("combobox", { name: "Blitz Bakers Gives" }),
+      screen.getByRole("heading", { level: 1, name: "Trade Analyzer" }),
+      screen.getByRole("list", { name: "Teams in the trade" }),
+      screen.getByRole("region", { name: "Your Team gets" }),
+      screen.getByRole("region", { name: "Team Two gets" }),
+      screen.getByText("Each team gives and gets at least one player."),
       submit(),
     ];
     for (let i = 1; i < parts.length; i++) {
@@ -328,16 +308,16 @@ describe("Analyzer", () => {
     }
   });
 
-  it("leaves the team that the other side holds out of its picker", async () => {
+  it("dims the team that the other side holds in its team sheet", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(200, TEAMS);
     render(<Analyzer target={apiTarget} finderOn={false} />);
-    await screen.findByText("Pick the Teams");
+    await formReady();
 
-    await choose(teamTrigger("Your Team"), "Gridiron Ghosts");
+    await pickTeam("Your Team", "Gridiron Ghosts");
     expect(await teamNames("Team Two")).toEqual(["Blitz BakersBen", "Punt PunksCy"]);
 
-    await choose(teamTrigger("Team Two"), "Blitz Bakers");
+    await pickTeam("Team Two", "Blitz Bakers");
     expect(await teamNames("Your Team")).toEqual(["Gridiron GhostsAna", "Punt PunksCy"]);
   });
 });

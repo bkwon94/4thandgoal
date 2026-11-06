@@ -45,13 +45,13 @@ describe("generateStaticParams", () => {
 });
 
 describe("WaiverPage", () => {
-  it("shows the week and the build time in the masthead", async () => {
+  it("shows the week and the build time under the top band", async () => {
     const { default: WaiverPage } = await routeOver();
     render(await WaiverPage({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
-    const banner = screen.getByRole("banner");
-    expect(banner.textContent).toContain("WEEK 6");
+    const page = document.body;
+    expect(page.textContent).toContain("WEEK 6");
     // The build time reads in league time, US Eastern.
-    expect(banner.textContent).toContain("Built Fri, Oct 23, 10:05 AM EDT");
+    expect(page.textContent).toContain("Built Fri, Oct 23, 10:05 AM EDT");
   });
 
   it("gives the menu a link to its own week, through the menu link of the waiver package", async () => {
