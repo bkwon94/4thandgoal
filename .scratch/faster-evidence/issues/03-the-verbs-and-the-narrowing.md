@@ -8,7 +8,7 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-5, AT-6, and AT-11.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A test on a small real folder proves each verb: a click, a fill, a scroll to a selector and to the end, a wait on a selector, the URL, and a time.
 - [x] The same test proves a named shot before and after a click, and the `url` file holds the URL after the click.
