@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-17, and AT-21.
 
 **Blocked by:** 09 and 11.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The top 3 trades are full cards with the record of each team since the trade.
 - [x] A player out in the first week after his trade has the tag "hurt on arrival".
