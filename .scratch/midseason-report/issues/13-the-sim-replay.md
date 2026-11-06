@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-29, AT-30, AT-31, 
 
 **Blocked by:** 03 and 11.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A press plays a random sim run: a lower third each week, a red PLAYOFFS wipe, the final standings with the cut and the byes, the bracket, and a champion card with "Wins the title in N% of all 10,000 runs".
 - [x] "Skip to the end" shows the final state at once, and a press during a run starts a clean new run.
