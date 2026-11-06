@@ -103,7 +103,7 @@ The home page
 
 56. As a league manager, I want the home page to show the report when it comes out, so that I do not miss it.
 57. As a league manager, I want a home tile with one big fact after the takeover ends, so that I can still find the report.
-58. As a league manager, I want no new item in the dock, so that the menu stays the same.
+58. As a league manager, I want a Midseason Report link in the menu, so that I find the report from any page. The dock keeps its five items.
 
 Brian's build and review
 
@@ -148,7 +148,7 @@ The apps wire the two together, as they wire `rankings` into the week today.
 - The pipeline app runs the sim, then hands its result to the report through a port that `midseason` declares. The sim facts reach the report as data, not as an import.
 - The site app mounts the replay of `sim` in the slot that the report page leaves for it. The report page takes the replay as a child.
 
-A client turns the report on with `midseason` in its package list. The report needs `sim`, so the client takes both. The config check fails a client that takes `midseason` without `sim`. Neither package adds a menu item.
+A client turns the report on with `midseason` in its package list. The report needs `sim`, so the client takes both. The config check fails a client that takes `midseason` without `sim`. The `midseason` package adds a Midseason Report menu item. The `sim` package adds none.
 
 ### The sim engine
 
@@ -252,7 +252,7 @@ The Sleeper provider gets one more fetch: the draft picks of the season, with th
 - `midseason.json` holds a takeover end week: the week of the report. The home page shows the takeover in place of its usual top while the latest published week is at or before that week.
 - The takeover shows the opener and a link to the report.
 - After the takeover ends, the home page shows a tile with one big fact and a link, in the shape of the R3 tile of ticket 09, for the rest of the season.
-- The dock and the menu do not change.
+- The menu has a Midseason Report link to the report of the season of the latest week, when the season has a report. The dock does not change.
 
 ### Timing of the work
 
@@ -291,7 +291,7 @@ The seams, from the highest down. The fewer, the better.
 - The sim on a weekly page or as a standalone page. The sim is a module so this can come later.
 - A move of the weekly odds onto the `sim` package. A later spec may do it. The parity test holds the two draws together until then.
 - A live sim, on a server or in the browser, and a pick of a game's winner. Ticket 08 chose a replay.
-- A dock item for the report.
+- A dock item for the report. The dock holds five items.
 - An outside ADP source. Each league's own draft is the baseline.
 - An injury date finer than the NFL week.
 - A comparison of the Trade result with the analyzer's Grade at the time of the trade.
