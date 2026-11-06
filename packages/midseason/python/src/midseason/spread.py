@@ -1,5 +1,6 @@
 """
-The spread rule of the midseason report: each team gets 1 to 3 headlines. Arcs, awards, and the opener never move.
+The spread rule of the midseason report: each team gets 1 to 3 headlines. Arcs and awards never move. The opener is
+no headline.
 A callout moves to the next team of its ranking. PRD, "The spread rule", and decision ticket 09.
 """
 from collections.abc import Mapping, Sequence
@@ -33,7 +34,7 @@ CALLOUT_LABELS = {
     "lineup.bench": "the bench points",
 }
 
-HeadlineKind = Literal["opener", "arc", "award", "callout"]
+HeadlineKind = Literal["arc", "award", "callout"]
 
 
 class Headline(BaseModel):
@@ -41,8 +42,8 @@ class Headline(BaseModel):
     kind: HeadlineKind
     # The headline itself, such as "arc.collapse", "award.mvp", or "luck.most_better".
     key: str
-    # The key of the chapter that shows it. None for the opener, which sits above the acts.
-    chapter: str | None
+    # The key of the chapter that shows it.
+    chapter: str
     roster_id: int
     # The place of the team in the ranking of a callout. 1 when the callout names the #1 team.
     place: int = 1
@@ -59,7 +60,8 @@ class Callout(BaseModel):
 def spread_rule(fixed: Sequence[Headline], callouts: Sequence[Callout], teams: Sequence[int]) -> list[Headline]:
     """Every headline of the report: the fixed headlines as they are, then one per callout, in the order given.
 
-    The fixed headlines are the opener, the arcs, and the awards. Each is a fact about its team, so it never moves.
+    The fixed headlines are the arcs and the awards. Each is a fact about its team, so it never moves. The opener is
+    about the title race of the whole league, so it is no headline.
     Each callout names the first team of its ranking with fewer than 3 headlines, so it goes to the next team when the
     #1 team is full. Then each team with no headline, in the order of `teams`, takes the callout where it ranks best
     from a team that keeps one or more. A callout that no team has room for names no team.
