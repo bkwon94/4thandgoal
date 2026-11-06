@@ -29,8 +29,8 @@ from midseason.waivers import WaiverFacts
 # The season file has its own version, so a change to one file never breaks the reader of another.
 MIDSEASON_SCHEMA_VERSION = 1
 MIDSEASON_FILE = "midseason.json"
-# The home page shows the takeover through the week after the report, then the report tile. PRD, "The takeover".
-TAKEOVER_WEEKS = 1
+# The home page shows the takeover through the week of the report, then the report tile. PRD, "The takeover".
+TAKEOVER_WEEKS = 0
 
 
 class StateChapter(BaseModel):

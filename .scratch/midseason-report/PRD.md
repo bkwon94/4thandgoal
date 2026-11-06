@@ -249,7 +249,7 @@ The Sleeper provider gets one more fetch: the draft picks of the season, with th
 
 ### The takeover and the home tile
 
-- `midseason.json` holds a takeover end week: the week of the report plus 1. The home page shows the takeover in place of its usual top while the latest published week is at or before that week.
+- `midseason.json` holds a takeover end week: the week of the report. The home page shows the takeover in place of its usual top while the latest published week is at or before that week.
 - The takeover shows the opener and a link to the report.
 - After the takeover ends, the home page shows a tile with one big fact and a link, in the shape of the R3 tile of ticket 09, for the rest of the season.
 - The dock and the menu do not change.
