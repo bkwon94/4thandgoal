@@ -71,7 +71,7 @@ App: both
 Stories: 8, 15
 Given: The local API runs with `make -C apps/api api-evidence`. The `steps.json` of site-redesign AT-24 and AT-25 each `wait` for the verdict before the shot.
 When: The runner takes the shots of AT-24 and then AT-25, back to back.
-Then: No request gets a 429. Each shot shows a real verdict from the API. Each test takes less than 61 s in the output.
+Then: No request gets a 429, and the API log shows no request waits on the limit. Each shot shows a real verdict from the API.
 Evidence: The output lines of AT-24 and AT-25 with their times, the API log with no 429, and one verdict shot of each test.
 
 AT-9: Production keeps 10
@@ -155,3 +155,4 @@ Out of scope "The daily grade limit of the analyzer": no test. Reason: an agent 
 
 - 2026-11-05: AT-9 sends its requests to `/teams?season=2026`, not `/teams`. The route answers 422 with no season. Brian approved.
 - 2026-11-05: AT-1 covers each site-redesign screenshot test that the six verbs cover, not 21, and names each skipped test. AT-5 uses redesign AT-11, AT-6 uses redesign AT-10, and AT-8 uses redesign AT-24 and AT-25. The old ids named the wrong tests. Brian approved.
+- 2026-11-05: AT-8 drops "each test takes less than 61 s". Redesign AT-25 takes 84.9 s from real work with no wait on the limit, so the time was a wrong sign. The Then names the API log with no wait on the limit. Brian approved.
