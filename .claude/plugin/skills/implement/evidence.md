@@ -34,7 +34,7 @@ The runner builds each client one time per round and serves its export on `http:
 - `themes`: optional. The default is `["light", "dark"]`.
 - `clients`: optional. The default is `["cpc"]`. Write `["cpc", "norcal"]` for a test of each client.
 
-Narrow `widths`, `themes`, and `clients` only to match the Evidence line of the test. A test that names no client covers both clients.
+Narrow `widths`, `themes`, and `clients` only to match the Evidence line of the test. Set `clients` to both only when the Evidence line says "each client" or "both", or when the acceptance file says every test covers both clients. Otherwise leave `clients` out, so the default `cpc` holds. Each extra client doubles the shots of a test.
 
 | Step | What it does |
 | --- | --- |
