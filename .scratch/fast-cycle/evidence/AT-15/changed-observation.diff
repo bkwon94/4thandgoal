@@ -1,0 +1,5 @@
+$ diff <faster-evidence 197fb328 EVIDENCE.md> <AT-15 copy EVIDENCE.md>
+34c34
+< Observation: The files come from site-redesign AT-14, whose `steps.json` holds only `route: "/"`. `1280-light.png` shows the CPC home page on a light gray page with white cards, and `1280-dark.png` shows it on a near-black page with dark cards.
+---
+> Observation: The files come from site-redesign AT-14, whose `steps.json` holds only `route: "/"`. `1280-light.png` shows the CPC home page on a near-black page with dark cards, and `1280-dark.png` shows it on a near-black page with dark cards.

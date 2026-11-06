@@ -1,0 +1,31 @@
+diff --cc apps/pipeline/src/cornerstone/pipeline.py
+index 7a370377,c48d53f6..00000000
+--- a/apps/pipeline/src/cornerstone/pipeline.py
++++ b/apps/pipeline/src/cornerstone/pipeline.py
+@@@ -720,16 -708,18 +723,15 @@@ def run_midseason(season: int, week: in
+      # A gap would drop a week from each record, so the report waits for a complete history.
+      if not history.complete():
+          raise BuildStopped(HISTORY_GAP.format(week=week))
+-     odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
+      names = {rid: team.name for rid, team in bundle.data.teams.items()}
+ -    # The sim writes sim.json, and its playoff odds reach the report through the port of midseason. So the report and
+ -    # the replay give one number. The week odds stand in only when the week gives the sim no inputs.
+ -    sim = week_sim(season, week, history, client=client)
+ -    if sim is not None:
+ -        write_sim(sim_file(sim, names), build_dir(client.folder))
+ -        odds = {rid: team.playoff for rid, team in sim.teams.items()}
+ -    else:
+ -        odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
+ -    state = league_state(history, week, names, playoff_odds=odds, median_game=client.settings.median_game)
+ +    median_game = client.settings.median_game
+ +    state = league_state(history, week, names, playoff_odds=odds, median_game=median_game)
+ +    luck = schedule_luck(history, week, state, median_game=median_game)
+ +    arcs = team_arcs(history, week, state, {team.roster_id: team.schedule_luck for team in luck.teams},
+ +                     median_game=median_game)
+      roast = midseason_values(client).roast
+ -    sheet = prose_sheet(week, state, roast)
+ +    later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule luck", luck_facts(luck))]
+ +    sheet = prose_sheet(week, state, roast, later)
+      blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
+      season_build = build_dir(client.folder) / str(season)
+      write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)

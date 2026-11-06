@@ -1,0 +1,10 @@
+$ git add (3 resolved files)
+$ git diff ed42aea9 --stat -- (the 3 files)
+ apps/pipeline/src/cornerstone/pipeline.py | 2 +-
+ apps/pipeline/tests/test_layers.py        | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+$ git commit --no-edit
+make check-fast..........................................................Passed
+[replay-at19-spec 8963ae2b] Merge branch 'replay-at19-ticket' into replay-at19-spec
+commit exit=0
+8963ae2b Merge branch 'replay-at19-ticket' into replay-at19-spec

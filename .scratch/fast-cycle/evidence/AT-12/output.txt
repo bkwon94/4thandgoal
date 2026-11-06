@@ -1,0 +1,17 @@
+$ cd scripts && python3 -B -m unittest -v test_verdict.TheJudgeRecord.test_at_12_a_fail_of_brian_overrides_a_pass_of_the_judge 
+test_at_12_a_fail_of_brian_overrides_a_pass_of_the_judge (test_verdict.TheJudgeRecord.test_at_12_a_fail_of_brian_overrides_a_pass_of_the_judge) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.065s
+
+OK
+exit 0
+
+$ python3 scripts/verdict.py scripts/fixtures/verdict/judge/ACCEPTANCE.md --verdicts scripts/fixtures/verdict/judge/VERDICTS.md --evidence scripts/fixtures/verdict/judge/EVIDENCE.md --comments scripts/fixtures/verdict/judge/comments-fail.json --owner bkwon94
+1 offense.
+
+comment 11:2  verdict/brian-fail
+  AT-2 has FAIL from Brian.
+  Rule: every acceptance test has a PASS Test verdict from the Judge and no FAIL from Brian (docs/adr/0026-the-judge-gives-the-test-verdicts.md).
+  Fix: fix AT-2 with `cpc:review`. Brian clears it with a newer Test verdicts comment with no FAIL for AT-2.
+exit 1

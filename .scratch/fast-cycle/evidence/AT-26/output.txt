@@ -1,0 +1,2 @@
+$ gh pr view 13 --json state,mergedAt
+{"mergedAt":null,"state":"OPEN"}

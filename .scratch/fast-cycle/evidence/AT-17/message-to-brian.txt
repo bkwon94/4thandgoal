@@ -1,0 +1,8 @@
+Brian, stage 4 of throwaway stopped after the fix round. I pushed nothing and opened no PR.
+
+These tests have no PASS. The reasons of the Judge, quoted from VERDICTS.md:
+
+- AT-2: BLOCKED The Then line asks for a purple background with PURPLE in the header, but `1280-light.png` shows a light gray page with the header "CORNERSTONE FANTASY FOOTBALL LEAGUE" and no purple.
+- AT-6: BLOCKED The Then line forbids any file with 375 in its name, but `file-list.txt` lists 375 and 1024 shots for both clients beside the 768 and 1280 shots.
+
+Decide the next step for each test: a change to the work, a change to the test with cpc:to-acceptance, or a stop.

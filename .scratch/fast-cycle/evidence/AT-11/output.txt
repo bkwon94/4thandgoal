@@ -1,0 +1,24 @@
+$ cd scripts && python3 -B -m unittest -v test_verdict.TheJudgeRecord.test_at_11_a_changed_evidence_file_is_stale test_verdict.TheJudgeRecord.test_at_11_a_changed_acceptance_file_is_stale 
+test_at_11_a_changed_evidence_file_is_stale (test_verdict.TheJudgeRecord.test_at_11_a_changed_evidence_file_is_stale) ... ok
+test_at_11_a_changed_acceptance_file_is_stale (test_verdict.TheJudgeRecord.test_at_11_a_changed_acceptance_file_is_stale) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.142s
+
+OK
+exit 0
+
+$ diff scripts/fixtures/verdict/judge/EVIDENCE.md <copy>/EVIDENCE.md
+11c11
+< Observation: the row of Ja'Marr Chase reads "Bye 10" on one line at each width.
+---
+> Observation: the row of Ja'Marr Chase reads "Bye 10" on two lines at each width.
+
+$ python3 scripts/verdict.py /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/bb4c91e1-a1fb-4b5f-b77a-9144d1f9e32b/scratchpad/at11-copy/ACCEPTANCE.md --verdicts /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/bb4c91e1-a1fb-4b5f-b77a-9144d1f9e32b/scratchpad/at11-copy/VERDICTS.md --evidence /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/bb4c91e1-a1fb-4b5f-b77a-9144d1f9e32b/scratchpad/at11-copy/EVIDENCE.md
+1 offense.
+
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/bb4c91e1-a1fb-4b5f-b77a-9144d1f9e32b/scratchpad/at11-copy/VERDICTS.md:4  verdict/stale-evidence
+  EVIDENCE.md is stale: it changed after the Judge read it (2c9190e to 008da98).
+  Rule: every acceptance test has a PASS Test verdict from the Judge and no FAIL from Brian (docs/adr/0026-the-judge-gives-the-test-verdicts.md).
+  Fix: record the evidence again, and run a fresh Judge on each test.
+exit 1
