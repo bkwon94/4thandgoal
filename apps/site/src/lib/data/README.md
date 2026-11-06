@@ -6,6 +6,7 @@
 - Where each file sits under `public/`, and which week folders hold `waiver.json`.
 - The join of the managers file with the last week of the rankings file.
 - Whether the waiver route and the managers route are on. `next.config.ts` builds each one only when its file exists.
+- The shared read of a published file in `published-file.ts`: the check of the schema version, then the parse.
 - The test of every published file against its schema, in `src/lib/data/published-files.test.ts`.
 
 ## Ports

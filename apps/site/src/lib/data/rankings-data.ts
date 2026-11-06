@@ -2,11 +2,11 @@
  * Reads the season rankings file from public/ at build time, and the avatars of the latest published week.
  * The file sits beside the week folders, so a missing file means the pipeline has not written it yet.
  */
-import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports the managers reader, which imports this module.
 import { rankingsSchema } from "@cpc/rankings/schema/rankings";
 import type { Rankings } from "@cpc/rankings/schema/rankings-types";
+import { readPublished } from "./published-file";
 import { listWeeks, loadWeek } from "./week-data";
 import type { AvatarMap } from "@cpc/week/schema/week-types";
 
@@ -24,15 +24,7 @@ export function latestSeason(): string | null {
 export function loadRankings(): Rankings | null {
   const season = latestSeason();
   if (season === null) return null;
-  const file = join(process.cwd(), "public", season, "rankings.json");
-  if (!existsSync(file)) return null;
-  const rankings = JSON.parse(readFileSync(file, "utf8")) as { schema_version?: unknown };
-  if (rankings.schema_version !== SCHEMA_VERSION) {
-    throw new Error(
-      `${file} has schema_version ${String(rankings.schema_version)}, but this site reads schema_version ${SCHEMA_VERSION}.`,
-    );
-  }
-  return rankingsSchema.parse(rankings);
+  return readPublished(join(process.cwd(), "public", season, "rankings.json"), SCHEMA_VERSION, rankingsSchema);
 }
 
 /* The avatars of the latest published week in a season, so the rankings rows show the same images as the week page.

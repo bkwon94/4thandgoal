@@ -2,10 +2,11 @@
  * Reads the week page JSON files from public/ at build time.
  * The week folder is the data folder, so the route and the images share one path.
  */
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports the readers, which import this module.
 import { weekHref } from "../routes";
+import { parseVersioned } from "./published-file";
 import { weekPageSchema } from "@cpc/week/schema/week";
 import type { WeekPage, WeekSummary } from "@cpc/week/schema/week-types";
 
@@ -38,15 +39,8 @@ const SCHEMA_VERSION = 2;
 
 /* A schema change must fail the build loud, so a page never renders from keys it misreads. */
 export function loadWeek(season: string, week: string): WeekPage {
-  const file = join(PUBLIC_DIR, season, week, "page.json");
-  const page = JSON.parse(readFileSync(file, "utf8")) as { schema_version?: unknown };
-  if (page.schema_version !== SCHEMA_VERSION) {
-    throw new Error(
-      `${file} has schema_version ${String(page.schema_version)}, but this site reads schema_version ${SCHEMA_VERSION}.`,
-    );
-  }
   // The version check runs first, so a layout change reads as a version error and not as a list of bad fields.
-  return weekPageSchema.parse(page);
+  return parseVersioned(join(PUBLIC_DIR, season, week, "page.json"), SCHEMA_VERSION, weekPageSchema);
 }
 
 /* Every published week, newest first. The sort reads the folder names as numbers, so week-10 follows week-09. */

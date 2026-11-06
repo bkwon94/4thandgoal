@@ -2,12 +2,13 @@
  * Reads the season managers file from public/ at build time and joins it with the last week of the rankings file.
  * The file sits beside the rankings file, so a missing file means the pipeline has not written it yet.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { managersHref } from "../routes";
 import { managersFileSchema } from "@cpc/managers/schema/managers";
 import type { Manager, ManagerEntry, Managers } from "@cpc/managers/schema/manager-types";
 import { clientValues } from "../../generated/client-values";
+import { readPublished } from "./published-file";
 import { latestSeason, loadRankings } from "./rankings-data";
 import type { RankingsRow } from "@cpc/rankings/schema/rankings-types";
 
@@ -29,14 +30,9 @@ function byRecord(a: ManagerEntry, b: ManagerEntry): number {
    the site ships before the pipeline writes the file, so the routes do not build and the menu has no entry. */
 export function loadManagers(): Managers | null {
   const file = managersFile();
-  if (file === null || !existsSync(file)) return null;
-  const data = JSON.parse(readFileSync(file, "utf8")) as { schema_version?: unknown };
-  if (data.schema_version !== SCHEMA_VERSION) {
-    throw new Error(
-      `${file} has schema_version ${String(data.schema_version)}, but this site reads schema_version ${SCHEMA_VERSION}.`,
-    );
-  }
-  const { season, through, managers } = managersFileSchema.parse(data);
+  const data = file === null ? null : readPublished(file, SCHEMA_VERSION, managersFileSchema);
+  if (data === null) return null;
+  const { season, through, managers } = data;
   // One number has one source, so the odds and the power rank come from the last week of the rankings file.
   const weeks = loadRankings()?.weeks ?? [];
   const rowsOf = (index: number) => new Map((weeks.at(index)?.rows ?? []).map((row) => [row.roster_id, row]));

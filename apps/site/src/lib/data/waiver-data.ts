@@ -2,9 +2,10 @@
  * Reads the waiver.json file of each week folder in public/ at build time.
  * The file is optional: the site ships before the pipeline writes it, and old weeks never have one.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { waiverHref } from "../routes";
+import { readPublished } from "./published-file";
 import { listWeeks, type WeekRef } from "./week-data";
 import { waiverBoardSchema } from "@cpc/waiver/schema";
 import type { WaiverBoard } from "@cpc/waiver/types";
@@ -23,15 +24,7 @@ export function listWaiverWeeks(): WeekRef[] {
 
 /* A schema change must fail the build loud, the same rule as the week reader. A missing file is not an error. */
 export function loadWaiver(season: string, week: string): WaiverBoard | null {
-  const file = waiverFile(season, week);
-  if (!existsSync(file)) return null;
-  const board = JSON.parse(readFileSync(file, "utf8")) as { schema_version?: unknown };
-  if (board.schema_version !== SCHEMA_VERSION) {
-    throw new Error(
-      `${file} has schema_version ${String(board.schema_version)}, but this site reads schema_version ${SCHEMA_VERSION}.`,
-    );
-  }
-  return waiverBoardSchema.parse(board);
+  return readPublished(waiverFile(season, week), SCHEMA_VERSION, waiverBoardSchema);
 }
 
 /* The masthead link to the waiver page of the latest week with a file. Only a client that takes waiver imports it.

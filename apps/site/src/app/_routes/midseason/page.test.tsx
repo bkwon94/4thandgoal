@@ -3,29 +3,20 @@
  * They read what a reader sees: a static param per season with the file, and the report of that season.
  */
 import { cleanup, render, screen } from "@testing-library/react";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { weekPageJson } from "@/fixtures/week-page-json";
+import { afterEach, describe, expect, it } from "vitest";
 import fixture from "@cpc/midseason/fixtures/midseason.json";
 import simFixture from "@cpc/sim/fixtures/sim.json";
+import { publicOver, removePublics } from "./temp-public";
 
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
+  removePublics();
 });
 
-/* A temp public/ folder with the week 8 page, and the midseason file and the sim file when each is given. */
+/* The route over a temp public/ folder with the weeks to week 8, and the midseason file and the sim file when each
+   is given. */
 async function routeOver(report?: unknown, sim?: unknown) {
-  const root = mkdtempSync(join(tmpdir(), "midseason-page-"));
-  mkdirSync(join(root, "public", "2026", "week-08"), { recursive: true });
-  writeFileSync(join(root, "public", "2026", "week-08", "page.json"), weekPageJson({}));
-  if (report !== undefined) writeFileSync(join(root, "public", "2026", "midseason.json"), JSON.stringify(report));
-  if (sim !== undefined) writeFileSync(join(root, "public", "2026", "sim.json"), JSON.stringify(sim));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them to pick up the temp folder.
-  vi.resetModules();
+  publicOver({ report, sim });
   return import("./page");
 }
 
