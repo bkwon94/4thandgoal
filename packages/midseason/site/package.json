@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "The site side of the midseason package: the report page with the opener, the three acts, and the chapter rail, the chapters of Act I, the schema and the types of the midseason file, and its fixture. It ships TSX source with no build step.",
+  "description": "The site side of the midseason package: the report page with the opener, the three acts, and the chapter rail, the chapters of Act I and Act II, the schema and the types of the midseason file, and its fixture. It ships TSX source with no build step.",
   "dependencies": {
     "@cpc/design": "workspace:*",
     "zod": "^4.6.7"

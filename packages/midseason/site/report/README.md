@@ -8,6 +8,7 @@
 - The chapter rail: one link per act, sticky under the top band at every width.
 - The part of each chapter by its key, in `chapter-part.tsx`. A chapter with no part shows its title and its prose.
 - The frame of a chapter, its prose and roast, and the number formats of the report.
+- A long list: its first 5 rows, then a "Show all" button, in `show-all.tsx`.
 
 ## Ports
 

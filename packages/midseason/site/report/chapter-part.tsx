@@ -7,6 +7,11 @@ import { Injuries } from "../act-one/injuries";
 import { Luck } from "../act-one/luck";
 import { State } from "../act-one/state";
 import { Top10 } from "../act-one/top10";
+import { Draft } from "../act-two/draft";
+import { Lineup } from "../act-two/lineup";
+import { Records } from "../act-two/records";
+import { Trades } from "../act-two/trades";
+import { Waivers } from "../act-two/waivers";
 import type { MidseasonChapter } from "../schema/midseason-types";
 import { ReportChapter } from "./report-chapter";
 
@@ -22,6 +27,16 @@ export function ChapterPart({ chapter }: { chapter: MidseasonChapter }) {
       return <Injuries chapter={chapter} />;
     case "top10":
       return <Top10 chapter={chapter} />;
+    case "draft":
+      return <Draft chapter={chapter} />;
+    case "waivers":
+      return <Waivers chapter={chapter} />;
+    case "trades":
+      return <Trades chapter={chapter} />;
+    case "lineup":
+      return <Lineup chapter={chapter} />;
+    case "records":
+      return <Records chapter={chapter} />;
     default:
       return <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb} roast={chapter.roast} />;
   }

@@ -10,7 +10,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-17, and AT-21.
 
 **Status:** ready-for-agent
 
-- [ ] The top 3 trades are full cards with the record of each team since the trade.
-- [ ] A player out in the first week after his trade has the tag "hurt on arrival".
-- [ ] Heartbreak and Beatdown each show once, inside the record book.
-- [ ] Long lists show 5 rows and a "Show all" button.
+- [x] The top 3 trades are full cards with the record of each team since the trade.
+- [x] A player out in the first week after his trade has the tag "hurt on arrival".
+- [x] Heartbreak and Beatdown each show once, inside the record book.
+- [x] Long lists show 5 rows and a "Show all" button.
