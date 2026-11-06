@@ -986,6 +986,26 @@ _Avoid_: Flag, feature flag, setting, option
 One thing that we deploy, such as the site or the API. An app holds only the build config, the routes, and the code that wires the packages. It holds no rule of a domain.
 _Avoid_: Shell (that is the frame of a page), service, project
 
+**Egg**:
+One hidden reward spot in the build of one week. A manager who finds it sees its egg code. Only a client that takes the eggs package has eggs.
+_Avoid_: Easter egg (in the code), secret, prize, hidden spot
+
+**Egg kind**:
+One entry of the catalog of eggs. Each week the pipeline makes up to three eggs from the egg kinds.
+_Avoid_: Egg type, template, egg idea
+
+**Egg code**:
+The secret word that an egg shows when a manager finds it. The site holds only a hash of it, never the word.
+_Avoid_: Claim code, password, key, claim (that is a research claim)
+
+**Hunter**:
+The first manager who sends Brian the egg code of one egg. Each egg has at most one hunter.
+_Avoid_: Finder (that is the trade code of the analyzer), winner, claimer
+
+**Egg board**:
+The page of the site that lists each egg of the season: its week, its egg kind, its hunter, and its reward. An egg with no hunter shows as still hidden.
+_Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board score)
+
 ## Workflow
 
 **Map**:
