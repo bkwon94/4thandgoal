@@ -8,7 +8,7 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, and AT
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A full PASS with matched SHAs exits 0 (AT-10).
 - [x] A changed `EVIDENCE.md` exits 1 with a rule id that names `EVIDENCE.md` as stale. A changed `ACCEPTANCE.md` does the same for its file (AT-11).
