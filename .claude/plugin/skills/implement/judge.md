@@ -71,13 +71,13 @@ Each round is one new commit, so each change to a Test verdict leaves a trace. N
 The check reads each offense:
 
 - `0 offenses.` Each test has PASS. Go to stage 5.
-- `verdict/not-pass` names a test with FAIL. Do the fix round below.
+- `verdict/not-pass` names a test with FAIL. In the first round, do the fix round below. After the fix round, stop, as "The hard stop" shows.
 - `verdict/missing`, `verdict/unknown`, `verdict/duplicate`, or `verdict/no-verdicts` means the Judge broke the shape. Start a fresh Judge on those tests, with the lines of "Some tests only". This is not a FAIL round.
 - `verdict/stale-acceptance` or `verdict/stale-evidence` means a file changed after you got its SHA. Get the SHAs again, and start a fresh Judge on each test.
 
 ## The fix round
 
-A FAIL gets one fix round.
+A FAIL gets one fix round. There is never a second fix round.
 
 1. Read the reason of the Judge for each failed test.
 2. Fix the cause on the Spec branch, in its own commit. Use `tdd` when the fix changes behavior. The hook must pass.
@@ -114,8 +114,16 @@ Add this line too when the tests had a FAIL and got a fix. A second FAIL then sh
 A test above that does not pass gets BLOCKED, not FAIL, with one sentence of reason.
 ````
 
+### The hard stop
+
+After the fix round, a test that does not have PASS stops stage 4. If the Judge wrote FAIL, not BLOCKED, treat the test as BLOCKED all the same:
+
+1. Push nothing.
+2. Open no PR.
+3. Tell Brian the test and the reason of the Judge, quoted from `VERDICTS.md`.
+
 Never change `ACCEPTANCE.md` to make a test pass. An acceptance test changes only with `cpc:to-acceptance` and Brian.
 
 A test that `evidence.md` skipped, because its ticket is `blocked`, gets no fix round. Its FAIL stays until the ticket builds. Then [`pr.md`](pr.md#a-second-start) runs the Judge on it.
 
-**Stop rule of stage 4.** Go to stage 5 when each test has PASS, or when each FAIL names a test of a `blocked` ticket. If a test has BLOCKED after the fix round, stop. Push nothing and open no PR. Tell Brian each BLOCKED test and the reason of the Judge, quoted from `VERDICTS.md`.
+**Stop rule of stage 4.** Go to stage 5 when each test has PASS, or when each FAIL names a test of a `blocked` ticket. If a test has no PASS after the fix round, stop, even if the Judge wrote FAIL. Push nothing and open no PR. Tell Brian each such test and the reason of the Judge, quoted from `VERDICTS.md`.
