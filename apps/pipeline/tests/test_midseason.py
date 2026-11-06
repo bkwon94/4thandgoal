@@ -223,7 +223,7 @@ def test_each_row_has_the_playoff_odds_of_the_sim_within_2_points_of_the_week(cp
 
 
 def test_a_rerun_gives_the_same_file(tmp_path, cpc_midseason):
-    # The first build is a copy of the shared build, and the rerun writes into the copy, so the shared folder stays.
+    # The first file comes from the shared build. The rerun writes into a copy of the shared folder, so the shared folder stays.
     shared, out = cpc_midseason
     shutil.copytree(shared.folder, tmp_path, dirs_exist_ok=True)
     client = cpc_client(at=tmp_path, models=VALUE_MODELS)

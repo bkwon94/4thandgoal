@@ -223,8 +223,8 @@ def week_8(tmp_path_factory):
 
 
 # The midseason build of CPC week 8 takes about 3 s, and most midseason tests only read what it writes. Each fixture
-# below builds once per session, or once per xdist worker, for one set of inputs, and the tests that only read the
-# build share it. A test that writes or changes the build folder keeps its own build in `tmp_path`.
+# below builds once per session, or once per xdist worker, for one set of inputs. The tests that only read the build
+# share it. A test that writes or changes the build folder keeps its own build in `tmp_path`.
 @pytest.fixture(scope="session")
 def cpc_midseason(tmp_path_factory):
     """The client and the midseason.json of one CPC week 8 build with a writer that fails each call, at 500 runs."""
