@@ -3,7 +3,7 @@ The prose of the midseason report: the facts and the prose blocks of each chapte
 the write and the check of each blurb through the writer and the verifier of facts. The report has no writer of its own.
 """
 import json
-from collections.abc import Collection, Sequence
+from collections.abc import Collection, Mapping, Sequence
 from pathlib import Path
 
 import anthropic
@@ -71,9 +71,18 @@ def _state_facts(state: LeagueState) -> list[Fact]:
 ChapterFacts = tuple[str, str, list[Fact]]
 
 
-def prose_sheet(week: int, state: LeagueState, roast: Roast, later: Sequence[ChapterFacts] = ()) -> FactSheet:
+def prose_sheet(
+    week: int, state: LeagueState, roast: Roast, later: Sequence[ChapterFacts] = (),
+    moved: Mapping[str, Collection[str]] | None = None,
+) -> FactSheet:
     """The fact sheet of the report: every fact and the prose blocks that cite them. Each chapter has one blurb block,
-    and a roast block unless the roast is off. `later` holds the facts of each chapter after the state."""
+    and a roast block unless the roast is off. `later` holds the facts of each chapter after the state.
+
+    `moved` holds the names of the teams that the spread rule moved off a callout, by chapter key. The block of that
+    chapter drops each fact that names one of them and takes them out of its scope. So the verifier fails a blurb that
+    names a team the rule moved off its headline. PRD, "The spread rule".
+    """
+    moved = moved or {}
     n = Nums()
     week_fact = fact(WEEK_FACT, f"The report counts week {n(week)} and every week before it.", n, [], [])
     teams = [team.name for team in state.teams]
@@ -82,16 +91,19 @@ def prose_sheet(week: int, state: LeagueState, roast: Roast, later: Sequence[Cha
     facts: list[Fact] = []
     chapters: list[Chapter] = []
     for key, title, chapter_facts in blocks:
+        off = set(moved.get(key, ()))
+        chapter_facts = [f for f in chapter_facts if not off & set(f.teams)]
+        scope = [team for team in teams if team not in off]
         facts += chapter_facts
         ids = [f.id for f in chapter_facts] + [week_fact.id]
         # The players of the facts are the players that the blurb may name, such as the waiver hits.
         players = sorted({p for f in chapter_facts for p in f.players})
-        chapters.append(Chapter(key=key, title=title, fact_ids=ids, scope_teams=teams, scope_players=players,
+        chapters.append(Chapter(key=key, title=title, fact_ids=ids, scope_teams=scope, scope_players=players,
                                 min_sentences=3, max_sentences=6))
         if roast != "off":
             # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
             chapters.append(Chapter(key=key + ROAST_SUFFIX, title=f"The roast of {title[0].lower() + title[1:]}",
-                                    fact_ids=ids, scope_teams=teams, scope_players=players, min_sentences=2,
+                                    fact_ids=ids, scope_teams=scope, scope_players=players, min_sentences=2,
                                     max_sentences=4))
     facts.append(week_fact)
     return FactSheet(facts={f.id: f for f in facts}, chapters=chapters)

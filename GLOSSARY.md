@@ -972,6 +972,14 @@ _Avoid_: Section, part
 Each team gets at least one and at most three headlines in the midseason report: the opener, a callout, an award, or an arc.
 _Avoid_: Fairness rule, balance
 
+**Headline**:
+One mention of a team as the subject of the midseason report: the opener, a callout, an award, or an arc. A table row is no headline.
+_Avoid_: Mention, feature
+
+**Callout**:
+A headline that names the #1 team of a ranking in a chapter, such as the biggest steal of the draft. When the #1 team holds three headlines, the callout names the next team, and the table still shows every team.
+_Avoid_: Highlight, spotlight
+
 **Takeover**:
 The weeks when the home page shows the midseason report in place of its usual top, through the report week plus 1.
 _Avoid_: Banner, promo

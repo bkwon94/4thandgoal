@@ -10,7 +10,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-18, AT-19, AT-20, 
 
 **Status:** ready-for-agent
 
-- [ ] London Cooking in week 2 lost by 1.67 with 27.54 on the bench.
-- [ ] The record book high is 158.96 by Maye d'force B with U in week 5, and the closest game is 0.4 in week 3.
-- [ ] The MVP is Jahmyr Gibbs, Most active is Bo Girds with 42, and Set and forget is London Cooking with 3.
-- [ ] Each team has 1 to 3 headlines, and the swap callouts of Bo Girds name another team.
+- [x] London Cooking in week 2 lost by 1.67 with 27.54 on the bench.
+- [x] The record book high is 158.96 by Maye d'force B with U in week 5, and the closest game is 0.4 in week 3.
+- [x] The MVP is Jahmyr Gibbs, Most active is Bo Girds with 42, and Set and forget is London Cooking with 3.
+- [x] Each team has 1 to 3 headlines, and the swap callouts of Bo Girds name another team.
