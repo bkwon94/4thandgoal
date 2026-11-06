@@ -36,6 +36,10 @@ BYES_NOTE = "Note: the byes next week are part of the preview."
 # The header of the words that other chapters of the page already say. Rule 14 of the writer prompt names it.
 PAGE_WORDS_HEADER = "Words this page already uses:"
 
+# The errors of one failed Claude check: a refusal, an empty or bad output, or a failed API call. A package outside
+# facts catches them by this name, so only facts and league import the Claude SDK (ADR 0023).
+CHECK_ERRORS = (RefusalError, WriterError, anthropic.APIError, ValidationError)
+
 # (system, user, output_model) -> parsed output. Tests pass a fake in place of Claude.
 ClaudeCall = Callable[[str, str, type[BaseModel]], BaseModel]
 # The output model of one retried call, so the caller gets back the type it asked for.

@@ -6,13 +6,11 @@ import json
 from collections.abc import Collection, Mapping, Sequence
 from pathlib import Path
 
-import anthropic
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from facts.tokens import Nums, fact
 from facts.verifier import page_words, verify_blurb, write_and_verify
-from facts.writer import ClaudeCall
-from league.claude_errors import RefusalError, WriterError
+from facts.writer import CHECK_ERRORS, ClaudeCall
 from league.files import write_bytes_atomic
 from league.models import Blurb, Chapter, Fact, FactSheet, VerifyResult
 from midseason.state import LeagueState
@@ -157,7 +155,7 @@ def recheck_prose(
         try:
             result = verify_blurb(blurb, chapter, draft.sheet, call, used, prompts_dir=prompts_dir,
                                   terms=prose_terms(chapter.key, draft.roast))
-        except (RefusalError, WriterError, anthropic.APIError, ValidationError) as err:
+        except CHECK_ERRORS as err:
             # A failed Claude check is no pass, so the publish refuses and names the blurb.
             failures.append(f"The blurb {blurb.chapter} has no verdict: the Claude check failed: {err}")
             continue

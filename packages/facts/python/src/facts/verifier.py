@@ -14,7 +14,16 @@ from pydantic import ValidationError
 from facts.chapters import RANKINGS_CHAPTER, two_team_chapter
 from facts.names import last_name
 from facts.tokens import NUMBER_TOKEN
-from facts.writer import ClaudeCall, RefusalError, WriterError, load_prompt, template_blurb, with_terms, write_blurb
+from facts.writer import (
+    CHECK_ERRORS,
+    ClaudeCall,
+    RefusalError,
+    WriterError,
+    load_prompt,
+    template_blurb,
+    with_terms,
+    write_blurb,
+)
 from league.models import (
     Blurb,
     Chapter,
@@ -554,7 +563,7 @@ def write_and_verify(
         else:
             try:
                 result = verify_blurb(blurb, chapter, sheet, call, used_words, prompts_dir=prompts_dir, terms=terms)
-            except (RefusalError, WriterError, anthropic.APIError, ValidationError) as err:
+            except CHECK_ERRORS as err:
                 # One bad verifier response must degrade to the template, not crash the build.
                 log.warning("verifier failed for %s: %s", chapter.key, err)
                 result = VerifyResult(
