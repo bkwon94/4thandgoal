@@ -3,7 +3,7 @@ The rules of the opener, the title race, on a small hand-built league: the leade
 with its title odds, and the facts that name them.
 """
 from league.models import History, PastWeek
-from midseason.opener import LEADERS, title_race, title_race_facts
+from midseason.opener import LEADERS, report_tile, title_race, title_race_facts
 from midseason.state import league_state
 
 
@@ -42,3 +42,13 @@ def test_the_facts_name_each_leader_s_title_odds_and_the_record_leader_s():
     assert facts["OP.4.title"].text == "Four has 31.5% title odds, the best in the league."
     assert facts["OP.3.title"].text == "Three has 30% title odds, 2nd best in the league."
     assert facts["OP.record"].text == "One leads the standings at 1-0 and has 12.5% title odds, 4th best in the league."
+
+
+def test_the_report_tile_shows_the_title_odds_of_the_favorite():
+    tile = report_tile(title_race(STATE, TITLE_ODDS))
+    assert (tile.label, tile.value, tile.note) == ("Title favorite", "31.5%", "Four")
+
+
+def test_with_no_title_odds_the_report_tile_shows_the_record_of_the_record_leader():
+    tile = report_tile(title_race(STATE, {}))
+    assert (tile.label, tile.value, tile.note) == ("Record leader", "1-0", "One")

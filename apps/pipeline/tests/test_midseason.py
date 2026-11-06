@@ -515,3 +515,9 @@ def test_a_clean_build_keeps_the_blurb_of_the_writer_for_each_chapter(tmp_path):
     for key in ("injuries", "top10", "watch"):
         chapter = _chapter(report, key)
         assert not chapter["blurb"]["fallback"] and not chapter["roast"]["fallback"]
+
+
+def test_the_report_tile_shows_the_title_odds_of_the_title_favorite(tmp_path):
+    # AT-45. The home tile shows one big fact of the title race: London Cooking leads at 16.8% title odds.
+    tile = _cpc_report(tmp_path)["tile"]
+    assert tile == {"label": "Title favorite", "value": "16.8%", "note": "London Cooking"}

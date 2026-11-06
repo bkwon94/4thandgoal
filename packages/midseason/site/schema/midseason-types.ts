@@ -21,4 +21,5 @@ export type PositionBoard = z.infer<typeof schema.positionBoardSchema>;
 export type Top10Chapter = z.infer<typeof schema.top10ChapterSchema>;
 export type MidseasonChapter = z.infer<typeof schema.chapterSchema>;
 export type Act = z.infer<typeof schema.actSchema>;
+export type ReportTile = z.infer<typeof schema.reportTileSchema>;
 export type Midseason = z.infer<typeof schema.midseasonSchema>;

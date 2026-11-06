@@ -50,6 +50,23 @@ class Opener(BaseModel):
     roast: Blurb | None = None
 
 
+class ReportTile(BaseModel):
+    """The one big fact of the home tile after the takeover ends. GLOSSARY.md, "Report tile"."""
+    label: str
+    value: str
+    note: str
+
+
+def report_tile(race: TitleRace) -> ReportTile:
+    """The tile of the title race: the title odds of the favorite. With no title odds, the record of the record leader."""
+    if race.leaders:
+        best = race.leaders[0]
+        return ReportTile(label="Title favorite", value=f"{best.title_odds:.1f}%", note=best.name)
+    top = race.record_leader
+    record = f"{top.wins}-{top.losses}" + (f"-{top.ties}" if top.ties else "")
+    return ReportTile(label="Record leader", value=record, note=top.name)
+
+
 def _rank(odds: Mapping[int, float], value: float) -> int:
     return 1 + sum(1 for other in odds.values() if other > value)
 

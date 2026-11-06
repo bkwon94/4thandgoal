@@ -42,8 +42,9 @@ export type MenuLinks = Partial<Record<PackageName, () => Destination | null>>;
 export type HomeTool = ComponentType;
 
 /* The place of a home part on the page (decision 08). The top sits under the intro, the middle sits above the Tools
-   chapter, and the bottom sits under it. */
-export type HomePlace = "top" | "middle" | "bottom";
+   chapter, and the bottom sits under it. A takeover part sits in place of every top part, such as the midseason report
+   for a short time after its publish (PRD of midseason-report). */
+export type HomePlace = "takeover" | "top" | "middle" | "bottom";
 
 /* One part that a package gives the home page, such as the hero or the Power Rankings chapter. */
 export type HomeSection = { place: HomePlace; part: ReactNode };
