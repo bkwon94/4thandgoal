@@ -16,6 +16,7 @@
     "check:export": "node scripts/check-export.mjs",
     "check:floor": "playwright test --project=floor",
     "test:floor": "playwright test --project=rules",
+    "evidence": "node scripts/evidence.mjs",
     "check": "pnpm check:fast && pnpm test:floor && node scripts/build-each-client.mjs",
     "check:fast": "CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && pnpm test",
     "hook:install": "prek install"
