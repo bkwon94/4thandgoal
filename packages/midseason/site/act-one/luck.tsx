@@ -53,6 +53,12 @@ function LuckTable({ teams }: { teams: TeamLuck[] }) {
   );
 }
 
+/* The cells of the swap grid keep a narrow pad, so all 12 columns fit the column of the report on a laptop. */
+const SWAP_HEAD = "px-sp-1 py-sp-2 text-center font-mono text-meta font-bold tracking-caps text-mute uppercase";
+const SWAP_CELL = "px-sp-1 py-sp-1 text-center font-mono text-meta tabular-nums whitespace-nowrap";
+/* The team column stays in place while a phone scrolls the grid, so each row keeps its name. */
+const SWAP_TEAM = "sticky left-0 z-10 bg-card";
+
 /* The swap grid: a row is a team, a column is a schedule, both in standings order. The diagonal is the real record. */
 function SwapGrid({ swap }: { swap: ScheduleSwap }) {
   const names = new Map(swap.rows.map((row) => [row.roster_id, row.name]));
@@ -63,12 +69,12 @@ function SwapGrid({ swap }: { swap: ScheduleSwap }) {
         Each row is a team. Each column is the schedule of the team at that place in the standings.
       </span>
       <Card className="overflow-x-auto p-0">
-        <table aria-label="Schedule swap" aria-describedby="swap-note" className="border-collapse">
+        <table aria-label="Schedule swap" aria-describedby="swap-note" className="w-full border-collapse">
           <thead>
             <tr className="border-b border-rule">
-              <th scope="col" className={HEAD}>Team</th>
+              <th scope="col" className={cn(HEAD, SWAP_TEAM)}>Team</th>
               {swap.rows.map((row, index) => (
-                <th key={row.roster_id} scope="col" className={cn(HEAD, "text-center")}>
+                <th key={row.roster_id} scope="col" className={SWAP_HEAD}>
                   <abbr title={`The schedule of ${row.name}`} className="no-underline">
                     {index + 1}
                   </abbr>
@@ -79,7 +85,10 @@ function SwapGrid({ swap }: { swap: ScheduleSwap }) {
           <tbody>
             {swap.rows.map((row, index) => (
               <tr key={row.roster_id} className="border-b border-rule last:border-b-0">
-                <th scope="row" className="max-w-[10rem] truncate px-sp-2 py-sp-1 text-left text-meta leading-tight font-semibold">
+                <th
+                  scope="row"
+                  className={cn("max-w-[10rem] truncate px-sp-2 py-sp-1 text-left text-meta leading-tight font-semibold", SWAP_TEAM)}
+                >
                   <span className="font-mono text-mute">{index + 1}</span> {row.name}
                 </th>
                 {row.cells.map((cell) => {
@@ -88,10 +97,7 @@ function SwapGrid({ swap }: { swap: ScheduleSwap }) {
                     <td
                       key={cell.schedule_of}
                       title={`${row.name} with the schedule of ${names.get(cell.schedule_of) ?? ""}`}
-                      className={cn(
-                        "px-sp-2 py-sp-1 text-center font-mono text-meta tabular-nums whitespace-nowrap",
-                        own ? "bg-ink font-bold text-page" : "text-ink",
-                      )}
+                      className={cn(SWAP_CELL, own ? "bg-ink font-bold text-page" : "text-ink")}
                     >
                       {fullRecord(cell.wins, cell.losses, cell.ties)}
                     </td>

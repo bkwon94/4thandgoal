@@ -347,6 +347,28 @@ for (const theme of THEMES) {
   }
 }
 
+/* The 12 columns of the schedule swap fit the column of the report on a laptop. On a phone the grid scrolls inside its
+   own box, and the team column stays in place. */
+for (const width of REPORT_WIDTHS) {
+  test(`midseason swap grid: ${CLIENT} ${MIDSEASON_ROUTE} fits or keeps the team column, ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const table = page.getByRole("table", { name: "Schedule swap" });
+    const box = table.locator("..");
+    const scroll = await box.evaluate((el) => ({ wide: el.scrollWidth, shown: el.clientWidth }));
+    if (width >= 1024) {
+      expect(scroll.wide, `the swap grid runs past its box at ${width}px`).toBeLessThanOrEqual(scroll.shown);
+      return;
+    }
+    const firstRow = table.locator("tbody tr").first().locator("th");
+    const before = (await firstRow.boundingBox())!;
+    await box.evaluate((el) => el.scrollTo({ left: el.scrollWidth }));
+    const after = (await firstRow.boundingBox())!;
+    expect(after.x).toBeCloseTo(before.x, 0);
+  });
+}
+
 /* AT-11: Position top 10 opens on RB and shows one position. */
 test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, async ({ page }) => {
   test.skip(!hasReport, `${CLIENT} builds no midseason report`);
