@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-8, AT-11, AT-26, A
 
 **Blocked by:** 04, 05, 06.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The Zod schema parses the real `midseason.json` of CPC.
 - [x] The three acts render in order, each with a dark title page.
