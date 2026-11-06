@@ -10,5 +10,5 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-22.
 
 **Status:** ready-for-agent
 
-- [ ] The skill text starts `make check` in the background at the start of the evidence stage, and names the rule of one `uv run` per checkout.
+- [x] The skill text starts `make check` in the background at the start of the evidence stage, and names the rule of one `uv run` per checkout.
 - [ ] In the evidence stage of `fast-cycle`, `make check` starts within 1 min of the stage start and ends green before the push, and the push waits 0 min for it (AT-22).

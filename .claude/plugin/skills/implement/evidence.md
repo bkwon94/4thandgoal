@@ -10,6 +10,24 @@ The evidence states what the instrument showed. It holds no PASS, no FAIL, and n
 2. Skip a test whose ticket is `blocked`, or is behind a `blocked` ticket. Its entry in `EVIDENCE.md` names the ticket.
 3. Skip a test with the word `Retired` in its title.
 
+## The background check
+
+Decision 05 sets one full check for each spec. It adds no wall time, because the evidence stage takes longer than the check.
+
+1. Start it first, before the first test. Run `make check` in the Spec worktree with the Bash tool `run_in_background`. Write the output to a log file, such as `make check > .scratch/<slug>/check.log 2>&1`.
+2. Write down the start time.
+3. Do not start the evidence of a test until the run is live.
+
+**One `uv run` for each checkout.** Run no other `uv run --exact --package` in the Spec worktree while the check is live. Two members share one `.venv` and break each other (decision 09). If you do, a run fails at random with a broken environment.
+
+The site evidence runner does not use `uv run`, so it runs at the same time. A pipeline test that needs `uv run` has two choices. Run it in a detached worktree of its own, or wait for the background run to end.
+
+Before the push, read the result of the run.
+
+- A green run needs no more work. The push does not wait on a run that is already green.
+- A red run gets fixed before the push. Run again only the check of the failed member: `make -C apps/<app> check`. Do not run the full check again.
+- Record the start time, the end time, and the last lines of the log in the evidence of AT-22.
+
 ## A site test
 
 The instrument is the evidence runner, a Playwright project of the site. One command takes every shot of every site test of the feature.
