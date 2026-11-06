@@ -10,7 +10,7 @@ const NUMERALS = ["I", "II", "III"];
 export function ActTitle({ index, title, headingId }: { index: number; title: string; headingId: string }) {
   const number = `Act ${NUMERALS[index] ?? index + 1}`;
   return (
-    <Hero label={`${number}: ${title}`} className="py-sp-6 tablet:min-h-[12rem]">
+    <Hero label={`${number}: ${title}`} className="rounded-report py-sp-6 tablet:min-h-[12rem]">
       {/* Each line sits on a plate, so the grid and the glow never sit under a letter. */}
       <div className="flex flex-col items-start gap-sp-3">
         <span className="plate font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase">

@@ -277,6 +277,9 @@ describe("MidseasonScreen", () => {
     for (const element of rounded) {
       expect(element.className).not.toMatch(/(^|\s)rounded-(pill|full|sm|card)(\s|$)/);
     }
+    // No corner is above 8 px, so the hero and the tile of the shared look give way to rounded-report too.
+    const corners = new Set(rounded.flatMap((element) => element.className.match(/(?<=(?:^|\s))rounded-\S+/g) ?? []));
+    expect([...corners]).toEqual(["rounded-report"]);
     // A sticky table cell takes the card color too, so a cell is no card.
     const cards = [...report.querySelectorAll(".bg-card:not(td, th)")];
     expect(cards.length).toBeGreaterThan(10);

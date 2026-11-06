@@ -1,6 +1,6 @@
 /**
  * The opener of the midseason report, the title race: the title odds of the leaders, then the record leader and its odds.
- * It is the hero of the report page, so it holds the level 1 heading of the page. "See the sim" jumps to the finale.
+ * It is the hero of the report page, with the 8px corners of the report, so it holds the level 1 heading of the page. "See the sim" jumps to the finale.
  */
 import { oneDecimal, ordinal } from "@cpc/design/format/format";
 import { Hero } from "@cpc/design/parts/hero";
@@ -27,7 +27,7 @@ export function Opener({
 }) {
   const { leaders, record_leader: top } = opener.facts;
   return (
-    <Hero label={opener.title}>
+    <Hero label={opener.title} className="rounded-report">
       <Rise step={0}>
         <div className="plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase">
           {season} Midseason Report // Week {week}
@@ -41,7 +41,13 @@ export function Opener({
         <ol aria-label="Title odds" className="m-0 mt-sp-5 grid list-none grid-cols-1 gap-sp-2 p-0 tablet:grid-cols-3">
           {leaders.map((leader) => (
             <li key={leader.roster_id}>
-              <Tile tone="hero" label="Title odds" value={`${oneDecimal(leader.title_odds)}%`} note={leader.name} />
+              <Tile
+                tone="hero"
+                label="Title odds"
+                value={`${oneDecimal(leader.title_odds)}%`}
+                note={leader.name}
+                className="rounded-report"
+              />
             </li>
           ))}
         </ol>
@@ -53,7 +59,7 @@ export function Opener({
           label="Record leader"
           value={top.title_odds === null ? "No odds" : `${oneDecimal(top.title_odds)}%`}
           note={`${top.name}, ${fullRecord(top.wins, top.losses, top.ties)}${top.title_rank === null ? "" : `, ${placeText(top.title_rank)}`}`}
-          className="mt-sp-2"
+          className="mt-sp-2 rounded-report"
         />
       </Rise>
       {finaleHref !== undefined && (
