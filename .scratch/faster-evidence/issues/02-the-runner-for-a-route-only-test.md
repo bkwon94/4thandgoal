@@ -10,10 +10,10 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, and 
 
 **Status:** ready-for-agent
 
-- [ ] A test on a small real folder proves the six file names of a route-only `steps.json`.
-- [ ] The same test proves the light shot is light and the dark shot is dark.
-- [ ] The same test proves a section that reveals on scroll shows in the full-page shot.
-- [ ] The same test proves a missing path shows the folder's `404.html`.
-- [ ] A test proves a bad verb and a bad key each stop the run with the file and the step named, and no PNG written.
-- [ ] A real run on the week 8 page of CPC prints the time of the test and the total.
-- [ ] `pnpm check:fast` of the site passes.
+- [x] A test on a small real folder proves the six file names of a route-only `steps.json`.
+- [x] The same test proves the light shot is light and the dark shot is dark.
+- [x] The same test proves a section that reveals on scroll shows in the full-page shot.
+- [x] The same test proves a missing path shows the folder's `404.html`.
+- [x] A test proves a bad verb and a bad key each stop the run with the file and the step named, and no PNG written.
+- [x] A real run on the week 8 page of CPC prints the time of the test and the total.
+- [x] `pnpm check:fast` of the site passes.
