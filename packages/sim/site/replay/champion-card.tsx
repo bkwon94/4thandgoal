@@ -27,7 +27,7 @@ export function ChampionCard({
   return (
     <motion.div
       role="group"
-      aria-label="Champion of this run"
+      aria-label="Champion of This Run"
       {...enter(pace, { scale: 0.96 }, { duration: 0.4 })}
       // The card sits in the flow of the stage above the bracket, so the final state shows both. It clips the rays.
       className="relative flex flex-col items-center gap-sp-3 overflow-hidden px-sp-4 text-center"
@@ -66,7 +66,7 @@ export function ChampionCard({
         </motion.span>
       </div>
       <motion.div {...enter(pace, {}, { duration: 0.4, delay: 0.5 })} className="flex flex-col items-center gap-sp-1">
-        <span className="font-mono text-meta font-bold tracking-caps text-accent-text uppercase">Champion of this run</span>
+        <span className="font-mono text-meta font-bold tracking-caps text-accent-text uppercase">Champion of This Run</span>
         <span className="text-score leading-tight font-bold text-on-dark">{champion.name}</span>
         <span className="text-body text-on-dark-2">{`Wins the title in ${champion.title}% of all ${thousands(runs)} runs`}</span>
       </motion.div>

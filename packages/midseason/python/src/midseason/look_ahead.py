@@ -45,7 +45,7 @@ class LookAhead(BaseModel):
 class LookAheadChapter(BaseModel):
     """The look ahead, the first chapter of Act III."""
     key: Literal["look-ahead"] = "look-ahead"
-    title: str = "The look ahead"
+    title: str = "The Look Ahead"
     facts: LookAhead
     blurb: Blurb | None = None
     roast: Blurb | None = None

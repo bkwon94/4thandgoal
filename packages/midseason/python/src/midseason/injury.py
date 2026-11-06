@@ -51,7 +51,7 @@ class InjuryToll(BaseModel):
 class InjuryChapter(BaseModel):
     """The injury toll chapter of Act I."""
     key: Literal["injuries"] = "injuries"
-    title: str = "The injury toll"
+    title: str = "The Injury Toll"
     facts: InjuryToll
     blurb: Blurb | None = None
     roast: Blurb | None = None

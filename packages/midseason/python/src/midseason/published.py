@@ -38,7 +38,7 @@ TAKEOVER_WEEKS = 1
 class StateChapter(BaseModel):
     """The state of the league, the first chapter of Act I."""
     key: Literal["state"] = "state"
-    title: str = "The state of the league"
+    title: str = "The State of the League"
     facts: LeagueState
     # The blurb of the writer. Brian may edit its sentences in the draft before the publish.
     blurb: Blurb | None = None
@@ -49,7 +49,7 @@ class StateChapter(BaseModel):
 class DraftChapter(BaseModel):
     """The draft steals and busts, the first chapter of Act II."""
     key: Literal["draft"] = "draft"
-    title: str = "Draft steals and busts"
+    title: str = "Draft Steals and Busts"
     facts: DraftValue
     blurb: Blurb | None = None
     roast: Blurb | None = None
@@ -58,7 +58,7 @@ class DraftChapter(BaseModel):
 class WaiversChapter(BaseModel):
     """Waiver hits and misses, in Act II: the top hits, the top misses, the top outbid claims, and the streamers."""
     key: Literal["waivers"] = "waivers"
-    title: str = "Waiver hits and misses"
+    title: str = "Waiver Hits and Misses"
     facts: WaiverFacts
     blurb: Blurb | None = None
     roast: Blurb | None = None
@@ -67,7 +67,7 @@ class WaiversChapter(BaseModel):
 class TradesChapter(BaseModel):
     """The trade report card, in Act II: every trade with its Trade result."""
     key: Literal["trades"] = "trades"
-    title: str = "The trade report card"
+    title: str = "The Trade Report Card"
     facts: TradeFacts
     blurb: Blurb | None = None
     roast: Blurb | None = None
@@ -137,9 +137,9 @@ def midseason_report(
         week=week,
         takeover_end_week=week + TAKEOVER_WEEKS,
         opener=Opener(facts=race, blurb=blurbs.get(OPENER), roast=blurbs.get(OPENER + ROAST_SUFFIX)),
-        acts=[Act(key="how-we-got-here", title="How we got here", chapters=act_one),
-              Act(key="the-moves", title="The moves", chapters=act_two),
-              Act(key="what-comes-next", title="What comes next", chapters=act_three)],
+        acts=[Act(key="how-we-got-here", title="How We Got Here", chapters=act_one),
+              Act(key="the-moves", title="The Moves", chapters=act_two),
+              Act(key="what-comes-next", title="What Comes Next", chapters=act_three)],
         tile=report_tile(race),
         headlines=headlines,
     )

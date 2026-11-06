@@ -17,7 +17,7 @@
             "click": "button:has-text(\"Skip to the end\")"
         },
         {
-            "wait": "[aria-label=\"Champion of this run\"]"
+            "wait": "[aria-label=\"Champion of This Run\"]"
         },
         {
             "shot": "after"

@@ -54,7 +54,7 @@ class PlayersToWatch(BaseModel):
 class WatchChapter(BaseModel):
     """The players to watch chapter of Act III."""
     key: Literal["watch"] = "watch"
-    title: str = "Players to watch"
+    title: str = "Players to Watch"
     facts: PlayersToWatch
     blurb: Blurb | None = None
     roast: Blurb | None = None

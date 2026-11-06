@@ -48,7 +48,7 @@ class PositionTop10(BaseModel):
 class Top10Chapter(BaseModel):
     """The Position top 10 chapter of Act I."""
     key: Literal["top10"] = "top10"
-    title: str = "Position top 10"
+    title: str = "Position Top 10"
     facts: PositionTop10
     blurb: Blurb | None = None
     roast: Blurb | None = None

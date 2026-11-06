@@ -19,7 +19,7 @@ export function Opener({ opener, season, week }: { opener: OpenerFacts; season: 
     <Hero label={opener.title}>
       <Rise step={0}>
         <div className="plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase">
-          {season} midseason report // Week {week}
+          {season} Midseason Report // Week {week}
         </div>
       </Rise>
       <Rise step={1}>

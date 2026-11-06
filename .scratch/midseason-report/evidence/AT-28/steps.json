@@ -4,7 +4,7 @@
         { "shot": "start" },
         { "scroll": "#state th:text-is(\"Playoff\")" },
         { "scroll": "#luck th:text-is(\"Close\")" },
-        { "scroll": "h1:has-text(\"The title race\")" },
+        { "scroll": "h1:has-text(\"The Title Race\")" },
         { "shot": "end" }
     ]
 }

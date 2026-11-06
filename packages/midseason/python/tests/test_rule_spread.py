@@ -112,7 +112,7 @@ def test_a_moved_team_stays_in_the_scope_and_the_facts_of_its_block_and_the_shee
     callouts = [Callout(key="luck.most_better", chapter="luck", ranking=[1, 2])]
     headlines = [Headline(kind="callout", key="luck.most_better", chapter="luck", roster_id=2, place=2)]
     notes = callout_facts(headlines, callouts, {1: "One", 2: "Two"})
-    later = [("luck", "Schedule luck", [fact("SW.1", "One is lucky.", Nums(), ["One"], []),
+    later = [("luck", "Schedule Luck", [fact("SW.1", "One is lucky.", Nums(), ["One"], []),
                                         fact("SW.2", "Two is lucky.", Nums(), ["Two"], [])])]
     sheet = prose_sheet(1, state, "off", later, callouts=notes)
     luck = next(chapter for chapter in sheet.chapters if chapter.key == "luck")

@@ -124,5 +124,5 @@ def test_the_draft_has_a_prose_block_and_a_roast_block_in_the_review_file(tmp_pa
     client = _cpc_week_8(tmp_path)
     out = build_week_8(_call(), client=client, provider=CPC_PROVIDER)
     review = (out.parent / "midseason-review.md").read_text(encoding="utf-8")
-    assert "## draft: Draft steals and busts" in review
+    assert "## draft: Draft Steals and Busts" in review
     assert "## draft.roast:" in review

@@ -159,7 +159,7 @@ export function SimReplay({
     <section aria-labelledby="sim-heading" className="flex flex-col gap-sp-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-sp-3 gap-y-sp-1">
         <h3 id="sim-heading" className="m-0 text-stat leading-tight font-bold">
-          Sim the rest of the season
+          Sim the Rest of the Season
         </h3>
         <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">
           {`Weeks ${sim.weeks[0]} to ${sim.weeks.at(-1)}`}
@@ -193,7 +193,7 @@ export function SimReplay({
           </p>
           {play === null || season === null || beat === null ? (
             <div className="flex flex-col gap-sp-3">
-              <span className="font-mono text-meta font-bold tracking-caps text-on-dark-2 uppercase">{`Standings after week ${sim.week}`}</span>
+              <span className="font-mono text-meta font-bold tracking-caps text-on-dark-2 uppercase">{`Standings After Week ${sim.week}`}</span>
               <Standings rows={replaySeason(sim, 0).start} label="Standings" pace={{ off, still: true }} />
             </div>
           ) : (

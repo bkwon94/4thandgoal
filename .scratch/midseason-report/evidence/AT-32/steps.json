@@ -8,7 +8,7 @@
             "click": "button:has-text(\"Sim the season\")"
         },
         {
-            "wait": "[aria-label=\"Champion of this run\"]"
+            "wait": "[aria-label=\"Champion of This Run\"]"
         }
     ]
 }

@@ -17,7 +17,7 @@ export function Odds({ sim, seeds }: { sim: Sim; seeds: Map<number, number> | nu
     <Card className="p-sp-3">
       <table className="w-full table-fixed border-collapse">
         <caption className="pb-sp-2 text-left font-mono text-meta font-bold tracking-caps text-accent-ink uppercase">
-          {`The odds of all ${thousands(sim.runs)} runs`}
+          {`The Odds of All ${thousands(sim.runs)} Runs`}
         </caption>
         <thead>
           <tr className="border-b border-rule">

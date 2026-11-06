@@ -69,9 +69,9 @@ describe("players to watch", () => {
     const facts = chapterOf("watch").facts;
     const chapter = chapterEl("watch");
     const lists = [
-      ["Due to rise", facts.due_to_rise],
-      ["Due to fall", facts.due_to_fall],
-      ["Grab him now", facts.grab_him_now],
+      ["Due to Rise", facts.due_to_rise],
+      ["Due to Fall", facts.due_to_fall],
+      ["Grab Him Now", facts.grab_him_now],
     ] as const;
     for (const [name, players] of lists) {
       const rows = chapter.getByRole("list", { name }).children;
@@ -84,12 +84,12 @@ describe("players to watch", () => {
     renderReport();
     const facts = chapterOf("watch").facts;
     const chapter = chapterEl("watch");
-    const rise = chapter.getByRole("list", { name: "Due to rise" }).children[0];
+    const rise = chapter.getByRole("list", { name: "Due to Rise" }).children[0];
     expect(rise.textContent).toContain(facts.due_to_rise[0].manager);
     expect(rise.textContent).toContain(`${oneDecimal(-facts.due_to_rise[0].gap)} a game under`);
-    const fall = chapter.getByRole("list", { name: "Due to fall" }).children[0];
+    const fall = chapter.getByRole("list", { name: "Due to Fall" }).children[0];
     expect(fall.textContent).toContain(`${oneDecimal(facts.due_to_fall[0].gap)} a game over`);
-    const grab = chapter.getByRole("list", { name: "Grab him now" }).children[0];
+    const grab = chapter.getByRole("list", { name: "Grab Him Now" }).children[0];
     expect(grab.textContent).toContain("Free agent");
     expect(grab.textContent).toContain(`${Math.round(facts.grab_him_now[0].projection)} projected`);
   });

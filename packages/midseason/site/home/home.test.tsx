@@ -22,9 +22,9 @@ describe("Takeover", () => {
   it("shows the opener, the title race, with the leaders, the record leader, and a link to the report", () => {
     render(<Takeover report={midseason} href="/midseason/2026/" />);
     const takeover = within(screen.getByRole("region", { name: "2026 Midseason Report" }));
-    expect(takeover.getByText("2026 midseason report // Week 8")).toBeTruthy();
+    expect(takeover.getByText("2026 Midseason Report // Week 8")).toBeTruthy();
     // The intro of the home page holds the h1, so the title of the opener is a level 2 heading.
-    expect(takeover.getByRole("heading", { level: 2, name: "The title race" })).toBeTruthy();
+    expect(takeover.getByRole("heading", { level: 2, name: "The Title Race" })).toBeTruthy();
     expect(takeover.getAllByRole("listitem").map((item) => item.textContent)).toEqual([
       "Title odds16.8%London Cooking",
       "Title odds16.3%Bo Girds",

@@ -97,6 +97,6 @@ def test_the_review_file_shows_the_blurbs_of_act_two(tmp_path):
     client = _cpc_week_8(tmp_path)
     build_week_8(_call(), client=client, provider=CPC_PROVIDER)
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
-    assert "## waivers: Waiver hits and misses" in review
-    assert "## trades: The trade report card" in review
+    assert "## waivers: Waiver Hits and Misses" in review
+    assert "## trades: The Trade Report Card" in review
     assert "- WV.hit.1: Ollie Gordon II went to Unsolicited Dak Picks for $40 in week 3" in review

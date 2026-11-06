@@ -73,7 +73,7 @@ export function Records({ chapter }: { chapter: RecordsChapter }) {
   return (
     <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb} roast={chapter.roast}>
       <BookList book={book} />
-      <h4 className="m-0 mt-sp-3 text-body leading-tight font-bold">The awards</h4>
+      <h4 className="m-0 mt-sp-3 text-body leading-tight font-bold">The Awards</h4>
       <Awards awards={book.awards.filter((award) => !award.in_record_book)} />
     </ReportChapter>
   );

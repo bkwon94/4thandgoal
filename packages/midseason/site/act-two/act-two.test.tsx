@@ -127,11 +127,11 @@ describe("the trade report card", () => {
     renderReport();
     const act = within(document.getElementById("the-moves")!);
     expect(act.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
-      "Draft steals and busts",
-      "Waiver hits and misses",
-      "The trade report card",
-      "Lineup choices",
-      "The record book",
+      "Draft Steals and Busts",
+      "Waiver Hits and Misses",
+      "The Trade Report Card",
+      "Lineup Choices",
+      "The Record Book",
     ]);
   });
 

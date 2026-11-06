@@ -4,7 +4,7 @@
   "week": 8,
   "takeover_end_week": 9,
   "opener": {
-    "title": "The title race",
+    "title": "The Title Race",
     "facts": {
       "leaders": [
         {
@@ -91,11 +91,11 @@
   "acts": [
     {
       "key": "how-we-got-here",
-      "title": "How we got here",
+      "title": "How We Got Here",
       "chapters": [
         {
           "key": "state",
-          "title": "The state of the league",
+          "title": "The State of the League",
           "facts": {
             "teams": [
               {
@@ -614,7 +614,7 @@
         },
         {
           "key": "luck",
-          "title": "Schedule luck",
+          "title": "Schedule Luck",
           "facts": {
             "teams": [
               {
@@ -1888,7 +1888,7 @@
         },
         {
           "key": "injuries",
-          "title": "The injury toll",
+          "title": "The Injury Toll",
           "facts": {
             "teams": [
               {
@@ -2239,7 +2239,7 @@
         },
         {
           "key": "top10",
-          "title": "Position top 10",
+          "title": "Position Top 10",
           "facts": {
             "positions": [
               {
@@ -3012,11 +3012,11 @@
     },
     {
       "key": "the-moves",
-      "title": "The moves",
+      "title": "The Moves",
       "chapters": [
         {
           "key": "draft",
-          "title": "Draft steals and busts",
+          "title": "Draft Steals and Busts",
           "facts": {
             "draft_type": "auction",
             "steals": [
@@ -3258,7 +3258,7 @@
         },
         {
           "key": "waivers",
-          "title": "Waiver hits and misses",
+          "title": "Waiver Hits and Misses",
           "facts": {
             "hits": [
               {
@@ -3584,7 +3584,7 @@
         },
         {
           "key": "trades",
-          "title": "The trade report card",
+          "title": "The Trade Report Card",
           "facts": {
             "trades": [
               {
@@ -5006,7 +5006,7 @@
         },
         {
           "key": "lineup",
-          "title": "Lineup choices",
+          "title": "Lineup Choices",
           "facts": {
             "teams": [
               {
@@ -5279,7 +5279,7 @@
         },
         {
           "key": "records",
-          "title": "The record book",
+          "title": "The Record Book",
           "facts": {
             "high": {
               "week": 5,
@@ -5481,11 +5481,11 @@
     },
     {
       "key": "what-comes-next",
-      "title": "What comes next",
+      "title": "What Comes Next",
       "chapters": [
         {
           "key": "look-ahead",
-          "title": "The look ahead",
+          "title": "The Look Ahead",
           "facts": {
             "teams": [
               {
@@ -6238,7 +6238,7 @@
         },
         {
           "key": "watch",
-          "title": "Players to watch",
+          "title": "Players to Watch",
           "facts": {
             "due_to_rise": [
               {

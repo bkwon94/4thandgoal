@@ -96,7 +96,7 @@ class ScheduleLuck(BaseModel):
 class LuckChapter(BaseModel):
     """Schedule luck with the Schedule swap, a chapter of Act I."""
     key: Literal["luck"] = "luck"
-    title: str = "Schedule luck"
+    title: str = "Schedule Luck"
     facts: ScheduleLuck
     blurb: Blurb | None = None
     roast: Blurb | None = None

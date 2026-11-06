@@ -139,9 +139,9 @@ export function Luck({ chapter }: { chapter: LuckChapter }) {
         {ALL_PLAY_SENTENCE} Schedule luck is the real wins minus the All-play wins.
       </p>
       <LuckTable teams={teams} />
-      <h4 className="m-0 mt-sp-3 text-body leading-tight font-bold">The schedule swap</h4>
+      <h4 className="m-0 mt-sp-3 text-body leading-tight font-bold">The Schedule Swap</h4>
       <SwapGrid swap={swap} />
-      <h4 className="m-0 mt-sp-3 text-body leading-tight font-bold">The best schedule each team missed</h4>
+      <h4 className="m-0 mt-sp-3 text-body leading-tight font-bold">The Best Schedule Each Team Missed</h4>
       <BestMissed swap={swap} />
     </ReportChapter>
   );

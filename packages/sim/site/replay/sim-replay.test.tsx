@@ -43,7 +43,7 @@ describe("the sim replay", () => {
     render(<SimReplay sim={sim} pick={picks(0)} />);
     expect(screen.getByRole("button", { name: "Sim the season" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Skip to the end" })).toBeNull();
-    const odds = screen.getByRole("table", { name: "The odds of all 10,000 runs" });
+    const odds = screen.getByRole("table", { name: "The Odds of All 10,000 Runs" });
     // One row per team, ordered by mean wins, with the playoff, bye, and title odds of the file.
     const rows = within(odds).getAllByRole("row").slice(1);
     expect(rows).toHaveLength(12);
@@ -99,7 +99,7 @@ describe("the sim replay", () => {
 
     // The champion card ends the run.
     playBeats(0, 10, 4);
-    const card = within(stage()).getByRole("group", { name: "Champion of this run" });
+    const card = within(stage()).getByRole("group", { name: "Champion of This Run" });
     expect(card.textContent).toContain("Lil Fridge");
     expect(card.textContent).toContain("Wins the title in 14.4% of all 10,000 runs");
     expect(screen.queryByRole("button", { name: "Skip to the end" })).toBeNull();
@@ -109,7 +109,7 @@ describe("the sim replay", () => {
     render(<SimReplay sim={sim} pick={picks(0)} />);
     press();
     playBeats(0, 0, 6);
-    const odds = screen.getByRole("table", { name: "The odds of all 10,000 runs" });
+    const odds = screen.getByRole("table", { name: "The Odds of All 10,000 Runs" });
     const fridge = within(odds).getAllByRole("row").find((row) => row.textContent?.includes("Lil Fridge"))!;
     expect(within(fridge).getAllByRole("cell").at(-1)!.textContent).toBe("1");
   });
@@ -119,7 +119,7 @@ describe("the sim replay", () => {
     press();
     playBeats(0, 0, 2);
     fireEvent.click(screen.getByRole("button", { name: "Skip to the end" }));
-    const card = within(stage()).getByRole("group", { name: "Champion of this run" });
+    const card = within(stage()).getByRole("group", { name: "Champion of This Run" });
     expect(card.textContent).toContain("Wins the title in 14.4% of all 10,000 runs");
     const bracket = within(stage()).getByRole("list", { name: "Bracket" });
     expect(within(bracket).getAllByRole("listitem").map((round) => round.getAttribute("aria-label"))).toEqual([
@@ -144,7 +144,7 @@ describe("the sim replay", () => {
     expect(within(stage()).queryByRole("group", { name: "Week 11 final" })).toBeNull();
     // Run 1 plays to its own champion, with no beat of run 0 left on the clock.
     playBeats(1, 0, 14);
-    const card = within(stage()).getByRole("group", { name: "Champion of this run" });
+    const card = within(stage()).getByRole("group", { name: "Champion of This Run" });
     const champion = replaySeason(sim, 1).champion;
     expect(card.textContent).toContain(champion.name);
     expect(card.textContent).toContain(`Wins the title in ${champion.title}% of all 10,000 runs`);
@@ -155,7 +155,7 @@ describe("the sim replay", () => {
     render(<SimReplay sim={sim} />);
     press();
     fireEvent.click(screen.getByRole("button", { name: "Skip to the end" }));
-    const card = within(stage()).getByRole("group", { name: "Champion of this run" });
+    const card = within(stage()).getByRole("group", { name: "Champion of This Run" });
     expect(card.textContent).toContain(replaySeason(sim, 100).champion.name);
     vi.restoreAllMocks();
   });

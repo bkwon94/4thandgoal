@@ -25,7 +25,7 @@ describe("the home part of the midseason package", () => {
     expect(sections.map((section) => section.place)).toEqual(["takeover"]);
     render(<>{sections[0].part}</>);
     const takeover = screen.getByRole("region", { name: "2026 Midseason Report" });
-    expect(within(takeover).getByRole("heading", { level: 2, name: "The title race" })).toBeTruthy();
+    expect(within(takeover).getByRole("heading", { level: 2, name: "The Title Race" })).toBeTruthy();
     expect(within(takeover).getByRole("link", { name: "Read the Midseason Report" }).getAttribute("href")).toBe(
       "/midseason/2026/",
     );

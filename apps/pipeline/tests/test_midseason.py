@@ -317,7 +317,7 @@ def test_the_review_file_shows_each_blurb_with_its_prose_block_its_facts_and_the
     build_week_8(_clean_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     state, roast = review.split("## state.roast")
-    assert "## state: The state of the league" in state
+    assert "## state: The State of the League" in state
     assert "3 to 6 sentences" in state
     assert "All You Need Is Love sits at 11-5. [ST.2.record]" in state
     assert "- ST.2.record: All You Need Is Love is 11-5, 1st in the standings." in state
@@ -480,7 +480,7 @@ def test_the_opener_is_the_title_race_with_the_leaders_and_all_you_need_is_love_
     sim = json.loads((build_dir(client.folder) / "2026" / "sim.json").read_text(encoding="utf-8"))["teams"]
     title = {int(rid): team["title"] for rid, team in sim.items()}
     race = report["opener"]["facts"]
-    assert report["opener"]["title"] == "The title race"
+    assert report["opener"]["title"] == "The Title Race"
     best = sorted(title, key=lambda rid: -title[rid])[:3]
     assert [(leader["roster_id"], leader["title_odds"]) for leader in race["leaders"]] == [
         (rid, title[rid]) for rid in best]
@@ -497,8 +497,8 @@ def test_the_opener_and_the_look_ahead_have_their_prose_blocks_in_the_review_fil
     report = _report(build_week_8(_clean_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS))
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     # The opener is the top of the page, so its blocks come first in the review file.
-    assert review.index("## opener: The title race") < review.index("## opener.roast") < review.index("## state:")
-    assert "## look-ahead: The look ahead" in review and "## look-ahead.roast" in review
+    assert review.index("## opener: The Title Race") < review.index("## opener.roast") < review.index("## state:")
+    assert "## look-ahead: The Look Ahead" in review and "## look-ahead.roast" in review
     assert "London Cooking leads the race at 16.8% title odds. [OP.5.title]" in review
     assert "Maye d'force B with U gets the softest schedule at 0.44. [LA.9.rate]" in review
     assert review.count("Verifier: passed on attempt 1.") == 26

@@ -44,7 +44,7 @@ class TitleRace(BaseModel):
 
 class Opener(BaseModel):
     """The top of the report. GLOSSARY.md, "Opener"."""
-    title: str = "The title race"
+    title: str = "The Title Race"
     facts: TitleRace
     blurb: Blurb | None = None
     roast: Blurb | None = None

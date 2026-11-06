@@ -18,7 +18,7 @@ export function Takeover({ report, href }: { report: Midseason; href: string }) 
     <Hero label={`${report.season} Midseason Report`}>
       <Rise step={0}>
         <div className="plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase">
-          {report.season} midseason report // Week {report.week}
+          {report.season} Midseason Report // Week {report.week}
         </div>
       </Rise>
       <Rise step={1}>

@@ -86,7 +86,7 @@ class RecordBook(BaseModel):
 class RecordsChapter(BaseModel):
     """The record book with the awards, the last chapter of Act II."""
     key: Literal["records"] = "records"
-    title: str = "The record book"
+    title: str = "The Record Book"
     facts: RecordBook
     blurb: Blurb | None = None
     roast: Blurb | None = None

@@ -70,13 +70,13 @@ export function Watch({ chapter }: { chapter: WatchChapter }) {
   return (
     <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb} roast={chapter.roast}>
       <div className="grid gap-sp-4 desktop:grid-cols-3">
-        <List label="Due to rise" note="Points a game under his expected points.">
+        <List label="Due to Rise" note="Points a game under his expected points.">
           {rise.map((player) => <GapRow key={player.player_id} player={player} />)}
         </List>
-        <List label="Due to fall" note="Points a game over his expected points.">
+        <List label="Due to Fall" note="Points a game over his expected points.">
           {fall.map((player) => <GapRow key={player.player_id} player={player} />)}
         </List>
-        <List label="Grab him now" note="Projected points for the weeks left.">
+        <List label="Grab Him Now" note="Projected points for the weeks left.">
           {grab.map((player) => <GrabRow key={player.player_id} player={player} />)}
         </List>
       </div>

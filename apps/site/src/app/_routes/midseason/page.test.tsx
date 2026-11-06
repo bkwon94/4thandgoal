@@ -30,7 +30,7 @@ describe("the midseason route", () => {
     const route = await routeOver(fixture);
     expect(route.generateStaticParams()).toEqual([{ season: "2026" }]);
     render(await route.default({ params: Promise.resolve({ season: "2026" }) }));
-    expect(screen.getByRole("heading", { level: 1, name: "The title race" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1, name: "The Title Race" })).toBeTruthy();
     expect(screen.getByRole("navigation", { name: "Chapters" })).toBeTruthy();
   });
 
@@ -47,7 +47,7 @@ describe("the midseason route", () => {
     render(await route.default({ params: Promise.resolve({ season: "2026" }) }));
     const last = document.getElementById(fixture.acts.at(-1)!.key)!;
     const finale = last.lastElementChild!;
-    expect(finale.querySelector("h3")!.textContent).toBe("Sim the rest of the season");
+    expect(finale.querySelector("h3")!.textContent).toBe("Sim the Rest of the Season");
     expect(screen.getByRole("button", { name: "Sim the season" })).toBeTruthy();
   });
 

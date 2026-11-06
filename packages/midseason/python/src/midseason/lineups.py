@@ -47,7 +47,7 @@ class LineupChoices(BaseModel):
 class LineupChapter(BaseModel):
     """The lineup choices, a chapter of Act II."""
     key: Literal["lineup"] = "lineup"
-    title: str = "Lineup choices"
+    title: str = "Lineup Choices"
     facts: LineupChoices
     blurb: Blurb | None = None
     roast: Blurb | None = None

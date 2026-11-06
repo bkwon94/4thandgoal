@@ -310,7 +310,7 @@ for (const theme of THEMES) {
       expect(failures, `${label} breaks the readability floor`).toEqual([]);
     });
 
-    /* AT-27: from Act II, a tap on "What comes next" in the rail moves the page to Act III, and the rail stays at the top. */
+    /* AT-27: from Act II, a tap on "What Comes Next" in the rail moves the page to Act III, and the rail stays at the top. */
     test(`midseason rail: ${CLIENT} ${MIDSEASON_ROUTE} jumps to Act III and stays at the top, ${theme} ${width}px`, async ({ page }) => {
       test.skip(!hasReport, `${CLIENT} builds no midseason report`);
       await page.setViewportSize({ width, height: 900 });
@@ -318,9 +318,9 @@ for (const theme of THEMES) {
       const rail = page.getByRole("navigation", { name: "Chapters" });
       const railTop = (await rail.boundingBox())!.y;
       await page.evaluate(() => document.getElementById("the-moves")!.scrollIntoView());
-      await rail.getByRole("link", { name: "What comes next" }).click();
+      await rail.getByRole("link", { name: "What Comes Next" }).click();
       const box = await rail.boundingBox();
-      const title = await page.getByRole("heading", { level: 2, name: "What comes next" }).boundingBox();
+      const title = await page.getByRole("heading", { level: 2, name: "What Comes Next" }).boundingBox();
       // The rail sits under the top band at every scroll, and the title of Act III sits just under the rail.
       expect(box!.y).toBe(railTop);
       expect(title!.y).toBeGreaterThanOrEqual(box!.y + box!.height);
@@ -417,7 +417,7 @@ for (const width of REPORT_WIDTHS) {
     const stage = page.getByRole("region", { name: "The replay" });
     test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
     const box = (await stage.boundingBox())!;
-    const odds = (await page.getByRole("table", { name: /^The odds of all/ }).boundingBox())!;
+    const odds = (await page.getByRole("table", { name: /^The Odds of All/ }).boundingBox())!;
     expect(odds.y).toBeGreaterThanOrEqual(box.y + box.height);
     const column = (await stage.evaluate((el) => el.parentElement!.getBoundingClientRect().width))!;
     expect(box.width).toBeCloseTo(column, 0);
@@ -467,7 +467,7 @@ for (const width of [375, 1280]) {
     await page.getByRole("button", { name: "Sim the season" }).click();
     await expect(stage.getByRole("group", { name: "Week 9 final" })).toBeVisible();
     await page.getByRole("button", { name: "Skip to the end" }).click();
-    const card = stage.getByRole("group", { name: "Champion of this run" });
+    const card = stage.getByRole("group", { name: "Champion of This Run" });
     await expect(card).toContainText(/Wins the title in [\d.]+% of all [\d,]+ runs/);
     expect(await scanScroll(page)).toEqual([]);
     const rounds = stage.getByRole("list", { name: "Bracket" }).getByRole("listitem");

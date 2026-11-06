@@ -830,17 +830,17 @@ def run_midseason(
     luck = with_swap_callouts(luck, most_better=_held(headlines, "luck.most_better"),
                               biggest_miss=_held(headlines, "luck.biggest_miss"))
     roast = midseason_values(client).roast
-    later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule luck", luck_facts(luck)),
-             ("injuries", "The injury toll", injury_facts(chapters.injuries)),
-             ("top10", "Position top 10", top10_facts(chapters.top10)),
-             ("draft", "Draft steals and busts", draft_facts(draft)),
-             ("waivers", "Waiver hits and misses", waiver_prose_facts(waivers)),
-             ("trades", "The trade report card", trade_prose_facts(trades)),
-             ("lineup", "Lineup choices", lineup_facts(lineups)),
-             ("records", "The record book", records_facts(records, waivers=waivers, lineups=lineups, state=state)),
-             (LOOK_AHEAD, "The look ahead", look_ahead_facts(look)),
-             ("watch", "Players to watch", watch_facts(chapters.watch))]
-    sheet = prose_sheet(week, state, roast, later, first=[(OPENER, "The title race", title_race_facts(race))],
+    later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule Luck", luck_facts(luck)),
+             ("injuries", "The Injury Toll", injury_facts(chapters.injuries)),
+             ("top10", "Position Top 10", top10_facts(chapters.top10)),
+             ("draft", "Draft Steals and Busts", draft_facts(draft)),
+             ("waivers", "Waiver Hits and Misses", waiver_prose_facts(waivers)),
+             ("trades", "The Trade Report Card", trade_prose_facts(trades)),
+             ("lineup", "Lineup Choices", lineup_facts(lineups)),
+             ("records", "The Record Book", records_facts(records, waivers=waivers, lineups=lineups, state=state)),
+             (LOOK_AHEAD, "The Look Ahead", look_ahead_facts(look)),
+             ("watch", "Players to Watch", watch_facts(chapters.watch))]
+    sheet = prose_sheet(week, state, roast, later, first=[(OPENER, "The Title Race", title_race_facts(race))],
                         callouts=callout_facts(headlines, callouts, names))
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)

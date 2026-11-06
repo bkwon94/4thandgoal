@@ -25,8 +25,8 @@ const renderReport = (finale?: React.ReactNode) =>
 describe("MidseasonScreen", () => {
   it("opens on the title race with All You Need Is Love as the record leader at 11-5", () => {
     renderReport();
-    const opener = within(screen.getByRole("region", { name: "The title race" }));
-    expect(opener.getByRole("heading", { level: 1, name: "The title race" })).toBeTruthy();
+    const opener = within(screen.getByRole("region", { name: "The Title Race" }));
+    expect(opener.getByRole("heading", { level: 1, name: "The Title Race" })).toBeTruthy();
     expect(opener.getAllByRole("listitem").map((item) => item.textContent)).toEqual([
       "Title odds16.8%London Cooking",
       "Title odds16.3%Bo Girds",
@@ -38,8 +38,8 @@ describe("MidseasonScreen", () => {
   it("renders the three acts in order, each opened by a title page on the dark hero surface", () => {
     renderReport();
     const titles = screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent);
-    expect(titles).toEqual(["How we got here", "The moves", "What comes next"]);
-    for (const [index, name] of ["Act I: How we got here", "Act II: The moves", "Act III: What comes next"].entries()) {
+    expect(titles).toEqual(["How We Got Here", "The Moves", "What Comes Next"]);
+    for (const [index, name] of ["Act I: How We Got Here", "Act II: The Moves", "Act III: What Comes Next"].entries()) {
       const page = screen.getByRole("region", { name });
       // The hero sits on the band color in both themes, so the title page is dark in the light theme too.
       expect(page.className).toContain("bg-band");
@@ -55,9 +55,9 @@ describe("MidseasonScreen", () => {
     expect(rail.className).toContain("sticky");
     const links = within(rail).getAllByRole("link");
     expect(links.map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
-      ["How we got here", "#how-we-got-here"],
-      ["The moves", "#the-moves"],
-      ["What comes next", "#what-comes-next"],
+      ["How We Got Here", "#how-we-got-here"],
+      ["The Moves", "#the-moves"],
+      ["What Comes Next", "#what-comes-next"],
     ]);
     for (const link of links) expect(document.getElementById(link.getAttribute("href")!.slice(1))).not.toBeNull();
   });
@@ -66,7 +66,7 @@ describe("MidseasonScreen", () => {
     renderReport();
     const act = within(document.getElementById("how-we-got-here")!);
     const chapters = act.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent);
-    expect(chapters).toEqual(["The state of the league", "Arcs", "Schedule luck", "The injury toll", "Position top 10"]);
+    expect(chapters).toEqual(["The State of the League", "Arcs", "Schedule Luck", "The Injury Toll", "Position Top 10"]);
   });
 
   it("shows the state of the league with each team in standings order", () => {
