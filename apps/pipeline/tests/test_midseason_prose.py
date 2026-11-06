@@ -11,6 +11,7 @@ from fakes import FakeWriter
 from test_midseason import CPC_PROVIDER, copy_cpc_week_8
 
 from cornerstone.pipeline import run_midseason
+from cornerstone.value_models import VALUE_MODELS
 from facts.verifier import code_check, page_words
 from facts.writer import build_writer_prompt, claude_call
 from league.models import Blurb, Sentence
@@ -22,7 +23,7 @@ from midseason.published import read_midseason, report_blurbs
 def built(tmp_path_factory) -> tuple[ProseDraft, Path, Path]:
     """One build of the real CPC week 8 with a writer that fails each call: the saved facts, the draft, and the voice
     folder of the client. Each prose block of the draft holds its template blurb."""
-    client = cpc_client(at=tmp_path_factory.mktemp("cpc"))
+    client = cpc_client(at=tmp_path_factory.mktemp("cpc"), models=VALUE_MODELS)
     copy_cpc_week_8(client)
     out = run_midseason(2026, 8, partial(claude_call, writer=FakeWriter()), client=client, provider=CPC_PROVIDER)
     return read_draft_facts(out.parent), out, client.voice_dir
