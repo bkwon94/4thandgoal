@@ -1,0 +1,10 @@
+$ git status --short clients/cpc/published/2026/rankings.json; md5 (before the build)
+MD5 (clients/cpc/published/2026/rankings.json) = 4a80c07457cf7adc6a184d9404dbf4f1
+
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ git status --short clients/cpc/published/2026/rankings.json; md5 (after the build)
+MD5 (clients/cpc/published/2026/rankings.json) = 4a80c07457cf7adc6a184d9404dbf4f1

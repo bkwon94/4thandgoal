@@ -1,0 +1,21 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '[.acts[].chapters[]] as $c | ($c[] | select(.key=="state") | .facts.teams | map({key: (.roster_id|tostring), value: "\(.wins)-\(.losses)-\(.ties)"}) | from_entries) as $rec | $c[] | select(.key=="luck") | .facts.swap.rows[] | .roster_id as $r | .name as $n | .cells[] | select(.schedule_of==$r) | {name: $n, diagonal: "\(.wins)-\(.losses)-\(.ties)", standings: $rec[$r|tostring]}' clients/cpc/build/2026/midseason.json
+{"name":"All You Need Is Love","diagonal":"11-5-0","standings":"11-5-0"}
+{"name":"Lil Fridge","diagonal":"10-6-0","standings":"10-6-0"}
+{"name":"Bo Girds","diagonal":"9-7-0","standings":"9-7-0"}
+{"name":"London Cooking","diagonal":"9-7-0","standings":"9-7-0"}
+{"name":"Maye d'force B with U","diagonal":"9-7-0","standings":"9-7-0"}
+{"name":"The Blue Tent","diagonal":"9-7-0","standings":"9-7-0"}
+{"name":"Return of T Mac","diagonal":"9-7-0","standings":"9-7-0"}
+{"name":"Teehee","diagonal":"8-8-0","standings":"8-8-0"}
+{"name":"To Infinity and Bijan","diagonal":"7-9-0","standings":"7-9-0"}
+{"name":"Unsolicited Dak Picks","diagonal":"6-10-0","standings":"6-10-0"}
+{"name":"behold the lamb","diagonal":"6-10-0","standings":"6-10-0"}
+{"name":"NFC Least","diagonal":"3-13-0","standings":"3-13-0"}
+
+$ jq -c '.acts[].chapters[] | select(.key=="luck") | .facts.swap.rows[] | select(.roster_id==6) | {name, cell: (.cells[] | select(.schedule_of==9))}' clients/cpc/build/2026/midseason.json
+{"name":"Bo Girds","cell":{"schedule_of":9,"wins":14,"losses":2,"ties":0}}

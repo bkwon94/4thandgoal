@@ -1,0 +1,10 @@
+{
+    "route": "/midseason/2026/",
+    "steps": [
+        { "shot": "start" },
+        { "scroll": "#state th:text-is(\"Playoff\")" },
+        { "scroll": "#luck th:text-is(\"Close\")" },
+        { "scroll": "h1:has-text(\"The title race\")" },
+        { "shot": "end" }
+    ]
+}

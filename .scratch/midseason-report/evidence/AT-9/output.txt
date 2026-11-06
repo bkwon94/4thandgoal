@@ -1,0 +1,18 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="injuries") | .facts.teams[] | {rank, name, games, players: [.players[] | "\(.name) \(.games)"]}' clients/cpc/build/2026/midseason.json
+{"rank":1,"name":"behold the lamb","games":9,"players":["Kyle Monangai 4","Emeka Egbuka 2","Saquon Barkley 2","Quinshon Judkins 1"]}
+{"rank":2,"name":"The Blue Tent","games":5,"players":["Davante Adams 2","Jadarian Price 1","Mike Evans 1","RJ Harvey 1"]}
+{"rank":3,"name":"London Cooking","games":4,"players":["DeVonta Smith 2","Jayden Daniels 2"]}
+{"rank":4,"name":"Return of T Mac","games":4,"players":["Breece Hall 3","Carnell Tate 1"]}
+{"rank":5,"name":"All You Need Is Love","games":2,"players":["Jeremiyah Love 2"]}
+{"rank":6,"name":"Lil Fridge","games":2,"players":["Caleb Williams 2"]}
+{"rank":7,"name":"Maye d'force B with U","games":1,"players":["Justin Jefferson 1"]}
+{"rank":8,"name":"NFC Least","games":1,"players":["Jalen Hurts 1"]}
+{"rank":9,"name":"To Infinity and Bijan","games":1,"players":["Lamar Jackson 1"]}
+{"rank":10,"name":"Bo Girds","games":0,"players":[]}
+{"rank":11,"name":"Teehee","games":0,"players":[]}
+{"rank":12,"name":"Unsolicited Dak Picks","games":0,"players":[]}

@@ -1,0 +1,18 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.opener | {title, facts}' clients/cpc/build/2026/midseason.json
+{"title":"The title race","facts":{"leaders":[{"roster_id":5,"name":"London Cooking","title_odds":16.8},{"roster_id":6,"name":"Bo Girds","title_odds":16.3},{"roster_id":9,"name":"Maye d'force B with U","title_odds":14.5}],"record_leader":{"roster_id":2,"name":"All You Need Is Love","wins":11,"losses":5,"ties":0,"title_odds":9.7,"title_rank":6}}}
+
+$ jq -c '.opener.blurb.sentences[] | {text, fact_ids}' clients/cpc/build/2026/midseason.json
+{"text":"London Cooking sits on top of the title odds at 16.8%.","fact_ids":["OP.5.title"]}
+{"text":"Bo Girds is right behind at 16.3%, 2nd in the league.","fact_ids":["OP.6.title"]}
+{"text":"Maye d'force B with U holds 3rd with 14.5% title odds.","fact_ids":["OP.9.title"]}
+{"text":"All You Need Is Love leads the standings at 11-5.","fact_ids":["OP.record"]}
+{"text":"Yet they hold just 9.7% title odds, 6th in the league.","fact_ids":["OP.record.title"]}
+{"text":"Standings are apparently just a suggestion.","fact_ids":[]}
+
+$ jq -c '[.headlines[] | select(.chapter=="opener")] | length' clients/cpc/build/2026/midseason.json
+0

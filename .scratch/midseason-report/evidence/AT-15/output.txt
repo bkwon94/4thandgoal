@@ -1,0 +1,15 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="waivers") | .facts.hits[0] | {top_hit: .player, team, week, bid, points_over_line}' clients/cpc/build/2026/midseason.json
+{"top_hit":"Ollie Gordon II","team":"Unsolicited Dak Picks","week":3,"bid":40,"points_over_line":30.3}
+
+$ jq -c '.acts[].chapters[] | select(.key=="waivers") | .facts.misses[0] | {top_miss: .player, team, week, bid, points_over_line}' clients/cpc/build/2026/midseason.json
+{"top_miss":"Joe Mixon","team":"To Infinity and Bijan","week":4,"bid":40,"points_over_line":0.0}
+
+$ jq -c '.acts[].chapters[] | select(.key=="waivers") | .facts.outbid[] | {player, team, bid, winner, winner_bid}' clients/cpc/build/2026/midseason.json
+{"player":"Ollie Gordon II","team":"The Blue Tent","bid":36,"winner":"Unsolicited Dak Picks","winner_bid":40}
+{"player":"Ollie Gordon II","team":"To Infinity and Bijan","bid":20,"winner":"Unsolicited Dak Picks","winner_bid":40}
+{"player":"Braelon Allen","team":"The Blue Tent","bid":32,"winner":"Return of T Mac","winner_bid":41}

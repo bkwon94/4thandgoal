@@ -1,0 +1,5 @@
+$ (cd apps/pipeline && uv run --exact --package cornerstone pytest -q -s tests/test_sim.py -k within_2_points)
+cpc: largest gap 2 points, roster 6
+.norcal: largest gap 1 points, roster 3
+.
+2 passed, 6 deselected in 3.66s

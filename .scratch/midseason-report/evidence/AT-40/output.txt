@@ -1,0 +1,78 @@
+$ sed -n '27,43p;69,84p;107,120p' clients/cpc/build/2026/midseason-review.md   # three roast entries: opener.roast, state.roast, arcs.roast
+## opener.roast: The roast of the title race
+
+Prose block: 2 to 4 sentences, 6 facts.
+
+Blurb:
+1. All You Need Is Love leads the standings at 11-5. [OP.record]
+2. Their title odds sit at 9.7%, just 6th in the league. [OP.record.title]
+3. Apparently it is not all you need. [reaction]
+4. London Cooking holds the top title odds at 16.8%, with first place nowhere in the facts. [OP.5.title]
+
+Cited facts:
+- OP.record: All You Need Is Love leads the standings at 11-5.
+- OP.record.title: All You Need Is Love has 9.7% title odds, 6th in the league.
+- OP.5.title: London Cooking has 16.8% title odds, the top in the league.
+
+Verifier: passed on attempt 1.
+
+## state.roast: The roast of the state of the league
+
+Prose block: 2 to 4 sentences, 49 facts.
+
+Blurb:
+1. NFC Least is 3-13 and dead last in the standings, the one promise this team name actually kept. [ST.4.record]
+2. Their playoff odds sit at 1%. [ST.4.odds]
+3. Truth in advertising, finally. [reaction]
+4. Somebody start the draft board early. [reaction]
+
+Cited facts:
+- ST.4.record: NFC Least is 3-13, 12th in the standings.
+- ST.4.odds: NFC Least has 1% playoff odds.
+
+Verifier: passed on attempt 1.
+
+## arcs.roast: The roast of arcs
+
+Prose block: 2 to 4 sentences, 9 facts.
+
+Blurb:
+1. NFC Least went 0-8 out of the gate and 3-5 since, the Never got going arc in its purest form. [ARC.4.never-got-going]
+2. That team name was a prophecy. [reaction]
+3. Nobody needed a scouting report. [reaction]
+
+Cited facts:
+- ARC.4.never-got-going: NFC Least has the Never got going arc: 0-8 in the first four weeks and 3-5 in the last four.
+
+Verifier: passed on attempt 1.
+
+
+$ awk '/^## /{s=$2} /^Verifier/{if (s ~ /roast/) print s, $0}' clients/cpc/build/2026/midseason-review.md
+opener.roast: Verifier: passed on attempt 1.
+state.roast: Verifier: passed on attempt 1.
+arcs.roast: Verifier: passed on attempt 1.
+luck.roast: Verifier: passed on attempt 1.
+injuries.roast: Verifier: passed on attempt 1.
+top10.roast: Verifier: passed on attempt 1.
+draft.roast: Verifier: passed on attempt 1.
+waivers.roast: Verifier: passed on attempt 2.
+trades.roast: Verifier: passed on attempt 1.
+lineup.roast: Verifier: passed on attempt 1.
+records.roast: Verifier: passed on attempt 1.
+look-ahead.roast: Verifier: passed on attempt 1.
+watch.roast: Verifier: passed on attempt 1.
+
+$ jq -c '[.opener, .acts[].chapters[]] | .[] | {chapter: (.roast.chapter), sentences: (.roast.sentences|length), cited_facts: ([.roast.sentences[].fact_ids[]]|unique|length)}' clients/cpc/build/2026/midseason.json
+{"chapter":"opener.roast","sentences":4,"cited_facts":3}
+{"chapter":"state.roast","sentences":4,"cited_facts":2}
+{"chapter":"arcs.roast","sentences":3,"cited_facts":1}
+{"chapter":"luck.roast","sentences":3,"cited_facts":1}
+{"chapter":"injuries.roast","sentences":3,"cited_facts":3}
+{"chapter":"top10.roast","sentences":4,"cited_facts":3}
+{"chapter":"draft.roast","sentences":4,"cited_facts":6}
+{"chapter":"waivers.roast","sentences":4,"cited_facts":4}
+{"chapter":"trades.roast","sentences":4,"cited_facts":2}
+{"chapter":"lineup.roast","sentences":4,"cited_facts":3}
+{"chapter":"records.roast","sentences":4,"cited_facts":2}
+{"chapter":"look-ahead.roast","sentences":4,"cited_facts":2}
+{"chapter":"watch.roast","sentences":4,"cited_facts":3}

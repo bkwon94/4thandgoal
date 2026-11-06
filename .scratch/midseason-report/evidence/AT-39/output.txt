@@ -1,0 +1,41 @@
+$ head -40 clients/cpc/build/2026/midseason-review.md
+# Midseason report 2026, week 8: review
+
+Roast: hot. Edit a blurb in midseason.json, then run make midseason-publish CLIENT=cpc WEEK=8.
+The publish checks each blurb again.
+
+## opener: The title race
+
+Prose block: 3 to 6 sentences, 6 facts.
+
+Blurb:
+1. London Cooking sits on top of the title odds at 16.8%. [OP.5.title]
+2. Bo Girds is right behind at 16.3%, 2nd in the league. [OP.6.title]
+3. Maye d'force B with U holds 3rd with 14.5% title odds. [OP.9.title]
+4. All You Need Is Love leads the standings at 11-5. [OP.record]
+5. Yet they hold just 9.7% title odds, 6th in the league. [OP.record.title]
+6. Standings are apparently just a suggestion. [reaction]
+
+Cited facts:
+- OP.5.title: London Cooking has 16.8% title odds, the top in the league.
+- OP.6.title: Bo Girds has 16.3% title odds, 2nd in the league.
+- OP.9.title: Maye d'force B with U has 14.5% title odds, 3rd in the league.
+- OP.record: All You Need Is Love leads the standings at 11-5.
+- OP.record.title: All You Need Is Love has 9.7% title odds, 6th in the league.
+
+Verifier: passed on attempt 1.
+
+## opener.roast: The roast of the title race
+
+Prose block: 2 to 4 sentences, 6 facts.
+
+Blurb:
+1. All You Need Is Love leads the standings at 11-5. [OP.record]
+2. Their title odds sit at 9.7%, just 6th in the league. [OP.record.title]
+3. Apparently it is not all you need. [reaction]
+4. London Cooking holds the top title odds at 16.8%, with first place nowhere in the facts. [OP.5.title]
+
+Cited facts:
+- OP.record: All You Need Is Love leads the standings at 11-5.
+- OP.record.title: All You Need Is Love has 9.7% title odds, 6th in the league.
+- OP.5.title: London Cooking has 16.8% title odds, the top in the league.

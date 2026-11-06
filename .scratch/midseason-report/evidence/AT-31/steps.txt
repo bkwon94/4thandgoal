@@ -1,0 +1,14 @@
+Why no steps.json: the runner has no video verb. Its full-page shot also takes about 5 s, and the Semifinal draw holds for 1 s.
+Tool, site, and data: the same as AT-30/steps.txt.
+
+Shots, once at 375 x 900 and once at 1280 x 900, dark theme, motion on:
+1. Set localStorage cpc.theme to dark. Open /midseason/2026/.
+2. Scroll #sim-heading to the top of the screen. Wait 1500 ms.
+3. Click "Sim the season". Call that moment t0.
+4. At t0 + 15400 ms (the Semifinal draw holds from 15000 to 16000 ms), take an element shot of section[aria-label="The replay"]: semifinal-<width>-dark.png.
+
+Video, 375 x 900, dark theme, motion on:
+1. Do steps 1 and 2 in a context with recordVideo at 375 x 900.
+2. Click "Sim the season".
+3. At t0 + 11500 ms, scroll the replay stage to the top of the screen, so the bracket shows.
+4. Wait until t0 + 22000 ms. Close the context: bracket-375-dark.webm.

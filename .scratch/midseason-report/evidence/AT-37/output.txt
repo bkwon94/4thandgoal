@@ -1,0 +1,25 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '{runs, random_seed, sample_count: (.sample|length), team_count: (.teams|length)}' clients/cpc/build/2026/sim.json
+{"runs":10000,"random_seed":202608,"sample_count":200,"team_count":12}
+
+$ jq -c '.teams[] | {roster_id, playoff, bye, final, title, seeds}' clients/cpc/build/2026/sim.json
+{"roster_id":1,"playoff":75,"bye":23,"final":26.1,"title":13.4,"seeds":{"1":10.0,"2":13.0,"3":13.6,"4":12.8,"5":12.9,"6":12.3}}
+{"roster_id":2,"playoff":81,"bye":33,"final":23.3,"title":9.7,"seeds":{"1":18.4,"2":14.8,"3":13.6,"4":12.4,"5":11.7,"6":10.3}}
+{"roster_id":3,"playoff":86,"bye":38,"final":29.6,"title":14.4,"seeds":{"1":22.1,"2":16.1,"3":14.8,"4":13.1,"5":11.0,"6":8.7}}
+{"roster_id":4,"playoff":1,"bye":1,"final":0.1,"title":0.0,"seeds":{"5":0.1,"6":0.2}}
+{"roster_id":5,"playoff":83,"bye":34,"final":31.4,"title":16.8,"seeds":{"1":17.6,"2":16.7,"3":14.5,"4":13.4,"5":11.5,"6":9.3}}
+{"roster_id":6,"playoff":74,"bye":26,"final":29.1,"title":16.3,"seeds":{"1":12.6,"2":13.2,"3":12.6,"4":12.6,"5":12.0,"6":11.5}}
+{"roster_id":7,"playoff":7,"bye":1,"final":0.9,"title":0.3,"seeds":{"1":0.1,"2":0.2,"3":0.6,"4":1.0,"5":1.8,"6":2.9}}
+{"roster_id":8,"playoff":43,"bye":6,"final":12.2,"title":5.4,"seeds":{"1":2.4,"2":3.9,"3":6.1,"4":7.8,"5":9.6,"6":13.4}}
+{"roster_id":9,"playoff":77,"bye":26,"final":28.1,"title":14.5,"seeds":{"1":11.6,"2":13.9,"3":13.5,"4":13.1,"5":12.8,"6":12.1}}
+{"roster_id":10,"playoff":4,"bye":1,"final":0.7,"title":0.2,"seeds":{"1":0.0,"2":0.1,"3":0.3,"4":0.7,"5":1.2,"6":2.1}}
+{"roster_id":11,"playoff":8,"bye":1,"final":1.6,"title":0.6,"seeds":{"1":0.1,"2":0.2,"3":0.7,"4":1.4,"5":2.2,"6":3.6}}
+{"roster_id":12,"playoff":62,"bye":13,"final":16.9,"title":8.4,"seeds":{"1":5.2,"2":7.9,"3":9.8,"4":11.8,"5":13.3,"6":13.7}}
+
+$ wc -c < clients/cpc/build/2026/sim.json; gzip -c clients/cpc/build/2026/sim.json | wc -c
+  161014
+   46463

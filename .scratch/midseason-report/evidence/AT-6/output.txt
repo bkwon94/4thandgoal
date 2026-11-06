@@ -1,0 +1,22 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="luck") | .facts.teams[] | {name, all_play_wins, head_to_head_wins, schedule_luck, points_against, points_against_rank, close_wins, close_losses, close_ties}' clients/cpc/build/2026/midseason.json
+{"name":"All You Need Is Love","all_play_wins":4.27,"head_to_head_wins":7.0,"schedule_luck":2.73,"points_against":787.92,"points_against_rank":11,"close_wins":2,"close_losses":0,"close_ties":0}
+{"name":"Maye d'force B with U","all_play_wins":4.09,"head_to_head_wins":5.0,"schedule_luck":0.91,"points_against":680.77,"points_against_rank":12,"close_wins":0,"close_losses":2,"close_ties":0}
+{"name":"Return of T Mac","all_play_wins":4.18,"head_to_head_wins":5.0,"schedule_luck":0.82,"points_against":834.39,"points_against_rank":8,"close_wins":0,"close_losses":0,"close_ties":0}
+{"name":"Lil Fridge","all_play_wins":4.64,"head_to_head_wins":5.0,"schedule_luck":0.36,"points_against":797.91,"points_against_rank":10,"close_wins":0,"close_losses":0,"close_ties":0}
+{"name":"behold the lamb","all_play_wins":2.91,"head_to_head_wins":3.0,"schedule_luck":0.09,"points_against":878.73,"points_against_rank":4,"close_wins":1,"close_losses":0,"close_ties":0}
+{"name":"The Blue Tent","all_play_wins":4.09,"head_to_head_wins":4.0,"schedule_luck":-0.09,"points_against":844.88,"points_against_rank":6,"close_wins":2,"close_losses":1,"close_ties":0}
+{"name":"NFC Least","all_play_wins":2.09,"head_to_head_wins":2.0,"schedule_luck":-0.09,"points_against":898.0,"points_against_rank":3,"close_wins":0,"close_losses":0,"close_ties":0}
+{"name":"Unsolicited Dak Picks","all_play_wins":3.36,"head_to_head_wins":3.0,"schedule_luck":-0.36,"points_against":917.23,"points_against_rank":2,"close_wins":1,"close_losses":0,"close_ties":0}
+{"name":"Teehee","all_play_wins":4.55,"head_to_head_wins":4.0,"schedule_luck":-0.55,"points_against":821.78,"points_against_rank":9,"close_wins":0,"close_losses":1,"close_ties":0}
+{"name":"To Infinity and Bijan","all_play_wins":3.64,"head_to_head_wins":3.0,"schedule_luck":-0.64,"points_against":947.27,"points_against_rank":1,"close_wins":1,"close_losses":1,"close_ties":0}
+{"name":"London Cooking","all_play_wins":5.0,"head_to_head_wins":4.0,"schedule_luck":-1.0,"points_against":843.15,"points_against_rank":7,"close_wins":0,"close_losses":2,"close_ties":0}
+{"name":"Bo Girds","all_play_wins":5.18,"head_to_head_wins":3.0,"schedule_luck":-2.18,"points_against":867.73,"points_against_rank":5,"close_wins":0,"close_losses":0,"close_ties":0}
+
+$ jq -c '.acts[].chapters[] | select(.key=="arcs") | .facts.teams[] | select(.roster_id==2 or .roster_id==6) | {name, arcs: [.arcs[] | {kind, schedule_luck}]}' clients/cpc/build/2026/midseason.json
+{"name":"All You Need Is Love","arcs":[{"kind":"Wire to wire","schedule_luck":null},{"kind":"Smoke and mirrors","schedule_luck":2.73}]}
+{"name":"Bo Girds","arcs":[{"kind":"Collapse","schedule_luck":null},{"kind":"Snakebit","schedule_luck":-2.18}]}

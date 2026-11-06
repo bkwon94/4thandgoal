@@ -1,0 +1,21 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="look-ahead") | .facts | {softest, hardest}' clients/cpc/build/2026/midseason.json
+{"softest":9,"hardest":10}
+
+$ jq -c '.acts[].chapters[] | select(.key=="look-ahead") | .facts.teams[] | {roster_id, name, opponents_rate}' clients/cpc/build/2026/midseason.json
+{"roster_id":9,"name":"Maye d'force B with U","opponents_rate":0.44}
+{"roster_id":1,"name":"The Blue Tent","opponents_rate":0.46}
+{"roster_id":3,"name":"Lil Fridge","opponents_rate":0.47}
+{"roster_id":11,"name":"Unsolicited Dak Picks","opponents_rate":0.47}
+{"roster_id":5,"name":"London Cooking","opponents_rate":0.48}
+{"roster_id":6,"name":"Bo Girds","opponents_rate":0.5}
+{"roster_id":12,"name":"Teehee","opponents_rate":0.5}
+{"roster_id":2,"name":"All You Need Is Love","opponents_rate":0.51}
+{"roster_id":7,"name":"To Infinity and Bijan","opponents_rate":0.52}
+{"roster_id":4,"name":"NFC Least","opponents_rate":0.54}
+{"roster_id":8,"name":"Return of T Mac","opponents_rate":0.55}
+{"roster_id":10,"name":"behold the lamb","opponents_rate":0.56}

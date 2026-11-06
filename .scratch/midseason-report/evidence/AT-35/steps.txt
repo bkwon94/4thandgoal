@@ -1,0 +1,9 @@
+Why no steps.json: the runner has no video verb.
+Tool, site, and data: the same as AT-30/steps.txt.
+
+Video, 375 x 900, dark theme, motion on:
+1. Set localStorage cpc.theme to dark. Open /midseason/2026/ in a context with recordVideo at 375 x 900.
+2. Scroll #sim-heading to the top of the screen. Wait 1500 ms.
+3. Click "Sim the season". Call that moment t0.
+4. At t0 + 3700 ms (week 11 holds from 3000 to 4500 ms), click "Sim the season" again.
+5. Wait 5000 ms. Close the context: fresh-run-375-dark.webm.

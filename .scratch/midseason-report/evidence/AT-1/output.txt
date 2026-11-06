@@ -1,0 +1,27 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+exit code: 0, time: 411 s
+
+$ ls clients/cpc/build/2026/
+managers.json
+midseason-facts.json
+midseason-review.md
+midseason.json
+rankings.json
+sim.json
+week-06
+week-07
+week-08
+
+$ git status --short --untracked-files=all clients/cpc/
+?? clients/cpc/build/2026/midseason-facts.json
+?? clients/cpc/build/2026/midseason-review.md
+?? clients/cpc/build/2026/midseason.json
+?? clients/cpc/build/2026/sim.json
+?? clients/cpc/data/2026/draft/draft.json
+?? clients/cpc/data/2026/draft/picks.json
+
+$ git status --short clients/cpc/published/2026/
+(no output)

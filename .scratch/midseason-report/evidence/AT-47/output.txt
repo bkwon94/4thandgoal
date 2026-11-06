@@ -1,0 +1,7 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -q -p no:cacheprovider tests/test_layers.py tests/test_client.py tests/test_golden.py
+........................................                                 [100%]
+40 passed in 1.07s
+
+$ for p in sim midseason; do (cd packages/$p/python && uv run --exact --package cpc-$p pytest -q tests/test_imports.py); done
+4 passed in 0.06s
+21 passed in 0.61s

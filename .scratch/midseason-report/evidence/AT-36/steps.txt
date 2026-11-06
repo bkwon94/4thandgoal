@@ -1,0 +1,8 @@
+Why no steps.json: the runner has no video verb, and it opens each page with reducedMotion "no-preference".
+Tool, site, and data: the same as AT-30/steps.txt.
+
+Video, 375 x 900, dark theme, reduced motion on:
+1. Open a context with reducedMotion "reduce" (prefers-reduced-motion: reduce) and recordVideo at 375 x 900.
+2. Set localStorage cpc.theme to dark. Open /midseason/2026/.
+3. Scroll #sim-heading to the top of the screen. Wait 1500 ms.
+4. Click "Sim the season". Wait 22000 ms. Close the context: reduced-motion-375-dark.webm.

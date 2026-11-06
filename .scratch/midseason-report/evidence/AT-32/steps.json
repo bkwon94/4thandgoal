@@ -1,0 +1,14 @@
+{
+    "route": "/midseason/2026/",
+    "steps": [
+        {
+            "scroll": "#sim-heading"
+        },
+        {
+            "click": "button:has-text(\"Sim the season\")"
+        },
+        {
+            "wait": "[aria-label=\"Champion of this run\"]"
+        }
+    ]
+}
