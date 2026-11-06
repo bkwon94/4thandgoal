@@ -4,7 +4,7 @@
 
 - The state of the league in `state.py`: the full record, points for and against, the streak, and the playoff odds of each team. The title race of the opener and the one big fact of the report tile in `opener.py`.
 - The draft steals and busts in `draft.py`: the cost rank at the position against the points rank, the top 5 of each, the "hurt" or "just bad" tag of a bust, and "the one that got away" line of a steal. The tag reads the missed games of `missed_games` in `injury.py`, the rule of the injury toll.
-- The waivers in `waivers.py` and the trades with their Trade result in `trades.py`. `moves.py` holds the line scores and the stints that both read. The lineup choices in `lineups.py`, and the record book with the seven awards in `records.py`.
+- The waivers in `waivers.py`, where a hit that its team let go carries "the one that got away" line of the draft, and the trades with their Trade result in `trades.py`. `moves.py` holds the line scores and the stints that both read. The lineup choices in `lineups.py`, and the record book with the seven awards in `records.py`.
 - The spread rule in `spread.py`: 1 to 3 headlines per team. Arcs and awards never move. A callout moves to the next team, and its fact names the moved team.
 - The arcs in `arcs.py`: at most 2 of the 8 arcs of decision ticket 05 per team, the biggest swing first. Schedule luck in `luck.py`: All-play wins, Schedule luck, points against, the close-game record, and the Schedule swap. The injury toll in `injury.py`, Position top 10 in `top10.py`, the games left of each team in `look_ahead.py`, and the players to watch in `watch.py`.
 - The shape of `midseason.json` and its writer in `published.py`, with the acts and the chapters (`cpc-midseason`, imported as `midseason`).

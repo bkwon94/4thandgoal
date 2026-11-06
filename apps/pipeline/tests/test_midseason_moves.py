@@ -33,6 +33,13 @@ def test_the_top_hit_is_ollie_gordon_ii_at_40_dollars_to_unsolicited_dak_picks(m
     assert [hit["points_over_line"] for hit in hits] == sorted((hit["points_over_line"] for hit in hits), reverse=True)
 
 
+def test_a_hit_that_its_team_let_go_carries_the_one_that_got_away_line(moves):
+    # Decision ticket 03: Return of T Mac no longer has Braelon Allen or Emanuel Wilson in week 8. Ollie Gordon II stays.
+    lines = {hit["player"]: hit["line"] for hit in moves["waivers"]["facts"]["hits"]}
+    assert lines["Braelon Allen"] == lines["Emanuel Wilson"] == "the one that got away"
+    assert lines["Ollie Gordon II"] is None
+
+
 def test_the_top_miss_is_joe_mixon_at_40_dollars(moves):
     # AT-15.
     misses = moves["waivers"]["facts"]["misses"]
