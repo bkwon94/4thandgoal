@@ -96,7 +96,7 @@ def lineup_choices(
 
 
 def lineup_facts(choices: LineupChoices) -> list[Fact]:
-    """The facts of the lineup choices: the Bench points of each team, and each loss its best lineup would have won."""
+    """The facts of the lineup choices: the Bench points of each team, and each loss a better lineup would have won."""
     facts = []
     for team in choices.teams:
         n = Nums()
@@ -104,8 +104,12 @@ def lineup_facts(choices: LineupChoices) -> list[Fact]:
                           f"{n.ord(team.rank)} most in the league.", n, [team.name], []))
         for week in team.lost_with_better:
             n = Nums()
+            # The loss and its bench are two facts, so each holds two numbers at most, as a sentence may.
             facts.append(fact(f"LC.{team.roster_id}.{week.week}",
-                              f"{team.name} lost to {week.opponent} by {n(week.margin)} in week {n(week.week)} with "
-                              f"{n(week.bench_points)} points on the bench, so its best lineup would have won.",
-                              n, [team.name, week.opponent], []))
+                              f"{team.name} lost to {week.opponent} by {n(week.margin)} in week {n(week.week)}, and a "
+                              f"better lineup from its bench would have won.", n, [team.name, week.opponent], []))
+            n = Nums()
+            facts.append(fact(f"LC.{team.roster_id}.{week.week}.bench",
+                              f"{team.name} left {n(week.bench_points)} points on the bench in week {n(week.week)}.",
+                              n, [team.name], []))
     return facts

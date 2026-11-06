@@ -6,15 +6,13 @@ import json
 from collections.abc import Collection, Mapping, Sequence
 from pathlib import Path
 
-import anthropic
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from facts.tokens import Nums, fact
-from facts.verifier import page_words, verify_blurb, write_and_verify
-from facts.writer import ClaudeCall
-from league.claude_errors import RefusalError, WriterError
+from facts.verifier import code_check, page_words, verify_blurb, write_and_verify
+from facts.writer import CHECK_ERRORS, ClaudeCall
 from league.files import write_bytes_atomic
-from league.models import Blurb, Chapter, Fact, FactSheet, VerifyResult
+from league.models import Blurb, Chapter, Fact, FactSheet, Sentence, VerifyResult
 from midseason.state import LeagueState
 from midseason.values import Roast
 
@@ -22,6 +20,13 @@ from midseason.values import Roast
 # against them again. The publish never copies this file.
 FACTS_FILE = "midseason-facts.json"
 ROAST_RULES = Path(__file__).parent / "prompts" / "roast.md"
+# The writing notes of every prose block: the number limit, the article before a 0 record, and the gated words that the
+# midseason facts never back. Each note keeps the writer off a failure of the code check of facts.
+PROSE_NOTES = Path(__file__).parent / "prompts" / "notes.md"
+# Two example roasts at hot heat. Only the hot step gets them, as warm softens each roast.
+ROAST_HOT_EXAMPLES = Path(__file__).parent / "prompts" / "roast-hot.md"
+# A roast block may hold two reaction sentences, so the reactions can carry the heat. The first sentence cites a fact.
+ROAST_REACTIONS = 2
 # The key of the roast prose block of a chapter is the chapter key with this suffix.
 ROAST_SUFFIX = ".roast"
 # The heat of each roast step, in the writer prompt after the roast rules. PRD, "The prose and the roast".
@@ -33,6 +38,11 @@ ROAST_STEPS: dict[Roast, str] = {
 ROAST_OFF = "Roast: off. Write no roast and no joke at a manager's expense. State the facts plainly."
 # The week fact lets a blurb name the report week and the week after it, as the verifier allows on a weekly page.
 WEEK_FACT = "W.week"
+# The last sentence of a template blurb. A reaction has no digit and no name, so it gives the blurb its sentence with no
+# number and makes no claim.
+TEMPLATE_REACTION = "The second half starts now."
+# The ID prefix of a callout fact of the spread rule.
+CALLOUT_PREFIX = "CO."
 
 
 class ProseDraft(BaseModel):
@@ -100,10 +110,11 @@ def prose_sheet(
         chapters.append(Chapter(key=key, title=title, fact_ids=ids, scope_teams=teams, scope_players=players,
                                 min_sentences=3, max_sentences=6))
         if roast != "off":
-            # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
+            # Two sentences at least. The code check fails a roast of reaction sentences only, so each roast cites a
+            # fact.
             chapters.append(Chapter(key=key + ROAST_SUFFIX, title=f"The roast of {title[0].lower() + title[1:]}",
                                     fact_ids=ids, scope_teams=teams, scope_players=players, min_sentences=2,
-                                    max_sentences=4))
+                                    max_sentences=4, max_reactions=ROAST_REACTIONS))
     facts.append(week_fact)
     return FactSheet(facts={f.id: f for f in facts}, chapters=chapters)
 
@@ -113,13 +124,41 @@ def is_roast(key: str) -> bool:
 
 
 def prose_terms(key: str, roast: Roast) -> list[str]:
-    """The extra writer and verifier terms of one prose block: the roast rules and the step on a roast block, and the
-    off line on every block when the roast is off."""
+    """The extra writer and verifier terms of one prose block: the writing notes on every block, the roast rules and
+    the step on a roast block, with the example roasts at hot, and the off line on every block when the roast is off."""
+    notes = PROSE_NOTES.read_text(encoding="utf-8").strip()
     if roast == "off":
-        return [ROAST_OFF]
+        return [notes, ROAST_OFF]
     if is_roast(key):
-        return [ROAST_RULES.read_text(encoding="utf-8").strip(), ROAST_STEPS[roast]]
-    return []
+        terms = [notes, ROAST_RULES.read_text(encoding="utf-8").strip(), ROAST_STEPS[roast]]
+        if roast == "hot":
+            terms.append(ROAST_HOT_EXAMPLES.read_text(encoding="utf-8").strip())
+        return terms
+    return [notes]
+
+
+def template_prose(
+    chapter: Chapter, sheet: FactSheet, used_words: Collection[str], *, prompts_dir: Path,
+) -> Blurb:
+    """The template blurb of a failed prose block: fact texts as sentences, then the template reaction, in the
+    sentence range of the block. It takes a fact only when the blurb with it still passes the code check, so the
+    publish passes the template as it passes a written blurb.
+    """
+    reaction = Sentence(text=TEMPLATE_REACTION, fact_ids=[])
+    # The template grows one fact at a time, so its check opens the sentence range. The last blurb fills the range.
+    open_range = chapter.model_copy(update={"min_sentences": 1})
+    chosen: list[Sentence] = []
+    for fid in chapter.fact_ids:
+        if len(chosen) + 1 >= chapter.min_sentences:
+            break
+        # The week fact is no headline, and a callout fact is a note to the writer, not prose.
+        if fid == WEEK_FACT or fid.startswith(CALLOUT_PREFIX):
+            continue
+        trial = [*chosen, Sentence(text=sheet.facts[fid].text, fact_ids=[fid])]
+        blurb = Blurb(chapter=chapter.key, sentences=[*trial, reaction], attempt=0, fallback=True)
+        if not code_check(blurb, open_range, sheet, used_words, prompts_dir=prompts_dir):
+            chosen = trial
+    return Blurb(chapter=chapter.key, sentences=[*chosen, reaction], attempt=0, fallback=True)
 
 
 def write_prose(
@@ -127,14 +166,18 @@ def write_prose(
 ) -> tuple[dict[str, Blurb], dict[str, list[VerifyResult]]]:
     """The blurb of each prose block and the verifier results of each attempt, by the key of the prose block.
 
-    A blurb that fails twice is the template blurb of facts, so the build never stops on the writer.
+    A blurb that fails twice is the template blurb of its block, so the build never stops on the writer.
     """
     blurbs: dict[str, Blurb] = {}
     results: dict[str, list[VerifyResult]] = {}
     used: set[str] = set()
     for chapter in sheet.chapters:
-        blurbs[chapter.key], results[chapter.key] = write_and_verify(
+        blurb, results[chapter.key] = write_and_verify(
             chapter, sheet, call, used, prompts_dir=prompts_dir, terms=prose_terms(chapter.key, roast))
+        # The template of facts is one sentence, too short for a prose block, so the block gets its own template.
+        if blurb.fallback:
+            blurb = template_prose(chapter, sheet, used, prompts_dir=prompts_dir)
+        blurbs[chapter.key] = blurb
         used |= page_words(blurbs[chapter.key], chapter)
     return blurbs, results
 
@@ -157,7 +200,7 @@ def recheck_prose(
         try:
             result = verify_blurb(blurb, chapter, draft.sheet, call, used, prompts_dir=prompts_dir,
                                   terms=prose_terms(chapter.key, draft.roast))
-        except (RefusalError, WriterError, anthropic.APIError, ValidationError) as err:
+        except CHECK_ERRORS as err:
             # A failed Claude check is no pass, so the publish refuses and names the blurb.
             failures.append(f"The blurb {blurb.chapter} has no verdict: the Claude check failed: {err}")
             continue

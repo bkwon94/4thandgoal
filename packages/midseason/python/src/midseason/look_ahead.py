@@ -83,16 +83,15 @@ def look_ahead(state: LeagueState, schedule: Mapping[int, Sequence[Pair]]) -> Lo
 
 
 def look_ahead_facts(look: LookAhead) -> list[Fact]:
-    """One fact per team with games left: the win rate of its opponents and its place from the softest schedule."""
+    """One fact per team with games left: the win rate of its opponents and its place from the softest schedule. The
+    last fact holds the weeks ahead."""
     facts = []
     rates = [team.opponents_rate for team in look.teams if team.opponents_rate is not None]
     for team in look.teams:
         if team.opponents_rate is None:
             continue
-        weeks = [game.week for game in team.games]
         n = Nums()
-        head = (f"{team.name} faces opponents with a {n(team.opponents_rate)} win rate in weeks {n(min(weeks))} to "
-                f"{n(max(weeks))}, the")
+        head = f"{team.name} faces opponents with a {n(team.opponents_rate)} win rate in the weeks ahead, the"
         if team.roster_id == look.softest:
             place = "softest schedule"
         elif team.roster_id == look.hardest:
@@ -101,4 +100,9 @@ def look_ahead_facts(look: LookAhead) -> list[Fact]:
             # A shared rate shares the place.
             place = f"{n.ord(1 + sum(1 for rate in rates if rate < team.opponents_rate))} softest schedule"
         facts.append(fact(f"LA.{team.roster_id}.rate", f"{head} {place}.", n, [team.name], []))
+    # The weeks are their own fact, so each rate fact holds two numbers at most, as a sentence of the writer may.
+    weeks = [game.week for team in look.teams for game in team.games]
+    if weeks:
+        n = Nums()
+        facts.append(fact("LA.weeks", f"The weeks ahead are weeks {n(min(weeks))} to {n(max(weeks))}.", n, [], []))
     return facts

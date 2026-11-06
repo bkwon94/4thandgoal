@@ -258,10 +258,14 @@ def luck_facts(luck: ScheduleLuck) -> list[Fact]:
     for team in luck.teams:
         prefix = f"SL.{team.roster_id}"
         n = Nums()
+        # The luck and its two parts are two facts, so each holds two numbers at most, as a sentence may.
         facts.append(fact(f"{prefix}.luck",
+                          f"{team.name} has a Schedule luck of {n.text(f'{team.schedule_luck:+.2f}')}, its "
+                          f"head-to-head wins minus its All-play wins.", n, [team.name], []))
+        n = Nums()
+        facts.append(fact(f"{prefix}.wins",
                           f"{team.name} has {n(team.head_to_head_wins)} head-to-head wins and {n(team.all_play_wins)} "
-                          f"All-play wins, a Schedule luck of {n.text(f'{team.schedule_luck:+.2f}')}.",
-                          n, [team.name], []))
+                          f"All-play wins.", n, [team.name], []))
         n = Nums()
         facts.append(fact(f"{prefix}.against",
                           f"{team.name} has {n(team.points_against)} points against, "
@@ -269,7 +273,7 @@ def luck_facts(luck: ScheduleLuck) -> list[Fact]:
         n = Nums()
         close = _cell_record(n, team.close_wins, team.close_losses, team.close_ties)
         facts.append(fact(f"{prefix}.close",
-                          f"{team.name} is {close} in close games, decided by under {n(int(CLOSE_GAME_MARGIN))} points.",
+                          f"{team.name} is {close} in close games, with a margin under {n(int(CLOSE_GAME_MARGIN))} points.",
                           n, [team.name], []))
     own = {row.roster_id: next(cell for cell in row.cells if cell.schedule_of == row.roster_id)
            for row in luck.swap.rows}
@@ -278,7 +282,7 @@ def luck_facts(luck: ScheduleLuck) -> list[Fact]:
         n = Nums()
         facts.append(fact(f"SW.{best.roster_id}.best",
                           f"{name} would be {_cell_record(n, best.wins, best.losses, best.ties)} with the schedule of "
-                          f"{other}, its best schedule, against "
+                          f"{other}, its top record with any schedule, against "
                           f"{_cell_record(n, mine.wins, mine.losses, mine.ties)} for real.",
                           n, [name, other], []))
     if luck.swap.most_better is not None:

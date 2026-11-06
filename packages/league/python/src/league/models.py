@@ -393,6 +393,8 @@ class Chapter(BaseModel):
     max_sentences: int
     # The fact IDs the writer must cite. The code check fails a blurb that leaves one uncited.
     required: list[str] = []
+    # The reaction sentences a blurb may hold. A chapter that allows more than one still needs a cited sentence.
+    max_reactions: int = 1
 
 
 class WeekData(BaseModel):

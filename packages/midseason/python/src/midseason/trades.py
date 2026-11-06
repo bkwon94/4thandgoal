@@ -178,21 +178,29 @@ def trade_facts(
 
 
 def trade_prose_facts(facts: TradeFacts) -> list[Fact]:
-    """The facts that the trade prose block cites: one per trade, with each side, its net, and the Trade result."""
+    """The facts that the trade prose block cites. Each trade has one fact with each side, the gap, and the Trade
+    result, then the net and the record since of each side, so each fact holds two numbers at most, as a sentence of
+    the writer may."""
     out = []
     for place, card in enumerate(facts.trades, start=1):
         n = Nums()
-        parts = []
-        for side in card.sides:
-            got = ", ".join(p.player for p in side.got) or "no player"
-            parts.append(f"{side.team} got {got} and has a net of {n(side.net)} points over the line since, "
-                         f"{n.text(_record_text(side.since))} since the trade")
+        parts = [f"{side.team} got {', '.join(p.player for p in side.got) or 'no player'}" for side in card.sides]
         result = card.result if card.winner is None else f"{card.result} for {card.winner}"
         out.append(fact(
             f"TR.{place}",
             f"In the trade of week {n(card.week)}, " + "; ".join(parts) + f". The gap is {n(card.gap)}. "
             f"The Trade result is {result}.",
             n, [side.team for side in card.sides], [p.player for side in card.sides for p in side.got]))
+        for side in card.sides:
+            players = [p.player for p in side.got]
+            n = Nums()
+            out.append(fact(f"TR.{place}.{side.roster_id}",
+                            f"{side.team} has a net of {n(side.net)} points over the line since the week "
+                            f"{n(card.week)} trade.", n, [side.team], players))
+            n = Nums()
+            out.append(fact(f"TR.{place}.{side.roster_id}.since",
+                            f"{side.team} is {n.text(_record_text(side.since))} since the week {n(card.week)} trade.",
+                            n, [side.team], players))
     return out
 
 
