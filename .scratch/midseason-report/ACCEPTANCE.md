@@ -77,7 +77,7 @@ App: pipeline
 Stories: 18
 Given: CPC 2026 week 8, after `make midseason CLIENT=cpc WEEK=8`.
 When: Read the injury toll in `midseason.json`.
-Then: behold the lamb lost 9 starter games, the most in the league.
+Then: The Blue Tent lost 17 starter games, the most in the league, with rows for Jadarian Price, De'Von Achane, and Travis Etienne Jr.
 Evidence: The command output and the named fields of `midseason.json` in the build folder.
 
 AT-10: Position top 10
@@ -142,7 +142,7 @@ App: site
 Stories: 31, 32, 33
 Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
 When: Open the report at `/midseason/2026` and scroll to the trade report card.
-Then: The top 3 trades are full cards, each with the record of each team since the trade, such as "5-3 since". A player who was out in the first week after his trade has the tag "hurt on arrival".
+Then: The top 3 trades are full cards, each with the record of each team since the trade, such as "5-3 since". Each result with a winner names the team, such as "Slight edge to <team>". No row has the tag "hurt on arrival", and no result reads "Push".
 Evidence: Screenshots of the trade report card at 375, 768, and 1280 px, each in the light theme and the dark theme. Name the hurt-on-arrival player, if any.
 
 AT-18: Lineup choices
@@ -458,12 +458,12 @@ When: Open the report and look at the cards, the position switch, and "Show all"
 Then: Cards have 8 px corners, and the report has no full pill. The switch is text with an underline under the chosen position. "Show all" is a text control with a chevron and no border.
 Evidence: Screenshots of the Position top 10 and a long list at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
-AT-57: The awards as lines
+AT-57: The awards as cards
 App: site
 Stories: 73
 Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
 When: Open the report and scroll to the record book.
-Then: Each award is one line, such as "MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts." No award is a card.
+Then: Each award is a card with a headshot or a team avatar and the text "Title — winner — short fact", such as "MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts."
 Evidence: Screenshots of the record book and the awards at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-58: Decimal places
