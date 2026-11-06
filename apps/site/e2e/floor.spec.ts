@@ -421,4 +421,9 @@ test(`sim replay: ${CLIENT} ${MIDSEASON_ROUTE} plays a run and skips to the cham
   const card = stage.getByRole("dialog", { name: "Champion of this run" });
   await expect(card).toContainText(/Wins the title in [\d.]+% of all [\d,]+ runs/);
   expect(await scanScroll(page)).toEqual([]);
+  // The trophy sits centered over the avatar of the champion.
+  const trophy = (await card.locator("[data-trophy]").boundingBox())!;
+  const avatar = (await card.locator("[data-avatar]").boundingBox())!;
+  expect(trophy.x + trophy.width / 2).toBeCloseTo(avatar.x + avatar.width / 2, 0);
+  expect(trophy.y + trophy.height).toBeLessThanOrEqual(avatar.y + 1);
 });

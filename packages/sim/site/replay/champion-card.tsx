@@ -53,13 +53,15 @@ export function ChampionCard({
             />
           </>
         )}
-        <motion.span {...enter(pace, { scale: 0.4 }, { spring: true, delay: 0.1 })} className="relative">
+        <motion.span data-avatar {...enter(pace, { scale: 0.4 }, { spring: true, delay: 0.1 })} className="relative">
           <PhotoFrame src={null} name={champion.name} size="lg" decorative />
         </motion.span>
+        {/* The trophy drops in to the top of the box, centered over the avatar. */}
         <motion.span
+          data-trophy
           aria-hidden="true"
           {...enter(pace, { y: -24 }, { spring: true, delay: 0.35 })}
-          className="absolute -top-sp-1 right-0 text-accent-text"
+          className="absolute top-0 left-1/2 -translate-x-1/2 text-accent-text"
         >
           <Trophy className="size-sp-6" strokeWidth={2.5} />
         </motion.span>
