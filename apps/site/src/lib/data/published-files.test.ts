@@ -48,9 +48,11 @@ describe.each([
   ["waiver.json", waiverBoardSchema, 0],
   ["rankings.json", rankingsSchema, 1],
   ["managers.json", managersFileSchema, 1],
-  // No midseason.json is published yet. The midseason tests cover its schema through the package fixture.
+  // Only a season after the midseason publish holds midseason.json, so the least count is zero. The midseason tests
+  // and the floor of the fixture client cover its schema through the package fixture.
   ["midseason.json", midseasonSchema, 0],
-  // No sim.json is published yet. The sim tests cover its schema through the package fixture.
+  // The midseason publish puts sim.json live beside midseason.json, so the least count is zero too. The sim tests and
+  // the floor of the fixture client cover its schema through the package fixture.
   ["sim.json", simSchema, 0],
 ])("%s under public/", (name, schema, least) => {
   it("parses with its schema", () => {
