@@ -117,6 +117,35 @@ describe("The egg word cards", () => {
   });
 });
 
+describe("The look of the egg board", () => {
+  it("puts no plate behind the text of a hero, and shows the grid and the glow only behind the art", () => {
+    for (const state of [board, won]) {
+      const { container, unmount } = render(<EggBoard board={state} now={NOW} />);
+      expect(container.querySelectorAll(".plate")).toHaveLength(0);
+      // Each hero hides its full texture, and an oval of the texture sits behind its art.
+      const heroes = [...container.querySelectorAll("section")].filter((section) => section.querySelector("[data-hero-art]"));
+      expect(heroes.length).toBe(state === won ? 2 : 1);
+      for (const hero of heroes) {
+        expect(hero.classList.contains("egg-hero")).toBe(true);
+        expect(hero.querySelector(".egg-art-ground")).not.toBeNull();
+      }
+      unmount();
+    }
+  });
+
+  it("lays each letter row out as one grid column per letter, each tile the full width of its column", () => {
+    render(<EggBoard board={board} now={NOW} />);
+    const tiles = screen.getAllByTestId("tile");
+    const rows = new Set(tiles.map((tile) => tile.parentElement!));
+    expect(rows.size).toBeGreaterThan(1);
+    for (const row of rows) {
+      expect(row.classList.contains("grid")).toBe(true);
+      expect(row.style.gridTemplateColumns).toMatch(new RegExp(`^repeat\\(${row.children.length}, minmax\\(0(px)?, var\\(--spacing-letter(-sm)?\\)\\)\\)$`));
+      for (const tile of row.children) expect(tile.classList.contains("w-full")).toBe(true);
+    }
+  });
+});
+
 describe("Latest claims", () => {
   it("shows the manager, the letter, and the egg word of each claim, newest first", () => {
     render(<EggBoard board={won} now={NOW} />);

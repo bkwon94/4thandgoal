@@ -4,12 +4,13 @@
  */
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Card } from "@cpc/design/parts/card";
 import { Hero } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
 import { cn } from "@cpc/design/lib/utils";
 import type { Board } from "../lib/api";
+import { ArtGround } from "../hunt/egg-art";
 
 type Word = Board["words"][number];
 type Slot = Board["weeks"][number]["slots"][number];
@@ -96,26 +97,30 @@ function BoardHero({ board }: { board: Board }) {
     ["To drop", board.counts.to_drop, "text-on-dark-muted"],
   ];
   return (
-    <Hero label="Egg hunt">
+    // The class egg-hero hides the full texture of the hero, and the oval of the texture sits behind the grid of the
+    // eggs only, so each line of text sits on the flat band color with no plate (the ground of globals.css).
+    <Hero label="Egg hunt" className="egg-hero">
       <div className="flex flex-col gap-sp-5">
         <div className="flex flex-col items-start gap-sp-1">
-          <span className={cn(LABEL, "plate text-accent-text")}>Egg hunt</span>
-          <h1 className="plate m-0 text-headline leading-stat font-bold tracking-tight">The Egg Board</h1>
-          <p className="plate m-0 text-lead text-on-dark-2">
+          <span className={cn(LABEL, "text-accent-text")}>Egg hunt</span>
+          <h1 className="m-0 text-headline leading-stat font-bold tracking-tight">The Egg Board</h1>
+          <p className="m-0 text-lead text-on-dark-2">
             {`$${total} in gift cards. ${countWord(board.words.length)} egg words. First to fill a word wins it.`}
           </p>
         </div>
         <dl className="m-0 grid grid-cols-3 gap-sp-2">
           {counts.map(([label, value, color]) => (
             <div key={label} className="flex flex-col-reverse items-start gap-sp-1">
-              <dt className={cn(LABEL, "plate text-on-dark-muted")}>{label}</dt>
-              {/* The leading stays at 1, so the plate of the count holds its whole glyph box and axe can read it. */}
-              <dd className={cn("plate m-0 font-mono text-headline leading-none font-bold tracking-grade tabular-nums", color)}>{value}</dd>
+              <dt className={cn(LABEL, "text-on-dark-muted")}>{label}</dt>
+              <dd className={cn("m-0 font-mono text-headline leading-none font-bold tracking-grade tabular-nums", color)}>{value}</dd>
             </div>
           ))}
         </dl>
         <div className="flex flex-col gap-sp-3">
-          <ul aria-label="The eggs of each week" className="m-0 grid list-none grid-cols-9 gap-sp-1 p-0">
+          <div className="relative">
+            {/* The ground stops above the week numbers, so its box never reaches a line of text. */}
+            <ArtGround inset="top-0 bottom-8 -inset-x-hero-x" />
+          <ul aria-label="The eggs of each week" className="relative m-0 grid list-none grid-cols-9 gap-sp-1 p-0">
             {board.weeks.map((week) => (
               <li
                 key={week.week}
@@ -130,21 +135,34 @@ function BoardHero({ board }: { board: Board }) {
                 ))}
                 <span
                   aria-hidden="true"
-                  className={cn("plate font-mono text-meta font-bold", week.week === current ? "text-accent-text" : "text-on-dark-muted")}
+                  className={cn("font-mono text-meta font-bold", week.week === current ? "text-accent-text" : "text-on-dark-muted")}
                 >
                   {String(week.week).padStart(2, "0")}
                 </span>
               </li>
             ))}
           </ul>
+          </div>
           <div aria-hidden="true" className="flex flex-wrap gap-x-sp-4 gap-y-sp-1 text-meta text-on-dark-2">
-            <span className="plate inline-flex items-center gap-sp-1"><Egg slot="found" />Found</span>
-            <span className="plate inline-flex items-center gap-sp-1"><Egg slot="out" />Out now</span>
-            <span className="plate inline-flex items-center gap-sp-1"><Egg slot="future" />Drops on a later Tuesday</span>
+            <span className="inline-flex items-center gap-sp-1"><Egg slot="found" />Found</span>
+            <span className="inline-flex items-center gap-sp-1"><Egg slot="out" />Out now</span>
+            <span className="inline-flex items-center gap-sp-1"><Egg slot="future" />Drops on a later Tuesday</span>
           </div>
         </div>
       </div>
     </Hero>
+  );
+}
+
+/* A row of letter tiles: one grid column per letter, each at most the tile size, as the slot row of the hunt.
+   On a narrow phone each column shrinks by the same amount, so the row never wraps and never leaves its card. Each tile
+   fills its column, so every tile has one width. The gap keeps two dashed borders apart, so each slot reads as its own box. */
+function TileRow({ length, small, className, children }: { length: number; small: boolean; className?: string; children: ReactNode }) {
+  const size = small ? "var(--spacing-letter-sm)" : "var(--spacing-letter)";
+  return (
+    <div className={cn("grid max-w-full gap-sp-2", className)} style={{ gridTemplateColumns: `repeat(${length}, minmax(0, ${size}))` }}>
+      {children}
+    </div>
   );
 }
 
@@ -154,8 +172,8 @@ function LetterTile({ letter, small, hint }: { letter: string; small: boolean; h
     <span
       data-testid="tile"
       className={cn(
-        "inline-flex flex-none items-center justify-center rounded-letter font-mono text-meta font-bold",
-        small ? "size-letter-sm" : "size-letter",
+        "inline-flex w-full items-center justify-center rounded-letter font-mono text-meta font-bold",
+        small ? "h-letter-sm" : "h-letter",
         letter !== "" ? "bg-ink text-page" : "border border-dashed border-rule text-mute",
       )}
     >
@@ -169,7 +187,7 @@ function GiftPill({ prize, won }: { prize: number; won: boolean }) {
     <span
       className={cn(
         "ml-auto rounded-pill border px-sp-3 py-sp-1 font-mono text-meta font-bold tracking-caps uppercase",
-        won ? "plate border-rule-dark text-on-dark" : "border-rule text-ink-2",
+        won ? "border-rule-dark text-on-dark" : "border-rule text-ink-2",
       )}
     >
       {`$${prize} gift card`}
@@ -179,13 +197,16 @@ function GiftPill({ prize, won }: { prize: number; won: boolean }) {
 
 function WonCard({ word }: { word: Word & { winner: NonNullable<Word["winner"]> } }) {
   return (
-    <Hero label={word.word} className="rounded-card">
+    // The class egg-hero and the ground behind the tiles keep the text on the flat band color, as on the hero of the board.
+    <Hero label={word.word} className="egg-hero rounded-card">
       <div className="flex flex-col items-start gap-sp-4">
         <div className="flex w-full items-center gap-sp-2">
-          <h2 className={cn(LABEL, "plate text-accent-text")}>{word.word}</h2>
+          <h2 className={cn(LABEL, "text-accent-text")}>{word.word}</h2>
           <GiftPill prize={word.prize} won />
         </div>
-        <div className="flex flex-wrap gap-sp-1">
+        <div className="relative self-stretch">
+          <ArtGround inset="inset-y-0 -inset-x-hero-x" />
+        <div className="relative flex flex-wrap gap-sp-1">
           {[...word.word].map((letter, index) => (
             <span
               key={index}
@@ -195,13 +216,14 @@ function WonCard({ word }: { word: Word & { winner: NonNullable<Word["winner"]> 
             </span>
           ))}
         </div>
+        </div>
         <div className="flex items-center gap-sp-3">
-          <span className="plate text-score leading-tight font-bold">{`${word.winner.team} won it.`}</span>
+          <span className="text-score leading-tight font-bold">{`${word.winner.team} won it.`}</span>
           <span className="-rotate-6 rounded-letter border-2 border-on-dark bg-accent px-sp-2 py-sp-0 font-mono text-meta font-bold tracking-wide text-on-dark">
             WON
           </span>
         </div>
-        <p className="plate m-0 text-lead text-on-dark-2">{`The $${word.prize} gift card is theirs. The race is over.`}</p>
+        <p className="m-0 text-lead text-on-dark-2">{`The $${word.prize} gift card is theirs. The race is over.`}</p>
       </div>
     </Hero>
   );
@@ -227,11 +249,11 @@ function WordCard({ word }: { word: Word }) {
         {open ? "No letters yet. The race is open." : `${leader.team} leads with ${leader.letters.length} of ${word.word.length}.`}
       </span>
       {open ? (
-        <div className="flex flex-wrap gap-sp-0 pt-sp-2 pb-sp-1">
+        <TileRow length={word.word.length} small={small} className="pt-sp-2 pb-sp-1">
           {[...word.word].map((letter, index) => (
             <LetterTile key={index} letter="" hint={letter} small={small} />
           ))}
-        </div>
+        </TileRow>
       ) : (
         <>
           <ol className="m-0 flex list-none flex-col p-0">
@@ -254,11 +276,11 @@ function WordCard({ word }: { word: Word }) {
                       <span className="text-mute">{`/${word.word.length}`}</span>
                     </span>
                   </div>
-                  <div className="flex flex-wrap gap-sp-0 pl-divider">
+                  <TileRow length={word.word.length} small={small} className="pl-divider">
                     {placeLetters(word.word, manager.letters).map((letter, at) => (
                       <LetterTile key={at} letter={letter} small={small} />
                     ))}
-                  </div>
+                  </TileRow>
                 </li>
               );
             })}
