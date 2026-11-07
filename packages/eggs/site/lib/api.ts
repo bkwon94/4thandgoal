@@ -37,6 +37,8 @@ export const boardSchema = z.object({
     z.object({
       word: z.string(),
       prize: z.number(),
+      // The manager whose letters fill the egg word, or null while the word is open.
+      winner: managerSchema.nullable(),
       managers: z.array(managerSchema.extend({ letters: z.array(z.string()) })),
     }),
   ),
@@ -54,21 +56,32 @@ export const claimAnswerSchema = z.object({
   roster_id: z.number(),
   word: z.string().nullable(),
   letters: z.record(z.string(), z.array(z.string())),
+  // The egg word that the claim fills, or null when the word is still open or the claim is a block.
+  winner: z.object({ roster_id: z.number(), word: z.string() }).nullable(),
 });
 export type ClaimAnswer = z.infer<typeof claimAnswerSchema>;
 
-/* The body of the claim: the token of the check, the roster, and the egg word. */
-export type EggClaim = { token: string; roster_id: number; word: string };
+/* The body of the claim: the token of the check, the roster, and the egg word, or null for a block. */
+export type EggClaim = { token: string; roster_id: number; word: string | null };
 
-/* A failed call: its status, and the detail of the API when the body has one. */
+/* A failed call: its status, the detail of the API when the body has one, and the wait of a 429. */
 export class EggsError extends Error {
   readonly status: number;
+  // Seconds to wait, from the Retry-After header of a 429.
+  readonly retryAfter?: number;
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, retryAfter?: number) {
     super(message);
     this.name = "EggsError";
     this.status = status;
+    this.retryAfter = retryAfter;
   }
+}
+
+/* The seconds of a Retry-After header, or undefined when the header is missing or is not a count of seconds. */
+function retryAfterOf(response: Response): number | undefined {
+  const seconds = Number(response.headers.get("Retry-After"));
+  return Number.isFinite(seconds) && seconds > 0 ? seconds : undefined;
 }
 
 function eggsBase(target: EggsTarget): string {
@@ -84,7 +97,7 @@ async function answer<S extends z.ZodType>(response: Response, schema: S): Promi
     } catch {
       // The body is not JSON, so the status text stands.
     }
-    throw new EggsError(response.status, detail);
+    throw new EggsError(response.status, detail, retryAfterOf(response));
   }
   const parsed = schema.safeParse(await response.json());
   if (!parsed.success) throw new EggsError(502, "The API sent an answer the site cannot read.");
