@@ -103,8 +103,7 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
         <div className="egg-up relative flex flex-none items-center gap-sp-3 overflow-hidden rounded-tile border border-rule-dark bg-band p-sp-3 text-on-dark">
           <span className="relative flex-none">
             {/* The ground reaches the edges of the hero on the left, top, and bottom. On the right it stops at the edge of
-                the tile, so the full gap lies between the ground and the title: at 340 px axe read the title as over the
-                ground and could not read its contrast. */}
+                the tile, so the full gap lies between the ground and the title. */}
             <ArtGround inset="-inset-y-sp-3 -left-sp-3 right-0" />
             {/* The tile is taller than the glyph box of the letter at the largest headline size, 46px, so axe can read its contrast. */}
             <span className="relative flex size-16 items-center justify-center rounded-letter bg-accent font-mono text-headline font-bold text-on-dark shadow-orb">
@@ -115,8 +114,11 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
             <Label dark className="mb-0 text-meta">
               Claim
             </Label>
+            {/* Each line is its own element. axe reads the page under the sheet at each line of an element, and a line
+                that wraps sits over two parts of the page, so axe then cannot read its contrast. The break leaves room
+                for a wide letter in the narrow column at 340px. */}
             <h2 id="egg-claim-title" className="text-stat leading-tight font-bold">
-              {`Put ${letter} in an egg word.`}
+              <span className="block">{`Put ${letter} in`}</span> <span className="block">an egg word.</span>
             </h2>
           </div>
           <button

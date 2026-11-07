@@ -154,6 +154,14 @@ describe("EggHunt", () => {
     expect(cornerstone.textContent).toContain("1/11");
   });
 
+  it("sets the title of the sheet as one element per line, so axe reads each line over one part of the page", async () => {
+    await openSheet(fakeEggsApi(MATCH));
+    const title = screen.getByRole("heading", { name: "Put C in an egg word." });
+    const lines = [...title.children] as HTMLElement[];
+    expect(lines.map((line) => line.textContent)).toEqual(["Put C in", "an egg word."]);
+    for (const line of lines) expect(line.classList.contains("block")).toBe(true);
+  });
+
   it("fades a disabled egg word card with the muted tokens, and leaves an enabled card plain", async () => {
     await openSheet(fakeEggsApi(MATCH));
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
