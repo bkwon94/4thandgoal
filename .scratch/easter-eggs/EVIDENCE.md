@@ -383,14 +383,14 @@ Observation: The drop of the 404 egg with the page /golden-egg/ answered HTTP 20
 App: both
 Then: The listener sends `trade_teams`, the two roster ids of the trade, smallest first, and no `trade`. The checks with 1 and 3 in either order match. The other two checks are no match. The drop refuses the old `trade` condition.
 Files: `evidence/AT-54/find-1280-light.png`, `evidence/AT-54/output.txt`, `evidence/AT-54/site-N.txt`, `evidence/AT-54/steps.txt`
-Observation: The analyzer route of the site is /analyze/, not /analyzer/. A real grade of a trade of The Blue Tent (1) and Lil Fridge (3) took 17 s and read "Not as is", with data-trade-key "1:10219|3:11560". A double-tap on the verdict word sent one check with trade_teams [1, 3] and trade_answer not_as_is, and no trade key. The egg matched and the find card shows. Over the API, the checks with [1, 3] and [3, 1] matched with the letter A. The checks with [1, 12] and [1, 3, 12] answered no match. The drop with the old trade condition answered HTTP 422 with "The condition \"trade\" is gone.", and the store holds 0 eggs of that week. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
+Observation: The analyzer route of the site is /analyze/, not /analyzer/. A real grade of a trade of The Blue Tent (1) and Lil Fridge (3) took 8 s and read "Not as is", with data-trade-key "1:10219|3:11560". A double-tap on the verdict word sent one check with trade_teams [1, 3] and trade_answer not_as_is, and no trade key. The egg matched and the find card shows. Over the API, the checks with [1, 3] and [3, 1] matched with the letter A. The checks with [1, 12] and [1, 3, 12] answered no match. The drop with the old trade condition answered HTTP 422 with "The condition \"trade\" is gone.", and the store holds 0 eggs of that week. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
 
 ## AT-55: A burst of 3 or more taps sends nothing
 
 App: both
 Then: The listener sends no check. The drop refuses the actions `tap3`, `tap5`, `hold1`, `hold3`, and `hold5`.
 Files: `evidence/AT-55/output.txt`, `evidence/AT-55/site-N.txt`, `evidence/AT-55/steps.txt`
-Observation: Three mouse taps on luck-3 (pointerups at 12, 170, and 331 ms) sent no check and opened no dialog. Five mouse taps on luck-5, about 160 ms apart, sent no check and opened no dialog. The log counts 0 checks in all. Over the API, the drops with tap3, tap5, hold1, hold3, and hold5 each answered HTTP 422 with "The action ... is not one of tap2, hold, select.", and the store holds 0 eggs of that week. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
+Observation: Three mouse taps on luck-3 (pointerups at 10, 168, and 327 ms) sent no check and opened no dialog. Five mouse taps on luck-5, about 160 ms apart, sent no check and opened no dialog. The log counts 0 checks in all. Over the API, the drops with tap3, tap5, hold1, hold3, and hold5 each answered HTTP 422 with "The action ... is not one of tap2, hold, select.", and the store holds 0 eggs of that week. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
 
 ## AT-56: A blurb takes a double-tap egg and refuses a hold egg
 
