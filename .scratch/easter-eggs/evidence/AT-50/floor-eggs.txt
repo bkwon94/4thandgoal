@@ -1,4 +1,4 @@
-$ cd apps/site && CLIENT=cpc pnpm build && CLIENT=cpc pnpm check:floor -g /eggs/   # at 034d7b08
+$ cd apps/site && CLIENT=cpc pnpm build && CLIENT=cpc pnpm check:floor -g /eggs/   # at f74391cd
 
 > cpcfantasyfootball-site@0.1.0 check:floor /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/apps/site
 > playwright test --project=floor -g /eggs/
@@ -6,8 +6,7 @@ $ cd apps/site && CLIENT=cpc pnpm build && CLIENT=cpc pnpm check:floor -g /eggs/
 
 Running 1 test using 1 worker
 
-cpc /eggs/ dark 390px: prose 0, other text 10, in 137 ms
-  ✓  1 [floor] › e2e/floor.spec.ts:219:7 › fast sweep: cpc /eggs/ dark 390px (249ms)
+cpc /eggs/ dark 390px: prose 0, other text 10, in 175 ms
+  ✓  1 [floor] › e2e/floor.spec.ts:219:7 › fast sweep: cpc /eggs/ dark 390px (286ms)
 
-  1 passed (808ms)
-exit 0
+  1 passed (845ms)
