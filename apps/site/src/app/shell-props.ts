@@ -1,10 +1,11 @@
 /**
- * Builds the shell props that every page shares: the title, the brand, and the menu, from client.toml, brand.toml, and copy.toml.
+ * Builds the shell props of every page from client.toml, brand.toml, and copy.toml: the title, the brand, the menu, and the band buttons.
  * It reads public/ at build time in the app layer, so the shell itself reads no file and builds no route.
  */
 import type { Brand, NavItem, NavKind, SiteMenu } from "@cpc/design/shell/nav";
 import { clientValues } from "@/generated/client-values";
-import { menuLinks } from "@/generated/registry";
+import { createElement, type ReactNode } from "react";
+import { bandParts, menuLinks } from "@/generated/registry";
 import type { ClientValues, MenuItem, MenuLinks } from "@/lib/client-values";
 import { listWeekSummaries } from "@/lib/data/week-data";
 import { homeHref, logoSrc } from "@/lib/routes";
@@ -49,7 +50,7 @@ export function weekSubtitle(): string {
   return clientValues.copy.tagline;
 }
 
-export function shellProps(): { title: string; brand: Brand; menu: SiteMenu } {
+export function shellProps(): { title: string; brand: Brand; menu: SiteMenu; actions: ReactNode } {
   // The registry holds only the packages of the client, so an omitted package has no link and no code in the bundle.
   const home = homeHref();
   // Every published week, newest first, for the week chip and the strip. A client with no week lists none.
@@ -60,5 +61,7 @@ export function shellProps(): { title: string; brand: Brand; menu: SiteMenu } {
     title: clientValues.copy.masthead,
     brand: { home, logo: logoSrc(clientValues.brand.logo) },
     menu: { items: menuPages(clientValues.menu.items, menuLinks, home), weeks },
+    // The button of each package of the client, such as the egg button. The registry lists only the packages of the client.
+    actions: bandParts.map((Part, index) => createElement(Part, { key: index })),
   };
 }

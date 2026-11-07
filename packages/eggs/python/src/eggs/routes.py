@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from eggs.rules import refusal, winner
-from eggs.store import AlreadyClaimed, Claim, EggStore
+from eggs.store import AlreadyClaimed, Claim, Egg, EggStore
 from eggs.tokens import ClaimTokens
 from eggs.values import EggsValues
 
@@ -133,9 +133,20 @@ def _winner_of(claims: list[Claim], teams: dict[int, str], word: str) -> dict | 
     return None if roster_id is None else {"roster_id": roster_id, "team": teams.get(roster_id, "")}
 
 
+def _last_drop(eggs: list[Egg]) -> dict | None:
+    """The week, the count, and the time of the newest drop, or None before the first drop. The egg banner reads it."""
+    if not eggs:
+        return None
+    # The store lists the eggs in the order of the drop, so the last egg is of the newest drop.
+    newest = eggs[-1]
+    count = sum(1 for egg in eggs if egg.week == newest.week)
+    return {"week": newest.week, "count": count, "dropped_at": newest.dropped_at}
+
+
 @open_router.get("/board")
 def board(hunt: ClientHunt) -> dict:
-    """The egg board: the counts, the state of each slot by week, each manager in each egg word, and the latest claims.
+    """The egg board: the counts, the state of each slot by week, each manager in each egg word, the latest claims,
+    and the week, the count, and the time of the last drop.
 
     It holds no page, no target, no action, and no condition, so the board gives no hint.
     """
@@ -173,6 +184,7 @@ def board(hunt: ClientHunt) -> dict:
         "latest": [{"roster_id": claim.roster_id, "team": teams.get(claim.roster_id, ""), "letter": claim.letter,
                     "word": claim.word, "claimed_at": claim.claimed_at} for claim in claims if claim.word is not None],
         "managers": managers,
+        "last_drop": _last_drop(eggs),
     }
 
 

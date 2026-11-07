@@ -10,10 +10,10 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-40, AT-41, AT-42, AT-43
 
 **Status:** ready-for-agent
 
-- [ ] The egg button sits beside the theme button on every page of a client with the package. Its badge is the count left to find, and a tap opens `/eggs/`.
-- [ ] The egg banner reads "6 eggs dropped today · 6 left" on the day of the drop, then "6 eggs dropped Tue · 5 left". A hide stays after a reload until the next drop.
-- [ ] The hero shows the counts left to find, found, and to drop, over 54 slots that are white, red, or dashed.
-- [ ] One card per egg word shows its gift card value, its leader, the top 5, and "Show all 11". A won egg word is a hero card with a WON stamp.
-- [ ] "Latest claims" shows the manager, the letter, and the egg word, with no page, no spot, and no block. "How the hunt works" ends the page.
-- [ ] Before the first drop, the board shows three empty egg words and 54 to drop.
+- [x] The egg button sits beside the theme button on every page of a client with the package. Its badge is the count left to find, and a tap opens `/eggs/`.
+- [x] The egg banner reads "6 eggs dropped today · 6 left" on the day of the drop, then "6 eggs dropped Tue · 5 left". A hide stays after a reload until the next drop.
+- [x] The hero shows the counts left to find, found, and to drop, over 54 slots that are white, red, or dashed.
+- [x] One card per egg word shows its gift card value, its leader, the top 5, and "Show all 11". A won egg word is a hero card with a WON stamp.
+- [x] "Latest claims" shows the manager, the letter, and the egg word, with no page, no spot, and no block. "How the hunt works" ends the page.
+- [x] Before the first drop, the board shows three empty egg words and 54 to drop.
 - [ ] The copy has no "rival", no name of the commissioner, and no hint. The readability floor passes on the board and the banner.

@@ -29,6 +29,8 @@ export const boardSchema = z.object({
     z.object({
       word: z.string(),
       prize: z.number(),
+      // The manager who filled the egg word, or null while the word is open.
+      winner: managerSchema.nullable(),
       managers: z.array(managerSchema.extend({ letters: z.array(z.string()) })),
     }),
   ),
@@ -36,6 +38,9 @@ export const boardSchema = z.object({
     managerSchema.extend({ letter: z.string(), word: z.string(), claimed_at: z.string() }),
   ),
   managers: z.array(managerSchema),
+  // The week, the count, and the time of the newest drop, or null before the first drop. The egg banner reads it.
+  // The time carries the offset of the timezone of the client, because the API clock runs in that timezone.
+  last_drop: z.object({ week: z.number(), count: z.number(), dropped_at: z.string() }).nullable(),
 });
 export type Board = z.infer<typeof boardSchema>;
 export type Manager = z.infer<typeof managerSchema>;

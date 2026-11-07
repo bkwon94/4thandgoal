@@ -60,7 +60,7 @@ for (const width of WIDTHS) {
     await expect(page).toHaveURL(/\/eggs\/$/);
     const cornerstone = page.getByRole("region", { name: /CORNERSTONE/ });
     await expect(cornerstone.getByRole("listitem").filter({ hasText: "Lil Fridge" })).toContainText("C");
-    await expect(page.getByRole("region", { name: "Latest claims" })).toContainText("Lil Fridge · C · CORNERSTONE");
+    await expect(page.getByRole("region", { name: "Latest claims" })).toContainText("Lil Fridge claimed a C for CORNERSTONE.");
     await page.screenshot({ path: `test-results/eggs/board-${width}.png`, fullPage: true });
     // The claim of the first width takes the egg, so the API undoes it for the next width.
     const board = await (await fetch(`${LOCAL_API}/clients/cpc/eggs/board`)).json();

@@ -8,7 +8,7 @@ import { TopBand } from "@cpc/design/shell/top-band";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { Rise } from "@cpc/design/parts/rise";
 import { clientValues } from "@/generated/client-values";
-import { homeSections, homeTools } from "@/generated/registry";
+import { homeBanners, homeSections, homeTools } from "@/generated/registry";
 import type { HomePlace } from "@/lib/client-values";
 import { season } from "@/lib/config";
 import { homeHref } from "@/lib/routes";
@@ -31,6 +31,10 @@ export default function HomePage() {
     <>
       {/* The intro names the season, so the top band holds no week line. */}
       <TopBand {...shellProps()} pageHref={homeHref()} />
+      {/* The strip of each package under the top band, edge to edge, such as the egg banner after an egg drop. */}
+      {homeBanners.map((Banner, index) => (
+        <Banner key={index} />
+      ))}
       {/* The page color fills the width under the band, so the cards sit on the page in both themes. */}
       <div className="bg-page">
         <PageColumn>

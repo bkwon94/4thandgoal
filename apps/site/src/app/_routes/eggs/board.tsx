@@ -4,12 +4,9 @@
  */
 "use client";
 
-import { eggsApi } from "@cpc/eggs/lib/api";
 import { EggBoardScreen } from "@cpc/eggs/board/egg-board-screen";
-import { eggsTarget } from "@/lib/config";
-
-const api = eggsApi(eggsTarget);
+import { boardApi } from "./api";
 
 export function EggBoardPart() {
-  return <EggBoardScreen api={api} />;
+  return <EggBoardScreen api={boardApi} />;
 }

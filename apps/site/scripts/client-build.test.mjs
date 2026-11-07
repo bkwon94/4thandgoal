@@ -122,6 +122,16 @@ describe("the client build", () => {
     expect(registry).toContain("export const pageParts: PagePart[] = [eggsPagePart];");
   });
 
+  it("gives a client of the eggs package the egg button in the top band and the egg banner on the home page", () => {
+    const repo = tempRepo();
+    buildClient(repo);
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { BandPart as eggsBandPart } from "@/app/_routes/eggs/band";');
+    expect(registry).toContain("export const bandParts: BandPart[] = [eggsBandPart];");
+    expect(registry).toContain('import { HomeBanner as eggsHomeBanner } from "@/app/_routes/eggs/home-banner";');
+    expect(registry).toContain("export const homeBanners: HomeBanner[] = [eggsHomeBanner];");
+  });
+
   it("gives a client without the eggs package no /eggs/ route and no egg hunt", () => {
     const repo = tempRepo(CPC_TOML.replace(', "eggs"]', "]").replace(/\n# The roster of the commissioner[^\n]*\n\[values\.eggs\]\n[^\n]*\n/, "\n"));
     buildClient(repo);
@@ -129,6 +139,8 @@ describe("the client build", () => {
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
     expect(registry).not.toContain("eggs");
     expect(registry).toContain("export const pageParts: PagePart[] = [];");
+    expect(registry).toContain("export const bandParts: BandPart[] = [];");
+    expect(registry).toContain("export const homeBanners: HomeBanner[] = [];");
   });
 
   it("starts each generated file with a GENERATED line that names the client file", () => {
