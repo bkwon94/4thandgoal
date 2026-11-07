@@ -11,6 +11,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+
+def normal_page(page: str) -> str:
+    """The page with no trailing slash, except "/". The site builds each real page with a slash, but a missing URL
+    keeps the path as the manager typed it, so the drop and the check both compare this one form."""
+    return page.removesuffix("/") or "/"
+
+
 # A claim with no undo time holds its egg. The unique index covers only those claims, so the first claim of an egg
 # wins a tie, and an undo sets the egg live again while the claims table keeps the row of the undone claim.
 SCHEMA = """
@@ -110,15 +117,16 @@ class EggStore:
                 db.executemany(
                     "INSERT INTO eggs (week, page, target, action, conditions, letter, dropped_at) "
                     "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    [(week, egg["page"], egg["target"], egg["action"], json.dumps(egg["conditions"], sort_keys=True),
-                      egg["letter"], now.isoformat()) for egg in eggs])
+                    [(week, normal_page(egg["page"]), egg["target"], egg["action"],
+                      json.dumps(egg["conditions"], sort_keys=True), egg["letter"], now.isoformat())
+                     for egg in eggs])
         return self.eggs(week)
 
     def find(self, page: str, target: str, action: str) -> list[Egg]:
         """Each egg on `target` of `page` that `action` finds. The caller checks the conditions of each one."""
         with self._connect() as db:
             rows = db.execute("SELECT * FROM eggs WHERE page = ? AND target = ? AND action = ? ORDER BY id",
-                              (page, target, action)).fetchall()
+                              (normal_page(page), target, action)).fetchall()
         return [_egg(row) for row in rows]
 
     def claim_of(self, egg_id: int) -> Claim | None:

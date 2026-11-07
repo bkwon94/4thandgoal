@@ -98,6 +98,22 @@ def test_a_check_of_another_target_or_action_is_no_match(api):
     assert api.post(f"{BASE}/check", json={**CHECK, "action": "tap2"}).json() == {"match": False}
 
 
+def test_a_not_found_egg_on_a_page_with_a_slash_matches_a_check_from_the_page_without_it(api):
+    # A missing URL keeps the path as typed, so it has no trailing slash, while a real page always has one.
+    _drop(api, {"page": "/golden-egg/", "target": "page", "action": "tap5", "conditions": {"not_found": True},
+                "letter": "C"})
+    check = {"page": "/golden-egg", "target": "page", "action": "tap5", "conditions": {"not_found": True}}
+    assert api.post(f"{BASE}/check", json=check).json()["match"] is True
+    assert api.post(f"{BASE}/check", json={**check, "page": "/golden-eggs"}).json() == {"match": False}
+
+
+def test_an_egg_dropped_on_a_page_without_a_slash_matches_a_check_from_the_page_with_it(api):
+    _drop(api, {"page": "/golden-egg", "target": "page", "action": "tap5", "conditions": {"not_found": True},
+                "letter": "C"})
+    check = {"page": "/golden-egg/", "target": "page", "action": "tap5", "conditions": {"not_found": True}}
+    assert api.post(f"{BASE}/check", json=check).json()["match"] is True
+
+
 def _claim(api, token, roster_id=LIL_FRIDGE, word="CORNERSTONE", headers=PASS):
     return api.post(f"{BASE}/claim", json={"token": token, "roster_id": roster_id, "word": word}, headers=headers)
 
