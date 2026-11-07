@@ -106,6 +106,23 @@ def test_no_letter_repeats_in_one_drop(api):
     assert len(set(letters)) == 11
 
 
+@pytest.mark.parametrize("conditions", [
+    {"clock": "11pm-midnight"}, {"clock": "25:00-26:00"}, {"clock": "23:00"}, {"clock": 2300},
+    {"weekday": "thursday"}, {"weekday": "xyz"}, {"weekday": 3},
+])
+def test_the_drop_refuses_a_bad_clock_window_or_weekday_and_drops_nothing(api, conditions):
+    eggs = [{**_spots(1)[0], "conditions": conditions}]
+    response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": eggs}, headers=COMMISSIONER)
+    assert response.status_code == 422
+    assert api.app.state.hunts["cpc"].store.eggs() == []
+
+
+def test_the_drop_takes_a_good_clock_window_and_weekday(api):
+    eggs = [{**_spots(1)[0], "conditions": {"clock": "23:00-00:00", "weekday": "Thu"}}]
+    response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": eggs}, headers=COMMISSIONER)
+    assert response.status_code == 200, response.text
+
+
 def test_a_second_drop_of_one_week_adds_nothing_and_answers_with_the_eggs_there(api):
     first = api.post(f"{BASE}/drop", json={"week": 9, "eggs": _spots(1)}, headers=COMMISSIONER).json()
     second = api.post(f"{BASE}/drop", json={"week": 9, "eggs": _spots(2)}, headers=COMMISSIONER).json()

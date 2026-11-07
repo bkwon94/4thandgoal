@@ -9,9 +9,9 @@ from datetime import datetime, tzinfo
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
-from eggs.conditions import conditions_hold
+from eggs.conditions import check_conditions, conditions_hold
 from eggs.letters import drop_letters
 from eggs.rules import refusal, winner
 from eggs.store import AlreadyClaimed, Claim, Egg, EggStore
@@ -218,6 +218,13 @@ class DropEgg(BaseModel):
     target: str
     action: str
     conditions: dict[str, Any] = {}
+
+    @field_validator("conditions")
+    @classmethod
+    def _conditions(cls, conditions: dict[str, Any]) -> dict[str, Any]:
+        # A bad clock window or weekday answers 422 at the drop, so no check of the egg ever fails on it.
+        check_conditions(conditions)
+        return conditions
 
 
 class DropRequest(BaseModel):
