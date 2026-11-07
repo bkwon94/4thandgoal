@@ -29,7 +29,7 @@ from analyzer.rubric import (
     verdict,
 )
 from cornerstone.egg_draft import run_egg_draft
-from cornerstone.egg_drop import drop_from_env
+from cornerstone.egg_drop import drop_after_publish, drop_from_env
 from cornerstone.pipeline import (
     BuildStopped,
     has_raw,
@@ -606,7 +606,7 @@ def main(
                 return 0
             print(run_publish(repo, season, week, client.slug, client.folder))
             # The last step of the publish: a failed drop warns and keeps the exit 0, and "make egg-drop" retries.
-            print(drop_from_env(client, week, args.eggs_file or default_egg_file(season)))
+            print(drop_after_publish(client, week, args.eggs_file or default_egg_file(season)))
     except (BuildStopped, PublishError, DraftError, ValueError) as err:
         print(err)
         return 2

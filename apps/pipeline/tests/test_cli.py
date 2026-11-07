@@ -742,3 +742,32 @@ def test_the_settings_command_prints_the_derived_sizes(tmp_path, monkeypatch, ca
     assert "team_count: 12" in out
     assert "lines: {'QB': 24, 'RB': 36, 'WR': 36, 'TE': 24}" in out
     assert "star_rank_by_position: {'QB': 6, 'RB': 12, 'WR': 12, 'TE': 6}" in out
+
+
+BAD_EGG_FILE = '[[eggs]]\nweek = 8\ntarget = "t"\naction = "tap3"\nconfirmed = true\n'
+
+
+def test_the_egg_drop_command_with_a_bad_egg_file_exits_non_zero_and_names_the_problem(tmp_path, monkeypatch, capsys):
+    from test_midseason import CPC_PROVIDER
+
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    egg_file = tmp_path / "2026.toml"
+    egg_file.write_text(BAD_EGG_FILE, encoding="utf-8")
+    args = ["egg-drop", "--client", "cpc", "--season", "2026", "--week", "8", "--eggs-file", str(egg_file)]
+    assert cli.main(args, provider=CPC_PROVIDER) == 2
+    out = capsys.readouterr().out
+    assert str(egg_file) in out and "no page in egg 1" in out
+
+
+def test_the_drop_after_the_publish_warns_on_a_bad_egg_file_with_the_same_message(tmp_path):
+    from cornerstone.egg_drop import drop_after_publish
+
+    egg_file = tmp_path / "2026.toml"
+    egg_file.write_text(BAD_EGG_FILE, encoding="utf-8")
+    line = drop_after_publish(cpc_client(root=tmp_path), 8, egg_file)
+    assert line.startswith("WARNING: the egg drop of week 8 failed:")
+    assert str(egg_file) in line and "no page in egg 1" in line
+    assert "make egg-drop CLIENT=cpc WEEK=8" in line

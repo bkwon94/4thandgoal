@@ -10,6 +10,10 @@ from pathlib import Path
 from typing import Any
 
 
+class EggFileError(ValueError):
+    """The egg file is not valid. The message names the file and the problem."""
+
+
 def default_egg_file(season: int) -> Path:
     """The egg file of the season on the laptop of the commissioner, outside the repo."""
     return Path.home() / "cpc-eggs" / f"{season}.toml"
@@ -36,13 +40,29 @@ class Spot:
 
 
 def read_spots(path: Path) -> list[Spot]:
-    """Each spot of the egg file, in the order of the file. A file that does not exist holds no spot."""
+    """Each spot of the egg file, in the order of the file. A file that does not exist holds no spot.
+
+    A file that is not valid TOML, or a spot with a missing or wrong field, raises EggFileError.
+    """
     if not path.is_file():
         return []
-    data = tomllib.loads(path.read_text(encoding="utf-8"))
-    return [Spot(week=int(each["week"]), page=each["page"], target=each["target"], action=each["action"],
-                 reason=each.get("reason", ""), conditions=dict(each.get("conditions", {})),
-                 confirmed=bool(each.get("confirmed", False))) for each in data.get("eggs", [])]
+    try:
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+    except (tomllib.TOMLDecodeError, UnicodeDecodeError) as err:
+        raise EggFileError(f"The egg file {path} is not valid TOML: {err}") from err
+    return [_spot(path, number, each) for number, each in enumerate(data.get("eggs", []), start=1)]
+
+
+def _spot(path: Path, number: int, each: dict[str, Any]) -> Spot:
+    for name in ("week", "page", "target", "action"):
+        if name not in each:
+            raise EggFileError(f"The egg file {path} has no {name} in egg {number}.")
+    try:
+        return Spot(week=int(each["week"]), page=each["page"], target=each["target"], action=each["action"],
+                    reason=each.get("reason", ""), conditions=dict(each.get("conditions", {})),
+                    confirmed=bool(each.get("confirmed", False)))
+    except (TypeError, ValueError) as err:
+        raise EggFileError(f"The egg file {path} has a wrong value in egg {number}: {err}") from err
 
 
 def confirmed_spots(path: Path, week: int) -> list[Spot]:

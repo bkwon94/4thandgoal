@@ -7,7 +7,7 @@ from pathlib import Path
 
 import httpx
 
-from eggs.eggfile import confirmed_spots
+from eggs.eggfile import EggFileError, confirmed_spots
 from eggs.keys import API_URL, commissioner_key_env
 from league.client import Client
 
@@ -49,3 +49,14 @@ def drop_from_env(client: Client, week: int, egg_file: Path) -> str:
     """Run the egg drop against the API of CORNERSTONE_API_URL, with the commissioner key of the env."""
     with httpx.Client(base_url=os.environ.get("CORNERSTONE_API_URL", API_URL), timeout=30) as http:
         return run_egg_drop(client, week, egg_file, http, os.environ.get(commissioner_key_env(client.slug)))
+
+
+def drop_after_publish(client: Client, week: int, egg_file: Path) -> str:
+    """The egg drop as the last step of the publish: a bad egg file gives a warning, so the publish still exits 0.
+
+    "make egg-drop" calls drop_from_env, which lets the EggFileError through, so it exits non-zero with the same message.
+    """
+    try:
+        return drop_from_env(client, week, egg_file)
+    except EggFileError as err:
+        return f"WARNING: the egg drop of week {week} failed: {err} Fix the file, then run make egg-drop CLIENT={client.slug} WEEK={week}."
