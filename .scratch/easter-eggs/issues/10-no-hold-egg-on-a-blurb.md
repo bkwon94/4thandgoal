@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance test AT-56.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The draft prompt states the rule.
 - [x] The draft refuses a `hold` on a `blurb-*` target and writes nothing.
