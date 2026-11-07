@@ -382,13 +382,13 @@ When: Read the last card.
 Then: It states the egg drop each Tuesday, the claim, the letter rule, the gift cards, and that the commissioner cannot hunt.
 Evidence: screenshots of the card at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
-AT-47: The egg board before the first drop
+AT-47: Nothing of the hunt shows before the first drop
 App: site
-Stories: 33, 34
+Stories: 28, 30
 Given: An empty store.
-When: Open `/eggs/`.
-Then: The three egg words show with no letters, and the count to drop is 54.
-Evidence: screenshots of the page at 375, 768, and 1280 px, each in the light theme and the dark theme.
+When: Open the home page, week 8, and `/eggs/`, and tap the Luck cell of Lil Fridge on `/midseason/2026/` 3 times.
+Then: No page shows the egg button or the egg banner, the listener sends no check, and `/eggs/` shows the 404 page.
+Evidence: screenshots of the home page, week 8, and `/eggs/` at 375, 768, and 1280 px, each in the light theme and the dark theme, and the log of the checks sent.
 
 AT-48: The copy rules hold
 App: site
@@ -451,13 +451,13 @@ Story 24: AT-37, AT-51
 Story 25: AT-12, AT-37
 Story 26: AT-10
 Story 27: AT-6
-Story 28: AT-40
+Story 28: AT-40, AT-47
 Story 29: AT-40
-Story 30: AT-41
+Story 30: AT-41, AT-47
 Story 31: AT-41
 Story 32: AT-41
-Story 33: AT-42, AT-47
-Story 34: AT-42, AT-47
+Story 33: AT-42
+Story 34: AT-42
 Story 35: AT-42
 Story 36: AT-43
 Story 37: AT-43
@@ -489,3 +489,4 @@ Out of scope "A riddle, an answer box, or any typed answer": AT-48
 ## Revisions
 
 - 2026-11-06: AT-41 names the day of the drop, because the banner stays up all week and "6 new eggs" read as eggs of that day. Brian approved.
+- 2026-11-07: AT-47 tests that nothing of the hunt shows before the first drop, because the hunt turns on at the first drop (Brian chose the automatic flag). Brian approved.
