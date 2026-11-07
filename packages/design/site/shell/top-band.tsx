@@ -42,8 +42,9 @@ export function TopBand({ title, brand, menu, pageHref, children, actions }: Top
           {/* A plain anchor, so the home link works with scripts off. The title names the link, so the logo is decorative.
               Under the rail tier the logo shows alone, so the pill bar has room for its full labels on one row. The title
               stays for a screen reader. A long title cuts at the end.
-              The link is 44px or more on each side, so the logo alone is still a full tap target. */}
-          <a href={brand.home} className="flex min-h-touch min-w-touch items-center gap-sp-3 text-inherit no-underline">
+              The link is 44px or more on each side, so the logo alone is still a full tap target.
+              Its high shrink lets the title cut before the pill bar loses width, so the bar keeps each full label with no scroll. */}
+          <a href={brand.home} className="flex min-h-touch min-w-touch shrink-999 items-center gap-sp-3 text-inherit no-underline">
             {brand.logo !== null && (
               <img src={brand.logo} alt="" width={30} height={30} className="size-logo flex-none rounded-full" />
             )}
@@ -54,10 +55,12 @@ export function TopBand({ title, brand, menu, pageHref, children, actions }: Top
               {title}
             </span>
           </a>
+          {/* The bar starts at the width of its labels and grows into the free space. A bar that starts at no width
+              leaves the free space to the title, and then a full title makes the bar scroll. */}
           <PillBar
             items={menu.items}
             current={current}
-            className="min-w-0 flex-1 justify-center"
+            className="min-w-0 flex-auto justify-center"
           />
           <div className="ml-auto flex flex-none items-center gap-sp-2">
             {week !== undefined && <WeekChip weeks={menu.weeks} week={week} pageHref={pageHref} />}
