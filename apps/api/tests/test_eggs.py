@@ -67,9 +67,12 @@ def api(settings, fixture_raw_dir):
 
 
 def _drop(api, *eggs, week=9):
-    response = api.post(f"{BASE}/drop", json={"week": week, "eggs": list(eggs)}, headers=COMMISSIONER)
-    assert response.status_code == 200, response.text
-    return response.json()
+    """Put test eggs with a fixed letter in the store, so a check and a claim test know the letter of each egg.
+
+    The drop route gives each egg its letter by the letter rule. tests/test_egg_drop.py tests the route.
+    """
+    dropped = api.app.state.hunts["cpc"].store.drop(week, list(eggs), NOW)
+    return {"eggs": [{"id": egg.id, "letter": egg.letter} for egg in dropped]}
 
 
 def test_the_check_of_a_dropped_egg_gives_its_letter_and_a_claim_token(api):
@@ -149,7 +152,7 @@ def test_a_second_claim_of_one_egg_answers_that_another_manager_claimed_first(ap
 
 def test_the_drop_needs_the_commissioner_key_and_not_the_passphrase(api):
     for headers in ({}, PASS, {"X-Commissioner-Key": "wrong"}):
-        response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": [T1]}, headers=headers)
+        response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": [CHECK]}, headers=headers)
         assert response.status_code == 401
     assert api.get(f"{BASE}/board").json()["counts"] == {"left": 0, "found": 0, "to_drop": 54}
 
@@ -161,14 +164,6 @@ def test_the_undo_needs_the_commissioner_key_and_sets_the_egg_live_again(api, se
     assert api.post(f"{BASE}/undo", json={"egg_id": egg_id}, headers=COMMISSIONER).status_code == 200
     assert api.get(f"{BASE}/board").json()["counts"]["left"] == 1
     assert _claim(api, _token(api), roster_id=12).status_code == 200
-
-
-def test_a_second_drop_of_one_week_adds_nothing_and_answers_with_the_eggs_there(api):
-    first = _drop(api, T1)
-    second = _drop(api, {**T1, "target": "luck-12"})
-    assert first["dropped"] == 1
-    assert second["dropped"] == 0
-    assert second["eggs"] == first["eggs"]
 
 
 def test_the_check_and_the_board_need_no_key(api):

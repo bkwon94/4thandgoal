@@ -4,12 +4,15 @@
 
 - The package values in `values.py` (`cpc-eggs`, imported as `eggs`), under `[values.eggs]`: `words`, the egg words and the gift card of each, `first_week` and `last_week` of the hunt, `drop_size`, the count of each egg drop, and `commissioner`, the roster id of the commissioner. The defaults are CORNERSTONE $50, LANSDALE $30, EAGLES $20, weeks 9 to 17, 6 eggs, and no commissioner.
 - The store in `store.py`: one SQLite file per client with the tables `eggs` and `claims`. The first claim of an egg wins, and an undo keeps the row with its undo time.
+- The letter rule of the drop in `letters.py`: per egg, the letter that the most managers still need over the open egg words, with no repeat in one drop and the guard of the last letter of each leader.
+- The egg file of the commissioner in `eggfile.py`, at `~/cpc-eggs/<season>.toml` outside the repo, and the egg draft in `draft.py` with the agent prompt `draft_prompt.md`.
 - The one-time claim tokens in `tokens.py`, each good for 15 minutes.
 - The eggs routes of the API in `routes.py`: `check` and `board` are open, `claim` needs the passphrase, and `drop` and `undo` need the commissioner key. The board holds no page and no spot.
 - The site part in `site/`: the listener, the find card, the claim sheet, the egg board, and the client of the eggs routes.
 
 ## Ports
 
+- `Propose` in `draft.py`: the agent of the egg draft. The pipeline gives one headless run of the `claude` CLI.
 - `Rosters` in `routes.py`: the team name of each roster. The API app gives the live rosters of the client.
 - `EggsApi` in `site/lib/api.ts`: the eggs routes for the site parts. A test gives the one fake of `site/lib/fixtures/eggs-api.ts`.
 
