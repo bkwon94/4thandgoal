@@ -5,6 +5,7 @@
 import type { Metadata } from "next";
 import { Hero } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
+import { NOT_FOUND, stableId } from "@cpc/design/lib/stable-id";
 import { TopBand } from "@cpc/design/shell/top-band";
 import { pageTitle, shellProps } from "@/app/shell-props";
 
@@ -23,7 +24,8 @@ export default function NotFound() {
     <>
       {/* The page is no destination, so it passes no page href, and no item of the shell is marked. */}
       <TopBand {...shell} />
-      <main className="mx-auto w-full max-w-page px-gutter py-sp-6">
+      {/* The mark tells the egg hunt that the page is the 404 page, whatever path the reader typed. */}
+      <main className="mx-auto w-full max-w-page px-gutter py-sp-6" {...{ [NOT_FOUND]: true }}>
         <Hero label="Page not found">
           {/* Each line of text sits on a plate, so the grid and the glow never sit under a letter. */}
           <Rise step={0}>
@@ -32,7 +34,12 @@ export default function NotFound() {
             </div>
           </Rise>
           <Rise step={1}>
-            <h1 className="plate mt-sp-4 mb-0 w-fit font-mono text-hero leading-none font-bold tracking-grade">404</h1>
+            <h1
+              className="plate mt-sp-4 mb-0 w-fit font-mono text-hero leading-none font-bold tracking-grade"
+              {...stableId("not-found-hero")}
+            >
+              404
+            </h1>
           </Rise>
           <Rise step={2}>
             <p className="plate mt-sp-4 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2">

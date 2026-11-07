@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { thousands } from "@cpc/design/format/format";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { SIM_CHAMPION, SIM_SEEDS } from "@cpc/design/lib/stable-id";
 import type { Sim } from "../schema/sim-types";
 import { type Beat, beatsOf } from "./beats";
 import { Bracket } from "./bracket";
@@ -162,9 +163,15 @@ export function SimReplay({
       ? new Map(season.seeds.map((seed) => [seed.roster_id, seed.seed]))
       : null;
   const pace: Pace = { off, still: play?.still ?? false };
+  // The outcome of the run on the root of the replay: the seeds once the regular season ends, and the champion once
+  // the replay shows the champion. The egg hunt reads them as the condition of a sim egg.
+  const outcome = {
+    ...(seeds !== null ? { [SIM_SEEDS]: [...seeds].map(([roster, seed]) => `${roster}:${seed}`).join(" ") } : {}),
+    ...(season !== null && beat?.kind === "champion" ? { [SIM_CHAMPION]: season.champion.roster_id } : {}),
+  };
 
   return (
-    <section aria-labelledby="sim-heading" className="flex flex-col gap-sp-3">
+    <section aria-labelledby="sim-heading" className="flex flex-col gap-sp-3" {...outcome}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-sp-3 gap-y-sp-1">
         <h3 id="sim-heading" className="m-0 text-stat leading-tight font-bold">
           Sim the Rest of the Season

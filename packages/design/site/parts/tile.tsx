@@ -3,6 +3,7 @@
  * The page tone sits on a card or the page. The hero tone sits in the hero, on the raised surface of the hero.
  */
 import type { ReactNode } from "react";
+import { STABLE_ID } from "../lib/stable-id";
 import { cn } from "../lib/utils";
 
 type TileProps = {
@@ -12,6 +13,8 @@ type TileProps = {
   // A short line under the number, such as the team that scored it.
   note?: ReactNode;
   tone?: "page" | "hero";
+  // The stable id of the tile, from the data that it renders, so the egg hunt can name it.
+  stable?: string;
   className?: string;
 };
 
@@ -21,10 +24,10 @@ const TONES = {
   hero: { box: "bg-chip-dark text-on-dark", label: "text-on-dark-muted", note: "text-on-dark-2" },
 } as const;
 
-export function Tile({ label, value, note, tone = "page", className }: TileProps) {
+export function Tile({ label, value, note, tone = "page", stable, className }: TileProps) {
   const colors = TONES[tone];
   return (
-    <div className={cn("rounded-tile p-sp-4", colors.box, className)}>
+    <div className={cn("rounded-tile p-sp-4", colors.box, className)} {...(stable ? { [STABLE_ID]: stable } : {})}>
       {/* The label and the number are mono, so the numbers of a row of tiles line up. */}
       <div className={cn("font-mono text-meta leading-tight font-bold tracking-caps uppercase", colors.label)}>{label}</div>
       <div className="mt-sp-1 font-mono text-stat leading-stat font-bold tabular-nums">{value}</div>

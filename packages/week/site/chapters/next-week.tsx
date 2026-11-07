@@ -8,6 +8,7 @@ import type { AvatarMap, ByePlayer, NextGame, Team } from "../schema/week-types"
 import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
 import { WeekChapter } from "../parts/week-chapter";
+import { stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* The players on bye of one side, key starters first, as the JSON lists them. The key starter's name is the one emphasis.
    The line wraps and never cuts, so a long list stays whole. */
@@ -43,7 +44,7 @@ function Side({ team, avatars }: { team: Team; avatars: AvatarMap }) {
 function Game({ game, avatars }: { game: NextGame; avatars: AvatarMap }) {
   return (
     // The article carries the Must Watch state, so a test and a style hook read it without the class names.
-    <article data-must-watch={game.must_watch}>
+    <article data-must-watch={game.must_watch} {...stableId("next-game", game.a.roster_id, game.b.roster_id)}>
       <Card edge={game.must_watch} className="flex h-full flex-col gap-sp-3">
         {game.must_watch && (
           <div className="flex flex-col gap-sp-1">
@@ -71,7 +72,7 @@ export function NextWeek({
 }) {
   return (
     <WeekChapter id="next-week" title="Next week" note={`Week ${String(week + 1).padStart(2, "0")}`}>
-      {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{blurb}</p>}
+      {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>}
       <div className="grid grid-cols-1 gap-sp-2 tablet:grid-cols-2">
         {games.map((game) => (
           <Game key={game.a.roster_id} game={game} avatars={avatars} />

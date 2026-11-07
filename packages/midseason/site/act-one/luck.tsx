@@ -10,6 +10,7 @@ import { fullRecord, signedTwo, teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { WordTag } from "../report/word-tag";
 import type { BestAndWorst, LuckChapter, LuckExample, SwapEnd, TeamLuck } from "../schema/midseason-types";
+import { stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* The label of the All-play wins. The page never says "All-play", because readers do not know the term (decision ticket 16). */
 const EVERYONE = "Wins if you played everyone";
@@ -67,7 +68,7 @@ function LuckCard({ example, weeks }: { example: LuckExample; weeks: number }) {
               <h5 id={`luck-card-${index}`} className="m-0 text-body leading-tight font-bold">
                 {step.title}
               </h5>
-              <p className="m-0 max-w-measure text-lead text-ink-2">{step.text}</p>
+              <p className="m-0 max-w-measure text-lead text-ink-2" {...textId("blurb", step.text)}>{step.text}</p>
             </div>
           </div>
         ))}
@@ -99,7 +100,7 @@ function LuckTable({ teams }: { teams: TeamLuck[] }) {
               <td className={cn(CELL, "text-right")}>{num(team.head_to_head_wins)}</td>
               <td className={cn(CELL, "text-right")}>{team.all_play_wins.toFixed(2)}</td>
               {/* The stable id derives from the roster, so the egg listener can name the cell. Every row has one. */}
-              <td data-luck data-stable-id={`luck-${team.roster_id}`} className={cn(CELL, "text-right font-bold")}>
+              <td data-luck {...stableId("luck", team.roster_id)} className={cn(CELL, "text-right font-bold")}>
                 <span className="block">{signedTwo(team.schedule_luck)}</span>
                 {/* The word sits under the number. */}
                 <WordTag tone={Math.abs(team.schedule_luck) >= LOUD_GAP ? "accent" : "mute"} className="ml-0 block">

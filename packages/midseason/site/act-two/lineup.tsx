@@ -8,10 +8,14 @@ import { teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
 import type { LineupChapter, TeamLineup } from "../schema/midseason-types";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 function Row({ team }: { team: TeamLineup }) {
   return (
-    <li className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0">
+    <li
+      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0"
+      {...stableId("bench", team.roster_id)}
+    >
       <span className="font-mono text-meta text-mute tabular-nums">{String(team.rank).padStart(2, "0")}</span>
       <span className="min-w-0">
         <span className="block text-body leading-tight font-semibold">{team.name}</span>
