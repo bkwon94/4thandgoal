@@ -5,19 +5,21 @@ The app mounts each group at /clients/<slug>/eggs/ with its own guard, and each 
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, tzinfo
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, ConfigDict
 
+from eggs.conditions import conditions_hold
 from eggs.letters import drop_letters
 from eggs.rules import refusal, winner
 from eggs.store import AlreadyClaimed, Claim, EggStore
 from eggs.tokens import ClaimTokens
 from eggs.values import EggsValues
 
-# The open routes: the egg check and the egg board need no key.
+# The open routes: the egg check and the egg board need no key. The check has its own limit, so it has its own group.
+check_router = APIRouter()
 open_router = APIRouter()
 # The claim needs the passphrase of the client. The app gives the guard.
 claim_router = APIRouter()
@@ -40,6 +42,8 @@ class Hunt:
     rosters: Rosters
     clock: Callable[[], datetime]
     tokens: ClaimTokens = field(default_factory=ClaimTokens)
+    # The timezone of the client. The clock window and the weekday of an egg hold on the clock of the client.
+    tz: tzinfo | None = None
     # FastAPI runs the sync routes in a thread pool. The lock keeps the take of a token and its claim in one step.
     lock: threading.Lock = field(default_factory=threading.Lock)
 
@@ -56,24 +60,35 @@ ClientHunt = Annotated[Hunt, Depends(client_hunt)]
 
 
 class CheckRequest(BaseModel):
-    """The body of the egg check: the page, the stable id of the element, the action, and the state of the conditions."""
+    """The body of the egg check: the page, the stable id of the element, the action, the trail of a tap combo, the
+    word of a selection, and the state of the conditions."""
 
     page: str
     target: str
     action: str
+    # The stable ids of the two taps before the double-tap of a tap combo, oldest first. An egg holds it as "trail".
+    trail: list[str] = []
+    # The selected word of the action "select", in lower case. An egg holds it as "word".
+    word: str | None = None
     conditions: dict[str, Any] = {}
 
+    def state(self) -> dict[str, Any]:
+        """The state that the conditions of an egg match: the conditions, the trail, and the word."""
+        return {**self.conditions, "trail": self.trail, "word": self.word}
 
-@open_router.post("/check")
+
+@check_router.post("/check")
 def check(body: CheckRequest, hunt: ClientHunt) -> dict:
     """No match, a match with the letter and a one-time claim token, or a match on an egg that a manager claimed."""
+    now = hunt.clock()
+    local = now.astimezone(hunt.tz) if hunt.tz is not None else now
     for egg in hunt.store.find(body.page, body.target, body.action):
-        # Each condition of the egg must hold in the state that the listener sends.
-        if any(body.conditions.get(name) != value for name, value in egg.conditions.items()):
+        # Each condition of the egg must hold in the state that the listener sends and on the clock of the client.
+        if not conditions_hold(egg.conditions, body.state(), local):
             continue
         if hunt.store.claim_of(egg.id) is not None:
             return {"match": True, "claimed": True, "letter": egg.letter}
-        token = hunt.tokens.issue(egg.id, hunt.clock())
+        token = hunt.tokens.issue(egg.id, now)
         return {"match": True, "claimed": False, "letter": egg.letter, "token": token}
     return {"match": False}
 

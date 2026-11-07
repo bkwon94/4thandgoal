@@ -8,10 +8,18 @@ import { z } from "zod";
 export type EggsTarget = { url: string; client: string };
 
 /* The state of the conditions of one check, such as the theme. The API matches each condition of an egg. */
-export type Conditions = Record<string, string | boolean | number>;
+export type Conditions = Record<string, string | boolean | number | string[]>;
 
-/* The body of the egg check: the page, the stable id of the element, the action, and the state of the conditions. */
-export type EggCheck = { page: string; target: string; action: string; conditions: Conditions };
+/* The body of the egg check: the page, the stable id of the element, the action, the stable ids of the two taps before
+   the double-tap of a tap combo, the selected word of the action "select", and the state of the conditions. */
+export type EggCheck = {
+  page: string;
+  target: string;
+  action: string;
+  trail?: string[];
+  word?: string;
+  conditions: Conditions;
+};
 
 export const checkAnswerSchema = z.union([
   z.object({ match: z.literal(false) }),

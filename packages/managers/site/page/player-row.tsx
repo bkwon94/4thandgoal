@@ -7,6 +7,7 @@ import { num } from "@cpc/design/format/format";
 import type { ManagerPlayer } from "../schema/manager-types";
 import { PhotoFrame } from "@cpc/design/parts/photo-frame";
 import { sleeperHeadshot } from "@cpc/league/images";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 /* The quiet line of a row. A null position adds no part, so the line starts at the next part. */
 export function playerMetaLine(player: ManagerPlayer, ...parts: string[]): string {
@@ -25,14 +26,17 @@ export function PlayerRow({
   meta,
   points,
   under,
+  stable,
 }: {
   player: ManagerPlayer;
   meta: string;
   points: number;
   under: string;
+  // The stable id of the row, from its chapter and its player, so the egg hunt can name it.
+  stable?: string;
 }) {
   return (
-    <li className="flex items-center gap-sp-2 border-t border-rule py-sp-2 tabular-nums first:border-t-0">
+    <li className="flex items-center gap-sp-2 border-t border-rule py-sp-2 tabular-nums first:border-t-0" {...(stable ? stableId(stable) : {})}>
       {/* The name sits next to the frame, so the frame is decorative. */}
       <PhotoFrame src={photoOf(player)} name={player.name} decorative />
       <span className="flex min-w-0 flex-1 flex-col">

@@ -12,6 +12,7 @@ import type { ManagerGrade } from "../schema/manager-types";
 import { PART_NAMES } from "./part-names";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, EASE_OUT, INSTANT } from "@cpc/design/lib/motion";
+import { openId, stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* The scale the popover starts from. It matches the Past Weeks popover, so the popover grows out of the letter and does not pop. */
 const POPOVER_SCALE = 0.95;
@@ -49,6 +50,7 @@ export function GradePopover({ grade, teams }: { grade: ManagerGrade; teams: num
           It sits in the hero, so it carries the plate of the hero text, and it is a full tap target on each side. */}
       <PopoverTrigger
         aria-label={`Grade ${grade.letter}, how the grade reads`}
+        {...openId("popover-grade")}
         className="press plate min-w-touch cursor-pointer border-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         {grade.letter}
@@ -77,11 +79,11 @@ export function GradePopover({ grade, teams }: { grade: ManagerGrade; teams: num
               How The Grade Reads
             </PopoverTitle>
             {/* The read comes first: the grade in words, from the pipeline, so a reader gets the gist before the ranks. */}
-            <p className="m-0 text-body text-ink">{grade.read}</p>
+            <p className="m-0 text-body text-ink" {...textId("blurb", grade.read)}>{grade.read}</p>
             {/* One line per part. The rank is the one emphasis, so the part name and "of 12" stay quiet. */}
             <ul className="m-0 flex list-none flex-col gap-sp-2 p-0 text-body text-ink-2 tabular-nums">
               {grade.parts.map((part) => (
-                <li key={part.key}>
+                <li key={part.key} {...stableId("grade-part", part.key)}>
                   {`${PART_NAMES[part.key]} · `}
                   <span className="font-semibold text-ink">{ordinal(part.rank)}</span>
                   <span className="text-mute">{` of ${teams}`}</span>

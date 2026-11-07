@@ -26,11 +26,13 @@ MAX_TRACKED_ADDRESSES = 10_000
 
 
 class RateLimiter:
-    """Count the requests of each address in its current window."""
+    """Count the requests of each address in its current window. The window is one minute unless `window` says more."""
 
-    def __init__(self, limit: int, clock: Callable[[], float] = time.monotonic) -> None:
+    def __init__(self, limit: int, clock: Callable[[], float] = time.monotonic, window: int = WINDOW_SECONDS) -> None:
         self.limit = limit
         self.clock = clock
+        # The length of each window in seconds. The egg check counts in a window of one hour.
+        self.window = window
         # The start of the current window and the count in it, by address.
         self.windows: dict[str, tuple[float, int]] = {}
 
@@ -38,14 +40,14 @@ class RateLimiter:
         """Count one request. Return None when it is within the limit, else the seconds until the window ends."""
         now = self.clock()
         start, count = self.windows.get(address, (now, 0))
-        if now - start >= WINDOW_SECONDS:
+        if now - start >= self.window:
             start, count = now, 0
         if count >= self.limit:
-            return max(1, math.ceil(start + WINDOW_SECONDS - now))
+            return max(1, math.ceil(start + self.window - now))
         self.windows[address] = (start, count + 1)
         # Old windows go when the map grows, so a stream of new addresses cannot fill the memory.
         if len(self.windows) > MAX_TRACKED_ADDRESSES:
-            self.windows = {a: w for a, w in self.windows.items() if now - w[0] < WINDOW_SECONDS}
+            self.windows = {a: w for a, w in self.windows.items() if now - w[0] < self.window}
         return None
 
 

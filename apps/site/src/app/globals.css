@@ -491,3 +491,16 @@ html:not([data-hydrated]) [data-draw] {
         scroll-behavior: auto !important;
     }
 }
+
+/* The egg hunt reads a long press on each element with a stable id, so iOS opens no callout there. A link and an
+   image keep the callout, so a long press on them still opens the menu of the browser. Text selection stays on, so
+   a manager can select a word of a blurb. */
+[data-stable-id] {
+    -webkit-touch-callout: none;
+}
+[data-stable-id] a,
+[data-stable-id] img,
+a[data-stable-id],
+img[data-stable-id] {
+    -webkit-touch-callout: default;
+}

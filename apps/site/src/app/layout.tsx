@@ -7,6 +7,7 @@ import type { Viewport } from "next";
 import type { ReactNode } from "react";
 import { usageCode } from "@/lib/config";
 import { pageParts } from "@/generated/registry";
+import { stableId } from "@cpc/design/lib/stable-id";
 import { paintOf } from "@cpc/design/lib/theme";
 import { UsageScript } from "@cpc/design/shell/usage-script";
 import { fontVariables } from "./fonts/fonts";
@@ -35,6 +36,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <style>{"[data-reveal]{opacity:1!important;transform:none!important}"}</style>
         </noscript>
         {children}
+        {/* The empty space after the last chapter of every page. It is a target of the egg hunt on every page, so
+            it marks no egg. */}
+        <div aria-hidden="true" className="h-sp-6" {...stableId("page-end")} />
         {/* The part of each package that every page mounts, such as the egg hunt. A client without one mounts none. */}
         {pageParts.map((Part, index) => (
           <Part key={index} />

@@ -369,3 +369,109 @@ def test_the_undo_keeps_the_row_and_the_egg_goes_live_again(api, settings):
         rows = db.execute("SELECT egg_id, undone_at FROM claims").fetchall()
     assert [row[0] for row in rows] == [egg_id]
     assert rows[0][1] is not None
+
+
+# The test egg T2 of the acceptance tests: the clock window 11 PM to midnight in the timezone of the client.
+T2 = {**T1, "target": "award-top-score", "action": "hold1", "conditions": {"clock": "23:00-00:00"}, "letter": "A"}
+T2_CHECK = {"page": "/midseason/2026/", "target": "award-top-score", "action": "hold1", "conditions": {}}
+
+
+def test_a_clock_window_egg_matches_only_inside_the_window_in_the_timezone_of_the_client(api):
+    _drop(api, T2)
+    hunt = api.app.state.hunts["cpc"]
+    hunt.clock = lambda: datetime(2026, 11, 10, 22, 59, tzinfo=ET)
+    assert api.post(f"{BASE}/check", json=T2_CHECK).json() == {"match": False}
+    hunt.clock = lambda: datetime(2026, 11, 10, 23, 30, tzinfo=ET)
+    assert api.post(f"{BASE}/check", json=T2_CHECK).json()["letter"] == "A"
+    # 23:30 in Los Angeles is 2:30 in New York, so the window of the client holds on the clock of the client.
+    hunt.clock = lambda: datetime(2026, 11, 10, 23, 30, tzinfo=ZoneInfo("America/Los_Angeles"))
+    assert api.post(f"{BASE}/check", json=T2_CHECK).json() == {"match": False}
+    hunt.clock = lambda: datetime(2026, 11, 11, 0, 0, tzinfo=ET)
+    assert api.post(f"{BASE}/check", json=T2_CHECK).json() == {"match": False}
+
+
+def test_a_weekday_egg_matches_only_on_that_day_of_the_client(api):
+    _drop(api, {**T2, "conditions": {"weekday": "thu"}})
+    hunt = api.app.state.hunts["cpc"]
+    hunt.clock = lambda: datetime(2026, 11, 12, 1, 0, tzinfo=ET)
+    assert api.post(f"{BASE}/check", json=T2_CHECK).json()["match"] is True
+    hunt.clock = lambda: datetime(2026, 11, 13, 1, 0, tzinfo=ET)
+    assert api.post(f"{BASE}/check", json=T2_CHECK).json() == {"match": False}
+
+
+TEEHEE = 12
+# The test egg T3 of the acceptance tests: a long press of the sim champion trophy when the champion is Teehee.
+T3 = {"page": "/midseason/2026/", "target": "sim-trophy", "action": "hold1", "conditions": {"sim_champion": TEEHEE},
+      "letter": "D"}
+
+
+def test_a_sim_egg_matches_only_when_the_replay_shows_its_champion(api):
+    _drop(api, T3)
+    check = {"page": "/midseason/2026/", "target": "sim-trophy", "action": "hold1"}
+    assert api.post(f"{BASE}/check", json={**check, "conditions": {"sim_champion": LIL_FRIDGE}}).json() == {
+        "match": False}
+    assert api.post(f"{BASE}/check", json={**check, "conditions": {"sim_champion": TEEHEE}}).json()["letter"] == "D"
+
+
+def _check(api, **body):
+    return api.post(f"{BASE}/check", json={"page": "/midseason/2026/", "conditions": {}, **body}).json()
+
+
+def test_an_open_state_egg_matches_when_the_listener_sends_that_state_among_the_open_states(api):
+    _drop(api, {**T1, "target": "bench-3-9", "action": "tap2", "conditions": {"open": "show-all-bench"}})
+    check = {"target": "bench-3-9", "action": "tap2"}
+    assert _check(api, **check, conditions={"open": []}) == {"match": False}
+    assert _check(api, **check, conditions={"open": ["show-all-draft"]}) == {"match": False}
+    assert _check(api, **check, conditions={"open": ["show-all-draft", "show-all-bench"]})["match"] is True
+
+
+def test_a_tap_combo_egg_matches_only_the_double_tap_with_its_trail(api):
+    _drop(api, {**T1, "target": "award-top-score", "action": "tap2", "conditions": {"trail": ["heading-a", "heading-b"]}})
+    check = {"target": "award-top-score", "action": "tap2"}
+    assert _check(api, **check) == {"match": False}
+    assert _check(api, **check, trail=["heading-b", "heading-a"]) == {"match": False}
+    assert _check(api, **check, trail=["heading-a", "heading-b"])["match"] is True
+
+
+def test_a_selected_word_egg_matches_only_its_word_in_its_blurb(api):
+    _drop(api, {**T1, "target": "blurb-luck", "action": "select", "conditions": {"word": "lucky"}})
+    assert _check(api, target="blurb-luck", action="select", word="unlucky") == {"match": False}
+    assert _check(api, target="blurb-other", action="select", word="lucky") == {"match": False}
+    assert _check(api, target="blurb-luck", action="select", word="lucky")["match"] is True
+
+
+def test_the_trade_key_the_scroll_and_the_404_page_each_hold_as_a_condition(api):
+    trade = "3:4046,4881|12:6794"
+    _drop(api,
+          {**T1, "page": "/analyzer/", "target": "verdict-word", "action": "hold3", "conditions": {"trade": trade}},
+          {**T1, "target": "page-end", "action": "tap4", "conditions": {"scrolled_end": True}},
+          {**T1, "page": "/old-week/", "target": "not-found-hero", "action": "tap5", "conditions": {"not_found": True}})
+    assert _check(api, page="/analyzer/", target="verdict-word", action="hold3",
+                  conditions={"trade": "3:4046|12:6794"}) == {"match": False}
+    assert _check(api, page="/analyzer/", target="verdict-word", action="hold3",
+                  conditions={"trade": trade})["match"] is True
+    assert _check(api, target="page-end", action="tap4") == {"match": False}
+    assert _check(api, target="page-end", action="tap4", conditions={"scrolled_end": True})["match"] is True
+    assert _check(api, page="/old-week/", target="not-found-hero", action="tap5") == {"match": False}
+    assert _check(api, page="/old-week/", target="not-found-hero", action="tap5",
+                  conditions={"not_found": True})["match"] is True
+
+
+def test_the_check_has_its_own_limit_of_60_an_hour_and_the_other_routes_keep_theirs(api):
+    _drop(api, T1)
+    statuses = [api.post(f"{BASE}/check", json=CHECK).status_code for _ in range(61)]
+    assert statuses[:60] == [200] * 60
+    assert statuses[60] == 429
+    blocked = api.post(f"{BASE}/check", json=CHECK)
+    # The window is one hour, so the retry-after is close to one hour, and the site names it in minutes.
+    assert 3500 < int(blocked.headers["Retry-After"]) <= 3600
+    # The 60 checks spend nothing of the limit of 10 a minute of the other routes.
+    assert api.get("/clients/cpc/teams", params={"season": 2026}, headers=PASS).status_code == 200
+    assert api.get(f"{BASE}/board").status_code == 200
+
+
+def test_the_check_limit_counts_each_address_apart(api):
+    for _ in range(60):
+        api.post(f"{BASE}/check", json=CHECK, headers={"Fly-Client-IP": "10.0.0.1"})
+    assert api.post(f"{BASE}/check", json=CHECK, headers={"Fly-Client-IP": "10.0.0.1"}).status_code == 429
+    assert api.post(f"{BASE}/check", json=CHECK, headers={"Fly-Client-IP": "10.0.0.2"}).status_code == 200

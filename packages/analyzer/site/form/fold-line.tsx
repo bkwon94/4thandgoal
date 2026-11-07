@@ -7,6 +7,7 @@
 import { Avatar } from "@cpc/league/avatar";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
 import { Card } from "@cpc/design/parts/card";
+import { stableId } from "@cpc/design/lib/stable-id";
 import type { Team } from "../lib/api";
 
 type FoldLineProps = {
@@ -33,11 +34,17 @@ export function FoldLine({ asker, others, gives, gets, onEdit }: FoldLineProps) 
   return (
     <Card className="mt-sp-5 py-sp-2 pr-sp-2">
       <div role="group" aria-label="The trade" className="flex min-h-touch items-center gap-sp-3">
-        {asker && <Avatar src={asker.avatar ?? AVATAR_FALLBACK} className={FACE} />}
+        {asker && (
+          <span className="flex flex-none" {...stableId("fold-avatar", asker.roster_id)}>
+            <Avatar src={asker.avatar ?? AVATAR_FALLBACK} className={FACE} />
+          </span>
+        )}
         <span className="font-mono text-meta font-bold tracking-wide text-accent-ink uppercase">For</span>
         <span className="flex flex-none">
           {others.map((team, i) => (
-            <Avatar key={team.roster_id} src={team.avatar ?? AVATAR_FALLBACK} className={i === 0 ? FACE : `${FACE} -ml-sp-2`} />
+            <span key={team.roster_id} className={i === 0 ? "flex" : "-ml-sp-2 flex"} {...stableId("fold-avatar", team.roster_id)}>
+              <Avatar src={team.avatar ?? AVATAR_FALLBACK} className={FACE} />
+            </span>
           ))}
         </span>
         <span className="min-w-0 flex-1 text-meta leading-tight text-ink-2">

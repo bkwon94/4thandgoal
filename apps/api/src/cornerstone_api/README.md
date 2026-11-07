@@ -7,7 +7,7 @@
 - It mounts the analyzer routes of the `analyzer` package at `/clients/<slug>/`. The old paths with no client answer as `cpc`.
 - It mounts the eggs routes of the `eggs` package at `/clients/<slug>/eggs/` for each client of the package, with one SQLite file per client in `CORNERSTONE_EGGS_DIR`.
 - The refresh route that a daily cron pings.
-- The passphrase check of each client, from `CORNERSTONE_PASSPHRASE_<SLUG>`, the commissioner key check of each client of the eggs package, from `CORNERSTONE_COMMISSIONER_KEY_<SLUG>`, the rate limit of each address, the state of each client, and the settings from the environment.
+- The passphrase check of each client, from `CORNERSTONE_PASSPHRASE_<SLUG>`, the commissioner key check of each client of the eggs package, from `CORNERSTONE_COMMISSIONER_KEY_<SLUG>`, the rate limit of each address, the limit of the egg check of each address, the state of each client, and the settings from the environment.
 - The terms are in `GLOSSARY.md`.
 
 ## Ports

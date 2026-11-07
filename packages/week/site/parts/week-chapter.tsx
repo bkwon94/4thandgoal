@@ -5,6 +5,7 @@
 import type { ReactNode } from "react";
 import { DURATION, RISE_EASE } from "@cpc/design/lib/motion";
 import { Reveal } from "@cpc/design/parts/reveal";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 export function WeekChapter({
   id,
@@ -24,7 +25,7 @@ export function WeekChapter({
     <section id={id} aria-labelledby={heading}>
       <Reveal duration={DURATION.rise} ease={RISE_EASE} className="flex flex-col gap-sp-3">
         <div className="flex flex-wrap items-baseline justify-between gap-x-sp-3 gap-y-sp-1">
-          <h2 id={heading} className="m-0 text-stat leading-tight font-bold">
+          <h2 id={heading} className="m-0 text-stat leading-tight font-bold" {...stableId("heading", id)}>
             {title}
           </h2>
           {note !== undefined && (
