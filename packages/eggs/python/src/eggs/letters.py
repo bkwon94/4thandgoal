@@ -10,7 +10,8 @@ from eggs.store import Claim
 
 
 def drop_letters(words: Iterable[str], managers: Iterable[int], claims: Iterable[Claim], count: int) -> list[str]:
-    """The letters of the `count` eggs of one drop, in the order of the eggs.
+    """The letters of at most `count` eggs of one drop, in the order of the eggs. No letter repeats in one drop, so
+    with fewer letters to pick than `count`, the list is shorter than `count`.
 
     `words` are the egg words, `managers` the roster ids of the managers who hunt, and `claims` each claim that holds.
     """
@@ -33,8 +34,8 @@ def drop_letters(words: Iterable[str], managers: Iterable[int], claims: Iterable
     picks += [letter for letter in ranked if letter in guarded]
     # With every egg word won, no manager needs a letter, so the letters of the egg words keep the drop whole.
     picks = picks or sorted(set("".join(words)))
-    # A drop larger than the count of needed letters starts the order again, so each egg still gets a letter.
-    return [picks[index % len(picks)] for index in range(count)]
+    # No letter repeats within one drop, so a drop larger than the count of letters to pick gets fewer letters.
+    return picks[:count]
 
 
 def _needs(word: str, letters: Counter[str]) -> Counter[str]:

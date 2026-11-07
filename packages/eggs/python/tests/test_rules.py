@@ -26,3 +26,11 @@ def test_the_drop_gives_no_letter_to_a_word_that_has_a_winner():
     assert winner(claims, "EAGLES") == 3
     # G sits only in EAGLES, so with EAGLES won, no manager needs a G.
     assert "G" not in drop_letters(["CORNERSTONE", "LANSDALE", "EAGLES"], [3, 12], claims, 6)
+
+
+def test_the_drop_never_repeats_a_letter_and_gives_fewer_letters_when_too_few_are_left():
+    # EAGLES holds five letters, so a drop of six eggs gets five letters.
+    assert drop_letters(["EAGLES"], [3, 12], [], 6) == ["A", "E", "G", "L", "S"]
+    # With the word won, the fallback picks from the letters of the egg words, with no repeat too.
+    won = [_claim(index, letter, 3, "EAGLES") for index, letter in enumerate("EAGLES")]
+    assert drop_letters(["EAGLES"], [3, 12], won, 6) == ["A", "E", "G", "L", "S"]

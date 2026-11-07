@@ -106,6 +106,16 @@ def test_no_letter_repeats_in_one_drop(api):
     assert len(set(letters)) == 11
 
 
+def test_a_drop_larger_than_the_letters_to_pick_drops_fewer_eggs_and_repeats_no_letter(api):
+    # The three egg words hold 11 letters, so a drop of 12 eggs drops the first 11, each with its own letter.
+    response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": _spots(12)}, headers=COMMISSIONER)
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["dropped"] == 11
+    assert [egg["target"] for egg in body["eggs"]] == [f"test-{index}" for index in range(11)]
+    assert len({egg["letter"] for egg in body["eggs"]}) == 11
+
+
 @pytest.mark.parametrize("conditions", [
     {"clock": "11pm-midnight"}, {"clock": "25:00-26:00"}, {"clock": "23:00"}, {"clock": 2300},
     {"weekday": "thursday"}, {"weekday": "xyz"}, {"weekday": 3},

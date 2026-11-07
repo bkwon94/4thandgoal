@@ -237,13 +237,15 @@ class DropRequest(BaseModel):
 def drop(body: DropRequest, hunt: ClientHunt) -> dict:
     """Give each egg of the week its letter by the letter rule and make the eggs live.
 
-    A second drop of one week adds nothing and answers with the eggs there.
+    A second drop of one week adds nothing and answers with the eggs there. No letter repeats within one drop, so
+    with fewer letters to pick than eggs, only the first eggs drop, and "dropped" says how many.
     """
     before = len(hunt.store.eggs(body.week))
     managers = [roster_id for roster_id in hunt.rosters() if roster_id != hunt.values.commissioner]
     letters = drop_letters([each.word for each in hunt.values.words], managers, hunt.store.claims(), len(body.eggs))
     eggs = hunt.store.drop(body.week, [{**egg.model_dump(), "letter": letter}
-                                       for egg, letter in zip(body.eggs, letters, strict=True)], hunt.clock())
+                                       for egg, letter in zip(body.eggs[:len(letters)], letters, strict=True)],
+                           hunt.clock())
     return {
         "week": body.week,
         "dropped": len(eggs) - before,
