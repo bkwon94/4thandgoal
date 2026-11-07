@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-37, AT-50, and AT-51.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The text of the find card, the letter card, each end card, and the hero of the claim sheet shows with no box and no overlap of two lines.
 - [x] The hero of the claim sheet keeps its height when a team is picked and the sheet scrolls.
