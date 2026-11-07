@@ -33,11 +33,16 @@ def run_egg_drop(client: Client, week: int, egg_file: Path, http: httpx.Client, 
     # The status check is by hand, because the test client of the API raises its own error type, not the one of httpx.
     if response.status_code != 200:
         return f"WARNING: the egg drop of week {week} failed: HTTP {response.status_code} {response.text}. {retry}"
-    dropped = response.json()["dropped"]
+    answer = response.json()
+    # One line per egg, so the commissioner finds the id for "make egg-undo". It goes to the terminal only, never to a file.
+    lines = [f"Egg {egg['id']}  letter {egg['letter']}  {egg['page']}  {egg['target']}" for egg in answer["eggs"]]
+    dropped = answer["dropped"]
     if dropped == 0:
         # A second drop of one week adds nothing, so the eggs of the first drop stay.
-        return f"Week {week} already holds its eggs, so no eggs dropped."
-    return f"Dropped {dropped} eggs of week {week}."
+        head = f"Week {week} already holds its eggs, so no eggs dropped."
+    else:
+        head = f"Dropped {dropped} eggs of week {week}."
+    return "\n".join([head, *lines])
 
 
 def drop_from_env(client: Client, week: int, egg_file: Path) -> str:

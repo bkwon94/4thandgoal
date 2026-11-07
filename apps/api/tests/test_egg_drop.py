@@ -145,6 +145,10 @@ def _egg_file(tmp_path: Path, text: str = EGG_FILE) -> Path:
     return path
 
 
+def _egg_lines(eggs) -> list[str]:
+    return [f"Egg {egg.id}  letter {egg.letter}  {egg.page}  {egg.target}" for egg in eggs]
+
+
 def _board_left(api) -> int:
     return api.get(f"{BASE}/board").json()["counts"]["left"]
 
@@ -153,9 +157,9 @@ def test_the_drop_step_sends_only_the_confirmed_eggs_of_the_week_and_says_the_co
     client = cpc_client(at=settings.repo, models=VALUE_MODELS)
     before = _board_left(api)
     line = run_egg_drop(client, 8, _egg_file(tmp_path), api, KEY)
-    assert line == "Dropped 4 eggs of week 8."
-    assert _board_left(api) == before + 4
     eggs = api.app.state.hunts["cpc"].store.eggs(8)
+    assert line.splitlines() == ["Dropped 4 eggs of week 8.", *_egg_lines(eggs)]
+    assert _board_left(api) == before + 4
     assert [egg.target for egg in eggs] == ["test-0", "test-1", "test-2", "test-3"]
     assert all(egg.conditions == {"theme": "light"} for egg in eggs)
 
@@ -176,7 +180,7 @@ def test_the_drop_step_warns_when_the_api_is_down_and_a_retry_drops_the_eggs(api
         line = run_egg_drop(client, 8, path, down, KEY)
     assert line.startswith("WARNING: the egg drop of week 8 failed")
     assert "make egg-drop CLIENT=cpc WEEK=8" in line
-    assert run_egg_drop(client, 8, path, api, KEY) == "Dropped 4 eggs of week 8."
+    assert run_egg_drop(client, 8, path, api, KEY).startswith("Dropped 4 eggs of week 8.")
 
 
 def test_the_drop_step_warns_when_the_api_refuses_the_key(api, settings, tmp_path):
@@ -204,3 +208,13 @@ def test_the_egg_undo_and_the_egg_drop_default_to_the_same_live_api():
                          capture_output=True, text=True, check=True).stdout
     assert f'"{API_URL}/clients/cpc/eggs/undo"' in dry
     assert API_URL == "https://api.4thandgoal.app"
+
+
+def test_a_repeat_drop_prints_the_eggs_that_already_dropped(api, settings, tmp_path):
+    client = cpc_client(at=settings.repo, models=VALUE_MODELS)
+    path = _egg_file(tmp_path)
+    first = run_egg_drop(client, 8, path, api, KEY)
+    again = run_egg_drop(client, 8, path, api, KEY)
+    assert again.splitlines()[0] == "Week 8 already holds its eggs, so no eggs dropped."
+    assert again.splitlines()[1:] == first.splitlines()[1:]
+    assert len(again.splitlines()) == 5
