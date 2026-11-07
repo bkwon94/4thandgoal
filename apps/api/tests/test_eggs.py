@@ -69,12 +69,12 @@ def api(settings, fixture_raw_dir):
     return TestClient(create_app(settings, [client], sources={"cpc": sources}))
 
 
-def _drop(api, *eggs, week=9):
+def _drop(api, *eggs, week=9, at=NOW):
     """Put test eggs with a fixed letter in the store, so a check and a claim test know the letter of each egg.
 
     The drop route gives each egg its letter by the letter rule. tests/test_egg_drop.py tests the route.
     """
-    dropped = api.app.state.hunts["cpc"].store.drop(week, list(eggs), NOW)
+    dropped = api.app.state.hunts["cpc"].store.drop(week, list(eggs), at)
     return {"eggs": [{"id": egg.id, "letter": egg.letter} for egg in dropped]}
 
 
@@ -204,8 +204,7 @@ def test_the_board_names_the_week_the_time_and_the_count_of_the_last_drop(api):
     assert api.get(f"{BASE}/board").json()["last_drop"] is None
     _drop(api, T1, {**T1, "target": "luck-12", "letter": "A"})
     tuesday = datetime(2026, 10, 27, 9, 30, tzinfo=ET)
-    api.app.state.hunts["cpc"].clock = lambda: tuesday
-    _drop(api, *[_letter_egg(letter, f"luck-{index}") for index, letter in enumerate("ACDEGL")], week=10)
+    _drop(api, *[_letter_egg(letter, f"luck-{index}") for index, letter in enumerate("ACDEGL")], week=10, at=tuesday)
     assert api.get(f"{BASE}/board").json()["last_drop"] == {
         "week": 10, "count": 6, "dropped_at": tuesday.isoformat()}
 
