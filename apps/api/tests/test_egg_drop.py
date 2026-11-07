@@ -137,6 +137,22 @@ def test_the_drop_refuses_an_action_that_is_not_tap2_hold_or_select(api, action)
     assert api.app.state.hunts["cpc"].store.eggs() == []
 
 
+def test_the_drop_refuses_a_hold_on_a_blurb_and_drops_nothing(api):
+    # A long press on a blurb starts the selection of a word on Android, so a hold egg there can never send.
+    eggs = [{**_spots(1)[0], "target": "blurb-luck", "action": "hold"}]
+    response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": eggs}, headers=COMMISSIONER)
+    assert response.status_code == 422
+    assert "blurb" in response.text
+    assert api.app.state.hunts["cpc"].store.eggs() == []
+
+
+def test_the_drop_takes_a_double_tap_on_a_blurb(api):
+    eggs = [{**_spots(1)[0], "target": "blurb-luck", "action": "tap2"}]
+    response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": eggs}, headers=COMMISSIONER)
+    assert response.status_code == 200
+    assert [egg.target for egg in api.app.state.hunts["cpc"].store.eggs()] == ["blurb-luck"]
+
+
 @pytest.mark.parametrize("conditions", [
     {"trade": "3:4046|12:6794"}, {"trade_teams": [1]}, {"trade_teams": [1, 3, 5]}, {"trade_teams": [3, 3]},
     {"trade_teams": ["a", "b"]}, {"trade_teams": "1,3"}, {"not_found": False},

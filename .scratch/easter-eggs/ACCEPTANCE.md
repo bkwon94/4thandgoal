@@ -454,10 +454,18 @@ When: Tap the Luck cell of Lil Fridge 3 times, each tap within 400 ms of the one
 Then: The listener sends no check. The drop refuses the actions `tap3`, `tap5`, `hold1`, `hold3`, and `hold5`.
 Evidence: the test output with the checks sent, and the output of each refused drop.
 
+AT-56: A blurb takes a double-tap egg and refuses a hold egg
+App: both
+Stories: 2
+Given: A page with the listener on and a blurb with the stable id `blurb-luck`.
+When: Double-tap two places in the blurb. Then draft a spot with the action `hold` on the target `blurb-luck`, and drop an egg with the same spot.
+Then: The listener sends one check `tap2` with the target `blurb-luck` for each double-tap. The draft writes nothing and names the spot. The drop answers 422 and stores no egg. A `tap2` egg on `blurb-luck` drops.
+Evidence: the test output of the listener, the draft, and the drop.
+
 ## Trace
 
 Story 1: AT-1, AT-51
-Story 2: AT-1, AT-26, AT-27, AT-28, AT-29, AT-52, AT-55
+Story 2: AT-1, AT-26, AT-27, AT-28, AT-29, AT-52, AT-55, AT-56
 Story 3: AT-2
 Story 4: AT-4
 Story 5: AT-54
@@ -523,3 +531,4 @@ Out of scope "A riddle, an answer box, or any typed answer": AT-48
 - 2026-11-06: AT-41 names the day of the drop, because the banner stays up all week and "6 new eggs" read as eggs of that day. Brian approved.
 - 2026-11-07: AT-47 tests that nothing of the hunt shows before the first drop, because the hunt turns on at the first drop (Brian chose the automatic flag). Brian approved.
 - 2026-11-07: Brian tested the hunt by hand and changed the catalog (decision tickets 01 and 10, revised 2026-11-07). T1, AT-1, AT-26, AT-30, and AT-47 use a double-tap, because the actions `tap3` to `tap5` are gone. AT-27 tests the one action `hold` of 2 seconds or more, and no check for a press of 1.5 seconds. AT-52 tests the hold of a touch press on Android Chrome, which fires `contextmenu`. AT-53 tests a 404 egg on any missing URL. AT-54 tests a two-team analyzer egg and covers story 5. AT-55 tests that a burst of 3 or more taps sends nothing. Brian decided each change. He reviews the new test text in the PR.
+- 2026-11-07: Brian decided that a hold egg never goes on a blurb, because on Android a long press on text selects a word. A blurb may take a double-tap egg. AT-56 tests the double-tap on a blurb and the refusal of a hold on a blurb by the draft and the drop. Brian reviews the new test text in the PR.

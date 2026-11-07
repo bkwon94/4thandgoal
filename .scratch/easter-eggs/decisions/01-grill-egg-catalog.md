@@ -56,3 +56,4 @@ Brian tested the hunt by hand and changed the catalog. The text above stays as t
 - Holds: one action `hold`. A press of 2 seconds or more counts, with no upper limit. The holds of 1, 3, and 5 seconds are gone. A press of 1 to 2 seconds sends nothing.
 - The 404 page: an egg with `not_found = true` matches on any missing URL, not on one typed path. Its page is `*404`.
 - The analyzer: an egg names two teams, and the draft picks them at random. Any graded trade between exactly those two teams matches, in either direction, with any players. The action stays a double-tap on the verdict word. The idea "any trade that the analyzer grades F" stays out of scope.
+- Blurbs (2026-11-07): a hold egg never goes on a blurb, because on Android a long press on text selects a word. A blurb may take a double-tap egg. The blurb is one target, so a double-tap anywhere in it counts. The draft and the drop refuse a hold on a blurb.

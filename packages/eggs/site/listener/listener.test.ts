@@ -64,6 +64,20 @@ describe("listenForEggs", () => {
     ]);
   });
 
+  it("sends one tap2 check with the id of the blurb for a double-tap anywhere in a blurb", () => {
+    // A blurb is one target, so a double-tap on any word of it finds its egg. A blurb takes no hold egg.
+    const blurb = cell("blurb-luck");
+    tap(blurb);
+    tap(blurb, TAP_GAP_MS + 1);
+    const word = document.createElement("em");
+    word.textContent = "luckiest";
+    blurb.append(" The ", word, " won.");
+    tap(word);
+    tap(word, TAP_GAP_MS + 1);
+    const check = { page: "/midseason/2026/", target: "blurb-luck", action: "tap2", conditions: { theme: "light" } };
+    expect(sent).toEqual([check, check]);
+  });
+
   it("sends nothing for a burst of 3 or more fast taps, so a spam of taps finds no double-tap egg", () => {
     tap(cell("luck-3"));
     tap(cell("luck-3"));

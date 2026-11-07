@@ -9,9 +9,9 @@ from datetime import datetime, tzinfo
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
-from eggs.conditions import check_action, check_conditions, conditions_hold, egg_page
+from eggs.conditions import check_action, check_conditions, check_spot, conditions_hold, egg_page
 from eggs.letters import drop_letters
 from eggs.rules import letters_of, refusal, winner
 from eggs.store import AlreadyClaimed, Claim, Egg, EggStore
@@ -225,6 +225,12 @@ class DropEgg(BaseModel):
         # An action that the listener never sends answers 422 at the drop, so no egg hides where nobody can find it.
         check_action(action)
         return action
+
+    @model_validator(mode="after")
+    def _spot(self) -> "DropEgg":
+        # A hold on a blurb answers 422 at the drop, because a long press on a blurb selects a word on Android.
+        check_spot(self.target, self.action)
+        return self
 
     @field_validator("conditions")
     @classmethod

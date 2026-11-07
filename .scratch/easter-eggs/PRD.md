@@ -144,6 +144,8 @@ The rules of ticket 10, with the shape of each action:
 
 The actions of an egg are `tap2`, `hold`, and `select`. The drop refuses any other action.
 
+A hold egg never goes on a blurb (Brian, 2026-11-07): on Android a long press on text selects a word, so the hold never sends. A blurb may take a `tap2` egg, and a double-tap anywhere in the blurb counts. The draft and the drop refuse a `hold` on a `blurb-*` target.
+
 - The stable id of an element derives from the data that it renders, such as the chapter, the roster, and the row. Every element of each class of target in the catalog gets a stable id on every page, with an egg or not. So the bundle holds thousands of candidates, and no id marks an egg.
 - The state of the conditions is the theme, the open states, the sim outcome, the two teams of the analyzer trade, the scroll to the end, and the 404 page. The API checks the clock window in the timezone of the client.
 - An analyzer egg names two roster ids as `trade_teams`. The draft picks the two teams at random. Any graded trade between exactly those two teams matches, in either direction, with any players. The listener derives the two roster ids from the trade key on the root of the result.

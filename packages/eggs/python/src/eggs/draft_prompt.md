@@ -21,8 +21,9 @@ Rules:
 6. Give each spot a reason of one or two sentences: why the spot is hard and fair.
 7. Write no hint and no riddle.
 8. Use only the actions "tap2", "hold", and "select". "tap2" is a double-tap. "hold" is a press of 2 seconds or more.
-9. For a 404 egg, set the page to "*404" and the condition "not_found" to true. The egg matches on any missing URL.
-10. For an analyzer egg, pick two different teams at random. Set "trade_teams" to their two roster ids, such as [1, 3]. Any graded trade between those two teams matches.
+9. Never put a "hold" on a blurb, a target whose id starts with "blurb-". On Android a long press on text selects a word, so a hold there never sends. A blurb may take a "tap2": the blurb is one target, so a double-tap anywhere in it counts.
+10. For a 404 egg, set the page to "*404" and the condition "not_found" to true. The egg matches on any missing URL.
+11. For an analyzer egg, pick two different teams at random. Set "trade_teams" to their two roster ids, such as [1, 3]. Any graded trade between those two teams matches.
 
 Answer with one JSON list and nothing else. Each item has these keys:
 

@@ -7,7 +7,7 @@ import re
 from collections.abc import Callable
 from pathlib import Path
 
-from eggs.conditions import check_action, check_conditions, egg_page
+from eggs.conditions import check_action, check_conditions, check_spot, egg_page
 from eggs.eggfile import Spot, append_spots, read_spots
 
 # The prompt of the agent. It names the files to read, so it holds no spot.
@@ -76,6 +76,7 @@ def _problems(spots: list[Spot], dropped: list[Spot], size: int) -> list[str]:
     for spot in spots:
         try:
             check_action(spot.action)
+            check_spot(spot.target, spot.action)
             check_conditions(spot.conditions)
         except ValueError as err:
             problems.append(f"The spot {spot.target} on {spot.page} is not valid: {err}")

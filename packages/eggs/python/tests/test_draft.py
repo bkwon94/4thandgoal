@@ -81,6 +81,24 @@ def test_a_draft_with_an_old_action_or_a_bad_condition_writes_nothing(tmp_path, 
     assert [spot for spot in read_spots(path) if spot.week == 8] == []
 
 
+def test_a_draft_with_a_hold_on_a_blurb_writes_nothing(tmp_path):
+    # A long press on a blurb starts the selection of a word on Android, so a hold egg there can never send.
+    path = _file(tmp_path)
+    spots = _six()
+    spots[2] = {**spots[2], "target": "blurb-luck", "action": "hold"}
+    with pytest.raises(DraftError, match="blurb-luck"):
+        draft_week(path, 8, lambda prompt: _answer(spots), prompt="the prompt")
+    assert [spot for spot in read_spots(path) if spot.week == 8] == []
+
+
+def test_a_draft_with_a_double_tap_on_a_blurb_writes_the_spot(tmp_path):
+    path = _file(tmp_path)
+    spots = _six()
+    spots[2] = {**spots[2], "target": "blurb-luck", "action": "tap2"}
+    draft_week(path, 8, lambda prompt: _answer(spots), prompt="the prompt")
+    assert "blurb-luck" in [spot.target for spot in read_spots(path) if spot.week == 8]
+
+
 def test_a_second_draft_of_one_week_writes_nothing(tmp_path):
     path = _file(tmp_path)
     draft_week(path, 8, lambda prompt: _answer(_six()), prompt="the prompt")

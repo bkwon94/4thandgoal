@@ -13,6 +13,8 @@ WEEKDAY = "weekday"
 TRAIL = "trail"
 # The actions that the listener sends: a double-tap, a press of 2 seconds or more, and a selected word.
 ACTIONS = ("tap2", "hold", "select")
+# The prefix of the target of a blurb, as the listener reads it. A blurb takes no hold egg (check_spot).
+BLURB_PREFIX = "blurb-"
 # The two teams of an analyzer trade, as two roster ids. Any trade between exactly those two teams matches, in either
 # direction and with any players. The listener derives them from the trade key on the root of the analyzer result.
 TRADE_TEAMS = "trade_teams"
@@ -52,6 +54,16 @@ def check_action(action: str) -> None:
     """Raise ValueError when the listener never sends the action, so the drop refuses an egg that nobody can find."""
     if action not in ACTIONS:
         raise ValueError(f"The action {action!r} is not one of {', '.join(ACTIONS)}.")
+
+
+def check_spot(target: str, action: str) -> None:
+    """Raise ValueError for a hold on a blurb, so the drop and the draft refuse an egg that nobody can find.
+
+    On Android a long press on text starts the selection of a word, so a blurb keeps its menu and a hold there never
+    sends. A blurb is one target, so a double-tap anywhere in it finds its egg.
+    """
+    if action == "hold" and target.startswith(BLURB_PREFIX):
+        raise ValueError(f"The target {target!r} is a blurb, and a blurb takes no hold. Use tap2 or select.")
 
 
 def check_conditions(conditions: dict[str, Any]) -> None:
