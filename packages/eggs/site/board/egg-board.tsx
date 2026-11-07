@@ -109,7 +109,8 @@ function BoardHero({ board }: { board: Board }) {
           {counts.map(([label, value, color]) => (
             <div key={label} className="flex flex-col-reverse items-start gap-sp-1">
               <dt className={cn(LABEL, "plate text-on-dark-muted")}>{label}</dt>
-              <dd className={cn("plate m-0 font-mono text-headline leading-hero font-bold tracking-grade tabular-nums", color)}>{value}</dd>
+              {/* The leading stays at 1, so the plate of the count holds its whole glyph box and axe can read it. */}
+              <dd className={cn("plate m-0 font-mono text-headline leading-none font-bold tracking-grade tabular-nums", color)}>{value}</dd>
             </div>
           ))}
         </dl>

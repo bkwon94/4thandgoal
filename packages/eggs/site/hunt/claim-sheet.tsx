@@ -99,7 +99,8 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
         <span aria-hidden="true" className="h-1 w-9 self-center rounded-pill bg-rule tablet:hidden" />
 
         <div className="egg-up hero-texture relative flex items-center gap-sp-3 overflow-hidden rounded-tile border border-rule-dark bg-band p-sp-3 text-on-dark">
-          <span className="flex size-15 flex-none items-center justify-center rounded-letter bg-accent font-mono text-headline font-bold text-on-dark shadow-orb">
+          {/* The tile is taller than the glyph box of the letter at the largest headline size, 46px, so axe can read its contrast. */}
+          <span className="flex size-16 flex-none items-center justify-center rounded-letter bg-accent font-mono text-headline font-bold text-on-dark shadow-orb">
             {letter}
           </span>
           <div className="flex min-w-0 flex-col gap-sp-1">
@@ -107,7 +108,9 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
               <span className="plate">Claim</span>
             </Label>
             <h2 id="egg-claim-title" className="text-stat leading-tight font-bold">
-              <span className="plate box-decoration-clone">Put {letter} in an egg word.</span>
+              {/* One text node gives one box per line. axe reads the page under the sheet at each box, so fewer boxes
+                  keep its contrast read clear. */}
+              <span className="plate box-decoration-clone">{`Put ${letter} in an egg word.`}</span>
             </h2>
           </div>
           <button
@@ -211,7 +214,12 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
           >
             {label}
           </button>
-          <span className="text-center text-meta text-mute">The first claim wins the egg. The commissioner can undo a claim.</span>
+          {/* Each sentence is its own line. A line that wraps sits over two parts of the page under the sheet, and axe then
+              cannot read its contrast. */}
+          <span className="text-center text-meta text-mute">
+            <span className="block">The first claim wins the egg.</span>
+            <span className="block">The commissioner can undo a claim.</span>
+          </span>
         </div>
       </div>
     </div>
