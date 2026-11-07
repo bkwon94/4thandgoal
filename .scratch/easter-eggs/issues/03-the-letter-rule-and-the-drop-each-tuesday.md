@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-15, AT-16, AT-20, AT-21
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The drop route gives each egg the letter that the most managers need over the open egg words, ties in the order of the alphabet, and no repeat in one egg drop. An empty store drops A, C, D, E, G, and L.
 - [x] The drop route never gives the last letter that the leader of an egg word needs.
