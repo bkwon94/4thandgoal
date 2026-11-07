@@ -8,6 +8,7 @@ from pathlib import Path
 import httpx
 
 from eggs.eggfile import confirmed_spots
+from eggs.keys import commissioner_key_env
 from league.client import Client
 
 
@@ -41,11 +42,6 @@ def run_egg_drop(client: Client, week: int, egg_file: Path, http: httpx.Client, 
 
 # The API of the site, the same default as the site config.
 API_URL = "https://api.4thandgoal.app"
-
-
-def commissioner_key_env(slug: str) -> str:
-    """The env value of the commissioner key of the client `slug`, as the API app reads it."""
-    return f"CORNERSTONE_COMMISSIONER_KEY_{slug.upper()}"
 
 
 def drop_from_env(client: Client, week: int, egg_file: Path) -> str:
