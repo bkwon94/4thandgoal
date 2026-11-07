@@ -1,5 +1,5 @@
 ACCEPTANCE.md: 731ddfbf5628bc927c0261b8f8869bc7dbe43b6c
-EVIDENCE.md: dde9ced2b52e195622284d041d56f3744a1e1e34
+EVIDENCE.md: 8e0d354e475d2db5456148fd49d2f162e9909735
 
 Test verdicts
 AT-1: PASS
@@ -51,5 +51,5 @@ AT-46: PASS
 AT-47: PASS
 AT-48: PASS
 AT-49: PASS
-AT-50: BLOCKED The Observation says the scans had "no axe incomplete item", but floor-eggs.txt and site-A1.txt show only counts of failures and no count of axe incomplete items.
+AT-50: PASS
 AT-51: PASS
