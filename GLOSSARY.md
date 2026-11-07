@@ -1078,23 +1078,27 @@ One thing that we deploy, such as the site or the API. An app holds only the bui
 _Avoid_: Shell (that is the frame of a page), service, project
 
 **Egg**:
-One hidden reward spot in the build of one week. A manager who finds it sees its egg code. Only a client that takes the eggs package has eggs.
+One hidden spot on the site that holds one letter. The first manager who finds it and claims it gets the letter, and then the egg is gone. Only a client that takes the eggs package has eggs.
 _Avoid_: Easter egg (in the code), secret, prize, hidden spot
 
 **Egg kind**:
-One entry of the catalog of eggs. Each week the pipeline makes up to three eggs from the egg kinds.
-_Avoid_: Egg type, template, egg idea
+The way to find one egg: a target, such as an avatar or a cell of a table, an action, such as three taps or a long press, and an optional condition, such as light mode.
+_Avoid_: Egg type, template, egg idea, trigger
 
-**Egg code**:
-The secret word that an egg shows when a manager finds it. The site holds only a hash of it, never the word.
-_Avoid_: Claim code, password, key, claim (that is a research claim)
+**Egg word**:
+One of the three words that a manager fills with letters: CORNERSTONE, LANSDALE, and EAGLES. A claimed letter counts toward one egg word only. The first manager to fill an egg word wins its prize.
+_Avoid_: Word (alone), target word, puzzle
+
+**Egg drop**:
+The batch of six eggs that goes live each Tuesday with the weekly publish. The API gives each egg of a drop its letter by a public rule.
+_Avoid_: Release, batch, spawn
 
 **Hunter**:
-The first manager who sends Brian the egg code of one egg. Each egg has at most one hunter.
+The manager who claims one egg. Each egg has at most one hunter.
 _Avoid_: Finder (that is the trade code of the analyzer), winner, claimer
 
 **Egg board**:
-The page of the site that lists each egg of the season: its week, its egg kind, its hunter, and its reward. An egg with no hunter shows as still hidden.
+The page of the site that shows the letters of each manager in each egg word, the count of eggs left, and the winner of each egg word. It never shows where an egg hides.
 _Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board score)
 
 ## Workflow

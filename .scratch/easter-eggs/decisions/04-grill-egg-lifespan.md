@@ -6,7 +6,7 @@ Map: `.scratch/easter-eggs/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ Decide if an egg ends when the next week build publishes, or stays hidden until 
 
 ## Decision
 
-None yet.
+Brian decided in the grill of 2026-11-06. An egg stays live from its egg drop until its first claim, then it is gone. It does not end with its week. Each egg is single use, and its letter goes to one manager.

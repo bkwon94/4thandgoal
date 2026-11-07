@@ -4,13 +4,13 @@ Map: `.scratch/easter-eggs/MAP.md`.
 
 **Kind:** grill
 
-**Blocked by:** 01
+**Blocked by:** none
 
 **Status:** open
 
 ## Question
 
-Decide the rewards, such as FAAB, a draft pick swap, a title on the site, or a cash share. Decide if a reward depends on the difficulty of the egg. Decide if the site shows the reward before the hunt. The league rules may limit a reward that changes the game.
+Brian set three prizes in the grill of 2026-11-06: a gift card for each egg word, CORNERSTONE the biggest, LANSDALE the second, and EAGLES the third. Decide the value of each gift card. Decide if the egg board shows the prizes.
 
 ## Decision
 

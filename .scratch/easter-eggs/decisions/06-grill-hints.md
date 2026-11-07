@@ -10,7 +10,7 @@ Map: `.scratch/easter-eggs/MAP.md`.
 
 ## Question
 
-Decide if the site says how many eggs hide in each week, and on which page. Decide if each egg gives a hint, and if a hint gets easier over time. With no word on the site, nobody hunts. With too much, the hard eggs get easy.
+Decide if the site tells managers that eggs exist and that six drop each Tuesday. Decide if an egg gives a hint, such as the page it is on, and if a hint gets easier over time. With no word on the site, nobody hunts. With too much, the eggs get easy, and an AI gets help.
 
 ## Decision
 
