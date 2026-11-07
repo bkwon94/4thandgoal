@@ -127,7 +127,6 @@ describe("EggHunt", () => {
     // LANSDALE and EAGLES hold no C, so each is faded and disabled, with no ghost tile.
     for (const word of ["LANSDALE", "EAGLES"]) {
       expect(wordCard(word).disabled).toBe(true);
-      expect(wordCard(word).className).toContain("opacity-40");
       expect(wordCard(word).textContent).toContain("No open C in this word.");
       expect(wordCard(word).querySelector(".egg-ghost")).toBeNull();
     }
@@ -135,6 +134,21 @@ describe("EggHunt", () => {
     fireEvent.click(cornerstone);
     expect(cornerstone.getAttribute("aria-pressed")).toBe("true");
     expect(cornerstone.textContent).toContain("1/11");
+  });
+
+  it("fades a disabled egg word card with the muted tokens, and leaves an enabled card plain", async () => {
+    await openSheet(fakeEggsApi(MATCH));
+    fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
+    const faded = ["border-dashed", "bg-raised", "text-mute"];
+    const enabled = wordCard("CORNERSTONE");
+    for (const name of faded) expect(enabled.classList.contains(name)).toBe(false);
+    for (const word of ["LANSDALE", "EAGLES"]) {
+      const card = wordCard(word);
+      for (const name of faded) expect(card.classList.contains(name)).toBe(true);
+      // The entry motion of a card ends at opacity 1 and holds it, so an opacity class gives no fade.
+      expect(card.classList.contains("egg-up")).toBe(true);
+      expect([...card.classList].filter((name) => name.startsWith("opacity-"))).toEqual([]);
+    }
   });
 
   it("fades and disables an egg word where the manager holds the letter already", async () => {

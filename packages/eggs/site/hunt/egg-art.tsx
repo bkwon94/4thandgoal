@@ -88,6 +88,7 @@ export function SlotRow({
   tone,
   picked = false,
   landing = false,
+  faded = false,
 }: {
   slots: Slot[];
   tone: "page" | "hero";
@@ -95,6 +96,8 @@ export function SlotRow({
   picked?: boolean;
   // True on the hero card of a claim, so the red tile drops into its slot with a burst.
   landing?: boolean;
+  // True on the card of a word with no open slot, so a held tile takes the muted fill of the faded card.
+  faded?: boolean;
 }) {
   // The sizes fit the 11 tiles of CORNERSTONE in one row on a 375px phone.
   const size = tone === "page" ? "size-6.5 text-row" : "h-7.5 w-6 text-body";
@@ -107,7 +110,7 @@ export function SlotRow({
         );
         if (slot.kind === "held") {
           return (
-            <span key={index} className={cn(box, tone === "page" ? "bg-ink text-page" : "bg-on-dark text-band")}>
+            <span key={index} className={cn(box, tone === "page" ? (faded ? "bg-mute text-page" : "bg-ink text-page") : "bg-on-dark text-band")}>
               {slot.letter}
             </span>
           );

@@ -219,7 +219,9 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
 }
 
 /* The card of one egg word: its gift card, the count of the manager, the tiles, the bar, and the leader.
-   A ghost tile pulses where the letter lands. A word with no open slot for the letter is faded and disabled. */
+   A ghost tile pulses where the letter lands. A word with no open slot for the letter is faded and disabled.
+   The fade is the muted tokens on the raised surface, not an opacity: the entry motion of the card holds its opacity
+   at 1, and the muted text keeps the contrast floor of 4.5 to 1 on the raised surface. */
 function WordCard({
   word,
   team,
@@ -255,24 +257,25 @@ function WordCard({
       className={cn(
         "press egg-up flex w-full flex-col gap-sp-3 rounded-card border p-sp-4 text-left text-ink",
         `egg-up-${Math.min(step, 4)}`,
-        picked ? "border-accent bg-raised ring-4 ring-accent-glow" : "border-rule bg-card",
-        !open && "opacity-40",
+        picked ? "border-accent bg-raised ring-4 ring-accent-glow" : open ? "border-rule bg-card" : "border-dashed border-rule bg-raised text-mute",
       )}
     >
       <span className="flex w-full items-baseline gap-sp-2">
         <span id={id} className="text-body font-bold tracking-wide">
           {word.word}
         </span>
-        <span className="rounded-pill border border-rule px-sp-2 font-mono text-meta font-bold text-ink-2">${word.prize}</span>
-        <span className={cn("ml-auto font-mono text-row font-bold", picked ? "text-accent-ink" : "text-ink")}>
+        <span className={cn("rounded-pill border border-rule px-sp-2 font-mono text-meta font-bold", open ? "text-ink-2" : "text-mute")}>
+          ${word.prize}
+        </span>
+        <span className={cn("ml-auto font-mono text-row font-bold", picked ? "text-accent-ink" : open ? "text-ink" : "text-mute")}>
           {shown}
           <span className="text-mute">/{word.word.length}</span>
         </span>
       </span>
-      <SlotRow slots={slotsOf(word.word, held, open ? letter : null)} tone="page" picked={picked} />
+      <SlotRow slots={slotsOf(word.word, held, open ? letter : null)} tone="page" picked={picked} faded={!open} />
       <span className="block h-1 w-full overflow-hidden rounded-pill bg-raised">
         <span
-          className={cn("block h-full rounded-pill transition-[width] duration-500 ease-rise", picked ? "bg-accent" : "bg-ink")}
+          className={cn("block h-full rounded-pill transition-[width] duration-500 ease-rise", picked ? "bg-accent" : open ? "bg-ink" : "bg-mute")}
           style={{ width: `${Math.round((shown / word.word.length) * 100)}%` }}
         />
       </span>
