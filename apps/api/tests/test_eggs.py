@@ -297,6 +297,22 @@ def test_two_claims_of_one_egg_at_once_give_one_winner(api):
     assert api.get(f"{BASE}/board").json()["counts"]["found"] == 1
 
 
+def test_the_check_issues_its_token_under_the_lock_that_the_claim_holds(api, monkeypatch):
+    # The issue rebuilds the map of live tokens that a claim pops, so a check and a claim must never run it at once.
+    _drop(api, T1)
+    hunt = api.app.state.hunts["cpc"]
+    issue = hunt.tokens.issue
+    held = []
+
+    def watched(egg_id, now):
+        held.append(hunt.lock.locked())
+        return issue(egg_id, now)
+
+    monkeypatch.setattr(hunt.tokens, "issue", watched)
+    assert _claim(api, _token(api)).status_code == 200
+    assert held == [True]
+
+
 def test_the_claim_of_the_commissioner_is_refused_and_the_egg_stays_live(api):
     _drop(api, T1)
     token = _token(api)

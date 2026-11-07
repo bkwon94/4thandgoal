@@ -88,7 +88,9 @@ def check(body: CheckRequest, hunt: ClientHunt) -> dict:
             continue
         if hunt.store.claim_of(egg.id) is not None:
             return {"match": True, "claimed": True, "letter": egg.letter}
-        token = hunt.tokens.issue(egg.id, now)
+        # The issue rebuilds the map of live tokens that a claim pops, so it runs under the lock too.
+        with hunt.lock:
+            token = hunt.tokens.issue(egg.id, now)
         return {"match": True, "claimed": False, "letter": egg.letter, "token": token}
     return {"match": False}
 
