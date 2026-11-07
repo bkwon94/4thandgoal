@@ -18,19 +18,21 @@ A CPC-only `eggs` package hides very hard eggs across the site, six more each Tu
 - The API keeps the eggs and the claims in one SQLite file on its Fly volume. The rest derives from the two tables. Grill of 2026-11-06, ticket 01.
 - An egg drop of six eggs goes live each Tuesday from week 9 to week 17, 54 eggs in all. Brian places the six spots. The API gives each spot a letter: the letters that the most managers still need, but never the last letter that a leader needs. Grill of 2026-11-06, ticket 01.
 - An egg kind is a target, an action, and an optional condition. The catalog has 5 actions, 8 conditions, and about 30 targets, most on old week pages and the midseason page. `decisions/01-grill-egg-catalog.md`.
+- A loud launch with no hints: the egg board is in the menu, and a banner each Tuesday gives the count of new eggs and of eggs left. `decisions/06-grill-hints.md`.
 - No agent finalizes an egg without Brian. An agent may propose spots, and Brian confirms each one first. Brian, 2026-11-06. `decisions/09-grill-weekly-drop.md`.
 - Claude Design, the Design artifact type built into Claude, makes the design of the claim form, the egg, the animations, and the egg board. Brian, 2026-11-06. `decisions/08-prototype-claim-form.md`.
 - The prizes are three gift cards: $50 for CORNERSTONE, $30 for LANSDALE, and $20 for EAGLES. The egg board shows each value. `decisions/03-grill-rewards.md`.
 
 ## NOT YET SPECIFIED
 
-- Does the site tell managers about the eggs or the egg drop, and does it give hints? `decisions/06-grill-hints.md`.
 - What does the claim form look and feel like, with the status of each egg word to help the choice? `decisions/08-prototype-claim-form.md`.
 - How does Brian place six spots each week, and how does the egg drop join the Tuesday publish? `decisions/09-grill-weekly-drop.md`.
 - Does the egg check use an open route or the analyzer passphrase, how many calls may one browser make, and how does the listener leave a normal tap alone? `decisions/10-grill-listener-limits.md`.
 - Where does the egg board sit in the menu, and what does it show? `decisions/07-spec-egg-board.md`.
 
 ## OUT OF SCOPE
+
+- A hint of any kind: a page, a spot, or a riddle. Brian wants the eggs found with no help.
 
 - Eggs for `norcal` or any other client. The feature is for CPC only, so only `clients/cpc/client.toml` takes the package.
 - A login, a PIN, or Google sign-in. Brian trusts the league, and an account is a barrier to the fun.
