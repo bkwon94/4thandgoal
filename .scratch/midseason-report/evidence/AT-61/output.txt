@@ -1,0 +1,16 @@
+$ jq '[paths | map(tostring) | select(any(.[]; . == "roast"))]' clients/cpc/build/2026/midseason.json   # every path with a roast key
+[]
+$ jq -r '.opener, (.acts[].chapters[] | ., (.chapters // [])[]) | "\(.key // "opener"): \(keys | join(","))"' clients/cpc/build/2026/midseason.json
+opener: blurb,facts,title
+state: blurb,facts,key,title
+arcs: blurb,facts,key,title
+luck: blurb,facts,key,title
+top10: blurb,facts,key,title
+draft: blurb,facts,key,title
+waivers: blurb,facts,key,title
+trades: blurb,facts,key,title
+records: blurb,facts,key,title
+quick-hits: chapters,key,title
+lineup: blurb,facts,key,title
+injuries: blurb,facts,key,title
+look-ahead: blurb,facts,key,title

@@ -41,7 +41,7 @@ from analyzer.routes import result_document
 from analyzer.rubric import BAND_REASONS, LETTERS, ProposedTrade, grade, verdict
 from analyzer.tunables import GRADES_PER_MINUTE
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
-from cornerstone_api.settings import Settings
+from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE, Settings
 from cornerstone_api.sources import Sources
 from league.client import ClientError
 from league.live import RefreshResult
@@ -995,8 +995,6 @@ def test_a_fallback_is_not_cached_so_a_repeat_tries_claude_again(settings, sourc
 
 
 def test_past_the_rate_limit_the_route_is_429_with_a_retry_after(settings, sources):
-    from cornerstone_api.app import RATE_LIMIT_PER_MINUTE
-
     client = _client(settings, sources)
     for _ in range(RATE_LIMIT_PER_MINUTE):
         # Wrong guesses count too, so a stranger cannot loop through passphrases.
@@ -1007,9 +1005,29 @@ def test_past_the_rate_limit_the_route_is_429_with_a_retry_after(settings, sourc
     assert client.get("/health").status_code == 200
 
 
-def test_each_fly_client_address_has_its_own_rate_limit(settings, sources):
-    from cornerstone_api.app import RATE_LIMIT_PER_MINUTE
+@pytest.mark.parametrize("value, count", [("25", 25), (None, RATE_LIMIT_PER_MINUTE)])
+def test_the_rate_limit_comes_from_the_environment_or_the_default(settings, sources, monkeypatch, value, count):
+    monkeypatch.setenv("CORNERSTONE_PASSPHRASE_CPC", PASSPHRASE)
+    if value is None:
+        monkeypatch.delenv("CORNERSTONE_RATE_LIMIT_PER_MINUTE", raising=False)
+    else:
+        monkeypatch.setenv("CORNERSTONE_RATE_LIMIT_PER_MINUTE", value)
+    from_env = Settings.from_env(["cpc"])
+    client = _client(dataclasses.replace(settings, rate_limit_per_minute=from_env.rate_limit_per_minute), sources)
+    for _ in range(count):
+        assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
+    assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 429
 
+
+@pytest.mark.parametrize("value", ["0", "-5", "2.5", "ten"])
+def test_a_bad_rate_limit_value_stops_the_start_and_names_the_env_value(monkeypatch, value):
+    monkeypatch.setenv("CORNERSTONE_PASSPHRASE_CPC", PASSPHRASE)
+    monkeypatch.setenv("CORNERSTONE_RATE_LIMIT_PER_MINUTE", value)
+    with pytest.raises(RuntimeError, match="CORNERSTONE_RATE_LIMIT_PER_MINUTE"):
+        Settings.from_env(["cpc"])
+
+
+def test_each_fly_client_address_has_its_own_rate_limit(settings, sources):
     client = _client(settings, sources)
     # Behind the Fly proxy every request shares one peer address, so the header tells the clients apart.
     for _ in range(RATE_LIMIT_PER_MINUTE):

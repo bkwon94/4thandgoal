@@ -1,16 +1,27 @@
 """
-Checks one Test verdicts comment against the acceptance tests of a feature, and prints a rule report.
-The verdict workflow runs it on each spec PR. It uses only the Python standard library. See ADR 0020.
+Checks the VERDICTS.md of the Judge and the Test verdicts comments of Brian against ACCEPTANCE.md, and prints a rule report.
+The verdict workflow runs it on each spec PR. It uses only the Python standard library. See ADR 0026.
+
+VERDICTS.md names the git blob SHA of each file that the Judge read, then holds one line per test:
+
+    ACCEPTANCE.md: <blob SHA>
+    EVIDENCE.md: <blob SHA>
+
+    Test verdicts
+    AT-1: PASS
+    AT-2: FAIL <reason>
 """
 import argparse
+import hashlib
 import json
 import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import NamedTuple
 
-ADR = "docs/adr/0020-a-spec-pr-merges-on-the-verdicts-of-its-acceptance-tests.md"
-RULE = "every acceptance test has a PASS Test verdict from Brian"
+ADR = "docs/adr/0026-the-judge-gives-the-test-verdicts.md"
+RULE = "every acceptance test has a PASS Test verdict from the Judge and no FAIL from Brian"
 HEADING = "test verdicts"
 # Each PR comment that a cpc skill writes ends with this line. The gh CLI of the agent and Brian share one
 # account, so the marker is the only sign that an agent wrote a comment. A marked comment never counts.
@@ -21,6 +32,10 @@ WORDS = {"PASS", "FAIL", "BLOCKED"}
 TEST_LINE = re.compile(r"^AT-(\d+):\s*(.*)$")
 # A verdict line may sit in a list: "- AT-1: PASS the note".
 VERDICT_LINE = re.compile(r"^\s*(?:[-*]\s+)?AT-(\d+)\s*:\s*(\S*)\s*(.*)$")
+# A SHA line of VERDICTS.md names one file that the Judge read: "EVIDENCE.md: <blob SHA>".
+SHA_LINE = re.compile(r"^\s*(?:[-*]\s+)?`?(ACCEPTANCE\.md|EVIDENCE\.md)`?\s*:\s*`?([0-9a-f]{40})`?\s*$")
+# Each file that the Judge read, and the rule id of a stale copy.
+READ_FILES = {"ACCEPTANCE.md": "verdict/stale-acceptance", "EVIDENCE.md": "verdict/stale-evidence"}
 
 
 @dataclass(frozen=True)
@@ -93,56 +108,117 @@ def has_heading(text: str) -> bool:
     return any(_is_heading(line) for line in text.splitlines())
 
 
-def judge(acceptance: str, comment: str | None, acceptance_path: str = "ACCEPTANCE.md",
-          comment_path: str = "the Test verdicts comment") -> Result:
-    """Judge one comment. It fails if a live test has no line, a line is not PASS, or a line names no live test."""
-    tests = acceptance_tests(acceptance)
-    result = Result(tests=list(tests))
-    lines = (comment or "").splitlines()
+def verdict_lines(text: str | None) -> list[tuple[int, re.Match]] | None:
+    """The line number and the match of each verdict line under the heading, or None if the text has no heading."""
+    lines = (text or "").splitlines()
     start = next((i for i, line in enumerate(lines) if _is_heading(line)), None)
     if start is None:
+        return None
+    numbered = enumerate(lines[start + 1:], start=start + 2)
+    return [(number, match) for number, line in numbered if (match := VERDICT_LINE.match(line))]
+
+
+def check_verdicts(acceptance: str, verdicts: str | None, acceptance_path: str = "ACCEPTANCE.md",
+          verdicts_path: str = "VERDICTS.md") -> Result:
+    """Check the lines of VERDICTS.md. It fails if a live test has no line, a line is not PASS, or a line names no
+    live test."""
+    tests = acceptance_tests(acceptance)
+    result = Result(tests=list(tests))
+    lines = verdict_lines(verdicts)
+    if lines is None:
         result.offenses.append(Offense(
-            comment_path, 0, "verdict/no-comment", "No comment by Brian holds the line `Test verdicts`.",
-            "Brian writes one PR comment: the line `Test verdicts`, then one line `AT-<n>: PASS|FAIL|BLOCKED` per test.",
+            verdicts_path, 0, "verdict/no-verdicts", "No VERDICTS.md of the Judge holds the line `Test verdicts`.",
+            "run the Judge. It writes the line `Test verdicts`, then one line `AT-<n>: PASS|FAIL|BLOCKED` per test.",
         ))
         return result
 
     seen: dict[str, int] = {}
-    for number, line in enumerate(lines[start + 1:], start=start + 2):
-        match = VERDICT_LINE.match(line)
-        if not match:
-            continue
+    for number, match in lines:
         test_id, word = f"AT-{match.group(1)}", match.group(2).upper()
         if test_id in seen:
             result.offenses.append(Offense(
-                comment_path, number, "verdict/duplicate", f"{test_id} has two lines.",
-                f"keep one line for {test_id} in a new comment.",
+                verdicts_path, number, "verdict/duplicate", f"{test_id} has two lines.",
+                f"keep one line for {test_id}.",
             ))
             continue
         seen[test_id] = number
         if test_id not in tests:
             result.offenses.append(Offense(
-                comment_path, number, "verdict/unknown", f"{test_id} is not a live test of the acceptance file.",
+                verdicts_path, number, "verdict/unknown", f"{test_id} is not a live test of the acceptance file.",
                 f"remove the line, or fix the id to a test of `{acceptance_path}`.",
             ))
         elif word not in WORDS:
             result.offenses.append(Offense(
-                comment_path, number, "verdict/not-pass", f"{test_id} has `{match.group(2)}`, not PASS, FAIL, or BLOCKED.",
+                verdicts_path, number, "verdict/not-pass", f"{test_id} has `{match.group(2)}`, not PASS, FAIL, or BLOCKED.",
                 f"write `{test_id}: PASS`, `FAIL`, or `BLOCKED`, then an optional note.",
             ))
         elif word != "PASS":
             result.offenses.append(Offense(
-                comment_path, number, "verdict/not-pass", f"{test_id} has {word}.",
-                "fix the work with `cpc:review`, then Brian writes a new comment with PASS.",
+                verdicts_path, number, "verdict/not-pass", f"{test_id} has {word}.",
+                "fix the work, record its evidence again, and run a fresh Judge on the test.",
             ))
 
     for test_id, number in tests.items():
         if test_id not in seen:
             result.offenses.append(Offense(
-                acceptance_path, number, "verdict/missing", f"{test_id} has no line in the Test verdicts comment.",
-                f"Brian adds the line `{test_id}: PASS|FAIL|BLOCKED` to a new Test verdicts comment.",
+                acceptance_path, number, "verdict/missing", f"{test_id} has no line in the verdicts of the Judge.",
+                f"run a fresh Judge on {test_id}.",
             ))
     return result
+
+
+def blob_sha(data: bytes) -> str:
+    """The git blob SHA of the bytes, as `git hash-object` gives it and the GitHub contents API returns it."""
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+class NamedSha(NamedTuple):
+    """The first line of VERDICTS.md that names a file, and the blob SHA on that line."""
+    line: int
+    sha: str
+
+
+def stale_files(verdicts: str, head_shas: dict[str, str | None], verdicts_path: str = "VERDICTS.md") -> list[Offense]:
+    """An offense for each file whose blob SHA at the PR head is not the SHA that VERDICTS.md names.
+
+    An old verdict must never cover new work, so a change to a file after the Judge read it fails the check.
+    """
+    named = {}
+    for number, line in enumerate(verdicts.splitlines(), start=1):
+        match = SHA_LINE.match(line)
+        if match:
+            named.setdefault(match.group(1), NamedSha(number, match.group(2)))
+    offenses = []
+    fix = "record the evidence again, and run a fresh Judge on each test."
+    for name, rule_id in READ_FILES.items():
+        head = head_shas.get(name)
+        if name not in named:
+            offenses.append(Offense(verdicts_path, 0, rule_id, f"VERDICTS.md names no blob SHA of {name}.", fix))
+        elif head is None:
+            offenses.append(Offense(verdicts_path, named[name].line, rule_id, f"The PR head has no {name}.", fix))
+        elif head != named[name].sha:
+            offenses.append(Offense(
+                verdicts_path, named[name].line, rule_id,
+                f"{name} is stale: it changed after the Judge read it ({named[name].sha[:7]} to {head[:7]}).", fix,
+            ))
+    return offenses
+
+
+def brian_fails(comment: str | None, comment_path: str = "the Test verdicts comment") -> list[Offense]:
+    """An offense for each FAIL or BLOCKED line of the comment of Brian. A PASS line of Brian changes nothing.
+
+    Only the latest comment counts, so a newer comment with no FAIL for a test clears an older FAIL.
+    """
+    offenses = []
+    for number, match in verdict_lines(comment) or []:
+        if match.group(2).upper() in {"FAIL", "BLOCKED"}:
+            test_id, word = f"AT-{match.group(1)}", match.group(2).upper()
+            offenses.append(Offense(
+                comment_path, number, "verdict/brian-fail", f"{test_id} has {word} from Brian.",
+                f"fix {test_id} with `cpc:review`. Brian clears it with a newer Test verdicts comment with no FAIL "
+                f"for {test_id}.",
+            ))
+    return offenses
 
 
 def latest_verdict_comment(comments: list[dict], owner: str) -> dict | None:
@@ -159,30 +235,57 @@ def latest_verdict_comment(comments: list[dict], owner: str) -> dict | None:
     return picked
 
 
+def _is_file(path: str | None) -> bool:
+    """Whether the path is set and names a file."""
+    return bool(path) and Path(path).is_file()
+
+
+def _read(path: str | None) -> str | None:
+    """The text of a file, or None if the PR has no such file."""
+    return Path(path).read_text() if _is_file(path) else None
+
+
+def _head_sha(given: str | None, path: str | None) -> str | None:
+    """The given blob SHA, or the SHA of the local file. An empty SHA or no file means the PR has no such file."""
+    if given is not None:
+        return given or None
+    return blob_sha(Path(path).read_bytes()) if _is_file(path) else None
+
+
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Check a Test verdicts comment against ACCEPTANCE.md.")
+    parser = argparse.ArgumentParser(description="Check VERDICTS.md and the comments of Brian against ACCEPTANCE.md.")
     parser.add_argument("acceptance", help="the path of ACCEPTANCE.md")
-    source = parser.add_mutually_exclusive_group(required=True)
-    source.add_argument("--comment", help="a file with the text of one comment")
+    parser.add_argument("--verdicts", required=True, help="the path of VERDICTS.md, which the Judge writes")
+    parser.add_argument("--evidence", help="the path of EVIDENCE.md")
+    # verdict.yml gives the blob SHAs at the PR head from the contents API. Without them, the script computes the
+    # SHA of each local file.
+    parser.add_argument("--acceptance-sha", help="the blob SHA of ACCEPTANCE.md at the PR head")
+    parser.add_argument("--evidence-sha", help="the blob SHA of EVIDENCE.md at the PR head, or empty if it has none")
+    source = parser.add_mutually_exclusive_group()
+    source.add_argument("--comment", help="a file with the text of one comment of Brian")
     source.add_argument("--comments", help="a JSON file of the PR comments, as the GitHub API lists them")
     parser.add_argument("--owner", help="with --comments: the login whose comments count")
-    parser.add_argument("--name", help="the path of ACCEPTANCE.md to print in the report")
     parser.add_argument("--summary", help="write the one-line summary to this file")
     args = parser.parse_args(argv)
 
     acceptance = Path(args.acceptance).read_text()
-    name = args.name or args.acceptance
+    verdicts = _read(args.verdicts)
+    result = check_verdicts(acceptance, verdicts, acceptance_path=args.acceptance, verdicts_path=args.verdicts)
+    if verdicts is not None:
+        head_shas = {
+            "ACCEPTANCE.md": _head_sha(args.acceptance_sha, args.acceptance),
+            "EVIDENCE.md": _head_sha(args.evidence_sha, args.evidence),
+        }
+        result.offenses.extend(stale_files(verdicts, head_shas, args.verdicts))
+
     if args.comments:
         if not args.owner:
             parser.error("--comments needs --owner")
         picked = latest_verdict_comment(json.loads(Path(args.comments).read_text()), args.owner)
-        comment = picked["body"] if picked else None
-        label = f"comment {picked['id']}" if picked else "the PR comments"
-    else:
-        comment = Path(args.comment).read_text()
-        label = args.comment
-
-    result = judge(acceptance, comment, acceptance_path=name, comment_path=label)
+        if picked:
+            result.offenses.extend(brian_fails(picked["body"], f"comment {picked['id']}"))
+    elif args.comment:
+        result.offenses.extend(brian_fails(Path(args.comment).read_text(), args.comment))
     print(result.report())
     if args.summary:
         Path(args.summary).write_text(result.summary() + "\n")

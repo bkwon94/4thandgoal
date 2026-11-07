@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 from conftest import save_chart_read
-from cpc import cli_root
+from cpc import cli_root, cpc_client
 
 
 def _no_nflverse(season, week, player_ids, players):
@@ -691,6 +691,45 @@ def test_the_check_client_command_names_an_unknown_key_and_the_file(tmp_path, ca
     assert cli.main(["check-client", str(path.parent)]) == 2
     out = capsys.readouterr().out
     assert "finderr" in out and str(path) in out
+
+
+def test_the_check_client_command_names_sim_for_a_client_with_midseason_and_no_sim(tmp_path, capsys):
+    # AT-48, on a copy of the CPC file, so the real file never changes.
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    path = tmp_path / "clients" / "cpc" / "client.toml"
+    path.write_text(path.read_text(encoding="utf-8").replace('"midseason", "sim"]', '"midseason"]', 1))
+    assert cli.main(["check-client", str(path.parent)]) == 2
+    out = capsys.readouterr().out
+    assert "The midseason package needs the sim package. Add sim to the package list." in out
+
+
+def test_the_midseason_command_writes_the_report_to_the_build_folder(tmp_path, monkeypatch, capsys):
+    from fakes import FakeWriter
+    from test_midseason import CLEAN_BUILD, CPC_PROVIDER, copy_cpc_week_8
+
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    copy_cpc_week_8(cpc_client(root=tmp_path))
+    monkeypatch.chdir(tmp_path)
+
+    args = ["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]
+    assert cli.main(args, writer=FakeWriter(list(CLEAN_BUILD)), provider=CPC_PROVIDER) == 0
+    out = tmp_path / "clients" / "cpc" / "build" / "2026" / "midseason.json"
+    assert str(out) in capsys.readouterr().out
+    assert json.loads(out.read_text(encoding="utf-8"))["week"] == 8
+    assert not (tmp_path / "clients" / "cpc" / "published").exists()
+
+
+def test_the_midseason_command_with_no_saved_week_exits_plainly(tmp_path, monkeypatch, capsys):
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]) == 2
+    assert "Run make build CLIENT=cpc WEEK=8 first." in capsys.readouterr().out
 
 
 def test_the_settings_command_prints_the_derived_sizes(tmp_path, monkeypatch, capsys):

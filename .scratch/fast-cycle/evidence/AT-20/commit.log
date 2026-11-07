@@ -1,0 +1,252 @@
+$ git commit --no-edit   # step 3: commit the merge with the hook
+make check-fast..........................................................Failed
+- hook id: check-fast
+- exit code: 2
+
+  ==> scripts: check-fast
+  ......................................
+  ----------------------------------------------------------------------
+  Ran 38 tests in 0.236s
+
+  OK
+  ==> site: check-fast
+
+  > cpcfantasyfootball-site@0.1.0 check:fast /private/tmp/claude-503/replay-at19/apps/site
+  > CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && pnpm test
+
+
+  > cpcfantasyfootball-site@0.1.0 typecheck /private/tmp/claude-503/replay-at19/apps/site
+  > next typegen && tsc --noEmit
+
+  Generating route types...
+  ✓ Types generated successfully
+
+  > cpcfantasyfootball-site@0.1.0 test /private/tmp/claude-503/replay-at19/apps/site
+  > vitest run
+
+
+   RUN  v5.0.5 /private/tmp/claude-503/replay-at19/apps/site
+
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+  Not implemented: Window's scrollTo() method
+
+   Test Files  69 passed (69)
+        Tests  693 passed (693)
+     Start at  12:32:27
+     Duration  12.80s (tests 44%, environment 39%, import 15%, transform 2%)
+
+  Environment  jsdom was created 69 times · 38.48s total, 39% of tracked time
+               create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+               learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+  ==> pipeline: check-fast
+  uv run --exact --package cornerstone ruff check src tests
+  Installed 10 packages in 6ms
+  F401 [*] `cornerstone.season_sim.week_sim` imported but unused
+    --> src/cornerstone/pipeline.py:18:36
+     |
+  17 | from cornerstone.render import render_week
+  18 | from cornerstone.season_sim import week_sim
+     |                                    ^^^^^^^^
+  19 | from cornerstone.sheet import (
+  20 |     build_bundle,
+     |
+  help: Remove unused import: `cornerstone.season_sim.week_sim`
+     |
+  17 | from cornerstone.render import render_week
+     - from cornerstone.season_sim import week_sim
+  18 | from cornerstone.sheet import (
+     |
+
+  F401 [*] `sim.published.sim_file` imported but unused
+    --> src/cornerstone/pipeline.py:95:27
+     |
+  93 | from midseason.values import MidseasonValues
+  94 | from rankings.published import render_rankings
+  95 | from sim.published import sim_file, write_sim
+     |                           ^^^^^^^^
+  96 | from waiver.board import waiver_board
+  97 | from waiver.price import bid_history
+     |
+  help: Remove unused import
+     |
+  94 | from rankings.published import render_rankings
+     - from sim.published import sim_file, write_sim
+  95 | from waiver.board import waiver_board
+     |
+
+  F401 [*] `sim.published.write_sim` imported but unused
+    --> src/cornerstone/pipeline.py:95:37
+     |
+  93 | from midseason.values import MidseasonValues
+  94 | from rankings.published import render_rankings
+  95 | from sim.published import sim_file, write_sim
+     |                                     ^^^^^^^^^
+  96 | from waiver.board import waiver_board
+  97 | from waiver.price import bid_history
+     |
+  help: Remove unused import
+     |
+  94 | from rankings.published import render_rankings
+     - from sim.published import sim_file, write_sim
+  95 | from waiver.board import waiver_board
+     |
+
+  F821 Undefined name `odds`
+     --> src/cornerstone/pipeline.py:728:61
+      |
+  726 |     names = {rid: team.name for rid, team in bundle.data.teams.items()}
+  727 |     median_game = client.settings.median_game
+  728 |     state = league_state(history, week, names, playoff_odds=odds, median_game=median_game)
+      |                                                             ^^^^
+  729 |     luck = schedule_luck(history, week, state, median_game=median_game)
+  730 |     arcs = team_arcs(history, week, state, {team.roster_id: team.schedule_luck for team in luck.teams},
+      |
+
+  Found 4 errors.
+  [*] 3 fixable with `--fix`.
+  make[1]: *** [lint] Error 1
+  make: *** [check-fast] Error 2
+commit exit=1

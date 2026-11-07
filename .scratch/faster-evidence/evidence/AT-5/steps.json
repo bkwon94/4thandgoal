@@ -1,0 +1,23 @@
+{
+  "route": "/",
+  "steps": [
+    {
+      "click": "summary:has-text(\"WK 08\")"
+    },
+    {
+      "shot": "before"
+    },
+    {
+      "click": "nav[aria-label=\"Weeks of the season\"] a[href=\"/2026/week-07/\"]"
+    },
+    {
+      "wait": "url"
+    },
+    {
+      "shot": "after-tap"
+    },
+    {
+      "url": true
+    }
+  ]
+}

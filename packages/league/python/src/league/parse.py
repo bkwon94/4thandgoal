@@ -36,8 +36,9 @@ def _avatar_url(user: RawUser) -> str | None:
 
 
 def team_name(user: RawUser) -> str:
-    """The team name the user set, else the display name."""
-    return (user.metadata.team_name if user.metadata else None) or user.display_name
+    """The team name the user set, else the display name, with no space around it. Sleeper keeps the spaces that a
+    manager types, and a trailing space shows in each fact that names the team."""
+    return ((user.metadata.team_name if user.metadata else None) or user.display_name).strip()
 
 
 def _teams(raw: RawWeek) -> dict[int, Team]:

@@ -1,0 +1,8 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="top10") | .facts.positions[] | select(.position=="QB" or .position=="DEF") | {position, top3: [.players[:3][] | {rank, name, points, manager, tag}]}' clients/cpc/build/2026/midseason.json
+{"position":"QB","top3":[{"rank":1,"name":"Josh Allen","points":189.32,"manager":"behold the lamb","tag":null},{"rank":2,"name":"Joe Burrow","points":174.6,"manager":"All You Need Is Love","tag":null},{"rank":3,"name":"Drake Maye","points":164.92,"manager":"Maye d'force B with U","tag":null}]}
+{"position":"DEF","top3":[{"rank":1,"name":"Pittsburgh Steelers","points":82.2,"manager":"Return of T Mac","tag":null},{"rank":2,"name":"Minnesota Vikings","points":80.3,"manager":"All You Need Is Love","tag":null},{"rank":3,"name":"Tampa Bay Buccaneers","points":77.75,"manager":null,"tag":"Free agent"}]}

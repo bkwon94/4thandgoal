@@ -1,0 +1,57 @@
+Stage start: 2026-11-06T13:08:43-0500, at head 0a70f1a3
+First push of fast-cycle: 2026-11-06 13:27:24 -0500
+
+== Run 1: make check, in the background (log tail)
+start 2026-11-06T13:08:43-0500
+==> scripts: check
+==> site: check
+  ✘  13 [rules] › e2e/evidence-rules.spec.ts:365:5 › the evidence server serves on its fixed port, so the API can allow its origin (48ms)
+    Error: listen EADDRINUSE: address already in use 127.0.0.1:4173
+ ELIFECYCLE  Command failed with exit code 1.
+make: *** [check] Error 1
+exit 2
+end 2026-11-06T13:10:37-0500
+
+== Port 4173 at 13:10, after run 1
+python3 56676 ... -m http.server 4173 --bind 127.0.0.1 --directory .claude/worktrees/midseason-preview/apps/site/out (started 13:10:24)
+
+== The members that run 1 did not reach, one at a time
+== check-pipeline start 13:11:52
+All checks passed!
+1578 passed in 55.60s
+1 passed, 1586 deselected in 2.66s
+== check-pipeline exit 0 end 13:12:54
+== check-api start 13:12:54
+All checks passed!
+163 passed in 15.19s
+== check-api exit 0 end 13:13:12
+== check-packages start 13:13:12
+All checks passed!
+17 passed in 0.83s
+All checks passed!
+12 passed in 1.21s
+All checks passed!
+10 passed in 0.13s
+All checks passed!
+3 passed in 0.01s
+All checks passed!
+9 passed in 0.08s
+All checks passed!
+63 passed, 1 deselected in 3.29s
+All checks passed!
+7 passed in 0.64s
+== check-packages exit 0 end 13:13:29
+
+== The site check again, after Brian stopped PID 56676
+start 2026-11-06T13:24:53-0500
+ Test Files  69 passed (69)
+      Tests  693 passed (693)
+  ✘  13 [rules] › e2e/evidence-rules.spec.ts:365:5 › the evidence server serves on its fixed port, so the API can allow its origin (48ms)
+    Error: listen EADDRINUSE: address already in use 127.0.0.1:4173
+  1 failed
+  21 passed (1.7m)
+ ELIFECYCLE  Command failed with exit code 1.
+ ELIFECYCLE  Command failed with exit code 1.
+exit 2
+end 2026-11-06T13:26:47-0500
+Port 4173 at 13:27: python3 69139 ... http.server 4173 ... midseason-preview/apps/site/out (started 13:18:55 by another Claude session)

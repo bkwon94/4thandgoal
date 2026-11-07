@@ -43,8 +43,11 @@ def _expected(row: dict[str, str], scoring: dict[str, float]) -> Decimal:
 
 
 def read_expected(path: Path, games: Path, season: int, week: int, scoring: dict[str, float],
-                  sleeper_of_gsis: dict[str, str]) -> ExpectedPoints | None:
+                  sleeper_of_gsis: dict[str, str], window: int | None = WINDOW_GAMES) -> ExpectedPoints | None:
     """The expected window of each player by Sleeper ID, through week `week` or week `week` - 1.
+
+    `window` is the count of last games each player keeps. None keeps every game of the season, as the players to
+    watch of the midseason report read the gap over the whole season.
 
     The file reads through week `week` when it holds every game of the last game day of the week, and through
     the week before when it does not. None when the schedules have no game of week `week`, because then the
@@ -66,7 +69,8 @@ def read_expected(path: Path, games: Path, season: int, week: int, scoring: dict
             week=int(row["week"]), game_id=row["game_id"], expected=r2(float(_expected(row, scoring)))))
     # The file lists the games of a player out of week order. The reader alone cuts the window to the last games.
     return ExpectedPoints(through_week=through, players={
-        pid: sorted(player, key=lambda g: g.week)[-WINDOW_GAMES:] for pid, player in sorted(played.items())})
+        pid: sorted(player, key=lambda g: g.week)[-window if window else None:]
+        for pid, player in sorted(played.items())})
 
 
 def window_gap(games: list[ExpectedGame], actual: dict[int, float]) -> float | None:

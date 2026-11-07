@@ -1,0 +1,21 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="draft") | .facts.draft_type' clients/cpc/build/2026/midseason.json
+"auction"
+
+$ jq -c '.acts[].chapters[] | select(.key=="draft") | .facts.steals[] | {kind: "steal", name, team, cost, cost_rank, points, points_rank, tag, line}' clients/cpc/build/2026/midseason.json
+{"kind":"steal","name":"Matthew Golden","team":"Bo Girds","cost":2,"cost_rank":44,"points":110.0,"points_rank":7,"tag":null,"line":null}
+{"kind":"steal","name":"Jalen Coker","team":"NFC Least","cost":1,"cost_rank":58,"points":64.9,"points_rank":24,"tag":null,"line":"the one that got away"}
+{"kind":"steal","name":"Stefon Diggs","team":"The Blue Tent","cost":1,"cost_rank":51,"points":68.7,"points_rank":23,"tag":null,"line":"the one that got away"}
+{"kind":"steal","name":"Aaron Jones","team":"All You Need Is Love","cost":1,"cost_rank":50,"points":70.3,"points_rank":22,"tag":null,"line":null}
+{"kind":"steal","name":"Tyler Allgeier","team":"Bo Girds","cost":2,"cost_rank":44,"points":73.6,"points_rank":20,"tag":null,"line":"the one that got away"}
+
+$ jq -c '.acts[].chapters[] | select(.key=="draft") | .facts.busts[] | {kind: "bust", name, team, cost, cost_rank, points, points_rank, tag, line}' clients/cpc/build/2026/midseason.json
+{"kind":"bust","name":"A.J. Brown","team":"Unsolicited Dak Picks","cost":39,"cost_rank":7,"points":13.6,"points_rank":60,"tag":"just bad","line":null}
+{"kind":"bust","name":"De'Von Achane","team":"The Blue Tent","cost":46,"cost_rank":10,"points":21.1,"points_rank":50,"tag":"just bad","line":null}
+{"kind":"bust","name":"Jadarian Price","team":"The Blue Tent","cost":20,"cost_rank":21,"points":16.7,"points_rank":53,"tag":"hurt","line":null}
+{"kind":"bust","name":"Saquon Barkley","team":"behold the lamb","cost":58,"cost_rank":3,"points":46.0,"points_rank":33,"tag":"hurt","line":null}
+{"kind":"bust","name":"Ladd McConkey","team":"Bo Girds","cost":29,"cost_rank":15,"points":43.1,"points_rank":45,"tag":"just bad","line":null}

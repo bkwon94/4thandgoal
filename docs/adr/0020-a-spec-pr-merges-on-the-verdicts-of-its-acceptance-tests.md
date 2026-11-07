@@ -5,6 +5,8 @@ agent had. A diff review by that human is slow, and it checks the code more than
 We decided that a spec pull request merges on the test verdicts of its acceptance tests, not on a
 review of the diff.
 
+Superseded by ADR 0026: the Judge, a subagent that did not build the work, now gives each test verdict, and Brian no longer posts one.
+
 ## The steps
 
 1. An agent runs `code-review` on the spec branch and fixes the findings.

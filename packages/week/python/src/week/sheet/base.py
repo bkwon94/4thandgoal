@@ -84,7 +84,7 @@ def check_week_is_buildable(week_target: int, last_scored: int, client: Client) 
 
 
 def projected_totals(
-    week: Week, client: Client, bye_weeks: dict[str, int] | None = None,
+    week: Week, client: Client, bye_weeks: dict[str, int] | None = None, through: int | None = None,
 ) -> dict[int, dict[int, float]]:
     """The projected total of each roster's best lineup in each week ahead, by roster ID and week.
 
@@ -97,10 +97,12 @@ def projected_totals(
     The weeks stop at the last regular week of `client`, because the file runs to the end of the NFL season for the
     waiver board.
     A playoff week in the totals would move the projected pace of the odds why.
+    `through` sets another last week, such as the last bracket week for the season sim.
     """
+    last = client.settings.last_regular_week if through is None else through
     totals: dict[int, dict[int, float]] = {rid: {} for rid in week.rosters}
     for w, projections in sorted(week.projections_ahead.items()):
-        if w > client.settings.last_regular_week:
+        if w > last:
             continue
         # The pool players with a projection above zero that week, best first, with the player id as the tie rule.
         pool = sorted(

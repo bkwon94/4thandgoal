@@ -1,0 +1,50 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[type=submit]"
+    },
+    {
+      "wait": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "button[aria-label=\"Pick Team Two\"]"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Teehee\")"
+    },
+    {
+      "click": "button:has-text(\"Add a player Your Team gets\")"
+    },
+    {
+      "wait": "ul[aria-label^=\"Players of\"]"
+    },
+    {
+      "shot": "sheet"
+    },
+    {
+      "click": "ul[aria-label^=\"Players of\"] button:has-text(\"Tee Higgins\")"
+    },
+    {
+      "click": "ul[aria-label^=\"Players of\"] button:has-text(\"Bhayshul Tuten\")"
+    },
+    {
+      "click": "button:has-text(\"Done\")"
+    },
+    {
+      "shot": "done"
+    }
+  ]
+}

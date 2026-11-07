@@ -1,0 +1,8 @@
+{
+  "route": "/2026/week-08/",
+  "steps": [
+    {
+      "click": "button[aria-expanded]:has-text(\"The Blue Tent\")"
+    }
+  ]
+}

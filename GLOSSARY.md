@@ -238,7 +238,8 @@ _Avoid_: angle, narrative, hook
 
 **Key starter**:
 A player a team started in at least 3 of its last 4 completed weeks, at QB, RB, WR, or TE. With fewer than 4
-played weeks, 2 of 3, then 2 of 2. The rule reads real starts, not the best lineup. A kicker or a defense is never one.
+played weeks, 2 of 3, then 2 of 2. The rule reads real starts, not the best lineup. A kicker or a defense is never one. The
+injury toll reads the last 4 weeks that the player could play: it skips his injured weeks and his byes.
 _Avoid_: star (that is a chart rank), stud, core player, regular
 
 **Bye line**:
@@ -914,6 +915,96 @@ _Avoid_: Context, week data, state
 One JSON file the render step writes under the build folder `clients/<slug>/build/` and publish copies into `clients/<slug>/published/`: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape, and the site reads it with one loader.
 _Avoid_: Snapshot, data file, output, artifact, feed, export
 
+### The midseason report
+
+**Midseason report**:
+The one page per season that recaps the season to date for one client: arcs, steals and busts, waiver pickups, trades, schedule luck, and the sim of the weeks left. Brian runs its build by hand for one week, and it does not rebuild each week.
+_Avoid_: Season recap, halftime report, mid-year review
+
+**Arc**:
+The shape of one team's season to date, found from the data, from a fixed set such as a turnaround or a collapse. An arc is about a team's season. A Storyline is about one next-week game.
+_Avoid_: Storyline (that is the reason a next-week game matters), narrative, story
+
+**Draft value**:
+A player's points to date against his draft cost in his league's own draft: dollars in an auction, pick number in a snake. It names a steal or a bust.
+_Avoid_: Value (alone), ADP, Trade value (that is the chart worth of a player)
+
+**All-play wins**:
+The sum of a team's weekly all-play win rates, a tie counted as half. It is the number of head-to-head wins that the team's scores earned with an average schedule. The report page labels it "Wins if you played everyone", because readers do not know the term.
+_Avoid_: Expected wins (Expected points is a player term), projected wins
+
+**Schedule luck**:
+A team's head-to-head wins minus its All-play wins, for weeks 1 to the report week. The median game stays out. Positive is lucky. It is a team measure, not the Lucky award or the Unlucky award of a player.
+_Avoid_: Luck (alone), overachiever (a prose word only), expected gap (that is a player term)
+
+**Schedule swap**:
+A team's record with another team's schedule and its own scores. In the week that the other team played it, the team plays the other team. A median game keeps its own result, so the real schedule gives the real record.
+_Avoid_: Schedule strength, what-if record
+
+**Roast setting**:
+The voice of a client's report prose: `off`, `warm`, `hot`, or `savage`. It sets the voice of the whole paragraph, not one sentence. Every level keeps to football and cites real facts.
+_Avoid_: Heat, roast level, tone
+
+**Quick hits**:
+The block at the end of Act II of the midseason report that holds lineup choices and the injury toll.
+_Avoid_: Odds and ends, misc, extras
+
+**Injury toll**:
+The starter games that a team lost to injury, by NFL week. It is a cost, not a chance. An absence is a run of NFL games with no
+snap for the player, and it is an injury when one of its weeks has an Out row or an out status. A bye neither counts
+nor ends it. Each game of the absence is a starter game when the player was a Key starter of the team at its start.
+The team keeps the loss if it drops or trades him while he is out, until he plays again. The "hurt" tag of a draft
+bust reads the same missed games.
+_Avoid_: Injury luck
+
+**Position top 10**:
+The 10 players with the most points at one position, weeks 1 to the report week, in the league's own scoring. Every NFL player counts, rostered or not. It is the league-wide list of the midseason report.
+_Avoid_: Top performers (that is a team's own starters on the manager page), Position leader (that is the top 3 of one week)
+
+**Opener**:
+The top of the midseason report: the title race, with the title odds of the leaders and of the record leader.
+_Avoid_: Hero (that is the top of a manager page), cover, banner
+
+**Act**:
+One of the three parts of the midseason report, each opened by a dark title page: How we got here, The moves, and What comes next.
+_Avoid_: Section, part
+
+**Spread rule**:
+Each team gets at least one and at most three headlines in the midseason report: a callout, an award, or an arc.
+_Avoid_: Fairness rule, balance
+
+**Headline**:
+One mention of a team as the subject of the midseason report: a callout, an award, or an arc. The opener and a table row are not headlines.
+_Avoid_: Mention, feature
+
+**Callout**:
+A headline that names the #1 team of a ranking in a chapter, such as the biggest steal of the draft. When the #1 team holds three headlines, the callout names the next team, and the table still shows every team.
+_Avoid_: Highlight, spotlight
+
+**Takeover**:
+The weeks when the home page shows the midseason report in place of its usual top, through the report week.
+_Avoid_: Banner, promo
+
+**Report tile**:
+The home tile with one big fact and a link to the midseason report. It stays after the takeover ends.
+_Avoid_: Card, teaser
+
+**Sim run**:
+One stored season of the sim, with every team's score for each week left. The replay plays one sim run per press.
+_Avoid_: Simulation, sample, scenario
+
+**Points over the line**:
+A player's points in one start minus that week's score at the line of his position: RB36, WR36, or TE24. It ranks the waiver pickups of the midseason report. K and DEF have no line, so they have none.
+_Avoid_: Points over replacement, VORP, value over replacement
+
+**Swung win**:
+A win of a team that the points of one of its starters decided: the team won, and that starter scored more than the margin.
+_Avoid_: Clutch win, game winner, difference maker
+
+**Trade result**:
+The midseason report's label for one past trade, from the net Points over the line of each side since the trade: Robbery, Clear win, Slight edge, Even, or Too soon.
+_Avoid_: Grade (that is the analyzer's letter for a proposed trade), hindsight grade, trade score
+
 ## Client language
 
 The terms of the structure that both apps share: the clients, the packages, and the apps.
@@ -1041,5 +1132,13 @@ A statement of behavior that a reader checks on the finished work, with evidence
 _Avoid_: Test case, QA step, check, criterion
 
 **Test verdict**:
-The word PASS, FAIL, or BLOCKED that Brian gives to one acceptance test. Only a test verdict counts toward a merge.
+The word PASS, FAIL, or BLOCKED that the Judge gives to one acceptance test. Only a test verdict counts toward a merge. A FAIL from Brian overrides it.
 _Avoid_: Verdict (alone; that is the answer of the analyzer), result, approval, sign-off, status
+
+**Judge**:
+The subagent that reads only the acceptance tests and their evidence, and gives each test its Test verdict. It did not build the work.
+_Avoid_: Grader, reviewer, checker, QA agent
+
+**Evidence**:
+The files and the observation that show what the finished work does for one acceptance test. It holds no Test verdict.
+_Avoid_: Proof, result, QA output

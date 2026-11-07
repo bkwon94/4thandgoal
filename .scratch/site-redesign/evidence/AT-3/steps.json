@@ -1,0 +1,13 @@
+{
+  "route": "/",
+  "widths": [
+    375
+  ],
+  "themes": [
+    "light"
+  ],
+  "clients": [
+    "cpc",
+    "norcal"
+  ]
+}

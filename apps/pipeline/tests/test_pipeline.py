@@ -129,6 +129,16 @@ def test_a_build_of_one_client_leaves_the_build_files_of_another_client_unchange
     assert {path: path.read_bytes() for path in cpc_page.parent.parent.rglob("*") if path.is_file()} == before
 
 
+def test_the_weekly_build_does_not_change_the_report_file(tmp_path, fixture_raw_dir, offline):
+    # AT-49: the midseason report is one edited moment per season, so the weekly build never rebuilds it.
+    repo = _repo(tmp_path, fixture_raw_dir)
+    report = build_dir(repo) / "2026" / "midseason.json"
+    report.parent.mkdir(parents=True)
+    report.write_text('{"schema_version": 1}', encoding="utf-8")
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
+    assert report.read_text(encoding="utf-8") == '{"schema_version": 1}'
+
+
 def test_an_old_verify_file_with_a_chart_flag_still_reads(tmp_path):
     path = tmp_path / "verify.json"
     path.write_text('{"build": {"started": "2026-10-20T11:58:00-04:00", "sources": {"history": true, "chart": true},'

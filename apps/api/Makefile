@@ -2,7 +2,7 @@
 # Run "make help" to list the targets.
 
 .DEFAULT_GOAL := help
-.PHONY: need-main help install test lint typecheck rules check check-fast api image deploy logs
+.PHONY: need-main help install test lint typecheck rules check check-fast api api-evidence image deploy logs
 
 # Each command runs in the env of this member only. --exact removes each package it does not list,
 # so an import of an unlisted package fails here as it fails in the deploy (decision 07).
@@ -16,8 +16,9 @@ help: ## List the targets
 install: ## Install the dependencies
 	uv sync --exact --package cpc-api
 
+# The tests share no files or data, so they run in parallel. A test that measures wall time is marked serial and runs alone. See .scratch/fast-cycle/decisions/09-research-parallel-pytest.md.
 test: ## Run the tests
-	$(RUN) pytest -q
+	$(RUN) pytest -q -n auto
 
 lint: ## Check the code style
 	$(RUN) ruff check src tests
@@ -43,6 +44,13 @@ PASSPHRASES = $(foreach slug,$(notdir $(wildcard $(ROOT)/clients/*)),CORNERSTONE
 
 api: ## Run the API on port 8080 with the test passphrase localtest for each client
 	$(PASSPHRASES) CORNERSTONE_REPO=$(ROOT) $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
+
+# Evidence runs only: an analyzer test of an evidence run makes many requests, and the default limit of 10 would
+# make it wait 61 s. The API stays real. Fly never sets the value, so production keeps 10.
+# The evidence runner serves the site at http://127.0.0.1:4173, EVIDENCE_ORIGIN of apps/site/e2e/evidence.ts. The API
+# answers only the origins it allows, so this target allows that one origin.
+api-evidence: ## Run the API like api, with a limit of 600 requests per minute, for evidence runs only
+	$(PASSPHRASES) CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:4173 CORNERSTONE_REPO=$(ROOT) $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
 
 image: ## Build the image of the API with the local Docker
 	docker build -f $(ROOT)/apps/api/Dockerfile -t cpcfantasy-api $(ROOT)

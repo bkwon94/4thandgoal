@@ -1,0 +1,89 @@
+$ git log --stat   # in the throwaway repo, branch throwaway
+commit 2803599f35cd533b851e435754c182b2c4eea6c2
+Author: cpc agent <agent@localhost>
+Date:   Fri Nov 6 13:16:10 2026 -0500
+
+    Record the Test verdicts of the Judge
+
+ .scratch/throwaway/VERDICTS.md | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit eddcd71670ce25d0fe17a361373a2392cbf8f7f9
+Author: cpc agent <agent@localhost>
+Date:   Fri Nov 6 13:15:06 2026 -0500
+
+    Record the evidence of throwaway again
+
+ .scratch/throwaway/EVIDENCE.md                 |  2 +-
+ .scratch/throwaway/evidence/AT-6/file-list.txt | 54 +++++++++++++++++---------
+ 2 files changed, 37 insertions(+), 19 deletions(-)
+
+commit ea0d32447c137e242275889d6d7c729fa0194567
+Author: cpc agent <agent@localhost>
+Date:   Fri Nov 6 13:15:06 2026 -0500
+
+    Record the Test verdicts of the Judge
+
+ .scratch/throwaway/VERDICTS.md | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+commit c8a19945f7c92336cec057b0dc9c39e505cd6427
+Author: cpc agent <agent@localhost>
+Date:   Fri Nov 6 13:13:00 2026 -0500
+
+    Record the evidence of throwaway
+
+ .scratch/throwaway/ACCEPTANCE.md                   | 158 +++++++++++++++++++++
+ .scratch/throwaway/EVIDENCE.md                     | 118 +++++++++++++++
+ .scratch/throwaway/evidence/AT-1/output.txt        |  55 +++++++
+ .scratch/throwaway/evidence/AT-1/steps-paths.txt   |  26 ++++
+ .scratch/throwaway/evidence/AT-10/output.txt       |  28 ++++
+ .scratch/throwaway/evidence/AT-10/steps.json       |   1 +
+ .scratch/throwaway/evidence/AT-11/output.txt       |  29 ++++
+ .scratch/throwaway/evidence/AT-12/diff.txt         | 117 +++++++++++++++
+ .scratch/throwaway/evidence/AT-13/diff.txt         |  13 ++
+ .scratch/throwaway/evidence/AT-14/review-diff.txt  |   1 +
+ .../throwaway/evidence/AT-14/worktree-after.txt    |  12 ++
+ .../throwaway/evidence/AT-14/worktree-before.txt   |  10 ++
+ .scratch/throwaway/evidence/AT-2/1280-dark.png     | Bin 0 -> 191028 bytes
+ .scratch/throwaway/evidence/AT-2/1280-light.png    | Bin 0 -> 191769 bytes
+ .scratch/throwaway/evidence/AT-2/steps.json        |   3 +
+ .scratch/throwaway/evidence/AT-3/375-dark.png      | Bin 0 -> 636715 bytes
+ .scratch/throwaway/evidence/AT-3/375-light.png     | Bin 0 -> 644771 bytes
+ .scratch/throwaway/evidence/AT-3/output.txt        |  14 ++
+ .scratch/throwaway/evidence/AT-3/steps.json        |   1 +
+ .scratch/throwaway/evidence/AT-4/cpc-1280-dark.png | Bin 0 -> 69355 bytes
+ .../throwaway/evidence/AT-4/cpc-1280-light.png     | Bin 0 -> 69247 bytes
+ .scratch/throwaway/evidence/AT-4/cpc-375-dark.png  | Bin 0 -> 43473 bytes
+ .scratch/throwaway/evidence/AT-4/cpc-375-light.png | Bin 0 -> 43751 bytes
+ .scratch/throwaway/evidence/AT-4/cpc-768-dark.png  | Bin 0 -> 59385 bytes
+ .scratch/throwaway/evidence/AT-4/cpc-768-light.png | Bin 0 -> 59737 bytes
+ .../throwaway/evidence/AT-4/norcal-1280-dark.png   | Bin 0 -> 68507 bytes
+ .../throwaway/evidence/AT-4/norcal-1280-light.png  | Bin 0 -> 69829 bytes
+ .../throwaway/evidence/AT-4/norcal-375-dark.png    | Bin 0 -> 46099 bytes
+ .../throwaway/evidence/AT-4/norcal-375-light.png   | Bin 0 -> 46706 bytes
+ .../throwaway/evidence/AT-4/norcal-768-dark.png    | Bin 0 -> 61521 bytes
+ .../throwaway/evidence/AT-4/norcal-768-light.png   | Bin 0 -> 63521 bytes
+ .scratch/throwaway/evidence/AT-4/steps.json        |   7 +
+ .../evidence/AT-5/after-tap-1280-dark.png          | Bin 0 -> 837646 bytes
+ .../throwaway/evidence/AT-5/before-1280-dark.png   | Bin 0 -> 195310 bytes
+ .scratch/throwaway/evidence/AT-5/file-list.txt     |  20 +++
+ .scratch/throwaway/evidence/AT-5/steps.json        |  23 +++
+ .scratch/throwaway/evidence/AT-5/url-1280-dark.txt |   1 +
+ .scratch/throwaway/evidence/AT-6/file-list.txt     |  18 +++
+ .scratch/throwaway/evidence/AT-6/steps.json        |  16 +++
+ .scratch/throwaway/evidence/AT-7/build-lines.txt   |   2 +
+ .scratch/throwaway/evidence/AT-7/cpc-1280-dark.png | Bin 0 -> 191028 bytes
+ .scratch/throwaway/evidence/AT-7/file-list.txt     |  14 ++
+ .../throwaway/evidence/AT-7/norcal-1280-dark.png   | Bin 0 -> 183349 bytes
+ .scratch/throwaway/evidence/AT-7/steps.json        |   7 +
+ .../evidence/AT-8/AT-24-result-1280-dark.png       | Bin 0 -> 284740 bytes
+ .scratch/throwaway/evidence/AT-8/AT-24-steps.json  |  68 +++++++++
+ .../throwaway/evidence/AT-8/AT-25-1280-dark.png    | Bin 0 -> 426396 bytes
+ .scratch/throwaway/evidence/AT-8/AT-25-steps.json  |  86 +++++++++++
+ .scratch/throwaway/evidence/AT-8/api.log           | 119 ++++++++++++++++
+ .scratch/throwaway/evidence/AT-8/grep-429.txt      |   7 +
+ .scratch/throwaway/evidence/AT-8/output-lines.txt  |   2 +
+ .scratch/throwaway/evidence/AT-9/api.log           |  16 +++
+ .scratch/throwaway/evidence/AT-9/output.txt        |  18 +++
+ 53 files changed, 1010 insertions(+)

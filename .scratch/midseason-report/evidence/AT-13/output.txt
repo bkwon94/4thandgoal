@@ -1,0 +1,34 @@
+$ (cd apps/pipeline && make midseason CLIENT=norcal WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client norcal --season 2026 --week 8
+clients/norcal/build/2026/midseason.json
+[172 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="draft") | .facts.draft_type' clients/norcal/build/2026/midseason.json
+"snake"
+
+$ jq -c '.acts[].chapters[] | select(.key=="draft") | .facts | (.steals[] | {kind: "steal", name, team, cost, cost_rank, points, tag, line}), (.busts[] | {kind: "bust", name, team, cost, cost_rank, points, tag, line})' clients/norcal/build/2026/midseason.json
+{"kind":"steal","name":"Tre Tucker","team":"Breece Mode","cost":139,"cost_rank":60,"points":99.8,"tag":null,"line":null}
+{"kind":"steal","name":"Denzel Boston","team":"puurdygood","cost":140,"cost_rank":61,"points":86.9,"tag":null,"line":null}
+{"kind":"steal","name":"Braelon Allen","team":"Davlionman","cost":145,"cost_rank":55,"points":99.6,"tag":null,"line":null}
+{"kind":"steal","name":"Matthew Golden","team":"Hock Tua 💦","cost":98,"cost_rank":44,"points":131.5,"tag":null,"line":null}
+{"kind":"steal","name":"Christian Watson","team":"kaiedmonds","cost":64,"cost_rank":30,"points":146.8,"tag":null,"line":null}
+{"kind":"bust","name":"A.J. Brown","team":"The Mean Machine","cost":17,"cost_rank":7,"points":19.1,"tag":"just bad","line":null}
+{"kind":"bust","name":"De'Von Achane","team":"VarsityBlue2","cost":14,"cost_rank":9,"points":24.6,"tag":"just bad","line":null}
+{"kind":"bust","name":"Marvin Harrison","team":"Davlionman","cost":49,"cost_rank":22,"points":33.5,"tag":"just bad","line":null}
+{"kind":"bust","name":"Ladd McConkey","team":"Bo Girds","cost":36,"cost_rank":16,"points":51.6,"tag":"just bad","line":null}
+{"kind":"bust","name":"Rashee Rice","team":"kaiedmonds","cost":33,"cost_rank":14,"points":56.3,"tag":"hurt","line":null}
+
+$ jq -c '.acts[].chapters[] | select(.key=="draft") | .blurb.sentences[].text' clients/norcal/build/2026/midseason.json
+"Davlionman owns the steal of the draft in Braelon Allen, the 17th drafted RB by points with 99.6."
+"That same manager also took Marvin Harrison, who sits at 33.5 points."
+"The Mean Machine has the bust of the draft in A.J. Brown, 65th among drafted WRs with 19.1 points."
+"Brutal pick."
+"VarsityBlue2 has 24.6 points from De'Von Achane, 50th among drafted RBs."
+"Over at kaiedmonds, Christian Watson is the 3rd drafted WR by points with 146.8."
+
+$ # each cost against pick_no of the same player in clients/norcal/data/2026/draft/picks.json
+$ jq -c --slurpfile p clients/norcal/data/2026/draft/picks.json '[.acts[].chapters[] | select(.key=="draft") | .facts | .steals[], .busts[] | {player_id, cost}] | map(. as $x | {player_id, cost, pick_no: ($p[0][] | select(.player_id==$x.player_id) | .pick_no)})' clients/norcal/build/2026/midseason.json
+[{"player_id":"10213","cost":139,"pick_no":139},{"player_id":"13346","cost":140,"pick_no":140},{"player_id":"11576","cost":145,"pick_no":145},{"player_id":"12501","cost":98,"pick_no":98},{"player_id":"8167","cost":64,"pick_no":64},{"player_id":"5859","cost":17,"pick_no":17},{"player_id":"9226","cost":14,"pick_no":14},{"player_id":"11628","cost":49,"pick_no":49},{"player_id":"11635","cost":36,"pick_no":36},{"player_id":"10229","cost":33,"pick_no":33}]
+
+$ jq -r '.acts[].chapters[] | select(.key=="draft") | .blurb.sentences[].text, (.roast.sentences // [] | .[].text)' clients/norcal/build/2026/midseason.json | grep -c '\$'
+0

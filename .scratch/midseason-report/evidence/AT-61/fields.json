@@ -1,0 +1,116 @@
+{
+  "opener": [
+    "blurb",
+    "facts",
+    "title"
+  ],
+  "chapters": [
+    {
+      "key": "state",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "arcs",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "luck",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "top10",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "draft",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "waivers",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "trades",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "records",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "quick-hits",
+      "fields": [
+        "chapters",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "lineup",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "injuries",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    },
+    {
+      "key": "look-ahead",
+      "fields": [
+        "blurb",
+        "facts",
+        "key",
+        "title"
+      ]
+    }
+  ]
+}

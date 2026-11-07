@@ -1,0 +1,27 @@
+$ make midseason-publish CLIENT=cpc WEEK=8   # in a clone; origin is a local bare repo
+uv run --exact --package cornerstone cornerstone midseason-publish --client cpc --season 2026 --week 8
+Uninstalled 3 packages in 7ms
+Publish the midseason report of week 8 of cpc? [y/N] INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+The blurb opener fails the verifier: [3] number 999 is not in the cited facts OP.record
+Nothing is published. Fix each blurb in the draft, then run the publish again.
+make: *** [midseason-publish] Error 2
+exit code: 2
+
+$ git status --short clients/cpc/
+?? clients/cpc/build/2026/midseason-facts.json
+?? clients/cpc/build/2026/midseason-review.md
+?? clients/cpc/build/2026/midseason.json
+?? clients/cpc/build/2026/sim.json
+?? clients/cpc/data/2026/draft/
+$ git log -1 --oneline
+233d3ef0 Merge remote-tracking branch 'origin/main' into midseason-report
+
+[25 INFO log lines of the Claude calls removed]
+
+The edit, in the clone's clients/cpc/build/2026/midseason.json:
+before: opener.blurb.sentences[3].text = "All You Need Is Love leads the standings at 11-5."
+after:  opener.blurb.sentences[3].text = "All You Need Is Love leads the standings at 11-5, with 999 points for."
+
+$ git remote -v
+origin	<scratchpad>/ev-remote.git (fetch)
+origin	<scratchpad>/ev-remote.git (push)

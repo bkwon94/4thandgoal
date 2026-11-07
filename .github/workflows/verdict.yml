@@ -1,5 +1,6 @@
-# Sets the commit status "verdict" on the head of each PR to main, from the Test verdicts comment of Brian.
-# A required check on "verdict" then blocks the merge of a spec PR until every acceptance test has PASS (ADR 0020).
+# Sets the commit status "verdict" on the head of each PR to main, from the VERDICTS.md of the Judge and the Test
+# verdicts comments of Brian. A required check on "verdict" then blocks the merge of a spec PR until every acceptance
+# test has PASS from the Judge and no FAIL from Brian (ADR 0026).
 #
 # The status API, and not a plain job result, carries the verdict. An issue_comment run belongs to the default
 # branch, so its job result shows on main and never on the PR. A commit status on the PR head SHA shows on
@@ -12,7 +13,7 @@ on:
   issue_comment:
     types: [created, edited]
 
-# The job reads the PR, its comments, and one file, and writes one commit status. It needs no other access.
+# The job reads the PR, its comments, and three files, and writes one commit status. It needs no other access.
 permissions:
   contents: read
   pull-requests: read
@@ -32,7 +33,8 @@ jobs:
     timeout-minutes: 5
     steps:
       # The run always reads the script from main. A PR that edits scripts/verdict.py must not judge itself.
-      # The ACCEPTANCE.md of the PR is data. The run reads it through the API and runs no code of the PR.
+      # The ACCEPTANCE.md, EVIDENCE.md, and VERDICTS.md of the PR are data. The run reads them through the API and
+      # runs no code of the PR.
       - name: Check out the verdict script
         uses: actions/checkout@v7
         with:
@@ -40,7 +42,7 @@ jobs:
           sparse-checkout: scripts/verdict.py
           sparse-checkout-cone-mode: false
 
-      - name: Judge the latest Test verdicts comment
+      - name: Check the verdicts of the Judge and the latest Test verdicts comment
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -67,24 +69,42 @@ jobs:
             exit 0
           fi
 
-          # A Spec branch <slug> has .scratch/<slug>/ACCEPTANCE.md. A PR with no such file is not a spec PR,
-          # such as a records PR, so it needs no Test verdict and passes.
-          path=".scratch/$slug/ACCEPTANCE.md"
-          if ! gh api -H "Accept: application/vnd.github.raw" "repos/$REPO/contents/$path?ref=$sha" \
-               > ACCEPTANCE.md 2> error.txt; then
-            if grep -q "HTTP 404" error.txt; then
-              post success "No $path, so this PR needs no Test verdict."
-              exit 0
-            fi
+          # Writes the body of one API call to a file. A 404 writes no file and returns 1. Any other error stops
+          # the run, so a failed read never counts as a missing file.
+          get() {
+            out="$1"; shift
+            if gh api "$@" > "$out" 2> error.txt; then return 0; fi
+            rm -f "$out"
+            if grep -q "HTTP 404" error.txt; then return 1; fi
             cat error.txt
             exit 1
+          }
+          contents="repos/$REPO/contents"
+          raw="Accept: application/vnd.github.raw"
+
+          # A Spec branch <slug> has .scratch/<slug>/ACCEPTANCE.md. A PR with no such file is not a spec PR,
+          # such as a records PR, so it needs no Test verdict and passes.
+          dir=".scratch/$slug"
+          path="$dir/ACCEPTANCE.md"
+          mkdir -p "$dir"
+          if ! get "$path" -H "$raw" "$contents/$path?ref=$sha"; then
+            post success "No $path, so this PR needs no Test verdict."
+            exit 0
           fi
+
+          # The contents API gives the git blob SHA of each file at the PR head in "sha". The script compares
+          # them with the SHAs in VERDICTS.md. An empty SHA tells the script that the PR has no EVIDENCE.md.
+          get acceptance_sha.txt "$contents/$path?ref=$sha" --jq .sha
+          get evidence_sha.txt "$contents/$dir/EVIDENCE.md?ref=$sha" --jq .sha || : > evidence_sha.txt
+          # With no VERDICTS.md, the script gets no file and fails with a rule that asks for the Judge.
+          get "$dir/VERDICTS.md" -H "$raw" "$contents/$dir/VERDICTS.md?ref=$sha" || true
 
           gh api --paginate "repos/$REPO/issues/$PR/comments?per_page=100" \
             --jq '.[] | {id, user: {login: .user.login}, created_at, body}' | jq -s . > comments.json
 
-          if python3 scripts/verdict.py ACCEPTANCE.md --comments comments.json --owner "$OWNER" \
-               --name "$path" --summary summary.txt; then
+          if python3 scripts/verdict.py "$path" --verdicts "$dir/VERDICTS.md" \
+               --acceptance-sha "$(cat acceptance_sha.txt)" --evidence-sha "$(cat evidence_sha.txt)" \
+               --comments comments.json --owner "$OWNER" --summary summary.txt; then
             post success "$(cat summary.txt)"
           else
             post failure "$(cat summary.txt)"

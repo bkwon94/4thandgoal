@@ -1,0 +1,16 @@
+CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/faster-evidence uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 8080
+INFO:     Started server process [16420]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
+INFO:     127.0.0.1:55783 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55787 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55789 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55791 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55793 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55795 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55797 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55799 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55801 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55803 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55805 - "GET /teams?season=2026 HTTP/1.1" 429 Too Many Requests

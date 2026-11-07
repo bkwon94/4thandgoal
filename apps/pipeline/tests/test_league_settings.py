@@ -104,3 +104,11 @@ def test_a_flex_slot_starts_each_position_it_takes():
 def test_a_league_with_no_def_slot_starts_no_def():
     settings = league_settings(_raw(roster_positions=["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "BN"]))
     assert "DEF" not in settings.positions
+
+
+def test_the_bracket_reseeds_when_the_league_settings_say_so(cpc):
+    # Sleeper sets playoff_seed_type to 1 for a bracket that reseeds after each round, as CPC does.
+    assert cpc.reseed is True
+    norcal = Path(__file__).parents[3] / "clients" / "norcal" / "data" / "2026" / "league.json"
+    assert league_settings(RawLeague.model_validate_json(norcal.read_text(encoding="utf-8"))).reseed is False
+    assert league_settings(_raw(playoff_seed_type=0)).reseed is False

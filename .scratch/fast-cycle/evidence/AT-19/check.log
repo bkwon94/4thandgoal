@@ -1,0 +1,294 @@
+$ make check-fast BASE=main
+==> scripts: check-fast
+......................................
+----------------------------------------------------------------------
+Ran 38 tests in 0.253s
+
+OK
+==> site: check-fast
+
+> cpcfantasyfootball-site@0.1.0 check:fast /private/tmp/claude-503/replay-at19/apps/site
+> CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && pnpm test
+
+
+> cpcfantasyfootball-site@0.1.0 typecheck /private/tmp/claude-503/replay-at19/apps/site
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+
+> cpcfantasyfootball-site@0.1.0 test /private/tmp/claude-503/replay-at19/apps/site
+> vitest run
+
+
+ RUN  v5.0.5 /private/tmp/claude-503/replay-at19/apps/site
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+ Test Files  69 passed (69)
+      Tests  693 passed (693)
+   Start at  12:31:15
+   Duration  13.02s (tests 46%, environment 38%, import 14%, transform 2%)
+
+Environment  jsdom was created 69 times · 38.20s total, 38% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+==> pipeline: check-fast
+uv run --exact --package cornerstone ruff check src tests
+Installed 10 packages in 6ms
+All checks passed!
+uv run --exact --package cornerstone pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cornerstone pytest -q tests/test_layers.py tests/test_rule_client.py tests/test_rule_ports.py tests/test_rule_publish.py tests/test_rule_readmes.py tests/test_rule_suppressions.py tests/test_rule_tracker.py
+.................................................                        [100%]
+49 passed in 3.66s
+==> api: check-fast
+uv run --exact --package cpc-api ruff check src tests
+Uninstalled 5 packages in 3ms
+Installed 3 packages in 7ms
+All checks passed!
+uv run --exact --package cpc-api pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-api pytest -q tests/test_rule_api.py
+.....                                                                    [100%]
+5 passed in 0.05s
+==> packages/analyzer: check-fast
+uv run --exact --package cpc-analyzer ruff check src tests
+Uninstalled 5 packages in 10ms
+All checks passed!
+uv run --exact --package cpc-analyzer pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-analyzer pytest -q
+.................                                                        [100%]
+17 passed in 1.74s
+==> packages/design: check-fast
+The site check covers it.
+==> packages/facts: check-fast
+uv run --exact --package cpc-facts ruff check src tests
+Uninstalled 4 packages in 12ms
+All checks passed!
+uv run --exact --package cpc-facts pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-facts pytest -q
+............                                                             [100%]
+12 passed in 0.58s
+==> packages/league: check-fast
+uv run --exact --package cpc-league ruff check src tests
+Uninstalled 1 package in 0.78ms
+All checks passed!
+uv run --exact --package cpc-league pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-league pytest -q
+..........                                                               [100%]
+10 passed in 0.12s
+==> packages/managers: check-fast
+uv run --exact --package cpc-managers ruff check src tests
+Installed 2 packages in 2ms
+All checks passed!
+uv run --exact --package cpc-managers pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-managers pytest -q
+...                                                                      [100%]
+3 passed in 0.01s
+==> packages/midseason: check-fast
+uv run --exact --package cpc-midseason ruff check src tests
+Uninstalled 1 package in 0.52ms
+Installed 1 package in 1ms
+All checks passed!
+uv run --exact --package cpc-midseason pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-midseason pytest -q
+.............................................                            [100%]
+45 passed in 0.62s
+==> packages/rankings: check-fast
+uv run --exact --package cpc-rankings ruff check src tests
+Uninstalled 1 package in 0.55ms
+Installed 1 package in 2ms
+All checks passed!
+uv run --exact --package cpc-rankings pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-rankings pytest -q
+.........                                                                [100%]
+9 passed in 0.08s
+==> packages/sim: check-fast
+uv run --exact --package cpc-sim ruff check src tests
+Uninstalled 1 package in 0.47ms
+Installed 1 package in 2ms
+All checks passed!
+uv run --exact --package cpc-sim pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-sim pytest -q
+...............                                                          [100%]
+15 passed in 0.23s
+==> packages/waiver: check-fast
+uv run --exact --package cpc-waiver ruff check src tests
+Uninstalled 1 package in 0.48ms
+Installed 1 package in 2ms
+All checks passed!
+uv run --exact --package cpc-waiver pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-waiver pytest -q
+...............................................................          [100%]
+63 passed, 1 deselected in 2.91s
+==> packages/week: check-fast
+uv run --exact --package cpc-week ruff check src tests
+Uninstalled 1 package in 0.53ms
+Installed 1 package in 2ms
+All checks passed!
+uv run --exact --package cpc-week pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-week pytest -q
+.......                                                                  [100%]
+7 passed in 0.61s
+make check-fast BASE=main  118.23s user 17.75s system 273% cpu 49.705 total
+check exit=0
+$ git rev-parse HEAD
+8963ae2b8ea3573b50949481bcbe67a967abf6f3
+*   8963ae2b Merge branch 'replay-at19-ticket' into replay-at19-spec
+|\  
+| * 7306d8f5 Build the sim engine and sim.json of the midseason report
+* | 41fb6242 Mark midseason-report 05 in-review

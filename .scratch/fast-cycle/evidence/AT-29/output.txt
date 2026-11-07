@@ -1,0 +1,7 @@
+$ grep -n code-review .claude/plugin/skills/implement/build.md
+85:1. In the Spec worktree, call the Skill tool for `code-review`. The fixed point is `main`. The spec is `.scratch/<slug>/PRD.md`.
+
+$ grep -n "^## " .claude/plugin/skills/implement/build.md
+5:## The setup of a worktree
+12:## Stage 1: the build
+83:## Stage 2: the review

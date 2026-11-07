@@ -1,0 +1,7 @@
+$ grep -c ' 429' api.log
+0
+$ grep -ciE 'rate|limit|wait' api.log
+2
+$ grep -oE '" [0-9]{3}' api.log | sort | uniq -c
+ 112 " 200
+Note: the 2 hits of 'rate|limit|wait' are the start command line (CORNERSTONE_RATE_LIMIT_PER_MINUTE=600) and 'Waiting for application startup.'

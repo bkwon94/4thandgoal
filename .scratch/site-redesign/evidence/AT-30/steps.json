@@ -1,0 +1,17 @@
+{
+  "route": "/2026/managers/",
+  "steps": [
+    {
+      "shot": "index"
+    },
+    {
+      "click": "a[href=\"/2026/managers/2/\"]"
+    },
+    {
+      "wait": "url"
+    },
+    {
+      "url": true
+    }
+  ]
+}

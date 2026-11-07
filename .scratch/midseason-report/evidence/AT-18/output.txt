@@ -1,0 +1,7 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="lineup") | .facts.teams[] | select(.name=="London Cooking") | {name, lost_with_better: [.lost_with_better[] | . + {opponent_score: ((.score + .margin)*100|round/100)}]}' clients/cpc/build/2026/midseason.json
+{"name":"London Cooking","lost_with_better":[{"week":2,"opponent_roster_id":11,"opponent":"Unsolicited Dak Picks","score":112.14,"best":139.68,"bench_points":27.54,"margin":1.67,"opponent_score":113.81},{"week":8,"opponent_roster_id":1,"opponent":"The Blue Tent","score":98.88,"best":104.68,"bench_points":5.8,"margin":1.43,"opponent_score":100.31}]}

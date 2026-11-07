@@ -1,0 +1,12 @@
+$ git rev-parse HEAD   # the head before the merge
+41fb62424dd9a8ebd9c4a637891244eb5910f0a4
+$ git merge --no-edit replay-at19-ticket
+Auto-merging apps/pipeline/src/cornerstone/pipeline.py
+CONFLICT (content): Merge conflict in apps/pipeline/src/cornerstone/pipeline.py
+Auto-merging apps/pipeline/tests/test_layers.py
+CONFLICT (content): Merge conflict in apps/pipeline/tests/test_layers.py
+Auto-merging apps/pipeline/tests/test_midseason.py
+Auto-merging apps/pipeline/tests/test_midseason_publish.py
+CONFLICT (content): Merge conflict in apps/pipeline/tests/test_midseason_publish.py
+Automatic merge failed; fix conflicts and then commit the result.
+exit=1

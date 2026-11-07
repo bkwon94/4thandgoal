@@ -289,3 +289,193 @@ test(`the week chips of the Ladder of ${CLIENT} stay on one row at 375px`, async
   expect(chosen!.x + chosen!.width).toBeLessThanOrEqual(box!.x + box!.width);
   expect(await scanScroll(page)).toEqual([]);
 });
+
+/* The midseason report of the latest season. A client builds it only when it takes midseason and the season has a
+   published midseason file, so each check of the report skips a client with no report page. */
+const MIDSEASON_ROUTE = `/midseason/${SEASON}/`;
+const hasReport = routes.includes(MIDSEASON_ROUTE);
+
+/* The widths of the report: a phone, a tablet, and a laptop (ticket 11 of midseason-report). */
+const REPORT_WIDTHS = [375, 768, 1280] as const;
+
+for (const theme of THEMES) {
+  for (const width of REPORT_WIDTHS) {
+    test(`midseason floor: ${CLIENT} ${MIDSEASON_ROUTE} ${theme} ${width}px`, async ({ page }) => {
+      test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+      const label = `${CLIENT} ${MIDSEASON_ROUTE} ${theme} ${width}px`;
+      await page.setViewportSize({ width, height: 900 });
+      await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, theme);
+      const failures = await textFloor(page, label, Date.now());
+      failures.push(...(await scanTargets(page)).failures, ...(await scanWords(page)), ...(await scanContrast(page)));
+      expect(failures, `${label} breaks the readability floor`).toEqual([]);
+    });
+
+    /* AT-27: from Act II, a tap on "What Comes Next" in the rail moves the page to Act III, and the rail stays at the top. */
+    test(`midseason rail: ${CLIENT} ${MIDSEASON_ROUTE} jumps to Act III and stays at the top, ${theme} ${width}px`, async ({ page }) => {
+      test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+      await page.setViewportSize({ width, height: 900 });
+      await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, theme);
+      const rail = page.getByRole("navigation", { name: "Chapters" });
+      const railTop = (await rail.boundingBox())!.y;
+      await page.evaluate(() => document.getElementById("the-moves")!.scrollIntoView());
+      await rail.getByRole("link", { name: "What Comes Next" }).click();
+      const box = await rail.boundingBox();
+      const title = await page.getByRole("heading", { level: 2, name: "What Comes Next" }).boundingBox();
+      // The rail sits under the top band at every scroll, and the title of Act III sits just under the rail.
+      expect(box!.y).toBe(railTop);
+      expect(title!.y).toBeGreaterThanOrEqual(box!.y + box!.height);
+      expect(title!.y).toBeLessThan(900 / 2);
+    });
+  }
+}
+
+/* The home page in the takeover: the opener of the report in place of the usual top, through the takeover end week.
+   Only a client with a report shows it, and after the end week the home page shows the tile, so the check skips both. */
+for (const theme of THEMES) {
+  for (const width of REPORT_WIDTHS) {
+    test(`midseason takeover: ${CLIENT} / ${theme} ${width}px`, async ({ page }) => {
+      test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+      const label = `${CLIENT} / takeover ${theme} ${width}px`;
+      await page.setViewportSize({ width, height: 900 });
+      await openPage(page, `${server.url}/`, theme);
+      const takeover = page.getByRole("region", { name: `${SEASON} Midseason Report` });
+      test.skip((await takeover.count()) === 0, `${CLIENT} is past the takeover end week`);
+      const failures = await textFloor(page, label, Date.now());
+      failures.push(...(await scanTargets(page)).failures, ...(await scanWords(page)), ...(await scanContrast(page)));
+      expect(failures, `${label} breaks the readability floor`).toEqual([]);
+    });
+  }
+}
+
+/* AT-59 and AT-8: the schedule swap is one text row per team with no grid and no bar, and the page never says
+   "All-play" (decision ticket 16). */
+for (const width of REPORT_WIDTHS) {
+  test(`midseason swap rows: ${CLIENT} ${MIDSEASON_ROUTE} text rows and no All-play, ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const swap = page.getByRole("list", { name: "Schedule swap" });
+    await expect(swap.getByRole("listitem")).not.toHaveCount(0);
+    await expect(swap.locator("table, svg, [role=meter], [role=progressbar]")).toHaveCount(0);
+    await expect(page.getByRole("table", { name: "Schedule swap" })).toHaveCount(0);
+    expect(await page.locator("body").innerText()).not.toMatch(/all-play/i);
+  });
+}
+
+/* AT-28: on a phone, each shown table of the report fits its card, or its card scrolls it and the first cell of each
+   row stays in place. The page itself never scrolls sideways. */
+test(`midseason tables: ${CLIENT} ${MIDSEASON_ROUTE} fit their cards or scroll with the team column fixed, 375px`, async ({ page }) => {
+  test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+  await page.setViewportSize({ width: 375, height: 900 });
+  await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+  const failures = await page.locator("main table").evaluateAll((tables) =>
+    tables
+      .filter((table) => table.getClientRects().length > 0)
+      .flatMap((table) => {
+        const name = table.getAttribute("aria-label") ?? table.closest("[id]")?.id ?? "a table";
+        const card = table.parentElement!;
+        if (table.getBoundingClientRect().width <= card.clientWidth + 1) return [];
+        if (!["auto", "scroll"].includes(getComputedStyle(card).overflowX)) return [`${name} runs past its card`];
+        const first = table.querySelector("tbody tr > :first-child")!;
+        const before = first.getBoundingClientRect().left;
+        card.scrollLeft = card.scrollWidth;
+        const after = first.getBoundingClientRect().left;
+        card.scrollLeft = 0;
+        return Math.abs(after - before) > 1 ? [`${name} scrolls its team column out of view`] : [];
+      }),
+  );
+  expect(failures).toEqual([]);
+  expect(await scanScroll(page)).toEqual([]);
+});
+
+/* AT-11: Position top 10 opens on RB and shows one position. */
+test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, async ({ page }) => {
+  test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+  await page.setViewportSize({ width: 375, height: 900 });
+  await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+  const chapter = page.locator("#top10");
+  await expect(chapter.getByRole("button", { name: "RB" })).toHaveAttribute("aria-pressed", "true");
+  await expect(chapter.getByRole("list")).toHaveCount(1);
+  await expect(chapter.getByRole("list", { name: "RB top 10" })).toBeVisible();
+});
+
+/* AT-33: the odds of all runs sit below the replay at every width, and the stage takes the full width of the column.
+   Beside the odds on a laptop, the stage had room for one letter of each team name. A report with no sim file has no
+   replay, so the check skips it too. */
+for (const width of REPORT_WIDTHS) {
+  test(`sim odds: ${CLIENT} ${MIDSEASON_ROUTE} below the replay at full width, ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const stage = page.getByRole("region", { name: "The replay" });
+    test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
+    const box = (await stage.boundingBox())!;
+    const odds = (await page.getByRole("table", { name: /^The Odds of All/ }).boundingBox())!;
+    expect(odds.y).toBeGreaterThanOrEqual(box.y + box.height);
+    const column = (await stage.evaluate((el) => el.parentElement!.getBoundingClientRect().width))!;
+    expect(box.width).toBeCloseTo(column, 0);
+  });
+}
+
+/* The text boxes of the bracket that a chip or a cut must never hide: each team name and each score. */
+const bracketText = (page: Page) => page.locator('ol[aria-label="Bracket"] [data-team-name], ol[aria-label="Bracket"] [data-score]');
+
+/* Each team name of the bracket shows in full at each width of the report, and the seed chip that waits at the edge of
+   a decided card covers no name or score. */
+for (const width of REPORT_WIDTHS) {
+  test(`sim bracket: ${CLIENT} ${MIDSEASON_ROUTE} shows full team names and no chip on a card, ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const stage = page.getByRole("region", { name: "The replay" });
+    test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
+    await page.getByRole("button", { name: "Sim the season" }).click();
+    // Mid-run, after the results of round 1: the winner chips wait at the edge of their cards.
+    await expect(stage.getByRole("status")).toHaveText("Round 1 results", { timeout: 30_000 });
+    const chips = await stage.locator("[data-departed]").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+    expect(chips.length).toBeGreaterThan(0);
+    const texts = await bracketText(page).evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+    const overlaps = chips.flatMap((chip) =>
+      texts.filter((text) => chip.left < text.right && text.left < chip.right && chip.top < text.bottom && text.top < chip.bottom),
+    );
+    expect(overlaps, `a waiting chip covers a name or a score at ${width}px`).toEqual([]);
+    // At rest, after a skip, every name of every round shows in full.
+    await page.getByRole("button", { name: "Skip to the end" }).click();
+    const cut = await stage
+      .locator("[data-team-name]")
+      .evaluateAll((els) => els.filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.textContent));
+    expect(cut, `the bracket cuts a team name at ${width}px`).toEqual([]);
+  });
+}
+
+/* AT-32 and AT-34: a press plays a run, and a skip shows the final state at once: the champion card with the title odds
+   of all runs, and the complete bracket below it, with no part of the bracket under the card. */
+for (const width of [375, 1280]) {
+  test(`sim replay: ${CLIENT} ${MIDSEASON_ROUTE} plays a run and skips to the champion and the bracket at ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const stage = page.getByRole("region", { name: "The replay" });
+    test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
+    await page.getByRole("button", { name: "Sim the season" }).click();
+    await expect(stage.getByRole("group", { name: "Week 9 final" })).toBeVisible();
+    await page.getByRole("button", { name: "Skip to the end" }).click();
+    const card = stage.getByRole("group", { name: "Champion of This Run" });
+    await expect(card).toContainText(/Wins the title in [\d.]+% of all [\d,]+ runs/);
+    expect(await scanScroll(page)).toEqual([]);
+    const rounds = stage.getByRole("list", { name: "Bracket" }).getByRole("listitem");
+    await expect(rounds).toHaveCount(3);
+    for (const round of await rounds.all()) await expect(round).toBeVisible();
+    const cardBox = (await card.boundingBox())!;
+    const bracketBox = (await stage.getByRole("list", { name: "Bracket" }).boundingBox())!;
+    expect(bracketBox.y, `the champion card covers the bracket at ${width}px`).toBeGreaterThanOrEqual(cardBox.y + cardBox.height);
+    // The stage clips its parts, so the whole bracket must sit inside the stage.
+    const stageBox = (await stage.boundingBox())!;
+    expect(bracketBox.y + bracketBox.height).toBeLessThanOrEqual(stageBox.y + stageBox.height);
+    // The trophy sits centered over the avatar of the champion.
+    const trophy = (await card.locator("[data-trophy]").boundingBox())!;
+    const avatar = (await card.locator("[data-avatar]").boundingBox())!;
+    expect(trophy.x + trophy.width / 2).toBeCloseTo(avatar.x + avatar.width / 2, 0);
+    expect(trophy.y + trophy.height).toBeLessThanOrEqual(avatar.y + 1);
+  });
+}

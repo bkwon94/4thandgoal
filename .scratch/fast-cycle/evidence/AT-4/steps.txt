@@ -1,0 +1,45 @@
+$ gh api repos/{owner}/{repo}/actions/jobs/<site job id>   # the steps of the job site
+== Run 1, 42270918161, the cold cache
+  Set up job                                              success     1 s
+  Check out the repository                                success     6 s
+  Set up pnpm                                             success     3 s
+  Set up Node                                             success     5 s
+  Install the site dependencies                           success     2 s
+  Read the Playwright version                             success     0 s
+  Restore the Playwright browsers                         success     0 s
+  Install Chromium for the readability floor              success    20 s
+  Install the system packages of Chromium                 skipped     0 s
+  Run the check of the site                               success   262 s
+  Post Restore the Playwright browsers                    success     4 s
+  Post Set up Node                                        success     0 s
+  Post Set up pnpm                                        success     0 s
+  Post Check out the repository                           success     1 s
+  Complete job                                            success     0 s
+== Run 2, 42271914935, after run 1
+  Set up job                                              success     1 s
+  Check out the repository                                success     6 s
+  Set up pnpm                                             success     4 s
+  Set up Node                                             success     4 s
+  Install the site dependencies                           success     2 s
+  Read the Playwright version                             success     0 s
+  Restore the Playwright browsers                         success     3 s
+  Install Chromium for the readability floor              skipped     0 s
+  Install the system packages of Chromium                 success    11 s
+  Run the check of the site                               success   261 s
+  Post Restore the Playwright browsers                    success     0 s
+  Post Set up Node                                        success     0 s
+  Post Set up pnpm                                        success     0 s
+  Post Check out the repository                           success     0 s
+  Complete job                                            success     1 s
+
+$ git diff fa2cf3d5b70114f909caba89fe4cf0a42736f44d 03e003db025c377c6c5109c103bc44309dc607c3 -- pnpm-lock.yaml | wc -l
+       0
+
+$ gh run view 42271914935 --log | grep -iE 'cache (restored|hit|not found)|Cache restored'
+site	Restore the Playwright browsers	2026-11-06T18:34:42.5896846Z Cache hit for: Linux-playwright-1.64.1
+site	Restore the Playwright browsers	2026-11-06T18:34:45.4283336Z Cache restored successfully
+site	Restore the Playwright browsers	2026-11-06T18:34:45.4543961Z Cache restored from key: Linux-playwright-1.64.1
+site	Post Restore the Playwright browsers	2026-11-06T18:39:17.4047033Z Cache hit occurred on the primary key Linux-playwright-1.64.1, not saving cache.
+$ gh run view 42270918161 --log | grep -iE 'cache not found|Cache saved'   # run 1
+site	Restore the Playwright browsers	2026-11-06T18:28:07.4180212Z Cache not found for input keys: Linux-playwright-1.64.1
+site	Post Restore the Playwright browsers	2026-11-06T18:32:53.5415475Z Cache saved with key: Linux-playwright-1.64.1

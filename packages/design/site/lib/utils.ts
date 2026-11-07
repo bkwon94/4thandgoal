@@ -15,6 +15,8 @@ export const cn = createCn({
       // The movement colors and the page breakpoint, so cn sorts each name into its group.
       color: ["move-up", "move-down"],
       breakpoint: ["page"],
+      // The radii of the look, so cn keeps only the last one, such as rounded-report over the rounded-card of a card.
+      radius: ["hero", "card", "tile", "pill", "report"],
     },
     classGroups: {
       "font-size": [{ text: ["label", "meta", "row", "body", "lead", "stat", "score", "headline", "hero"] }],

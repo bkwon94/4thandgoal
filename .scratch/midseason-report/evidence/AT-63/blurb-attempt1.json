@@ -1,0 +1,43 @@
+{
+  "chapter": "luck",
+  "sentences": [
+    {
+      "text": "All You Need Is Love: 7 head-to-head wins, on scores worth 4.27.",
+      "fact_ids": [
+        "SL.2.wins"
+      ],
+      "roster_id": null
+    },
+    {
+      "text": "Pure charity.",
+      "fact_ids": [],
+      "roster_id": null
+    },
+    {
+      "text": "Bo Girds has 3 head-to-head wins on scores worth 5.18.",
+      "fact_ids": [
+        "SL.6.wins"
+      ],
+      "roster_id": null
+    },
+    {
+      "text": "behold the lamb would gain 4 wins on the schedule of Maye d'force B with U.",
+      "fact_ids": [
+        "SW.biggest"
+      ],
+      "roster_id": null
+    },
+    {
+      "text": "All You Need Is Love has four wins over teams with the winning lineup benched.",
+      "fact_ids": [
+        "LC.12.2",
+        "LC.6.7",
+        "LC.7.1",
+        "LC.1.3"
+      ],
+      "roster_id": null
+    }
+  ],
+  "attempt": 1,
+  "fallback": false
+}

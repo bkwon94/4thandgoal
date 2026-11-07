@@ -1,0 +1,27 @@
+$ (cd apps/pipeline && make midseason CLIENT=norcal WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client norcal --season 2026 --week 8
+clients/norcal/build/2026/midseason.json
+[172 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="state") | .facts.teams[] | {name, wins, losses, ties, games: (.wins + .losses + .ties)}' clients/norcal/build/2026/midseason.json
+{"name":"Mitseeker5000","wins":6,"losses":2,"ties":0,"games":8}
+{"name":"puurdygood","wins":5,"losses":3,"ties":0,"games":8}
+{"name":"kaiedmonds","wins":5,"losses":3,"ties":0,"games":8}
+{"name":"Hock Tua 💦","wins":5,"losses":3,"ties":0,"games":8}
+{"name":"Davlionman","wins":5,"losses":3,"ties":0,"games":8}
+{"name":"Breece Mode","wins":4,"losses":4,"ties":0,"games":8}
+{"name":"BobBuckstein","wins":4,"losses":4,"ties":0,"games":8}
+{"name":"Skol Daddy","wins":3,"losses":5,"ties":0,"games":8}
+{"name":"Bo Girds","wins":3,"losses":5,"ties":0,"games":8}
+{"name":"VarsityBlue2","wins":3,"losses":5,"ties":0,"games":8}
+{"name":"The Mean Machine","wins":3,"losses":5,"ties":0,"games":8}
+{"name":"The Dart Side","wins":2,"losses":6,"ties":0,"games":8}
+
+$ jq -c '[.acts[].chapters[] | select(.key=="top10") | .facts.positions[].position]' clients/norcal/build/2026/midseason.json
+["QB","RB","WR","TE"]
+
+$ jq -c '.parameters | {median_game, reseed, playoff_spots, bye_count}' clients/norcal/build/2026/sim.json
+{"median_game":false,"reseed":false,"playoff_spots":6,"bye_count":2}
+
+$ jq -c '{weeks, bracket_weeks, records}' clients/norcal/build/2026/sim.json
+{"weeks":[9,10,11,12,13,14,15,16,17],"bracket_weeks":[15,16,17],"records":{"1":[5,3,1010.86],"2":[3,5,927.22],"3":[4,4,1014.38],"4":[3,5,883.14],"5":[3,5,1089.82],"6":[6,2,1130.34],"7":[3,5,983.36],"8":[5,3,1006.98],"9":[5,3,1010.86],"10":[5,3,972.32],"11":[4,4,1055.74],"12":[2,6,790.8]}}

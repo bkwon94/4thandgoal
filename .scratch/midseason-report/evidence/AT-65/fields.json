@@ -1,0 +1,56 @@
+{
+  "letdowns": [
+    {
+      "player_id": "9509",
+      "name": "Bijan Robinson",
+      "position": "RB",
+      "roster_id": 7,
+      "team": "To Infinity and Bijan",
+      "cost": 81,
+      "cost_rank": 1,
+      "points": 138.8,
+      "points_rank": 3,
+      "swing": -2,
+      "tag": null,
+      "price_rank": 1,
+      "last_top_week": 4
+    }
+  ],
+  "busts": [
+    {
+      "name": "A.J. Brown",
+      "team": "Unsolicited Dak Picks",
+      "cost": 39,
+      "points_rank": 60,
+      "tag": "just bad"
+    },
+    {
+      "name": "De'Von Achane",
+      "team": "The Blue Tent",
+      "cost": 46,
+      "points_rank": 50,
+      "tag": "just bad"
+    },
+    {
+      "name": "Jadarian Price",
+      "team": "The Blue Tent",
+      "cost": 20,
+      "points_rank": 53,
+      "tag": "hurt"
+    },
+    {
+      "name": "Saquon Barkley",
+      "team": "behold the lamb",
+      "cost": 58,
+      "points_rank": 33,
+      "tag": "hurt"
+    },
+    {
+      "name": "Ladd McConkey",
+      "team": "Bo Girds",
+      "cost": 29,
+      "points_rank": 45,
+      "tag": "just bad"
+    }
+  ]
+}

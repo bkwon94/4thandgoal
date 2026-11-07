@@ -1,0 +1,17 @@
+Why no steps.json: the runner has no video verb. Its full-page shot also takes about 5 s, and the wipe holds for 1.8 s.
+Tool: a Playwright script (chromium, recordVideo), not agent-browser. `agent-browser record` opens a fresh context, so it does not keep the viewport and the reduced-motion setting.
+Site: the export of `pnpm --dir apps/site evidence midseason-report` in apps/site/out, served on http://127.0.0.1:4173. A missing path gets 404.html.
+Data: `make midseason CLIENT=cpc WEEK=8` of 2026-11-05, with midseason.json and sim.json copied into clients/cpc/published/2026/ for the build only.
+
+Shots, once at 375 x 900 and once at 1280 x 900, dark theme, motion on:
+1. Set localStorage cpc.theme to dark. Open /midseason/2026/.
+2. Scroll #sim-heading to the top of the screen. Wait 1500 ms.
+3. Click the button "Sim the season". Call that moment t0.
+4. At t0 + 2200 ms (week 10 holds from 1500 to 3000 ms), take an element shot of section[aria-label="The replay"]: week-<width>-dark.png.
+5. At t0 + 9700 ms (the split holds from 9000 to 10800 ms), take the same element shot: wipe-<width>-dark.png.
+6. At t0 + 11500 ms (the final standings hold from 10800 to 12200 ms), take the same element shot: final-<width>-dark.png.
+Each press plays a random stored run, so each width shows a different run.
+
+Video, 375 x 900, dark theme, motion on:
+1. Do steps 1 and 2 above in a context with recordVideo at 375 x 900.
+2. Click "Sim the season". Wait until t0 + 22000 ms. Close the context: replay-375-dark.webm.

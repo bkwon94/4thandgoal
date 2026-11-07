@@ -1,0 +1,37 @@
+$ git grep -n -E 'SIM_RUNS|sim_runs=' origin/main -- apps/pipeline/tests/test_midseason.py apps/pipeline/tests/test_sim.py apps/pipeline/tests/conftest.py   # origin/main = fbd6f24e
+origin/main:apps/pipeline/tests/test_midseason.py:20:from sim.tunables import SIM_RUNS
+origin/main:apps/pipeline/tests/test_midseason.py:32:# passes SIM_RUNS, the count of the real build. The writer answers of the opener cite the title odds of the full count,
+origin/main:apps/pipeline/tests/test_midseason.py:33:# so each build with them passes SIM_RUNS too.
+origin/main:apps/pipeline/tests/test_midseason.py:34:TEST_SIM_RUNS = 500
+origin/main:apps/pipeline/tests/test_midseason.py:69:def build_week_8(call, *, client, provider, sim_runs: int = TEST_SIM_RUNS) -> Path:
+origin/main:apps/pipeline/tests/test_midseason.py:71:    return run_midseason(2026, 8, call, client=client, provider=provider, sim_runs=sim_runs)
+origin/main:apps/pipeline/tests/test_midseason.py:216:    rows = _state_rows(_report(build_week_8(_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)))
+origin/main:apps/pipeline/tests/test_midseason.py:250:    build_week_8(_clean_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
+origin/main:apps/pipeline/tests/test_midseason.py:276:                                  sim_runs=SIM_RUNS))
+origin/main:apps/pipeline/tests/test_midseason.py:290:    report = _report(build_week_8(call, client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS))
+origin/main:apps/pipeline/tests/test_midseason.py:302:    build_week_8(partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
+origin/main:apps/pipeline/tests/test_midseason.py:313:                                  sim_runs=SIM_RUNS))
+origin/main:apps/pipeline/tests/test_midseason.py:469:    report = _report(build_week_8(_clean_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS))
+origin/main:apps/pipeline/tests/test_midseason.py:546:                                 sim_runs=SIM_RUNS))
+origin/main:apps/pipeline/tests/test_midseason.py:554:    report = build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
+
+$ git grep -n -E 'SIM_RUNS|sim_runs=' HEAD -- apps/pipeline/tests/test_midseason.py apps/pipeline/tests/test_sim.py apps/pipeline/tests/conftest.py   # HEAD = dfd8a33e
+HEAD:apps/pipeline/tests/conftest.py:240:    """The client and the midseason.json of one CPC week 8 build with a writer that fails each call, at SIM_RUNS."""
+HEAD:apps/pipeline/tests/conftest.py:243:    from sim.tunables import SIM_RUNS
+HEAD:apps/pipeline/tests/conftest.py:246:    return client, build_week_8(_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
+HEAD:apps/pipeline/tests/conftest.py:251:    """The client, the midseason.json, and the writer of one clean CPC week 8 build at SIM_RUNS. The writer gives the
+HEAD:apps/pipeline/tests/conftest.py:258:    from sim.tunables import SIM_RUNS
+HEAD:apps/pipeline/tests/conftest.py:262:    out = build_week_8(partial(claude_call, writer=writer), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
+HEAD:apps/pipeline/tests/test_midseason.py:20:from sim.tunables import SIM_RUNS
+HEAD:apps/pipeline/tests/test_midseason.py:32:# passes SIM_RUNS, the count of the real build. The writer answers of the opener cite the title odds of the full count,
+HEAD:apps/pipeline/tests/test_midseason.py:33:# so each build with them passes SIM_RUNS too.
+HEAD:apps/pipeline/tests/test_midseason.py:34:TEST_SIM_RUNS = 500
+HEAD:apps/pipeline/tests/test_midseason.py:69:def build_week_8(call, *, client, provider, sim_runs: int = TEST_SIM_RUNS) -> Path:
+HEAD:apps/pipeline/tests/test_midseason.py:71:    return run_midseason(2026, 8, call, client=client, provider=provider, sim_runs=sim_runs)
+HEAD:apps/pipeline/tests/test_midseason.py:214:    # the fixture builds with sim_runs=SIM_RUNS.
+HEAD:apps/pipeline/tests/test_midseason.py:291:    report = _report(build_week_8(call, client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS))
+HEAD:apps/pipeline/tests/test_midseason.py:312:                                  sim_runs=SIM_RUNS))
+HEAD:apps/pipeline/tests/test_midseason.py:552:    # builds with sim_runs=SIM_RUNS.
+
+$ git diff origin/main HEAD -- apps/pipeline/tests/test_sim.py | wc -l
+       0

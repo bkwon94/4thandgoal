@@ -123,19 +123,20 @@ class TheRepoWorkspace(unittest.TestCase):
         self.assertEqual(select_apps(REPO, ["apps/pipeline/src/cornerstone/odds.py"]), ["pipeline", "api"])
 
     def test_a_change_in_the_league_package_of_the_repo_selects_each_app_and_each_package_on_it(self):
-        # The facts, the analyzer, the managers, the rankings, the waiver, and the week packages list the league
-        # package, so a change in league checks each.
+        # The facts, the analyzer, the managers, the midseason, the rankings, the sim, the waiver, and the week packages
+        # list the league package, so a change in league checks each.
         files = ["packages/league/python/src/league/models.py"]
         self.assertEqual(select_apps(REPO, files), ["site", "pipeline", "api"])
         self.assertEqual(select_packages(REPO, files),
-                         ["analyzer", "facts", "league", "managers", "rankings", "waiver", "week"])
+                         ["analyzer", "facts", "league", "managers", "midseason", "rankings", "sim", "waiver", "week"])
 
     def test_a_change_in_the_facts_package_of_the_repo_selects_the_apps_that_import_it_and_not_league(self):
-        # The analyzer, the managers, the rankings, the waiver, and the week packages list the facts package, so a
-        # change in facts checks each too.
+        # The analyzer, the managers, the midseason, the rankings, the sim, the waiver, and the week packages list the
+        # facts package, so a change in facts checks each too.
         files = ["packages/facts/python/src/facts/writer.py"]
         self.assertEqual(select_apps(REPO, files), ["pipeline", "api"])
-        self.assertEqual(select_packages(REPO, files), ["analyzer", "facts", "managers", "rankings", "waiver", "week"])
+        self.assertEqual(select_packages(REPO, files),
+                         ["analyzer", "facts", "managers", "midseason", "rankings", "sim", "waiver", "week"])
 
     def test_a_change_in_the_analyzer_package_of_the_repo_selects_the_apps_that_import_it(self):
         # The analyzer has both languages, so a change on either side selects the site and the two Python apps.

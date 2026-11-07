@@ -1,0 +1,15 @@
+{
+  "route": "/2026/week-08/",
+  "steps": [
+    { "shot": "top" },
+    { "scroll": "end" },
+    { "shot": "end" }
+  ],
+  "widths": [
+    375
+  ],
+  "clients": [
+    "cpc",
+    "norcal"
+  ]
+}

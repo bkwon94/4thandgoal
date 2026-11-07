@@ -9,7 +9,9 @@ import { describe, expect, it } from "vitest";
 import type { ZodType } from "zod";
 import { type Offense, report } from "../../rule-report";
 import { managersFileSchema } from "@cpc/managers/schema/managers";
+import { midseasonSchema } from "@cpc/midseason/schema/midseason";
 import { rankingsSchema } from "@cpc/rankings/schema/rankings";
+import { simSchema } from "@cpc/sim/schema/sim";
 import { waiverBoardSchema } from "@cpc/waiver/schema";
 import { weekPageSchema } from "@cpc/week/schema/week";
 
@@ -46,6 +48,12 @@ describe.each([
   ["waiver.json", waiverBoardSchema, 0],
   ["rankings.json", rankingsSchema, 1],
   ["managers.json", managersFileSchema, 1],
+  // Only a season after the midseason publish holds midseason.json, so the least count is zero. The midseason tests
+  // and the floor of the fixture client cover its schema through the package fixture.
+  ["midseason.json", midseasonSchema, 0],
+  // The midseason publish puts sim.json live beside midseason.json, so the least count is zero too. The sim tests and
+  // the floor of the fixture client cover its schema through the package fixture.
+  ["sim.json", simSchema, 0],
 ])("%s under public/", (name, schema, least) => {
   it("parses with its schema", () => {
     const files = filesNamed(name);

@@ -1,0 +1,16 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="records") | .facts.awards | length' clients/cpc/build/2026/midseason.json
+7
+
+$ jq -c '.acts[].chapters[] | select(.key=="records") | .facts.awards[] | {title, team, player, value, in_record_book, fact}' clients/cpc/build/2026/midseason.json
+{"title":"MVP","team":"Maye d'force B with U","player":"Jahmyr Gibbs","value":135.1,"in_record_book":false,"fact":"Jahmyr Gibbs of Maye d'force B with U has 135.1 points over the line in his starts, the most of any QB, RB, WR, or TE."}
+{"title":"Streaming king","team":"Return of T Mac","player":null,"value":174.4,"in_record_book":false,"fact":"Return of T Mac started streamed QBs, kickers, and defenses 11 times for 174.4 points, the most in the league."}
+{"title":"Bench crime of the year","team":"London Cooking","player":null,"value":27.54,"in_record_book":false,"fact":"London Cooking left 27.54 points on the bench in its week 2 loss to Unsolicited Dak Picks, the most in a loss that a better lineup would have won."}
+{"title":"Heartbreak of the year","team":"The Blue Tent","player":null,"value":0.4,"in_record_book":true,"fact":"The Blue Tent lost to All You Need Is Love by 0.4 in week 3, the closest head-to-head game of the season."}
+{"title":"Beatdown of the year","team":"Maye d'force B with U","player":null,"value":92.14,"in_record_book":true,"fact":"Maye d'force B with U beat To Infinity and Bijan by 92.14 in week 5, the biggest head-to-head margin of the season."}
+{"title":"Most active","team":"Bo Girds","player":null,"value":42.0,"in_record_book":false,"fact":"Bo Girds made 42 moves, adds and trades, the most in the league."}
+{"title":"Set and forget","team":"London Cooking","player":null,"value":3.0,"in_record_book":false,"fact":"London Cooking made 3 moves, the fewest in the league, and is 9-7."}

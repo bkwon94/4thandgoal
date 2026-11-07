@@ -1,0 +1,12 @@
+$ gh pr close 15 --comment ...
+✓ Closed pull request bkwon94/4thandgoal#15 (Throwaway: AT-3 of fast-cycle, a planted failed API test)
+$ git push origin --delete fast-cycle-at3
+To ssh://ssh.github.com:443/bkwon94/4thandgoal.git
+ - [deleted]           fast-cycle-at3
+$ git worktree remove --force .claude/worktrees/fast-cycle-at3
+$ git branch -D fast-cycle-at3
+Deleted branch fast-cycle-at3 (was c0d1e038).
+$ gh pr view 15 --json state,closed,merged
+{"closed":true,"state":"CLOSED"}
+$ git ls-remote --heads origin fast-cycle-at3
+(end of output: 0 lines)

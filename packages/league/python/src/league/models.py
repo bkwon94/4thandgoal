@@ -4,9 +4,9 @@ They are plain data, so the rest of the code does not read raw Sleeper JSON.
 """
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr, StringConstraints
 
 from league.league_settings import DEFAULT_POINTS_KEY
 from league.numbers import r2
@@ -22,7 +22,9 @@ def sub(a: float, b: float) -> float:
 
 class Team(BaseModel):
     roster_id: int
-    name: str
+    # Sleeper keeps the spaces a manager types around a team name. A saved file of an older build may hold them, so
+    # the load strips them too.
+    name: Annotated[str, StringConstraints(strip_whitespace=True)]
     owner: str
     avatar_url: str | None
     wins: int
@@ -393,6 +395,13 @@ class Chapter(BaseModel):
     max_sentences: int
     # The fact IDs the writer must cite. The code check fails a blurb that leaves one uncited.
     required: list[str] = []
+    # The reaction sentences a blurb may hold. A chapter that allows more than one still needs a cited sentence.
+    max_reactions: int = 1
+    # The word limit of the whole blurb. None has no limit.
+    max_words: int | None = None
+    # The fact IDs of other chapters that a blurb may cite too, so a paragraph can call back across chapters. A
+    # template blurb reads only fact_ids, so it stays on its own chapter.
+    callback_ids: list[str] = []
 
 
 class WeekData(BaseModel):
