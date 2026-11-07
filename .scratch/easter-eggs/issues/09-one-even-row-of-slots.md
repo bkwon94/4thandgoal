@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-34, AT-37, and AT-51.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Each tile of a slot row has the same width, the filled tile too.
 - [x] A visible gap sits between two tiles.
