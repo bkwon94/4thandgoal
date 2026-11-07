@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-40, AT-41, AT-42, AT-43
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The egg button sits beside the theme button on every page of a client with the package. Its badge is the count left to find, and a tap opens `/eggs/`.
 - [x] The egg banner reads "6 eggs dropped today · 6 left" on the day of the drop, then "6 eggs dropped Tue · 5 left". A hide stays after a reload until the next drop.
