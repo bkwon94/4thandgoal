@@ -1,5 +1,5 @@
-ACCEPTANCE.md: 4c3f5d8700c754c731ee0d323badfd496071ae3b
-EVIDENCE.md: e30049d3c5ea00e845cfe824288966ec0cd018fe
+ACCEPTANCE.md: 8b4e6d71fea91aff80dedf1b4923e42ad4dc05db
+EVIDENCE.md: 25111688f6cef7b80b40036c88bc3b150a8d5801
 
 Test verdicts
 AT-1: PASS
@@ -53,3 +53,8 @@ AT-48: PASS
 AT-49: PASS
 AT-50: PASS
 AT-51: PASS
+AT-52: PASS
+AT-53: PASS
+AT-54: FAIL The Observation says the real grade took 17 s, but site-N.txt shows "The grade took 8 s", so the Observation states something that the files do not show.
+AT-55: FAIL The Observation gives the pointerups of the three taps on luck-3 as 12, 170, and 331 ms, but site-N.txt shows 10, 168, and 327 ms, so the Observation states something that the files do not show.
+AT-56: PASS
