@@ -11,6 +11,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from eggs.conditions import egg_page
+
 
 def normal_page(page: str) -> str:
     """The page with no trailing slash, except "/". The site builds each real page with a slash, but a missing URL
@@ -117,7 +119,7 @@ class EggStore:
                 db.executemany(
                     "INSERT INTO eggs (week, page, target, action, conditions, letter, dropped_at) "
                     "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    [(week, normal_page(egg["page"]), egg["target"], egg["action"],
+                    [(week, normal_page(egg_page(egg["page"], egg["conditions"])), egg["target"], egg["action"],
                       json.dumps(egg["conditions"], sort_keys=True), egg["letter"], now.isoformat())
                      for egg in eggs])
         return self.eggs(week)

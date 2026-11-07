@@ -24,10 +24,10 @@ The commissioner places every egg, so the commissioner cannot hunt. An agent pro
 ### Find an egg
 
 1. As a manager, I want to tap an exact spot on a page to find an egg, so that the hunt rewards a close read of the site.
-2. As a manager, I want an egg kind to use 2 to 5 fast taps, a long press, a long hold, a tap combo, or a selected word, so that each egg is a new puzzle.
+2. As a manager, I want an egg kind to use a double-tap, a long press, a tap combo, or a selected word, so that each egg is a new puzzle.
 3. As a manager, I want some eggs to need a condition, such as light mode, an open "Show all", or an old week, so that the hard eggs stay hard.
 4. As a manager, I want eggs on the sim, so that a replay where one roster wins the title can hide a letter.
-5. As a manager, I want eggs on the analyzer, so that a grade of one exact trade can hide a letter.
+5. As a manager, I want eggs on the analyzer, so that a grade of any trade between two teams can hide a letter.
 6. As a manager, I want an egg that works only in a clock window, after a scroll to the end of a page, or on the 404 page, so that the catalog has many kinds.
 7. As a manager, I want a normal tap to do what it always does, so that the hunt never breaks a link, a toggle, or a chip.
 8. As a manager on an iPhone, I want a long press on a target to show no callout, so that the long-press eggs work on a phone.
@@ -134,15 +134,20 @@ Each route sits under the slug of the client. The egg check and the egg board ar
 
 The rules of ticket 10, with the shape of each action:
 
-1. A multi-tap counts when each tap lands within 400 ms of the one before, on the same element. The listener sends one check when the taps stop.
-2. A long press sends one check on release, with the hold rounded down to 1, 3, or 5 seconds.
-3. A tap combo is tap A, tap B, then a double-tap on C. The double-tap check carries the ids of the two taps before it, within 5 seconds. So only multi-taps and long presses send a check, and a normal tap sends none.
+1. A double-tap counts when the second tap lands within 400 ms of the first, on the same element. The listener sends one check `tap2` when the taps stop. A burst of 3 or more fast taps sends nothing, so a spam of taps finds no egg.
+2. A long press of 2 seconds or more sends one check `hold` on release, with no upper limit. A press under 1 second is a tap. A press of 1 to 2 seconds and a cancel send nothing.
+3. A tap combo is tap A, tap B, then a double-tap on C. The double-tap check carries the ids of the two taps before it, within 5 seconds. So only double-taps and long presses send a check, and a normal tap sends none.
 4. A selected word sends one check when the selection settles on one whole word in a blurb.
 5. The listener counts by the stable id of the element, not by the node, so a frame change of the sim does not reset the count.
 6. The listener never calls `preventDefault` on a tap. It turns off the iOS callout on every class of target in the catalog, never on a link or an image. Text selection stays on.
+7. Android Chrome fires `contextmenu` during a long press of a touch, then `pointercancel`. On a touch press of an egg target, the listener calls `preventDefault` on `contextmenu`, so the hold sends. A link, an image, a blurb, and a mouse right-click keep the menu.
+
+The actions of an egg are `tap2`, `hold`, and `select`. The drop refuses any other action.
 
 - The stable id of an element derives from the data that it renders, such as the chapter, the roster, and the row. Every element of each class of target in the catalog gets a stable id on every page, with an egg or not. So the bundle holds thousands of candidates, and no id marks an egg.
-- The state of the conditions is the theme, the open states, the sim outcome, the trade key of the analyzer result, the scroll to the end, and the 404 page. The API checks the clock window in the timezone of the client.
+- The state of the conditions is the theme, the open states, the sim outcome, the two teams of the analyzer trade, the scroll to the end, and the 404 page. The API checks the clock window in the timezone of the client.
+- An analyzer egg names two roster ids as `trade_teams`. The draft picks the two teams at random. Any graded trade between exactly those two teams matches, in either direction, with any players. The listener derives the two roster ids from the trade key on the root of the result.
+- An egg with `not_found = true` matches on the 404 page of any missing URL. The drop stores its page as `*404`, and a check from the 404 page names that page.
 - The sim result and the analyzer result put their outcome and their trade key on the root of the result, so the listener can read them.
 
 ### The letter rule
@@ -199,7 +204,7 @@ A good test checks what a manager or the commissioner sees, through the highest 
 
 ### Seam 2: the site part of `eggs`
 
-- The listener: tests fire real pointer events on a rendered page and read the checks that it sends through its send port. They cover each action, the 400 ms rule, the count by stable id across a re-render, no check for a normal tap, and no blocked link or toggle.
+- The listener: tests fire real pointer events on a rendered page and read the checks that it sends through its send port. They cover each action, the 400 ms rule, no check for a burst of 3 or more taps, the count by stable id across a re-render, no check for a normal tap, no blocked link or toggle, and the hold of a touch press that fires `contextmenu`.
 - The egg board, the egg banner, the egg button, and the claim flow: tests render each from the board fixture of seam 1 with Testing Library, as the tests of `packages/sim/site` and `packages/analyzer/site/form` do.
 
 ### Seam 3: the drop of the pipeline

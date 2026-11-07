@@ -1082,7 +1082,7 @@ One hidden spot on the site that holds one letter. The first manager who finds i
 _Avoid_: Easter egg (in the code), secret, prize, hidden spot
 
 **Egg kind**:
-The way to find one egg: a target, such as an avatar or a cell of a table, an action, such as three taps or a long press, and an optional condition, such as light mode.
+The way to find one egg: a target, such as an avatar or a cell of a table, an action, such as a double-tap or a long press, and an optional condition, such as light mode.
 _Avoid_: Egg type, template, egg idea, trigger
 
 **Egg word**:

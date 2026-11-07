@@ -7,8 +7,9 @@ import { z } from "zod";
 /* The API that a call goes to: its base URL and the slug of the client. The app builds it from its config. */
 export type EggsTarget = { url: string; client: string };
 
-/* The state of the conditions of one check, such as the theme. The API matches each condition of an egg. */
-export type Conditions = Record<string, string | boolean | number | string[]>;
+/* The state of the conditions of one check, such as the theme or the two roster ids of a trade. The API matches each
+   condition of an egg. */
+export type Conditions = Record<string, string | boolean | number | string[] | number[]>;
 
 /* The body of the egg check: the page, the stable id of the element, the action, the stable ids of the two taps before
    the double-tap of a tap combo, the selected word of the action "select", and the state of the conditions. */

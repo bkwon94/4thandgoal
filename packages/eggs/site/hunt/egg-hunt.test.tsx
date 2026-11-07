@@ -23,10 +23,10 @@ const wait = (ms: number) => act(() => new Promise((done) => setTimeout(done, ms
 
 /* Three fast taps on the Luck cell of Lil Fridge, then the end of the run. The board loads first, because the
    listener starts only when the board names a drop. */
-async function tripleTap() {
+async function doubleTap() {
   await act(async () => {});
   const cell = screen.getByText("+1.20");
-  for (const _ of [1, 2, 3]) fireEvent.pointerUp(cell, { isPrimary: true });
+  for (const _ of [1, 2]) fireEvent.pointerUp(cell, { isPrimary: true });
   await wait(TAP_GAP_MS + 50);
 }
 
@@ -48,7 +48,7 @@ function page(api: ReturnType<typeof fakeEggsApi>) {
 /* The find, the crack, and the open claim sheet. */
 async function openSheet(api: ReturnType<typeof fakeEggsApi>, letter = "C") {
   page(api);
-  await tripleTap();
+  await doubleTap();
   fireEvent.click(await screen.findByRole("button", { name: "Crack the egg" }));
   await wait(CRACK_MS + 50);
   fireEvent.click(screen.getByRole("button", { name: `Claim ${letter}` }));
@@ -59,12 +59,12 @@ async function openSheet(api: ReturnType<typeof fakeEggsApi>, letter = "C") {
 const wordCard = (word: string) => screen.getByRole("button", { name: word }) as HTMLButtonElement;
 
 describe("EggHunt", () => {
-  it("sends one check for a 3-tap, shows the egg, and cracks it to the red letter tile", async () => {
+  it("sends one check for a double-tap, shows the egg, and cracks it to the red letter tile", async () => {
     const api = fakeEggsApi(MATCH);
     page(api);
-    await tripleTap();
+    await doubleTap();
     expect(api.checks).toEqual([
-      { page: "/", target: "luck-3", action: "tap3", conditions: { theme: "light" } },
+      { page: "/", target: "luck-3", action: "tap2", conditions: { theme: "light" } },
     ]);
     expect(await screen.findByRole("heading", { name: "You found an egg" })).toBeTruthy();
     // The ring ripples out from the spot of the find while the egg waits.
@@ -84,7 +84,7 @@ describe("EggHunt", () => {
   it("sends no check and opens no card before the first drop", async () => {
     const api = fakeEggsApi(MATCH, {}, { ...board, last_drop: null });
     page(api);
-    await tripleTap();
+    await doubleTap();
     expect(api.checks).toEqual([]);
     expect(screen.queryByRole("dialog")).toBeNull();
   });
@@ -92,7 +92,7 @@ describe("EggHunt", () => {
   it("sends no check when the board call fails", async () => {
     const api = fakeEggsApi(MATCH, { board: new EggsError(500, "Server error") });
     page(api);
-    await tripleTap();
+    await doubleTap();
     expect(api.checks).toEqual([]);
     expect(screen.queryByRole("dialog")).toBeNull();
   });
@@ -100,14 +100,14 @@ describe("EggHunt", () => {
   it("shows nothing on no match", async () => {
     const api = fakeEggsApi({ match: false });
     page(api);
-    await tripleTap();
+    await doubleTap();
     expect(api.checks).toHaveLength(1);
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
   it("shows the hero card of another manager first on a claimed egg", async () => {
     page(fakeEggsApi({ match: true, claimed: true, letter: "C" }));
-    await tripleTap();
+    await doubleTap();
     const card = await screen.findByRole("dialog", { name: "Another manager claimed first." });
     expect(within(card).getByText("Too late")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Claim C" })).toBeNull();
@@ -115,14 +115,14 @@ describe("EggHunt", () => {
 
   it("shows the limit hero card with the minutes to wait on a 429 of the check", async () => {
     page(fakeEggsApi(MATCH, { check: new EggsError(429, "Too many requests", 690) }));
-    await tripleTap();
+    await doubleTap();
     const card = await screen.findByRole("dialog", { name: "The eggs need a rest." });
     expect(card.textContent).toContain("Try again in 12 minutes.");
   });
 
   it("shows nothing on any other failure of the check", async () => {
     page(fakeEggsApi(MATCH, { check: new EggsError(500, "Server error") }));
-    await tripleTap();
+    await doubleTap();
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 

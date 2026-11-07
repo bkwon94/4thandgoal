@@ -11,7 +11,7 @@ from eggs.draft import DraftError, draft_prompt, draft_week
 from eggs.eggfile import Spot, append_spots, read_spots
 
 # T1 to T4 of the acceptance tests: four test eggs that dropped before week 8.
-DROPPED = [Spot(week=7, page="/midseason/2026/", target=f"test-t{index}", action="tap3", reason=f"Test T{index}.",
+DROPPED = [Spot(week=7, page="/midseason/2026/", target=f"test-t{index}", action="tap2", reason=f"Test T{index}.",
                 confirmed=True) for index in range(1, 5)]
 
 
@@ -67,6 +67,17 @@ def test_a_draft_with_a_spot_that_has_no_reason_or_not_six_spots_writes_nothing(
         draft_week(path, 8, lambda prompt: _answer(no_reason), prompt="the prompt")
     with pytest.raises(DraftError, match="not 6"):
         draft_week(path, 8, lambda prompt: _answer(_six()[:5]), prompt="the prompt")
+    assert [spot for spot in read_spots(path) if spot.week == 8] == []
+
+
+@pytest.mark.parametrize("change", [{"action": "tap3"}, {"action": "hold1"}, {"conditions": {"trade": "1:2|3:4"}},
+                                    {"conditions": {"trade_teams": [1]}}])
+def test_a_draft_with_an_old_action_or_a_bad_condition_writes_nothing(tmp_path, change):
+    path = _file(tmp_path)
+    spots = _six()
+    spots[2] = {**spots[2], **change}
+    with pytest.raises(DraftError, match="test-new-2"):
+        draft_week(path, 8, lambda prompt: _answer(spots), prompt="the prompt")
     assert [spot for spot in read_spots(path) if spot.week == 8] == []
 
 

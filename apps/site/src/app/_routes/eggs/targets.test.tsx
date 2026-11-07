@@ -169,7 +169,7 @@ describe("the targets of the midseason report", () => {
     expect(sent[0].conditions.open).toEqual(expect.arrayContaining([showAll.getAttribute("data-open-id")]));
   });
 
-  it("sends one check with the hold 3 for a hold of 3.5 seconds on the Luck cell of Lil Fridge (AT-27)", async () => {
+  it("sends one check with the hold for a hold of 3.5 seconds on the Luck cell of Lil Fridge (AT-27)", async () => {
     await renderReport();
     vi.useFakeTimers();
     listen("/midseason/2026/");
@@ -180,7 +180,7 @@ describe("the targets of the midseason report", () => {
     fireEvent.pointerUp(target("luck-3"), { isPrimary: true });
     // The chosen chip of the Top 10 is an open state, so the check names it.
     expect(sent).toEqual([
-      { page: "/midseason/2026/", target: "luck-3", action: "hold3", conditions: { theme: "light", open: ["chip-rb"] } },
+      { page: "/midseason/2026/", target: "luck-3", action: "hold", conditions: { theme: "light", open: ["chip-rb"] } },
     ]);
   });
 
@@ -213,7 +213,7 @@ describe("the targets of the midseason report", () => {
 });
 
 describe("the targets of the sim replay", () => {
-  it("counts 3 taps on one standings row as one multi-tap while the frame of the replay changes (AT-30)", () => {
+  it("counts 2 taps on one standings row as one double-tap while the frame of the replay changes (AT-30)", () => {
     vi.useFakeTimers();
     render(<SimReplay sim={simFixture} pick={() => 0} />);
     listen("/midseason/2026/");
@@ -228,9 +228,8 @@ describe("the targets of the sim replay", () => {
     tap(row(), 200);
     // The beat ends inside the gap, so the second tap lands on the next frame.
     expect(frame()).not.toBe(before);
-    tap(row());
     tap(row(), TAP_GAP_MS + 1);
-    expect(sent.map((check) => [check.target, check.action])).toEqual([[row().getAttribute("data-stable-id"), "tap3"]]);
+    expect(sent.map((check) => [check.target, check.action])).toEqual([[row().getAttribute("data-stable-id"), "tap2"]]);
   });
 });
 
@@ -282,6 +281,24 @@ describe("the targets of the analyzer result", () => {
     expect(root.getAttribute("data-trade-key")).toBe(key);
     expect(root.getAttribute("data-trade-answer")).toBe(doc.decision.answer);
     expectUnique(ids());
+  });
+
+  it("sends the two teams of the trade and the answer on a double-tap of the verdict word (AT-54)", () => {
+    const doc = analyzeResponse as AnalyzeResponse;
+    render(<AnalyzeResult doc={doc} />);
+    vi.useFakeTimers();
+    listen("/analyzer/");
+    tap(target("verdict-word"));
+    tap(target("verdict-word"), TAP_GAP_MS + 1);
+    const teams = doc.trade.sides.map((side) => side.roster_id).sort((a, b) => a - b);
+    expect(sent).toEqual([
+      expect.objectContaining({
+        target: "verdict-word",
+        action: "tap2",
+        conditions: expect.objectContaining({ trade_teams: teams, trade_answer: doc.decision.answer }),
+      }),
+    ]);
+    expect(sent[0].conditions).not.toHaveProperty("trade");
   });
 });
 

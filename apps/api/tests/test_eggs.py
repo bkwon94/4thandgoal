@@ -31,10 +31,10 @@ KEY = "commissioner-test"
 PASS = {"X-League-Passphrase": PASSPHRASE}
 COMMISSIONER = {"X-Commissioner-Key": KEY}
 BASE = "/clients/cpc/eggs"
-# The test egg T1 of the acceptance tests: a 3-tap on the Luck cell of Lil Fridge, in the light theme.
-T1 = {"page": "/midseason/2026/", "target": "luck-3", "action": "tap3", "conditions": {"theme": "light"},
+# The test egg T1 of the acceptance tests: a double-tap on the Luck cell of Lil Fridge, in the light theme.
+T1 = {"page": "/midseason/2026/", "target": "luck-3", "action": "tap2", "conditions": {"theme": "light"},
       "letter": "C"}
-CHECK = {"page": "/midseason/2026/", "target": "luck-3", "action": "tap3", "conditions": {"theme": "light"}}
+CHECK = {"page": "/midseason/2026/", "target": "luck-3", "action": "tap2", "conditions": {"theme": "light"}}
 LIL_FRIDGE = 3
 BO_GIRDS = 6
 
@@ -95,23 +95,24 @@ def test_a_check_in_the_wrong_theme_is_no_match_with_no_letter_and_no_token(api)
 def test_a_check_of_another_target_or_action_is_no_match(api):
     _drop(api, T1)
     assert api.post(f"{BASE}/check", json={**CHECK, "target": "luck-12"}).json() == {"match": False}
-    assert api.post(f"{BASE}/check", json={**CHECK, "action": "tap2"}).json() == {"match": False}
+    assert api.post(f"{BASE}/check", json={**CHECK, "action": "hold"}).json() == {"match": False}
 
 
-def test_a_not_found_egg_on_a_page_with_a_slash_matches_a_check_from_the_page_without_it(api):
-    # A missing URL keeps the path as typed, so it has no trailing slash, while a real page always has one.
-    _drop(api, {"page": "/golden-egg/", "target": "page", "action": "tap5", "conditions": {"not_found": True},
+def test_a_not_found_egg_matches_on_the_404_page_of_any_missing_url(api):
+    # The page of the egg is only the one the draft wrote. Any missing URL shows the 404 page, so each one matches.
+    _drop(api, {"page": "/golden-egg/", "target": "not-found-hero", "action": "tap2", "conditions": {"not_found": True},
                 "letter": "C"})
-    check = {"page": "/golden-egg", "target": "page", "action": "tap5", "conditions": {"not_found": True}}
-    assert api.post(f"{BASE}/check", json=check).json()["match"] is True
-    assert api.post(f"{BASE}/check", json={**check, "page": "/golden-eggs"}).json() == {"match": False}
+    check = {"target": "not-found-hero", "action": "tap2", "conditions": {"not_found": True}}
+    for page in ("/golden-egg", "/golden-egg/", "/no-such-page/", "/2026/week-99"):
+        assert api.post(f"{BASE}/check", json={**check, "page": page}).json()["match"] is True
+    # A real page is no 404 page, so the same target and action there is no match.
+    assert api.post(f"{BASE}/check", json={**check, "page": "/golden-egg/", "conditions": {}}).json() == {
+        "match": False}
 
 
 def test_an_egg_dropped_on_a_page_without_a_slash_matches_a_check_from_the_page_with_it(api):
-    _drop(api, {"page": "/golden-egg", "target": "page", "action": "tap5", "conditions": {"not_found": True},
-                "letter": "C"})
-    check = {"page": "/golden-egg/", "target": "page", "action": "tap5", "conditions": {"not_found": True}}
-    assert api.post(f"{BASE}/check", json=check).json()["match"] is True
+    _drop(api, {**T1, "page": "/midseason/2026"})
+    assert api.post(f"{BASE}/check", json=CHECK).json()["match"] is True
 
 
 def _claim(api, token, roster_id=LIL_FRIDGE, word="CORNERSTONE", headers=PASS):
@@ -424,8 +425,8 @@ def test_the_undo_keeps_the_row_and_the_egg_goes_live_again(api, settings):
 
 
 # The test egg T2 of the acceptance tests: the clock window 11 PM to midnight in the timezone of the client.
-T2 = {**T1, "target": "award-top-score", "action": "hold1", "conditions": {"clock": "23:00-00:00"}, "letter": "A"}
-T2_CHECK = {"page": "/midseason/2026/", "target": "award-top-score", "action": "hold1", "conditions": {}}
+T2 = {**T1, "target": "award-top-score", "action": "hold", "conditions": {"clock": "23:00-00:00"}, "letter": "A"}
+T2_CHECK = {"page": "/midseason/2026/", "target": "award-top-score", "action": "hold", "conditions": {}}
 
 
 def test_a_clock_window_egg_matches_only_inside_the_window_in_the_timezone_of_the_client(api):
@@ -453,13 +454,13 @@ def test_a_weekday_egg_matches_only_on_that_day_of_the_client(api):
 
 TEEHEE = 12
 # The test egg T3 of the acceptance tests: a long press of the sim champion trophy when the champion is Teehee.
-T3 = {"page": "/midseason/2026/", "target": "sim-trophy", "action": "hold1", "conditions": {"sim_champion": TEEHEE},
+T3 = {"page": "/midseason/2026/", "target": "sim-trophy", "action": "hold", "conditions": {"sim_champion": TEEHEE},
       "letter": "D"}
 
 
 def test_a_sim_egg_matches_only_when_the_replay_shows_its_champion(api):
     _drop(api, T3)
-    check = {"page": "/midseason/2026/", "target": "sim-trophy", "action": "hold1"}
+    check = {"page": "/midseason/2026/", "target": "sim-trophy", "action": "hold"}
     assert api.post(f"{BASE}/check", json={**check, "conditions": {"sim_champion": LIL_FRIDGE}}).json() == {
         "match": False}
     assert api.post(f"{BASE}/check", json={**check, "conditions": {"sim_champion": TEEHEE}}).json()["letter"] == "D"
@@ -492,21 +493,33 @@ def test_a_selected_word_egg_matches_only_its_word_in_its_blurb(api):
     assert _check(api, target="blurb-luck", action="select", word="lucky")["match"] is True
 
 
-def test_the_trade_key_the_scroll_and_the_404_page_each_hold_as_a_condition(api):
-    trade = "3:4046,4881|12:6794"
+def test_the_two_teams_of_a_trade_the_scroll_and_the_404_page_each_hold_as_a_condition(api):
     _drop(api,
-          {**T1, "page": "/analyzer/", "target": "verdict-word", "action": "hold3", "conditions": {"trade": trade}},
-          {**T1, "target": "page-end", "action": "tap4", "conditions": {"scrolled_end": True}},
-          {**T1, "page": "/old-week/", "target": "not-found-hero", "action": "tap5", "conditions": {"not_found": True}})
-    assert _check(api, page="/analyzer/", target="verdict-word", action="hold3",
-                  conditions={"trade": "3:4046|12:6794"}) == {"match": False}
-    assert _check(api, page="/analyzer/", target="verdict-word", action="hold3",
-                  conditions={"trade": trade})["match"] is True
-    assert _check(api, target="page-end", action="tap4") == {"match": False}
-    assert _check(api, target="page-end", action="tap4", conditions={"scrolled_end": True})["match"] is True
-    assert _check(api, page="/old-week/", target="not-found-hero", action="tap5") == {"match": False}
-    assert _check(api, page="/old-week/", target="not-found-hero", action="tap5",
+          {**T1, "page": "/analyzer/", "target": "verdict-word", "action": "tap2", "conditions": {"trade_teams": [1, 3]}},
+          {**T1, "target": "page-end", "action": "hold", "conditions": {"scrolled_end": True}},
+          {**T1, "page": "/old-week/", "target": "not-found-hero", "action": "tap2", "conditions": {"not_found": True}})
+    assert _check(api, page="/analyzer/", target="verdict-word", action="tap2") == {"match": False}
+    assert _check(api, page="/analyzer/", target="verdict-word", action="tap2",
+                  conditions={"trade_teams": [1, 12]}) == {"match": False}
+    assert _check(api, target="page-end", action="hold") == {"match": False}
+    assert _check(api, target="page-end", action="hold", conditions={"scrolled_end": True})["match"] is True
+    assert _check(api, page="/old-week/", target="not-found-hero", action="tap2") == {"match": False}
+    assert _check(api, page="/old-week/", target="not-found-hero", action="tap2",
                   conditions={"not_found": True})["match"] is True
+
+
+@pytest.mark.parametrize("teams", [[1, 3], [3, 1]])
+def test_a_two_team_egg_matches_any_trade_between_those_two_teams_in_either_direction(api, teams):
+    # The listener sends the roster ids of the sides of the trade key, so any players of the two teams match.
+    _drop(api, {**T1, "page": "/analyzer/", "target": "verdict-word", "action": "tap2",
+                "conditions": {"trade_teams": teams, "trade_answer": "yes"}})
+    check = {"page": "/analyzer/", "target": "verdict-word", "action": "tap2"}
+    assert _check(api, **check, conditions={"trade_teams": [1, 3], "trade_answer": "yes"})["match"] is True
+    assert _check(api, **check, conditions={"trade_teams": [3, 1], "trade_answer": "yes"})["match"] is True
+    assert _check(api, **check, conditions={"trade_teams": [1, 3], "trade_answer": "no"}) == {"match": False}
+    # A trade of exactly two other teams, or of three teams, is no match.
+    assert _check(api, **check, conditions={"trade_teams": [1, 12], "trade_answer": "yes"}) == {"match": False}
+    assert _check(api, **check, conditions={"trade_teams": [1, 3, 12], "trade_answer": "yes"}) == {"match": False}
 
 
 def test_the_check_has_its_own_limit_of_60_an_hour_and_the_other_routes_keep_theirs(api):

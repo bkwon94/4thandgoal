@@ -34,3 +34,14 @@ The listener:
 3. The iOS callout turns off on every kind of target in the catalog, never on a link or an image. Text selection stays on, for the selected-word action.
 4. The listener counts taps by the stable id of the element, not by the node, so a frame change of the sim does not reset the count.
 5. Each check sends the page, the element id, the action, and the state of the conditions: the theme, the open states, the sim outcome, the trade key, and the scroll. The API matches all of them.
+
+## Revised 2026-11-07 by Brian
+
+Brian tested the hunt by hand on Android Chrome and in the phone mode of Chrome DevTools. The text above stays as the first decision.
+
+- A long press of a touch fires `contextmenu`, then `pointercancel`, so the hold never sent. On a touch press of an egg target, the listener now calls `preventDefault` on `contextmenu`, and the hold sends.
+- The block holds only for a touch press, with `pointerType` `touch`. A mouse right-click keeps its menu. A link and an image keep their menu.
+- A blurb keeps its menu too, because Android Chrome starts the selection of a word from that long press. The selected word stays an action.
+- The rule of item 2 holds: the listener never calls `preventDefault` on a tap. A tap fires no `contextmenu`.
+- Item 1 now reads: a double-tap counts when the second tap lands within 400 ms of the first. A burst of 3 or more fast taps sends nothing.
+- Item 5 now reads: each check sends the two teams of the analyzer trade, not the trade key.

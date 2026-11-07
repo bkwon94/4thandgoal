@@ -20,11 +20,14 @@ Rules:
 5. Never put two spots of this draft on one target of one page.
 6. Give each spot a reason of one or two sentences: why the spot is hard and fair.
 7. Write no hint and no riddle.
+8. Use only the actions "tap2", "hold", and "select". "tap2" is a double-tap. "hold" is a press of 2 seconds or more.
+9. For a 404 egg, set the page to "*404" and the condition "not_found" to true. The egg matches on any missing URL.
+10. For an analyzer egg, pick two different teams at random. Set "trade_teams" to their two roster ids, such as [1, 3]. Any graded trade between those two teams matches.
 
 Answer with one JSON list and nothing else. Each item has these keys:
 
 - "page": the path of the page, such as "/midseason/2026/".
 - "target": the stable id of the element.
-- "action": the action name, such as "tap3".
+- "action": the action name: "tap2", "hold", or "select".
 - "conditions": an object of condition names and values, or {{}}.
 - "reason": the reason of the spot.

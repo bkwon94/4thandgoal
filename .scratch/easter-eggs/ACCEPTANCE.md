@@ -8,7 +8,7 @@ The Test verdict: the Judge gives one for each test in `VERDICTS.md`. The Judge 
 
 - The API runs on this machine with a temp SQLite file, a test passphrase, and a test commissioner key.
 - The tests drop test eggs on the real published CPC 2026 pages: week 8 and `/midseason/2026/`.
-- The test egg T1 is a 3-tap on the Luck cell of Lil Fridge on `/midseason/2026/`, in the light theme. Its letter is C.
+- The test egg T1 is a double-tap on the Luck cell of Lil Fridge on `/midseason/2026/`, in the light theme. Its letter is C.
 - The repo is public, so no evidence uses a real spot or `~/cpc-eggs/2026.toml`.
 - A test labelled `pipeline` covers the Python of the API or the pipeline. Its evidence is the command, such as `curl` to the local API, and its output.
 
@@ -18,7 +18,7 @@ AT-1: The egg check matches the test egg
 App: pipeline
 Stories: 1, 2
 Given: T1 dropped, with no claim.
-When: POST `/cpc/eggs/check` with the page, the id of the Luck cell of Lil Fridge, the action 3 taps, and the light theme.
+When: POST `/cpc/eggs/check` with the page, the id of the Luck cell of Lil Fridge, the action `tap2`, and the light theme.
 Then: The answer holds the letter C and a claim token.
 Evidence: the `curl` command and its output.
 
@@ -214,20 +214,20 @@ When: Tap one game card one time.
 Then: The card opens, and the listener sends no check.
 Evidence: the test output with the checks sent, and screenshots of the open card at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
-AT-26: A multi-tap sends one check
+AT-26: A double-tap sends one check
 App: site
 Stories: 2
 Given: `/midseason/2026/` in the light theme.
-When: Tap the Luck cell of Lil Fridge 3 times, each tap within 400 ms of the one before.
-Then: The listener sends one check with the page, the id, the action 3 taps, and the light theme.
+When: Tap the Luck cell of Lil Fridge 2 times, the second tap within 400 ms of the first.
+Then: The listener sends one check with the page, the id, the action `tap2`, and the light theme.
 Evidence: the test output with the body of the check.
 
 AT-27: A long hold sends one check
 App: site
 Stories: 2
 Given: `/midseason/2026/`.
-When: Hold the Luck cell of Lil Fridge for 3.5 seconds.
-Then: The listener sends one check with the hold 3.
+When: Hold the Luck cell of Lil Fridge for 3.5 seconds. Then hold it for 1.5 seconds.
+Then: The listener sends one check with the action `hold` for the hold of 3.5 seconds, and no check for the hold of 1.5 seconds.
 Evidence: the test output with the body of the check.
 
 AT-28: A tap combo sends one check
@@ -250,8 +250,8 @@ AT-30: The count by id holds across sim frames
 App: site
 Stories: 9
 Given: The sim replay of `/midseason/2026/#sim` as it runs.
-When: Tap one standings row 3 times as the frame changes.
-Then: The listener sends one check with the action 3 taps.
+When: Tap one standings row 2 times as the frame changes.
+Then: The listener sends one check with the action `tap2`.
 Evidence: the test output with the frame changes and the check.
 
 AT-31: The iOS callout is off on targets only
@@ -386,7 +386,7 @@ AT-47: Nothing of the hunt shows before the first drop
 App: site
 Stories: 28, 30
 Given: An empty store.
-When: Open the home page, week 8, and `/eggs/`, and tap the Luck cell of Lil Fridge on `/midseason/2026/` 3 times.
+When: Open the home page, week 8, and `/eggs/`, and double-tap the Luck cell of Lil Fridge on `/midseason/2026/`.
 Then: No page shows the egg button or the egg banner, the listener sends no check, and `/eggs/` shows the 404 page.
 Evidence: screenshots of the home page, week 8, and `/eggs/` at 375, 768, and 1280 px, each in the light theme and the dark theme, and the log of the checks sent.
 
@@ -422,16 +422,48 @@ When: Find T1, claim C for Lil Fridge into CORNERSTONE, and open `/eggs/`.
 Then: The egg board shows the C of Lil Fridge in CORNERSTONE and the claim in the feed.
 Evidence: the Playwright output, and screenshots of each step at 375 and 1280 px, each in the light theme and the dark theme.
 
+AT-52: A touch hold sends its check when the browser fires the menu event
+App: site
+Stories: 2, 8
+Given: `/midseason/2026/`, with the listener on.
+When: Press the Luck cell of Lil Fridge with a touch for 2.2 seconds, and fire `contextmenu` during the press, as Android Chrome does. Then fire `contextmenu` on a mouse right-click of the cell, on a link, and on an image.
+Then: The listener blocks the menu of the touch press and sends one check with the action `hold`. The right-click, the link, and the image keep the menu.
+Evidence: the test output with the check sent and the blocked state of each menu event.
+
+AT-53: A 404 egg matches on any missing URL
+App: pipeline
+Stories: 6
+Given: A test egg on the 404 hero with the action `tap2` and the condition `not_found = true`, dropped with the page `/golden-egg/`.
+When: POST its check with `not_found` true from `/golden-egg`, `/no-such-page/`, and `/2026/week-99`. Then POST the check from `/golden-egg/` with no `not_found`.
+Then: Each 404 check matches. The check with no `not_found` is no match. The drop answers the page `*404` for the egg.
+Evidence: the test output of each check and of the drop.
+
+AT-54: A two-team egg matches any trade between its two teams
+App: both
+Stories: 5
+Given: A test egg on the verdict word of `/analyzer/` with the action `tap2` and the condition `trade_teams` of The Blue Tent and Lil Fridge, roster ids 1 and 3.
+When: Double-tap the verdict word of a graded trade, and read the check that the listener sends. Then POST the check with the teams 1 and 3, with 3 and 1, with 1 and 12, and with 1, 3, and 12.
+Then: The listener sends `trade_teams`, the two roster ids of the trade, smallest first, and no `trade`. The checks with 1 and 3 in either order match. The other two checks are no match. The drop refuses the old `trade` condition.
+Evidence: the test output with the body of the check from the listener, and the output of each API check and of the refused drop.
+
+AT-55: A burst of 3 or more taps sends nothing
+App: both
+Stories: 2
+Given: `/midseason/2026/`.
+When: Tap the Luck cell of Lil Fridge 3 times, each tap within 400 ms of the one before. Then tap another cell 5 times.
+Then: The listener sends no check. The drop refuses the actions `tap3`, `tap5`, `hold1`, `hold3`, and `hold5`.
+Evidence: the test output with the checks sent, and the output of each refused drop.
+
 ## Trace
 
 Story 1: AT-1, AT-51
-Story 2: AT-1, AT-26, AT-27, AT-28, AT-29
+Story 2: AT-1, AT-26, AT-27, AT-28, AT-29, AT-52, AT-55
 Story 3: AT-2
 Story 4: AT-4
-Story 5: no test. Reason: AT-4 tests the same match of a condition. The trade key is one more field of the same body.
-Story 6: AT-3
+Story 5: AT-54
+Story 6: AT-3, AT-53
 Story 7: AT-25
-Story 8: AT-31
+Story 8: AT-31, AT-52
 Story 9: AT-30
 Story 10: AT-32, AT-49
 Story 11: AT-32
@@ -490,3 +522,4 @@ Out of scope "A riddle, an answer box, or any typed answer": AT-48
 
 - 2026-11-06: AT-41 names the day of the drop, because the banner stays up all week and "6 new eggs" read as eggs of that day. Brian approved.
 - 2026-11-07: AT-47 tests that nothing of the hunt shows before the first drop, because the hunt turns on at the first drop (Brian chose the automatic flag). Brian approved.
+- 2026-11-07: Brian tested the hunt by hand and changed the catalog (decision tickets 01 and 10, revised 2026-11-07). T1, AT-1, AT-26, AT-30, and AT-47 use a double-tap, because the actions `tap3` to `tap5` are gone. AT-27 tests the one action `hold` of 2 seconds or more, and no check for a press of 1.5 seconds. AT-52 tests the hold of a touch press on Android Chrome, which fires `contextmenu`. AT-53 tests a 404 egg on any missing URL. AT-54 tests a two-team analyzer egg and covers story 5. AT-55 tests that a burst of 3 or more taps sends nothing. Brian decided each change. He reviews the new test text in the PR.

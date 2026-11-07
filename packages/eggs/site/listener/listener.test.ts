@@ -40,22 +40,40 @@ function tap(element: Element, gap = 100) {
 const cell = (id: string) => document.querySelector(`[data-stable-id="${id}"]`)!;
 
 /* A press: the pointer goes down on the element, stays for `ms`, and comes up. */
-function press(element: Element, ms: number) {
-  element.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true }));
+function press(element: Element, ms: number, pointerType = "mouse") {
+  element.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType }));
   vi.advanceTimersByTime(ms);
-  element.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true }));
+  element.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true, pointerType }));
   vi.advanceTimersByTime(TAP_GAP_MS + 1);
 }
 
+/* The menu event of a long press, as Android Chrome fires it during a touch hold. True when the listener blocked it. */
+function menu(element: Element): boolean {
+  const event = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });
+  element.dispatchEvent(event);
+  return event.defaultPrevented;
+}
+
 describe("listenForEggs", () => {
-  it("sends one check with the page, the stable id, the action, and the theme after three fast taps", () => {
+  it("sends one check with the page, the stable id, the action, and the theme after two fast taps", () => {
     const target = document.getElementById("inner")!;
-    tap(target);
     tap(target);
     tap(target, TAP_GAP_MS + 1);
     expect(sent).toEqual([
-      { page: "/midseason/2026/", target: "luck-3", action: "tap3", conditions: { theme: "light" } },
+      { page: "/midseason/2026/", target: "luck-3", action: "tap2", conditions: { theme: "light" } },
     ]);
+  });
+
+  it("sends nothing for a burst of 3 or more fast taps, so a spam of taps finds no double-tap egg", () => {
+    tap(cell("luck-3"));
+    tap(cell("luck-3"));
+    tap(cell("luck-3"), TAP_GAP_MS + 1);
+    tap(cell("luck-12"));
+    tap(cell("luck-12"));
+    tap(cell("luck-12"));
+    tap(cell("luck-12"));
+    tap(cell("luck-12"), TAP_GAP_MS + 1);
+    expect(sent).toEqual([]);
   });
 
   it("sends the dark theme when the page is dark", () => {
@@ -104,29 +122,68 @@ describe("listenForEggs", () => {
     expect(sent).toEqual([]);
   });
 
-  it("sends one check on release for a long press of 1 second, with the hold rounded down", () => {
-    press(cell("luck-3"), 1500);
+  it("sends one check on release for a long press of 2 seconds", () => {
+    press(cell("luck-3"), 2000);
     expect(sent).toEqual([
-      { page: "/midseason/2026/", target: "luck-3", action: "hold1", conditions: { theme: "light" } },
+      { page: "/midseason/2026/", target: "luck-3", action: "hold", conditions: { theme: "light" } },
     ]);
   });
 
-  it("sends hold3 for a hold of 3.5 seconds and hold5 for a hold of 6 seconds", () => {
+  it("sends the same hold for a press of any length past 2 seconds, with no upper limit", () => {
     press(cell("luck-3"), 3500);
-    press(cell("luck-12"), 6000);
+    press(cell("luck-12"), 30000);
     expect(sent.map((check) => [check.target, check.action])).toEqual([
-      ["luck-3", "hold3"],
-      ["luck-12", "hold5"],
+      ["luck-3", "hold"],
+      ["luck-12", "hold"],
     ]);
   });
 
-  it("sends no check before the release, and none for a press under 1 second", () => {
+  it("sends no check before the release, none for a press of 1 to 2 seconds, and none as a tap for it", () => {
     cell("luck-3").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true }));
     vi.advanceTimersByTime(4000);
     expect(sent).toEqual([]);
     cell("luck-3").dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true }));
-    press(cell("luck-12"), 900);
-    expect(sent.map((check) => check.action)).toEqual(["hold3"]);
+    press(cell("luck-12"), 1900);
+    tap(cell("luck-12"), TAP_GAP_MS + 1);
+    expect(sent.map((check) => check.action)).toEqual(["hold"]);
+  });
+
+  it("sends the hold of a touch press when Android Chrome fires its menu event during the hold", () => {
+    const target = cell("luck-3");
+    target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "touch" }));
+    vi.advanceTimersByTime(600);
+    // The listener blocks the menu, so the browser fires no pointercancel and the release comes.
+    expect(menu(target)).toBe(true);
+    vi.advanceTimersByTime(1600);
+    target.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true, pointerType: "touch" }));
+    vi.advanceTimersByTime(TAP_GAP_MS + 1);
+    expect(sent).toEqual([
+      { page: "/midseason/2026/", target: "luck-3", action: "hold", conditions: { theme: "light" } },
+    ]);
+  });
+
+  it("keeps the menu of a mouse right-click, a link, an image, a blurb, and an element with no stable id", () => {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `<div data-stable-id="award-top"><a id="inner-link" href="#a">Go</a><img id="inner-img" alt=""></div>`,
+    );
+    const touchDown = (element: Element) =>
+      element.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "touch" }));
+    cell("luck-3").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "mouse" }));
+    expect(menu(cell("luck-3"))).toBe(false);
+    for (const element of [
+      document.getElementById("inner-link")!,
+      document.getElementById("inner-img")!,
+      cell("blurb-luck"),
+      document.getElementById("plain")!,
+    ]) {
+      touchDown(element);
+      expect(menu(element)).toBe(false);
+    }
+  });
+
+  it("keeps the menu when no press is down, such as a menu key", () => {
+    expect(menu(cell("luck-3"))).toBe(false);
   });
 
   it("sends no check for a press that the browser cancels, such as a scroll", () => {
@@ -178,9 +235,8 @@ describe("listenForEggs", () => {
     const next = document.createElement("td");
     next.setAttribute("data-stable-id", "luck-3");
     cell("luck-3").replaceWith(next);
-    tap(cell("luck-3"));
     tap(cell("luck-3"), TAP_GAP_MS + 1);
-    expect(sent.map((check) => check.action)).toEqual(["tap3"]);
+    expect(sent.map((check) => check.action)).toEqual(["tap2"]);
   });
 
   /* Select the text from `start` to `end` of the first text node of the element, then let the selection settle. */
@@ -254,7 +310,7 @@ describe("listenForEggs", () => {
     expect(conditionsNow()).toEqual({ theme: "light" });
   });
 
-  it("sends the sim outcome and the trade of the analyzer from the marks on the root of each result", () => {
+  it("sends the sim outcome and the two teams of the analyzer trade from the marks on the root of each result", () => {
     document.body.insertAdjacentHTML(
       "beforeend",
       `<section data-sim-champion="12" data-sim-seeds="12:1 3:6"></section>
@@ -264,7 +320,7 @@ describe("listenForEggs", () => {
       theme: "light",
       sim_champion: 12,
       sim_seeds: ["12:1", "3:6"],
-      trade: "3:4046|12:6794",
+      trade_teams: [3, 12],
       trade_answer: "no",
     });
   });

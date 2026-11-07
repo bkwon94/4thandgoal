@@ -11,7 +11,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, field_validator
 
-from eggs.conditions import check_conditions, conditions_hold
+from eggs.conditions import check_action, check_conditions, conditions_hold, egg_page
 from eggs.letters import drop_letters
 from eggs.rules import letters_of, refusal, winner
 from eggs.store import AlreadyClaimed, Claim, Egg, EggStore
@@ -82,7 +82,8 @@ def check(body: CheckRequest, hunt: ClientHunt) -> dict:
     """No match, a match with the letter and a one-time claim token, or a match on an egg that a manager claimed."""
     now = hunt.clock()
     local = now.astimezone(hunt.tz) if hunt.tz is not None else now
-    for egg in hunt.store.find(body.page, body.target, body.action):
+    # A check from the 404 page names the one page of every 404 egg, so a 404 egg matches on any missing URL.
+    for egg in hunt.store.find(egg_page(body.page, body.conditions), body.target, body.action):
         # Each condition of the egg must hold in the state that the listener sends and on the clock of the client.
         if not conditions_hold(egg.conditions, body.state(), local):
             continue
@@ -217,6 +218,13 @@ class DropEgg(BaseModel):
     target: str
     action: str
     conditions: dict[str, Any] = {}
+
+    @field_validator("action")
+    @classmethod
+    def _action(cls, action: str) -> str:
+        # An action that the listener never sends answers 422 at the drop, so no egg hides where nobody can find it.
+        check_action(action)
+        return action
 
     @field_validator("conditions")
     @classmethod

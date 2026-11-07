@@ -47,3 +47,12 @@ Cut, with the reason:
 - Time on the page and the device: Brian cut them.
 
 If the eggs prove too hard, Brian raises the count of each egg drop.
+
+## Revised 2026-11-07 by Brian
+
+Brian tested the hunt by hand and changed the catalog. The text above stays as the first decision.
+
+- Taps: a double-tap only. The actions `tap3`, `tap4`, and `tap5` are gone. A burst of 3 or more fast taps sends nothing, so a spam of taps finds no double-tap egg. The tap combo stays: tap A, tap B, then a double-tap on C, within 5 seconds.
+- Holds: one action `hold`. A press of 2 seconds or more counts, with no upper limit. The holds of 1, 3, and 5 seconds are gone. A press of 1 to 2 seconds sends nothing.
+- The 404 page: an egg with `not_found = true` matches on any missing URL, not on one typed path. Its page is `*404`.
+- The analyzer: an egg names two teams, and the draft picks them at random. Any graded trade between exactly those two teams matches, in either direction, with any players. The action stays a double-tap on the verdict word. The idea "any trade that the analyzer grades F" stays out of scope.

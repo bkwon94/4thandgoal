@@ -1,5 +1,5 @@
 /**
- * The listener of the egg hunt: it reads fast taps, holds, tap combos, and a selected word on an element with a stable
+ * The listener of the egg hunt: it reads double-taps, holds, tap combos, and a selected word on an element with a stable
  * id, and sends one egg check for each. It never blocks a tap, so a link, a toggle, or a chip still does what it always does.
  */
 import { DARK_CLASS } from "@cpc/design/lib/theme";
@@ -14,11 +14,14 @@ import {
 } from "@cpc/design/lib/stable-id";
 import type { Conditions, EggCheck } from "../lib/api";
 
-/* A tap counts toward a multi-tap when it lands within this gap of the tap before, on the same element. */
+/* A tap counts toward a double-tap when it lands within this gap of the tap before, on the same element. */
 export const TAP_GAP_MS = 400;
 
-/* The holds of a long press, longest first. A press sends the longest hold that it reaches, on release. */
-export const HOLDS_S = [5, 3, 1] as const;
+/* A press of this time or more is a hold, with no upper limit. It sends one check on release. */
+export const HOLD_MS = 2000;
+
+/* A press of this time or more is no tap. A press from this time up to HOLD_MS sends nothing. */
+export const TAP_MAX_MS = 1000;
 
 /* A tap combo is tap A, tap B, then a double-tap on C, all within this time from tap A to the last tap on C. */
 export const COMBO_MS = 5000;
@@ -27,7 +30,8 @@ export const COMBO_MS = 5000;
 export const SELECT_SETTLE_MS = 600;
 
 /* The prefix of the stable id of a blurb, as `textId("blurb", text)` makes it. Only a blurb sends a select check, so
-   a selection in a table cell or a heading spends none of the limit of the API. */
+   a selection in a table cell or a heading spends none of the limit of the API. A blurb also keeps the menu of a long
+   press, because Android Chrome starts the selection of a word from that long press. */
 const BLURB_PREFIX = "blurb-";
 
 /* One word: letters and digits, with an apostrophe or a dash inside, such as "don't" or "co-op". */
@@ -71,12 +75,18 @@ function conditions(root: Document, scrolledEnd: boolean): Conditions {
   const seeds = mark(root, SIM_SEEDS);
   if (seeds) state.sim_seeds = seeds.split(/\s+/).filter(Boolean);
   const trade = mark(root, TRADE_KEY);
-  if (trade) state.trade = trade;
+  if (trade) state.trade_teams = teamsOf(trade);
   const answer = mark(root, TRADE_ANSWER);
   if (answer) state.trade_answer = answer;
   if (scrolledEnd) state.scrolled_end = true;
   if (root.querySelector(`[${NOT_FOUND}]`)) state.not_found = true;
   return state;
+}
+
+/* The roster ids of the sides of a trade key such as "3:4046|12:6794", smallest first. An egg names two teams, so any
+   trade between those two teams matches, with any players. */
+function teamsOf(key: string): number[] {
+  return key.split("|").map((side) => Number(side.split(":")[0])).sort((a, b) => a - b);
 }
 
 /* The stable id of the element under an event, or null when no element with a stable id holds the event. */
@@ -108,21 +118,24 @@ function selectedWord(root: Document): { id: string; word: string } | null {
   return id?.startsWith(BLURB_PREFIX) ? { id, word: word.toLowerCase() } : null;
 }
 
-/* The hold that a press of `ms` reaches, or null for a press under the shortest hold. */
-function holdOf(ms: number): number | null {
-  return HOLDS_S.find((hold) => ms >= hold * 1000) ?? null;
+/* True when the long press of a touch on `event.target` may lose its menu: an egg target that is not a blurb, with no link
+   and no image under the press. */
+function blocksMenu(event: Event): boolean {
+  const element = event.target instanceof Element ? event.target : null;
+  if (!element || element.closest("a, img")) return false;
+  const id = element.closest(`[${STABLE_ID}]`)?.getAttribute(STABLE_ID);
+  return Boolean(id) && !id!.startsWith(BLURB_PREFIX);
 }
 
-/* Listen on `root` and return the stop. Only a run of 2 or more taps or a long press sends a check, so a normal tap
-   sends none. */
+/* Listen on `root` and return the stop. Only a double-tap or a long press sends a check, so a normal tap sends none. */
 export function listenForEggs(root: Document, ports: ListenerPorts): () => void {
   // The run of fast taps on one stable id: its count and the time of its last tap.
   let run: { id: string; count: number; at: number } | null = null;
   // The single taps before the run, oldest first, for the trail of a tap combo. Only the last two count.
   let singles: { id: string; at: number }[] = [];
   let timer: ReturnType<typeof setTimeout> | undefined;
-  // The press that is down now: its stable id and the time it went down.
-  let down: { id: string; at: number } | null = null;
+  // The press that is down now: its stable id, the time it went down, and true for a touch.
+  let down: { id: string; at: number; touch: boolean } | null = null;
 
   // The wait for the selection to settle, and the key of the last selection that sent a check.
   let settle: ReturnType<typeof setTimeout> | undefined;
@@ -158,10 +171,12 @@ export function listenForEggs(root: Document, ports: ListenerPorts): () => void 
       singles = [...singles, { id: done.id, at: done.at }].slice(-2);
       return;
     }
-    // A double-tap carries the single taps before it within the time of a combo, so a tap combo sends one check.
-    const trail = done.count === 2 ? singles.filter((single) => done.at - single.at <= COMBO_MS).map((single) => single.id) : [];
+    // Only a double-tap sends a check. A burst of 3 or more taps sends nothing, so a spam of taps finds no egg.
+    const trail = singles.filter((single) => done.at - single.at <= COMBO_MS).map((single) => single.id);
     singles = [];
-    send(done.id, `tap${done.count}`, { trail });
+    if (done.count !== 2) return;
+    // A double-tap carries the single taps before it within the time of a combo, so a tap combo sends one check.
+    send(done.id, "tap2", { trail });
   }
 
   function onTap(id: string) {
@@ -181,7 +196,7 @@ export function listenForEggs(root: Document, ports: ListenerPorts): () => void 
   function onDown(event: PointerEvent) {
     if (!event.isPrimary) return;
     const id = idOf(event);
-    down = id ? { id, at: Date.now() } : null;
+    down = id ? { id, at: Date.now(), touch: event.pointerType === "touch" } : null;
   }
 
   function onUp(event: PointerEvent) {
@@ -189,13 +204,14 @@ export function listenForEggs(root: Document, ports: ListenerPorts): () => void 
     const pressed = down;
     down = null;
     // A long press is a hold and not a tap. It names the element where it went down, because a frame of the sim can
-    // put another node under the pointer before the release.
-    const hold = pressed ? holdOf(Date.now() - pressed.at) : null;
-    if (pressed && hold !== null) {
+    // put another node under the pointer before the release. A press too long for a tap and too short for a hold
+    // sends nothing.
+    const ms = pressed ? Date.now() - pressed.at : 0;
+    if (pressed && ms >= TAP_MAX_MS) {
       clearTimeout(timer);
       flush();
       singles = [];
-      send(pressed.id, `hold${hold}`);
+      if (ms >= HOLD_MS) send(pressed.id, "hold");
       return;
     }
     const id = idOf(event) ?? pressed?.id;
@@ -207,6 +223,13 @@ export function listenForEggs(root: Document, ports: ListenerPorts): () => void 
     down = null;
   }
 
+  // Android Chrome fires the menu event during a long press of a touch, then cancels the press, so the hold never
+  // sends. The block of the menu keeps the press. A mouse right-click, a link, and an image keep their menu. A tap
+  // fires no menu event, so no tap is ever blocked.
+  function onMenu(event: Event) {
+    if (down?.touch && blocksMenu(event)) event.preventDefault();
+  }
+
   function onScroll() {
     const view = root.defaultView;
     if (!view) return;
@@ -216,6 +239,7 @@ export function listenForEggs(root: Document, ports: ListenerPorts): () => void 
   root.addEventListener("pointerdown", onDown);
   root.addEventListener("pointerup", onUp);
   root.addEventListener("pointercancel", onCancel);
+  root.addEventListener("contextmenu", onMenu);
   root.addEventListener("selectionchange", onSelectionChange);
   root.defaultView?.addEventListener("scroll", onScroll, { passive: true });
   return () => {
@@ -227,6 +251,7 @@ export function listenForEggs(root: Document, ports: ListenerPorts): () => void 
     root.removeEventListener("pointerdown", onDown);
     root.removeEventListener("pointerup", onUp);
     root.removeEventListener("pointercancel", onCancel);
+    root.removeEventListener("contextmenu", onMenu);
     root.removeEventListener("selectionchange", onSelectionChange);
     root.defaultView?.removeEventListener("scroll", onScroll);
   };

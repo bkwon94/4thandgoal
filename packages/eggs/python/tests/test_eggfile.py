@@ -6,7 +6,7 @@ import pytest
 
 from eggs.eggfile import EggFileError, Spot, append_spots, read_spots
 
-GOOD = '[[eggs]]\nweek = 8\npage = "/a/"\ntarget = "t"\naction = "tap3"\nconfirmed = true\n'
+GOOD = '[[eggs]]\nweek = 8\npage = "/a/"\ntarget = "t"\naction = "tap2"\nconfirmed = true\n'
 
 
 def _file(tmp_path, text):
@@ -43,12 +43,12 @@ def test_an_egg_with_a_week_that_is_not_a_number_names_the_file(tmp_path):
 def test_a_spot_with_list_conditions_reads_back_the_same(tmp_path):
     path = tmp_path / "2026.toml"
     conditions = {"open": ["game-3"], "trail": ["a", "b"]}
-    spot = Spot(week=8, page="/a/", target="t", action="tap3", reason="r", conditions=conditions)
+    spot = Spot(week=8, page="/a/", target="t", action="tap2", reason="r", conditions=conditions)
     append_spots(path, [spot])
     assert [each.conditions for each in read_spots(path)] == [conditions]
 
 
 def test_a_value_of_another_type_is_still_an_error(tmp_path):
-    spot = Spot(week=8, page="/a/", target="t", action="tap3", reason="r", conditions={"open": {"a": 1}})
+    spot = Spot(week=8, page="/a/", target="t", action="tap2", reason="r", conditions={"open": {"a": 1}})
     with pytest.raises(ValueError, match="must be a string"):
         append_spots(tmp_path / "2026.toml", [spot])

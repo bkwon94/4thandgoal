@@ -12,8 +12,8 @@ const OUT = join(process.cwd(), "out");
 // The test passphrase and the test commissioner key of make -C apps/api api-evidence.
 const PASSPHRASE = "localtest";
 const COMMISSIONER_KEY = "localkey";
-// The test egg T1 of the acceptance tests: a 3-tap on the Luck cell of Lil Fridge, roster 3, in the light theme.
-const T1 = { page: "/midseason/2026/", target: "luck-3", action: "tap3", conditions: { theme: "light" } };
+// The test egg T1 of the acceptance tests: a double-tap on the Luck cell of Lil Fridge, roster 3, in the light theme.
+const T1 = { page: "/midseason/2026/", target: "luck-3", action: "tap2", conditions: { theme: "light" } };
 // The egg words of the hunt, in the order of the values file. The claim goes into the first word that holds the letter.
 const EGG_WORDS = ["CORNERSTONE", "LANSDALE", "EAGLES"];
 const WIDTHS = [375, 1280];
@@ -53,7 +53,7 @@ for (const width of WIDTHS) {
     await page.goto(`${server.url}/midseason/2026/`);
     const cell = page.locator('[data-stable-id="luck-3"]');
     await cell.scrollIntoViewIfNeeded();
-    await cell.click({ clickCount: 3 });
+    await cell.click({ clickCount: 2 });
     await expect(page.getByRole("heading", { name: "You found an egg" })).toBeVisible();
     await page.screenshot({ path: `test-results/eggs/egg-${width}.png` });
     await page.getByRole("button", { name: "Crack the egg" }).click();

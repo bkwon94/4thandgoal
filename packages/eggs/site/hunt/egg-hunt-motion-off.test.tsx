@@ -38,7 +38,7 @@ describe("EggHunt with reduced motion", () => {
     // The listener starts when the board loads with a drop.
     await act(async () => {});
     const cell = screen.getByText("+1.20");
-    for (const _ of [1, 2, 3]) fireEvent.pointerUp(cell, { isPrimary: true });
+    for (const _ of [1, 2]) fireEvent.pointerUp(cell, { isPrimary: true });
     await act(() => new Promise((done) => setTimeout(done, TAP_GAP_MS + 50)));
     await screen.findByRole("heading", { name: "You found an egg" });
     expect(document.querySelector(".egg-ripple")).toBeNull();

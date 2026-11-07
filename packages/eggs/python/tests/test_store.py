@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 from eggs.store import AlreadyClaimed, EggStore
 
 NOW = datetime(2026, 11, 10, 9, 0, tzinfo=ZoneInfo("America/New_York"))
-T1 = {"page": "/midseason/2026/", "target": "luck-3", "action": "tap3", "conditions": {"theme": "light"}, "letter": "C"}
+T1 = {"page": "/midseason/2026/", "target": "luck-3", "action": "tap2", "conditions": {"theme": "light"}, "letter": "C"}
 
 
 def test_two_claims_of_one_egg_at_once_give_one_claim(tmp_path):

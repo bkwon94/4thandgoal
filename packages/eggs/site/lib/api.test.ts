@@ -31,7 +31,7 @@ afterAll(() => new Promise<void>((done) => server.close(() => done())));
 
 describe("eggsApi", () => {
   it("gives the seconds of the Retry-After header on a 429 of the check", async () => {
-    const failure = await api.check({ page: "/", target: "luck-3", action: "tap3", conditions: {} }).catch((error) => error);
+    const failure = await api.check({ page: "/", target: "luck-3", action: "tap2", conditions: {} }).catch((error) => error);
     expect(failure).toBeInstanceOf(EggsError);
     expect(failure.status).toBe(429);
     expect(failure.retryAfter).toBe(690);

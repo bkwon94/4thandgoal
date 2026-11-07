@@ -7,6 +7,7 @@ import re
 from collections.abc import Callable
 from pathlib import Path
 
+from eggs.conditions import check_action, check_conditions, egg_page
 from eggs.eggfile import Spot, append_spots, read_spots
 
 # The prompt of the agent. It names the files to read, so it holds no spot.
@@ -68,13 +69,21 @@ def _parse(text: str, week: int) -> list[Spot]:
 
 
 def _problems(spots: list[Spot], dropped: list[Spot], size: int) -> list[str]:
-    """Each rule of the draft that the spots break: the count, a reason for each, and no repeat."""
+    """Each rule of the draft that the spots break: the count, a reason for each, a good action and good conditions
+    as the drop checks them, and no repeat."""
     problems = [] if len(spots) == size else [f"The draft holds {len(spots)} spots, not {size}."]
     problems += [f"The spot {spot.target} on {spot.page} has no reason." for spot in spots if not spot.reason]
-    # A spot repeats when another egg hides on the same target of the same page.
-    seen = {(spot.page, spot.target) for spot in dropped}
     for spot in spots:
-        if (spot.page, spot.target) in seen:
+        try:
+            check_action(spot.action)
+            check_conditions(spot.conditions)
+        except ValueError as err:
+            problems.append(f"The spot {spot.target} on {spot.page} is not valid: {err}")
+    # A spot repeats when another egg hides on the same target of the same page. Every 404 egg shares one page.
+    seen = {(egg_page(spot.page, spot.conditions), spot.target) for spot in dropped}
+    for spot in spots:
+        key = (egg_page(spot.page, spot.conditions), spot.target)
+        if key in seen:
             problems.append(f"The spot {spot.target} on {spot.page} repeats an egg.")
-        seen.add((spot.page, spot.target))
+        seen.add(key)
     return problems

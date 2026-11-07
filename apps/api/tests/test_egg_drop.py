@@ -56,7 +56,7 @@ def api(settings, fixture_raw_dir):
 
 def _spots(count: int) -> list[dict]:
     """`count` test eggs, each on its own target of the midseason page. No spot is real."""
-    return [{"page": "/midseason/2026/", "target": f"test-{index}", "action": "tap3", "conditions": {}}
+    return [{"page": "/midseason/2026/", "target": f"test-{index}", "action": "tap2", "conditions": {}}
             for index in range(count)]
 
 
@@ -129,6 +129,35 @@ def test_the_drop_refuses_a_bad_clock_window_or_weekday_and_drops_nothing(api, c
     assert api.app.state.hunts["cpc"].store.eggs() == []
 
 
+@pytest.mark.parametrize("action", ["tap3", "tap5", "hold1", "hold3", "hold5", "swipe"])
+def test_the_drop_refuses_an_action_that_is_not_tap2_hold_or_select(api, action):
+    eggs = [{**_spots(1)[0], "action": action}]
+    response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": eggs}, headers=COMMISSIONER)
+    assert response.status_code == 422
+    assert api.app.state.hunts["cpc"].store.eggs() == []
+
+
+@pytest.mark.parametrize("conditions", [
+    {"trade": "3:4046|12:6794"}, {"trade_teams": [1]}, {"trade_teams": [1, 3, 5]}, {"trade_teams": [3, 3]},
+    {"trade_teams": ["a", "b"]}, {"trade_teams": "1,3"}, {"not_found": False},
+])
+def test_the_drop_refuses_the_old_trade_key_a_bad_team_pair_or_a_false_404(api, conditions):
+    eggs = [{**_spots(1)[0], "conditions": conditions}]
+    response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": eggs}, headers=COMMISSIONER)
+    assert response.status_code == 422
+    assert api.app.state.hunts["cpc"].store.eggs() == []
+
+
+def test_the_drop_takes_each_action_a_team_pair_and_a_404_egg_on_the_page_of_any_404(api):
+    eggs = [{**_spots(3)[0], "action": "tap2"},
+            {**_spots(3)[1], "page": "/analyzer/", "action": "hold", "conditions": {"trade_teams": [3, 1]}},
+            {**_spots(3)[2], "page": "/old-week/", "action": "select", "conditions": {"not_found": True}}]
+    response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": eggs}, headers=COMMISSIONER)
+    assert response.status_code == 200, response.text
+    # A 404 egg matches on any missing URL, so the drop stores the one page of every 404.
+    assert [egg["page"] for egg in response.json()["eggs"]] == ["/midseason/2026", "/analyzer", "*404"]
+
+
 def test_the_drop_takes_a_good_clock_window_and_weekday(api):
     eggs = [{**_spots(1)[0], "conditions": {"clock": "23:00-00:00", "weekday": "Thu"}}]
     response = api.post(f"{BASE}/drop", json={"week": 9, "eggs": eggs}, headers=COMMISSIONER)
@@ -158,7 +187,7 @@ confirmed = true
 week = 8
 page = "/week/2026/8/"
 target = "test-{index}"
-action = "tap3"
+action = "hold"
 conditions = {{ theme = "light" }}
 reason = "Test spot {index}."
 confirmed = {"true" if index < 4 else "false"}
