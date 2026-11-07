@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-6, AT-7, AT-9, AT-10, A
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Two claims of one egg at once give one winner. The other answers that another manager claimed first.
 - [x] The API refuses a claim for the roster of the commissioner of the package values.
