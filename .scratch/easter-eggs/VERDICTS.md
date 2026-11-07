@@ -1,5 +1,5 @@
-ACCEPTANCE.md: 731ddfbf5628bc927c0261b8f8869bc7dbe43b6c
-EVIDENCE.md: 8e0d354e475d2db5456148fd49d2f162e9909735
+ACCEPTANCE.md: 4c3f5d8700c754c731ee0d323badfd496071ae3b
+EVIDENCE.md: 0e5990e5f44120019cfd94c0067b4281825545fd
 
 Test verdicts
 AT-1: PASS
@@ -33,9 +33,9 @@ AT-28: PASS
 AT-29: PASS
 AT-30: PASS
 AT-31: PASS
-AT-32: PASS
+AT-32: FAIL The Then line says the ring shows, the egg cracks, and the C tile springs up, but the files show only a still egg card and a still tile, with no ring, no crack, and no spring.
 AT-33: PASS
-AT-34: PASS
+AT-34: FAIL The Then line says a ghost tile pulses, but the shots show a still ghost tile and site-B.txt logs no animation of it.
 AT-35: PASS
 AT-36: PASS
 AT-37: PASS
