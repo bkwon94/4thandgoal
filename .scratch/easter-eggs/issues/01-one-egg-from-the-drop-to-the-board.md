@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-1, AT-2, AT-5, AT-8, AT
 
 **Blocked by:** None. It can start now.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The package `eggs` has a Python part, a site part, and a README with the headings Knows, Ports, and Does not do. Only `clients/cpc/client.toml` lists it.
 - [x] The API makes one SQLite file for each client on the volume at `/data`, with the tables `eggs` and `claims` of the spec. The `egg_id` of `claims` is unique.
