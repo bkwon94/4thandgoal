@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 import { Hero } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
 import type { ClaimAnswer } from "../lib/api";
-import { SlotRow } from "./egg-art";
+import { ArtGround, SlotRow } from "./egg-art";
 import { slotsOf } from "./slots";
 
 /* The end of a path. A claim carries the answer of the API, the gift card of the egg word, and the team. */
@@ -32,8 +32,8 @@ export function EndCard({ end, onClose }: { end: End; onClose: () => void }) {
         onClose={onClose}
       >
         <div className="flex flex-col items-center gap-sp-2 font-mono font-bold">
-          <span className="plate text-hero leading-hero text-accent-text">{end.minutes}</span>
-          <span className="plate text-meta tracking-caps text-on-dark-muted uppercase">Minutes left</span>
+          <span className="text-hero leading-hero text-accent-text">{end.minutes}</span>
+          <span className="text-meta tracking-caps text-on-dark-muted uppercase">Minutes left</span>
         </div>
       </Shell>
     );
@@ -87,8 +87,8 @@ export function EndCard({ end, onClose }: { end: End; onClose: () => void }) {
       board
     >
       <div className="flex items-baseline gap-sp-0 font-mono font-bold">
-        <span className="egg-tick plate text-hero leading-hero">{letters.length}</span>
-        <span className="plate text-score text-on-dark-muted">/{word.length}</span>
+        <span className="egg-tick text-hero leading-hero">{letters.length}</span>
+        <span className="text-score text-on-dark-muted">/{word.length}</span>
       </div>
       <SlotRow slots={slotsOf(word, before, answer.letter)} tone="hero" landing />
     </Shell>
@@ -117,23 +117,27 @@ function Shell({
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="egg-end-title" className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-gutter">
       <div aria-hidden="true" className="egg-scrim fixed inset-0 bg-band/80" />
-      <Hero label={label} className="egg-hero-in w-full max-w-sm">
+      <Hero label={label} className="egg-hero egg-hero-in w-full max-w-sm">
         <div className="flex flex-col items-center gap-sp-4 text-center">
           <div className="flex w-full items-center justify-between gap-sp-2">
             <Label dark className="mb-0 text-meta">
-              <span className="plate">{label}</span>
+              {label}
             </Label>
             {team && (
-              <span className="plate font-mono text-meta font-bold tracking-caps text-on-dark-muted uppercase">{team}</span>
+              <span className="font-mono text-meta font-bold tracking-caps text-on-dark-muted uppercase">{team}</span>
             )}
           </div>
-          {children}
+          {/* The ground reaches the edges of the hero, and never above or below the art. */}
+          <div className="relative flex flex-col items-center gap-sp-4 self-stretch">
+            <ArtGround inset="inset-y-0 -inset-x-hero-x" />
+            <div className="relative flex flex-col items-center gap-sp-4">{children}</div>
+          </div>
           <div className="egg-fade-in egg-fade-in-late flex flex-col gap-sp-1">
             <h2 id="egg-end-title" className="text-score leading-tight font-bold">
-              <span className="plate box-decoration-clone">{title}</span>
+              {title}
             </h2>
             <p className="text-lead text-on-dark-2">
-              <span className="plate box-decoration-clone">{line}</span>
+              {line}
             </p>
           </div>
           <div className="flex w-full flex-col items-center gap-sp-2">
@@ -145,7 +149,7 @@ function Shell({
               Back to the page
             </button>
             {board && (
-              <a href="/eggs/" className="inline-flex min-h-touch items-center rounded-pill bg-band px-sp-4 text-body font-bold text-accent-text">
+              <a href="/eggs/" className="inline-flex min-h-touch items-center rounded-pill px-sp-4 text-body font-bold text-accent-text">
                 See the egg board
               </a>
             )}

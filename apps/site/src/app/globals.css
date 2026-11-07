@@ -467,6 +467,24 @@
     }
 }
 
+/* The ground of the egg hunt: the grid and the glow sit only behind the art of an egg card, not behind its text.
+   An egg card has a two-line headline over the grid and the glow, and the plate of each line painted over the line above
+   it and showed as a dark box. So an egg hero hides its full texture, and the art takes a soft oval of the texture.
+   The text then sits on the flat band color, its contrast is the contrast of its role pair, and axe can read it.
+   The ground comes first in its parent and the art after it is positioned, so the art paints over the ground. A negative
+   z-index would do the same, but axe then misreads the stack and cannot read the contrast of the art. Each use sets its
+   inset, so the box of the ground never reaches a line of text. */
+@layer components {
+    .egg-hero [data-hero-art="texture"] {
+        display: none;
+    }
+    .egg-art-ground {
+        position: absolute;
+        pointer-events: none;
+        mask-image: radial-gradient(closest-side, #000 45%, transparent);
+    }
+}
+
 /* The motion of the egg hunt (ADR 0024): the find, the crack, the claim sheet, and the hero card at the end of each path.
    Each part takes the rise curve of the look. Keyframes with many steps cannot be Tailwind classes cleanly, so they live here. */
 @layer components {

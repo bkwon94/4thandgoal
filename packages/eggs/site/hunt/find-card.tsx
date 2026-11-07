@@ -9,7 +9,7 @@ import { Hero } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
-import { Egg } from "./egg-art";
+import { ArtGround, Egg } from "./egg-art";
 
 /* The time from the tap to the letter, in ms: the crack draws, the halves part, and the tile lands. */
 export const CRACK_MS = 1150;
@@ -49,12 +49,14 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
           <span className="egg-ripple egg-ripple-late" style={{ left: origin.x, top: origin.y }} />
         </div>
       )}
-      <Hero label={phase === "letter" ? "Letter found" : "Egg found"} className="egg-hero-in egg-hero-in-late w-full max-w-sm">
+      <Hero label={phase === "letter" ? "Letter found" : "Egg found"} className="egg-hero egg-hero-in egg-hero-in-late w-full max-w-sm">
         <div className="flex flex-col items-center gap-sp-4 text-center">
           <Label dark className="mb-0 self-start text-meta">
-            <span className="plate">{phase === "letter" ? "Letter found" : "Egg found"}</span>
+            {phase === "letter" ? "Letter found" : "Egg found"}
           </Label>
           <div className="relative flex h-58 w-50 items-center justify-center">
+            {/* The ground reaches past the art to the edges of the hero, and never above or below the art. */}
+            <ArtGround inset="inset-y-0 -inset-x-16" />
             {phase !== "letter" && (
               <button
                 type="button"
@@ -86,10 +88,10 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
             <div className={cn("flex w-full flex-col items-center gap-sp-4", motion && "egg-fade-in")}>
               <div className="flex flex-col gap-sp-1">
                 <h2 id="egg-find-title" className="text-score leading-tight font-bold">
-                  <span className="plate box-decoration-clone">The letter {letter} is yours to claim.</span>
+                  The letter {letter} is yours to claim.
                 </h2>
                 <p className="text-lead text-on-dark-2">
-                  <span className="plate box-decoration-clone">The first claim wins. Another manager can still beat you to it.</span>
+                  The first claim wins. Another manager can still beat you to it.
                 </p>
               </div>
               <button
@@ -103,10 +105,10 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
           ) : (
             <div className="flex flex-col gap-sp-1">
               <h2 id="egg-find-title" className="text-score leading-tight font-bold">
-                <span className="plate">You found an egg</span>
+                You found an egg
               </h2>
               <p className="text-lead text-on-dark-2">
-                <span className="plate">Tap it to crack it open.</span>
+                Tap it to crack it open.
               </p>
             </div>
           )}

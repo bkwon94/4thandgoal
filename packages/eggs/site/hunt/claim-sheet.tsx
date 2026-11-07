@@ -9,7 +9,7 @@ import { Label } from "@cpc/design/parts/label";
 import { cn } from "@cpc/design/lib/utils";
 import { EggsError, type Board, type ClaimAnswer, type EggsApi } from "../lib/api";
 import { clearPassphrase, getPassphrase, setPassphrase } from "../lib/passphrase";
-import { SlotRow } from "./egg-art";
+import { ArtGround, SlotRow } from "./egg-art";
 import { hasOpenSlot, heldLetters, leaderLine, slotsOf } from "./slots";
 
 type ClaimSheetProps = {
@@ -96,21 +96,25 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
     <div role="dialog" aria-modal="true" aria-labelledby="egg-claim-title" className="fixed inset-0 z-50 flex items-end justify-center tablet:items-center tablet:p-gutter">
       <div aria-hidden="true" className="egg-scrim fixed inset-0 bg-band/60" />
       <div className="egg-sheet-rise relative flex max-h-[92dvh] w-full max-w-lg flex-col gap-sp-5 overflow-y-auto rounded-t-hero border-t border-rule bg-page px-gutter pt-sp-3 pb-sp-6 text-ink tablet:rounded-hero tablet:border">
-        <span aria-hidden="true" className="h-1 w-9 self-center rounded-pill bg-rule tablet:hidden" />
+        {/* The sheet scrolls when its content is taller than the sheet. Each part with no content of its own to hold its
+            height takes flex-none, or the column shrinks it: the handle, and the hero, whose overflow-hidden lets it shrink. */}
+        <span aria-hidden="true" className="h-1 w-9 flex-none self-center rounded-pill bg-rule tablet:hidden" />
 
-        <div className="egg-up hero-texture relative flex items-center gap-sp-3 overflow-hidden rounded-tile border border-rule-dark bg-band p-sp-3 text-on-dark">
-          {/* The tile is taller than the glyph box of the letter at the largest headline size, 46px, so axe can read its contrast. */}
-          <span className="flex size-16 flex-none items-center justify-center rounded-letter bg-accent font-mono text-headline font-bold text-on-dark shadow-orb">
-            {letter}
+        <div className="egg-up relative flex flex-none items-center gap-sp-3 overflow-hidden rounded-tile border border-rule-dark bg-band p-sp-3 text-on-dark">
+          <span className="relative flex-none">
+            {/* The ground reaches the edges of the hero on the left, top, and bottom, and stops short of the text. */}
+            <ArtGround inset="-inset-y-sp-3 -left-sp-3 -right-sp-2" />
+            {/* The tile is taller than the glyph box of the letter at the largest headline size, 46px, so axe can read its contrast. */}
+            <span className="relative flex size-16 items-center justify-center rounded-letter bg-accent font-mono text-headline font-bold text-on-dark shadow-orb">
+              {letter}
+            </span>
           </span>
           <div className="flex min-w-0 flex-col gap-sp-1">
             <Label dark className="mb-0 text-meta">
-              <span className="plate">Claim</span>
+              Claim
             </Label>
             <h2 id="egg-claim-title" className="text-stat leading-tight font-bold">
-              {/* One text node gives one box per line. axe reads the page under the sheet at each box, so fewer boxes
-                  keep its contrast read clear. */}
-              <span className="plate box-decoration-clone">{`Put ${letter} in an egg word.`}</span>
+              {`Put ${letter} in an egg word.`}
             </h2>
           </div>
           <button

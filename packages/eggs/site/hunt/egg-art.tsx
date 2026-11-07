@@ -80,6 +80,12 @@ export function Egg({ cracking, motion }: { cracking: boolean; motion: boolean }
   );
 }
 
+/* The grid and the glow of the hero behind the art of an egg card (the class egg-art-ground of globals.css).
+   It comes first in its parent, before the positioned art, and the inset keeps the box of the ground off each line of text. */
+export function ArtGround({ inset }: { inset: string }) {
+  return <span aria-hidden="true" className={cn("egg-art-ground hero-texture", inset)} />;
+}
+
 /* The tiles of one egg word in a row. The page tone sits on a card of the claim sheet, the hero tone on a hero card.
    The tile of the new letter is red. In the sheet it is a ghost that pulses until the manager picks the word.
    The row is art, so a screen reader reads the count beside it instead. */
@@ -99,13 +105,15 @@ export function SlotRow({
   // True on the card of a word with no open slot, so a held tile takes the muted fill of the faded card.
   faded?: boolean;
 }) {
-  // The sizes fit the 11 tiles of CORNERSTONE in one row on a 375px phone.
+  // The sizes fit the 11 tiles of CORNERSTONE in one row on a 375px phone. The row never wraps: on a narrower phone each
+  // tile shrinks by the same amount, because a wrap left two tiles alone on a second row. The gap keeps two dashed
+  // borders apart, so each empty slot reads as its own box.
   const size = tone === "page" ? "size-6.5 text-row" : "h-7.5 w-6 text-body";
   return (
-    <div aria-hidden="true" className="flex flex-wrap gap-sp-0">
+    <div aria-hidden="true" className="flex max-w-full gap-sp-1">
       {slots.map((slot, index) => {
         const box = cn(
-          "relative inline-flex flex-none items-center justify-center rounded-letter font-mono font-bold",
+          "relative inline-flex min-w-0 shrink items-center justify-center rounded-letter font-mono font-bold",
           size,
         );
         if (slot.kind === "held") {

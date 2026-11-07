@@ -10,8 +10,8 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-37, AT-50, and AT-51.
 
 **Status:** ready-for-agent
 
-- [ ] The text of the find card, the letter card, each end card, and the hero of the claim sheet shows with no box and no overlap of two lines.
-- [ ] The hero of the claim sheet keeps its height when a team is picked and the sheet scrolls.
-- [ ] The link "See the egg board" shows with no dark pill.
-- [ ] The slots of CORNERSTONE on the end card show as one clean row of dashed slots at 390 px.
-- [ ] The readability floor passes on the claim sheet.
+- [x] The text of the find card, the letter card, each end card, and the hero of the claim sheet shows with no box and no overlap of two lines.
+- [x] The hero of the claim sheet keeps its height when a team is picked and the sheet scrolls.
+- [x] The link "See the egg board" shows with no dark pill.
+- [x] The slots of CORNERSTONE on the end card show as one clean row of dashed slots at 390 px.
+- [x] The readability floor passes on the claim sheet.
