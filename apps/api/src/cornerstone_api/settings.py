@@ -8,6 +8,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from eggs.keys import commissioner_key_env
 from league.paths import results_cache_dir
 
 # The site of each client at its Worker, the old CPC host for a page that a reader still has open, and the two local dev servers.
@@ -83,11 +84,6 @@ class Settings:
 def passphrase_env(slug: str) -> str:
     """The env value of the passphrase of the client `slug`, such as CORNERSTONE_PASSPHRASE_CPC for cpc."""
     return f"CORNERSTONE_PASSPHRASE_{slug.upper()}"
-
-
-def commissioner_key_env(slug: str) -> str:
-    """The env value of the commissioner key of the client `slug`, such as CORNERSTONE_COMMISSIONER_KEY_CPC for cpc."""
-    return f"CORNERSTONE_COMMISSIONER_KEY_{slug.upper()}"
 
 
 def eggs_dir(settings: Settings) -> Path:

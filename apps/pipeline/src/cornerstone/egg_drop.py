@@ -7,7 +7,8 @@ from pathlib import Path
 
 import httpx
 
-from eggs.eggfile import confirmed_spots
+from eggs.eggfile import EggFileError, confirmed_spots
+from eggs.keys import API_URL, commissioner_key_env
 from league.client import Client
 
 
@@ -32,23 +33,30 @@ def run_egg_drop(client: Client, week: int, egg_file: Path, http: httpx.Client, 
     # The status check is by hand, because the test client of the API raises its own error type, not the one of httpx.
     if response.status_code != 200:
         return f"WARNING: the egg drop of week {week} failed: HTTP {response.status_code} {response.text}. {retry}"
-    dropped = response.json()["dropped"]
+    answer = response.json()
+    # One line per egg, so the commissioner finds the id for "make egg-undo". It goes to the terminal only, never to a file.
+    lines = [f"Egg {egg['id']}  letter {egg['letter']}  {egg['page']}  {egg['target']}" for egg in answer["eggs"]]
+    dropped = answer["dropped"]
     if dropped == 0:
         # A second drop of one week adds nothing, so the eggs of the first drop stay.
-        return f"Week {week} already holds its eggs, so no eggs dropped."
-    return f"Dropped {dropped} eggs of week {week}."
-
-
-# The API of the site, the same default as the site config.
-API_URL = "https://api.4thandgoal.app"
-
-
-def commissioner_key_env(slug: str) -> str:
-    """The env value of the commissioner key of the client `slug`, as the API app reads it."""
-    return f"CORNERSTONE_COMMISSIONER_KEY_{slug.upper()}"
+        head = f"Week {week} already holds its eggs, so no eggs dropped."
+    else:
+        head = f"Dropped {dropped} eggs of week {week}."
+    return "\n".join([head, *lines])
 
 
 def drop_from_env(client: Client, week: int, egg_file: Path) -> str:
     """Run the egg drop against the API of CORNERSTONE_API_URL, with the commissioner key of the env."""
     with httpx.Client(base_url=os.environ.get("CORNERSTONE_API_URL", API_URL), timeout=30) as http:
         return run_egg_drop(client, week, egg_file, http, os.environ.get(commissioner_key_env(client.slug)))
+
+
+def drop_after_publish(client: Client, week: int, egg_file: Path) -> str:
+    """The egg drop as the last step of the publish: a bad egg file gives a warning, so the publish still exits 0.
+
+    "make egg-drop" calls drop_from_env, which lets the EggFileError through, so it exits non-zero with the same message.
+    """
+    try:
+        return drop_from_env(client, week, egg_file)
+    except EggFileError as err:
+        return f"WARNING: the egg drop of week {week} failed: {err} Fix the file, then run make egg-drop CLIENT={client.slug} WEEK={week}."
