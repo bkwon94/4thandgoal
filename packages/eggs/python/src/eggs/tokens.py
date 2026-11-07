@@ -27,3 +27,10 @@ class ClaimTokens:
         if held is None or held[1] <= now:
             return None
         return held[0]
+
+    def peek(self, token: str, now: datetime) -> int | None:
+        """The egg of the token without taking it, so a refused claim leaves the token good."""
+        held = self.live.get(token)
+        if held is None or held[1] <= now:
+            return None
+        return held[0]

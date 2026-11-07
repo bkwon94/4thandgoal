@@ -11,6 +11,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
+from eggs.rules import refusal, winner
 from eggs.store import AlreadyClaimed, Claim, EggStore
 from eggs.tokens import ClaimTokens
 from eggs.values import EggsValues
@@ -100,22 +101,36 @@ def claim(body: ClaimRequest, hunt: ClientHunt) -> dict:
         raise HTTPException(status_code=422, detail=f"Roster {body.roster_id} is not in the league.")
     now = hunt.clock()
     with hunt.lock:
-        egg_id = hunt.tokens.take(body.token, now)
+        egg_id = hunt.tokens.peek(body.token, now)
         if egg_id is None:
             raise HTTPException(status_code=410, detail=BAD_TOKEN)
+        letter = next(each.letter for each in hunt.store.eggs() if each.id == egg_id)
+        # A refusal comes before the take, so the token stays good for a claim that stands.
+        reason = refusal(hunt.values, hunt.store.claims(), body.roster_id, body.word, letter)
+        if reason is not None:
+            raise HTTPException(status_code=422, detail=reason)
+        hunt.tokens.take(body.token, now)
         try:
             hunt.store.claim(egg_id, body.roster_id, body.word, body.browser, now)
         except AlreadyClaimed:
             raise HTTPException(status_code=409, detail=CLAIMED_FIRST) from None
     claims = hunt.store.claims()
-    letter = next(each.letter for each in claims if each.egg_id == egg_id)
+    # The claim fills the egg word when the manager now wins it.
+    won = body.word is not None and winner(claims, body.word) == body.roster_id
     return {
         "egg_id": egg_id,
         "letter": letter,
         "roster_id": body.roster_id,
         "word": body.word,
         "letters": {word: _letters(claims, body.roster_id, word) for word in words},
+        "winner": {"roster_id": body.roster_id, "word": body.word} if won else None,
     }
+
+
+def _winner_of(claims: list[Claim], teams: dict[int, str], word: str) -> dict | None:
+    """The winner of the egg word with the team name, or None while the word is open."""
+    roster_id = winner(claims, word)
+    return None if roster_id is None else {"roster_id": roster_id, "team": teams.get(roster_id, "")}
 
 
 @open_router.get("/board")
@@ -148,6 +163,7 @@ def board(hunt: ClientHunt) -> dict:
             {
                 "word": each.word,
                 "prize": each.prize,
+                "winner": _winner_of(claims, teams, each.word),
                 "managers": [{**manager, "letters": _letters(claims, manager["roster_id"], each.word)}
                              for manager in managers],
             }

@@ -109,6 +109,7 @@
     {
       "word": "CORNERSTONE",
       "prize": 50,
+      "winner": null,
       "managers": [
         {
           "roster_id": 1,
@@ -172,6 +173,7 @@
     {
       "word": "LANSDALE",
       "prize": 30,
+      "winner": null,
       "managers": [
         {
           "roster_id": 1,
@@ -233,6 +235,7 @@
     {
       "word": "EAGLES",
       "prize": 20,
+      "winner": null,
       "managers": [
         {
           "roster_id": 1,

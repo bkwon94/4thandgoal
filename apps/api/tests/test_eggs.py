@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -54,7 +55,8 @@ def repo(tmp_path, fixture_history_root, fixture_nflverse_dir):
 @pytest.fixture
 def settings(repo):
     return Settings(passphrases={"cpc": PASSPHRASE}, repo=repo, result_cache_dir=repo / "results",
-                    commissioner_keys={"cpc": KEY}, eggs_dir=repo / "eggs")
+                    commissioner_keys={"cpc": KEY}, eggs_dir=repo / "eggs",
+                    rate_limit_per_minute=600)
 
 
 @pytest.fixture
@@ -267,3 +269,108 @@ def test_the_board_answer_keeps_the_shape_of_the_site_fixture(api):
     _drop(api, T1, {**T1, "target": "luck-12", "letter": "A"})
     _claim(api, _token(api))
     assert api.get(f"{BASE}/board").json() == json.loads(BOARD_FIXTURE.read_text(encoding="utf-8"))
+
+
+def _letter_egg(letter, target):
+    """A test egg with its own target, so each letter has its own egg."""
+    return {**T1, "target": target, "letter": letter}
+
+
+def _claim_egg(api, egg, roster_id=LIL_FRIDGE, word="CORNERSTONE"):
+    """Check the egg at its spot and claim it, as a manager does."""
+    token = api.post(f"{BASE}/check", json={**CHECK, "target": egg["target"]}).json()["token"]
+    return _claim(api, token, roster_id=roster_id, word=word)
+
+
+def test_two_claims_of_one_egg_at_once_give_one_winner(api):
+    _drop(api, T1)
+    tokens = [_token(api), _token(api)]
+    with ThreadPoolExecutor(2) as pool:
+        statuses = sorted(pool.map(lambda args: _claim(api, *args).status_code,
+                                   [(tokens[0], LIL_FRIDGE), (tokens[1], 12)]))
+    assert statuses == [200, 409]
+    assert api.get(f"{BASE}/board").json()["counts"]["found"] == 1
+
+
+def test_the_claim_of_the_commissioner_is_refused_and_the_egg_stays_live(api):
+    _drop(api, T1)
+    token = _token(api)
+    response = _claim(api, token, roster_id=BO_GIRDS)
+    assert response.status_code == 422
+    assert api.get(f"{BASE}/board").json()["counts"]["left"] == 1
+    # The refusal keeps the token good.
+    assert _claim(api, token).status_code == 200
+
+
+def test_a_letter_into_an_egg_word_with_no_open_slot_for_it_is_refused(api):
+    _drop(api, T1, _letter_egg("C", "luck-12"))
+    assert _claim_egg(api, T1).status_code == 200
+    response = _claim_egg(api, _letter_egg("C", "luck-12"))
+    assert response.status_code == 422
+    assert api.get(f"{BASE}/board").json()["counts"]["found"] == 1
+
+
+def test_a_letter_that_is_not_in_the_egg_word_is_refused(api):
+    _drop(api, {**T1, "letter": "Z"})
+    assert _claim(api, _token(api)).status_code == 422
+
+
+def test_a_letter_that_twice_in_the_egg_word_fills_two_slots_and_no_more(api):
+    _drop(api, *[_letter_egg("R", f"luck-{n}") for n in (1, 2, 4)])
+    assert _claim_egg(api, _letter_egg("R", "luck-1")).status_code == 200
+    assert _claim_egg(api, _letter_egg("R", "luck-2")).status_code == 200
+    assert _claim_egg(api, _letter_egg("R", "luck-4")).status_code == 422
+
+
+def test_a_block_is_refused_when_the_letter_fits_an_egg_word_of_the_manager(api):
+    _drop(api, T1)
+    response = _claim(api, _token(api), word=None)
+    assert response.status_code == 422
+    assert api.get(f"{BASE}/board").json()["counts"]["found"] == 0
+
+
+def test_a_block_counts_as_found_and_shows_nowhere_else(api):
+    # Lil Fridge holds the one C of CORNERSTONE, and C is in neither LANSDALE nor EAGLES.
+    _drop(api, T1, _letter_egg("C", "luck-12"))
+    assert _claim_egg(api, T1).status_code == 200
+    before = api.get(f"{BASE}/board").json()
+    response = _claim_egg(api, _letter_egg("C", "luck-12"), word=None)
+    assert response.status_code == 200
+    after = api.get(f"{BASE}/board").json()
+    assert after["counts"]["found"] == before["counts"]["found"] + 1
+    assert after["words"] == before["words"]
+    assert after["latest"] == before["latest"]
+
+
+def _fill_eagles(api, roster_id, letters="EAGLS"):
+    eggs = [_letter_egg(letter, f"luck-{n}") for n, letter in enumerate(letters, start=1)]
+    _drop(api, *eggs)
+    for egg in eggs:
+        assert _claim_egg(api, egg, roster_id=roster_id, word="EAGLES").status_code == 200
+
+
+def test_the_claim_that_fills_an_egg_word_names_the_winner_and_closes_the_word(api):
+    # EAGLES holds two E, so Lil Fridge holds E, A, G, L, S, and the last E fills it.
+    _fill_eagles(api, LIL_FRIDGE)
+    spare = _letter_egg("E", "luck-12")
+    _drop(api, spare, week=10)
+    response = _claim_egg(api, spare, word="EAGLES")
+    assert response.status_code == 200
+    assert response.json()["winner"] == {"roster_id": LIL_FRIDGE, "word": "EAGLES"}
+    words = {word["word"]: word for word in api.get(f"{BASE}/board").json()["words"]}
+    assert words["EAGLES"]["winner"] == {"roster_id": LIL_FRIDGE, "team": "Lil Fridge"}
+    assert words["CORNERSTONE"]["winner"] is None
+    # Another manager now gets no letter into EAGLES.
+    other = _letter_egg("A", "luck-13")
+    _drop(api, other, week=11)
+    assert _claim_egg(api, other, roster_id=12, word="EAGLES").status_code == 422
+
+
+def test_the_undo_keeps_the_row_and_the_egg_goes_live_again(api, settings):
+    egg_id = _drop(api, T1)["eggs"][0]["id"]
+    _claim(api, _token(api))
+    api.post(f"{BASE}/undo", json={"egg_id": egg_id}, headers=COMMISSIONER)
+    with sqlite3.connect(next(settings.eggs_dir.iterdir())) as db:
+        rows = db.execute("SELECT egg_id, undone_at FROM claims").fetchall()
+    assert [row[0] for row in rows] == [egg_id]
+    assert rows[0][1] is not None

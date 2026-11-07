@@ -11,7 +11,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish page-json rankings midseason midseason-publish analyze push
+.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish page-json rankings midseason midseason-publish analyze egg-undo push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -80,6 +80,18 @@ analyze: need-client ## Grade a trade without the Claude call (SIDES="ROSTER:PLA
 
 settings: need-client ## Print the League settings and the derived sizes of a season (CLIENT required)
 	$(RUN) cornerstone settings --client $(CLIENT) --season $(SEASON)
+
+# The commissioner key of the client comes from the env CORNERSTONE_COMMISSIONER_KEY_<SLUG>, such as ..._CPC. The API
+# base URL is CORNERSTONE_API_URL, and it defaults to the local API of "make api" in apps/api.
+# Example: make egg-undo CLIENT=cpc EGG=12
+CORNERSTONE_API_URL ?= http://127.0.0.1:8080
+COMMISSIONER_KEY_ENV = CORNERSTONE_COMMISSIONER_KEY_$(shell echo $(CLIENT) | tr a-z A-Z)
+egg-undo: need-client ## Undo the claim of an egg so the egg is live again (CLIENT and EGG required)
+	@test -n "$(EGG)" || { echo "Set EGG, the egg id. Example: make egg-undo CLIENT=cpc EGG=12"; exit 1; }
+	@test -n "$${$(COMMISSIONER_KEY_ENV)}" || { echo "Set $(COMMISSIONER_KEY_ENV), the commissioner key of $(CLIENT)."; exit 1; }
+	@curl --fail-with-body --silent --show-error -X POST "$(CORNERSTONE_API_URL)/clients/$(CLIENT)/eggs/undo" \
+		-H "X-Commissioner-Key: $${$(COMMISSIONER_KEY_ENV)}" -H "Content-Type: application/json" -d '{"egg_id": $(EGG)}'
+	@echo
 
 # The refresh cron runs from main.
 push: need-main ## Push main to origin (main branch, clean tree only)
