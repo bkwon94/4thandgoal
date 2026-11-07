@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, and A
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The text of each hero of the board sits on the flat band color with no plate. The grid and the glow show only where no text sits.
 - [x] Each tile of a letter row of an egg word card has the same width, with a visible gap, inside its card at 340 px and 390 px.
