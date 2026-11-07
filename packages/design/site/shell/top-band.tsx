@@ -1,5 +1,5 @@
 /**
- * The shell of every page: the top band with the brand mark, the pill bar, the week chip, and the theme button,
+ * The shell of every page: the top band with the brand mark, the pill bar, the week chip, the actions, and the theme button,
  * and the dock at the bottom of a phone and a tablet. The top band stays on screen at every scroll.
  */
 import type { ReactNode } from "react";
@@ -21,9 +21,12 @@ type TopBandProps = {
   pageHref?: string;
   // The head of a page with no hero, such as its week line, under the band. A page with a hero passes none.
   children?: ReactNode;
+  // The buttons of the packages of the client, such as the egg button, just before the theme button. The app layer
+  // passes them, so the shell names no package. A client with none passes none.
+  actions?: ReactNode;
 };
 
-export function TopBand({ title, brand, menu, pageHref, children }: TopBandProps) {
+export function TopBand({ title, brand, menu, pageHref, children, actions }: TopBandProps) {
   const current = currentHref(menu.items, menu.weeks, pageHref);
   const week = chipWeek(menu.weeks, pageHref);
   return (
@@ -58,6 +61,7 @@ export function TopBand({ title, brand, menu, pageHref, children }: TopBandProps
           />
           <div className="ml-auto flex flex-none items-center gap-sp-2">
             {week !== undefined && <WeekChip weeks={menu.weeks} week={week} pageHref={pageHref} />}
+            {actions}
             {/* The theme button needs the script, so it hides with scripts off. The negative margin lines the icon up with the edge. */}
             <ThemeButton className="-mr-sp-3 [@media(scripting:none)]:hidden" />
           </div>

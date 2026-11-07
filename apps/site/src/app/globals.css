@@ -90,6 +90,16 @@
     /* The space the dock takes at the bottom of a phone: the item, the 4px inset of the dock, its 1px edges, and its
        12px offset from the bottom edge. The body keeps it free, so the dock never covers the end of the page. */
     --spacing-dock-space: calc(var(--spacing-dock) + 2 * var(--spacing-sp-1) + 2px + var(--spacing-sp-3));
+    /* The egg banner of the home page: one strip, edge to edge under the top band (ticket 07 of easter-eggs). */
+    --spacing-banner: 52px;
+    /* The letter tiles of the egg board. A long egg word, such as CORNERSTONE, takes the small tile, so its row fits a
+       phone. The feed tile leads a row of Latest claims, and the win tile spells a won egg word in its hero card. */
+    --spacing-letter: 24px;
+    --spacing-letter-sm: 20px;
+    --spacing-feed-tile: 32px;
+    --spacing-win-tile: 36px;
+    /* The glow of an egg still out on the grid of the egg board. */
+    --drop-shadow-egg: 0 0 4px var(--color-accent-text);
     /* The inner space of the hero: 28px on top and bottom, and 24px on the sides (ADR 0024). */
     --spacing-hero-y: 28px;
     --spacing-hero-x: var(--spacing-sp-6);

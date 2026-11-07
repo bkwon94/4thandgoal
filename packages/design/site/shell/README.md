@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The top band: the brand mark, the pill bar, the week chip, and the theme button. It is sticky, so it stays on screen at every scroll.
+- The top band: the brand mark, the pill bar, the week chip, the actions, and the theme button. It is sticky, so it stays on screen at every scroll. The actions are the button of each package of the client, such as the egg button, which the app passes.
 - The pill bar: each destination with its full label, from the desktop tier up. The dock: each destination as an icon and a short label, fixed at the bottom of a phone and a tablet.
 - The week chip, "WK 08", and the strip of the weeks of the season that it opens. The chip week has the brand edge.
 - The open destination: `currentHref` in `nav.ts` marks the item of the open page, a page under it, or any week.

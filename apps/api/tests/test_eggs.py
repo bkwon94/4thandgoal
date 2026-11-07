@@ -199,6 +199,16 @@ def test_the_board_shows_each_slot_of_the_hunt_by_week(api):
     assert all(week["slots"] == ["future"] * 6 for week in weeks[1:])
 
 
+def test_the_board_names_the_week_the_time_and_the_count_of_the_last_drop(api):
+    assert api.get(f"{BASE}/board").json()["last_drop"] is None
+    _drop(api, T1, {**T1, "target": "luck-12", "letter": "A"})
+    tuesday = datetime(2026, 10, 27, 9, 30, tzinfo=ET)
+    api.app.state.hunts["cpc"].clock = lambda: tuesday
+    _drop(api, *[_letter_egg(letter, f"luck-{index}") for index, letter in enumerate("ACDEGL")], week=10)
+    assert api.get(f"{BASE}/board").json()["last_drop"] == {
+        "week": 10, "count": 6, "dropped_at": tuesday.isoformat()}
+
+
 def test_the_store_is_one_sqlite_file_of_the_client_with_the_eggs_and_the_claims_tables(api, settings):
     _drop(api, T1)
     with sqlite3.connect(settings.eggs_dir / "cpc.sqlite") as db:

@@ -349,5 +349,10 @@
       "roster_id": 12,
       "team": "Amon-Ra Dawg Your Team"
     }
-  ]
+  ],
+  "last_drop": {
+    "week": 9,
+    "count": 2,
+    "dropped_at": "2026-10-19T12:00:00-04:00"
+  }
 }

@@ -5,13 +5,14 @@
 - The client of the eggs routes in `api.ts`, the Zod schema of each answer, and the port `EggsApi` that the parts call.
 - The wait of a 429, from its Retry-After header, on the error of a failed call.
 - The passphrase in local storage, under the same key as the trade analyzer.
+- The hide state of the egg banner in local storage, keyed by drop, in `banner-store.ts`.
 - The board fixture in `fixtures/board.json`, which the API tests hold to the real answer, and the one fake of the port.
   A test gives the fake a failure of the check or the claim, or a board built from the fixture with `boardWith`.
 
 ## Ports
 
 - The eggs routes of the API, at `<url>/clients/<slug>/eggs/check`, `/claim`, and `/board`.
-- Local storage, through `passphrase.ts`.
+- Local storage, through `passphrase.ts` and `banner-store.ts`.
 
 ## Does not do
 

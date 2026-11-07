@@ -199,6 +199,14 @@ const HOME_TOOLS = { analyzer: "@/app/_routes/analyzer/home", managers: "@/app/_
    list, so the bundle of a client that omits the package holds none of its code. */
 const PAGE_PARTS = { eggs: "@/app/_routes/eggs/hunt" };
 
+/* The button that a package puts in the top band of every page, such as the egg button, just before the theme button.
+   The registry imports it only for a package of the list, so the top band of a client that omits the package holds none. */
+const BAND_PARTS = { eggs: "@/app/_routes/eggs/band" };
+
+/* The strip that a package puts under the top band of the home page, such as the egg banner. The registry imports it
+   only for a package of the list, so the home page of a client that omits the package holds none. */
+const HOME_BANNERS = { eggs: "@/app/_routes/eggs/home-banner" };
+
 /* The managers routes build only for the latest season, so its managers file gives their params. */
 function managersFile(published) {
   const season = latestSeasonDir(published);
@@ -229,13 +237,17 @@ function registryText(slug, values) {
   const tools = Object.keys(HOME_TOOLS).filter((name) => values.packages.includes(name));
   const home = HOME_SECTIONS.filter((name) => values.packages.includes(name));
   const parts = Object.keys(PAGE_PARTS).filter((name) => values.packages.includes(name));
+  const band = Object.keys(BAND_PARTS).filter((name) => values.packages.includes(name));
+  const banners = Object.keys(HOME_BANNERS).filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { HomeSections, HomeTool, MenuLinks, PagePart } from "@/lib/client-values";`,
+    `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
     ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
     ...home.map((name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`),
     ...parts.map((name) => `import { PagePart as ${name}PagePart } from "${PAGE_PARTS[name]}";`),
+    ...band.map((name) => `import { BandPart as ${name}BandPart } from "${BAND_PARTS[name]}";`),
+    ...banners.map((name) => `import { HomeBanner as ${name}HomeBanner } from "${HOME_BANNERS[name]}";`),
     "",
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
@@ -252,6 +264,12 @@ function registryText(slug, values) {
     "",
     "/* The part of each package of the client that every page mounts. */",
     `export const pageParts: PagePart[] = [${parts.map((name) => `${name}PagePart`).join(", ")}];`,
+    "",
+    "/* The button of each package of the client in the top band, just before the theme button. */",
+    `export const bandParts: BandPart[] = [${band.map((name) => `${name}BandPart`).join(", ")}];`,
+    "",
+    "/* The strip of each package of the client under the top band of the home page. */",
+    `export const homeBanners: HomeBanner[] = [${banners.map((name) => `${name}HomeBanner`).join(", ")}];`,
     "",
   ].join("\n");
 }

@@ -16,7 +16,7 @@ export function EggBoardScreen({ api }: { api: EggsApi }) {
     api.board().then(setBoard, () => setFailed(true));
   }, [api]);
 
-  if (failed) return <p className="text-body">The egg board did not load. Try again in a few minutes.</p>;
-  if (board === null) return <p className="text-body text-mute">The egg board loads.</p>;
+  if (failed) return <p className="text-lead">The egg board did not load. Try again in a few minutes.</p>;
+  if (board === null) return <p className="text-lead text-mute">The egg board loads.</p>;
   return <EggBoard board={board} />;
 }

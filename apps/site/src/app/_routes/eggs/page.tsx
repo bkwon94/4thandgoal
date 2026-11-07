@@ -16,8 +16,8 @@ export default function EggsPage() {
   return (
     <>
       <TopBand {...shellProps()} pageHref={eggsHref()} />
-      <main className="mx-auto w-full max-w-page px-gutter pt-sp-6 pb-sp-6">
-        <h1 className="mb-sp-4 text-headline font-black uppercase">Egg Board</h1>
+      {/* The hero of the egg board holds the h1 of the page. */}
+      <main className="mx-auto w-full max-w-page px-gutter pt-sp-5 pb-sp-6">
         <EggBoardPart />
       </main>
     </>
