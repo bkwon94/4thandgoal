@@ -4,6 +4,7 @@ The rosters come from the recorded week 6 Sleeper data, so no test needs the net
 """
 import os
 import shutil
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -18,6 +19,7 @@ from cornerstone_api.app import create_app
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
+from eggs.keys import API_URL
 from league.provider.sleeper import load_raw
 
 ET = ZoneInfo("America/New_York")
@@ -191,3 +193,14 @@ def test_a_client_without_the_eggs_package_skips_the_drop(api, settings, tmp_pat
     line = run_egg_drop(without, 8, _egg_file(tmp_path), api, KEY)
     assert line == "The client cpc has no eggs package, so no eggs dropped."
     assert _board_left(api) == 0
+
+
+def test_the_egg_undo_and_the_egg_drop_default_to_the_same_live_api():
+    pipeline = Path(__file__).resolve().parents[2] / "pipeline"
+    env = {name: value for name, value in os.environ.items() if name != "CORNERSTONE_API_URL"}
+    # "make -n" prints the curl line of the undo with the URL that the Makefile picks, and runs nothing else.
+    # The "make" call runs the real Makefile, so the default of the Makefile is the one under test.
+    dry = subprocess.run(["make", "-n", "egg-undo", "CLIENT=cpc", "EGG=1"], cwd=pipeline, env=env,
+                         capture_output=True, text=True, check=True).stdout
+    assert f'"{API_URL}/clients/cpc/eggs/undo"' in dry
+    assert API_URL == "https://api.4thandgoal.app"

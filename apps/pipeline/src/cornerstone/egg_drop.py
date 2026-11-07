@@ -8,7 +8,7 @@ from pathlib import Path
 import httpx
 
 from eggs.eggfile import confirmed_spots
-from eggs.keys import commissioner_key_env
+from eggs.keys import API_URL, commissioner_key_env
 from league.client import Client
 
 
@@ -38,10 +38,6 @@ def run_egg_drop(client: Client, week: int, egg_file: Path, http: httpx.Client, 
         # A second drop of one week adds nothing, so the eggs of the first drop stay.
         return f"Week {week} already holds its eggs, so no eggs dropped."
     return f"Dropped {dropped} eggs of week {week}."
-
-
-# The API of the site, the same default as the site config.
-API_URL = "https://api.4thandgoal.app"
 
 
 def drop_from_env(client: Client, week: int, egg_file: Path) -> str:

@@ -94,9 +94,10 @@ settings: need-client ## Print the League settings and the derived sizes of a se
 	$(RUN) cornerstone settings --client $(CLIENT) --season $(SEASON)
 
 # The commissioner key of the client comes from the env CORNERSTONE_COMMISSIONER_KEY_<SLUG>, such as ..._CPC. The API
-# base URL is CORNERSTONE_API_URL, and it defaults to the local API of "make api" in apps/api.
+# base URL is CORNERSTONE_API_URL. It defaults to the live API, the same default as egg-drop (eggs.keys.API_URL).
+# A local run sets CORNERSTONE_API_URL, such as http://127.0.0.1:8080 for "make api" in apps/api.
 # Example: make egg-undo CLIENT=cpc EGG=12
-CORNERSTONE_API_URL ?= http://127.0.0.1:8080
+CORNERSTONE_API_URL ?= $(shell $(RUN) python -c "from eggs.keys import API_URL; print(API_URL)")
 COMMISSIONER_KEY_ENV = CORNERSTONE_COMMISSIONER_KEY_$(shell echo $(CLIENT) | tr a-z A-Z)
 egg-undo: need-client ## Undo the claim of an egg so the egg is live again (CLIENT and EGG required)
 	@test -n "$(EGG)" || { echo "Set EGG, the egg id. Example: make egg-undo CLIENT=cpc EGG=12"; exit 1; }
