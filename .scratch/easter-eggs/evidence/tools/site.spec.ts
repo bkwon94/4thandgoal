@@ -856,3 +856,53 @@ test("phase L: the multi-tap, the sim frames, and the callout", async ({ browser
     await close();
   }
 });
+
+test("phase P47: the hunt hides before the first drop", async ({ browser }) => {
+  PHASE = "P47";
+  api("P47", true);
+  const answer = await board();
+  writeFileSync(join(folder("AT-47"), "board.json"), JSON.stringify(answer, null, 2));
+  log("AT-47", `The board answer of the empty store: counts ${JSON.stringify(answer.counts)}, last_drop ${JSON.stringify(answer.last_drop)}.`);
+  for (const [name, route] of [["home", "/"], ["week-08", "/2026/week-08/"], ["eggs", "/eggs/"]] as const) {
+    for (const width of WIDTHS) for (const theme of THEMES) {
+      const { page, close } = await open(browser, width, theme);
+      const response = await page.goto(`${CPC}${route}`);
+      // The board read decides the hunt, so the shot waits for that answer and a settle.
+      await page.waitForResponse((r) => r.url().includes("/eggs/board"), { timeout: 10000 }).catch(() => {});
+      await settle(page);
+      await shot(page, "AT-47", name, width, theme, true);
+      const button = await page.getByRole("link", { name: /^Egg board/ }).count();
+      const banner = await page.locator('section[aria-label="Egg drop"]').count();
+      let extra = "";
+      if (name === "eggs") {
+        const hero = await page.locator('[data-not-found], [data-stable-id="not-found-hero"]').count();
+        const main = await page.locator("main").innerText().catch(() => "");
+        const copy = (main.match(/Egg Board|egg word|CORNERSTONE|LANSDALE|EAGLES|LEFT TO FIND|How the hunt works/gi) ?? []).length;
+        extra = `; HTTP status ${response?.status()}; 404 hero marks ${hero}; text "${main.replace(/\s+/g, " ").slice(0, 80)}"; egg copy matches in main ${copy}`;
+      }
+      log("AT-47", `${name} ${width}-${theme}: egg buttons ${button}, egg banners ${banner}${extra}`);
+      await close();
+    }
+  }
+  for (const theme of THEMES) {
+    const { page, checks, close } = await open(browser, 1280, theme);
+    await page.goto(`${CPC}/midseason/2026/`);
+    await page.waitForTimeout(1500);
+    if (theme === "light") await setTheme(page, "light");
+    await page.locator('[data-stable-id="luck-3"]').scrollIntoViewIfNeeded();
+    await page.evaluate(() => {
+      const w = window as unknown as { eeTimes: number[] };
+      w.eeTimes = [];
+      window.addEventListener("pointerup", () => w.eeTimes.push(Math.round(performance.now())), true);
+    });
+    for (let i = 0; i < 3; i += 1) {
+      await tapAt(page, '[data-stable-id="luck-3"]');
+      if (i < 2) await page.waitForTimeout(150);
+    }
+    await page.waitForTimeout(1500);
+    const times = await page.evaluate(() => (window as unknown as { eeTimes: number[] }).eeTimes);
+    log("AT-47", `Three mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ at 1280 px, ${theme} theme, pointerups at ${times.map((t) => t - times[0]).join(", ")} ms. Requests to /eggs/check: ${checks.length}${checks.length ? ` ${JSON.stringify(checks)}` : ""}. Dialogs: ${await page.getByRole("dialog").count()}.`);
+    await close();
+  }
+  execFileSync("bash", [join(TOOLS, "stop-api.sh")], { env: { ...process.env }, stdio: "pipe" });
+});

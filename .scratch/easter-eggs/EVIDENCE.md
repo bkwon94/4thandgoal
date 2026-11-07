@@ -1,7 +1,7 @@
 # Easter eggs: evidence
 
 Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests: `.scratch/easter-eggs/ACCEPTANCE.md`.
-Built from: `f255557d`, on 2026-11-07. AT-3, AT-34, and AT-41 ran again at `4f87122b`, after the fixes E1, E2, and E3. AT-50 ran again at `35ca282e`, the same code as `4f87122b`. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
+Built from: `f255557d`, on 2026-11-07. AT-3, AT-34, and AT-41 ran again at `4f87122b`, after the fixes E1, E2, and E3. AT-50 ran again at `35ca282e`, the same code as `4f87122b`. AT-47, revised, ran at `c5d68913`. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
 Round time: the runner did not run, because a server that is not ours holds its fixed port 4173. The Playwright phases of `evidence/tools/site.spec.ts` took 15 min for 27 site tests.
 
 The API ran on this machine like `make -C apps/api api-evidence`: passphrase `localtest`, commissioner key `localkey`, and a temp `CORNERSTONE_EGGS_DIR` outside the repo for each store. The scripts are in `evidence/tools/`. The real path of each eggs route is `/clients/cpc/eggs/<route>`. The tests write `/cpc/eggs/`.
@@ -329,12 +329,12 @@ Then: It states the egg drop each Tuesday, the claim, the letter rule, the gift 
 Files: `evidence/AT-46/1280-dark.png`, `evidence/AT-46/1280-light.png`, `evidence/AT-46/375-dark.png`, `evidence/AT-46/375-light.png`, `evidence/AT-46/768-dark.png`, `evidence/AT-46/768-light.png`, `evidence/AT-46/site-A0.txt`, `evidence/AT-46/steps.txt`
 Observation: The last card "How the hunt works" lists 8 points: 6 eggs drop each Tuesday from week 9 through week 17; tap or press a spot; the first claim gets the letter; each letter goes in an egg word or blocks; the letter rule and its guard; the gift cards CORNERSTONE $50, LANSDALE $30, EAGLES $20; and "The commissioner places every egg, so the commissioner cannot hunt."
 
-## AT-47: The egg board before the first drop
+## AT-47: Nothing of the hunt shows before the first drop
 
 App: site
-Then: The three egg words show with no letters, and the count to drop is 54.
-Files: `evidence/AT-47/1280-dark.png`, `evidence/AT-47/1280-light.png`, `evidence/AT-47/375-dark.png`, `evidence/AT-47/375-light.png`, `evidence/AT-47/768-dark.png`, `evidence/AT-47/768-light.png`, `evidence/AT-47/board.json`, `evidence/AT-47/site-A0.txt`, `evidence/AT-47/steps.txt`
-Observation: In an empty store, /eggs/ shows 0 left to find, 0 found, and 54 to drop, and the three egg words with "No letters yet. The race is open." and empty tiles, at each width and theme. board.json is the board answer.
+Then: No page shows the egg button or the egg banner, the listener sends no check, and `/eggs/` shows the 404 page.
+Files: `evidence/AT-47/board.json`, `evidence/AT-47/eggs-1280-dark.png`, `evidence/AT-47/eggs-1280-light.png`, `evidence/AT-47/eggs-375-dark.png`, `evidence/AT-47/eggs-375-light.png`, `evidence/AT-47/eggs-768-dark.png`, `evidence/AT-47/eggs-768-light.png`, `evidence/AT-47/home-1280-dark.png`, `evidence/AT-47/home-1280-light.png`, `evidence/AT-47/home-375-dark.png`, `evidence/AT-47/home-375-light.png`, `evidence/AT-47/home-768-dark.png`, `evidence/AT-47/home-768-light.png`, `evidence/AT-47/site-P47.txt`, `evidence/AT-47/steps.txt`, `evidence/AT-47/week-08-1280-dark.png`, `evidence/AT-47/week-08-1280-light.png`, `evidence/AT-47/week-08-375-dark.png`, `evidence/AT-47/week-08-375-light.png`, `evidence/AT-47/week-08-768-dark.png`, `evidence/AT-47/week-08-768-light.png`
+Observation: board.json of the empty store shows counts left 0, found 0, to_drop 54, and last_drop null. On the home page, week 8, and /eggs/, at 375, 768, and 1280 px in each theme, the log counts 0 links named "Egg board" and 0 egg banners, and the shots show no egg button and no banner. /eggs/ shows the 404 hero ("ERROR // PAGE NOT FOUND", "404", 1 hero mark) with 0 matches of egg copy in main, at each width and theme. The HTTP status of /eggs/ is 200, because the export holds a built /eggs/ page that renders the 404 hero. Three mouse taps on the Luck cell of Lil Fridge on /midseason/2026/ at 1280 px, with pointerups at 0, 207, and 367 ms in light and at 0, 161, and 318 ms in dark, sent 0 requests to /eggs/check and opened 0 dialogs.
 
 ## AT-48: The copy rules hold
 

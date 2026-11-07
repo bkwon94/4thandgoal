@@ -19,4 +19,4 @@ shots come from Playwright directly, with tools/site.spec.ts and tools/playwrigh
 Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
 
 This test:
-Phase A0, store A, empty. For each width and theme: open /eggs/, scroll to the end and back, full-page shot. board.json is the board answer.
+Phase P47 at c5d68913. Store P47, fresh and empty. board.json is the board answer. For each page (/, /2026/week-08/, /eggs/) and each width and theme: open the page, wait for the board answer, scroll to the end and back, full-page shot <page>-<w>-<theme>.png. The log counts the links whose accessible name starts with "Egg board" and each section[aria-label="Egg drop"]. On /eggs/ it logs the HTTP status, the 404 hero marks, the text of main, and the count of egg copy in main. Then, at 1280 px in each theme, three mouse taps 150 ms apart on [data-stable-id="luck-3"] of /midseason/2026/; the page logs each request to /eggs/check and the pointerup times.
