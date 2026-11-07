@@ -149,7 +149,7 @@ The rules of ticket 10, with the shape of each action:
 
 - The API gives each egg its letter at the drop, by a public rule that the "How the hunt works" card states.
 - A letter fits an egg word for a manager when the manager holds fewer of that letter than the egg word has. An egg word with a winner takes no more letters.
-- For each egg of a drop, the API picks the letter that the most managers still need, over the open egg words. A tie goes to the earlier letter of the alphabet.
+- For each egg of a drop, the API picks the letter that the most managers still need, over the open egg words. A tie goes to the earlier letter of the alphabet. No letter repeats within one egg drop, so the first egg drop holds A, C, D, E, G, and L.
 - The guard: the API never picks the last letter that the leader of an egg word needs. If the guard rules out every letter, the API picks the next letter by need.
 - The claim form offers a block only when the letter fits no open egg word of the manager. A block takes the egg and counts toward the found count, but the egg board shows no block.
 
