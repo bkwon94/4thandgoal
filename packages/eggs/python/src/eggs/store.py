@@ -34,6 +34,9 @@ CREATE TABLE IF NOT EXISTS claims (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS claims_egg_id ON claims (egg_id) WHERE undone_at IS NULL;
 """
+# The columns of a claim with the letter of its egg. The caller adds the WHERE of the claims it reads.
+CLAIM_SELECT = ("SELECT claims.egg_id, eggs.letter, claims.roster_id, claims.word, claims.claimed_at FROM claims "
+                "JOIN eggs ON eggs.id = claims.egg_id")
 
 
 @dataclass(frozen=True)
@@ -94,6 +97,12 @@ class EggStore:
                 rows = db.execute("SELECT * FROM eggs WHERE week = ? ORDER BY id", (week,)).fetchall()
         return [_egg(row) for row in rows]
 
+    def egg(self, egg_id: int) -> Egg | None:
+        """The egg of the id, or None when no egg has it."""
+        with self._connect() as db:
+            row = db.execute("SELECT * FROM eggs WHERE id = ?", (egg_id,)).fetchone()
+        return None if row is None else _egg(row)
+
     def drop(self, week: int, eggs: list[dict[str, Any]], now: datetime) -> list[Egg]:
         """Make the eggs of `week` live. A second drop of one week adds nothing, and returns the eggs already there."""
         with self._connect() as db:
@@ -114,7 +123,10 @@ class EggStore:
 
     def claim_of(self, egg_id: int) -> Claim | None:
         """The claim that holds the egg, or None when the egg is live."""
-        return next((claim for claim in self.claims() if claim.egg_id == egg_id), None)
+        with self._connect() as db:
+            row = db.execute(
+                f"{CLAIM_SELECT} WHERE claims.undone_at IS NULL AND claims.egg_id = ?", (egg_id,)).fetchone()
+        return None if row is None else _claim(row)
 
     def claim(self, egg_id: int, roster_id: int, word: str | None, browser: str | None, now: datetime) -> None:
         """Claim the egg for the roster. A second claim of one egg raises AlreadyClaimed, so the first write wins."""
@@ -135,12 +147,14 @@ class EggStore:
     def claims(self) -> list[Claim]:
         """Each claim that holds its egg, newest first. An undone claim stays in the table and is not in the list."""
         with self._connect() as db:
-            rows = db.execute(
-                "SELECT claims.egg_id, eggs.letter, claims.roster_id, claims.word, claims.claimed_at FROM claims "
-                "JOIN eggs ON eggs.id = claims.egg_id WHERE claims.undone_at IS NULL "
-                "ORDER BY claims.claimed_at DESC, claims.rowid DESC").fetchall()
-        return [Claim(egg_id=row["egg_id"], letter=row["letter"], roster_id=row["roster_id"], word=row["word"],
-                      claimed_at=row["claimed_at"]) for row in rows]
+            rows = db.execute(f"{CLAIM_SELECT} WHERE claims.undone_at IS NULL "
+                              "ORDER BY claims.claimed_at DESC, claims.rowid DESC").fetchall()
+        return [_claim(row) for row in rows]
+
+
+def _claim(row: sqlite3.Row) -> Claim:
+    return Claim(egg_id=row["egg_id"], letter=row["letter"], roster_id=row["roster_id"], word=row["word"],
+                 claimed_at=row["claimed_at"])
 
 
 def _egg(row: sqlite3.Row) -> Egg:

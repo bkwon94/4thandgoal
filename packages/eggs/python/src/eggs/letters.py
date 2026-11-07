@@ -5,24 +5,25 @@ A tie goes to the earlier letter, no letter repeats in one drop, and the guard k
 from collections import Counter
 from collections.abc import Iterable
 
+from eggs.rules import letters_of, winner
 from eggs.store import Claim
 
 
 def drop_letters(words: Iterable[str], managers: Iterable[int], claims: Iterable[Claim], count: int) -> list[str]:
-    """The letters of the `count` eggs of one drop, in the order of the eggs.
+    """The letters of at most `count` eggs of one drop, in the order of the eggs. No letter repeats in one drop, so
+    with fewer letters to pick than `count`, the list is shorter than `count`.
 
     `words` are the egg words, `managers` the roster ids of the managers who hunt, and `claims` each claim that holds.
     """
     words = list(words)
-    held = _held(claims)
+    claims = list(claims)
     managers = list(managers)
     # An egg word with a winner takes no more letters.
-    open_words = [word for word in words
-                  if all(_needs(word, held.get((roster, word), Counter())) for roster in managers)]
+    open_words = [word for word in words if winner(claims, word) is None]
     need: Counter[str] = Counter()
     guarded: set[str] = set()
     for roster in managers:
-        needs = [_needs(word, held.get((roster, word), Counter())) for word in open_words]
+        needs = [_needs(word, Counter(letters_of(claims, roster, word))) for word in open_words]
         need.update(set().union(*needs))
         # A manager who needs one letter more leads the egg word, so one egg of that letter would end the race.
         guarded |= {letter for each in needs if sum(each.values()) == 1 for letter in each}
@@ -33,17 +34,8 @@ def drop_letters(words: Iterable[str], managers: Iterable[int], claims: Iterable
     picks += [letter for letter in ranked if letter in guarded]
     # With every egg word won, no manager needs a letter, so the letters of the egg words keep the drop whole.
     picks = picks or sorted(set("".join(words)))
-    # A drop larger than the count of needed letters starts the order again, so each egg still gets a letter.
-    return [picks[index % len(picks)] for index in range(count)]
-
-
-def _held(claims: Iterable[Claim]) -> dict[tuple[int, str], Counter[str]]:
-    """The letters that each roster holds in each egg word. A block holds no egg word, so it counts for none."""
-    held: dict[tuple[int, str], Counter[str]] = {}
-    for claim in claims:
-        if claim.word is not None:
-            held.setdefault((claim.roster_id, claim.word), Counter())[claim.letter] += 1
-    return held
+    # No letter repeats within one drop, so a drop larger than the count of letters to pick gets fewer letters.
+    return picks[:count]
 
 
 def _needs(word: str, letters: Counter[str]) -> Counter[str]:

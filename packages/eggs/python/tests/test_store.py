@@ -27,3 +27,16 @@ def test_two_claims_of_one_egg_at_once_give_one_claim(tmp_path):
         results = list(pool.map(claim, [3, 12]))
     assert sorted(results) == [False, True]
     assert len(store.claims()) == 1
+
+
+def test_the_store_reads_one_egg_and_the_claim_of_one_egg_by_its_id(tmp_path):
+    store = EggStore(tmp_path / "cpc.sqlite")
+    egg = store.drop(9, [T1, {**T1, "target": "luck-12", "letter": "A"}], NOW)[1]
+    assert store.egg(egg.id) == egg
+    assert store.egg(egg.id + 100) is None
+    assert store.claim_of(egg.id) is None
+    store.claim(egg.id, 3, "CORNERSTONE", None, NOW)
+    assert store.claim_of(egg.id) == store.claims()[0]
+    assert store.claim_of(egg.id - 1) is None
+    store.undo(egg.id, NOW)
+    assert store.claim_of(egg.id) is None

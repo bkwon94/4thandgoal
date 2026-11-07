@@ -9,7 +9,11 @@ from eggs.tunables import TOKEN_SECONDS
 
 
 class ClaimTokens:
-    """The live claim tokens, each with its egg and the end of its life."""
+    """The live claim tokens, each with its egg and the end of its life.
+
+    The class holds no lock. The caller holds the lock of the hunt for each call, because the issue rebuilds the map
+    that the take pops.
+    """
 
     def __init__(self) -> None:
         self.live: dict[str, tuple[int, datetime]] = {}

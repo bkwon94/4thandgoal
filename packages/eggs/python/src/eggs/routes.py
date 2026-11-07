@@ -9,16 +9,16 @@ from datetime import datetime, tzinfo
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
-from eggs.conditions import conditions_hold
+from eggs.conditions import check_conditions, conditions_hold
 from eggs.letters import drop_letters
-from eggs.rules import refusal, winner
+from eggs.rules import letters_of, refusal, winner
 from eggs.store import AlreadyClaimed, Claim, Egg, EggStore
 from eggs.tokens import ClaimTokens
 from eggs.values import EggsValues
 
-# The open routes: the egg check and the egg board need no key. The check has its own limit, so it has its own group.
+# The open routes: the egg check and the egg board need no key. Each has its own limit, so each has its own group.
 check_router = APIRouter()
 open_router = APIRouter()
 # The claim needs the passphrase of the client. The app gives the guard.
@@ -88,7 +88,9 @@ def check(body: CheckRequest, hunt: ClientHunt) -> dict:
             continue
         if hunt.store.claim_of(egg.id) is not None:
             return {"match": True, "claimed": True, "letter": egg.letter}
-        token = hunt.tokens.issue(egg.id, now)
+        # The issue rebuilds the map of live tokens that a claim pops, so it runs under the lock too.
+        with hunt.lock:
+            token = hunt.tokens.issue(egg.id, now)
         return {"match": True, "claimed": False, "letter": egg.letter, "token": token}
     return {"match": False}
 
@@ -100,11 +102,6 @@ class ClaimRequest(BaseModel):
     roster_id: int
     word: str | None
     browser: str | None = None
-
-
-def _letters(claims: list[Claim], roster_id: int, word: str) -> list[str]:
-    """The letters of the roster in the egg word, in the order of the claims."""
-    return [claim.letter for claim in reversed(claims) if claim.roster_id == roster_id and claim.word == word]
 
 
 @claim_router.post("/claim")
@@ -120,7 +117,11 @@ def claim(body: ClaimRequest, hunt: ClientHunt) -> dict:
         egg_id = hunt.tokens.peek(body.token, now)
         if egg_id is None:
             raise HTTPException(status_code=410, detail=BAD_TOKEN)
-        letter = next(each.letter for each in hunt.store.eggs() if each.id == egg_id)
+        egg = hunt.store.egg(egg_id)
+        # A token of an egg that is gone is as good as no token, so the manager finds the egg again.
+        if egg is None:
+            raise HTTPException(status_code=410, detail=BAD_TOKEN)
+        letter = egg.letter
         # A refusal comes before the take, so the token stays good for a claim that stands.
         reason = refusal(hunt.values, hunt.store.claims(), body.roster_id, body.word, letter)
         if reason is not None:
@@ -138,7 +139,7 @@ def claim(body: ClaimRequest, hunt: ClientHunt) -> dict:
         "letter": letter,
         "roster_id": body.roster_id,
         "word": body.word,
-        "letters": {word: _letters(claims, body.roster_id, word) for word in words},
+        "letters": {word: letters_of(claims, body.roster_id, word) for word in words},
         "winner": {"roster_id": body.roster_id, "word": body.word} if won else None,
     }
 
@@ -191,7 +192,7 @@ def board(hunt: ClientHunt) -> dict:
                 "word": each.word,
                 "prize": each.prize,
                 "winner": _winner_of(claims, teams, each.word),
-                "managers": [{**manager, "letters": _letters(claims, manager["roster_id"], each.word)}
+                "managers": [{**manager, "letters": letters_of(claims, manager["roster_id"], each.word)}
                              for manager in managers],
             }
             for each in values.words
@@ -217,6 +218,13 @@ class DropEgg(BaseModel):
     action: str
     conditions: dict[str, Any] = {}
 
+    @field_validator("conditions")
+    @classmethod
+    def _conditions(cls, conditions: dict[str, Any]) -> dict[str, Any]:
+        # A bad clock window or weekday answers 422 at the drop, so no check of the egg ever fails on it.
+        check_conditions(conditions)
+        return conditions
+
 
 class DropRequest(BaseModel):
     """The body of the drop: the week and its confirmed eggs."""
@@ -229,13 +237,15 @@ class DropRequest(BaseModel):
 def drop(body: DropRequest, hunt: ClientHunt) -> dict:
     """Give each egg of the week its letter by the letter rule and make the eggs live.
 
-    A second drop of one week adds nothing and answers with the eggs there.
+    A second drop of one week adds nothing and answers with the eggs there. No letter repeats within one drop, so
+    with fewer letters to pick than eggs, only the first eggs drop, and "dropped" says how many.
     """
     before = len(hunt.store.eggs(body.week))
     managers = [roster_id for roster_id in hunt.rosters() if roster_id != hunt.values.commissioner]
     letters = drop_letters([each.word for each in hunt.values.words], managers, hunt.store.claims(), len(body.eggs))
     eggs = hunt.store.drop(body.week, [{**egg.model_dump(), "letter": letter}
-                                       for egg, letter in zip(body.eggs, letters, strict=True)], hunt.clock())
+                                       for egg, letter in zip(body.eggs[:len(letters)], letters, strict=True)],
+                           hunt.clock())
     return {
         "week": body.week,
         "dropped": len(eggs) - before,

@@ -16,6 +16,7 @@ import pytest
 from cpc import cpc_client
 from fastapi.testclient import TestClient
 
+from analyzer.ratelimit import RateLimiter
 from cornerstone_api.app import create_app
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
@@ -239,6 +240,16 @@ def test_a_client_without_the_eggs_package_has_no_eggs_routes(settings, fixture_
     assert api.post(f"{BASE}/check", json=CHECK).status_code == 404
 
 
+def test_the_drop_and_the_undo_of_a_client_with_no_commissioner_key_are_refused(settings, fixture_raw_dir):
+    client = cpc_client(at=settings.repo, models=VALUE_MODELS)
+    without = client.model_copy(update={"values": client.values.model_copy(
+        update={"packages": [name for name in client.values.packages if name != "eggs"]})})
+    api = TestClient(create_app(dataclasses.replace(settings, commissioner_keys={}), [without]))
+    for headers in ({}, COMMISSIONER, {"X-Commissioner-Key": ""}):
+        assert api.post(f"{BASE}/drop", json={"week": 9, "eggs": []}, headers=headers).status_code == 401
+        assert api.post(f"{BASE}/undo", json={"egg_id": 1}, headers=headers).status_code == 401
+
+
 def test_the_app_refuses_a_client_of_the_eggs_package_with_no_commissioner_key(settings):
     client = cpc_client(at=settings.repo, models=VALUE_MODELS)
     with pytest.raises(ValueError, match="CORNERSTONE_COMMISSIONER_KEY_CPC"):
@@ -295,6 +306,22 @@ def test_two_claims_of_one_egg_at_once_give_one_winner(api):
                                    [(tokens[0], LIL_FRIDGE), (tokens[1], 12)]))
     assert statuses == [200, 409]
     assert api.get(f"{BASE}/board").json()["counts"]["found"] == 1
+
+
+def test_the_check_issues_its_token_under_the_lock_that_the_claim_holds(api, monkeypatch):
+    # The issue rebuilds the map of live tokens that a claim pops, so a check and a claim must never run it at once.
+    _drop(api, T1)
+    hunt = api.app.state.hunts["cpc"]
+    issue = hunt.tokens.issue
+    held = []
+
+    def watched(egg_id, now):
+        held.append(hunt.lock.locked())
+        return issue(egg_id, now)
+
+    monkeypatch.setattr(hunt.tokens, "issue", watched)
+    assert _claim(api, _token(api)).status_code == 200
+    assert held == [True]
 
 
 def test_the_claim_of_the_commissioner_is_refused_and_the_egg_stays_live(api):
@@ -485,3 +512,24 @@ def test_the_check_limit_counts_each_address_apart(api):
         api.post(f"{BASE}/check", json=CHECK, headers={"Fly-Client-IP": "10.0.0.1"})
     assert api.post(f"{BASE}/check", json=CHECK, headers={"Fly-Client-IP": "10.0.0.1"}).status_code == 429
     assert api.post(f"{BASE}/check", json=CHECK, headers={"Fly-Client-IP": "10.0.0.2"}).status_code == 200
+
+
+def test_the_board_has_its_own_limit_of_60_a_minute_and_spends_none_of_the_shared_limit(api):
+    # The shared limit of the analyzer and the claim is 10 a minute in the real app.
+    api.app.state.limiter = RateLimiter(10)
+    statuses = [api.get(f"{BASE}/board").status_code for _ in range(61)]
+    assert statuses[:60] == [200] * 60
+    assert statuses[60] == 429
+    assert 0 < int(api.get(f"{BASE}/board").headers["Retry-After"]) <= 60
+    # The 60 board reads spend nothing of the limit of 10 a minute of the other routes.
+    assert api.get("/clients/cpc/teams", params={"season": 2026}, headers=PASS).status_code == 200
+
+
+def test_a_claim_of_an_egg_that_is_gone_says_to_find_the_egg_again(api, settings):
+    _drop(api, T1)
+    token = _token(api)
+    with sqlite3.connect(settings.eggs_dir / "cpc.sqlite") as db:
+        db.execute("DELETE FROM eggs")
+    response = _claim(api, token)
+    assert response.status_code == 410
+    assert "Find the egg again" in response.json()["detail"]
