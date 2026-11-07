@@ -91,6 +91,9 @@ def _key(name: str) -> str:
 
 def _value(value: Any) -> str:
     # A JSON string, number, or bool is also a valid TOML value, so json.dumps writes each one.
+    # A JSON array of such values is a valid TOML array, so a list of them goes the same way.
     if isinstance(value, (str, bool, int, float)):
         return json.dumps(value, ensure_ascii=False)
+    if isinstance(value, list):
+        return "[" + ", ".join(_value(item) for item in value) + "]"
     raise ValueError(f"An egg file value must be a string, a number, or a bool, not {value!r}.")
