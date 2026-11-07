@@ -163,6 +163,8 @@ async function findT1(page: Page) {
   await page.goto(`${CPC}/midseason/2026/`);
   // T1 holds only in the light theme. A shot in the dark theme switches the theme after the find.
   await setTheme(page, "light");
+  // The hunt mounts its listener only after the board answer names a drop, so the taps wait for the egg button.
+  await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
   const cell = page.locator('[data-stable-id="luck-3"]');
   await cell.scrollIntoViewIfNeeded();
   await cell.click({ clickCount: 3 });
@@ -902,6 +904,128 @@ test("phase P47: the hunt hides before the first drop", async ({ browser }) => {
     await page.waitForTimeout(1500);
     const times = await page.evaluate(() => (window as unknown as { eeTimes: number[] }).eeTimes);
     log("AT-47", `Three mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ at 1280 px, ${theme} theme, pointerups at ${times.map((t) => t - times[0]).join(", ")} ms. Requests to /eggs/check: ${checks.length}${checks.length ? ` ${JSON.stringify(checks)}` : ""}. Dialogs: ${await page.getByRole("dialog").count()}.`);
+    await close();
+  }
+  execFileSync("bash", [join(TOOLS, "stop-api.sh")], { env: { ...process.env }, stdio: "pipe" });
+});
+
+/* Install a sampler in the page: snap(label) records, in ms from window.eeT0, each part of the find with its computed
+   style and each running animation (name, play state, duration, current time). */
+async function installSampler(page: Page) {
+  await page.evaluate(() => {
+    const w = window as unknown as { eeT0: number; eeSnaps: unknown[]; eeSnap: (label: string) => void };
+    w.eeSnaps = [];
+    const parts: [string, string][] = [
+      ["scrim", ".egg-scrim"], ["ring", ".egg-ripple"], ["halo", ".egg-halo"], ["egg", 'button[aria-label="Crack the egg"] svg'],
+      ["half", ".egg-half"], ["crack", ".egg-crack"], ["burst", ".egg-burst"], ["tile", '[data-testid="egg-letter"]'],
+    ];
+    w.eeSnap = (label: string) => {
+      const t = Math.round(performance.now() - w.eeT0);
+      const found = parts.flatMap(([name, selector]) => [...document.querySelectorAll(selector)].map((element, index) => {
+        const style = getComputedStyle(element);
+        const animations = element.getAnimations().map((a) => {
+          const css = a as CSSAnimation;
+          const timing = a.effect?.getComputedTiming();
+          return `${css.animationName ?? "?"} ${a.playState} dur ${Math.round(Number(timing?.duration ?? 0))}ms delay ${Math.round(Number(timing?.delay ?? 0))}ms iter ${timing?.iterations} at ${Math.round(Number(a.currentTime ?? 0))}ms`;
+        });
+        const extra = name === "scrim" ? ` backdrop-filter ${style.backdropFilter || (style as unknown as Record<string, string>).webkitBackdropFilter}` : name === "crack" ? ` stroke-dashoffset ${style.strokeDashoffset}` : "";
+        return `${name}${index ? index + 1 : ""}: opacity ${Number(style.opacity).toFixed(2)} transform ${style.transform}${extra} | ${animations.join("; ") || "no animation"}`;
+      }));
+      w.eeSnaps.push(`[${t} ms] ${label}: ${found.join(" || ") || "no part of the find"}`);
+    };
+  });
+}
+const snaps = (page: Page) => page.evaluate(() => (window as unknown as { eeSnaps: string[] }).eeSnaps);
+
+test("phase M32: the motion of the find", async ({ browser }) => {
+  PHASE = "M32";
+  api("M32", true);
+  await drop(9, [F1, T1, T2, T3, F5, F6]);
+  for (const width of [375, 1280]) for (const theme of THEMES) {
+    const dir = join(SCRATCH, `video-${width}-${theme}`);
+    execFileSync("rm", ["-rf", dir]);
+    const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: "no-preference", recordVideo: { dir, size: { width, height: 900 } } });
+    await context.addInitScript(() => { try { if (!sessionStorage.getItem("ee")) { localStorage.setItem("cpc.theme", "light"); sessionStorage.setItem("ee", "1"); } } catch {} });
+    const page = await context.newPage();
+    await page.goto(`${CPC}/midseason/2026/`);
+    const cell = page.locator('[data-stable-id="luck-3"]');
+    await cell.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(800);
+    await installSampler(page);
+    const name = (n: string) => join(folder("AT-32"), `motion-${width}-${theme}-${n}.png`);
+    // The three taps: window.eeT0 is the time of the first tap.
+    await page.evaluate(() => { (window as unknown as { eeT0: number }).eeT0 = performance.now(); });
+    const t0 = Date.now();
+    await cell.click({ clickCount: 3 });
+    await page.getByRole("heading", { name: "You found an egg" }).waitFor();
+    if (theme === "dark") await page.evaluate(() => { document.documentElement.classList.add("dark"); localStorage.setItem("cpc.theme", "dark"); });
+    await page.evaluate(() => (window as unknown as { eeSnap: (l: string) => void }).eeSnap("the find card shows"));
+    await page.screenshot({ path: name(`find-${Date.now() - t0}ms`) });
+    await page.waitForTimeout(250);
+    await page.evaluate(() => (window as unknown as { eeSnap: (l: string) => void }).eeSnap("the ring grows"));
+    await page.screenshot({ path: name(`find-${Date.now() - t0}ms`) });
+    await page.waitForTimeout(1500);
+    await page.evaluate(() => (window as unknown as { eeSnap: (l: string) => void }).eeSnap("the egg bobs, the ring is done"));
+    await page.screenshot({ path: name(`find-${Date.now() - t0}ms`) });
+    // The tap on the egg: window.eeT0 restarts, and the sampler runs every 75 ms inside the page.
+    await page.evaluate(() => {
+      const w = window as unknown as { eeT0: number; eeSnap: (l: string) => void };
+      w.eeT0 = performance.now();
+      document.querySelector<HTMLButtonElement>('button[aria-label="Crack the egg"]')!.click();
+      for (let at = 0; at <= 1500; at += 75) setTimeout(() => w.eeSnap(`after the tap on the egg`), at);
+    });
+    const t1 = Date.now();
+    for (const target of [0, 150, 300, 450, 600, 900, 1200, 1600]) {
+      const wait = t1 + target - Date.now();
+      if (wait > 0) await page.waitForTimeout(wait);
+      await page.screenshot({ path: name(`crack-${String(Date.now() - t1).padStart(4, "0")}ms`) });
+    }
+    await page.waitForTimeout(400);
+    log("AT-32", `=== ${width} px, ${theme} theme. The find in the light theme${theme === "dark" ? ", then the switch to the dark theme as the card shows" : ""}. Times in ms from the first tap, then from the tap on the egg.`);
+    for (const line of await snaps(page)) log("AT-32", line);
+    await context.close();
+    const video = (await import("node:fs")).readdirSync(dir).find((file) => file.endsWith(".webm"));
+    if (video) execFileSync("cp", [join(dir, video), join(folder("AT-32"), `motion-${width}-${theme}.webm`)]);
+  }
+  execFileSync("bash", [join(TOOLS, "stop-api.sh")], { env: { ...process.env }, stdio: "pipe" });
+});
+
+test("phase M34: the pulse of the ghost tile", async ({ browser }) => {
+  PHASE = "M34";
+  api("M34", true);
+  const leaders = { page: "/2026/week-08/", target: "heading-leaders", action: "tap2", conditions: {} };
+  await drop(9, [F1, leaders, ...["heading-standings", "heading-next-week", "heading-trades", "heading-median"].map((target) => ({ page: "/2026/week-08/", target, action: "tap2", conditions: {} }))]);
+  await drop(10, [{ page: "/midseason/2026/", target: "heading-arcs", action: "tap2", conditions: {} }, T1,
+    ...["heading-draft", "heading-waivers", "heading-records", "heading-injuries"].map((target) => ({ page: "/midseason/2026/", target, action: "tap2", conditions: {} }))]);
+  log("AT-34", `The setup, as phase B: Teehee claims the C of heading-leaders into CORNERSTONE: ${JSON.stringify(await claim(leaders, TEEHEE, "CORNERSTONE"))}`);
+  api("M34");
+  for (const width of [375, 1280]) for (const theme of THEMES) {
+    const { page, close } = await open(browser, width, theme, { pass: true });
+    await findT1(page);
+    await crack(page);
+    if (theme === "dark") await setTheme(page, "dark");
+    await page.getByRole("button", { name: "Claim C" }).click();
+    await page.getByRole("group", { name: "Your team" }).getByRole("button", { name: "Lil Fridge" }).click();
+    const ghost = page.locator('[role="group"][aria-label="Egg word"] button').filter({ hasText: "CORNERSTONE" }).locator(".egg-ghost").first();
+    await ghost.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+    const read = () => ghost.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const a = element.getAnimations()[0] as CSSAnimation | undefined;
+      const timing = a?.effect?.getComputedTiming();
+      return `opacity ${Number(style.opacity).toFixed(3)} | ${a ? `${a.animationName} ${a.playState} dur ${Math.round(Number(timing?.duration))}ms iter ${timing?.iterations} at ${Math.round(Number(a.currentTime))}ms` : "no animation"}`;
+    });
+    const start = Date.now();
+    for (let i = 0; i < 4; i += 1) {
+      const wait = start + i * 400 - Date.now();
+      if (wait > 0) await page.waitForTimeout(wait);
+      const line = await read();
+      log("AT-34", `ghost ${width}-${theme} at +${Date.now() - start} ms: ${line}`);
+      if (i < 3) {
+        const box = (await ghost.boundingBox())!;
+        await page.screenshot({ path: join(folder("AT-34"), `ghost-${width}-${theme}-${i + 1}.png`), clip: { x: Math.max(0, box.x - 24), y: Math.max(0, box.y - 24), width: box.width + 48, height: box.height + 48 } });
+      }
+    }
     await close();
   }
   execFileSync("bash", [join(TOOLS, "stop-api.sh")], { env: { ...process.env }, stdio: "pipe" });

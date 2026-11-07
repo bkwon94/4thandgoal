@@ -20,3 +20,8 @@ Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.
 
 This test (AT-3, AT-34, AT-41, and AT-50 ran again at 4f87122b with the run of step 3 below):
 Phase B. Store B: week 9 [number-top-score A, heading-leaders C, ...] and week 10 [heading-arcs A, T1 C, ...]; Teehee claims the C of heading-leaders into CORNERSTONE. For each width and theme, with the passphrase in the browser: find T1, crack, tap "Claim C", pick Teehee, shot teehee-<w>-<theme>.png, then pick Lil Fridge, shot lil-fridge-<w>-<theme>.png. The log reads each word button: disabled, and the count of .egg-ghost tiles.
+
+The pulse, phase M34 at the head 566d11e7 (the code of c5d68913). Store M34, fresh, set up as phase B. At 375 and 1280 px in
+each theme, find T1, tap "Claim C", pick Lil Fridge, then read the ghost tile of CORNERSTONE at about +0, +400, +800, and
++1200 ms: computed opacity and its running animation (name, play state, duration, iterations, current time). Shots
+ghost-<w>-<theme>-1/2/3.png crop the ghost tile at the first three moments. The log is site-M34.txt.
