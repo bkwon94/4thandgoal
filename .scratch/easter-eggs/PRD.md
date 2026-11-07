@@ -5,7 +5,7 @@ Date: 2026-11-06
 Apps: both. The site holds the listener, the find and claim flow, the egg board, the egg banner, and the egg button. The API holds the eggs, the claims, the egg check, and the letter rule. The pipeline drafts and drops the eggs of each week with the Tuesday publish.
 Spec branch: `easter-eggs`.
 Source: the map `.scratch/easter-eggs/MAP.md` and decision tickets 01 to 10. The canvas of ticket 08 is https://claude.ai/artifact/2pe6Z3X2vAiTVAfEwbHSJF. ADRs 0022, 0023, and 0024.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 06, in `issues/`.
 
 ## Problem Statement
 
