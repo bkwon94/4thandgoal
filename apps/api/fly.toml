@@ -1,5 +1,6 @@
 # The Fly.io config of the Cornerstone API: one small machine in the New York area that always runs.
-# Secrets (ANTHROPIC_API_KEY, and CORNERSTONE_PASSPHRASE_<SLUG> for each client) never go here. Set them with `fly secrets set`.
+# Secrets (ANTHROPIC_API_KEY, CORNERSTONE_PASSPHRASE_<SLUG> for each client, and CORNERSTONE_COMMISSIONER_KEY_<SLUG> for
+# each client of the eggs package) never go here. Set them with `fly secrets set`.
 
 app = "cpcfantasy-api"
 primary_region = "ewr"
@@ -12,6 +13,8 @@ primary_region = "ewr"
 [env]
   CORNERSTONE_REPO = "/app"
   CORNERSTONE_RESULT_CACHE_DIR = "/data/cache/results"
+  # The SQLite file of the egg hunt of each client, on the volume, so a deploy keeps every egg and claim.
+  CORNERSTONE_EGGS_DIR = "/data/eggs"
   # The site of each client at its Worker, and the old CPC host for a page that a reader still has open.
   CORNERSTONE_ALLOWED_ORIGINS = "https://cpc.4thandgoal.app,https://norcal.4thandgoal.app,https://cpcfantasy.com"
 

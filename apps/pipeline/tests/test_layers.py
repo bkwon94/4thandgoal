@@ -203,6 +203,8 @@ LAYER_OF: dict[str, str] = {
     "week.page": "output",
     "managers.render": "output",
     "publish": "output",
+    "egg_drop": "output",
+    "egg_draft": "output",
     "pipeline": "output",
     "cli": "output",
 }

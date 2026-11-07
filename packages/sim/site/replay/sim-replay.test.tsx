@@ -175,4 +175,29 @@ describe("the sim replay", () => {
     }
     expect(controls().every((name) => allowed.has(name ?? ""))).toBe(true);
   });
+
+  it("puts the outcome of the run on its root: the seeds after the regular season, and the champion at the end", () => {
+    const { container } = render(<SimReplay sim={sim} pick={picks(0)} />);
+    const root = () => container.querySelector("section")!;
+    press();
+    expect(root().hasAttribute("data-sim-champion")).toBe(false);
+    expect(root().hasAttribute("data-sim-seeds")).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Skip to the end" }));
+    const season = replaySeason(sim, 0);
+    expect(root().getAttribute("data-sim-champion")).toBe(String(season.champion.roster_id));
+    const seeds = root().getAttribute("data-sim-seeds")!.split(" ");
+    expect(seeds).toEqual(season.seeds.map((seed) => `${seed.roster_id}:${seed.seed}`));
+  });
+
+  it("gives each standings row, each bracket chip, and the trophy a stable id from the data, never from the frame", () => {
+    const { container } = render(<SimReplay sim={sim} pick={picks(0)} />);
+    const ids = () => [...container.querySelectorAll("[data-stable-id]")].map((element) => element.getAttribute("data-stable-id"));
+    expect(ids().filter((id) => id!.startsWith("sim-row-"))).toHaveLength(12);
+    press();
+    fireEvent.click(screen.getByRole("button", { name: "Skip to the end" }));
+    const season = replaySeason(sim, 0);
+    expect(ids()).toContain("sim-trophy");
+    expect(ids()).toContain(`bracket-0-${season.seeds[0].roster_id}`);
+    expect(ids().filter((id) => id!.startsWith("bracket-")).length).toBeGreaterThan(4);
+  });
 });

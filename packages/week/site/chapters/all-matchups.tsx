@@ -17,6 +17,7 @@ import { avatarSrc } from "@cpc/league/images";
 import { managerHrefOrNull } from "@cpc/league/hrefs";
 import { ShareBar, shareOf } from "../parts/share-bar";
 import { WeekChapter } from "../parts/week-chapter";
+import { openId, stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* One team of a card. The card is one button, so the name is plain text. A long name cuts at the end of its row. */
 function TeamRow({ side, avatars, lead }: { side: MatchupSide; avatars: AvatarMap; lead: boolean }) {
@@ -49,6 +50,7 @@ function GameCard({ matchup, avatars, managersHref }: { matchup: Matchup; avatar
           type="button"
           aria-expanded={open}
           aria-controls={panelId}
+          {...openId("game", matchup.id)}
           onClick={() => setOpen(!open)}
           className="press flex min-h-touch w-full cursor-pointer flex-col gap-sp-3 border-0 bg-transparent p-sp-4 text-left text-inherit [-webkit-tap-highlight-color:transparent]"
         >
@@ -66,10 +68,13 @@ function GameCard({ matchup, avatars, managersHref }: { matchup: Matchup; avatar
               transition={off ? INSTANT : { duration: DURATION.recap, ease: RISE_EASE }}
               className="flex flex-col gap-sp-3 border-t border-rule px-sp-4 pt-sp-3 pb-sp-4"
             >
-              <span className="font-mono text-meta leading-tight font-bold tracking-caps text-accent-ink uppercase">
+              <span
+                className="font-mono text-meta leading-tight font-bold tracking-caps text-accent-ink uppercase"
+                {...stableId("recap", matchup.id)}
+              >
                 {`Won by ${num(first.score - second.score)}`}
               </span>
-              {matchup.recap !== null && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{matchup.recap}</p>}
+              {matchup.recap !== null && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", matchup.recap)}>{matchup.recap}</p>}
               {/* One link per recap: the manager page of the team that leads the card. It is a full tap target. */}
               {href !== null && (
                 <a

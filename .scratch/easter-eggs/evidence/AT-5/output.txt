@@ -1,0 +1,11 @@
+# The token of AT-1, the roster of Lil Fridge (3), the egg word CORNERSTONE, and the passphrase.
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"24cOyEPctkPaJgJryg5Qol3EqC2CUA4H","roster_id":3,"word":"CORNERSTONE"}'
+{"egg_id":2,"letter":"C","roster_id":3,"word":"CORNERSTONE","letters":{"CORNERSTONE":["C"],"LANSDALE":[],"EAGLES":[]},"winner":null}
+HTTP 200
+
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); w=[x for x in b["words"] if x["word"]=="CORNERSTONE"][0]; print("counts", b["counts"]); print("CORNERSTONE", [(m["team"], m["letters"]) for m in w["managers"] if m["letters"]]); print("latest", b["latest"])'
+counts {'left': 11, 'found': 1, 'to_drop': 42}
+CORNERSTONE [('Lil Fridge', ['C'])]
+latest [{'roster_id': 3, 'team': 'Lil Fridge', 'letter': 'C', 'word': 'CORNERSTONE', 'claimed_at': '2026-11-07T00:40:42.219998-05:00'}]
+
+

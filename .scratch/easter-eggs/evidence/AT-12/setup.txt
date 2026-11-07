@@ -1,0 +1,31 @@
+# A fresh API with an empty store. The drop of week 9 with 11 eggs gives the 11 letters of the egg words, A to T, one each.
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":9,"eggs":[{"page":"/midseason/2026/","target":"top10-rb-1","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-2","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-3","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-4","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-5","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-6","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-7","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-8","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-9","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-10","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"bench-4","action":"tap2","conditions":{}}]}' | python3 -c 'import json,sys; print([(e["id"], e["target"], e["letter"]) for e in json.load(sys.stdin)["eggs"]])'
+[(1, 'top10-rb-1', 'A'), (2, 'top10-rb-2', 'C'), (3, 'top10-rb-3', 'D'), (4, 'top10-rb-4', 'E'), (5, 'top10-rb-5', 'G'), (6, 'top10-rb-6', 'L'), (7, 'top10-rb-7', 'N'), (8, 'top10-rb-8', 'O'), (9, 'top10-rb-9', 'R'), (10, 'top10-rb-10', 'S'), (11, 'bench-4', 'T')]
+
+
+# Lil Fridge (3) claims E, A, G, L, and S into EAGLES. Each claim takes a token from a check of its egg.
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"lh7e0opGY_WrvvWL2YmYCJraAcW-o_tM","roster_id":3,"word":"EAGLES"}'
+{"egg_id":4,"letter":"E","roster_id":3,"word":"EAGLES","letters":{"CORNERSTONE":[],"LANSDALE":[],"EAGLES":["E"]},"winner":null}
+
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"2kHIpLUmparFtJZlvGlCMn8bpN4H3RVM","roster_id":3,"word":"EAGLES"}'
+{"egg_id":1,"letter":"A","roster_id":3,"word":"EAGLES","letters":{"CORNERSTONE":[],"LANSDALE":[],"EAGLES":["E","A"]},"winner":null}
+
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"PsyA7KQ9Nzkhqf-BBNbK6fsAkpa0aBEg","roster_id":3,"word":"EAGLES"}'
+{"egg_id":5,"letter":"G","roster_id":3,"word":"EAGLES","letters":{"CORNERSTONE":[],"LANSDALE":[],"EAGLES":["E","A","G"]},"winner":null}
+
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"ukLRMSDFwqV_YcPwx22PfErkCOPvVBg_","roster_id":3,"word":"EAGLES"}'
+{"egg_id":6,"letter":"L","roster_id":3,"word":"EAGLES","letters":{"CORNERSTONE":[],"LANSDALE":[],"EAGLES":["E","A","G","L"]},"winner":null}
+
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"qIGeJefAv4rDAblHcg6CBdGytZhtXlrJ","roster_id":3,"word":"EAGLES"}'
+{"egg_id":10,"letter":"S","roster_id":3,"word":"EAGLES","letters":{"CORNERSTONE":[],"LANSDALE":[],"EAGLES":["E","A","G","L","S"]},"winner":null}
+
+# The drop of week 11 with 11 eggs. The guard puts E last, so egg 11 holds E. Its target is the Luck cell of London Cooking (luck-5), for the site shots of AT-37.
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":11,"eggs":[{"page":"/2026/week-08/","target":"median-7","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-8","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-9","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-10","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-11","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-12","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"leader-qb-1","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"leader-qb-2","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"leader-qb-3","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"leader-qb-4","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"luck-5","action":"tap2","conditions":{}}]}' | python3 -c 'import json,sys; print([(e["id"], e["target"], e["letter"]) for e in json.load(sys.stdin)["eggs"]])'
+[(18, 'median-7', 'A'), (19, 'median-8', 'C'), (20, 'median-9', 'D'), (21, 'median-10', 'L'), (22, 'median-11', 'N'), (23, 'median-12', 'O'), (24, 'leader-qb-1', 'R'), (25, 'leader-qb-2', 'S'), (26, 'leader-qb-3', 'T'), (27, 'leader-qb-4', 'G'), (28, 'luck-5', 'E')]
+
+
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c "$NEED"
+managers who need each letter: {'A': 11, 'C': 11, 'D': 11, 'E': 11, 'L': 11, 'N': 11, 'O': 11, 'R': 11, 'S': 11, 'T': 11, 'G': 10}
+Lil Fridge in EAGLES: ['E', 'A', 'G', 'L', 'S']
+
+

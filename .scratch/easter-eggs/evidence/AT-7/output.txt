@@ -1,0 +1,14 @@
+# The token of AT-1, a claim for Bo Girds, roster 6, the commissioner of values.eggs.commissioner.
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"24cOyEPctkPaJgJryg5Qol3EqC2CUA4H","roster_id":6,"word":"CORNERSTONE"}'
+{"detail":"The commissioner places the eggs and cannot hunt them."}
+HTTP 422
+
+# The board after: found stays 0, so T1 stays live.
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); print(b["counts"], b["latest"])'
+{'left': 12, 'found': 0, 'to_drop': 42} []
+
+
+# T1 still matches with a token:
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/midseason/2026/","target":"luck-3","action":"tap3","conditions":{"theme":"light"}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":true,"claimed":false,"letter":"C","token":"<cut>"}
+

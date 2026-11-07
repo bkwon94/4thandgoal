@@ -1,0 +1,66 @@
+# A fresh API with an empty store in a new CORNERSTONE_EGGS_DIR. The real path is /clients/cpc/eggs/.
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); print(b["counts"], b["latest"], b["last_drop"])'
+{'left': 0, 'found': 0, 'to_drop': 54} [] None
+
+
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":9,"eggs":[{"page":"/midseason/2026/","target":"top10-rb-1","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-2","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-3","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-4","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-5","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-6","action":"tap2","conditions":{}}]}' | python3 -m json.tool
+{
+    "week": 9,
+    "dropped": 6,
+    "eggs": [
+        {
+            "id": 1,
+            "page": "/midseason/2026/",
+            "target": "top10-rb-1",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "A"
+        },
+        {
+            "id": 2,
+            "page": "/midseason/2026/",
+            "target": "top10-rb-2",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "C"
+        },
+        {
+            "id": 3,
+            "page": "/midseason/2026/",
+            "target": "top10-rb-3",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "D"
+        },
+        {
+            "id": 4,
+            "page": "/midseason/2026/",
+            "target": "top10-rb-4",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "E"
+        },
+        {
+            "id": 5,
+            "page": "/midseason/2026/",
+            "target": "top10-rb-5",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "G"
+        },
+        {
+            "id": 6,
+            "page": "/midseason/2026/",
+            "target": "top10-rb-6",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "L"
+        }
+    ]
+}
+
+
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":9,"eggs":[{"page":"/midseason/2026/","target":"top10-rb-1","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-2","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-3","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-4","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-5","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"top10-rb-6","action":"tap2","conditions":{}}]}' | python3 -c 'import json,sys; print("letters:", [e["letter"] for e in json.load(sys.stdin)["eggs"]])'
+letters: ['A', 'C', 'D', 'E', 'G', 'L']
+
+

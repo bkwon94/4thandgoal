@@ -1,0 +1,10 @@
+The replay runs. One frame lasts about 1520 ms. The taps and the frame changes of [data-stable-id="sim-row-3"] near the taps, in ms from the first tap:
+Pointerups seen by the page: 4.
+-1390: frame: 02Lil Fridge13-91248.5
+0: TAP
+125: frame: 04▼down 2Lil Fridge13-111361.0
+215: TAP
+429: TAP
+1630: frame: 03▲up 1Lil Fridge15-111476.3
+Checks sent: 1
+body: {"page":"/midseason/2026/","target":"sim-row-3","action":"tap3","conditions":{"theme":"light","open":["chip-rb"]}}

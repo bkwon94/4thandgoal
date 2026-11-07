@@ -1,0 +1,26 @@
+# The drop step is the last step of make publish: drop_after_publish of cornerstone/egg_drop.py. drop_step.py runs only that step, so no commit and no push run.
+# The temp egg file: six spots for week 8, four of them confirmed.
+$ grep -c '^\[\[eggs\]\]' /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/at21-eggs.toml; grep -c 'confirmed = true' /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/at21-eggs.toml
+6
+4
+
+
+# The board before:
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; print(json.load(sys.stdin)["counts"])'
+{'left': 0, 'found': 0, 'to_drop': 54}
+
+
+$ cd /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/apps/pipeline && CORNERSTONE_API_URL=http://127.0.0.1:8080 CORNERSTONE_COMMISSIONER_KEY_CPC=localkey uv run --exact --package cornerstone python ../../.scratch/easter-eggs/evidence/tools/drop_step.py cpc 2026 8 /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/at21-eggs.toml 2>&1 | grep -v '^INFO\|nstalled'; echo "exit ${PIPESTATUS[0]}"
+Dropped 4 eggs of week 8.
+Egg 1  letter A  /2026/week-08/  award-top-scorer
+Egg 2  letter C  /2026/week-08/  award-underperformer
+Egg 3  letter D  /2026/week-08/  award-overachiever
+Egg 4  letter E  /2026/week-08/  leader-qb-1
+exit 0
+
+
+# The board after:
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; print(json.load(sys.stdin)["counts"])'
+{'left': 4, 'found': 0, 'to_drop': 50}
+
+

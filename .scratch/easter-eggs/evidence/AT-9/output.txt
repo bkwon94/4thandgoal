@@ -1,0 +1,9 @@
+# The setup: Lil Fridge (3) holds the one C of CORNERSTONE, from T1. AT-6 left roster 3 on T1.
+# T4 is egg 8, egg 2 of week 10, letter C. A token of T4, then a claim for Lil Fridge into CORNERSTONE:
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/2026/week-08/","target":"number-closest","action":"tap3","conditions":{}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":true,"claimed":false,"letter":"C","token":"<cut>"}
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"ym0WU6lV4QC8-8boBHCpFgbZORhnIBc-","roster_id":3,"word":"CORNERSTONE"}'
+{"detail":"CORNERSTONE has no open slot for the letter C."}
+HTTP 422
+

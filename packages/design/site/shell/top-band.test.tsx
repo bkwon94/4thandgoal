@@ -90,6 +90,16 @@ describe("TopBand", () => {
     renderBand("/");
     expect(within(screen.getByRole("banner")).getByRole("button", { name: /Switch to (light|dark) theme/ })).toBeTruthy();
   });
+
+  it("holds the actions of the app just before the theme button, and the dock keeps its five items", () => {
+    render(<TopBand title={TITLE} brand={BRAND} menu={MENU} pageHref="/" actions={<a href="/eggs/">Egg board</a>} />);
+    const band = screen.getByRole("banner");
+    const action = within(band).getByRole("link", { name: "Egg board" });
+    const theme = within(band).getByRole("button", { name: /Switch to (light|dark) theme/ });
+    expect(action.compareDocumentPosition(theme) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(action.parentElement).toBe(theme.parentElement);
+    expect(within(screen.getByRole("navigation", { name: "Bottom menu" })).getAllByRole("link")).toHaveLength(5);
+  });
 });
 
 describe("The pill bar (AT-10)", () => {

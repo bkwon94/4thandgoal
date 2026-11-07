@@ -1,0 +1,3 @@
+The board counts: {"left":4,"found":2,"to_drop":48}
+The slots of the grid by their data-slot mark: {"found":3,"out":5,"future":49}
+The hero text: EGG HUNT | The Egg Board | $100 in gift cards. Three egg words. First to fill a word wins it. | LEFT TO FIND | 4 | FOUND | 2 | TO DROP | 48 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | Found | Out now | Drops on a later Tuesday | CORNERSTONE | $50 GIFT CARD | No letters yet. The race is open. | C | O | R | N | E | R | S | T | O | N | E | LANSDALE | $30 GIFT CARD | Tee

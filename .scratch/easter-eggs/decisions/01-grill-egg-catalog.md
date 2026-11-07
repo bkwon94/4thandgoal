@@ -1,0 +1,49 @@
+# 01: Which egg kinds go in the catalog
+
+Map: `.scratch/easter-eggs/MAP.md`.
+
+**Kind:** grill
+
+**Blocked by:** none
+
+**Status:** done
+
+## Question
+
+Which egg kinds go in the catalog of the first build: the targets, the actions, and the conditions. Each egg must be very hard to find, found by a tap and never by an answer, and hard for an AI that reads the whole site.
+
+## Decision
+
+Brian decided in the grill of 2026-11-06. An egg kind is a target, an action, and an optional condition, which combine. The survey of the app is in `01-grill-egg-catalog.notes.md`.
+
+Actions:
+
+- 2 to 5 taps in a row.
+- A long press of 1 second, or a long hold of 3 or 5 seconds.
+- A tap combo: tap A, then B, then C on one page.
+- A selected word: highlight one exact word in a blurb.
+
+Conditions:
+
+- Light mode. Dark is the default.
+- An open state: a "Show all", a popover, a chip, or a fold.
+- An old week, or the frozen midseason page.
+- A sim outcome: the replay shows roster X as champion, or at one seed.
+- An analyzer trade: one exact trade, or any trade that the analyzer grades F.
+- A clock window, such as 11 PM to midnight ET, or a Thursday.
+- Scroll first: the egg works only after a scroll to the end of the page.
+- A page that does not exist: a typed URL shows the 404 page with an egg.
+
+Targets: a number tile, an award tile, a leaders row, a median bar, a recap line, and the must-watch card of a week page. The "01" of the rankings hero, a ladder tile, and a movement arrow row. A W/L chip, an odds tile, a grade factor row, a roster row, a moves row, and a best adds row of a manager page. A Luck cell, a Top 10 row, a bench row, a Look Ahead game, and an act heading of the midseason page. A standings row, a bracket chip, and the champion trophy of the sim. The verdict word, a factor row, a fold-line avatar, and the swap card of the analyzer. A heading, a word in a blurb, the empty space after the last chapter, and the 404 hero anywhere.
+
+Most eggs belong on old week pages and the midseason page, behind an open state, because those pages never change after they publish.
+
+Cut, with the reason:
+
+- The logo: it is a link home. The footer: the site has none.
+- A bare avatar or headshot with no context id: the same image shows in many chapters, and DEF players have no headshot.
+- The swipe: it fights the page scroll on a phone.
+- The hover and the key code: half the league reads on a phone, and a key code is typed.
+- Time on the page and the device: Brian cut them.
+
+If the eggs prove too hard, Brian raises the count of each egg drop.

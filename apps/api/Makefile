@@ -39,10 +39,11 @@ check-fast: lint typecheck rules ## Run lint, typecheck, and the rule tests
 
 # The API reads clients/ and data/ under the repo root, so the repo it reads is the root.
 # Each client needs its own passphrase, so the target sets one for each folder under clients/, such as
-# CORNERSTONE_PASSPHRASE_CPC=localtest.
-PASSPHRASES = $(foreach slug,$(notdir $(wildcard $(ROOT)/clients/*)),CORNERSTONE_PASSPHRASE_$(shell echo $(slug) | tr a-z A-Z)=localtest)
+# CORNERSTONE_PASSPHRASE_CPC=localtest. It sets the test commissioner key localkey for each folder too, such as
+# CORNERSTONE_COMMISSIONER_KEY_CPC=localkey. The API reads it only for a client of the eggs package.
+PASSPHRASES = $(foreach slug,$(notdir $(wildcard $(ROOT)/clients/*)),CORNERSTONE_PASSPHRASE_$(shell echo $(slug) | tr a-z A-Z)=localtest CORNERSTONE_COMMISSIONER_KEY_$(shell echo $(slug) | tr a-z A-Z)=localkey)
 
-api: ## Run the API on port 8080 with the test passphrase localtest for each client
+api: ## Run the API on port 8080 with the test passphrase localtest and the test commissioner key localkey
 	$(PASSPHRASES) CORNERSTONE_REPO=$(ROOT) $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
 
 # Evidence runs only: an analyzer test of an evidence run makes many requests, and the default limit of 10 would

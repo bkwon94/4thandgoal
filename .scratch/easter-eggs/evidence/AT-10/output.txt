@@ -1,0 +1,26 @@
+# The same state as AT-9: Lil Fridge holds the C of CORNERSTONE. LANSDALE and EAGLES hold no C. The token of AT-9 stays good after the refusal.
+# The board before:
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); print("counts", b["counts"]); print("Lil Fridge", {w["word"]: [m["letters"] for m in w["managers"] if m["roster_id"]==3][0] for w in b["words"]}); print("latest", b["latest"])'
+counts {'left': 11, 'found': 1, 'to_drop': 42}
+Lil Fridge {'CORNERSTONE': ['C'], 'LANSDALE': [], 'EAGLES': []}
+latest [{'roster_id': 3, 'team': 'Lil Fridge', 'letter': 'C', 'word': 'CORNERSTONE', 'claimed_at': '2026-11-07T00:40:43.298254-05:00'}]
+
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"ym0WU6lV4QC8-8boBHCpFgbZORhnIBc-","roster_id":3,"word":null}'
+{"egg_id":8,"letter":"C","roster_id":3,"word":null,"letters":{"CORNERSTONE":["C"],"LANSDALE":[],"EAGLES":[]},"winner":null}
+HTTP 200
+
+# The board after:
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); print("counts", b["counts"]); print("Lil Fridge", {w["word"]: [m["letters"] for m in w["managers"] if m["roster_id"]==3][0] for w in b["words"]}); print("latest", b["latest"])'
+counts {'left': 10, 'found': 2, 'to_drop': 42}
+Lil Fridge {'CORNERSTONE': ['C'], 'LANSDALE': [], 'EAGLES': []}
+latest [{'roster_id': 3, 'team': 'Lil Fridge', 'letter': 'C', 'word': 'CORNERSTONE', 'claimed_at': '2026-11-07T00:40:43.298254-05:00'}]
+
+
+$ sqlite3 -header $CORNERSTONE_EGGS_DIR/cpc.sqlite 'SELECT rowid, egg_id, roster_id, word, claimed_at, undone_at FROM claims'
+rowid|egg_id|roster_id|word|claimed_at|undone_at
+1|2|3|CORNERSTONE|2026-11-07T00:40:42.219998-05:00|2026-11-07T00:40:42.563892-05:00
+2|2|3|CORNERSTONE|2026-11-07T00:40:43.298254-05:00|
+3|8|3||2026-11-07T00:40:43.603437-05:00|
+
+

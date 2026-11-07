@@ -32,7 +32,7 @@ V = TypeVar("V", bound=PackageValues)
 TABLES_SCHEMA = {"type": "object", "additionalProperties": {"type": "object"}}
 
 # The packages a client chooses. league, facts, and design are in every client, so the list never names them.
-PackageName = Literal["week", "rankings", "managers", "waiver", "analyzer", "sim", "midseason"]
+PackageName = Literal["week", "rankings", "managers", "waiver", "analyzer", "sim", "midseason", "eggs"]
 # Each package that needs another package, with the package it needs. The midseason report ends on the sim, and the
 # app wires the two, so a client that takes midseason takes sim too.
 PACKAGE_NEEDS: dict[PackageName, PackageName] = {"midseason": "sim"}

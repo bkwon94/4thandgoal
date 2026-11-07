@@ -10,6 +10,7 @@ import { ordinal } from "@cpc/design/format/format";
 import { stagger } from "@cpc/design/lib/motion";
 import type { ManagerGrade, Manager } from "../schema/manager-types";
 import { PART_NAMES } from "./part-names";
+import { stableId, stableKey } from "@cpc/design/lib/stable-id";
 
 /* A tile for each slot, in the file's order. Each tile enters at its place in the stagger when the chapter reveals.
    A phone fits two tiles per row, so the rank and the depth never wrap. */
@@ -19,7 +20,13 @@ function SlotTiles({ grade, teams }: { grade: ManagerGrade; teams: number }) {
       {grade.slots.map((slot, i) => (
         <li key={slot.position}>
           <Reveal delay={stagger(i)} className="h-full">
-            <Tile label={slot.position} value={ordinal(slot.rank)} note={`of ${teams} · ${slot.depth}`} className="h-full" />
+            <Tile
+              label={slot.position}
+              value={ordinal(slot.rank)}
+              note={`of ${teams} · ${slot.depth}`}
+              stable={stableKey("roster-slot", slot.position)}
+              className="h-full"
+            />
           </Reveal>
         </li>
       ))}
@@ -33,7 +40,11 @@ function GradeParts({ grade, teams }: { grade: ManagerGrade; teams: number }) {
   return (
     <ol aria-label="Grade Parts" className="m-0 mt-sp-5 flex list-none flex-col p-0 tabular-nums">
       {grade.parts.map((part) => (
-        <li key={part.key} className="flex items-baseline justify-between gap-sp-3 border-t border-rule py-sp-2 first:border-t-0">
+        <li
+          key={part.key}
+          className="flex items-baseline justify-between gap-sp-3 border-t border-rule py-sp-2 first:border-t-0"
+          {...stableId("roster-part", part.key)}
+        >
           <span className="text-body text-ink-2">{PART_NAMES[part.key]}</span>
           <span className="font-mono text-body font-bold text-ink">
             {ordinal(part.rank)}

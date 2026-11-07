@@ -1,0 +1,68 @@
+# The board before: Lil Fridge leads EAGLES and needs only an E. E ties at the top of the need, with 11 managers.
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c "$NEED"
+managers who need each letter: {'A': 11, 'C': 11, 'D': 11, 'E': 11, 'L': 11, 'N': 11, 'O': 11, 'R': 11, 'S': 11, 'T': 11, 'G': 10}
+Lil Fridge in EAGLES: ['E', 'A', 'G', 'L', 'S']
+
+
+# The drop of six test eggs for week 10:
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":10,"eggs":[{"page":"/2026/week-08/","target":"median-1","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-2","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-3","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-4","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-5","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-6","action":"tap2","conditions":{}}]}' | python3 -m json.tool
+{
+    "week": 10,
+    "dropped": 6,
+    "eggs": [
+        {
+            "id": 12,
+            "page": "/2026/week-08/",
+            "target": "median-1",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "A"
+        },
+        {
+            "id": 13,
+            "page": "/2026/week-08/",
+            "target": "median-2",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "C"
+        },
+        {
+            "id": 14,
+            "page": "/2026/week-08/",
+            "target": "median-3",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "D"
+        },
+        {
+            "id": 15,
+            "page": "/2026/week-08/",
+            "target": "median-4",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "L"
+        },
+        {
+            "id": 16,
+            "page": "/2026/week-08/",
+            "target": "median-5",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "N"
+        },
+        {
+            "id": 17,
+            "page": "/2026/week-08/",
+            "target": "median-6",
+            "action": "tap2",
+            "conditions": {},
+            "letter": "O"
+        }
+    ]
+}
+
+
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":10,"eggs":[{"page":"/2026/week-08/","target":"median-1","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-2","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-3","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-4","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-5","action":"tap2","conditions":{}},{"page":"/2026/week-08/","target":"median-6","action":"tap2","conditions":{}}]}' | python3 -c 'import json,sys; l=[e["letter"] for e in json.load(sys.stdin)["eggs"]]; print("letters:", l, "E in the drop:", "E" in l)'
+letters: ['A', 'C', 'D', 'L', 'N', 'O'] E in the drop: False
+
+

@@ -6,6 +6,7 @@
 
 import { useState, type ReactNode } from "react";
 import { cn } from "@cpc/design/lib/utils";
+import { openId } from "@cpc/design/lib/stable-id";
 
 /* The rows that a long list shows before the reader opens it. */
 export const FIRST_ROWS = 5;
@@ -25,6 +26,7 @@ export function ShowAll({ label, rows, className }: { label: string; rows: React
           type="button"
           aria-expanded={open}
           onClick={() => setOpen(!open)}
+          {...openId("show-all", label)}
           className="press flex min-h-touch cursor-pointer items-center gap-sp-2 self-start bg-transparent p-0 font-mono text-meta font-bold tracking-caps text-accent-ink"
         >
           {open ? `Show top ${FIRST_ROWS}` : `Show all ${rows.length}`}

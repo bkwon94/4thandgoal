@@ -1,0 +1,9 @@
+# After the undo of AT-17, Teehee (12) holds no letter. A new token of T1, letter C, then a claim as a block (word null).
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); print("Teehee letters", {w["word"]: [m["letters"] for m in w["managers"] if m["roster_id"]==12][0] for w in b["words"]})'
+Teehee letters {'CORNERSTONE': [], 'LANSDALE': [], 'EAGLES': []}
+
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"73AzjWbocnepyjljDFc0ekIkTPUaTDzb","roster_id":12,"word":null}'
+{"detail":"The letter C fits an egg word of the manager, so a block is not open."}
+HTTP 422
+

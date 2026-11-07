@@ -43,6 +43,7 @@ from analyzer.tunables import GRADES_PER_MINUTE
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
 from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE, Settings
 from cornerstone_api.sources import Sources
+from cornerstone_api.value_models import VALUE_MODELS
 from league.client import ClientError
 from league.live import RefreshResult
 from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
@@ -56,7 +57,8 @@ from league.tunables import TEAMS_CACHE_SECONDS
 
 ET = ZoneInfo("America/New_York")
 # The client the builds and fetches of these tests read.
-CLIENT = cpc_client()
+# The models of the API, so the client holds the package values of eggs, as the real start reads them.
+CLIENT = cpc_client(models=VALUE_MODELS)
 FETCHED = datetime(2026, 10, 19, 9, 30, tzinfo=ET)
 # Monday night before the week 7 cutoff, so the trade week and the chart week are 6.
 NOW = datetime(2026, 10, 19, 12, 0, tzinfo=ET)
@@ -88,7 +90,7 @@ def repo(tmp_path, fixture_history_root, fixture_nflverse_dir):
 
 def _here(sources: Sources, settings: Settings) -> Sources:
     """The sources with the client of the test folder, so a snapshot reads and writes only that folder."""
-    return dataclasses.replace(sources, client=cpc_client(at=settings.repo))
+    return dataclasses.replace(sources, client=cpc_client(at=settings.repo, models=VALUE_MODELS))
 
 
 @pytest.fixture
@@ -104,7 +106,8 @@ def sources(fixture_raw_dir, chart_week6):
 
 @pytest.fixture
 def settings(repo):
-    return Settings(passphrases={"cpc": PASSPHRASE}, repo=repo, result_cache_dir=repo / "results")
+    return Settings(passphrases={"cpc": PASSPHRASE}, repo=repo, result_cache_dir=repo / "results",
+                    commissioner_keys={"cpc": "commissioner-test"})
 
 
 # The bullets of each side in a stub analysis.
@@ -1936,7 +1939,10 @@ SECOND_HEADERS = {"X-League-Passphrase": "norcal-test"}
 def _two_clients(settings, sources, analyzer=None):
     """An app that serves cpc and a second client on the same fixture league, each with its own sources."""
     cpc = _here(sources, settings)
-    second = dataclasses.replace(cpc, client=cpc.client.model_copy(update={"slug": SECOND}))
+    # The second client takes no eggs, as norcal takes none, so it needs no commissioner key.
+    values = cpc.client.values.model_copy(
+        update={"packages": [name for name in cpc.client.values.packages if name != "eggs"]})
+    second = dataclasses.replace(cpc, client=cpc.client.model_copy(update={"slug": SECOND, "values": values}))
     settings = dataclasses.replace(settings, passphrases={"cpc": PASSPHRASE, SECOND: SECOND_HEADERS["X-League-Passphrase"]})
     app = create_app(settings, [cpc.client, second.client], sources={"cpc": cpc, SECOND: second}, analyzer=analyzer)
     for served in app.state.served.values():
