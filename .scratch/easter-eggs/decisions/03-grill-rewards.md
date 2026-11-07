@@ -6,7 +6,7 @@ Map: `.scratch/easter-eggs/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ Brian set three prizes in the grill of 2026-11-06: a gift card for each egg word
 
 ## Decision
 
-None yet.
+Brian decided in the grill of 2026-11-06. Each egg word has one gift card for its first winner: $50 for CORNERSTONE, $30 for LANSDALE, and $20 for EAGLES, $100 in all. The egg board shows the value of each gift card beside the race of its egg word, because a visible prize is a reason to come back. Brian gives each gift card by hand.

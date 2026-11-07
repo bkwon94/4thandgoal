@@ -20,11 +20,10 @@ A CPC-only `eggs` package hides very hard eggs across the site, six more each Tu
 - An egg kind is a target, an action, and an optional condition. The catalog has 5 actions, 8 conditions, and about 30 targets, most on old week pages and the midseason page. `decisions/01-grill-egg-catalog.md`.
 - No agent finalizes an egg without Brian. An agent may propose spots, and Brian confirms each one first. Brian, 2026-11-06. `decisions/09-grill-weekly-drop.md`.
 - Claude Design, the Design artifact type built into Claude, makes the design of the claim form, the egg, the animations, and the egg board. Brian, 2026-11-06. `decisions/08-prototype-claim-form.md`.
-- The prizes are three gift cards: CORNERSTONE the biggest, LANSDALE the second, EAGLES the third. Grill of 2026-11-06.
+- The prizes are three gift cards: $50 for CORNERSTONE, $30 for LANSDALE, and $20 for EAGLES. The egg board shows each value. `decisions/03-grill-rewards.md`.
 
 ## NOT YET SPECIFIED
 
-- What is the value of each gift card, and does the site show it? `decisions/03-grill-rewards.md`.
 - Does the site tell managers about the eggs or the egg drop, and does it give hints? `decisions/06-grill-hints.md`.
 - What does the claim form look and feel like, with the status of each egg word to help the choice? `decisions/08-prototype-claim-form.md`.
 - How does Brian place six spots each week, and how does the egg drop join the Tuesday publish? `decisions/09-grill-weekly-drop.md`.

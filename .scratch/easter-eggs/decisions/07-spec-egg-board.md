@@ -4,7 +4,7 @@ Map: `.scratch/easter-eggs/MAP.md`.
 
 **Kind:** spec
 
-**Blocked by:** 03
+**Blocked by:** none
 
 **Status:** open
 
