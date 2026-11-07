@@ -7,7 +7,7 @@ import { createElement } from "react";
 import { describe, expect, it } from "vitest";
 import { TopBand } from "@cpc/design/shell/top-band";
 import type { MenuLinks } from "@/lib/client-values";
-import { shellProps, menuPages, pageTitle } from "./shell-props";
+import { shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
 
 /* The menu links of a client that takes each package, as the registry gives them. */
 const LINKS: MenuLinks = {
@@ -101,6 +101,12 @@ describe("shellProps of cpc", () => {
     expect(within(band).getByRole("link", { name: /^Egg board/ }).getAttribute("href")).toBe("/eggs/");
     expect(within(screen.getByRole("navigation", { name: "Bottom menu" })).getAllByRole("link")).toHaveLength(5);
     cleanup();
+  });
+});
+
+describe("takesEggs", () => {
+  it("is true for cpc, which lists the eggs package, the same switch that gives it the egg button", () => {
+    expect(takesEggs()).toBe(true);
   });
 });
 

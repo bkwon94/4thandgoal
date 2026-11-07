@@ -50,6 +50,12 @@ export function weekSubtitle(): string {
   return clientValues.copy.tagline;
 }
 
+/* True when the client takes the eggs package. The registry lists the packages of the client, so this is the same
+   switch that gives the egg button to the top band. The layout and the CSS use it to scope the marks of the hunt. */
+export function takesEggs(): boolean {
+  return clientValues.packages.includes("eggs");
+}
+
 export function shellProps(): { title: string; brand: Brand; menu: SiteMenu; actions: ReactNode } {
   // The registry holds only the packages of the client, so an omitted package has no link and no code in the bundle.
   const home = homeHref();

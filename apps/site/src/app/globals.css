@@ -894,13 +894,14 @@ html:not([data-hydrated]) [data-draw] {
 
 /* The egg hunt reads a long press on each element with a stable id, so iOS opens no callout there. A link and an
    image keep the callout, so a long press on them still opens the menu of the browser. Text selection stays on, so
-   a manager can select a word of a blurb. */
-[data-stable-id] {
+   a manager can select a word of a blurb. The layout sets data-eggs on the root of a client that takes eggs, so
+   another client keeps the callout everywhere. */
+[data-eggs] [data-stable-id] {
     -webkit-touch-callout: none;
 }
-[data-stable-id] a,
-[data-stable-id] img,
-a[data-stable-id],
-img[data-stable-id] {
+[data-eggs] [data-stable-id] a,
+[data-eggs] [data-stable-id] img,
+[data-eggs] a[data-stable-id],
+[data-eggs] img[data-stable-id] {
     -webkit-touch-callout: default;
 }

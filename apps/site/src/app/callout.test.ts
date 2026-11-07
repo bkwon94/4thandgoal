@@ -20,16 +20,22 @@ function declarationsOf(selector: string): string {
 
 describe("the callout rule of globals.css", () => {
   it("turns the iOS callout off on each element with a stable id", () => {
-    expect(declarationsOf("[data-stable-id]")).toMatch(/-webkit-touch-callout:\s*none/);
+    expect(declarationsOf("[data-eggs] [data-stable-id]")).toMatch(/-webkit-touch-callout:\s*none/);
   });
 
   it("keeps the callout on for each link and image, inside a target or not", () => {
-    expect(declarationsOf("[data-stable-id] a, [data-stable-id] img, a[data-stable-id], img[data-stable-id]")).toMatch(
+    expect(declarationsOf(
+        "[data-eggs] [data-stable-id] a, [data-eggs] [data-stable-id] img, [data-eggs] a[data-stable-id], [data-eggs] img[data-stable-id]",
+      )).toMatch(
       /-webkit-touch-callout:\s*default/,
     );
   });
 
+  it("scopes the callout rule to a client that takes eggs, so another client keeps the callout", () => {
+    expect(declarationsOf("[data-stable-id]")).toBe("");
+  });
+
   it("never turns text selection off on a target, so a manager can select a word", () => {
-    expect(declarationsOf("[data-stable-id]")).not.toMatch(/user-select/);
+    expect(declarationsOf("[data-eggs] [data-stable-id]")).not.toMatch(/user-select/);
   });
 });
