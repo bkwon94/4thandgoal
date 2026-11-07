@@ -23,10 +23,10 @@ A CPC-only `eggs` package hides very hard eggs across the site, six more each Tu
 - The egg check is an open route with its own limit of 60 per hour. The claim needs the passphrase, asked in the claim form only if the browser has none. The listener counts fast taps by element id and never blocks a link or a toggle. `decisions/10-grill-listener-limits.md`.
 - Claude Design, the Design artifact type built into Claude, makes the design of the claim form, the egg, the animations, and the egg board. Brian, 2026-11-06. `decisions/08-prototype-claim-form.md`.
 - The prizes are three gift cards: $50 for CORNERSTONE, $30 for LANSDALE, and $20 for EAGLES. The egg board shows each value. `decisions/03-grill-rewards.md`.
+- The claim flow, the egg banner, and the egg board share the look of the site: the hero grid, glow, brackets, and scan line, with letter tiles in the colors of the logo. The board opens from an egg button in the top band. The canvas of Claude Design holds all three. `decisions/08-prototype-claim-form.md`.
 
 ## NOT YET SPECIFIED
 
-- What does the claim form look and feel like, with the status of each egg word to help the choice? `decisions/08-prototype-claim-form.md`.
 - Where does the egg board sit in the menu, and what does it show? `decisions/07-spec-egg-board.md`.
 
 ## OUT OF SCOPE

@@ -1101,6 +1101,14 @@ _Avoid_: Finder (that is the trade code of the analyzer), winner, claimer
 The page of the site that shows the letters of each manager in each egg word, the count of eggs left, and the winner of each egg word. It never shows where an egg hides.
 _Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board score)
 
+**Egg banner**:
+The slim strip under the top band of the home page that shows the count of new eggs and the count of eggs left to find after each egg drop. It links to the egg board and names no spot.
+_Avoid_: Drop banner, alert, announcement, toast
+
+**Commissioner**:
+The person who places the eggs, cannot hunt, and can undo a claim. Site copy says "the commissioner" and never names the person.
+_Avoid_: Admin, owner, a real name
+
 ## Workflow
 
 **Map**:
