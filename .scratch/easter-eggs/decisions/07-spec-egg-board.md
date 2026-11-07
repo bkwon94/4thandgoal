@@ -6,7 +6,7 @@ Map: `.scratch/easter-eggs/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -28,4 +28,4 @@ Brian approved these choices with ticket 08 on 2026-11-06. The board and banner 
 
 ## Decision
 
-None yet.
+Brian approved the spec on 2026-11-06. The egg board is the route `/eggs/`, rendered in the client from the egg board route of the API. The way in is the egg button in the top band, not a menu item. The layout is the hero, one card per egg word, "Latest claims", and "How the hunt works". See Implementation Decisions of `.scratch/easter-eggs/PRD.md`.
