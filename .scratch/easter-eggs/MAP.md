@@ -18,6 +18,7 @@ A CPC-only `eggs` package hides very hard eggs across the site, six more each Tu
 - The API keeps the eggs and the claims in one SQLite file on its Fly volume. The rest derives from the two tables. Grill of 2026-11-06, ticket 01.
 - An egg drop of six eggs goes live each Tuesday from week 9 to week 17, 54 eggs in all. Brian places the six spots. The API gives each spot a letter: the letters that the most managers still need, but never the last letter that a leader needs. Grill of 2026-11-06, ticket 01.
 - An egg kind is a target, an action, and an optional condition. The catalog has 5 actions, 8 conditions, and about 30 targets, most on old week pages and the midseason page. `decisions/01-grill-egg-catalog.md`.
+- No agent finalizes an egg without Brian. An agent may propose spots, and Brian confirms each one first. Brian, 2026-11-06. `decisions/09-grill-weekly-drop.md`.
 - Claude Design, the Design artifact type built into Claude, makes the design of the claim form, the egg, the animations, and the egg board. Brian, 2026-11-06. `decisions/08-prototype-claim-form.md`.
 - The prizes are three gift cards: CORNERSTONE the biggest, LANSDALE the second, EAGLES the third. Grill of 2026-11-06.
 
