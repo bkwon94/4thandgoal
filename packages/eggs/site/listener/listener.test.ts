@@ -21,6 +21,7 @@ beforeEach(() => {
     </tr></table>
     <a id="link" href="#next">Next</a>
     <p data-stable-id="blurb-luck">Lil Fridge got lucky, and the luckiest team won.</p>
+    <p data-stable-id="chapter-title">Lucky chapter title</p>
     <p id="plain-blurb">No stable id here, lucky or not.</p>`;
   document.documentElement.classList.remove("dark");
   stop = listenForEggs(document, { page: () => "/midseason/2026/", send: (check) => sent.push(check) });
@@ -221,6 +222,11 @@ describe("listenForEggs", () => {
     select(blurb(), at("luckiest"), at("luckiest") + 5);
     select(blurb(), at("got"), at("lucky") + 5);
     select(document.getElementById("plain-blurb")!, 24, 29);
+    expect(sent).toEqual([]);
+  });
+
+  it("sends no check for a word in an element whose stable id is not a blurb id", () => {
+    select(cell("chapter-title"), 0, 5);
     expect(sent).toEqual([]);
   });
 

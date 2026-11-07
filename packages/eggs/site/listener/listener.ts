@@ -26,6 +26,10 @@ export const COMBO_MS = 5000;
 /* A selection sends its check when it has not changed for this time, so a drag of the handles sends one check. */
 export const SELECT_SETTLE_MS = 600;
 
+/* The prefix of the stable id of a blurb, as `textId("blurb", text)` makes it. Only a blurb sends a select check, so
+   a selection in a table cell or a heading spends none of the limit of the API. */
+const BLURB_PREFIX = "blurb-";
+
 /* One word: letters and digits, with an apostrophe or a dash inside, such as "don't" or "co-op". */
 const WORD = /^[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*$/u;
 const WORD_MARK = /[\p{L}\p{N}'’-]/u;
@@ -86,7 +90,7 @@ function markAt(node: Node, offset: number): string {
   return node.nodeType === Node.TEXT_NODE ? (node.textContent ?? "").charAt(offset) : "";
 }
 
-/* The stable id and the word of a selection of one whole word in an element with a stable id, or null. A selection
+/* The stable id and the word of a selection of one whole word in a blurb, or null. A selection
    with a space at an end, as a double-click makes, keeps its word. A part of a word or two words is null. */
 function selectedWord(root: Document): { id: string; word: string } | null {
   const selection = root.getSelection();
@@ -101,7 +105,7 @@ function selectedWord(root: Document): { id: string; word: string } | null {
   const node = range.commonAncestorContainer;
   const element = (node instanceof Element ? node : node.parentElement)?.closest(`[${STABLE_ID}]`);
   const id = element?.getAttribute(STABLE_ID);
-  return id ? { id, word: word.toLowerCase() } : null;
+  return id?.startsWith(BLURB_PREFIX) ? { id, word: word.toLowerCase() } : null;
 }
 
 /* The hold that a press of `ms` reaches, or null for a press under the shortest hold. */
