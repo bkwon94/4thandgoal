@@ -441,7 +441,7 @@ Evidence: the test output of each check and of the drop.
 AT-54: A two-team egg matches any trade between its two teams
 App: both
 Stories: 5
-Given: A test egg on the verdict word of `/analyzer/` with the action `tap2` and the condition `trade_teams` of The Blue Tent and Lil Fridge, roster ids 1 and 3.
+Given: A test egg on the verdict word of `/analyze/` with the action `tap2` and the condition `trade_teams` of The Blue Tent and Lil Fridge, roster ids 1 and 3.
 When: Double-tap the verdict word of a graded trade, and read the check that the listener sends. Then POST the check with the teams 1 and 3, with 3 and 1, with 1 and 12, and with 1, 3, and 12.
 Then: The listener sends `trade_teams`, the two roster ids of the trade, smallest first, and no `trade`. The checks with 1 and 3 in either order match. The other two checks are no match. The drop refuses the old `trade` condition.
 Evidence: the test output with the body of the check from the listener, and the output of each API check and of the refused drop.
@@ -530,5 +530,5 @@ Out of scope "A riddle, an answer box, or any typed answer": AT-48
 
 - 2026-11-06: AT-41 names the day of the drop, because the banner stays up all week and "6 new eggs" read as eggs of that day. Brian approved.
 - 2026-11-07: AT-47 tests that nothing of the hunt shows before the first drop, because the hunt turns on at the first drop (Brian chose the automatic flag). Brian approved.
-- 2026-11-07: Brian tested the hunt by hand and changed the catalog (decision tickets 01 and 10, revised 2026-11-07). T1, AT-1, AT-26, AT-30, and AT-47 use a double-tap, because the actions `tap3` to `tap5` are gone. AT-27 tests the one action `hold` of 2 seconds or more, and no check for a press of 1.5 seconds. AT-52 tests the hold of a touch press on Android Chrome, which fires `contextmenu`. AT-53 tests a 404 egg on any missing URL. AT-54 tests a two-team analyzer egg and covers story 5. AT-55 tests that a burst of 3 or more taps sends nothing. Brian decided each change. He reviews the new test text in the PR.
-- 2026-11-07: Brian decided that a hold egg never goes on a blurb, because on Android a long press on text selects a word. A blurb may take a double-tap egg. AT-56 tests the double-tap on a blurb and the refusal of a hold on a blurb by the draft and the drop. Brian reviews the new test text in the PR.
+- 2026-11-07: Brian tested the hunt by hand and changed the catalog (decision tickets 01 and 10, revised 2026-11-07). T1, AT-1, AT-26, AT-30, and AT-47 use a double-tap, because the actions `tap3` to `tap5` are gone. AT-27 tests the one action `hold` of 2 seconds or more, and no check for a press of 1.5 seconds. AT-52 tests the hold of a touch press on Android Chrome, which fires `contextmenu`. AT-53 tests a 404 egg on any missing URL. AT-54 tests a two-team analyzer egg and covers story 5. AT-55 tests that a burst of 3 or more taps sends nothing. Brian decided each change. Brian approved the test text on 2026-11-07.
+- 2026-11-07: Brian decided that a hold egg never goes on a blurb, because on Android a long press on text selects a word. A blurb may take a double-tap egg. AT-56 tests the double-tap on a blurb and the refusal of a hold on a blurb by the draft and the drop. Brian approved the test text on 2026-11-07.
