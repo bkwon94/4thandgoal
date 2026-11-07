@@ -31,7 +31,7 @@ from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
 from eggs import routes as eggs_routes
 from eggs.store import EggStore
-from eggs.tunables import CHECK_WINDOW_SECONDS, CHECKS_PER_HOUR
+from eggs.tunables import BOARD_READS_PER_MINUTE, BOARD_WINDOW_SECONDS, CHECK_WINDOW_SECONDS, CHECKS_PER_HOUR
 from eggs.values import EggsValues
 from league.client import Client, SettingsFetch, load_client
 from league.paths import provider_cache_dir
@@ -88,7 +88,7 @@ def _guard(request: Request) -> None:
 
 
 def _limit(request: Request) -> None:
-    """Stop a request past the rate limit of its address. The open eggs routes run it with no passphrase."""
+    """Stop a request past the rate limit of its address. The commissioner guard runs it before the key check."""
     retry_after = request.app.state.limiter.hit(request_address(request))
     if retry_after is not None:
         raise _RateLimited(retry_after)
@@ -98,6 +98,14 @@ def _check_limit(request: Request) -> None:
     """Stop an egg check past the limit of the egg check of its address. The check counts apart from the other routes,
     so a hunt spends none of the limit of the analyzer, and a sweep of the site stops at the limit of one hour."""
     retry_after = request.app.state.check_limiter.hit(request_address(request))
+    if retry_after is not None:
+        raise _RateLimited(retry_after)
+
+
+def _board_limit(request: Request) -> None:
+    """Stop a board read past the limit of the board of its address. The egg button and the egg banner read the board
+    on each page, so the board counts apart from the other routes and a page read spends none of the analyzer limit."""
+    retry_after = request.app.state.board_limiter.hit(request_address(request))
     if retry_after is not None:
         raise _RateLimited(retry_after)
 
@@ -190,6 +198,7 @@ def create_app(
                        for client in clients if "eggs" in client.values.packages}
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
+    app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
     # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
     app.state.analyzer = analyzer or analyze
     # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
@@ -217,9 +226,10 @@ def create_app(
         app.include_router(refresh_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
 
     # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
-    # commissioner key. The check has its own limit of each address, and each other group keeps the rate limit.
+    # commissioner key. The check and the board each have their own limit of each address, and each other group keeps
+    # the rate limit.
     app.include_router(eggs_routes.check_router, prefix=EGGS_PREFIX, dependencies=[Depends(_check_limit)])
-    app.include_router(eggs_routes.open_router, prefix=EGGS_PREFIX, dependencies=[Depends(_limit)])
+    app.include_router(eggs_routes.open_router, prefix=EGGS_PREFIX, dependencies=[Depends(_board_limit)])
     app.include_router(eggs_routes.claim_router, prefix=EGGS_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(eggs_routes.commissioner_router, prefix=EGGS_PREFIX, dependencies=[Depends(_commissioner_guard)])
 

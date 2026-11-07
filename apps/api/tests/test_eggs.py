@@ -16,6 +16,7 @@ import pytest
 from cpc import cpc_client
 from fastapi.testclient import TestClient
 
+from analyzer.ratelimit import RateLimiter
 from cornerstone_api.app import create_app
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
@@ -501,3 +502,14 @@ def test_the_check_limit_counts_each_address_apart(api):
         api.post(f"{BASE}/check", json=CHECK, headers={"Fly-Client-IP": "10.0.0.1"})
     assert api.post(f"{BASE}/check", json=CHECK, headers={"Fly-Client-IP": "10.0.0.1"}).status_code == 429
     assert api.post(f"{BASE}/check", json=CHECK, headers={"Fly-Client-IP": "10.0.0.2"}).status_code == 200
+
+
+def test_the_board_has_its_own_limit_of_60_a_minute_and_spends_none_of_the_shared_limit(api):
+    # The shared limit of the analyzer and the claim is 10 a minute in the real app.
+    api.app.state.limiter = RateLimiter(10)
+    statuses = [api.get(f"{BASE}/board").status_code for _ in range(61)]
+    assert statuses[:60] == [200] * 60
+    assert statuses[60] == 429
+    assert 0 < int(api.get(f"{BASE}/board").headers["Retry-After"]) <= 60
+    # The 60 board reads spend nothing of the limit of 10 a minute of the other routes.
+    assert api.get("/clients/cpc/teams", params={"season": 2026}, headers=PASS).status_code == 200

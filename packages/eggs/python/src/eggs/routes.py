@@ -18,7 +18,7 @@ from eggs.store import AlreadyClaimed, Claim, Egg, EggStore
 from eggs.tokens import ClaimTokens
 from eggs.values import EggsValues
 
-# The open routes: the egg check and the egg board need no key. The check has its own limit, so it has its own group.
+# The open routes: the egg check and the egg board need no key. Each has its own limit, so each has its own group.
 check_router = APIRouter()
 open_router = APIRouter()
 # The claim needs the passphrase of the client. The app gives the guard.
