@@ -3,8 +3,10 @@
 ## Knows
 
 - The client of the eggs routes in `api.ts`, the Zod schema of each answer, and the port `EggsApi` that the parts call.
+- The wait of a 429, from its Retry-After header, on the error of a failed call.
 - The passphrase in local storage, under the same key as the trade analyzer.
 - The board fixture in `fixtures/board.json`, which the API tests hold to the real answer, and the one fake of the port.
+  A test gives the fake a failure of the check or the claim, or a board built from the fixture with `boardWith`.
 
 ## Ports
 
