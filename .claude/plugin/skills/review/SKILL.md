@@ -1,6 +1,6 @@
 ---
 name: review
-description: Do one round of feedback on a spec PR of this repo. Read the open review comments and the latest Test verdicts comment of Brian, then make a correction commit or a reply for each, push, and post a summary. Use when Brian finishes a round of comments on a PR that cpc:implement opened.
+description: Do one round of feedback on a spec PR of this repo. Read the open review comments, the Test verdicts of the Judge, and the latest Test verdicts comment of Brian, then make a correction commit or a reply for each, push, and post a summary. Use when Brian finishes a round of comments on a PR that cpc:implement opened.
 argument-hint: '<PR number>'
 ---
 
@@ -8,7 +8,7 @@ argument-hint: '<PR number>'
 
 Do one round of feedback on one spec PR. One run is one round. Brian starts the next round when he finishes his next comments.
 
-The agent never writes a Test verdict. Only Brian gives PASS, FAIL, or BLOCKED (ADR 0020).
+The agent never writes a Test verdict. The Judge, a fresh subagent, gives each Test verdict in `VERDICTS.md`. A FAIL from Brian in a PR comment overrides the Judge (ADR 0026).
 
 ## Before you start
 
@@ -23,7 +23,7 @@ The agent never writes a Test verdict. Only Brian gives PASS, FAIL, or BLOCKED (
 1. Read the comments with the commands of [`github.md`](github.md). Find each comment that needs an action:
    - Each review thread that is not resolved, and whose last comment has no agent marker `<!-- cpc:agent -->`.
    - Each PR comment with no marker that is later than the last round comment of the agent. In the first round, each PR comment with no marker counts.
-2. Judge the latest Test verdicts comment with the verdict script, as [`github.md`](github.md#the-test-verdicts) shows. Each test with FAIL or BLOCKED needs an action.
+2. Check `VERDICTS.md` and the latest Test verdicts comment of Brian with the verdict script, as [`github.md`](github.md#the-test-verdicts) shows. Each offense needs an action.
 3. Act on each item with the table below.
 4. Run `make check-fast BASE=main` in the worktree. If it fails, fix it before the push. If you cannot fix it, stop and tell Brian. The CI check `Check` on the PR runs the full check after the push.
 5. Push with a plain `git push`. Never force-push, never squash, and never use `--no-verify`.
@@ -35,8 +35,10 @@ The agent never writes a Test verdict. Only Brian gives PASS, FAIL, or BLOCKED (
 | A change request | One correction commit, and a reply with the commit id. |
 | A question | A reply with the answer. No change. |
 | A conflict with the spec, an ADR, or an approved test | A reply that names the conflict. No change. |
-| A test with FAIL | A correction commit, built with `tdd` when it changes behavior. Then new evidence with [`../implement/evidence.md`](../implement/evidence.md), committed, and a reply with the commit id and the new evidence link. |
-| A test with BLOCKED | A reply that names what the test needs. If the agent can supply it, such as a missing evidence file, supply it and reply with the link. |
+| A FAIL from Brian | One finding. A correction commit, built with `tdd` when it changes behavior. Then new evidence for that test with [`../implement/evidence.md`](../implement/evidence.md), committed. Then a fresh Judge on that test, with the lines of "Some tests only" and "After a fix" of [`../implement/judge.md`](../implement/judge.md#some-tests-only). Copy its reply into `VERDICTS.md` as that section shows, and commit it. A reply with the commit ids, the new evidence link, and the new word of the Judge in a sentence, such as "The Judge now gives PASS to AT-2." |
+| A BLOCKED from Brian | A reply that names what the test needs. If the agent can supply it, such as a missing evidence file, supply it, run a fresh Judge on that test as for a FAIL, and reply with the link. |
+| A FAIL or BLOCKED from the Judge | A reply in the round comment that names the test and the reason of the Judge. Tell Brian. The agent gives the test no third round. |
+| A stale `VERDICTS.md` | A fresh Judge on each test, with [`../implement/judge.md`](../implement/judge.md), committed. |
 | A test with PASS | No action. A PASS stays valid after a correction commit. |
 | A change to an approved acceptance test | A reply that tells Brian to change the test with `cpc:to-acceptance`. No change. |
 | A decision for a blocked ticket | A reply that tells Brian to run `cpc:implement <slug>`. This skill builds no ticket. |
@@ -44,10 +46,12 @@ The agent never writes a Test verdict. Only Brian gives PASS, FAIL, or BLOCKED (
 ## The rules
 
 - Record new evidence only for the tests that get a fix, or that Brian names.
+- Never write a Test verdict of your own in `VERDICTS.md`. Only a fresh Judge gives one. On some tests only, copy the reply lines of the Judge word for word, as [`../implement/judge.md`](../implement/judge.md#some-tests-only) shows. Each round is one commit `Record the Test verdicts of the Judge`.
+- Run the Judge after the last commit that changes `EVIDENCE.md` in the round, so its SHAs match the head.
 - Never write the line `Test verdicts`, and never write `AT-<n>: PASS`, `FAIL`, or `BLOCKED`, in a comment or a reply.
 - Brian resolves each thread. The agent does not.
 - Leave the tracker as it is. Set no ticket to `done`.
 
 ## The end
 
-The round is done when each item of steps 1 and 2 has a reply, and the round comment is on the PR. Tell Brian to write a new Test verdicts comment for each test that changed.
+The round is done when each item of steps 1 and 2 has a reply, and the round comment is on the PR. Tell Brian the new Test verdict of the Judge for each test that changed. A FAIL from Brian still blocks the merge until he posts a newer Test verdicts comment with no FAIL for that test.

@@ -1,0 +1,31 @@
+$ cd fast-cycle && make -C apps/api test
+start 2026-11-06T13:20:47-0500, load { 3.12 5.82 10.61 }
+uv run --exact --package cpc-api pytest -q -n auto
+Uninstalled 3 packages in 4ms
+Installed 3 packages in 3ms
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 44%]
+........................................................................ [ 88%]
+...................                                                      [100%]
+163 passed in 17.81s
+real 19.02
+user 104.07
+sys 8.53
+exit 0
+wall 19 s
+test: ## Run the tests
+	$(RUN) pytest -q -n auto
+	$(RUN) pytest -q tests/test_rule_api.py
+$ cd api && uv run --exact --package cpc-api pytest -q -p no:xdist
+start 2026-11-06T13:21:06-0500, load { 7.87 6.77 10.84 }
+........................................................................ [ 44%]
+........................................................................ [ 88%]
+...................                                                      [100%]
+163 passed in 65.74s (0:01:05)
+real 66.90
+user 63.13
+sys 2.47
+exit 0
+wall 67 s

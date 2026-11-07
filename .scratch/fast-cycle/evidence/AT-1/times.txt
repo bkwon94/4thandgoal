@@ -1,0 +1,17 @@
+$ gh run view 42271914935 --json jobs   # run 2, after run 1 42270918161 filled the Chromium cache
+pipeline  start 2026-11-06T18:34:24Z  end 2026-11-06T18:37:09Z  starts 0 s after the first job  takes 165 s
+scripts   start 2026-11-06T18:34:24Z  end 2026-11-06T18:34:37Z  starts 0 s after the first job  takes 13 s
+packages  start 2026-11-06T18:34:24Z  end 2026-11-06T18:35:07Z  starts 0 s after the first job  takes 43 s
+api       start 2026-11-06T18:34:24Z  end 2026-11-06T18:35:37Z  starts 0 s after the first job  takes 73 s
+site      start 2026-11-06T18:34:24Z  end 2026-11-06T18:39:20Z  starts 0 s after the first job  takes 296 s
+check     start 2026-11-06T18:39:22Z  end 2026-11-06T18:39:26Z  starts 298 s after the first job  takes 4 s
+total from the first job start to the end of check: 302 s (5 min 2 s)
+
+# run 1, for reference
+packages  start 2026-11-06T18:27:49Z  end 2026-11-06T18:28:34Z  starts 0 s after the first job  takes 45 s
+pipeline  start 2026-11-06T18:27:49Z  end 2026-11-06T18:31:07Z  starts 0 s after the first job  takes 198 s
+api       start 2026-11-06T18:27:49Z  end 2026-11-06T18:28:57Z  starts 0 s after the first job  takes 68 s
+scripts   start 2026-11-06T18:27:49Z  end 2026-11-06T18:28:00Z  starts 0 s after the first job  takes 11 s
+site      start 2026-11-06T18:27:49Z  end 2026-11-06T18:32:55Z  starts 0 s after the first job  takes 306 s
+check     start 2026-11-06T18:32:57Z  end 2026-11-06T18:33:00Z  starts 308 s after the first job  takes 3 s
+total from the first job start to the end of check: 311 s (5 min 11 s)

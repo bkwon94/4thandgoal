@@ -1,0 +1,22 @@
+$ awk "/^## Workflow/,0" GLOSSARY.md | grep -A2 -E "^\*\*(Test verdict|Judge)\*\*"
+**Test verdict**:
+The word PASS, FAIL, or BLOCKED that the Judge gives to one acceptance test. Only a test verdict counts toward a merge. A FAIL from Brian overrides it.
+_Avoid_: Verdict (alone; that is the answer of the analyzer), result, approval, sign-off, status
+--
+**Judge**:
+The subagent that reads only the acceptance tests and their evidence, and gives each test its Test verdict. It did not build the work.
+_Avoid_: Grader, reviewer, checker, QA agent
+
+$ head -12 docs/adr/0020-*.md
+# A spec PR merges on the test verdicts of its acceptance tests
+
+Agents write most of the diff, and one human reads it later and with less context than the
+agent had. A diff review by that human is slow, and it checks the code more than the behavior.
+We decided that a spec pull request merges on the test verdicts of its acceptance tests, not on a
+review of the diff.
+
+Superseded by ADR 0026: the Judge, a subagent that did not build the work, now gives each test verdict, and Brian no longer posts one.
+
+## The steps
+
+1. An agent runs `code-review` on the spec branch and fixes the findings.

@@ -2,13 +2,31 @@
 
 Stage 3 of `cpc:implement`. Record the evidence of each acceptance test `AT-<n>` of `.scratch/<slug>/ACCEPTANCE.md`. The evidence uses real data and a real build, with no mock (ADR 0020).
 
-The evidence states what the instrument showed. It holds no PASS, no FAIL, and no BLOCKED. Only Brian gives a Test verdict.
+The evidence states what the instrument showed. It holds no PASS, no FAIL, and no BLOCKED. Only the Judge gives a Test verdict, in stage 4 (ADR 0026).
 
 ## Before the first test
 
 1. Start after the last commit of stage 2, so that each file shows the head commit. Write down `git rev-parse --short HEAD`.
 2. Skip a test whose ticket is `blocked`, or is behind a `blocked` ticket. Its entry in `EVIDENCE.md` names the ticket.
 3. Skip a test with the word `Retired` in its title.
+
+## The background check
+
+Run one full check for each spec (`.scratch/fast-cycle/decisions/05-grill-local-full-check.md`). It adds no wall time, because the evidence stage takes longer than the check.
+
+1. Start it first, before the first test. Run `make check` in the Spec worktree with the Bash tool `run_in_background`. Write the output to a log file outside the repo, such as `make check > <scratchpad>/<slug>-check.log 2>&1`. Use the session scratchpad if one exists, else `/tmp/<slug>-check.log`. A log in the repo is an untracked file, so the first step of stage 4 fails and the log can get into an evidence commit.
+2. Write down the start time.
+3. Do not start the evidence of a test until the run is live.
+
+**One `uv run` for each checkout.** Run no other `uv run --exact --package` in the Spec worktree while the check is live. Two members share one `.venv` and break each other (`.scratch/fast-cycle/decisions/09-research-parallel-pytest.md`). If you do, a run fails at random with a broken environment.
+
+The site evidence runner does not use `uv run`, so it runs at the same time. A pipeline test that needs `uv run` has two choices. Run it in a detached worktree of its own, or wait for the background run to end.
+
+Before the push, read the result of the run.
+
+- A green run needs no more work. The push does not wait on a run that is already green.
+- Fix a red run before the push. Run again only the check of the failed member: `make -C apps/<app> check`. Do not run the full check again.
+- If a test of the spec covers the background check, record the start time, the end time, and the last lines of the log in its evidence.
 
 ## A site test
 
@@ -90,7 +108,7 @@ Write `.scratch/<slug>/EVIDENCE.md` in this shape:
 # <Feature title>: evidence
 
 Spec: `.scratch/<slug>/PRD.md`. Acceptance tests: `.scratch/<slug>/ACCEPTANCE.md`.
-Built from: `<short sha>`, on <date>. The agent gives no Test verdict. Brian gives one for each test.
+Built from: `<short sha>`, on <date>. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
 Round time: <N> min for <M> site tests.
 
 ## AT-1: <title>
@@ -112,4 +130,4 @@ Observation: <what the output shows>
 
 A skipped test gets `Files: none` and the reason in its Observation line, such as "ticket 02 is blocked". A screenshot test that no verb covers names its reason too, such as "scripts off", and gets its shots from `agent-browser`.
 
-**Stop rule of stage 3.** Commit `EVIDENCE.md` and `evidence/` on the Spec branch with the message `Record the evidence of <slug>`. The hook must pass. If a site build or a pipeline command fails, stop. Tell Brian the command and its error.
+**Stop rule of stage 3.** Commit `EVIDENCE.md` and `evidence/` on the Spec branch with the message `Record the evidence of <slug>`. The hook must pass. Then go to stage 4, [`judge.md`](judge.md). If a site build or a pipeline command fails, stop. Tell Brian the command and its error.

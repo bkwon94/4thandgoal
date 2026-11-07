@@ -1,0 +1,10 @@
+AT-19 replay, 2026-11-06.
+Real merge-back: ed42aea9, ticket 03 of midseason-report, 2026-11-05 19:17:15.
+Spec side (head before the merge): 41fb62424dd9a8ebd9c4a637891244eb5910f0a4 "Mark midseason-report 05 in-review".
+Ticket side: 7306d8f5 "Build the sim engine and sim.json of the midseason report".
+Throwaway worktree: /private/tmp/claude-503/replay-at19, branches replay-at19-spec (41fb6242) and replay-at19-ticket (7306d8f5).
+Conflicted files: apps/pipeline/src/cornerstone/pipeline.py, apps/pipeline/tests/test_layers.py, apps/pipeline/tests/test_midseason_publish.py.
+Resolve: by the orchestrator, with resolving-merge-conflicts, both intents kept. It matches the real resolve of ed42aea9 up to line order.
+Merge commit: 8963ae2b, the hook passed. make check-fast BASE=main: exit 0, 49.7 s. The merge commit stays.
+Subagents started: none.
+Logs: merge.log, commit.log, check.log in this folder.

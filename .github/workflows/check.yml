@@ -1,7 +1,9 @@
-# Runs "make check" at the root on each push to main and on each pull request.
+# Runs the full check of each member of the repo on each push to main and on each pull request.
+# One job per member runs at the same time, and the gate job "check" needs them all, so the check name stays "check".
 # A branch with a PR runs once, because a push to a branch alone does not start it.
 # The deploy workflows keep their own build steps. Each deploy starts from the workflow_run event of this workflow,
 # so a push to main runs the check once. A manual dispatch of a deploy calls this workflow for the ref it deploys.
+# workflow_run fires once, when every job ends, and its conclusion is success only if each job succeeded.
 name: Check
 
 on:
@@ -19,10 +21,26 @@ on:
 permissions:
   contents: read
 
+# Each member job calls one root Makefile target, so CI and the local "make check" run the same commands.
+# Two "uv run --exact --package" runs of different members in one checkout break each other, so each job has its own
+# checkout and runs one member, or runs its members one after another.
 jobs:
-  check:
+  # The root scripts use only the Python standard library, so the python3 of the runner is enough.
+  scripts:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Run the check of the root scripts
+        run: make check-scripts
+
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
@@ -42,6 +60,50 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      # One install at the root fills the whole pnpm workspace from the root lock file.
+      - name: Install the site dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The browser of a Playwright release is fixed, so the Playwright version in the lock file keys the cache.
+      - name: Read the Playwright version
+        id: playwright
+        run: |
+          version=$(sed -n -E 's/^  playwright@([^:]+):.*/\1/p' pnpm-lock.yaml | head -n 1)
+          if [ -z "$version" ]; then
+            echo "pnpm-lock.yaml has no playwright entry."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright.outputs.version }}
+
+      # The readability floor of the site runs in Chromium. Chromium alone is enough, because the floor reads layout and color.
+      - name: Install Chromium for the readability floor
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --dir apps/site exec playwright install --with-deps chromium
+
+      # The cache holds the browser only. The system packages of Chromium live outside it, so a hit installs them.
+      - name: Install the system packages of Chromium
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --dir apps/site exec playwright install-deps chromium
+
+      - name: Run the check of the site
+        run: make check-site
+
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
       # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
       # setup-uv publishes no major tag from v8 on, so the step names the full release.
       - name: Set up uv
@@ -50,17 +112,78 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
 
-      # One install at the root fills the whole pnpm workspace from the root lock file.
-      - name: Install the site dependencies
-        run: pnpm install --frozen-lockfile
+      # --locked fails the job if uv.lock is out of date. The check then runs the member with "uv run --exact --package".
+      - name: Install the Python dependencies
+        run: uv sync --locked --exact --package cornerstone
 
-      # Each check then runs its member with "uv run --exact --package", which trims the env to that member.
+      - name: Run the check of the pipeline
+        run: make check-pipeline
+
+  api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+      # setup-uv publishes no major tag from v8 on, so the step names the full release.
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      # --locked fails the job if uv.lock is out of date. The check then runs the member with "uv run --exact --package".
+      - name: Install the Python dependencies
+        run: uv sync --locked --exact --package cpc-api
+
+      - name: Run the check of the API
+        run: make check-api
+
+  # The check of the site covers the site side of each package, so this job runs only the Python side.
+  packages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+      # setup-uv publishes no major tag from v8 on, so the step names the full release.
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      # The packages run one after another, and each one trims the env to itself with "uv run --exact --package".
       - name: Install the Python dependencies
         run: uv sync --locked --all-packages
 
-      # The readability floor of the site runs in Chromium. Chromium alone is enough, because the floor reads layout and color.
-      - name: Install Chromium for the readability floor
-        run: pnpm --dir apps/site exec playwright install --with-deps chromium
+      - name: Run the check of each package
+        run: make check-packages
 
-      - name: Run the check
-        run: make check
+  # The gate. It runs even if a job fails or is cancelled, and fails unless each job succeeded.
+  # A skipped gate counts as a pass on a PR, so "if: always()" keeps the gate from a skip.
+  check:
+    if: always()
+    needs: [scripts, site, pipeline, api, packages]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Fail unless each job succeeded
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "The results of the jobs: $RESULTS"
+          for result in $RESULTS; do
+            if [ "$result" != "success" ]; then
+              echo "A job has the result $result, so the check fails."
+              exit 1
+            fi
+          done

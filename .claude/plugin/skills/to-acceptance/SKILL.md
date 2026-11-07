@@ -6,7 +6,7 @@ argument-hint: '<feature slug>'
 
 # To acceptance
 
-Write the acceptance tests of one spec as `.scratch/<slug>/ACCEPTANCE.md`. An acceptance test is a behavior that a reader checks on the finished work, with evidence. Another agent with none of this conversation records the evidence. Only Brian gives a Test verdict (ADR 0020).
+Write the acceptance tests of one spec as `.scratch/<slug>/ACCEPTANCE.md`. An acceptance test is a behavior that a reader checks on the finished work, with evidence. Another agent with none of this conversation records the evidence. Only the Judge, a fresh subagent that reads only this file and the evidence, gives a Test verdict. A FAIL from Brian overrides it (ADR 0026).
 
 ## Before you start
 

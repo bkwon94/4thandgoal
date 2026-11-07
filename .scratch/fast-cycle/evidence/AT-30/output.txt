@@ -1,0 +1,2 @@
+$ git diff origin/main...fast-cycle -- .claude/plugin/skills/to-tickets
+(end of output: 0 lines)

@@ -1,0 +1,2 @@
+$ gh pr view 13 --json state,mergedAt
+{"mergedAt":"2026-11-06T20:27:50Z","state":"MERGED"}

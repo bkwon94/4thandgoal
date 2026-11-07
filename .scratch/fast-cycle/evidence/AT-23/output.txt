@@ -1,0 +1,14 @@
+$ cd fast-cycle && make -C apps/pipeline test   # at dfd8a33e
+start 2026-11-06T16:31:35-0500, load { 5.68 9.76 7.90 }
+uv run --exact --package cornerstone pytest -q -n auto -m 'not live and not serial'
+1687 passed in 56.67s
+uv run --exact --package cornerstone pytest -q -p no:xdist -m 'serial and not live'
+1 passed, 1695 deselected in 2.66s
+real 61.54
+exit 0
+$ cd main && make -C apps/pipeline test   # at fbd6f24e
+start 2026-11-06T16:32:37-0500, load { 13.60 11.62 8.75 }
+uv run --exact --package cornerstone pytest -q
+1688 passed, 8 deselected in 390.64s (0:06:30)
+real 392.89
+exit 0

@@ -1,0 +1,126 @@
+$ git init -q -b throwaway && copy the AT-15 files to .scratch/throwaway/
+$ grep -n PURPLE .scratch/throwaway/*.md
+.scratch/throwaway/ACCEPTANCE.md:26:Then: `1280-light.png` shows a purple background with the word PURPLE in the header. `1280-dark.png` shows the dark set.
+.scratch/throwaway/EVIDENCE.md:32:Then: `1280-light.png` shows a purple background with the word PURPLE in the header. `1280-dark.png` shows the dark set.
+$ git log --oneline
+c8a1994 Record the evidence of throwaway
+$ git status --short .scratch/throwaway
+$ git hash-object .scratch/throwaway/ACCEPTANCE.md .scratch/throwaway/EVIDENCE.md
+4114c17a14344e8337bcb089a3d1cc0344c6e345
+484e9c0f89d5e277306461690df9e383f35da583
+
+== Round 1: check and commit
+$ python3 scripts/verdict.py .scratch/throwaway/ACCEPTANCE.md --verdicts .scratch/throwaway/VERDICTS.md --evidence .scratch/throwaway/EVIDENCE.md
+2 offenses.
+
+.scratch/throwaway/VERDICTS.md:6  verdict/not-pass
+  AT-2 has FAIL.
+  Rule: every acceptance test has a PASS Test verdict from the Judge and no FAIL from Brian (docs/adr/0026-the-judge-gives-the-test-verdicts.md).
+  Fix: fix the work, record its evidence again, and run a fresh Judge on the test.
+
+.scratch/throwaway/VERDICTS.md:10  verdict/not-pass
+  AT-6 has FAIL.
+  Rule: every acceptance test has a PASS Test verdict from the Judge and no FAIL from Brian (docs/adr/0026-the-judge-gives-the-test-verdicts.md).
+  Fix: fix the work, record its evidence again, and run a fresh Judge on the test.
+exit 1
+$ git show --stat HEAD
+commit ea0d32447c137e242275889d6d7c729fa0194567
+Author: cpc agent <agent@localhost>
+Date:   Fri Nov 6 13:15:06 2026 -0500
+
+    Record the Test verdicts of the Judge
+
+ .scratch/throwaway/VERDICTS.md | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+== The fix round
+AT-2: no fix. The Then line asks for a purple background, and no shot of the work is purple.
+AT-6: record the evidence again with the full list of the folder at 197fb328.
+$ cat .scratch/throwaway/evidence/AT-6/file-list.txt
+$ git ls-tree -r --name-only 197fb328 .scratch/site-redesign/evidence/AT-10/ | sed "s#.scratch/site-redesign/evidence/##"   # the whole folder
+AT-10/cpc/1024-dark-scrolled.png
+AT-10/cpc/1024-dark-top.png
+AT-10/cpc/1024-light-scrolled.png
+AT-10/cpc/1024-light-top.png
+AT-10/cpc/1280-dark-scrolled.png
+AT-10/cpc/1280-dark-top.png
+AT-10/cpc/1280-light-scrolled.png
+AT-10/cpc/1280-light-top.png
+AT-10/cpc/375-dark-scrolled.png
+AT-10/cpc/375-dark-top.png
+AT-10/cpc/375-light-scrolled.png
+AT-10/cpc/375-light-top.png
+AT-10/cpc/768-dark-scrolled.png
+AT-10/cpc/768-dark-top.png
+AT-10/cpc/768-light-scrolled.png
+AT-10/cpc/768-light-top.png
+AT-10/cpc/state.txt
+AT-10/norcal/1024-dark-scrolled.png
+AT-10/norcal/1024-dark-top.png
+AT-10/norcal/1024-light-scrolled.png
+AT-10/norcal/1024-light-top.png
+AT-10/norcal/1280-dark-scrolled.png
+AT-10/norcal/1280-dark-top.png
+AT-10/norcal/1280-light-scrolled.png
+AT-10/norcal/1280-light-top.png
+AT-10/norcal/375-dark-scrolled.png
+AT-10/norcal/375-dark-top.png
+AT-10/norcal/375-light-scrolled.png
+AT-10/norcal/375-light-top.png
+AT-10/norcal/768-dark-scrolled.png
+AT-10/norcal/768-dark-top.png
+AT-10/norcal/768-light-scrolled.png
+AT-10/norcal/768-light-top.png
+AT-10/norcal/state.txt
+AT-10/steps.json
+$ git diff --stat
+ .scratch/throwaway/EVIDENCE.md                 |  2 +-
+ .scratch/throwaway/evidence/AT-6/file-list.txt | 54 +++++++++++++++++---------
+ 2 files changed, 37 insertions(+), 19 deletions(-)
+$ git hash-object .scratch/throwaway/ACCEPTANCE.md .scratch/throwaway/EVIDENCE.md
+4114c17a14344e8337bcb089a3d1cc0344c6e345
+d0bf4c8816148963daba7f0fad9c86d40d5b67c6
+
+== Round 2: copy the reply of the Judge
+AT-2: BLOCKED The Then line asks for a purple background with PURPLE in the header, but `1280-light.png` shows a light gray page with the header "CORNERSTONE FANTASY FOOTBALL LEAGUE" and no purple.
+AT-6: BLOCKED The Then line forbids any file with 375 in its name, but `file-list.txt` lists 375 and 1024 shots for both clients beside the 768 and 1280 shots.
+$ git diff -U0 .scratch/throwaway/VERDICTS.md
+diff --git a/.scratch/throwaway/VERDICTS.md b/.scratch/throwaway/VERDICTS.md
+index ba42fef..29dbf76 100644
+--- a/.scratch/throwaway/VERDICTS.md
++++ b/.scratch/throwaway/VERDICTS.md
+@@ -2 +2 @@ ACCEPTANCE.md: 4114c17a14344e8337bcb089a3d1cc0344c6e345
+-EVIDENCE.md: 484e9c0f89d5e277306461690df9e383f35da583
++EVIDENCE.md: d0bf4c8816148963daba7f0fad9c86d40d5b67c6
+@@ -6 +6 @@ AT-1: PASS
+-AT-2: FAIL The Then line needs a purple background with PURPLE in the header, but `1280-light.png` shows a light gray page with no purple and no PURPLE word.
++AT-2: BLOCKED The Then line asks for a purple background with PURPLE in the header, but `1280-light.png` shows a light gray page with the header "CORNERSTONE FANTASY FOOTBALL LEAGUE" and no purple.
+@@ -10 +10 @@ AT-5: PASS
+-AT-6: FAIL The Then line needs no file with 375 in the folder, but `file-list.txt` lists only files newer than the round start, so it does not show the whole folder.
++AT-6: BLOCKED The Then line forbids any file with 375 in its name, but `file-list.txt` lists 375 and 1024 shots for both clients beside the 768 and 1280 shots.
+$ python3 scripts/verdict.py .scratch/throwaway/ACCEPTANCE.md --verdicts .scratch/throwaway/VERDICTS.md --evidence .scratch/throwaway/EVIDENCE.md
+2 offenses.
+
+.scratch/throwaway/VERDICTS.md:6  verdict/not-pass
+  AT-2 has BLOCKED.
+  Rule: every acceptance test has a PASS Test verdict from the Judge and no FAIL from Brian (docs/adr/0026-the-judge-gives-the-test-verdicts.md).
+  Fix: fix the work, record its evidence again, and run a fresh Judge on the test.
+
+.scratch/throwaway/VERDICTS.md:10  verdict/not-pass
+  AT-6 has BLOCKED.
+  Rule: every acceptance test has a PASS Test verdict from the Judge and no FAIL from Brian (docs/adr/0026-the-judge-gives-the-test-verdicts.md).
+  Fix: fix the work, record its evidence again, and run a fresh Judge on the test.
+exit 1
+$ git show --stat HEAD
+commit 2803599f35cd533b851e435754c182b2c4eea6c2
+Author: cpc agent <agent@localhost>
+Date:   Fri Nov 6 13:16:10 2026 -0500
+
+    Record the Test verdicts of the Judge
+
+ .scratch/throwaway/VERDICTS.md | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+== The hard stop: no push, no PR
+$ git remote -v   # the throwaway repo has no remote, so no push can run
+(no gh pr create runs in this log)

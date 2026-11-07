@@ -1,0 +1,21 @@
+To the subagent of ticket 03 of midseason-report (replay-at19-ticket):
+
+The merge of replay-at19-ticket into the Spec branch had a conflict. I resolved it, and `make check-fast BASE=main` failed.
+I reset the Spec branch to 41fb62424dd9a8ebd9c4a637891244eb5910f0a4, the head before the merge.
+
+Conflicted files:
+- apps/pipeline/src/cornerstone/pipeline.py
+- apps/pipeline/tests/test_layers.py
+- apps/pipeline/tests/test_midseason_publish.py
+
+Red output:
+  F821 Undefined name `odds`
+     --> src/cornerstone/pipeline.py:728:61
+  Found 4 errors.
+  make[1]: *** [lint] Error 1
+  make: *** [check-fast] Error 2
+
+1. Merge midseason-report into replay-at19-ticket with `resolving-merge-conflicts`.
+2. Keep the sim block that sets `odds`, and keep `median_game`, `luck`, and `arcs` of the Spec branch.
+3. Run `make check-fast BASE=midseason-report`. It must pass.
+4. Commit with a plain `git commit`, and report again.

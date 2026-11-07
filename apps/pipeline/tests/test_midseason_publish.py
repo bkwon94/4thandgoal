@@ -4,6 +4,7 @@ commits only midseason.json and sim.json of the season. Each test builds a real 
 """
 import io
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -16,9 +17,7 @@ from test_midseason import (
     CLEAN_RECHECK,
     CPC_PROVIDER,
     _call,
-    _clean_call,
     _passed,
-    build_week_8,
     copy_cpc_week_8,
 )
 from test_rule_publish import _outside_offenses
@@ -27,7 +26,6 @@ from cornerstone.publish import PublishError, run_midseason_publish
 from cornerstone.value_models import VALUE_MODELS
 from league.models import Verdict, VerifyOut
 from league.paths import build_dir
-from sim.tunables import SIM_RUNS
 
 
 def _git(cwd: Path, *args: str) -> str:
@@ -36,18 +34,20 @@ def _git(cwd: Path, *args: str) -> str:
     ).stdout
 
 
-def _drafted_repo(tmp_path: Path, monkeypatch):
+def _drafted_repo(tmp_path: Path, monkeypatch, clean_build):
     """A git repo with the pipeline at apps/pipeline and a clean draft of the CPC week 8 report in the build folder,
     with a sim.json beside it. A bare repo in the temp folder is its remote, so the push of the publish stays local.
-    The prek hook sets GIT_DIR, and the publish calls git with the process env, so the test clears it."""
+    The prek hook sets GIT_DIR, and the publish calls git with the process env, so the test clears it.
+
+    The client folder is a copy of `clean_build`, the shared clean build at SIM_RUNS of the fixture
+    `cpc_midseason_clean`. A publish changes the folder, so each test gets its own copy."""
     for name in ("GIT_DIR", "GIT_INDEX_FILE", "GIT_WORK_TREE"):
         monkeypatch.delenv(name, raising=False)
     root = tmp_path / "one"
     pipeline = root / "apps" / "pipeline"
     pipeline.mkdir(parents=True)
     client = cpc_client(at=root / "clients" / "cpc", models=VALUE_MODELS)
-    copy_cpc_week_8(client)
-    build_week_8(_clean_call(), client=client, provider=CPC_PROVIDER, sim_runs=SIM_RUNS)
+    shutil.copytree(clean_build[0].folder, client.folder)
     _git(root, "init", "-b", "main")
     _git(root, "config", "user.email", "test@example.com")
     _git(root, "config", "user.name", "Test")
@@ -64,9 +64,9 @@ def _published(root: Path) -> Path:
     return root / "clients" / "cpc" / "published" / "2026"
 
 
-def test_a_clean_publish_commits_midseason_json_and_sim_json_and_no_other_path(tmp_path, monkeypatch):
+def test_a_clean_publish_commits_midseason_json_and_sim_json_and_no_other_path(tmp_path, monkeypatch, cpc_midseason_clean):
     # AT-43.
-    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
+    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch, cpc_midseason_clean)
     run_midseason_publish(pipeline, 2026, 8, _call(*CLEAN_RECHECK), client=client)
     assert _git(root, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").split() == [
         "clients/cpc/published/2026/midseason.json", "clients/cpc/published/2026/sim.json"]
@@ -83,9 +83,9 @@ def test_a_clean_publish_commits_midseason_json_and_sim_json_and_no_other_path(t
     assert _git(root, "status", "--short", "--", "clients/cpc/build").strip() == "?? clients/cpc/build/"
 
 
-def test_an_edited_blurb_with_an_uncited_number_makes_the_publish_refuse_and_name_the_blurb(tmp_path, monkeypatch):
+def test_an_edited_blurb_with_an_uncited_number_makes_the_publish_refuse_and_name_the_blurb(tmp_path, monkeypatch, cpc_midseason_clean):
     # AT-42. The code check fails the edit, so the publish makes no Claude call.
-    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
+    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch, cpc_midseason_clean)
     draft = build_dir(client.folder) / "2026" / "midseason.json"
     data = json.loads(draft.read_text(encoding="utf-8"))
     data["acts"][0]["chapters"][0]["blurb"]["sentences"][0]["text"] = "All You Need Is Love sits at 999."
@@ -98,8 +98,8 @@ def test_an_edited_blurb_with_an_uncited_number_makes_the_publish_refuse_and_nam
     assert _git(root, "log", "--format=%s").split("\n")[0] == "Start"
 
 
-def test_a_blurb_that_the_claude_check_rejects_makes_the_publish_refuse(tmp_path, monkeypatch):
-    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
+def test_a_blurb_that_the_claude_check_rejects_makes_the_publish_refuse(tmp_path, monkeypatch, cpc_midseason_clean):
+    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch, cpc_midseason_clean)
     rejected = VerifyOut(verdicts=[*_passed(2).verdicts, Verdict(index=2, supported=False, reason="No fact.")])
     with pytest.raises(PublishError, match=r"The blurb state fails the verifier: \[2\] No fact\."):
         # The block of the opener comes first and passes.
@@ -107,17 +107,17 @@ def test_a_blurb_that_the_claude_check_rejects_makes_the_publish_refuse(tmp_path
     assert not _published(root).exists()
 
 
-def test_the_publish_refuses_a_draft_with_no_sim_json(tmp_path, monkeypatch):
-    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
+def test_the_publish_refuses_a_draft_with_no_sim_json(tmp_path, monkeypatch, cpc_midseason_clean):
+    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch, cpc_midseason_clean)
     (build_dir(client.folder) / "2026" / "sim.json").unlink()
     with pytest.raises(PublishError, match="sim.json"):
         run_midseason_publish(pipeline, 2026, 8, _call(_passed(3)), client=client)
     assert not _published(root).exists()
 
 
-def test_a_blurb_that_cites_a_fact_of_another_chapter_passes_the_verifier_and_the_publish(tmp_path, monkeypatch):
+def test_a_blurb_that_cites_a_fact_of_another_chapter_passes_the_verifier_and_the_publish(tmp_path, monkeypatch, cpc_midseason_clean):
     # AT-63. The luck blurb calls back to a lineup fact, and the recheck of the publish passes it.
-    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
+    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch, cpc_midseason_clean)
     draft = build_dir(client.folder) / "2026" / "midseason.json"
     data = json.loads(draft.read_text(encoding="utf-8"))
     luck = next(chapter for chapter in data["acts"][0]["chapters"] if chapter["key"] == "luck")
@@ -130,8 +130,8 @@ def test_a_blurb_that_cites_a_fact_of_another_chapter_passes_the_verifier_and_th
     assert luck["blurb"]["sentences"][1]["fact_ids"] == ["LC.1.2"]
 
 
-def test_the_publish_refuses_a_draft_of_another_week(tmp_path, monkeypatch):
-    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
+def test_the_publish_refuses_a_draft_of_another_week(tmp_path, monkeypatch, cpc_midseason_clean):
+    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch, cpc_midseason_clean)
     with pytest.raises(PublishError, match="week 8"):
         run_midseason_publish(pipeline, 2026, 9, _call(), client=client)
     assert not _published(root).exists()

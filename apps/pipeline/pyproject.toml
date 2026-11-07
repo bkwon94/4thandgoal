@@ -44,6 +44,7 @@ packages = ["cpc-managers", "cpc-midseason", "cpc-rankings", "cpc-sim", "cpc-wai
 dev = [
     "pyright>=1.1.414",
     "pytest>=9.1.1",
+    "pytest-xdist>=3.8.0",
     "ruff==0.17.3",
 ]
 
@@ -52,7 +53,11 @@ dev = [
 default-groups = ["dev", "packages"]
 
 [tool.pytest.ini_options]
-markers = ["live: calls a real external API"]
+markers = [
+    "live: calls a real external API",
+    # A wall-time assertion fails when other workers load the CPU, so the test runs alone, after the parallel pass.
+    "serial: measures wall time, so it runs alone and not under xdist",
+]
 addopts = "-m 'not live'"
 
 [tool.ruff]

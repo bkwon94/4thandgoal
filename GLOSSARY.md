@@ -1112,8 +1112,12 @@ A statement of behavior that a reader checks on the finished work, with evidence
 _Avoid_: Test case, QA step, check, criterion
 
 **Test verdict**:
-The word PASS, FAIL, or BLOCKED that Brian gives to one acceptance test. Only a test verdict counts toward a merge.
+The word PASS, FAIL, or BLOCKED that the Judge gives to one acceptance test. Only a test verdict counts toward a merge. A FAIL from Brian overrides it.
 _Avoid_: Verdict (alone; that is the answer of the analyzer), result, approval, sign-off, status
+
+**Judge**:
+The subagent that reads only the acceptance tests and their evidence, and gives each test its Test verdict. It did not build the work.
+_Avoid_: Grader, reviewer, checker, QA agent
 
 **Evidence**:
 The files and the observation that show what the finished work does for one acceptance test. It holds no Test verdict.

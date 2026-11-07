@@ -19,8 +19,12 @@ help: ## List the targets
 install: ## Install the dependencies
 	uv sync --exact --package cornerstone
 
+# The tests share no files or data, so they run in parallel. A test that measures wall time is marked serial and runs alone. See .scratch/fast-cycle/decisions/09-research-parallel-pytest.md.
+# The serial pass runs each serial test with its full assertion, alone, so no check gets weaker.
+# Each -m replaces the -m of addopts in pyproject.toml, so each pass also leaves out live.
 test: ## Run the tests
-	$(RUN) pytest -q
+	$(RUN) pytest -q -n auto -m 'not live and not serial'
+	$(RUN) pytest -q -p no:xdist -m 'serial and not live'
 
 # A golden change must show in review, so commit the rewritten files with the code that changed them.
 golden: ## Rewrite the four golden files from the week 6 fixtures

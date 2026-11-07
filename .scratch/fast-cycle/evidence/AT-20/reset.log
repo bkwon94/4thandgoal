@@ -1,0 +1,7 @@
+$ git reset --hard 41fb62424dd9a8ebd9c4a637891244eb5910f0a4   # step 5
+HEAD is now at 41fb6242 Mark midseason-report 05 in-review
+$ git rev-parse HEAD
+41fb62424dd9a8ebd9c4a637891244eb5910f0a4
+$ git status --short
+$ ls .git MERGE_HEAD
+no MERGE_HEAD: no merge in progress

@@ -148,6 +148,7 @@ def test_a_two_for_one_appears_in_both_directions(slow_snap):
 PAIR_SECONDS = 5
 
 
+@pytest.mark.serial
 def test_the_pair_with_the_most_candidates_runs_in_a_few_seconds(slow_snap):
     snap = _roster_rows(slow_snap, 5, 9)
     start = time.perf_counter()

@@ -1,0 +1,12 @@
+$ gh pr close 16 --comment ...
+✓ Closed pull request bkwon94/4thandgoal#16 (Throwaway: AT-27 of fast-cycle, one changed doc line)
+$ git push origin --delete fast-cycle-at27
+To ssh://ssh.github.com:443/bkwon94/4thandgoal.git
+ - [deleted]           fast-cycle-at27
+$ git worktree remove --force .claude/worktrees/fast-cycle-at27
+$ git branch -D fast-cycle-at27
+Deleted branch fast-cycle-at27 (was c83415b1).
+$ gh pr view 16 --json state,closed,merged
+{"closed":true,"state":"CLOSED"}
+$ git ls-remote --heads origin fast-cycle-at27
+(end of output: 0 lines)

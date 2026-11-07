@@ -2,7 +2,7 @@
 # Run "make help" to list the targets.
 
 .DEFAULT_GOAL := help
-.PHONY: help check check-fast
+.PHONY: help check check-fast check-scripts check-site check-pipeline check-api check-packages
 
 # The command of each app, per target. Each app owns its rules, so the root only calls them.
 site-check = pnpm --dir apps/site check
@@ -29,9 +29,9 @@ APPS = $(if $(BASE),$(filter $(ALL_APPS),$(CHANGED)),$(ALL_APPS))
 PACKAGES = $(if $(BASE),$(filter-out $(ALL_APPS),$(CHANGED)),$(notdir $(wildcard packages/*)))
 
 help: ## List the targets
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
+	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
 
-# The CI job and the prek hook run these targets. set -e stops the run at the first failure.
+# The local full run and the prek hook run these targets. set -e stops the run at the first failure.
 # Usage: make check [BASE=origin/main]
 check: ## Run the full check of every app and package (BASE=<ref> runs only the changed ones)
 	@set -e; \
@@ -43,3 +43,22 @@ check-fast: ## Run the fast check of every app and package (BASE=<ref> runs only
 	@set -e; \
 	echo "==> scripts: check-fast"; $(scripts-check); \
 	$(if $(strip $(APPS) $(PACKAGES)),$(foreach app,$(APPS),echo "==> $(app): check-fast"; $($(app)-check-fast); )$(foreach pkg,$(PACKAGES),echo "==> packages/$(pkg): check-fast"; $(call package-check,$(pkg),check-fast)),echo "No app or package changed since $(BASE). Nothing to run.")
+
+# One target per member, for the CI job of that member. Each one runs the full check of its member and ignores BASE,
+# because CI always runs every member. "make check" runs the same commands in sequence.
+check-scripts: ## Run the full check of the root scripts
+	@echo "==> scripts: check"; $(scripts-check)
+
+check-site: ## Run the full check of the site
+	@echo "==> site: check"; $(site-check)
+
+check-pipeline: ## Run the full check of the pipeline
+	@echo "==> pipeline: check"; $(pipeline-check)
+
+check-api: ## Run the full check of the API
+	@echo "==> api: check"; $(api-check)
+
+# The packages run one after another, because two "uv run --exact --package" runs in one checkout break each other.
+check-packages: ## Run the full check of each package
+	@set -e; \
+	$(foreach pkg,$(notdir $(wildcard packages/*)),echo "==> packages/$(pkg): check"; $(call package-check,$(pkg),check))

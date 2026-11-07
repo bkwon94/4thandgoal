@@ -1,0 +1,7 @@
+$ git diff origin/main...fast-cycle -- . ':!.scratch' | grep '^+' | grep -v '^+++' | grep -nE "skip|xfail|deselect|\.only|-m 'not"
+195:+A test that `evidence.md` skipped, because its ticket is `blocked`, gets no fix round. Its FAIL stays until the ticket builds. Then [`pr.md`](pr.md#a-second-start) runs the Judge on it.
+347:+  # A skipped gate counts as a pass on a PR, so "if: always()" keeps the gate from a skip.
+438:+	$(RUN) pytest -q -n auto -m 'not live and not serial'
+
+$ git diff --diff-filter=D --name-only origin/main...fast-cycle
+(deleted files: 0)

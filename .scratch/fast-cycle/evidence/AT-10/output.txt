@@ -1,0 +1,12 @@
+$ cd scripts && python3 -B -m unittest -v test_verdict.TheJudgeRecord.test_at_10_a_full_pass_of_the_judge_exits_0 
+test_at_10_a_full_pass_of_the_judge_exits_0 (test_verdict.TheJudgeRecord.test_at_10_a_full_pass_of_the_judge_exits_0) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.057s
+
+OK
+exit 0
+
+$ python3 scripts/verdict.py scripts/fixtures/verdict/judge/ACCEPTANCE.md --verdicts scripts/fixtures/verdict/judge/VERDICTS.md --evidence scripts/fixtures/verdict/judge/EVIDENCE.md
+0 offenses. AT-1, AT-2, and AT-3 have PASS.
+exit 0

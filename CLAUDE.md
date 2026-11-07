@@ -20,7 +20,7 @@ Write all output in Simplified Technical English. Rules: `~/.claude/rules/commun
 
 ## The flow
 
-ADRs 0018 to 0021 set the flow. The spec `.scratch/one/` builds it, so its own tickets still merge to `main` as before.
+ADRs 0018 to 0021 and ADR 0026 set the flow. ADR 0026 supersedes ADR 0020. The spec `.scratch/one/` builds it, so its own tickets still merge to `main` as before.
 
 1. `main` is the record branch. No agent commits on `main` or pushes to `main` (ADR 0019).
 2. A spec branch is named `<slug>` and starts from `main`.
@@ -28,7 +28,7 @@ ADRs 0018 to 0021 set the flow. The spec `.scratch/one/` builds it, so its own t
 4. A ticket merges into its spec branch with `git merge --no-edit`, after the check passes.
 5. One pull request goes from the spec branch to `main`, as a squash merge.
 6. An agent records the evidence of each acceptance test `AT-<n>`. The agent gives no test verdict.
-7. Brian gives PASS, FAIL, or BLOCKED for each test in one PR comment. A check blocks the merge until each test has PASS (ADR 0020).
+7. A fresh subagent, the Judge, gives PASS, FAIL, or BLOCKED for each test in `VERDICTS.md`. A check blocks the merge until each test has PASS. A FAIL from Brian in a PR comment overrides the Judge (ADR 0026).
 
 The weekly `publish` is the one exception. It may push to `main`, and it may stage only `clients/<slug>/published/<season>/`, `clients/<slug>/data/<season>/`, and `clients/<slug>/build/<season>/`.
 
@@ -38,8 +38,8 @@ The repo plugin `cpc` takes an idea to a merged spec. Run its skills in this ord
 2. `cpc:to-spec <feature>` writes `PRD.md`.
 3. `cpc:to-acceptance <feature>` writes `ACCEPTANCE.md`.
 4. `cpc:to-tickets <feature>` writes the tickets and the `state.md` row.
-5. `cpc:implement <feature>` builds each ticket on its ticket branch, merges it into the spec branch, records the evidence in `EVIDENCE.md`, and opens one PR to `main`.
-6. Brian writes the Test verdicts comment. `cpc:review <PR number>` does one round of feedback per run. The check `verdict` passes when each test has PASS, and Brian merges.
+5. `cpc:implement <feature>` builds each ticket on its ticket branch, merges it into the spec branch, records the evidence in `EVIDENCE.md`, has the Judge write `VERDICTS.md`, and opens one PR to `main`.
+6. Brian posts no comment unless he gives a FAIL. `cpc:review <PR number>` does one round of feedback per run. The check `verdict` passes when each test has PASS from the Judge and no FAIL from Brian, and Brian merges.
 
 ## Tracker
 

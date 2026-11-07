@@ -1,0 +1,7 @@
+AT-20 replay, 2026-11-06, in the worktree of AT-19.
+Head before the merge: 41fb62424dd9a8ebd9c4a637891244eb5910f0a4.
+Bad resolve: pipeline.py keeps only the HEAD side of its hunk. The ticket side removed the line that sets `odds`. See bad-resolve.diff.
+git commit: the hook ran make check-fast and failed, exit 1. make check-fast BASE=main: exit 2, ruff F821 Undefined name `odds`.
+git reset --hard 41fb6242: head after the reset is 41fb62424dd9a8ebd9c4a637891244eb5910f0a4, a clean tree, no MERGE_HEAD.
+Message to the subagent: message-to-subagent.txt. Written only after the reset. Not sent: the replay starts no subagent.
+Logs: merge.log, commit.log, check.log, reset.log in this folder.
