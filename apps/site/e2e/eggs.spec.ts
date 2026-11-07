@@ -13,13 +13,18 @@ const OUT = join(process.cwd(), "out");
 const PASSPHRASE = "localtest";
 const COMMISSIONER_KEY = "localkey";
 // The test egg T1 of the acceptance tests: a 3-tap on the Luck cell of Lil Fridge, roster 3, in the light theme.
-const T1 = { page: "/midseason/2026/", target: "luck-3", action: "tap3", conditions: { theme: "light" }, letter: "C" };
+const T1 = { page: "/midseason/2026/", target: "luck-3", action: "tap3", conditions: { theme: "light" } };
+// The egg words of the hunt, in the order of the values file. The claim goes into the first word that holds the letter.
+const EGG_WORDS = ["CORNERSTONE", "LANSDALE", "EAGLES"];
 const WIDTHS = [375, 1280];
 // The port of the served export. The API answers only the origins it allows, so EGGS_PORT moves the run off
 // EVIDENCE_PORT only together with CORNERSTONE_ALLOWED_ORIGINS of the API.
 const PORT = Number(process.env.EGGS_PORT ?? EVIDENCE_PORT);
 
 let server: { url: string; close: () => Promise<void> };
+// The letter that the letter rule gives to T1, and the egg word that holds it. Both come from the answer of the drop.
+let letter: string;
+let word: string;
 
 test.beforeAll(async () => {
   test.setTimeout(600_000);
@@ -31,6 +36,9 @@ test.beforeAll(async () => {
     body: JSON.stringify({ week: 9, eggs: [T1] }),
   });
   expect(drop.status).toBe(200);
+  letter = (await dropAnswer()).eggs[0].letter;
+  word = EGG_WORDS.find((each) => each.includes(letter)) ?? "";
+  expect(word).not.toBe("");
 });
 
 test.afterAll(async () => {
@@ -38,7 +46,7 @@ test.afterAll(async () => {
 });
 
 for (const width of WIDTHS) {
-  test(`a manager finds the test egg, claims C, and sees the claim on the egg board at ${width} px`, async ({ page }) => {
+  test(`a manager finds the test egg, claims the letter, and sees the claim on the egg board at ${width} px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     // The light theme is a condition of the test egg, so the browser stores the light choice before the first paint.
     await page.addInitScript(() => localStorage.setItem("cpc.theme", "light"));
@@ -49,20 +57,20 @@ for (const width of WIDTHS) {
     await expect(page.getByRole("heading", { name: "You found an egg" })).toBeVisible();
     await page.screenshot({ path: `test-results/eggs/egg-${width}.png` });
     await page.getByRole("button", { name: "Crack the egg" }).click();
-    await expect(page.getByTestId("egg-letter")).toHaveText("C");
-    await page.getByRole("button", { name: "Claim C" }).click();
+    await expect(page.getByTestId("egg-letter")).toHaveText(letter);
+    await page.getByRole("button", { name: `Claim ${letter}` }).click();
     await page.screenshot({ path: `test-results/eggs/find-${width}.png` });
     await page.getByRole("group", { name: "Your team" }).getByRole("button", { name: "Lil Fridge" }).click();
-    await page.getByRole("button", { name: "CORNERSTONE", exact: true }).click();
+    await page.getByRole("button", { name: word, exact: true }).click();
     await page.getByLabel("Passphrase").fill(PASSPHRASE);
     await page.screenshot({ path: `test-results/eggs/sheet-${width}.png` });
-    await page.getByRole("button", { name: "Claim C for CORNERSTONE" }).click();
-    await expect(page.getByRole("dialog", { name: "C goes to CORNERSTONE." })).toBeVisible();
+    await page.getByRole("button", { name: `Claim ${letter} for ${word}` }).click();
+    await expect(page.getByRole("dialog", { name: `${letter} goes to ${word}.` })).toBeVisible();
     await page.getByRole("link", { name: "See the egg board" }).click();
     await expect(page).toHaveURL(/\/eggs\/$/);
-    const cornerstone = page.getByRole("region", { name: /CORNERSTONE/ });
-    await expect(cornerstone.getByRole("listitem").filter({ hasText: "Lil Fridge" })).toContainText("C");
-    await expect(page.getByRole("region", { name: "Latest claims" })).toContainText("Lil Fridge claimed a C for CORNERSTONE.");
+    const cornerstone = page.getByRole("region", { name: new RegExp(word) });
+    await expect(cornerstone.getByRole("listitem").filter({ hasText: "Lil Fridge" })).toContainText(letter);
+    await expect(page.getByRole("region", { name: "Latest claims" })).toContainText(new RegExp(`Lil Fridge claimed an? ${letter} for ${word}\\.`));
     await page.screenshot({ path: `test-results/eggs/board-${width}.png`, fullPage: true });
     // The claim of the first width takes the egg, so the API undoes it for the next width.
     const board = await (await fetch(`${LOCAL_API}/clients/cpc/eggs/board`)).json();
@@ -76,7 +84,7 @@ for (const width of WIDTHS) {
 }
 
 /* The answer of a second drop of week 9, which adds nothing and names the egg that dropped. */
-async function dropAnswer(): Promise<{ eggs: { id: number }[] }> {
+async function dropAnswer(): Promise<{ eggs: { id: number; letter: string }[] }> {
   const response = await fetch(`${LOCAL_API}/clients/cpc/eggs/drop`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Commissioner-Key": COMMISSIONER_KEY },
