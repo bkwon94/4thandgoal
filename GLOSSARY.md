@@ -1102,7 +1102,7 @@ The page of the site that shows the letters of each manager in each egg word, th
 _Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board score)
 
 **Egg banner**:
-The slim strip under the top band of the home page that shows the count of new eggs and the count of eggs left to find after each egg drop. It links to the egg board and names no spot.
+The slim strip under the top band of the home page that shows the count of eggs of the last egg drop, its day, and the count of eggs left to find. It links to the egg board and names no spot.
 _Avoid_: Drop banner, alert, announcement, toast
 
 **Commissioner**:

@@ -338,8 +338,8 @@ AT-41: The egg banner
 App: site
 Stories: 30, 31, 32
 Given: Six test eggs dropped for week 9, none claimed.
-When: Open the home page, hide the banner, and reload.
-Then: The banner reads "6 new eggs · 6 left" and links to `/eggs/`. After the reload it stays hidden.
+When: Open the home page on the Tuesday of the drop. Open it again on Wednesday, after one claim. Hide the banner, and reload.
+Then: On Tuesday the banner reads "6 eggs dropped today · 6 left". On Wednesday it reads "6 eggs dropped Tue · 5 left". It links to `/eggs/`, and after the reload it stays hidden.
 Evidence: screenshots before and after at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-42: The hero of the egg board
@@ -488,4 +488,4 @@ Out of scope "A riddle, an answer box, or any typed answer": AT-48
 
 ## Revisions
 
-None yet.
+- 2026-11-06: AT-41 names the day of the drop, because the banner stays up all week and "6 new eggs" read as eggs of that day. Brian approved.

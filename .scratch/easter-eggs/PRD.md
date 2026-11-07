@@ -59,7 +59,7 @@ The commissioner places every egg, so the commissioner cannot hunt. An agent pro
 28. As a manager, I want an egg button with a red badge in the top band of every page, so that I see the count of eggs left from anywhere.
 29. As a manager, I want the egg button to open the egg board, so that the race is one tap away.
 30. As a manager, I want the egg banner under the top band of the home page after each egg drop, so that I know new eggs are out.
-31. As a manager, I want the egg banner to read "6 new eggs · 7 left" and link to the egg board, so that I get the two counts and the way in.
+31. As a manager, I want the egg banner to read "6 eggs dropped today · 6 left" on the day of the drop and "6 eggs dropped Tue · 4 left" later, with a link to the egg board, so that the counts stay true all week.
 32. As a manager, I want to hide the egg banner, so that it does not take space after I read it.
 33. As a manager, I want the hero of the egg board to show the counts left to find, found, and to drop, so that I see the size of the hunt.
 34. As a manager, I want a grid of all 54 eggs, one column per week from 9 to 17, so that I see which drops still hold eggs.
@@ -179,7 +179,7 @@ This records the choice of the `spec` ticket 07.
 
 - The route is `/eggs/`. It is a page of the site that renders in the client, because the claims change at any time. It reads the egg board route of the API at each visit.
 - The way in is the egg button in the top band, beside the theme button, on every page. Its red badge is the count of eggs left to find. The egg board is not a menu item, so the dock keeps its five items. This replaces "the egg board is in the menu" of ticket 06.
-- The egg banner is a strip 52px tall, edge to edge under the top band of the home page. It shows after an egg drop, until the next drop or until the manager hides it. The hidden state of each drop stays in local storage of the browser, as a convenience of one viewer.
+- The egg banner is a strip 52px tall, edge to edge under the top band of the home page. It shows after an egg drop, until the next drop or until the manager hides it. It names the day of the drop, so it is true on any day: "6 eggs dropped today · 6 left" on the Tuesday, then "6 eggs dropped Tue · 4 left". The count left is the count of the whole hunt. The hidden state of each drop stays in local storage of the browser, as a convenience of one viewer.
 - The order of the egg board, from the top:
   1. The hero: the counts left to find, found, and to drop, over the grid of the 54 eggs, one column per week from 9 to 17. A found egg is white, an egg still out glows red, and a future egg is dashed.
   2. One card per egg word, CORNERSTONE first: its gift card value, its leader, the top 5 managers with their tiles, and "Show all 11". A won egg word turns into a hero card with a WON stamp and the name of its winner.
