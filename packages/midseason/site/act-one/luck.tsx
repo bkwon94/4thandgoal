@@ -98,7 +98,8 @@ function LuckTable({ teams }: { teams: TeamLuck[] }) {
               </th>
               <td className={cn(CELL, "text-right")}>{num(team.head_to_head_wins)}</td>
               <td className={cn(CELL, "text-right")}>{team.all_play_wins.toFixed(2)}</td>
-              <td data-luck className={cn(CELL, "text-right font-bold")}>
+              {/* The stable id derives from the roster, so the egg listener can name the cell. Every row has one. */}
+              <td data-luck data-stable-id={`luck-${team.roster_id}`} className={cn(CELL, "text-right font-bold")}>
                 <span className="block">{signedTwo(team.schedule_luck)}</span>
                 {/* The word sits under the number. */}
                 <WordTag tone={Math.abs(team.schedule_luck) >= LOUD_GAP ? "accent" : "mute"} className="ml-0 block">

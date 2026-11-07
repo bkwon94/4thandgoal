@@ -1,0 +1,204 @@
+"""
+The eggs route groups of the API: the open egg check and egg board, the claim, and the drop and the undo.
+The app mounts each group at /clients/<slug>/eggs/ with its own guard, and each route reads the Hunt of its client.
+"""
+import threading
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Annotated, Any
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
+
+from eggs.store import AlreadyClaimed, Claim, EggStore
+from eggs.tokens import ClaimTokens
+from eggs.values import EggsValues
+
+# The open routes: the egg check and the egg board need no key.
+open_router = APIRouter()
+# The claim needs the passphrase of the client. The app gives the guard.
+claim_router = APIRouter()
+# The drop and the undo need the commissioner key. The app gives the guard.
+commissioner_router = APIRouter()
+
+# The team name of each roster of the league, by roster id. The API app gives the live rosters of the client.
+Rosters = Callable[[], dict[int, str]]
+
+CLAIMED_FIRST = "Another manager claimed first."
+BAD_TOKEN = "The claim is too late or the egg is not found. Find the egg again."
+
+
+@dataclass
+class Hunt:
+    """The egg hunt of one client: its store, its package values, its claim tokens, its rosters, and its clock."""
+
+    store: EggStore
+    values: EggsValues
+    rosters: Rosters
+    clock: Callable[[], datetime]
+    tokens: ClaimTokens = field(default_factory=ClaimTokens)
+    # FastAPI runs the sync routes in a thread pool. The lock keeps the take of a token and its claim in one step.
+    lock: threading.Lock = field(default_factory=threading.Lock)
+
+
+def client_hunt(request: Request) -> Hunt:
+    """The hunt of the client of the path. A client without the eggs package has none, so its eggs routes are 404."""
+    hunt = request.app.state.hunts.get(request.path_params.get("slug"))
+    if hunt is None:
+        raise HTTPException(status_code=404, detail="This client has no egg hunt.")
+    return hunt
+
+
+ClientHunt = Annotated[Hunt, Depends(client_hunt)]
+
+
+class CheckRequest(BaseModel):
+    """The body of the egg check: the page, the stable id of the element, the action, and the state of the conditions."""
+
+    page: str
+    target: str
+    action: str
+    conditions: dict[str, Any] = {}
+
+
+@open_router.post("/check")
+def check(body: CheckRequest, hunt: ClientHunt) -> dict:
+    """No match, a match with the letter and a one-time claim token, or a match on an egg that a manager claimed."""
+    for egg in hunt.store.find(body.page, body.target, body.action):
+        # Each condition of the egg must hold in the state that the listener sends.
+        if any(body.conditions.get(name) != value for name, value in egg.conditions.items()):
+            continue
+        if hunt.store.claim_of(egg.id) is not None:
+            return {"match": True, "claimed": True, "letter": egg.letter}
+        token = hunt.tokens.issue(egg.id, hunt.clock())
+        return {"match": True, "claimed": False, "letter": egg.letter, "token": token}
+    return {"match": False}
+
+
+class ClaimRequest(BaseModel):
+    """The body of the claim: the token of the check, the roster, and the egg word, or None for a block."""
+
+    token: str
+    roster_id: int
+    word: str | None
+    browser: str | None = None
+
+
+def _letters(claims: list[Claim], roster_id: int, word: str) -> list[str]:
+    """The letters of the roster in the egg word, in the order of the claims."""
+    return [claim.letter for claim in reversed(claims) if claim.roster_id == roster_id and claim.word == word]
+
+
+@claim_router.post("/claim")
+def claim(body: ClaimRequest, hunt: ClientHunt) -> dict:
+    """Claim the egg of the token for the roster. The answer holds the letters of the roster in each egg word."""
+    words = [each.word for each in hunt.values.words]
+    if body.word is not None and body.word not in words:
+        raise HTTPException(status_code=422, detail=f"{body.word} is not an egg word.")
+    if body.roster_id not in hunt.rosters():
+        raise HTTPException(status_code=422, detail=f"Roster {body.roster_id} is not in the league.")
+    now = hunt.clock()
+    with hunt.lock:
+        egg_id = hunt.tokens.take(body.token, now)
+        if egg_id is None:
+            raise HTTPException(status_code=410, detail=BAD_TOKEN)
+        try:
+            hunt.store.claim(egg_id, body.roster_id, body.word, body.browser, now)
+        except AlreadyClaimed:
+            raise HTTPException(status_code=409, detail=CLAIMED_FIRST) from None
+    claims = hunt.store.claims()
+    letter = next(each.letter for each in claims if each.egg_id == egg_id)
+    return {
+        "egg_id": egg_id,
+        "letter": letter,
+        "roster_id": body.roster_id,
+        "word": body.word,
+        "letters": {word: _letters(claims, body.roster_id, word) for word in words},
+    }
+
+
+@open_router.get("/board")
+def board(hunt: ClientHunt) -> dict:
+    """The egg board: the counts, the state of each slot by week, each manager in each egg word, and the latest claims.
+
+    It holds no page, no target, no action, and no condition, so the board gives no hint.
+    """
+    values = hunt.values
+    eggs = hunt.store.eggs()
+    claims = hunt.store.claims()
+    found = {claim.egg_id for claim in claims}
+    teams = hunt.rosters()
+    # The commissioner places every egg, so the board and the claim sheet list only the managers who hunt.
+    managers = [{"roster_id": roster_id, "team": team} for roster_id, team in sorted(teams.items())
+                if roster_id != values.commissioner]
+    weeks = list(range(values.first_week, values.last_week + 1))
+    slots = []
+    for week in weeks:
+        dropped = ["found" if egg.id in found else "out" for egg in eggs if egg.week == week]
+        slots.append({"week": week, "slots": dropped + ["future"] * max(0, values.drop_size - len(dropped))})
+    return {
+        "counts": {
+            "left": len(eggs) - len(found),
+            "found": len(found),
+            "to_drop": max(0, len(weeks) * values.drop_size - len(eggs)),
+        },
+        "weeks": slots,
+        "words": [
+            {
+                "word": each.word,
+                "prize": each.prize,
+                "managers": [{**manager, "letters": _letters(claims, manager["roster_id"], each.word)}
+                             for manager in managers],
+            }
+            for each in values.words
+        ],
+        # A block takes an egg into no egg word, so the feed shows no block.
+        "latest": [{"roster_id": claim.roster_id, "team": teams.get(claim.roster_id, ""), "letter": claim.letter,
+                    "word": claim.word, "claimed_at": claim.claimed_at} for claim in claims if claim.word is not None],
+        "managers": managers,
+    }
+
+
+class DropEgg(BaseModel):
+    """One confirmed egg of a drop: where it hides, the action and the conditions that find it, and its letter."""
+
+    page: str
+    target: str
+    action: str
+    conditions: dict[str, Any] = {}
+    letter: str
+
+
+class DropRequest(BaseModel):
+    """The body of the drop: the week and its confirmed eggs."""
+
+    week: int
+    eggs: list[DropEgg]
+
+
+@commissioner_router.post("/drop")
+def drop(body: DropRequest, hunt: ClientHunt) -> dict:
+    """Make the eggs of the week live. A second drop of one week adds nothing and answers with the eggs there."""
+    before = len(hunt.store.eggs(body.week))
+    eggs = hunt.store.drop(body.week, [egg.model_dump() for egg in body.eggs], hunt.clock())
+    return {
+        "week": body.week,
+        "dropped": len(eggs) - before,
+        "eggs": [{"id": egg.id, "page": egg.page, "target": egg.target, "action": egg.action,
+                  "conditions": egg.conditions, "letter": egg.letter} for egg in eggs],
+    }
+
+
+class UndoRequest(BaseModel):
+    """The body of the undo: the id of the egg whose claim goes."""
+
+    egg_id: int
+
+
+@commissioner_router.post("/undo")
+def undo(body: UndoRequest, hunt: ClientHunt) -> dict:
+    """Undo the claim of the egg, so the egg is live again. The claims table keeps the row with its undo time."""
+    if not hunt.store.undo(body.egg_id, hunt.clock()):
+        raise HTTPException(status_code=404, detail=f"No claim holds the egg {body.egg_id}.")
+    return {"egg_id": body.egg_id, "undone": True}

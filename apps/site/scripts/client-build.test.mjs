@@ -108,8 +108,27 @@ describe("the client build", () => {
       "(client)/[season]/managers/[roster]/page.tsx",
       "(client)/[season]/managers/page.tsx",
       "(client)/analyze/page.tsx",
+      "(client)/eggs/page.tsx",
       "(client)/rankings/page.tsx",
     ]);
+  });
+
+  it("gives a client of the eggs package the /eggs/ route and the egg hunt on every page through the registry", () => {
+    const repo = tempRepo();
+    buildClient(repo);
+    expect(routeFiles(repo.site)).toContain("(client)/eggs/page.tsx");
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { PagePart as eggsPagePart } from "@/app/_routes/eggs/hunt";');
+    expect(registry).toContain("export const pageParts: PagePart[] = [eggsPagePart];");
+  });
+
+  it("gives a client without the eggs package no /eggs/ route and no egg hunt", () => {
+    const repo = tempRepo(CPC_TOML.replace(', "eggs"]', "]").replace(/\n# The roster of the commissioner[^\n]*\n\[values\.eggs\]\n[^\n]*\n/, "\n"));
+    buildClient(repo);
+    expect(routeFiles(repo.site)).not.toContain("(client)/eggs/page.tsx");
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).not.toContain("eggs");
+    expect(registry).toContain("export const pageParts: PagePart[] = [];");
   });
 
   it("starts each generated file with a GENERATED line that names the client file", () => {
@@ -132,7 +151,7 @@ describe("the client build", () => {
   });
 
   it("writes the waiver route when the list takes waiver and a week has a waiver file", () => {
-    const repo = tempRepo(CPC_TOML.replace('"sim"]', '"sim", "waiver"]'));
+    const repo = tempRepo(CPC_TOML.replace('"eggs"]', '"eggs", "waiver"]'));
     published(repo.root, "cpc", "2026/week-06/page.json");
     published(repo.root, "cpc", "2026/week-06/waiver.json");
     buildClient(repo);
@@ -290,7 +309,7 @@ describe("the client build", () => {
     const toml = CPC_TOML.slice(0, CPC_TOML.indexOf("# Each item names"));
     const repo = tempRepo(toml);
     buildClient(repo);
-    // The menu values keep midseason and sim, but the shell gives them no menu item and no dock item.
+    // The menu values keep midseason, sim, and eggs, but the shell gives them no menu item and no dock item.
     expect(clientValuesOf(repo.site).menu).toEqual({
       items: [
         { page: "home" },
@@ -300,6 +319,7 @@ describe("the client build", () => {
         { package: "analyzer" },
         { package: "midseason" },
         { package: "sim" },
+        { package: "eggs" },
       ],
     });
   });

@@ -177,6 +177,8 @@ const ROUTES = {
   analyzer: [{ path: "analyze/page.tsx", source: "@/app/_routes/analyzer/page", exports: ["default", "metadata"] }],
   // The sim has no page of its own. The report page mounts its replay.
   sim: [],
+  // The egg board renders in the browser from the API, so it needs no published file.
+  eggs: [{ path: "eggs/page.tsx", source: "@/app/_routes/eggs/page", exports: ["default", "metadata"] }],
   midseason: [
     {
       path: "midseason/[season]/page.tsx",
@@ -192,6 +194,10 @@ const ROUTES = {
    The registry imports it only for a package of the list, so the home page of a client that omits the package holds
    none of its code. The order is fixed here and not by the package list, so the order of client.toml never moves a row. */
 const HOME_TOOLS = { analyzer: "@/app/_routes/analyzer/home", managers: "@/app/_routes/managers/home" };
+
+/* The part that a package mounts on every page, such as the egg hunt. The registry imports it only for a package of the
+   list, so the bundle of a client that omits the package holds none of its code. */
+const PAGE_PARTS = { eggs: "@/app/_routes/eggs/hunt" };
 
 /* The managers routes build only for the latest season, so its managers file gives their params. */
 function managersFile(published) {
@@ -222,12 +228,14 @@ const HOME_SECTIONS = ["midseason", "rankings", "week"];
 function registryText(slug, values) {
   const tools = Object.keys(HOME_TOOLS).filter((name) => values.packages.includes(name));
   const home = HOME_SECTIONS.filter((name) => values.packages.includes(name));
+  const parts = Object.keys(PAGE_PARTS).filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { HomeSections, HomeTool, MenuLinks } from "@/lib/client-values";`,
+    `import type { HomeSections, HomeTool, MenuLinks, PagePart } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
     ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
     ...home.map((name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`),
+    ...parts.map((name) => `import { PagePart as ${name}PagePart } from "${PAGE_PARTS[name]}";`),
     "",
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
@@ -241,6 +249,9 @@ function registryText(slug, values) {
     "export const homeSections: HomeSections = [",
     ...home.map((name) => `  ${name}HomeSection,`),
     "];",
+    "",
+    "/* The part of each package of the client that every page mounts. */",
+    `export const pageParts: PagePart[] = [${parts.map((name) => `${name}PagePart`).join(", ")}];`,
     "",
   ].join("\n");
 }

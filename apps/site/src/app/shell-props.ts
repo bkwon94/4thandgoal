@@ -27,6 +27,8 @@ export function menuPages(items: MenuItem[], links: MenuLinks, home: string): Na
     if ("page" in item) return [{ kind: "home", label: item.label ?? "Home", short: "Home", href: home }];
     // The sim adds no menu item and no dock item (midseason PRD), so it has no kind.
     if (item.package === "sim") return [];
+    // The egg board is not a menu item, so the dock keeps its five items. The egg button of the top band opens it.
+    if (item.package === "eggs") return [];
     // The midseason report adds no menu item yet: a sixth item overflows the pill bar of CPC at 1280px. The home
     // takeover and the report tile link to the report.
     if (item.package === "midseason") return [];

@@ -8,7 +8,7 @@ import type { BrandSets } from "@cpc/design/lib/theme";
 import type { Destination } from "@cpc/design/shell/nav";
 
 /* A package that a client takes or omits. league, facts, and design are in every client, so the list never names them. */
-export type PackageName = "week" | "rankings" | "managers" | "waiver" | "analyzer" | "sim" | "midseason";
+export type PackageName = "week" | "rankings" | "managers" | "waiver" | "analyzer" | "sim" | "midseason" | "eggs";
 
 /* The values of the client that the site reads. */
 export type ClientValues = {
@@ -37,6 +37,9 @@ export type ClientMenu = { items: MenuItem[] };
 /* The menu link of each package of the client: its label and its href. A package with no page to link yet gives null,
    so the menu has no entry. */
 export type MenuLinks = Partial<Record<PackageName, () => Destination | null>>;
+
+/* The part of a package that every page mounts, such as the egg hunt. */
+export type PagePart = ComponentType;
 
 /* The tile of a package in the Tools chapter of the home page. A package with no page to link yet renders null. */
 export type HomeTool = ComponentType;
