@@ -338,7 +338,8 @@ function HowItWorks({ board }: { board: Board }) {
     "Eggs hide across the site. Tap or press the right spot to find one.",
     "The first manager to claim an egg gets its letter. Then the egg is gone.",
     "Put each letter in one of your egg words. A letter that fits none of them can block: the egg is gone, and the letter counts for no word.",
-    "Each egg holds the letter that the most managers still need. No egg holds the last letter that a leader needs.",
+    "Each egg holds the letter that the most managers still need. A tie goes to the earlier letter. No letter repeats in one drop.",
+    "No egg holds the last letter that a leader needs. If that rules out every letter, the egg holds the next letter by need.",
     `The first manager to fill an egg word wins its gift card: ${prizeList}.`,
     "The commissioner places every egg, so the commissioner cannot hunt.",
   ];

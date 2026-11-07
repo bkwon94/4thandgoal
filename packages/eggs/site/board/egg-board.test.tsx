@@ -144,6 +144,8 @@ describe("How the hunt works", () => {
     expect(text).toContain("6 new eggs drop each Tuesday from week 9 through week 17.");
     expect(text).toContain("The first manager to claim an egg gets its letter.");
     expect(text).toContain("the letter that the most managers still need");
+    expect(text).toContain("A tie goes to the earlier letter. No letter repeats in one drop.");
+    expect(text).toContain("No egg holds the last letter that a leader needs. If that rules out every letter, the egg holds the next letter by need.");
     expect(text).toContain("CORNERSTONE $50, LANSDALE $30, and EAGLES $20");
     expect(text).toContain("The commissioner places every egg, so the commissioner cannot hunt.");
   });
