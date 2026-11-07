@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Rise } from "@cpc/design/parts/rise";
 import type { Board, EggsApi } from "../lib/api";
 import { dropKey, hideBanner, isBannerHidden } from "../lib/banner-store";
-import { useBoard } from "./use-board";
+import { useHuntBoard } from "./use-board";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -108,9 +108,9 @@ export function EggBanner({ board, href, now = new Date() }: EggBannerProps) {
   );
 }
 
-/* The banner of the home page: it reads the board from the API at each visit, and shows nothing until the board loads
-   or when the call fails, so a failed call never pushes the page. */
+/* The banner of the home page: it reads the board from the API at each visit, and shows nothing until the board loads,
+   when the call fails, or before the first egg drop, so a failed call never pushes the page. */
 export function EggBannerScreen({ api, href }: { api: EggsApi; href: string }) {
-  const board = useBoard(api);
+  const board = useHuntBoard(api);
   return board === null ? null : <EggBanner board={board} href={href} />;
 }

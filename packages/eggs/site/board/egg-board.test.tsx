@@ -1,10 +1,10 @@
 /**
  * Tests for the egg board, rendered from the board fixture that the API tests hold to the real answer.
- * A variant of the fixture gives each other state: a won egg word, and the board before the first drop.
+ * A variant of the fixture gives each other state: a won egg word, and an egg word with no letters.
  */
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import type { Board } from "../lib/api";
+import { EggsError, type Board } from "../lib/api";
 import { board, fakeEggsApi } from "../lib/fixtures/eggs-api";
 import { EggBoard } from "./egg-board";
 import { EggBoardScreen } from "./egg-board-screen";
@@ -151,7 +151,7 @@ describe("How the hunt works", () => {
   });
 });
 
-describe("The egg board before the first drop", () => {
+describe("An egg word with no letters", () => {
   it("shows the three egg words with no letters and 54 eggs to drop", () => {
     render(<EggBoard board={empty} now={NOW} />);
     const hero = screen.getByRole("region", { name: "Egg hunt" });
@@ -175,9 +175,36 @@ describe("The copy of the egg board", () => {
   });
 });
 
+/* The content that the app gives for the time before the first drop: the 404 page of the site. */
+const CLOSED = <p>404</p>;
+const TITLE = "Egg Board · CPC";
+
 describe("EggBoardScreen", () => {
-  it("reads the board from the API at each visit", async () => {
-    render(<EggBoardScreen api={fakeEggsApi({ match: false })} />);
+  it("reads the board from the API at each visit, and names the page the egg board", async () => {
+    document.title = "Page Not Found · CPC";
+    render(<EggBoardScreen api={fakeEggsApi({ match: false })} closed={CLOSED} title={TITLE} />);
     expect(await screen.findByRole("region", { name: "Latest claims" })).toBeTruthy();
+    expect(document.title).toBe(TITLE);
+  });
+
+  it("shows nothing while the board loads", () => {
+    const { container } = render(<EggBoardScreen api={fakeEggsApi({ match: false })} closed={CLOSED} title={TITLE} />);
+    expect(container.innerHTML).toBe("");
+  });
+
+  it("shows the closed content and no egg copy before the first drop", async () => {
+    document.title = "Page Not Found · CPC";
+    const api = fakeEggsApi({ match: false }, {}, empty);
+    const { container } = render(<EggBoardScreen api={api} closed={CLOSED} title={TITLE} />);
+    await act(async () => {});
+    expect(container.innerHTML).toBe("<p>404</p>");
+    expect(document.title).toBe("Page Not Found · CPC");
+  });
+
+  it("shows the closed content when the board call fails", async () => {
+    const api = fakeEggsApi({ match: false }, { board: new EggsError(500, "Server error") });
+    const { container } = render(<EggBoardScreen api={api} closed={CLOSED} title={TITLE} />);
+    await act(async () => {});
+    expect(container.innerHTML).toBe("<p>404</p>");
   });
 });

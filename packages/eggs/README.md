@@ -9,7 +9,7 @@
 - The check matcher in `conditions.py`: each condition of an egg must hold in the state that the listener sends. A list in the state, such as the open states, holds each value that the egg wants. The trail of a tap combo must match in order. The clock window, such as `"23:00-00:00"`, and the weekday, such as `"thu"`, hold on the clock of the client, in the timezone of the client.
 - The one-time claim tokens in `tokens.py`, each good for 15 minutes, and the limit of the egg check in `tunables.py`: 60 checks per hour of each address, apart from the limit of the other routes.
 - The eggs routes of the API in `routes.py`: `check` and `board` are open, `check` and `board` each have their own limit, apart from the other routes, `claim` needs the passphrase, and `drop` and `undo` need the commissioner key. The board holds no page and no spot. It names the week, the count, and the time of the last drop for the egg banner.
-- The site part in `site/`: the listener, the find card, the claim sheet, the egg board, the egg button, the egg banner, and the client of the eggs routes.
+- The site part in `site/`: the listener, the find card, the claim sheet, the egg board, the egg button, the egg banner, and the client of the eggs routes. Nothing of the hunt shows before the first drop.
 
 ## Ports
 

@@ -4,13 +4,11 @@
  */
 "use client";
 
-import { eggsApi } from "@cpc/eggs/lib/api";
 import { EggHunt } from "@cpc/eggs/hunt/egg-hunt";
-import { eggsTarget } from "@/lib/config";
+import { boardApi } from "./api";
 
-// One port for the whole visit, so the listener mounts once.
-const api = eggsApi(eggsTarget);
-
+// One port for the whole visit, so the listener mounts once. The hunt reads the board of the shared port, so its check
+// of the first drop shares the one board call of the egg button and the egg banner.
 export function PagePart() {
-  return <EggHunt api={api} />;
+  return <EggHunt api={boardApi} />;
 }

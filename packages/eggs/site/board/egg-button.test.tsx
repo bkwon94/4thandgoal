@@ -2,7 +2,7 @@
  * Tests for the egg button of the top band, rendered from the board fixture that the API tests hold to the real answer.
  * Its badge is the count of eggs left to find, and a tap opens the egg board.
  */
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { board, fakeEggsApi } from "../lib/fixtures/eggs-api";
 import { EggButton, EggButtonScreen } from "./egg-button";
@@ -35,5 +35,17 @@ describe("EggButtonScreen", () => {
     render(<EggButtonScreen api={fakeEggsApi({ match: false })} href="/eggs/" />);
     const name = `Egg board, ${board.counts.left} egg left to find`;
     expect((await screen.findByRole("link", { name })).textContent).toBe(String(board.counts.left));
+  });
+
+  it("renders nothing before the first drop", async () => {
+    const api = fakeEggsApi({ match: false }, {}, { ...board, last_drop: null });
+    const { container } = render(<EggButtonScreen api={api} href="/eggs/" />);
+    await act(async () => {});
+    expect(container.innerHTML).toBe("");
+  });
+
+  it("renders nothing while the board loads", () => {
+    const { container } = render(<EggButtonScreen api={fakeEggsApi({ match: false })} href="/eggs/" />);
+    expect(container.innerHTML).toBe("");
   });
 });

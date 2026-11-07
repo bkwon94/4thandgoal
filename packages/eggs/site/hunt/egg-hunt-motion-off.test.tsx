@@ -35,6 +35,8 @@ describe("EggHunt with reduced motion", () => {
         <EggHunt api={fakeEggsApi({ match: true, claimed: false, letter: "C", token: "t1" })} />
       </>,
     );
+    // The listener starts when the board loads with a drop.
+    await act(async () => {});
     const cell = screen.getByText("+1.20");
     for (const _ of [1, 2, 3]) fireEvent.pointerUp(cell, { isPrimary: true });
     await act(() => new Promise((done) => setTimeout(done, TAP_GAP_MS + 50)));

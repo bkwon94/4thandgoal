@@ -1,12 +1,13 @@
 /**
  * The egg hunt of a page: the listener, the find card after a match, the claim sheet, and the hero card at the end of each path.
- * The app mounts it once on every page of a client of the eggs package.
+ * The app mounts it once on every page of a client of the eggs package. The listener starts only after the first egg drop.
  */
 "use client";
 
 import { useEffect, useState } from "react";
 import { EggsError, type CheckAnswer, type EggCheck, type EggsApi } from "../lib/api";
 import { listenForEggs } from "../listener/listener";
+import { useHuntBoard } from "../board/use-board";
 import { ClaimSheet } from "./claim-sheet";
 import { EndCard, minutesOf, type End } from "./end-card";
 import { FindCard, type Origin } from "./find-card";
@@ -37,8 +38,11 @@ function afterCheck(answer: CheckAnswer, origin: Origin | null): HuntState {
 
 export function EggHunt({ api }: { api: EggsApi }) {
   const [state, setState] = useState<HuntState>({ step: "idle" });
+  // The board decides if the hunt is on. Until it loads with a drop, the page has no handler of the hunt and sends no check.
+  const on = useHuntBoard(api) !== null;
 
   useEffect(() => {
+    if (!on) return;
     return listenForEggs(document, {
       page: () => window.location.pathname,
       send: (check) => {
@@ -54,7 +58,7 @@ export function EggHunt({ api }: { api: EggsApi }) {
         );
       },
     });
-  }, [api]);
+  }, [api, on]);
 
   const close = () => setState({ step: "idle" });
   if (state.step === "found") {

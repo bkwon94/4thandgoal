@@ -2,11 +2,11 @@
  * Tests for the egg banner of the home page, rendered from the board fixture that the API tests hold to the real answer.
  * The banner names the day of the last drop and the count left, and a hide stays until the next drop.
  */
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import type { Board } from "../lib/api";
-import { board } from "../lib/fixtures/eggs-api";
-import { EggBanner } from "./egg-banner";
+import { EggsError, type Board } from "../lib/api";
+import { board, fakeEggsApi } from "../lib/fixtures/eggs-api";
+import { EggBanner, EggBannerScreen } from "./egg-banner";
 
 afterEach(() => {
   cleanup();
@@ -72,5 +72,23 @@ describe("EggBanner", () => {
   it("shows nothing before the first drop", () => {
     const { container } = render(<EggBanner board={{ ...board, last_drop: null }} href="/eggs/" now={WEDNESDAY} />);
     expect(container.textContent).toBe("");
+  });
+});
+
+describe("EggBannerScreen", () => {
+  it("shows the banner of the last drop from the board of the API", async () => {
+    render(<EggBannerScreen api={fakeEggsApi({ match: false })} href="/eggs/" />);
+    expect(await screen.findByRole("region", { name: "Egg drop" })).toBeTruthy();
+  });
+
+  it("renders nothing before the first drop, while the board loads, and when the call fails", async () => {
+    const before = render(<EggBannerScreen api={fakeEggsApi({ match: false }, {}, { ...board, last_drop: null })} href="/eggs/" />);
+    expect(before.container.innerHTML).toBe("");
+    await act(async () => {});
+    expect(before.container.innerHTML).toBe("");
+    before.unmount();
+    const failed = render(<EggBannerScreen api={fakeEggsApi({ match: false }, { board: new EggsError(500, "Server error") })} href="/eggs/" />);
+    await act(async () => {});
+    expect(failed.container.innerHTML).toBe("");
   });
 });

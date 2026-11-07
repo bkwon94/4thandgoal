@@ -22,8 +22,8 @@ export const PASSPHRASE = "localtest";
 
 export type FakeEggsApi = EggsApi & { checks: EggCheck[]; claims: EggClaim[] };
 
-/* The failures that a test can give the fake: an error for each check, or an error for each claim, such as a 409. */
-export type FakeFailures = { check?: EggsError; claim?: EggsError };
+/* The failures that a test can give the fake: an error for each check, each claim, such as a 409, or each board call. */
+export type FakeFailures = { check?: EggsError; claim?: EggsError; board?: EggsError };
 
 /* A copy of the board fixture where each roster holds the letters given for each egg word, such as
    { EAGLES: { 3: ["E", "A", "G", "L", "E"] } }. A test builds the state it needs from the real fixture. */
@@ -76,6 +76,9 @@ export function fakeEggsApi(answer: CheckAnswer, failures: FakeFailures = {}, st
         winner: won && claim.word !== null ? { roster_id: claim.roster_id, word: claim.word } : null,
       };
     },
-    board: async () => state,
+    board: async () => {
+      if (failures.board) throw failures.board;
+      return state;
+    },
   };
 }

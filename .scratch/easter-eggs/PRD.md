@@ -185,7 +185,7 @@ This records the choice of the `spec` ticket 07.
   2. One card per egg word, CORNERSTONE first: its gift card value, its leader, the top 5 managers with their tiles, and "Show all 11". A won egg word turns into a hero card with a WON stamp and the name of its winner.
   3. "Latest claims": the manager, the letter, and the egg word of each claim, newest first, with no page and no spot. A block is not in the feed.
   4. "How the hunt works": the egg drop each Tuesday, the claim, the letter rule, the gift cards, and that the commissioner cannot hunt.
-- Before the first egg drop, the egg board shows the three egg words with no letters and the count to drop.
+- Before the first egg drop, nothing of the hunt shows: no egg button, no egg banner, and no check from the listener, and `/eggs/` shows the 404 page. The first drop turns the hunt on.
 
 ## Testing Decisions
 

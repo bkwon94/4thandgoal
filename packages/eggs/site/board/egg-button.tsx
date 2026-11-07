@@ -5,7 +5,7 @@
 "use client";
 
 import type { EggsApi } from "../lib/api";
-import { useBoard } from "./use-board";
+import { useHuntBoard } from "./use-board";
 
 type EggButtonProps = {
   // The count of eggs left to find, or null before the board loads. With null the button shows no badge.
@@ -40,8 +40,9 @@ export function EggButton({ left, href }: EggButtonProps) {
   );
 }
 
-/* The egg button of the top band: it reads the count left from the API at each visit. */
+/* The egg button of the top band: it reads the count left from the API at each visit. It renders nothing while the
+   board loads, when the call fails, and before the first egg drop, so the hunt stays hidden until it starts. */
 export function EggButtonScreen({ api, href }: { api: EggsApi; href: string }) {
-  const board = useBoard(api);
-  return <EggButton left={board === null ? null : board.counts.left} href={href} />;
+  const board = useHuntBoard(api);
+  return board === null ? null : <EggButton left={board.counts.left} href={href} />;
 }

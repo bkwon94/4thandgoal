@@ -6,7 +6,7 @@ import { act, cleanup, fireEvent, render, screen, within } from "@testing-librar
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TAP_GAP_MS } from "../listener/listener";
 import { EggsError, type Board } from "../lib/api";
-import { boardWith, fakeEggsApi, PASSPHRASE } from "../lib/fixtures/eggs-api";
+import { board, boardWith, fakeEggsApi, PASSPHRASE } from "../lib/fixtures/eggs-api";
 import { EggHunt } from "./egg-hunt";
 import { CRACK_MS } from "./find-card";
 
@@ -21,8 +21,10 @@ afterEach(cleanup);
 
 const wait = (ms: number) => act(() => new Promise((done) => setTimeout(done, ms)));
 
-/* Three fast taps on the Luck cell of Lil Fridge, then the end of the run. */
+/* Three fast taps on the Luck cell of Lil Fridge, then the end of the run. The board loads first, because the
+   listener starts only when the board names a drop. */
 async function tripleTap() {
+  await act(async () => {});
   const cell = screen.getByText("+1.20");
   for (const _ of [1, 2, 3]) fireEvent.pointerUp(cell, { isPrimary: true });
   await wait(TAP_GAP_MS + 50);
@@ -77,6 +79,22 @@ describe("EggHunt", () => {
     expect(screen.getByRole("heading", { name: "The letter C is yours to claim." })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Claim C" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Crack the egg" })).toBeNull();
+  });
+
+  it("sends no check and opens no card before the first drop", async () => {
+    const api = fakeEggsApi(MATCH, {}, { ...board, last_drop: null });
+    page(api);
+    await tripleTap();
+    expect(api.checks).toEqual([]);
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("sends no check when the board call fails", async () => {
+    const api = fakeEggsApi(MATCH, { board: new EggsError(500, "Server error") });
+    page(api);
+    await tripleTap();
+    expect(api.checks).toEqual([]);
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
   it("shows nothing on no match", async () => {

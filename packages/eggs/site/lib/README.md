@@ -7,7 +7,7 @@
 - The passphrase in local storage, under the same key as the trade analyzer.
 - The hide state of the egg banner in local storage, keyed by drop, in `banner-store.ts`.
 - The board fixture in `fixtures/board.json`, which the API tests hold to the real answer, and the one fake of the port.
-  A test gives the fake a failure of the check or the claim, or a board built from the fixture with `boardWith`.
+  A test gives the fake a failure of the check, the claim, or the board, or a board built from the fixture with `boardWith`.
 
 ## Ports
 
