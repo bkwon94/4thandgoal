@@ -240,6 +240,16 @@ def test_a_client_without_the_eggs_package_has_no_eggs_routes(settings, fixture_
     assert api.post(f"{BASE}/check", json=CHECK).status_code == 404
 
 
+def test_the_drop_and_the_undo_of_a_client_with_no_commissioner_key_are_refused(settings, fixture_raw_dir):
+    client = cpc_client(at=settings.repo, models=VALUE_MODELS)
+    without = client.model_copy(update={"values": client.values.model_copy(
+        update={"packages": [name for name in client.values.packages if name != "eggs"]})})
+    api = TestClient(create_app(dataclasses.replace(settings, commissioner_keys={}), [without]))
+    for headers in ({}, COMMISSIONER, {"X-Commissioner-Key": ""}):
+        assert api.post(f"{BASE}/drop", json={"week": 9, "eggs": []}, headers=headers).status_code == 401
+        assert api.post(f"{BASE}/undo", json={"egg_id": 1}, headers=headers).status_code == 401
+
+
 def test_the_app_refuses_a_client_of_the_eggs_package_with_no_commissioner_key(settings):
     client = cpc_client(at=settings.repo, models=VALUE_MODELS)
     with pytest.raises(ValueError, match="CORNERSTONE_COMMISSIONER_KEY_CPC"):

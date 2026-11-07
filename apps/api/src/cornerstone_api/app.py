@@ -118,8 +118,9 @@ def _commissioner_guard(request: Request) -> None:
     _limit(request)
     expected = request.app.state.settings.commissioner_keys.get(request.path_params.get("slug"))
     if expected is None:
-        # Each client of the eggs package has a key, so only a client with no hunt has none. Its route answers 404.
-        return
+        # Each client of the eggs package has a key, so only a client with no hunt has none. With no key, nothing can
+        # prove the commissioner, so the guard refuses the request and never lets it pass open.
+        raise _Unauthorized()
     given = request.headers.get(COMMISSIONER_HEADER, "")
     if not hmac.compare_digest(given.encode(), expected.encode()):
         raise _Unauthorized()
