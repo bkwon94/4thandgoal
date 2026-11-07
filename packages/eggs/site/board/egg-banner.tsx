@@ -73,12 +73,13 @@ export function EggBanner({ board, href, now = new Date() }: EggBannerProps) {
     <Rise>
       <section
         aria-label="Egg drop"
-        className="hero-texture relative flex h-banner items-center gap-sp-2 overflow-hidden border-b border-rule-dark bg-band pl-gutter text-on-dark"
+        className="hero-texture relative flex min-h-banner items-center gap-sp-2 overflow-hidden border-b border-rule-dark bg-band py-sp-1 pl-gutter text-on-dark"
       >
         <div aria-hidden="true" className="hero-scan" />
         <EggMark />
-        {/* The line sits on a plate, so the grid and the glow never sit under a letter. */}
-        <span data-banner-line className="plate relative min-w-0 flex-1 truncate text-body">
+        {/* The line sits on a plate, so the grid and the glow never sit under a letter.
+            The line wraps and the strip grows past its least height, so a narrow phone shows the whole line. */}
+        <span data-banner-line className="plate relative min-w-0 flex-1 text-body leading-tight text-pretty">
           <b className="font-mono font-bold text-accent-text">{line.count}</b> <b className="font-bold">{line.what}</b>
           <span className="text-on-dark-muted"> · </span>
           <b className="font-mono font-bold">{line.left}</b> left

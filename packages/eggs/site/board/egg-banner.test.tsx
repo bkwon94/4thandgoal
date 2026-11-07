@@ -57,6 +57,18 @@ describe("EggBanner", () => {
     expect(line()).toBe("6 eggs dropped today · 12 left");
   });
 
+  it("wraps the line and grows the strip, so a narrow phone never cuts the line", () => {
+    render(<EggBanner board={tuesdayDrop(6)} href="/eggs/" now={TUESDAY_NIGHT} />);
+    const strip = screen.getByRole("region", { name: "Egg drop" });
+    const lineBox = strip.querySelector("[data-banner-line]")!;
+    // The strip has a least height of one row, not a fixed height, so a line of two rows makes it taller.
+    expect(strip.classList.contains("min-h-banner")).toBe(true);
+    expect(strip.classList.contains("h-banner")).toBe(false);
+    // The line has no class that cuts or hides text past the end of its box.
+    const cuts = ["truncate", "text-ellipsis", "whitespace-nowrap", "overflow-hidden", "line-clamp-1"];
+    expect([...lineBox.classList].filter((name) => cuts.includes(name))).toEqual([]);
+  });
+
   it("shows nothing before the first drop", () => {
     const { container } = render(<EggBanner board={{ ...board, last_drop: null }} href="/eggs/" now={WEDNESDAY} />);
     expect(container.textContent).toBe("");
