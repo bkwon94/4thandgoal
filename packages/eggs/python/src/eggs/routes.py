@@ -13,7 +13,7 @@ from pydantic import BaseModel, ConfigDict, field_validator
 
 from eggs.conditions import check_conditions, conditions_hold
 from eggs.letters import drop_letters
-from eggs.rules import refusal, winner
+from eggs.rules import letters_of, refusal, winner
 from eggs.store import AlreadyClaimed, Claim, Egg, EggStore
 from eggs.tokens import ClaimTokens
 from eggs.values import EggsValues
@@ -104,11 +104,6 @@ class ClaimRequest(BaseModel):
     browser: str | None = None
 
 
-def _letters(claims: list[Claim], roster_id: int, word: str) -> list[str]:
-    """The letters of the roster in the egg word, in the order of the claims."""
-    return [claim.letter for claim in reversed(claims) if claim.roster_id == roster_id and claim.word == word]
-
-
 @claim_router.post("/claim")
 def claim(body: ClaimRequest, hunt: ClientHunt) -> dict:
     """Claim the egg of the token for the roster. The answer holds the letters of the roster in each egg word."""
@@ -140,7 +135,7 @@ def claim(body: ClaimRequest, hunt: ClientHunt) -> dict:
         "letter": letter,
         "roster_id": body.roster_id,
         "word": body.word,
-        "letters": {word: _letters(claims, body.roster_id, word) for word in words},
+        "letters": {word: letters_of(claims, body.roster_id, word) for word in words},
         "winner": {"roster_id": body.roster_id, "word": body.word} if won else None,
     }
 
@@ -193,7 +188,7 @@ def board(hunt: ClientHunt) -> dict:
                 "word": each.word,
                 "prize": each.prize,
                 "winner": _winner_of(claims, teams, each.word),
-                "managers": [{**manager, "letters": _letters(claims, manager["roster_id"], each.word)}
+                "managers": [{**manager, "letters": letters_of(claims, manager["roster_id"], each.word)}
                              for manager in managers],
             }
             for each in values.words

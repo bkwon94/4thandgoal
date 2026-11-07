@@ -8,8 +8,17 @@ from eggs.store import Claim
 from eggs.values import EggsValues
 
 
+def letters_of(claims: list[Claim], roster_id: int, word: str) -> list[str]:
+    """The letters of the roster in the egg word, oldest claim first. A block holds no egg word, so it counts for none.
+
+    The rules, the letter rule of the drop, the claim, and the board each count the letters of a roster with it.
+    """
+    # The store lists the claims newest first, so the reverse gives the order of the claims.
+    return [claim.letter for claim in reversed(claims) if claim.roster_id == roster_id and claim.word == word]
+
+
 def _held(claims: list[Claim], roster_id: int, word: str) -> Counter[str]:
-    return Counter(claim.letter for claim in claims if claim.roster_id == roster_id and claim.word == word)
+    return Counter(letters_of(claims, roster_id, word))
 
 
 def winner(claims: list[Claim], word: str) -> int | None:
