@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-3, AT-4, AT-13, AT-19, 
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The listener sends one check for a long press or hold of 1, 3, or 5 seconds, for a tap combo that ends with a double-tap, and for one selected word. A single tap sends no check.
 - [x] The listener counts taps by the stable id, so taps across the frames of the sim count as one multi-tap.
