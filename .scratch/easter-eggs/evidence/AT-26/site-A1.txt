@@ -1,0 +1,3 @@
+Three taps on [data-stable-id="luck-3"] of /midseason/2026/ in the light theme, at +0, +193, and +1264 ms.
+Checks sent: 1
+body: {"page":"/midseason/2026/","target":"luck-3","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]},"trail":["luck-3"]}

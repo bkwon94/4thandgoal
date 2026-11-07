@@ -1,0 +1,6 @@
+375-light: TOO LATE | C | Another manager claimed first. | The first claim wins the egg. | Back to the page | See the egg board
+375-dark: TOO LATE | C | Another manager claimed first. | The first claim wins the egg. | Back to the page | See the egg board
+768-light: TOO LATE | C | Another manager claimed first. | The first claim wins the egg. | Back to the page | See the egg board
+768-dark: TOO LATE | C | Another manager claimed first. | The first claim wins the egg. | Back to the page | See the egg board
+1280-light: TOO LATE | C | Another manager claimed first. | The first claim wins the egg. | Back to the page | See the egg board
+1280-dark: TOO LATE | C | Another manager claimed first. | The first claim wins the egg. | Back to the page | See the egg board

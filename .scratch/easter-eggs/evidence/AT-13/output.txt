@@ -1,0 +1,85 @@
+# 61 checks of T2 from the address 10.13.0.1, set in the header Fly-Client-IP, as the Fly proxy sets it.
+# No check came from this address before. The status of each answer:
+check  1: HTTP 200 
+check  2: HTTP 200 
+check  3: HTTP 200 
+check  4: HTTP 200 
+check  5: HTTP 200 
+check  6: HTTP 200 
+check  7: HTTP 200 
+check  8: HTTP 200 
+check  9: HTTP 200 
+check 10: HTTP 200 
+check 11: HTTP 200 
+check 12: HTTP 200 
+check 13: HTTP 200 
+check 14: HTTP 200 
+check 15: HTTP 200 
+check 16: HTTP 200 
+check 17: HTTP 200 
+check 18: HTTP 200 
+check 19: HTTP 200 
+check 20: HTTP 200 
+check 21: HTTP 200 
+check 22: HTTP 200 
+check 23: HTTP 200 
+check 24: HTTP 200 
+check 25: HTTP 200 
+check 26: HTTP 200 
+check 27: HTTP 200 
+check 28: HTTP 200 
+check 29: HTTP 200 
+check 30: HTTP 200 
+check 31: HTTP 200 
+check 32: HTTP 200 
+check 33: HTTP 200 
+check 34: HTTP 200 
+check 35: HTTP 200 
+check 36: HTTP 200 
+check 37: HTTP 200 
+check 38: HTTP 200 
+check 39: HTTP 200 
+check 40: HTTP 200 
+check 41: HTTP 200 
+check 42: HTTP 200 
+check 43: HTTP 200 
+check 44: HTTP 200 
+check 45: HTTP 200 
+check 46: HTTP 200 
+check 47: HTTP 200 
+check 48: HTTP 200 
+check 49: HTTP 200 
+check 50: HTTP 200 
+check 51: HTTP 200 
+check 52: HTTP 200 
+check 53: HTTP 200 
+check 54: HTTP 200 
+check 55: HTTP 200 
+check 56: HTTP 200 
+check 57: HTTP 200 
+check 58: HTTP 200 
+check 59: HTTP 200 
+check 60: HTTP 200 
+check 61: retry-after: 3600 HTTP 429 
+
+# The analyzer routes for the same address. The teams route answers 200. The analyze route answers 422 for an empty body, so it runs no Claude call, and it is not 429.
+$ curl -s -o /dev/null -w 'teams HTTP %{http_code}\n' 'http://127.0.0.1:8080/clients/cpc/teams?season=2026' -H 'Fly-Client-IP: 10.13.0.1' -H 'X-League-Passphrase: localtest'
+teams HTTP 200
+
+
+$ curl -s -w '\nanalyze HTTP %{http_code}\n' -X POST http://127.0.0.1:8080/clients/cpc/analyze -H 'Fly-Client-IP: 10.13.0.1' -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{}' | cut -c1-200
+{"detail":[{"type":"missing","loc":["body","season"],"msg":"Field required","input":{}},{"type":"missing","loc":["body","sides"],"msg":"Field required","input":{}},{"type":"missing","loc":["body","ask
+analyze HTTP 422
+
+
+# One real analyze call for the blocked address 10.13.0.1, with a real Claude call: Chris Rodriguez Jr. (10219) of The Blue Tent for Travis Kelce (1466) of Lil Fridge.
+$ curl -s -w '\nanalyze HTTP %{http_code}\n' -X POST http://127.0.0.1:8080/clients/cpc/analyze -H 'Fly-Client-IP: 10.13.0.1' -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"season":2026,"asker":1,"sides":[{"roster_id":1,"gives":[{"player_id":"10219","to":3}]},{"roster_id":3,"gives":[{"player_id":"1466","to":1}]}]}' | python3 -c 'import sys; t=sys.stdin.read(); body,_,code=t.rpartition("analyze HTTP"); import json; d=json.loads(body); print("decision:", d["decision"]["answer"], "| fallback:", d["fallback"], "| reason:", d["decision"]["reason"][:160]); print("analyze HTTP"+code.strip())'
+decision: yes | fallback: False | reason: The Blue Tent gets Kelce, whose target share is rising, for Rodriguez, and he covers the Goedert bye in week 10.
+analyze HTTP200
+
+
+# A check from another address still answers:
+$ curl -s -o /dev/null -w 'HTTP %{http_code}\n' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Fly-Client-IP: 10.13.0.2' -H 'Content-Type: application/json' -d '{"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{"clock":"23:00-00:00"}}'
+HTTP 200
+
+

@@ -1,0 +1,9 @@
+# T3 is egg 4 of week 9, letter E, on the sim trophy, with the champion Teehee (roster 12). Lil Fridge is roster 3.
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/midseason/2026/","target":"sim-trophy","action":"tap2","conditions":{"theme":"dark","sim_champion":3}}'
+{"match":false}
+HTTP 200
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/midseason/2026/","target":"sim-trophy","action":"tap2","conditions":{"theme":"dark","sim_champion":12}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":true,"claimed":false,"letter":"E","token":"<cut>"}
+HTTP 200
+

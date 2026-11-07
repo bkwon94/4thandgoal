@@ -1,0 +1,6 @@
+375-light: aria-expanded of the game 3 card after one tap true; egg checks sent 0 []
+375-dark: aria-expanded of the game 3 card after one tap true; egg checks sent 0 []
+768-light: aria-expanded of the game 3 card after one tap true; egg checks sent 0 []
+768-dark: aria-expanded of the game 3 card after one tap true; egg checks sent 0 []
+1280-light: aria-expanded of the game 3 card after one tap true; egg checks sent 0 []
+1280-dark: aria-expanded of the game 3 card after one tap true; egg checks sent 0 []

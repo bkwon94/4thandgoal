@@ -1,0 +1,15 @@
+The setup: the drop of week 9 [["number-top-score","A"],["heading-leaders","C"],["heading-standings","D"],["heading-next-week","E"],["heading-trades","G"],["heading-median","L"]]
+and of week 10 [["heading-arcs","A"],["luck-3","C"],["heading-draft","D"],["heading-waivers","E"],["heading-records","G"],["heading-injuries","L"]].
+Teehee claims the C of heading-leaders into CORNERSTONE: {"egg_id":2,"letter":"C","roster_id":12,"word":"CORNERSTONE","letters":{"CORNERSTONE":["C"],"LANSDALE":[],"EAGLES":[]},"winner":null}
+teehee 375-light: CORNERSTONE disabled=true ghost=0; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+lil-fridge 375-light: CORNERSTONE disabled=false ghost=1; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+teehee 375-dark: CORNERSTONE disabled=true ghost=0; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+lil-fridge 375-dark: CORNERSTONE disabled=false ghost=1; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+teehee 768-light: CORNERSTONE disabled=true ghost=0; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+lil-fridge 768-light: CORNERSTONE disabled=false ghost=1; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+teehee 768-dark: CORNERSTONE disabled=true ghost=0; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+lil-fridge 768-dark: CORNERSTONE disabled=false ghost=1; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+teehee 1280-light: CORNERSTONE disabled=true ghost=0; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+lil-fridge 1280-light: CORNERSTONE disabled=false ghost=1; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+teehee 1280-dark: CORNERSTONE disabled=true ghost=0; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0
+lil-fridge 1280-dark: CORNERSTONE disabled=false ghost=1; LANSDALE disabled=true ghost=0; EAGLES disabled=true ghost=0

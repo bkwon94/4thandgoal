@@ -1,0 +1,9 @@
+$ cd apps/site && EGGS_PORT=4174 pnpm exec playwright test --project=eggs   # the API runs on a fresh temp store, with the origin of 4174
+
+Running 2 tests using 1 worker
+
+  ✓  1 [eggs] › e2e/eggs.spec.ts:49:7 › a manager finds the test egg, claims the letter, and sees the claim on the egg board at 375 px (1.8s)
+  ✓  2 [eggs] › e2e/eggs.spec.ts:49:7 › a manager finds the test egg, claims the letter, and sees the claim on the egg board at 1280 px (1.8s)
+
+  2 passed (10.4s)
+exit 0

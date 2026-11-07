@@ -1,0 +1,22 @@
+The runner of apps/site (pnpm --dir apps/site evidence easter-eggs) could not run: it serves on its fixed port 4173,
+and a server that is not ours holds 4173 (python3 -m http.server 4173 of the worktree midseason-preview). So the
+shots come from Playwright directly, with tools/site.spec.ts and tools/playwright.config.ts of this evidence folder.
+
+1. Build each client against the local API: CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build, and the
+   same for CLIENT=norcal. Copy each apps/site/out to <scratch>/out-cpc and <scratch>/out-norcal, outside the repo.
+2. The spec serves out-cpc on http://127.0.0.1:4174 and out-norcal on http://127.0.0.1:4175. A missing path gets
+   404.html with the status 404, as the Worker gives it.
+3. The spec starts the local API with tools/start-api.sh: the values of make -C apps/api api-evidence (passphrase
+   localtest, commissioner key localkey, 600 requests a minute), CORNERSTONE_EGGS_DIR=<scratch>/eggs-<store>, a temp
+   folder outside the repo, and CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:4173,http://127.0.0.1:4174.
+   A restart of the API keeps the store and clears the limits of each address, which live in memory.
+4. The spec sets each state with the real routes of the API: drop, check, claim, and undo.
+5. Each browser context sets cpc.theme in local storage before the first paint, so the page opens in the theme of the
+   shot. A dark shot of a find of T1 finds T1 in the light theme, because T1 holds only in the light theme, then
+   switches the page to the dark theme as the theme button does: the class "dark" on the root and cpc.theme.
+6. The real path of each route is /clients/cpc/eggs/<route>. The tests write /cpc/eggs/.
+
+Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
+
+This test:
+Phase A2, store A. Teehee claims T1 into CORNERSTONE through check and claim. For each width and theme: find T1, wait for the dialog "Another manager claimed first.", shot.

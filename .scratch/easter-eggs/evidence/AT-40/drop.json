@@ -1,0 +1,60 @@
+{
+  "week": 9,
+  "dropped": 0,
+  "eggs": [
+    {
+      "id": 1,
+      "page": "/2026/week-08/",
+      "target": "number-top-score",
+      "action": "tap2",
+      "conditions": {},
+      "letter": "A"
+    },
+    {
+      "id": 2,
+      "page": "/midseason/2026/",
+      "target": "luck-3",
+      "action": "tap3",
+      "conditions": {
+        "theme": "light"
+      },
+      "letter": "C"
+    },
+    {
+      "id": 3,
+      "page": "/2026/week-08/",
+      "target": "number-median",
+      "action": "tap2",
+      "conditions": {
+        "clock": "23:00-00:00"
+      },
+      "letter": "D"
+    },
+    {
+      "id": 4,
+      "page": "/midseason/2026/",
+      "target": "sim-trophy",
+      "action": "tap2",
+      "conditions": {
+        "sim_champion": 12
+      },
+      "letter": "E"
+    },
+    {
+      "id": 5,
+      "page": "/midseason/2026/",
+      "target": "heading-luck",
+      "action": "tap4",
+      "conditions": {},
+      "letter": "G"
+    },
+    {
+      "id": 6,
+      "page": "/2026/week-08/",
+      "target": "heading-awards",
+      "action": "hold3",
+      "conditions": {},
+      "letter": "L"
+    }
+  ]
+}

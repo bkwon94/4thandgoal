@@ -1,0 +1,13 @@
+# Two checks of T1 give two tokens. The two claims go at once, in the background, for Lil Fridge (3) and Teehee (12).
+# token A CC3h1c... and token B L6wgRV... (cut)
+$ ( curl -s -w ' HTTP %{http_code} (Lil Fridge)\n' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"CC3h1capStxqv_RLzz4ib4y1zBAZiZ9P","roster_id":3,"word":"CORNERSTONE"}' & curl -s -w ' HTTP %{http_code} (Teehee)\n' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"L6wgRVaenNHag_qMTGQBZeSzzUqwU7WH","roster_id":12,"word":"CORNERSTONE"}' & wait )
+{"egg_id":2,"letter":"C","roster_id":3,"word":"CORNERSTONE","letters":{"CORNERSTONE":["C"],"LANSDALE":[],"EAGLES":[]},"winner":null} HTTP 200 (Lil Fridge)
+{"detail":"Another manager claimed first."} HTTP 409 (Teehee)
+
+
+$ sqlite3 -header $CORNERSTONE_EGGS_DIR/cpc.sqlite 'SELECT rowid, egg_id, roster_id, word, claimed_at, undone_at FROM claims'
+rowid|egg_id|roster_id|word|claimed_at|undone_at
+1|2|3|CORNERSTONE|2026-11-07T00:40:42.219998-05:00|2026-11-07T00:40:42.563892-05:00
+2|2|3|CORNERSTONE|2026-11-07T00:40:43.298254-05:00|
+
+

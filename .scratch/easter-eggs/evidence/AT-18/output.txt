@@ -1,0 +1,367 @@
+# T1, T2, T3, and T4 dropped, and T1 claimed. The full board JSON:
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -m json.tool
+{
+    "counts": {
+        "left": 11,
+        "found": 1,
+        "to_drop": 42
+    },
+    "weeks": [
+        {
+            "week": 9,
+            "slots": [
+                "out",
+                "found",
+                "out",
+                "out",
+                "out",
+                "out"
+            ]
+        },
+        {
+            "week": 10,
+            "slots": [
+                "out",
+                "out",
+                "out",
+                "out",
+                "out",
+                "out"
+            ]
+        },
+        {
+            "week": 11,
+            "slots": [
+                "future",
+                "future",
+                "future",
+                "future",
+                "future",
+                "future"
+            ]
+        },
+        {
+            "week": 12,
+            "slots": [
+                "future",
+                "future",
+                "future",
+                "future",
+                "future",
+                "future"
+            ]
+        },
+        {
+            "week": 13,
+            "slots": [
+                "future",
+                "future",
+                "future",
+                "future",
+                "future",
+                "future"
+            ]
+        },
+        {
+            "week": 14,
+            "slots": [
+                "future",
+                "future",
+                "future",
+                "future",
+                "future",
+                "future"
+            ]
+        },
+        {
+            "week": 15,
+            "slots": [
+                "future",
+                "future",
+                "future",
+                "future",
+                "future",
+                "future"
+            ]
+        },
+        {
+            "week": 16,
+            "slots": [
+                "future",
+                "future",
+                "future",
+                "future",
+                "future",
+                "future"
+            ]
+        },
+        {
+            "week": 17,
+            "slots": [
+                "future",
+                "future",
+                "future",
+                "future",
+                "future",
+                "future"
+            ]
+        }
+    ],
+    "words": [
+        {
+            "word": "CORNERSTONE",
+            "prize": 50,
+            "winner": null,
+            "managers": [
+                {
+                    "roster_id": 1,
+                    "team": "The Blue Tent",
+                    "letters": []
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "letters": []
+                },
+                {
+                    "roster_id": 3,
+                    "team": "Lil Fridge",
+                    "letters": [
+                        "C"
+                    ]
+                },
+                {
+                    "roster_id": 4,
+                    "team": "NFC Least",
+                    "letters": []
+                },
+                {
+                    "roster_id": 5,
+                    "team": "London Cooking",
+                    "letters": []
+                },
+                {
+                    "roster_id": 7,
+                    "team": "To Infinity and Bijan",
+                    "letters": []
+                },
+                {
+                    "roster_id": 8,
+                    "team": "Return of T Mac",
+                    "letters": []
+                },
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "letters": []
+                },
+                {
+                    "roster_id": 10,
+                    "team": "behold the lamb",
+                    "letters": []
+                },
+                {
+                    "roster_id": 11,
+                    "team": "Unsolicited Dak Picks",
+                    "letters": []
+                },
+                {
+                    "roster_id": 12,
+                    "team": "Teehee",
+                    "letters": []
+                }
+            ]
+        },
+        {
+            "word": "LANSDALE",
+            "prize": 30,
+            "winner": null,
+            "managers": [
+                {
+                    "roster_id": 1,
+                    "team": "The Blue Tent",
+                    "letters": []
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "letters": []
+                },
+                {
+                    "roster_id": 3,
+                    "team": "Lil Fridge",
+                    "letters": []
+                },
+                {
+                    "roster_id": 4,
+                    "team": "NFC Least",
+                    "letters": []
+                },
+                {
+                    "roster_id": 5,
+                    "team": "London Cooking",
+                    "letters": []
+                },
+                {
+                    "roster_id": 7,
+                    "team": "To Infinity and Bijan",
+                    "letters": []
+                },
+                {
+                    "roster_id": 8,
+                    "team": "Return of T Mac",
+                    "letters": []
+                },
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "letters": []
+                },
+                {
+                    "roster_id": 10,
+                    "team": "behold the lamb",
+                    "letters": []
+                },
+                {
+                    "roster_id": 11,
+                    "team": "Unsolicited Dak Picks",
+                    "letters": []
+                },
+                {
+                    "roster_id": 12,
+                    "team": "Teehee",
+                    "letters": []
+                }
+            ]
+        },
+        {
+            "word": "EAGLES",
+            "prize": 20,
+            "winner": null,
+            "managers": [
+                {
+                    "roster_id": 1,
+                    "team": "The Blue Tent",
+                    "letters": []
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "letters": []
+                },
+                {
+                    "roster_id": 3,
+                    "team": "Lil Fridge",
+                    "letters": []
+                },
+                {
+                    "roster_id": 4,
+                    "team": "NFC Least",
+                    "letters": []
+                },
+                {
+                    "roster_id": 5,
+                    "team": "London Cooking",
+                    "letters": []
+                },
+                {
+                    "roster_id": 7,
+                    "team": "To Infinity and Bijan",
+                    "letters": []
+                },
+                {
+                    "roster_id": 8,
+                    "team": "Return of T Mac",
+                    "letters": []
+                },
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "letters": []
+                },
+                {
+                    "roster_id": 10,
+                    "team": "behold the lamb",
+                    "letters": []
+                },
+                {
+                    "roster_id": 11,
+                    "team": "Unsolicited Dak Picks",
+                    "letters": []
+                },
+                {
+                    "roster_id": 12,
+                    "team": "Teehee",
+                    "letters": []
+                }
+            ]
+        }
+    ],
+    "latest": [
+        {
+            "roster_id": 3,
+            "team": "Lil Fridge",
+            "letter": "C",
+            "word": "CORNERSTONE",
+            "claimed_at": "2026-11-07T00:40:42.219998-05:00"
+        }
+    ],
+    "managers": [
+        {
+            "roster_id": 1,
+            "team": "The Blue Tent"
+        },
+        {
+            "roster_id": 2,
+            "team": "All You Need Is Love"
+        },
+        {
+            "roster_id": 3,
+            "team": "Lil Fridge"
+        },
+        {
+            "roster_id": 4,
+            "team": "NFC Least"
+        },
+        {
+            "roster_id": 5,
+            "team": "London Cooking"
+        },
+        {
+            "roster_id": 7,
+            "team": "To Infinity and Bijan"
+        },
+        {
+            "roster_id": 8,
+            "team": "Return of T Mac"
+        },
+        {
+            "roster_id": 9,
+            "team": "Maye d'force B with U"
+        },
+        {
+            "roster_id": 10,
+            "team": "behold the lamb"
+        },
+        {
+            "roster_id": 11,
+            "team": "Unsolicited Dak Picks"
+        },
+        {
+            "roster_id": 12,
+            "team": "Teehee"
+        }
+    ],
+    "last_drop": {
+        "week": 10,
+        "count": 6,
+        "dropped_at": "2026-11-07T00:40:41.732825-05:00"
+    }
+}
+
+
+# A search of the answer for each page, target, action, and condition name of T1 to T4:
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | grep -o -E 'midseason|week-08|luck-3|number-median|sim-trophy|number-closest|tap[0-9]|hold[0-9]|theme|clock|sim_champion|"page"|"target"|"action"|"conditions"' | sort | uniq -c; echo "matches: $(curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | grep -c -E 'midseason|week-08|luck-3|number-median|sim-trophy|number-closest|tap[0-9]|hold[0-9]|theme|clock|sim_champion|"page"|"target"|"action"|"conditions"')"
+matches: 0
+
+

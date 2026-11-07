@@ -1,0 +1,29 @@
+# T2 is egg 3 of week 9, letter D, with the clock window 23:00-00:00 on the clock of the client, America/New_York.
+$ TZ=America/New_York date '+%Y-%m-%d %H:%M:%S %Z'
+2026-11-07 00:40:42 EST
+
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{}}'
+{"match":false}
+HTTP 200
+
+# An extra real check on the real clock: a twin of T2 for week 12 with a window that holds now, 00:00-02:00 ET.
+$ TZ=America/New_York date '+%Y-%m-%d %H:%M:%S %Z'
+2026-11-07 00:41:04 EST
+
+
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":12,"eggs":[{"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{"clock":"00:00-02:00"}}]}'
+{"week":12,"dropped":1,"eggs":[{"id":13,"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{"clock":"00:00-02:00"},"letter":"A"}]}
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":true,"claimed":false,"letter":"A","token":"<cut>"}
+HTTP 200
+
+# The check inside the window of T2 itself, 11 PM to midnight ET: only a test can set the clock of the API, so the API test that covers it is the evidence.
+$ cd /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/apps/api && uv run --exact --package cpc-api pytest -q -p no:randomly 'tests/test_eggs.py::test_a_clock_window_egg_matches_only_inside_the_window_in_the_timezone_of_the_client' -v 2>&1 | tail -6
+plugins: xdist-3.8.0, anyio-4.15.1
+collected 1 item
+
+tests/test_eggs.py .                                                     [100%]
+
+============================== 1 passed in 0.25s ===============================

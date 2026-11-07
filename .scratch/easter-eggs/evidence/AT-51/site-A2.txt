@@ -1,0 +1,4 @@
+375-light: CORNERSTONE row of Lil Fridge: "01 Lil Fridge LEADS 1/11 C"; feed: "LATEST CLAIMS | C | Lil Fridge claimed a C for CORNERSTONE. | NOW"
+375-dark: CORNERSTONE row of Lil Fridge: "01 Lil Fridge LEADS 1/11 C"; feed: "LATEST CLAIMS | C | Lil Fridge claimed a C for CORNERSTONE. | NOW"
+1280-light: CORNERSTONE row of Lil Fridge: "01 Lil Fridge LEADS 1/11 C"; feed: "LATEST CLAIMS | C | Lil Fridge claimed a C for CORNERSTONE. | NOW"
+1280-dark: CORNERSTONE row of Lil Fridge: "01 Lil Fridge LEADS 1/11 C"; feed: "LATEST CLAIMS | C | Lil Fridge claimed a C for CORNERSTONE. | NOW"

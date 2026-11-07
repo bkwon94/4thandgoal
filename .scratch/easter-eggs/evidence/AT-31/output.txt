@@ -1,0 +1,9 @@
+WebKit 27.2, http://127.0.0.1:4174/midseason/2026/ at 375 px:
+data-eggs on the root element: true
+The rules of the built CSS that set -webkit-touch-callout: "[data-eggs] [data-stable-id]" -> none | "[data-eggs] [data-stable-id] a,[data-eggs] [data-stable-id] img,[data-eggs] a[data-stable-id],[data-eggs] img[data-stable-id]" -> default
+The computed value in this WebKit: "" (desktop WebKit does not compute the property; iOS Safari does)
+[data-stable-id="luck-3"], the Luck cell of Lil Fridge: none (the winning rule "[data-eggs] [data-stable-id]"; matched rules: "[data-eggs] [data-stable-id]" -> none)
+a link inside an element with a stable id: no element
+the first link of the page, main a[href]: no rule matches, so the browser default holds (the callout is on)
+an image inside an element with a stable id: default (the winning rule "[data-eggs] [data-stable-id] img"; matched rules: "[data-eggs] [data-stable-id] img" -> default)
+the first image of the page, main img: default (the winning rule "[data-eggs] [data-stable-id] img"; matched rules: "[data-eggs] [data-stable-id] img" -> default)
