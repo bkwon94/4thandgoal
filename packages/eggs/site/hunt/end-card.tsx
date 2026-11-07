@@ -130,7 +130,7 @@ function Shell({
           {/* The ground reaches the edges of the hero, and never above or below the art. */}
           <div className="relative flex flex-col items-center gap-sp-4 self-stretch">
             <ArtGround inset="inset-y-0 -inset-x-hero-x" />
-            <div className="relative flex flex-col items-center gap-sp-4">{children}</div>
+            <div className="relative flex flex-col items-center gap-sp-4 self-stretch">{children}</div>
           </div>
           <div className="egg-fade-in egg-fade-in-late flex flex-col gap-sp-1">
             <h2 id="egg-end-title" className="text-score leading-tight font-bold">

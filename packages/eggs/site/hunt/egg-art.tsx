@@ -105,17 +105,21 @@ export function SlotRow({
   // True on the card of a word with no open slot, so a held tile takes the muted fill of the faded card.
   faded?: boolean;
 }) {
-  // The sizes fit the 11 tiles of CORNERSTONE in one row on a 375px phone. The row never wraps: on a narrower phone each
-  // tile shrinks by the same amount, because a wrap left two tiles alone on a second row. The gap keeps two dashed
-  // borders apart, so each empty slot reads as its own box.
-  const size = tone === "page" ? "size-6.5 text-row" : "h-7.5 w-6 text-body";
+  // The sizes fit the 11 tiles of CORNERSTONE in one row on a 375px phone. The row is a grid of one column per letter,
+  // and each column takes the tile width at most. On a narrower phone each column shrinks by the same amount, so the
+  // row never wraps and never leaves its card: a wrap left two tiles alone on a second row. Each tile fills its column,
+  // so the filled tile and the empty slots have one width. The gap keeps two dashed borders apart, so each empty slot
+  // reads as its own box.
+  const width = tone === "page" ? "1.625rem" : "1.5rem";
+  const size = tone === "page" ? "h-6.5 text-row" : "h-7.5 text-body";
   return (
-    <div aria-hidden="true" className="flex max-w-full gap-sp-1">
+    <div
+      aria-hidden="true"
+      className="grid max-w-full gap-sp-2"
+      style={{ gridTemplateColumns: `repeat(${slots.length}, minmax(0, ${width}))` }}
+    >
       {slots.map((slot, index) => {
-        const box = cn(
-          "relative inline-flex min-w-0 shrink items-center justify-center rounded-letter font-mono font-bold",
-          size,
-        );
+        const box = cn("relative inline-flex w-full items-center justify-center rounded-letter font-mono font-bold", size);
         if (slot.kind === "held") {
           return (
             <span key={index} className={cn(box, tone === "page" ? (faded ? "bg-mute text-page" : "bg-ink text-page") : "bg-on-dark text-band")}>
