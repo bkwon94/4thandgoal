@@ -1,4 +1,4 @@
-$ cd apps/site && CLIENT=cpc pnpm check:floor -g /eggs/   # after the CPC build at f255557d, with NEXT_PUBLIC_API_URL=http://localhost:8080
+$ cd apps/site && CLIENT=cpc pnpm build && CLIENT=cpc pnpm check:floor -g /eggs/   # at 4f87122b
 
 > cpcfantasyfootball-site@0.1.0 check:floor /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/apps/site
 > playwright test --project=floor -g /eggs/
@@ -6,8 +6,8 @@ $ cd apps/site && CLIENT=cpc pnpm check:floor -g /eggs/   # after the CPC build 
 
 Running 1 test using 1 worker
 
-cpc /eggs/ dark 390px: prose 1, other text 10, in 155 ms
-  ✓  1 [floor] › e2e/floor.spec.ts:219:7 › fast sweep: cpc /eggs/ dark 390px (209ms)
+cpc /eggs/ dark 390px: prose 1, other text 10, in 165 ms
+  ✓  1 [floor] › e2e/floor.spec.ts:219:7 › fast sweep: cpc /eggs/ dark 390px (278ms)
 
-  1 passed (634ms)
+  1 passed (835ms)
 exit 0

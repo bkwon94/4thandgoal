@@ -1,6 +1,6 @@
-wednesday 375-light (clock 2026-11-11 12:00 ET, one claim): "6 eggs dropped Tue · 5 left Egg board", link /eggs/; banners after the hide and the reload: 0
-wednesday 375-dark (clock 2026-11-11 12:00 ET, one claim): "6 eggs dropped Tue · 5 left Egg board", link /eggs/; banners after the hide and the reload: 0
-wednesday 768-light (clock 2026-11-11 12:00 ET, one claim): "6 eggs dropped Tue · 5 left Egg board", link /eggs/; banners after the hide and the reload: 0
-wednesday 768-dark (clock 2026-11-11 12:00 ET, one claim): "6 eggs dropped Tue · 5 left Egg board", link /eggs/; banners after the hide and the reload: 0
-wednesday 1280-light (clock 2026-11-11 12:00 ET, one claim): "6 eggs dropped Tue · 5 left Egg board", link /eggs/; banners after the hide and the reload: 0
-wednesday 1280-dark (clock 2026-11-11 12:00 ET, one claim): "6 eggs dropped Tue · 5 left Egg board", link /eggs/; banners after the hide and the reload: 0
+wednesday 375-light (clock 2026-11-11 12:00 ET, one claim): line "6 eggs dropped Tue · 5 left", scrollWidth 194, clientWidth 194, cut false, height 24 px; link /eggs/; banners after the hide and the reload: 0
+wednesday 375-dark (clock 2026-11-11 12:00 ET, one claim): line "6 eggs dropped Tue · 5 left", scrollWidth 194, clientWidth 194, cut false, height 24 px; link /eggs/; banners after the hide and the reload: 0
+wednesday 768-light (clock 2026-11-11 12:00 ET, one claim): line "6 eggs dropped Tue · 5 left", scrollWidth 582, clientWidth 582, cut false, height 26 px; link /eggs/; banners after the hide and the reload: 0
+wednesday 768-dark (clock 2026-11-11 12:00 ET, one claim): line "6 eggs dropped Tue · 5 left", scrollWidth 582, clientWidth 582, cut false, height 26 px; link /eggs/; banners after the hide and the reload: 0
+wednesday 1280-light (clock 2026-11-11 12:00 ET, one claim): line "6 eggs dropped Tue · 5 left", scrollWidth 1089, clientWidth 1089, cut false, height 26 px; link /eggs/; banners after the hide and the reload: 0
+wednesday 1280-dark (clock 2026-11-11 12:00 ET, one claim): line "6 eggs dropped Tue · 5 left", scrollWidth 1089, clientWidth 1089, cut false, height 26 px; link /eggs/; banners after the hide and the reload: 0

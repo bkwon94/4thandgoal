@@ -18,5 +18,5 @@ shots come from Playwright directly, with tools/site.spec.ts and tools/playwrigh
 
 Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
 
-This test:
+This test (AT-3, AT-34, AT-41, and AT-50 ran again at 4f87122b with the run of step 3 below):
 Phase A1, store A, six eggs. For 390 and 1280 px in each theme: the egg board /eggs/ after the board loads, the claim sheet after a find of T1, and the home page with the banner (browser clock 2026-11-10 12:00 ET). Each page runs scanText, scanContrast (scoped to the sheet or the banner), scanTargets, and scanScroll of apps/site/e2e/floor.ts, the scans of check:floor, with reduced motion. floor-eggs.txt is the output of CLIENT=cpc pnpm check:floor -g /eggs/.

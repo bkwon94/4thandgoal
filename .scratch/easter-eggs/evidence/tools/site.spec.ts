@@ -170,6 +170,11 @@ async function crack(page: Page) {
   await expect(page.getByTestId("egg-letter")).toBeVisible();
 }
 
+/* The full text of the banner line and whether the line is cut: its scrollWidth is wider than its clientWidth. */
+async function bannerLine(page: Page) {
+  return page.locator("[data-banner-line]").evaluate((line) => `line "${(line.textContent ?? "").replace(/\s+/g, " ").trim()}", scrollWidth ${line.scrollWidth}, clientWidth ${line.clientWidth}, cut ${line.scrollWidth > line.clientWidth}, height ${Math.round(line.getBoundingClientRect().height)} px`);
+}
+
 test.describe.configure({ mode: "serial" });
 test.setTimeout(0);
 
@@ -405,7 +410,7 @@ test("phase A1: six eggs, none claimed", async ({ browser }) => {
     await expect(banner).toBeVisible();
     await page.waitForTimeout(1200);
     await shot(page, "AT-41", "tuesday", width, theme);
-    log("AT-41", `tuesday ${width}-${theme} (clock 2026-11-10 12:00 ET): "${(await banner.innerText()).replace(/\n/g, " ")}", link ${await banner.getByRole("link").getAttribute("href")}`);
+    log("AT-41", `tuesday ${width}-${theme} (clock 2026-11-10 12:00 ET): ${await bannerLine(page)}; link ${await banner.getByRole("link").getAttribute("href")}`);
     await close();
   }
 
@@ -564,14 +569,14 @@ test("phase A2: the claim cards, the end to end flow, and the later states", asy
     await expect(banner).toBeVisible();
     await page.waitForTimeout(1200);
     await shot(page, "AT-41", "wednesday", width, theme);
-    const line = (await banner.innerText()).replace(/\n/g, " ");
+    const line = await bannerLine(page);
     const href = await banner.getByRole("link").getAttribute("href");
     await page.getByRole("button", { name: "Hide the banner" }).click();
     await page.reload();
     await expect(page.locator('header a[href$="/eggs/"]').first()).toBeVisible();
     await page.waitForTimeout(1500);
     await shot(page, "AT-41", "hidden", width, theme);
-    log("AT-41", `wednesday ${width}-${theme} (clock 2026-11-11 12:00 ET, one claim): "${line}", link ${href}; banners after the hide and the reload: ${await banner.count()}`);
+    log("AT-41", `wednesday ${width}-${theme} (clock 2026-11-11 12:00 ET, one claim): ${line}; link ${href}; banners after the hide and the reload: ${await banner.count()}`);
     await close();
   }
 
@@ -656,7 +661,7 @@ test("phase B: Teehee holds the C of CORNERSTONE", async ({ browser }) => {
     const words = page.getByRole("group", { name: "Egg word" });
     await words.scrollIntoViewIfNeeded();
     await shot(page, "AT-34", "teehee", width, theme);
-    const state = await words.evaluate((group) => [...group.querySelectorAll("button")].map((button) => `${button.innerText.split("\n")[0]} disabled=${button.disabled || button.getAttribute("aria-disabled") === "true"} ghost=${button.querySelectorAll("[data-ghost], .egg-ghost").length}`));
+    const state = await words.evaluate((group) => [...group.querySelectorAll("button")].map((button) => `${button.innerText.split("\n")[0]} disabled=${button.disabled || button.getAttribute("aria-disabled") === "true"} ghost=${button.querySelectorAll("[data-ghost], .egg-ghost").length} background=${getComputedStyle(button).backgroundColor} border=${getComputedStyle(button).borderTopStyle} ${getComputedStyle(button).borderTopColor} text=${getComputedStyle(button.querySelector("span, p, div") ?? button).color}`));
     const notice = page.getByText("Claim it as a block.");
     if (await notice.count()) await notice.scrollIntoViewIfNeeded();
     await shot(page, "AT-35", "", width, theme);
@@ -668,7 +673,7 @@ test("phase B: Teehee holds the C of CORNERSTONE", async ({ browser }) => {
     await page.waitForTimeout(900);
     await words.scrollIntoViewIfNeeded();
     await shot(page, "AT-34", "lil-fridge", width, theme);
-    const other = await words.evaluate((group) => [...group.querySelectorAll("button")].map((button) => `${button.innerText.split("\n")[0]} disabled=${button.disabled || button.getAttribute("aria-disabled") === "true"} ghost=${button.querySelectorAll("[data-ghost], .egg-ghost").length}`));
+    const other = await words.evaluate((group) => [...group.querySelectorAll("button")].map((button) => `${button.innerText.split("\n")[0]} disabled=${button.disabled || button.getAttribute("aria-disabled") === "true"} ghost=${button.querySelectorAll("[data-ghost], .egg-ghost").length} background=${getComputedStyle(button).backgroundColor} border=${getComputedStyle(button).borderTopStyle} ${getComputedStyle(button).borderTopColor} text=${getComputedStyle(button.querySelector("span, p, div") ?? button).color}`));
     log("AT-34", `lil-fridge ${width}-${theme}: ${other.join("; ")}`);
     await close();
   }

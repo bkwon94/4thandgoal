@@ -7,23 +7,20 @@ $ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/egg
 {"match":false}
 HTTP 200
 
-# An extra real check on the real clock: a twin of T2 for week 12 with a window that holds now, 00:00-02:00 ET.
-$ TZ=America/New_York date '+%Y-%m-%d %H:%M:%S %Z'
-2026-11-07 00:41:04 EST
-
-
-$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":12,"eggs":[{"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{"clock":"00:00-02:00"}}]}'
-{"week":12,"dropped":1,"eggs":[{"id":13,"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{"clock":"00:00-02:00"},"letter":"A"}]}
-
-$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
-{"match":true,"claimed":false,"letter":"A","token":"<cut>"}
-HTTP 200
-
-# The check inside the window of T2 itself, 11 PM to midnight ET: only a test can set the clock of the API, so the API test that covers it is the evidence.
-$ cd /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/apps/api && uv run --exact --package cpc-api pytest -q -p no:randomly 'tests/test_eggs.py::test_a_clock_window_egg_matches_only_inside_the_window_in_the_timezone_of_the_client' -v 2>&1 | tail -6
-plugins: xdist-3.8.0, anyio-4.15.1
-collected 1 item
-
-tests/test_eggs.py .                                                     [100%]
-
-============================== 1 passed in 0.25s ===============================
+# The real clock of this machine is outside the window 23:00-00:00 ET, so the run below sets the clock of the hunt in the real API app.
+# The app is create_app with the real clients of the repo and a temp egg store. Each request goes over HTTP through the FastAPI test client.
+# T2 is the only egg of this store, so the letter rule gives it A here; in the store of AT-1 it is D.
+$ cd apps/api && uv run --exact --package cpc-api python ../../.scratch/easter-eggs/evidence/AT-3/clock-check.py
+The app: the real clients ['cpc', 'norcal'], the temp egg store <temp>/cpc.sqlite.
+POST /clients/cpc/eggs/drop {"week": 9, "eggs": [{"page": "/2026/week-08/", "target": "number-median", "action": "tap2", "conditions": {"clock": "23:00-00:00"}}]}
+  -> HTTP 200 {"week":9,"dropped":1,"eggs":[{"id":1,"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{"clock":"23:00-00:00"},"letter":"A"}]}
+clock of the hunt set to 2026-11-10T22:59:00-05:00 (22:59 EST)
+  POST /clients/cpc/eggs/check {"page": "/2026/week-08/", "target": "number-median", "action": "tap2", "conditions": {"theme": "dark"}}
+  -> HTTP 200 {"match":false}
+clock of the hunt set to 2026-11-10T23:30:00-05:00 (23:30 EST)
+  POST /clients/cpc/eggs/check {"page": "/2026/week-08/", "target": "number-median", "action": "tap2", "conditions": {"theme": "dark"}}
+  -> HTTP 200 {"match":true,"claimed":false,"letter":"A","token":"8ljMAhR8ZNTrDBs0L0RPWsrf0rCx2SX5"}
+clock of the hunt set to 2026-11-11T00:00:00-05:00 (00:00 EST)
+  POST /clients/cpc/eggs/check {"page": "/2026/week-08/", "target": "number-median", "action": "tap2", "conditions": {"theme": "dark"}}
+  -> HTTP 200 {"match":false}
+exit 0

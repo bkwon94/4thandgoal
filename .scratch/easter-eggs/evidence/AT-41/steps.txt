@@ -18,5 +18,5 @@ shots come from Playwright directly, with tools/site.spec.ts and tools/playwrigh
 
 Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
 
-This test:
+This test (AT-3, AT-34, AT-41, and AT-50 ran again at 4f87122b with the run of step 3 below):
 Phase A1 (Tuesday) and phase A2 (Wednesday), store A. The drop time of week 9 moves to the real Tuesday of the week 9 drop with sqlite3: UPDATE eggs SET dropped_at = '2026-11-10T09:00:00-05:00' WHERE week = 9. The browser clock is fixed with page.clock.setFixedTime: 2026-11-10 12:00 ET for tuesday-*.png, 2026-11-11 12:00 ET for wednesday-*.png, after Teehee claims the A of week 9 into LANSDALE. Then tap "Hide the banner", reload, shot hidden-*.png.

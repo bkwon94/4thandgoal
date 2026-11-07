@@ -1,7 +1,7 @@
 The setup: sqlite3 <store> "UPDATE eggs SET dropped_at = '2026-11-10T09:00:00-05:00' WHERE week = 9". The browser clock is fixed with page.clock.setFixedTime.
-tuesday 375-light (clock 2026-11-10 12:00 ET): "6 eggs dropped today · 6 left Egg board", link /eggs/
-tuesday 375-dark (clock 2026-11-10 12:00 ET): "6 eggs dropped today · 6 left Egg board", link /eggs/
-tuesday 768-light (clock 2026-11-10 12:00 ET): "6 eggs dropped today · 6 left Egg board", link /eggs/
-tuesday 768-dark (clock 2026-11-10 12:00 ET): "6 eggs dropped today · 6 left Egg board", link /eggs/
-tuesday 1280-light (clock 2026-11-10 12:00 ET): "6 eggs dropped today · 6 left Egg board", link /eggs/
-tuesday 1280-dark (clock 2026-11-10 12:00 ET): "6 eggs dropped today · 6 left Egg board", link /eggs/
+tuesday 375-light (clock 2026-11-10 12:00 ET): line "6 eggs dropped today · 6 left", scrollWidth 194, clientWidth 194, cut false, height 40 px; link /eggs/
+tuesday 375-dark (clock 2026-11-10 12:00 ET): line "6 eggs dropped today · 6 left", scrollWidth 194, clientWidth 194, cut false, height 40 px; link /eggs/
+tuesday 768-light (clock 2026-11-10 12:00 ET): line "6 eggs dropped today · 6 left", scrollWidth 582, clientWidth 582, cut false, height 26 px; link /eggs/
+tuesday 768-dark (clock 2026-11-10 12:00 ET): line "6 eggs dropped today · 6 left", scrollWidth 582, clientWidth 582, cut false, height 26 px; link /eggs/
+tuesday 1280-light (clock 2026-11-10 12:00 ET): line "6 eggs dropped today · 6 left", scrollWidth 1089, clientWidth 1089, cut false, height 26 px; link /eggs/
+tuesday 1280-dark (clock 2026-11-10 12:00 ET): line "6 eggs dropped today · 6 left", scrollWidth 1089, clientWidth 1089, cut false, height 26 px; link /eggs/

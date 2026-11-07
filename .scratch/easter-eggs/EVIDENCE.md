@@ -1,7 +1,7 @@
 # Easter eggs: evidence
 
 Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests: `.scratch/easter-eggs/ACCEPTANCE.md`.
-Built from: `f255557d`, on 2026-11-07. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
+Built from: `f255557d`, on 2026-11-07. AT-3, AT-34, AT-41, and AT-50 ran again at `4f87122b`, after the fixes E1, E2, and E3. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
 Round time: the runner did not run, because a server that is not ours holds its fixed port 4173. The Playwright phases of `evidence/tools/site.spec.ts` took 15 min for 27 site tests.
 
 The API ran on this machine like `make -C apps/api api-evidence`: passphrase `localtest`, commissioner key `localkey`, and a temp `CORNERSTONE_EGGS_DIR` outside the repo for each store. The scripts are in `evidence/tools/`. The real path of each eggs route is `/clients/cpc/eggs/<route>`. The tests write `/cpc/eggs/`.
@@ -25,8 +25,8 @@ Observation: The same check with the theme dark answered HTTP 200 with {"match":
 
 App: pipeline
 Then: The answer is no match. The same check inside the window matches.
-Files: `evidence/AT-3/output.txt`
-Observation: At 00:40 ET the check of T2 (window 23:00-00:00) answered {"match":false}. Only a test can set the API clock, so the check inside the window is the API test of the window, which passed: 22:59 ET no match, 23:30 ET a match, 23:30 Los Angeles no match, 00:00 ET no match. An extra real check of a twin egg with the window 00:00-02:00 matched at 00:41 ET. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
+Files: `evidence/AT-3/clock-check.py`, `evidence/AT-3/output.txt`
+Observation: The real check of T2 at 00:40 ET answered {"match":false}. The real clock is outside the window 23:00-00:00 ET, so clock-check.py builds the real API app (create_app, the real clients, a temp egg store), drops T2 through the drop route, and sets the clock of the hunt in the app. Over HTTP, the check of T2 answered {"match":false} at 22:59 ET, {"match":true,"claimed":false,"letter":"A","token":...} at 23:30 ET, and {"match":false} at 00:00 ET. T2 is the only egg of that store, so its letter is A there. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
 
 ## AT-4: A sim condition holds
 
@@ -243,7 +243,7 @@ Observation: The sheet shows 11 team pills at each width and theme: The Blue Ten
 App: site
 Then: CORNERSTONE is faded and disabled. A ghost tile pulses in its C slot only on a word with an open slot.
 Files: `evidence/AT-34/lil-fridge-1280-dark.png`, `evidence/AT-34/lil-fridge-1280-light.png`, `evidence/AT-34/lil-fridge-375-dark.png`, `evidence/AT-34/lil-fridge-375-light.png`, `evidence/AT-34/lil-fridge-768-dark.png`, `evidence/AT-34/lil-fridge-768-light.png`, `evidence/AT-34/site-B.txt`, `evidence/AT-34/steps.txt`, `evidence/AT-34/teehee-1280-dark.png`, `evidence/AT-34/teehee-1280-light.png`, `evidence/AT-34/teehee-375-dark.png`, `evidence/AT-34/teehee-375-light.png`, `evidence/AT-34/teehee-768-dark.png`, `evidence/AT-34/teehee-768-light.png`
-Observation: With Teehee holding the C of CORNERSTONE, the pick of Teehee shows CORNERSTONE faded with its C and "No open C in this word.", and each word button is disabled with 0 ghost tiles. LANSDALE and EAGLES have no C, so they are disabled too. The pick of Lil Fridge, in the same sheet, shows CORNERSTONE enabled with 1 ghost tile, and LANSDALE and EAGLES disabled with 0.
+Observation: At 4f87122b, with Teehee picked, CORNERSTONE, LANSDALE, and EAGLES are disabled with 0 ghost tiles, and each shows a dashed edge, a grey surface, and grey text. The computed values are background rgb(235, 235, 235), border dashed, and text rgb(102, 102, 102) in light, and background rgb(38, 38, 38), border dashed, and text rgb(153, 153, 153) in dark. With Lil Fridge picked, CORNERSTONE is enabled with 1 ghost tile, a white surface, a solid edge, and dark text rgb(20, 20, 20). LANSDALE and EAGLES stay disabled and faded. This holds at each width and theme.
 
 ## AT-35: The block notice
 
@@ -292,7 +292,7 @@ Observation: Six eggs of week 9, none claimed. On the home page, week 8, and /mi
 App: site
 Then: On Tuesday the banner reads "6 eggs dropped today · 6 left". On Wednesday it reads "6 eggs dropped Tue · 5 left". It links to `/eggs/`, and after the reload it stays hidden.
 Files: `evidence/AT-41/hidden-1280-dark.png`, `evidence/AT-41/hidden-1280-light.png`, `evidence/AT-41/hidden-375-dark.png`, `evidence/AT-41/hidden-375-light.png`, `evidence/AT-41/hidden-768-dark.png`, `evidence/AT-41/hidden-768-light.png`, `evidence/AT-41/site-A1.txt`, `evidence/AT-41/site-A2.txt`, `evidence/AT-41/steps.txt`, `evidence/AT-41/tuesday-1280-dark.png`, `evidence/AT-41/tuesday-1280-light.png`, `evidence/AT-41/tuesday-375-dark.png`, `evidence/AT-41/tuesday-375-light.png`, `evidence/AT-41/tuesday-768-dark.png`, `evidence/AT-41/tuesday-768-light.png`, `evidence/AT-41/wednesday-1280-dark.png`, `evidence/AT-41/wednesday-1280-light.png`, `evidence/AT-41/wednesday-375-dark.png`, `evidence/AT-41/wednesday-375-light.png`, `evidence/AT-41/wednesday-768-dark.png`, `evidence/AT-41/wednesday-768-light.png`
-Observation: The drop time of week 9 was set to the real Tuesday 2026-11-10 09:00 ET with sqlite3 in the temp store, and the browser clock was fixed. On Tuesday noon the banner reads "6 eggs dropped today · 6 left". On Wednesday noon after one claim it reads "6 eggs dropped Tue · 5 left". It links to /eggs/, and after the hide and a reload, 0 banners show. At 375 px the line is cut with an ellipsis after "6 l...", so the count left is not visible in the 375 shots; the DOM holds the full line.
+Observation: At 4f87122b, the drop time of week 9 was set to the real Tuesday 2026-11-10 09:00 ET with sqlite3 in the temp store, and the browser clock was fixed. On Tuesday noon the banner line reads "6 eggs dropped today · 6 left". On Wednesday noon, after one claim, it reads "6 eggs dropped Tue · 5 left". At every width and theme, scrollWidth equals clientWidth, so the line is not cut. At 375 px the Tuesday line wraps to two lines (40 px high). The banner links to /eggs/, and after the hide and a reload, 0 banners show.
 
 ## AT-42: The hero of the egg board
 
@@ -355,7 +355,7 @@ Observation: With reduced motion, 100 ms after the tap on the egg, each shot sho
 App: site
 Then: Each one passes.
 Files: `evidence/AT-50/floor-eggs.txt`, `evidence/AT-50/site-A1.txt`, `evidence/AT-50/steps.txt`
-Observation: CLIENT=cpc pnpm check:floor -g /eggs/ passed. It covered only the fast sweep of /eggs/ at 390 px dark, because its server uses a free port that the API does not allow, so the board did not load. The floor scans of apps/site/e2e/floor.ts, run on our server on 4174 at 390 and 1280 px in each theme, gave 0 text, target, and scroll failures on the loaded board, the claim sheet, and the banner. The contrast scan gave 0 for the banner, 3 axe "incomplete" items for the board (count values too short to judge), and 1 "incomplete" item for the sheet (a background axe could not find, or a tile too short to judge). The check counts an incomplete item as a failure.
+Observation: At 4f87122b, CLIENT=cpc pnpm check:floor -g /eggs/ passed after a plain CPC build. By design it covers only the static shell of /eggs/: ADR 0025 keeps any state that needs the live API out of the check, because a fake API is a mock, and CI has no API. The loaded board, the claim sheet, and the banner got the same four scans of floor.ts (text, contrast, targets, scroll) in the phase A1 run on 4174, at 390 and 1280 px in each theme. The scans gave 0 failures of each kind on all three, with no axe incomplete item.
 
 ## AT-51: The whole flow, end to end
 

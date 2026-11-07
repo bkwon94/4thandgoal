@@ -18,5 +18,5 @@ shots come from Playwright directly, with tools/site.spec.ts and tools/playwrigh
 
 Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
 
-This test:
+This test (AT-3, AT-34, AT-41, and AT-50 ran again at 4f87122b with the run of step 3 below):
 Phase B. Store B: week 9 [number-top-score A, heading-leaders C, ...] and week 10 [heading-arcs A, T1 C, ...]; Teehee claims the C of heading-leaders into CORNERSTONE. For each width and theme, with the passphrase in the browser: find T1, crack, tap "Claim C", pick Teehee, shot teehee-<w>-<theme>.png, then pick Lil Fridge, shot lil-fridge-<w>-<theme>.png. The log reads each word button: disabled, and the count of .egg-ghost tiles.
