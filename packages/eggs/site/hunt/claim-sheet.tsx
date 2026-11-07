@@ -102,8 +102,10 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
 
         <div className="egg-up relative flex flex-none items-center gap-sp-3 overflow-hidden rounded-tile border border-rule-dark bg-band p-sp-3 text-on-dark">
           <span className="relative flex-none">
-            {/* The ground reaches the edges of the hero on the left, top, and bottom, and stops short of the text. */}
-            <ArtGround inset="-inset-y-sp-3 -left-sp-3 -right-sp-2" />
+            {/* The ground reaches the edges of the hero on the left, top, and bottom. On the right it stops at the edge of
+                the tile, so the full gap lies between the ground and the title: at 340 px axe read the title as over the
+                ground and could not read its contrast. */}
+            <ArtGround inset="-inset-y-sp-3 -left-sp-3 right-0" />
             {/* The tile is taller than the glyph box of the letter at the largest headline size, 46px, so axe can read its contrast. */}
             <span className="relative flex size-16 items-center justify-center rounded-letter bg-accent font-mono text-headline font-bold text-on-dark shadow-orb">
               {letter}

@@ -10,5 +10,5 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance test AT-50.
 
 **Status:** ready-for-agent
 
-- [ ] No text of the claim sheet hero overlaps the oval at 340 px and 390 px.
+- [x] No text of the claim sheet hero overlaps the oval at 340 px and 390 px.
 - [ ] Axe gives 0 failures and 0 incompletes on the claim sheet before and after a team pick, at 340 px and 390 px in both themes.
