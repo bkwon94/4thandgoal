@@ -7,6 +7,8 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, writeFileSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
 import { scanContrast, scanTargets, scanText, scanScroll } from "../../../../apps/site/e2e/floor";
+// The same axe that floor.ts uses. floor.ts gives only its failure lines, so the spec runs axe again to print each count.
+import AxeBuilder from "../../../../apps/site/node_modules/@axe-core/playwright";
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, normalize } from "node:path";
@@ -442,7 +444,13 @@ test("phase A1: six eggs, none claimed", async ({ browser }) => {
       const targets = await scanTargets(page);
       const scroll = await scanScroll(page);
       const fails = [...text.failures, ...contrast, ...targets.failures, ...scroll];
-      log("AT-50", `${part} ${width}px ${theme}${scope ? ` (contrast scope ${scope})` : ""}: text prose ${text.prose}, other ${text.other}, text failures ${text.failures.length}; contrast failures ${contrast.length}; target failures ${targets.failures.length} (exempt ${targets.exempt.length}); scroll failures ${scroll.length}${fails.length ? ` :: ${fails.join(" ; ")}` : ""}`);
+      // The raw axe result of the same rule and scope as scanContrast: the count of nodes of each kind.
+      const builder = new AxeBuilder({ page }).withRules(["color-contrast"]);
+      const axe = await (scope === undefined ? builder : builder.include(scope)).analyze();
+      const nodes = (items: typeof axe.violations) => items.reduce((sum, rule) => sum + rule.nodes.length, 0);
+      const incomplete = axe.incomplete.flatMap((rule) => rule.nodes.map((node) => `${node.target.join(" ")}: ${(node.failureSummary ?? rule.help).replace(/\s+/g, " ")}`));
+      const counts = `axe color-contrast nodes: violations ${nodes(axe.violations)}, incomplete ${nodes(axe.incomplete)}, passes ${nodes(axe.passes)}; ${incomplete.length ? `incomplete: ${incomplete.join(" ; ")}` : "incomplete: none"}`;
+      log("AT-50", `${part} ${width}px ${theme}${scope ? ` (contrast scope ${scope})` : ""}: text prose ${text.prose}, other ${text.other}, text failures ${text.failures.length}; contrast failures ${contrast.length}; target failures ${targets.failures.length} (exempt ${targets.exempt.length}); scroll failures ${scroll.length}; ${counts}${fails.length ? ` :: ${fails.join(" ; ")}` : ""}`);
       await close();
     }
   }

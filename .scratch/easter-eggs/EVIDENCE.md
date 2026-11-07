@@ -1,7 +1,7 @@
 # Easter eggs: evidence
 
 Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests: `.scratch/easter-eggs/ACCEPTANCE.md`.
-Built from: `f255557d`, on 2026-11-07. AT-3, AT-34, AT-41, and AT-50 ran again at `4f87122b`, after the fixes E1, E2, and E3. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
+Built from: `f255557d`, on 2026-11-07. AT-3, AT-34, and AT-41 ran again at `4f87122b`, after the fixes E1, E2, and E3. AT-50 ran again at `35ca282e`, the same code as `4f87122b`. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
 Round time: the runner did not run, because a server that is not ours holds its fixed port 4173. The Playwright phases of `evidence/tools/site.spec.ts` took 15 min for 27 site tests.
 
 The API ran on this machine like `make -C apps/api api-evidence`: passphrase `localtest`, commissioner key `localkey`, and a temp `CORNERSTONE_EGGS_DIR` outside the repo for each store. The scripts are in `evidence/tools/`. The real path of each eggs route is `/clients/cpc/eggs/<route>`. The tests write `/cpc/eggs/`.
@@ -355,7 +355,7 @@ Observation: With reduced motion, 100 ms after the tap on the egg, each shot sho
 App: site
 Then: Each one passes.
 Files: `evidence/AT-50/floor-eggs.txt`, `evidence/AT-50/site-A1.txt`, `evidence/AT-50/steps.txt`
-Observation: At 4f87122b, CLIENT=cpc pnpm check:floor -g /eggs/ passed after a plain CPC build. By design it covers only the static shell of /eggs/: ADR 0025 keeps any state that needs the live API out of the check, because a fake API is a mock, and CI has no API. The loaded board, the claim sheet, and the banner got the same four scans of floor.ts (text, contrast, targets, scroll) in the phase A1 run on 4174, at 390 and 1280 px in each theme. The scans gave 0 failures of each kind on all three, with no axe incomplete item.
+Observation: CLIENT=cpc pnpm check:floor -g /eggs/ passed (floor-eggs.txt, run at 4f87122b): 1 test, the fast sweep of /eggs/ at dark 390px, prose 1 and other text 10. By design it covers only the static shell of /eggs/: ADR 0025 keeps any state that needs the live API out of the check, because a fake API is a mock, and CI has no API. site-A1.txt holds the phase A1 run at 35ca282e on 4174: the four scans of floor.ts (text, contrast, targets, scroll) on the loaded board, the claim sheet, and the banner, at 390 and 1280 px in each theme, and the raw axe result of the rule color-contrast on the same scope. Each of the 12 lines shows text failures 0, contrast failures 0, target failures 0 (exempt 0), scroll failures 0, axe violations 0, axe incomplete 0, and "incomplete: none". The axe passes are 81 for the board at 390 px and 82 at 1280 px in each theme, 19 for the sheet, and 6 for the banner at each width and theme.
 
 ## AT-51: The whole flow, end to end
 
