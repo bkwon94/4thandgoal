@@ -117,7 +117,11 @@ def claim(body: ClaimRequest, hunt: ClientHunt) -> dict:
         egg_id = hunt.tokens.peek(body.token, now)
         if egg_id is None:
             raise HTTPException(status_code=410, detail=BAD_TOKEN)
-        letter = next(each.letter for each in hunt.store.eggs() if each.id == egg_id)
+        egg = hunt.store.egg(egg_id)
+        # A token of an egg that is gone is as good as no token, so the manager finds the egg again.
+        if egg is None:
+            raise HTTPException(status_code=410, detail=BAD_TOKEN)
+        letter = egg.letter
         # A refusal comes before the take, so the token stays good for a claim that stands.
         reason = refusal(hunt.values, hunt.store.claims(), body.roster_id, body.word, letter)
         if reason is not None:

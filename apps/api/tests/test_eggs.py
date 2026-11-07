@@ -513,3 +513,13 @@ def test_the_board_has_its_own_limit_of_60_a_minute_and_spends_none_of_the_share
     assert 0 < int(api.get(f"{BASE}/board").headers["Retry-After"]) <= 60
     # The 60 board reads spend nothing of the limit of 10 a minute of the other routes.
     assert api.get("/clients/cpc/teams", params={"season": 2026}, headers=PASS).status_code == 200
+
+
+def test_a_claim_of_an_egg_that_is_gone_says_to_find_the_egg_again(api, settings):
+    _drop(api, T1)
+    token = _token(api)
+    with sqlite3.connect(settings.eggs_dir / "cpc.sqlite") as db:
+        db.execute("DELETE FROM eggs")
+    response = _claim(api, token)
+    assert response.status_code == 410
+    assert "Find the egg again" in response.json()["detail"]
