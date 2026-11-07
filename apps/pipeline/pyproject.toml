@@ -75,7 +75,7 @@ known-first-party = ["analyzer", "cornerstone", "eggs", "facts", "league", "mana
 [tool.pyright]
 typeCheckingMode = "basic"
 # The modules of each package have their own list in the pyproject.toml of the package, such as packages/league/python.
-include = ["src/cornerstone/render.py", "src/cornerstone/sheet/__init__.py",
+include = ["src/cornerstone/egg_draft.py", "src/cornerstone/egg_drop.py", "src/cornerstone/render.py", "src/cornerstone/sheet/__init__.py",
            "tests/fakes.py", "tests/rule_report.py", "tests/test_layers.py",
            "tests/test_offense_report.py", "tests/test_provider.py", "tests/test_rule_ports.py",
            "tests/test_rule_readmes.py", "tests/test_rule_suppressions.py", "tests/test_rule_tracker.py"]

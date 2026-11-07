@@ -4,6 +4,9 @@
 SEASON ?= 2026
 # The client slug: the name of its folder under clients/. Each league command needs it, so it has no default.
 CLIENT ?=
+# The egg file of the commissioner. Empty means ~/cpc-eggs/<season>.toml, outside the repo. A test names a temp file.
+EGGS_FILE ?=
+EGGS_ARG = $(if $(EGGS_FILE),--eggs-file $(EGGS_FILE))
 
 # Each command runs in the env of this member only. --exact removes each package it does not list, such as the API,
 # so an import of an unlisted package fails here as it fails in the deploy (decision 07).
@@ -11,7 +14,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish page-json rankings midseason midseason-publish analyze egg-undo push
+.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json rankings midseason midseason-publish analyze egg-undo push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -53,8 +56,17 @@ build: need-client need-week ## Build the report of a week (CLIENT and WEEK requ
 	$(RUN) cornerstone build --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
 # This target commits the build, data, and published folders of the season under clients/$(CLIENT)/ and pushes the repo.
+# Its last step sends the confirmed eggs of the week to the API. A failed drop warns, and make egg-drop retries.
 publish: need-client need-week ## Publish a week to clients/$(CLIENT)/published and push it (CLIENT and WEEK required)
-	$(RUN) cornerstone publish --client $(CLIENT) --season $(SEASON) --week $(WEEK)
+	$(RUN) cornerstone publish --client $(CLIENT) --season $(SEASON) --week $(WEEK) $(EGGS_ARG)
+
+# The agent reads the catalog, the survey notes, the built week page, and the eggs that dropped before.
+egg-draft: need-client need-week ## Propose the six egg spots of a week, marked not confirmed (CLIENT and WEEK required)
+	$(RUN) cornerstone egg-draft --client $(CLIENT) --season $(SEASON) --week $(WEEK) $(EGGS_ARG)
+
+# It reads CORNERSTONE_API_URL and CORNERSTONE_COMMISSIONER_KEY_<SLUG>. A failed drop warns and exits 0.
+egg-drop: need-client need-week ## Send the confirmed eggs of a week to the API (CLIENT and WEEK required)
+	$(RUN) cornerstone egg-drop --client $(CLIENT) --season $(SEASON) --week $(WEEK) $(EGGS_ARG)
 
 page-json: need-client need-week ## Write page.json for a saved week (CLIENT and WEEK required)
 	$(RUN) cornerstone page-json --client $(CLIENT) --season $(SEASON) --week $(WEEK)

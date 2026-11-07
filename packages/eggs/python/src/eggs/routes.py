@@ -9,8 +9,9 @@ from datetime import datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
+from eggs.letters import drop_letters
 from eggs.rules import refusal, winner
 from eggs.store import AlreadyClaimed, Claim, EggStore
 from eggs.tokens import ClaimTokens
@@ -177,13 +178,17 @@ def board(hunt: ClientHunt) -> dict:
 
 
 class DropEgg(BaseModel):
-    """One confirmed egg of a drop: where it hides, the action and the conditions that find it, and its letter."""
+    """One confirmed egg of a drop: where it hides, and the action and the conditions that find it.
+
+    The API gives the letter by the letter rule, so the body holds none, and the model refuses a letter.
+    """
+
+    model_config = ConfigDict(extra="forbid")
 
     page: str
     target: str
     action: str
     conditions: dict[str, Any] = {}
-    letter: str
 
 
 class DropRequest(BaseModel):
@@ -195,9 +200,15 @@ class DropRequest(BaseModel):
 
 @commissioner_router.post("/drop")
 def drop(body: DropRequest, hunt: ClientHunt) -> dict:
-    """Make the eggs of the week live. A second drop of one week adds nothing and answers with the eggs there."""
+    """Give each egg of the week its letter by the letter rule and make the eggs live.
+
+    A second drop of one week adds nothing and answers with the eggs there.
+    """
     before = len(hunt.store.eggs(body.week))
-    eggs = hunt.store.drop(body.week, [egg.model_dump() for egg in body.eggs], hunt.clock())
+    managers = [roster_id for roster_id in hunt.rosters() if roster_id != hunt.values.commissioner]
+    letters = drop_letters([each.word for each in hunt.values.words], managers, hunt.store.claims(), len(body.eggs))
+    eggs = hunt.store.drop(body.week, [{**egg.model_dump(), "letter": letter}
+                                       for egg, letter in zip(body.eggs, letters, strict=True)], hunt.clock())
     return {
         "week": body.week,
         "dropped": len(eggs) - before,
