@@ -1,8 +1,8 @@
 # Easter eggs: evidence
 
 Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests: `.scratch/easter-eggs/ACCEPTANCE.md`.
-Built from: `f255557d`, on 2026-11-07. AT-3, AT-34, and AT-41 ran again at `4f87122b`, after the fixes E1, E2, and E3. AT-50 ran again at `35ca282e`, the same code as `4f87122b`. AT-47, revised, ran at `c5d68913`. The motion of AT-32 and the pulse of AT-34 ran at `566d11e7`, the code of `c5d68913`. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
-Round time: the runner did not run, because a server that is not ours holds its fixed port 4173. The Playwright phases of `evidence/tools/site.spec.ts` took 15 min for 27 site tests.
+Built from: `f255557d`, on 2026-11-07. AT-3, AT-34, and AT-41 ran again at `4f87122b`, after the fixes E1, E2, and E3. AT-50 ran again at `35ca282e`, the same code as `4f87122b`. AT-47, revised, ran at `c5d68913`. The motion of AT-32 and the pulse of AT-34 ran at `566d11e7`, the code of `c5d68913`. After tickets 07 to 11, AT-1, AT-26, AT-27, AT-30, AT-32 to AT-39, AT-42 to AT-44, AT-47, and AT-49 to AT-56 ran again at `034d7b08`, on 2026-11-07. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
+Round time: the runner did not run, because a server that is not ours holds its fixed port 4173. The Playwright phases of `evidence/tools/site.spec.ts` took 15 min for 27 site tests. At `034d7b08` the runner did not run, because this run may not use port 4173. The phases took 19 min for 22 site tests.
 
 The API ran on this machine like `make -C apps/api api-evidence`: passphrase `localtest`, commissioner key `localkey`, and a temp `CORNERSTONE_EGGS_DIR` outside the repo for each store. The scripts are in `evidence/tools/`. The real path of each eggs route is `/clients/cpc/eggs/<route>`. The tests write `/cpc/eggs/`.
 AT-1 to AT-19 ran at `27424c16`. The fixes D1 and D2 changed only `eggfile.py` and `apps/site/e2e/eggs.spec.ts`, so that evidence stands at `f255557d`.
@@ -12,7 +12,7 @@ AT-1 to AT-19 ran at `27424c16`. The fixes D1 and D2 changed only `eggfile.py` a
 App: pipeline
 Then: The answer holds the letter C and a claim token.
 Files: `evidence/AT-1/output.txt`, `evidence/AT-1/setup.txt`
-Observation: The check of T1 (luck-3, tap3, light) answered HTTP 200 with match true, claimed false, letter C, and a token. setup.txt shows the drops: T1 is egg 2 of week 9 with the letter C. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
+Observation: At 034d7b08, on a fresh store, the check of T1 (luck-3, tap2, light) answered HTTP 200 with match true, claimed false, letter C, and a token. setup.txt shows the drops: T1 is egg 2 of week 9 with the letter C, and each egg uses tap2 or hold. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
 
 ## AT-2: A wrong condition is no match
 
@@ -182,19 +182,19 @@ Then: The card opens, and the listener sends no check.
 Files: `evidence/AT-25/1280-dark.png`, `evidence/AT-25/1280-light.png`, `evidence/AT-25/375-dark.png`, `evidence/AT-25/375-light.png`, `evidence/AT-25/768-dark.png`, `evidence/AT-25/768-light.png`, `evidence/AT-25/site-A1.txt`, `evidence/AT-25/steps.txt`
 Observation: One tap on the card of game 3 of week 8 set aria-expanded true and opened the recap ("Won by 1.43" and its text) in each shot. The page sent 0 egg checks at each width and theme.
 
-## AT-26: A multi-tap sends one check
+## AT-26: A double-tap sends one check
 
 App: site
-Then: The listener sends one check with the page, the id, the action 3 taps, and the light theme.
+Then: The listener sends one check with the page, the id, the action `tap2`, and the light theme.
 Files: `evidence/AT-26/site-A1.txt`, `evidence/AT-26/site-L.txt`, `evidence/AT-26/steps.txt`
-Observation: Three mouse taps on luck-3 at 0, 172, and 329 ms sent one check: page /midseason/2026/, target luck-3, action tap3, theme light, plus the open state chip-rb of the page. The store held a claim of T1 by then, so the card was the claimed-first card. A first run with Playwright clicks had a gap of 1231 ms and sent one tap2; its log stays in site-A1.txt.
+Observation: Two mouse taps on luck-3, 161 ms apart in phase L, sent one check: page /midseason/2026/, target luck-3, action tap2, theme light, plus the open state chip-rb of the page. The store held a claim of T1 by Teehee then, so the card was the claimed-first card. Phase A1, two taps 159 ms apart on a store with T1 live, also sent one tap2 check (site-A1.txt).
 
 ## AT-27: A long hold sends one check
 
 App: site
-Then: The listener sends one check with the hold 3.
+Then: The listener sends one check with the action `hold` for the hold of 3.5 seconds, and no check for the hold of 1.5 seconds.
 Files: `evidence/AT-27/site-A1.txt`, `evidence/AT-27/steps.txt`
-Observation: A press of 3524 ms on luck-3 sent one check with the action hold3, target luck-3, theme light.
+Observation: A press of 3531 ms on luck-3 sent one check with the action hold, target luck-3, theme light. Then a press of 1510 ms on the same cell sent no check. The log counts 1 check in all.
 
 ## AT-28: A tap combo sends one check
 
@@ -213,9 +213,9 @@ Observation: A DOM range selected the first whole word "First" of blurb-1jo5mqe.
 ## AT-30: The count by id holds across sim frames
 
 App: site
-Then: The listener sends one check with the action 3 taps.
+Then: The listener sends one check with the action `tap2`.
 Files: `evidence/AT-30/site-A1.txt`, `evidence/AT-30/site-L.txt`, `evidence/AT-30/steps.txt`
-Observation: The replay ran with frames about 1520 ms apart. Taps on sim-row-3 at 0, 215, and 429 ms; the frame changed at 125 ms, between tap 1 and tap 2, and the row moved from place 02 to place 04. The listener sent one check with target sim-row-3 and action tap3. A first run in phase A1 saw no frame change during its taps; its log stays in site-A1.txt.
+Observation: The replay ran with frames about 1526 ms apart. Two taps on sim-row-3 landed at 0 and 212 ms, and the frame changed at 125 ms, between the two taps. The listener sent one check with target sim-row-3 and action tap2. Phase A1 saw no frame change during its two taps, and it also sent one tap2 check (site-A1.txt).
 
 ## AT-31: The iOS callout is off on targets only
 
@@ -228,57 +228,57 @@ Observation: Desktop WebKit 27.2 and Chromium do not compute -webkit-touch-callo
 
 App: site
 Then: The page blurs, the ring and the egg show, the egg cracks, and the red C tile springs up.
-Files: `evidence/AT-32/egg-1280-dark.png`, `evidence/AT-32/egg-1280-light.png`, `evidence/AT-32/egg-375-dark.png`, `evidence/AT-32/egg-375-light.png`, `evidence/AT-32/egg-768-dark.png`, `evidence/AT-32/egg-768-light.png`, `evidence/AT-32/motion-1280-dark-crack-0000ms.png`, `evidence/AT-32/motion-1280-dark-crack-0153ms.png`, `evidence/AT-32/motion-1280-dark-crack-0302ms.png`, `evidence/AT-32/motion-1280-dark-crack-0453ms.png`, `evidence/AT-32/motion-1280-dark-crack-0603ms.png`, `evidence/AT-32/motion-1280-dark-crack-0901ms.png`, `evidence/AT-32/motion-1280-dark-crack-1202ms.png`, `evidence/AT-32/motion-1280-dark-crack-1602ms.png`, `evidence/AT-32/motion-1280-dark-find-1167ms.png`, `evidence/AT-32/motion-1280-dark-find-2782ms.png`, `evidence/AT-32/motion-1280-dark-find-843ms.png`, `evidence/AT-32/motion-1280-dark.webm`, `evidence/AT-32/motion-1280-light-crack-0000ms.png`, `evidence/AT-32/motion-1280-light-crack-0152ms.png`, `evidence/AT-32/motion-1280-light-crack-0301ms.png`, `evidence/AT-32/motion-1280-light-crack-0452ms.png`, `evidence/AT-32/motion-1280-light-crack-0601ms.png`, `evidence/AT-32/motion-1280-light-crack-0901ms.png`, `evidence/AT-32/motion-1280-light-crack-1201ms.png`, `evidence/AT-32/motion-1280-light-crack-1603ms.png`, `evidence/AT-32/motion-1280-light-find-1181ms.png`, `evidence/AT-32/motion-1280-light-find-2803ms.png`, `evidence/AT-32/motion-1280-light-find-852ms.png`, `evidence/AT-32/motion-1280-light.webm`, `evidence/AT-32/motion-375-dark-crack-0000ms.png`, `evidence/AT-32/motion-375-dark-crack-0150ms.png`, `evidence/AT-32/motion-375-dark-crack-0301ms.png`, `evidence/AT-32/motion-375-dark-crack-0449ms.png`, `evidence/AT-32/motion-375-dark-crack-0601ms.png`, `evidence/AT-32/motion-375-dark-crack-0901ms.png`, `evidence/AT-32/motion-375-dark-crack-1201ms.png`, `evidence/AT-32/motion-375-dark-crack-1601ms.png`, `evidence/AT-32/motion-375-dark-find-1146ms.png`, `evidence/AT-32/motion-375-dark-find-2701ms.png`, `evidence/AT-32/motion-375-dark-find-852ms.png`, `evidence/AT-32/motion-375-dark.webm`, `evidence/AT-32/motion-375-light-crack-0000ms.png`, `evidence/AT-32/motion-375-light-crack-0151ms.png`, `evidence/AT-32/motion-375-light-crack-0300ms.png`, `evidence/AT-32/motion-375-light-crack-0451ms.png`, `evidence/AT-32/motion-375-light-crack-0601ms.png`, `evidence/AT-32/motion-375-light-crack-0901ms.png`, `evidence/AT-32/motion-375-light-crack-1201ms.png`, `evidence/AT-32/motion-375-light-crack-1603ms.png`, `evidence/AT-32/motion-375-light-find-1173ms.png`, `evidence/AT-32/motion-375-light-find-2723ms.png`, `evidence/AT-32/motion-375-light-find-873ms.png`, `evidence/AT-32/motion-375-light.webm`, `evidence/AT-32/site-A1.txt`, `evidence/AT-32/site-M32.txt`, `evidence/AT-32/steps.txt`, `evidence/AT-32/tile-1280-dark.png`, `evidence/AT-32/tile-1280-light.png`, `evidence/AT-32/tile-375-dark.png`, `evidence/AT-32/tile-375-light.png`, `evidence/AT-32/tile-768-dark.png`, `evidence/AT-32/tile-768-light.png`
-Observation: The still shots show the blurred page, the find card, and the egg, then the red C tile. site-M32.txt and the burst shots show the motion, at 375 and 1280 px in each theme, with reduced motion off. When the card shows, the scrim has backdrop-filter blur(6px). Two rings run egg-ripple (1000 ms, the second with a delay of 180 ms) and grow to a scale of 4.7 at 383 ms, then 5 with opacity 0. The egg runs egg-bob and egg-wobble (3200 ms, infinite), and the halo runs egg-halo. After the tap on the egg, at 375 px light: the crack runs egg-draw, and its stroke-dashoffset goes 260, 212, 68, then 0 px at 378 ms; then egg-fade-out takes its opacity to 0 by 678 ms. The two halves run egg-split-top and egg-split-bottom (550 ms, delay 320 ms) and move from no offset to (-22, -70) and (16, 60) px with a turn, as their opacity goes to 0 by 903 ms. The tile runs egg-tile-rise (800 ms, delay 500 ms): its scale goes 0.29 at 527 ms, 0.64 at 604 ms, 0.99 at 753 ms, an overshoot of 1.046 at 903 ms, then 1 at 1355 ms, and a burst runs egg-burst. The other widths and themes log the same animations with the same values within a few ms. The crack shots at about 450 ms show the zigzag and the halves apart. Each run has a .webm video.
+Files: `evidence/AT-32/egg-1280-dark.png`, `evidence/AT-32/egg-1280-light.png`, `evidence/AT-32/egg-375-dark.png`, `evidence/AT-32/egg-375-light.png`, `evidence/AT-32/egg-768-dark.png`, `evidence/AT-32/egg-768-light.png`, `evidence/AT-32/motion-1280-dark-crack-0000ms.png`, `evidence/AT-32/motion-1280-dark-crack-0151ms.png`, `evidence/AT-32/motion-1280-dark-crack-0301ms.png`, `evidence/AT-32/motion-1280-dark-crack-0456ms.png`, `evidence/AT-32/motion-1280-dark-crack-0602ms.png`, `evidence/AT-32/motion-1280-dark-crack-0901ms.png`, `evidence/AT-32/motion-1280-dark-crack-1201ms.png`, `evidence/AT-32/motion-1280-dark-crack-1602ms.png`, `evidence/AT-32/motion-1280-dark-find-1244ms.png`, `evidence/AT-32/motion-1280-dark-find-2908ms.png`, `evidence/AT-32/motion-1280-dark-find-850ms.png`, `evidence/AT-32/motion-1280-dark.webm`, `evidence/AT-32/motion-1280-light-crack-0000ms.png`, `evidence/AT-32/motion-1280-light-crack-0150ms.png`, `evidence/AT-32/motion-1280-light-crack-0300ms.png`, `evidence/AT-32/motion-1280-light-crack-0452ms.png`, `evidence/AT-32/motion-1280-light-crack-0601ms.png`, `evidence/AT-32/motion-1280-light-crack-0901ms.png`, `evidence/AT-32/motion-1280-light-crack-1202ms.png`, `evidence/AT-32/motion-1280-light-crack-1601ms.png`, `evidence/AT-32/motion-1280-light-find-1265ms.png`, `evidence/AT-32/motion-1280-light-find-2950ms.png`, `evidence/AT-32/motion-1280-light-find-843ms.png`, `evidence/AT-32/motion-1280-light.webm`, `evidence/AT-32/motion-375-dark-crack-0000ms.png`, `evidence/AT-32/motion-375-dark-crack-0150ms.png`, `evidence/AT-32/motion-375-dark-crack-0300ms.png`, `evidence/AT-32/motion-375-dark-crack-0452ms.png`, `evidence/AT-32/motion-375-dark-crack-0601ms.png`, `evidence/AT-32/motion-375-dark-crack-0902ms.png`, `evidence/AT-32/motion-375-dark-crack-1202ms.png`, `evidence/AT-32/motion-375-dark-crack-1601ms.png`, `evidence/AT-32/motion-375-dark-find-1189ms.png`, `evidence/AT-32/motion-375-dark-find-2770ms.png`, `evidence/AT-32/motion-375-dark-find-857ms.png`, `evidence/AT-32/motion-375-dark.webm`, `evidence/AT-32/motion-375-light-crack-0000ms.png`, `evidence/AT-32/motion-375-light-crack-0152ms.png`, `evidence/AT-32/motion-375-light-crack-0302ms.png`, `evidence/AT-32/motion-375-light-crack-0450ms.png`, `evidence/AT-32/motion-375-light-crack-0601ms.png`, `evidence/AT-32/motion-375-light-crack-0900ms.png`, `evidence/AT-32/motion-375-light-crack-1202ms.png`, `evidence/AT-32/motion-375-light-crack-1601ms.png`, `evidence/AT-32/motion-375-light-find-1119ms.png`, `evidence/AT-32/motion-375-light-find-2680ms.png`, `evidence/AT-32/motion-375-light-find-827ms.png`, `evidence/AT-32/motion-375-light.webm`, `evidence/AT-32/site-A1.txt`, `evidence/AT-32/site-M32.txt`, `evidence/AT-32/steps.txt`, `evidence/AT-32/tile-1280-dark.png`, `evidence/AT-32/tile-1280-light.png`, `evidence/AT-32/tile-375-dark.png`, `evidence/AT-32/tile-375-light.png`, `evidence/AT-32/tile-768-dark.png`, `evidence/AT-32/tile-768-light.png`
+Observation: The find is a double-tap. Each egg shot shows the blurred page, the find card with "You found an egg", and the egg. Each tile shot shows the red C tile with "The letter C is yours to claim.", with no box behind a line and no overlap of the two lines. site-M32.txt logs the motion at 375 and 1280 px in each theme: the scrim has backdrop-filter blur(6px), two rings run egg-ripple to a scale near 4.65, and the egg runs its bob. After the tap on the egg at 375 px light, the stroke-dashoffset of the crack goes 260, 187, 26, then 0 px at 381 ms, and the halves fade to opacity 0 by 901 ms. The tile runs egg-tile-rise (800 ms, delay 500 ms): its scale goes 0.29, 0.39 at 527 ms, 0.76 at 601 ms, an overshoot of 1.045 at 901 ms, then 1 at 1351 ms. Each run has a .webm video and burst shots.
 
 ## AT-33: The team pills omit the commissioner
 
 App: site
 Then: The sheet shows 11 team pills, and Bo Girds is not one of them.
 Files: `evidence/AT-33/1280-dark.png`, `evidence/AT-33/1280-light.png`, `evidence/AT-33/375-dark.png`, `evidence/AT-33/375-light.png`, `evidence/AT-33/768-dark.png`, `evidence/AT-33/768-light.png`, `evidence/AT-33/site-A1.txt`, `evidence/AT-33/steps.txt`
-Observation: The sheet shows 11 team pills at each width and theme: The Blue Tent, All You Need Is Love, Lil Fridge, NFC Least, London Cooking, To Infinity and Bijan, Return of T Mac, Maye d'force B with U, behold the lamb, Unsolicited Dak Picks, Teehee. Bo Girds is not a pill.
+Observation: After a find by double-tap, the sheet shows 11 team pills at each width and theme: The Blue Tent, All You Need Is Love, Lil Fridge, NFC Least, London Cooking, To Infinity and Bijan, Return of T Mac, Maye d'force B with U, behold the lamb, Unsolicited Dak Picks, Teehee. Bo Girds is not a pill.
 
 ## AT-34: The egg word cards of the claim
 
 App: site
 Then: CORNERSTONE is faded and disabled. A ghost tile pulses in its C slot only on a word with an open slot.
 Files: `evidence/AT-34/ghost-1280-dark-1.png`, `evidence/AT-34/ghost-1280-dark-2.png`, `evidence/AT-34/ghost-1280-dark-3.png`, `evidence/AT-34/ghost-1280-light-1.png`, `evidence/AT-34/ghost-1280-light-2.png`, `evidence/AT-34/ghost-1280-light-3.png`, `evidence/AT-34/ghost-375-dark-1.png`, `evidence/AT-34/ghost-375-dark-2.png`, `evidence/AT-34/ghost-375-dark-3.png`, `evidence/AT-34/ghost-375-light-1.png`, `evidence/AT-34/ghost-375-light-2.png`, `evidence/AT-34/ghost-375-light-3.png`, `evidence/AT-34/lil-fridge-1280-dark.png`, `evidence/AT-34/lil-fridge-1280-light.png`, `evidence/AT-34/lil-fridge-375-dark.png`, `evidence/AT-34/lil-fridge-375-light.png`, `evidence/AT-34/lil-fridge-768-dark.png`, `evidence/AT-34/lil-fridge-768-light.png`, `evidence/AT-34/site-B.txt`, `evidence/AT-34/site-M34.txt`, `evidence/AT-34/steps.txt`, `evidence/AT-34/teehee-1280-dark.png`, `evidence/AT-34/teehee-1280-light.png`, `evidence/AT-34/teehee-375-dark.png`, `evidence/AT-34/teehee-375-light.png`, `evidence/AT-34/teehee-768-dark.png`, `evidence/AT-34/teehee-768-light.png`
-Observation: At 4f87122b, with Teehee picked, CORNERSTONE, LANSDALE, and EAGLES are disabled with 0 ghost tiles, and each shows a dashed edge, a grey surface, and grey text. The computed values are background rgb(235, 235, 235), border dashed, and text rgb(102, 102, 102) in light, and background rgb(38, 38, 38), border dashed, and text rgb(153, 153, 153) in dark. With Lil Fridge picked, CORNERSTONE is enabled with 1 ghost tile, a white surface, a solid edge, and dark text rgb(20, 20, 20). LANSDALE and EAGLES stay disabled and faded. This holds at each width and theme. The pulse, phase M34 at 375 and 1280 px in each theme: the ghost tile of CORNERSTONE for Lil Fridge runs egg-ghost (1600 ms, infinite iterations). Its computed opacity at +0, +400, +800, and +1200 ms is 0.873, 0.969, 0.577, and 0.481 at 375 px, and 0.888 or 0.903, 0.951, 0.547, and 0.499 at 1280 px. The three cropped shots of each width and theme catch the tile at three of those moments.
+Observation: With Teehee picked, CORNERSTONE, LANSDALE, and EAGLES are disabled with 0 ghost tiles. Each shows a dashed edge, a grey surface, and grey text: background rgb(235, 235, 235) and text rgb(102, 102, 102) in light, rgb(38, 38, 38) and rgb(153, 153, 153) in dark. With Lil Fridge picked, CORNERSTONE is enabled with 1 ghost tile and a solid edge, and LANSDALE and EAGLES stay disabled and faded. This holds at each width and theme. Each slot row shows even tiles with a gap, inside its card. Phase M34: the ghost tile runs egg-ghost (1600 ms, infinite). Its opacity at +0, +400, +800, and +1200 ms is 0.873, 0.969, 0.577, and 0.481 at 375 px, and 0.903, 0.951, 0.547, and 0.499 at 1280 px light. The cropped shots catch three of those moments.
 
 ## AT-35: The block notice
 
 App: site
 Then: A dashed notice offers a block.
 Files: `evidence/AT-35/1280-dark.png`, `evidence/AT-35/1280-light.png`, `evidence/AT-35/375-dark.png`, `evidence/AT-35/375-light.png`, `evidence/AT-35/768-dark.png`, `evidence/AT-35/768-light.png`, `evidence/AT-35/site-B.txt`, `evidence/AT-35/steps.txt`
-Observation: With Teehee picked, a dashed notice shows: "C fits none of your egg words. Claim it as a block. Then no other manager can put it in a word." The button reads "Claim C as a block". This shows at each width and theme.
+Observation: With Teehee picked, a dashed notice shows: "C fits none of your egg words. Claim it as a block. Then no other manager can put it in a word." This shows at each width and theme.
 
 ## AT-36: The passphrase field shows only when needed
 
 App: site
 Then: With no passphrase, the field shows and the button names it. With one, the field is gone.
 Files: `evidence/AT-36/no-passphrase-1280-dark.png`, `evidence/AT-36/no-passphrase-1280-light.png`, `evidence/AT-36/no-passphrase-375-dark.png`, `evidence/AT-36/no-passphrase-375-light.png`, `evidence/AT-36/no-passphrase-768-dark.png`, `evidence/AT-36/no-passphrase-768-light.png`, `evidence/AT-36/site-A1.txt`, `evidence/AT-36/steps.txt`, `evidence/AT-36/with-passphrase-1280-dark.png`, `evidence/AT-36/with-passphrase-1280-light.png`, `evidence/AT-36/with-passphrase-375-dark.png`, `evidence/AT-36/with-passphrase-375-light.png`, `evidence/AT-36/with-passphrase-768-dark.png`, `evidence/AT-36/with-passphrase-768-light.png`
-Observation: With no passphrase in the browser, the sheet shows the field "League passphrase" and the button "Enter the passphrase". With cpc.passphrase set, the field is gone and the button reads "Claim C for CORNERSTONE". This holds at each width and theme.
+Observation: With no passphrase in the browser, the sheet shows 1 passphrase field and the button "Enter the passphrase". With cpc.passphrase set, the sheet shows 0 fields and the button reads "Claim C for CORNERSTONE". This holds at each width and theme.
 
 ## AT-37: The claim hero card
 
 App: site
 Then: The hero card shows the count rise and the C tile in its slot. A claim that fills an egg word says the gift card is the manager's.
 Files: `evidence/AT-37/claim-1280-dark.png`, `evidence/AT-37/claim-1280-light.png`, `evidence/AT-37/claim-375-dark.png`, `evidence/AT-37/claim-375-light.png`, `evidence/AT-37/claim-768-dark.png`, `evidence/AT-37/claim-768-light.png`, `evidence/AT-37/site-A2.txt`, `evidence/AT-37/site-E.txt`, `evidence/AT-37/steps.txt`, `evidence/AT-37/won-1280-dark.png`, `evidence/AT-37/won-1280-light.png`, `evidence/AT-37/won-375-dark.png`, `evidence/AT-37/won-375-light.png`, `evidence/AT-37/won-768-dark.png`, `evidence/AT-37/won-768-light.png`
-Observation: The claim of C for Lil Fridge into CORNERSTONE shows the hero card "CLAIMED · LIL FRIDGE · 1/11", the C tile in its slot, "C goes to CORNERSTONE.", and "10 letters to go for the $50." The claim of E that fills EAGLES (store E) shows "6/6", the tiles E A G L E S, "EAGLES is complete.", and "The $20 gift card is yours." The API undid each claim after its shot.
+Observation: The claim of C for Lil Fridge into CORNERSTONE shows the hero card "CLAIMED · LIL FRIDGE · 1/11", the C tile in the first of 11 slots, "C goes to CORNERSTONE.", and "10 letters to go for the $50." The slots are one row of even tiles with a gap, inside the card, and the text shows no box. The claim of E that fills EAGLES (store E) shows "6/6", the tiles E A G L E S, "EAGLES is complete.", and "The $20 gift card is yours." The API undid each claim after its shot. This holds at each width and theme.
 
 ## AT-38: Another manager claimed first
 
 App: site
 Then: The hero card says that another manager claimed first.
 Files: `evidence/AT-38/1280-dark.png`, `evidence/AT-38/1280-light.png`, `evidence/AT-38/375-dark.png`, `evidence/AT-38/375-light.png`, `evidence/AT-38/768-dark.png`, `evidence/AT-38/768-light.png`, `evidence/AT-38/site-A2.txt`, `evidence/AT-38/steps.txt`
-Observation: With T1 claimed by Teehee, the find shows the card "TOO LATE · C · Another manager claimed first. · The first claim wins the egg." at each width and theme.
+Observation: With T1 claimed by Teehee, the find by double-tap shows the card "TOO LATE · C · Another manager claimed first. · The first claim wins the egg." at each width and theme.
 
 ## AT-39: The limit hero card
 
 App: site
 Then: The card reads "The eggs need a rest. Try again in N minutes." with a real N.
 Files: `evidence/AT-39/1280-dark.png`, `evidence/AT-39/1280-light.png`, `evidence/AT-39/375-dark.png`, `evidence/AT-39/375-light.png`, `evidence/AT-39/768-dark.png`, `evidence/AT-39/768-light.png`, `evidence/AT-39/site-A2.txt`, `evidence/AT-39/steps.txt`
-Observation: 60 checks from 127.0.0.1, then one more answered 429 with Retry-After 3600. The three taps show the card "LIMIT · 60 · MINUTES LEFT · The eggs need a rest. · Try again in 60 minutes." at each width and theme.
+Observation: 60 checks from 127.0.0.1, then one more answered 429 with Retry-After 3600. The double-tap shows the card "LIMIT · 60 · MINUTES LEFT · The eggs need a rest. · Try again in 60 minutes." at each width and theme.
 
 ## AT-40: The egg button is on every page
 
@@ -299,21 +299,21 @@ Observation: At 4f87122b, the drop time of week 9 was set to the real Tuesday 20
 App: site
 Then: The counts are 4 left to find, 2 found, and 48 to drop. The grid shows 2 white, 4 red, and 48 dashed slots.
 Files: `evidence/AT-42/1280-dark.png`, `evidence/AT-42/1280-light.png`, `evidence/AT-42/375-dark.png`, `evidence/AT-42/375-light.png`, `evidence/AT-42/768-dark.png`, `evidence/AT-42/768-light.png`, `evidence/AT-42/site-A2.txt`, `evidence/AT-42/steps.txt`
-Observation: Six eggs, two claimed. The hero reads 4 left to find, 2 found, and 48 to drop. The grid shows 2 white (found), 4 red (out now), and 48 dashed slots. The data-slot count of the page is found 3, out 5, and future 49, because the legend holds one more of each.
+Observation: Six eggs, two claimed. The board counts are left 4, found 2, and to_drop 48. The hero reads 4 left to find, 2 found, and 48 to drop. The grid shows 2 white (found), 4 red (out now), and 48 dashed slots. The data-slot count of the page is found 3, out 5, and future 49, because the legend holds one more of each. The counts, their labels, the week numbers, and the legend sit on the flat band color with no dark plate.
 
 ## AT-43: The egg word cards of the board
 
 App: site
 Then: The cards show $50, $30, and $20 and the top 5 of each egg word. The tap shows all 11 managers.
 Files: `evidence/AT-43/after-1280-dark.png`, `evidence/AT-43/after-1280-light.png`, `evidence/AT-43/after-375-dark.png`, `evidence/AT-43/after-375-light.png`, `evidence/AT-43/after-768-dark.png`, `evidence/AT-43/after-768-light.png`, `evidence/AT-43/before-1280-dark.png`, `evidence/AT-43/before-1280-light.png`, `evidence/AT-43/before-375-dark.png`, `evidence/AT-43/before-375-light.png`, `evidence/AT-43/before-768-dark.png`, `evidence/AT-43/before-768-light.png`, `evidence/AT-43/site-B.txt`, `evidence/AT-43/steps.txt`
-Observation: Seven managers hold letters. Each card shows its gift card, $50, $30, and $20. The CORNERSTONE card lists 5 rows before "Show all 11" and 11 rows after the tap, at each width and theme. Store B holds 12 eggs and 8 claims, so its counts differ from AT-42.
+Observation: Seven managers hold letters. Each card shows its gift card: $50, $30, and $20. The CORNERSTONE card lists 5 rows before "Show all 11" and 11 rows after the tap, at each width and theme. Each letter row shows even tiles with a gap between two tiles, inside the card. Store B holds 12 eggs and 8 claims, so its counts differ from AT-42.
 
 ## AT-44: A won egg word
 
 App: site
 Then: EAGLES is a hero card with a WON stamp and Lil Fridge.
 Files: `evidence/AT-44/1280-dark.png`, `evidence/AT-44/1280-light.png`, `evidence/AT-44/375-dark.png`, `evidence/AT-44/375-light.png`, `evidence/AT-44/768-dark.png`, `evidence/AT-44/768-light.png`, `evidence/AT-44/site-E.txt`, `evidence/AT-44/steps.txt`
-Observation: After AT-12, the EAGLES card is a hero card with the tiles E A G L E S, "Lil Fridge won it.", a WON stamp, and "The $20 gift card is theirs. The race is over."
+Observation: On store E after the claims of AT-12 (tools/api-store-e2.sh, run again on a scratch store), the EAGLES card is a hero card with the tiles E A G L E S, "Lil Fridge won it.", a WON stamp, and "The $20 gift card is theirs. The race is over." The tiles are even with a gap, and the text sits on the flat band color.
 
 ## AT-45: Latest claims
 
@@ -334,7 +334,7 @@ Observation: The last card "How the hunt works" lists 8 points: 6 eggs drop each
 App: site
 Then: No page shows the egg button or the egg banner, the listener sends no check, and `/eggs/` shows the 404 page.
 Files: `evidence/AT-47/board.json`, `evidence/AT-47/eggs-1280-dark.png`, `evidence/AT-47/eggs-1280-light.png`, `evidence/AT-47/eggs-375-dark.png`, `evidence/AT-47/eggs-375-light.png`, `evidence/AT-47/eggs-768-dark.png`, `evidence/AT-47/eggs-768-light.png`, `evidence/AT-47/home-1280-dark.png`, `evidence/AT-47/home-1280-light.png`, `evidence/AT-47/home-375-dark.png`, `evidence/AT-47/home-375-light.png`, `evidence/AT-47/home-768-dark.png`, `evidence/AT-47/home-768-light.png`, `evidence/AT-47/site-P47.txt`, `evidence/AT-47/steps.txt`, `evidence/AT-47/week-08-1280-dark.png`, `evidence/AT-47/week-08-1280-light.png`, `evidence/AT-47/week-08-375-dark.png`, `evidence/AT-47/week-08-375-light.png`, `evidence/AT-47/week-08-768-dark.png`, `evidence/AT-47/week-08-768-light.png`
-Observation: board.json of the empty store shows counts left 0, found 0, to_drop 54, and last_drop null. On the home page, week 8, and /eggs/, at 375, 768, and 1280 px in each theme, the log counts 0 links named "Egg board" and 0 egg banners, and the shots show no egg button and no banner. /eggs/ shows the 404 hero ("ERROR // PAGE NOT FOUND", "404", 1 hero mark) with 0 matches of egg copy in main, at each width and theme. The HTTP status of /eggs/ is 200, because the export holds a built /eggs/ page that renders the 404 hero. Three mouse taps on the Luck cell of Lil Fridge on /midseason/2026/ at 1280 px, with pointerups at 0, 207, and 367 ms in light and at 0, 161, and 318 ms in dark, sent 0 requests to /eggs/check and opened 0 dialogs.
+Observation: board.json of the empty store shows left 0, found 0, to_drop 54, and last_drop null. On the home page, week 8, and /eggs/, at 375, 768, and 1280 px in each theme, the log counts 0 egg buttons and 0 egg banners, and the shots show neither. /eggs/ shows the 404 hero ("ERROR // PAGE NOT FOUND", "404", 1 hero mark) with 0 matches of egg copy in main. Its HTTP status is 200, because the export holds a built /eggs/ page that renders the 404 hero. A double-tap on the Luck cell of Lil Fridge at 1280 px, with pointerups 156 ms apart in light and 164 ms apart in dark, sent 0 requests to /eggs/check and opened 0 dialogs.
 
 ## AT-48: The copy rules hold
 
@@ -348,18 +348,53 @@ Observation: The grep of the eggs site copy (packages/eggs/site and apps/site/sr
 App: site
 Then: The C tile shows with no motion.
 Files: `evidence/AT-49/1280-dark.png`, `evidence/AT-49/1280-light.png`, `evidence/AT-49/375-dark.png`, `evidence/AT-49/375-light.png`, `evidence/AT-49/768-dark.png`, `evidence/AT-49/768-light.png`, `evidence/AT-49/site-A1.txt`, `evidence/AT-49/steps.txt`
-Observation: With reduced motion, 100 ms after the tap on the egg, each shot shows the C tile at rest. The page has 0 running animations, and the tile and its parent have no animation and a transition of 0 s.
+Observation: With reduced motion, 100 ms after the tap on the egg, each shot shows the C tile at rest. The page has 0 running animations, and the tile and its parent have no animation and a transition of 0 s, at each width and theme.
 
 ## AT-50: The readability floor holds
 
 App: site
 Then: Each one passes.
 Files: `evidence/AT-50/floor-eggs.txt`, `evidence/AT-50/site-A1.txt`, `evidence/AT-50/steps.txt`
-Observation: CLIENT=cpc pnpm check:floor -g /eggs/ passed (floor-eggs.txt, run at 4f87122b): 1 test, the fast sweep of /eggs/ at dark 390px, prose 1 and other text 10. By design it covers only the static shell of /eggs/: ADR 0025 keeps any state that needs the live API out of the check, because a fake API is a mock, and CI has no API. site-A1.txt holds the phase A1 run at 35ca282e on 4174: the four scans of floor.ts (text, contrast, targets, scroll) on the loaded board, the claim sheet, and the banner, at 390 and 1280 px in each theme, and the raw axe result of the rule color-contrast on the same scope. Each of the 12 lines shows text failures 0, contrast failures 0, target failures 0 (exempt 0), scroll failures 0, axe violations 0, axe incomplete 0, and "incomplete: none". The axe passes are 81 for the board at 390 px and 82 at 1280 px in each theme, 19 for the sheet, and 6 for the banner at each width and theme.
+Observation: CLIENT=cpc pnpm check:floor -g /eggs/ passed at 034d7b08 (floor-eggs.txt): 1 test, the fast sweep of /eggs/ at dark 390 px. By design it covers only the static shell, because ADR 0025 keeps any state that needs the live API out of the check. site-A1.txt holds the four scans of floor.ts and the raw axe color-contrast result on the loaded board, the claim sheet, and the banner, at 340, 390, and 1280 px in each theme. At 390 and 1280 px, each of the 12 lines shows 0 failures of each scan, axe violations 0, and axe incomplete 0. At 340 px, the board and the banner show 0 of each. The claim sheet at 340 px shows contrast failures 1 in each theme: axe incomplete on #egg-claim-title, "Element's background color could not be determined because it partially overlaps other elements".
 
 ## AT-51: The whole flow, end to end
 
 App: both
 Then: The egg board shows the C of Lil Fridge in CORNERSTONE and the claim in the feed.
 Files: `evidence/AT-51/1-egg-1280-dark.png`, `evidence/AT-51/1-egg-1280-light.png`, `evidence/AT-51/1-egg-375-dark.png`, `evidence/AT-51/1-egg-375-light.png`, `evidence/AT-51/2-tile-1280-dark.png`, `evidence/AT-51/2-tile-1280-light.png`, `evidence/AT-51/2-tile-375-dark.png`, `evidence/AT-51/2-tile-375-light.png`, `evidence/AT-51/3-sheet-1280-dark.png`, `evidence/AT-51/3-sheet-1280-light.png`, `evidence/AT-51/3-sheet-375-dark.png`, `evidence/AT-51/3-sheet-375-light.png`, `evidence/AT-51/4-claimed-1280-dark.png`, `evidence/AT-51/4-claimed-1280-light.png`, `evidence/AT-51/4-claimed-375-dark.png`, `evidence/AT-51/4-claimed-375-light.png`, `evidence/AT-51/5-board-1280-dark.png`, `evidence/AT-51/5-board-1280-light.png`, `evidence/AT-51/5-board-375-dark.png`, `evidence/AT-51/5-board-375-light.png`, `evidence/AT-51/eggs-spec.txt`, `evidence/AT-51/site-A2.txt`, `evidence/AT-51/steps.txt`
-Observation: The flow at 375 and 1280 px in each theme: the egg, the C tile, the sheet with Lil Fridge and CORNERSTONE, the hero card "C goes to CORNERSTONE.", then /eggs/. The board shows the CORNERSTONE row "Lil Fridge LEADS 1/11 C" and the feed "Lil Fridge claimed a C for CORNERSTONE." eggs-spec.txt: apps/site/e2e/eggs.spec.ts (with D2) passed 2 of 2 on a fresh store, at 375 and 1280 px.
+Observation: The flow at 375 and 1280 px in each theme: the egg after a double-tap, the C tile, the sheet with Lil Fridge and CORNERSTONE, the hero card "C goes to CORNERSTONE.", then /eggs/. The board shows the CORNERSTONE row "01 Lil Fridge LEADS 1/11 C" and the feed "Lil Fridge claimed a C for CORNERSTONE." eggs-spec.txt: apps/site/e2e/eggs.spec.ts passed 2 of 2 on a fresh store, at 375 and 1280 px.
+
+## AT-52: A touch hold sends its check when the browser fires the menu event
+
+App: site
+Then: The listener blocks the menu of the touch press and sends one check with the action `hold`. The right-click, the link, and the image keep the menu.
+Files: `evidence/AT-52/site-N.txt`, `evidence/AT-52/steps.txt`
+Observation: In a touch context of Chromium at 375 px, a touch press of 2215 ms on luck-3 got a contextmenu event at 734 ms. The event shows defaultPrevented true, so the menu was blocked. The press sent one check: target luck-3, action hold, theme light. A mouse right-click on the Luck cell, a link (#sim), and an image (in top10-rb-1) each show defaultPrevented false and sent no check. A touch press on the link and on the image with a menu event also show defaultPrevented false. The touch press on the image sent one hold check for top10-rb-1. The menu event of the touch press comes from the spec, as Android Chrome fires it; no Android device ran the test.
+
+## AT-53: A 404 egg matches on any missing URL
+
+App: pipeline
+Then: Each 404 check matches. The check with no `not_found` is no match. The drop answers the page `*404` for the egg.
+Files: `evidence/AT-53/output.txt`
+Observation: The drop of the 404 egg with the page /golden-egg/ answered HTTP 200 with the page *404, and the store holds the page *404. The checks with not_found true from /golden-egg, /no-such-page/, and /2026/week-99 each answered match true with the letter A and a token. The check from /golden-egg/ with no not_found answered {"match":false}. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
+
+## AT-54: A two-team egg matches any trade between its two teams
+
+App: both
+Then: The listener sends `trade_teams`, the two roster ids of the trade, smallest first, and no `trade`. The checks with 1 and 3 in either order match. The other two checks are no match. The drop refuses the old `trade` condition.
+Files: `evidence/AT-54/find-1280-light.png`, `evidence/AT-54/output.txt`, `evidence/AT-54/site-N.txt`, `evidence/AT-54/steps.txt`
+Observation: The analyzer route of the site is /analyze/, not /analyzer/. A real grade of a trade of The Blue Tent (1) and Lil Fridge (3) took 17 s and read "Not as is", with data-trade-key "1:10219|3:11560". A double-tap on the verdict word sent one check with trade_teams [1, 3] and trade_answer not_as_is, and no trade key. The egg matched and the find card shows. Over the API, the checks with [1, 3] and [3, 1] matched with the letter A. The checks with [1, 12] and [1, 3, 12] answered no match. The drop with the old trade condition answered HTTP 422 with "The condition \"trade\" is gone.", and the store holds 0 eggs of that week. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
+
+## AT-55: A burst of 3 or more taps sends nothing
+
+App: both
+Then: The listener sends no check. The drop refuses the actions `tap3`, `tap5`, `hold1`, `hold3`, and `hold5`.
+Files: `evidence/AT-55/output.txt`, `evidence/AT-55/site-N.txt`, `evidence/AT-55/steps.txt`
+Observation: Three mouse taps on luck-3 (pointerups at 12, 170, and 331 ms) sent no check and opened no dialog. Five mouse taps on luck-5, about 160 ms apart, sent no check and opened no dialog. The log counts 0 checks in all. Over the API, the drops with tap3, tap5, hold1, hold3, and hold5 each answered HTTP 422 with "The action ... is not one of tap2, hold, select.", and the store holds 0 eggs of that week. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.
+
+## AT-56: A blurb takes a double-tap egg and refuses a hold egg
+
+App: both
+Then: The listener sends one check `tap2` with the target `blurb-luck` for each double-tap. The draft writes nothing and names the spot. The drop answers 422 and stores no egg. A `tap2` egg on `blurb-luck` drops.
+Files: `evidence/AT-56/draft.txt`, `evidence/AT-56/drop.txt`, `evidence/AT-56/site-N.txt`, `evidence/AT-56/steps.txt`
+Observation: The spec set the stable id of the first blurb of /midseason/2026/ (real id blurb-1jo5mqe) to blurb-luck. By touch at 375 px and by mouse at 1280 px, a double-tap near the start and a double-tap near the end of the blurb each sent one check: target blurb-luck, action tap2. No double-tap left a selection or sent a select check. draft.txt: the real draft_week, with a fixed answer of the agent port that holds a hold on blurb-luck, raised DraftError naming the spot blurb-luck, and the egg file stayed unchanged. drop.txt: the drop of a hold on blurb-luck answered HTTP 422 and the store holds 0 eggs on blurb-luck. A tap2 egg on blurb-luck then dropped with HTTP 200. The real path of each route has the prefix /clients/cpc/eggs/; the test writes /cpc/eggs/.

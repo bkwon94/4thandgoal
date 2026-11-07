@@ -1,0 +1,25 @@
+# The drop of one egg with each old action. Each drop is week 12.
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":12,"eggs":[{"page":"/midseason/2026/","target":"luck-5","action":"tap3","conditions":{}}]}'
+{"detail":[{"type":"value_error","loc":["body","eggs",0,"action"],"msg":"Value error, The action 'tap3' is not one of tap2, hold, select.","input":"tap3","ctx":{"error":{}}}]}
+HTTP 422
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":12,"eggs":[{"page":"/midseason/2026/","target":"luck-5","action":"tap5","conditions":{}}]}'
+{"detail":[{"type":"value_error","loc":["body","eggs",0,"action"],"msg":"Value error, The action 'tap5' is not one of tap2, hold, select.","input":"tap5","ctx":{"error":{}}}]}
+HTTP 422
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":12,"eggs":[{"page":"/midseason/2026/","target":"luck-5","action":"hold1","conditions":{}}]}'
+{"detail":[{"type":"value_error","loc":["body","eggs",0,"action"],"msg":"Value error, The action 'hold1' is not one of tap2, hold, select.","input":"hold1","ctx":{"error":{}}}]}
+HTTP 422
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":12,"eggs":[{"page":"/midseason/2026/","target":"luck-5","action":"hold3","conditions":{}}]}'
+{"detail":[{"type":"value_error","loc":["body","eggs",0,"action"],"msg":"Value error, The action 'hold3' is not one of tap2, hold, select.","input":"hold3","ctx":{"error":{}}}]}
+HTTP 422
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":12,"eggs":[{"page":"/midseason/2026/","target":"luck-5","action":"hold5","conditions":{}}]}'
+{"detail":[{"type":"value_error","loc":["body","eggs",0,"action"],"msg":"Value error, The action 'hold5' is not one of tap2, hold, select.","input":"hold5","ctx":{"error":{}}}]}
+HTTP 422
+
+$ sqlite3 $CORNERSTONE_EGGS_DIR/cpc.sqlite 'SELECT count(*) AS eggs_of_week_12 FROM eggs WHERE week=12'
+0
+
+

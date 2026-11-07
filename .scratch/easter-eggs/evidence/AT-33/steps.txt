@@ -1,6 +1,6 @@
-The runner of apps/site (pnpm --dir apps/site evidence easter-eggs) could not run: it serves on its fixed port 4173,
-and a server that is not ours holds 4173 (python3 -m http.server 4173 of the worktree midseason-preview). So the
-shots come from Playwright directly, with tools/site.spec.ts and tools/playwright.config.ts of this evidence folder.
+The runner of apps/site (pnpm --dir apps/site evidence easter-eggs) serves on its fixed port 4173, and this run may
+not use 4173, because another local stack of the commissioner shares the machine. So the shots come from Playwright
+directly, with tools/site.spec.ts and tools/playwright.config.ts of this evidence folder.
 
 1. Build each client against the local API: CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build, and the
    same for CLIENT=norcal. Copy each apps/site/out to <scratch>/out-cpc and <scratch>/out-norcal, outside the repo.
@@ -16,7 +16,7 @@ shots come from Playwright directly, with tools/site.spec.ts and tools/playwrigh
    switches the page to the dark theme as the theme button does: the class "dark" on the root and cpc.theme.
 6. The real path of each route is /clients/cpc/eggs/<route>. The tests write /cpc/eggs/.
 
-Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
+Run: cd apps/site && EGGS_SCRATCH=<scratch> EGGS_EV=<scratch>/ev pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
 
 This test:
 Phase A1. The find of AT-32, then tap "Claim C", wait for the group "Your team", shot <w>-<theme>.png. The log lists the pills of the group.

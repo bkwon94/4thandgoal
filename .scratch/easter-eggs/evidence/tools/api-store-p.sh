@@ -3,13 +3,13 @@
 # Start the API first with a fresh CORNERSTONE_EGGS_DIR. The real path of each route has the /clients/cpc/ prefix.
 source "$(dirname "$0")/lib.sh"
 mkdir -p $EV/AT-{1,2,3,4,5,6,7,8,9,10,11,13,14,17,18}
-T1='{"page":"/midseason/2026/","target":"luck-3","action":"tap3","conditions":{"theme":"light"}}'
+T1='{"page":"/midseason/2026/","target":"luck-3","action":"tap2","conditions":{"theme":"light"}}'
 T2='{"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{"clock":"23:00-00:00"}}'
 T3='{"page":"/midseason/2026/","target":"sim-trophy","action":"tap2","conditions":{"sim_champion":12}}'
-T4='{"page":"/2026/week-08/","target":"number-closest","action":"tap3","conditions":{}}'
+T4='{"page":"/2026/week-08/","target":"number-closest","action":"tap2","conditions":{}}'
 F1='{"page":"/2026/week-08/","target":"number-top-score","action":"tap2","conditions":{}}'
-F5='{"page":"/midseason/2026/","target":"heading-luck","action":"tap4","conditions":{}}'
-F6='{"page":"/2026/week-08/","target":"heading-awards","action":"hold3","conditions":{}}'
+F5='{"page":"/midseason/2026/","target":"heading-luck","action":"tap2","conditions":{}}'
+F6='{"page":"/2026/week-08/","target":"heading-awards","action":"hold","conditions":{}}'
 F7='{"page":"/midseason/2026/","target":"heading-arcs","action":"tap2","conditions":{}}'
 F9='{"page":"/midseason/2026/","target":"heading-draft","action":"tap2","conditions":{}}'
 F10='{"page":"/midseason/2026/","target":"heading-waivers","action":"tap2","conditions":{}}'
@@ -25,11 +25,11 @@ run "curl -s $E/board | python3 -c 'import json,sys; b=json.load(sys.stdin); pri
 
 OUT=$EV/AT-1/output.txt; : > $OUT
 note "T1 is egg 2 of week 9, letter C. The real path is /clients/cpc/eggs/check."
-run "curl -s -w '\nHTTP %{http_code}' -X POST $E/check -H '$J' -d '{\"page\":\"/midseason/2026/\",\"target\":\"luck-3\",\"action\":\"tap3\",\"conditions\":{\"theme\":\"light\"}}' | tee $EV/AT-1/.answer"
+run "curl -s -w '\nHTTP %{http_code}' -X POST $E/check -H '$J' -d '{\"page\":\"/midseason/2026/\",\"target\":\"luck-3\",\"action\":\"tap2\",\"conditions\":{\"theme\":\"light\"}}' | tee $EV/AT-1/.answer"
 TOKEN=$(head -1 $EV/AT-1/.answer | python3 -c "import json,sys; print(json.load(sys.stdin)['token'])"); rm -f $EV/AT-1/.answer
 
 OUT=$EV/AT-2/output.txt; : > $OUT
-run "curl -s -w '\nHTTP %{http_code}' -X POST $E/check -H '$J' -d '{\"page\":\"/midseason/2026/\",\"target\":\"luck-3\",\"action\":\"tap3\",\"conditions\":{\"theme\":\"dark\"}}'"
+run "curl -s -w '\nHTTP %{http_code}' -X POST $E/check -H '$J' -d '{\"page\":\"/midseason/2026/\",\"target\":\"luck-3\",\"action\":\"tap2\",\"conditions\":{\"theme\":\"dark\"}}'"
 
 OUT=$EV/AT-3/output.txt; : > $OUT
 note "T2 is egg 3 of week 9, letter D, with the clock window 23:00-00:00 on the clock of the client, America/New_York."
@@ -62,7 +62,7 @@ OUT=$EV/AT-18/output.txt; : > $OUT
 note "T1, T2, T3, and T4 dropped, and T1 claimed. The full board JSON:"
 run "curl -s $E/board | python3 -m json.tool"
 note "A search of the answer for each page, target, action, and condition name of T1 to T4:"
-run "curl -s $E/board | grep -o -E 'midseason|week-08|luck-3|number-median|sim-trophy|number-closest|tap[0-9]|hold[0-9]|theme|clock|sim_champion|\"page\"|\"target\"|\"action\"|\"conditions\"' | sort | uniq -c; echo \"matches: \$(curl -s $E/board | grep -c -E 'midseason|week-08|luck-3|number-median|sim-trophy|number-closest|tap[0-9]|hold[0-9]|theme|clock|sim_champion|\"page\"|\"target\"|\"action\"|\"conditions\"')\""
+run "curl -s $E/board | grep -o -E 'midseason|week-08|luck-3|number-median|sim-trophy|number-closest|tap[0-9]|hold|theme|clock|sim_champion|\"page\"|\"target\"|\"action\"|\"conditions\"' | sort | uniq -c; echo \"matches: \$(curl -s $E/board | grep -c -E 'midseason|week-08|luck-3|number-median|sim-trophy|number-closest|tap[0-9]|hold|theme|clock|sim_champion|\"page\"|\"target\"|\"action\"|\"conditions\"')\""
 
 OUT=$EV/AT-17/output.txt; : > $OUT
 note "The claim of AT-5 holds T1, egg 2. The undo runs through make egg-undo against the local API."
@@ -74,12 +74,12 @@ run "curl -s -X POST $E/check -H '$J' -d '$T1' | sed -E 's/\"token\":\"[^\"]+\"/
 OUT=$EV/AT-11/output.txt; : > $OUT
 note "After the undo of AT-17, Teehee (12) holds no letter. A new token of T1, letter C, then a claim as a block (word null)."
 run "curl -s $E/board | python3 -c 'import json,sys; b=json.load(sys.stdin); print(\"Teehee letters\", {w[\"word\"]: [m[\"letters\"] for m in w[\"managers\"] if m[\"roster_id\"]==12][0] for w in b[\"words\"]})'"
-TOKEN=$(token /midseason/2026/ luck-3 tap3 '{"theme":"light"}')
+TOKEN=$(token /midseason/2026/ luck-3 tap2 '{"theme":"light"}')
 run "curl -s -w '\nHTTP %{http_code}' -X POST $E/claim -H '$PASS' -H '$J' -d '{\"token\":\"$TOKEN\",\"roster_id\":12,\"word\":null}'"
 
 OUT=$EV/AT-6/output.txt; : > $OUT
 note "Two checks of T1 give two tokens. The two claims go at once, in the background, for Lil Fridge (3) and Teehee (12)."
-A=$(token /midseason/2026/ luck-3 tap3 '{"theme":"light"}'); B=$(token /midseason/2026/ luck-3 tap3 '{"theme":"light"}')
+A=$(token /midseason/2026/ luck-3 tap2 '{"theme":"light"}'); B=$(token /midseason/2026/ luck-3 tap2 '{"theme":"light"}')
 note "token A ${A:0:6}... and token B ${B:0:6}... (cut)"
 run "( curl -s -w ' HTTP %{http_code} (Lil Fridge)\n' -X POST $E/claim -H '$PASS' -H '$J' -d '{\"token\":\"$A\",\"roster_id\":3,\"word\":\"CORNERSTONE\"}' & curl -s -w ' HTTP %{http_code} (Teehee)\n' -X POST $E/claim -H '$PASS' -H '$J' -d '{\"token\":\"$B\",\"roster_id\":12,\"word\":\"CORNERSTONE\"}' & wait )"
 run "sqlite3 -header \$CORNERSTONE_EGGS_DIR/cpc.sqlite 'SELECT rowid, egg_id, roster_id, word, claimed_at, undone_at FROM claims'"
@@ -90,11 +90,11 @@ OUT=$EV/AT-9/output.txt; : > $OUT
 note "The setup: Lil Fridge (3) holds the one C of CORNERSTONE, from T1. AT-6 left roster $WINNER on T1."
 if [ "$WINNER" != "3" ]; then
   run "curl -s -X POST $E/undo -H '$KEY' -H '$J' -d '{\"egg_id\":2}'"
-  TOKEN=$(token /midseason/2026/ luck-3 tap3 '{"theme":"light"}')
+  TOKEN=$(token /midseason/2026/ luck-3 tap2 '{"theme":"light"}')
   run "curl -s -X POST $E/claim -H '$PASS' -H '$J' -d '{\"token\":\"$TOKEN\",\"roster_id\":3,\"word\":\"CORNERSTONE\"}'"
 fi
 note "T4 is egg 8, egg 2 of week 10, letter C. A token of T4, then a claim for Lil Fridge into CORNERSTONE:"
-TOKEN=$(token /2026/week-08/ number-closest tap3 '{}')
+TOKEN=$(token /2026/week-08/ number-closest tap2 '{}')
 run "curl -s -X POST $E/check -H '$J' -d '$T4' | sed -E 's/\"token\":\"[^\"]+\"/\"token\":\"<cut>\"/'"
 run "curl -s -w '\nHTTP %{http_code}' -X POST $E/claim -H '$PASS' -H '$J' -d '{\"token\":\"$TOKEN\",\"roster_id\":3,\"word\":\"CORNERSTONE\"}'"
 

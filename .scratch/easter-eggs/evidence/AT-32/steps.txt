@@ -1,6 +1,6 @@
-The runner of apps/site (pnpm --dir apps/site evidence easter-eggs) could not run: it serves on its fixed port 4173,
-and a server that is not ours holds 4173 (python3 -m http.server 4173 of the worktree midseason-preview). So the
-shots come from Playwright directly, with tools/site.spec.ts and tools/playwright.config.ts of this evidence folder.
+The runner of apps/site (pnpm --dir apps/site evidence easter-eggs) serves on its fixed port 4173, and this run may
+not use 4173, because another local stack of the commissioner shares the machine. So the shots come from Playwright
+directly, with tools/site.spec.ts and tools/playwright.config.ts of this evidence folder.
 
 1. Build each client against the local API: CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build, and the
    same for CLIENT=norcal. Copy each apps/site/out to <scratch>/out-cpc and <scratch>/out-norcal, outside the repo.
@@ -16,15 +16,7 @@ shots come from Playwright directly, with tools/site.spec.ts and tools/playwrigh
    switches the page to the dark theme as the theme button does: the class "dark" on the root and cpc.theme.
 6. The real path of each route is /clients/cpc/eggs/<route>. The tests write /cpc/eggs/.
 
-Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
+Run: cd apps/site && EGGS_SCRATCH=<scratch> EGGS_EV=<scratch>/ev pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
 
 This test:
-Phase A1. For each width and theme: open /midseason/2026/ in the light theme, three fast taps (click clickCount 3) on [data-stable-id="luck-3"], wait for "You found an egg", switch to the dark theme for a dark shot, wait 1.2 s, shot egg-<w>-<theme>.png. Tap "Crack the egg", wait 1.6 s, shot tile-<w>-<theme>.png.
-
-The motion, phase M32 at the head 566d11e7 (the code of c5d68913). Store M32, fresh, with the six eggs of week 9. At 375 and
-1280 px, with reduced motion off, find T1 in the light theme; the dark run switches the theme as the card shows. A sampler
-in the page logs, in ms from the first tap and then from the tap on the egg (every 75 ms for 1.5 s), the scrim with its
-backdrop-filter, each ring, the halo, the egg, the two halves, the crack, the burst, and the tile: computed opacity and
-transform, and each running animation from getAnimations(). Shots: motion-<w>-<theme>-find-<ms>.png after the find, and
-motion-<w>-<theme>-crack-<ms>.png at about 0, 150, 300, 450, 600, 900, 1200, and 1600 ms after the tap on the egg. Each
-context records a Playwright video, motion-<w>-<theme>.webm. The log is site-M32.txt.
+Phase A1. For each width and theme: open /midseason/2026/ in the light theme, wait for the egg button, double-tap (click clickCount 2) [data-stable-id="luck-3"], wait for "You found an egg", switch to the dark theme for a dark shot, wait 1.2 s, shot egg-<w>-<theme>.png. Tap "Crack the egg", wait 1.6 s, shot tile-<w>-<theme>.png. Phase M32, store M32: at 375 and 1280 px in each theme, a video and a sampler of the computed style and the running animations of each part of the find, with burst shots after the tap on the egg.

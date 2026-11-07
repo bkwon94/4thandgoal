@@ -32,7 +32,8 @@ function serveDir(dir: string, port: number): Promise<{ close: () => Promise<voi
 }
 
 const SCRATCH = process.env.EGGS_SCRATCH!;
-const EV = join(__dirname, "..");
+// EGGS_EV moves the output to a folder outside the repo, so a run again changes no file of a test outside its list.
+const EV = process.env.EGGS_EV ?? join(__dirname, "..");
 const TOOLS = __dirname;
 const CPC = "http://127.0.0.1:4174";
 const NORCAL = "http://127.0.0.1:4175";
@@ -45,11 +46,11 @@ type Theme = (typeof THEMES)[number];
 
 // The test eggs of ACCEPTANCE.md and the fillers of each drop. The API gives the letters A, C, D, E, G, L in this order.
 const F1 = { page: "/2026/week-08/", target: "number-top-score", action: "tap2", conditions: {} };
-const T1 = { page: "/midseason/2026/", target: "luck-3", action: "tap3", conditions: { theme: "light" } };
+const T1 = { page: "/midseason/2026/", target: "luck-3", action: "tap2", conditions: { theme: "light" } };
 const T2 = { page: "/2026/week-08/", target: "number-median", action: "tap2", conditions: { clock: "23:00-00:00" } };
 const T3 = { page: "/midseason/2026/", target: "sim-trophy", action: "tap2", conditions: { sim_champion: 12 } };
-const F5 = { page: "/midseason/2026/", target: "heading-luck", action: "tap4", conditions: {} };
-const F6 = { page: "/2026/week-08/", target: "heading-awards", action: "hold3", conditions: {} };
+const F5 = { page: "/midseason/2026/", target: "heading-luck", action: "tap2", conditions: {} };
+const F6 = { page: "/2026/week-08/", target: "heading-awards", action: "hold", conditions: {} };
 const LIL_FRIDGE = 3;
 const TEEHEE = 12;
 
@@ -158,7 +159,7 @@ async function settle(page: Page) {
 const shot = (page: Page, at: string, name: string, width: number, theme: Theme, fullPage = false) =>
   page.screenshot({ path: join(folder(at), `${name ? `${name}-` : ""}${width}-${theme}.png`), fullPage });
 
-/* Find T1 in the light theme: three fast taps on the Luck cell of Lil Fridge. */
+/* Find T1 in the light theme: a double-tap on the Luck cell of Lil Fridge. */
 async function findT1(page: Page) {
   await page.goto(`${CPC}/midseason/2026/`);
   // T1 holds only in the light theme. A shot in the dark theme switches the theme after the find.
@@ -167,7 +168,7 @@ async function findT1(page: Page) {
   await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
   const cell = page.locator('[data-stable-id="luck-3"]');
   await cell.scrollIntoViewIfNeeded();
-  await cell.click({ clickCount: 3 });
+  await cell.click({ clickCount: 2 });
 }
 async function crack(page: Page) {
   await page.getByRole("button", { name: "Crack the egg" }).click();
@@ -213,14 +214,14 @@ test("phase A0: an empty store, NorCal", async ({ browser }) => {
     await settle(page);
     await shot(page, "AT-24", "home", width, theme, true);
     const buttons = await page.locator('a[href$="/eggs/"]').count();
-    await page.locator('[data-stable-id="page-end"]').first().click({ clickCount: 3, force: true }).catch(() => {});
-    await page.locator("main").click({ clickCount: 3, position: { x: 20, y: 20 } }).catch(() => {});
+    await page.locator('[data-stable-id="page-end"]').first().click({ clickCount: 2, force: true }).catch(() => {});
+    await page.locator("main").click({ clickCount: 2, position: { x: 20, y: 20 } }).catch(() => {});
     await page.waitForTimeout(800);
     const response = await page.goto(`${NORCAL}/eggs/`);
     await settle(page);
     await shot(page, "AT-24", "eggs", width, theme, true);
     const notFound = await page.locator("[data-not-found]").count();
-    log("AT-24", `norcal ${width}-${theme}: links to /eggs/ on home ${buttons}, egg checks sent after two triple taps ${checks.length}, /eggs/ status ${response?.status()}, 404 mark ${notFound}`);
+    log("AT-24", `norcal ${width}-${theme}: links to /eggs/ on home ${buttons}, egg checks sent after two double-taps ${checks.length}, /eggs/ status ${response?.status()}, 404 mark ${notFound}`);
     await close();
   }
   const { page, close } = await open(browser, 1280, "light");
@@ -254,16 +255,21 @@ test("phase A1: six eggs, none claimed", async ({ browser }) => {
   {
     const { page, checks, close } = await open(browser, 1280, "light");
     await page.goto(`${CPC}/midseason/2026/`);
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
     const cell = page.locator('[data-stable-id="luck-3"]');
     await cell.scrollIntoViewIfNeeded();
-    const times: number[] = [];
-    for (let i = 0; i < 3; i += 1) {
-      times.push(Date.now());
-      await cell.click();
-      await page.waitForTimeout(150);
+    await page.evaluate(() => {
+      const w = window as unknown as { eeTimes: number[] };
+      w.eeTimes = [];
+      window.addEventListener("pointerup", () => w.eeTimes.push(Math.round(performance.now())), true);
+    });
+    for (let i = 0; i < 2; i += 1) {
+      await tapAt(page, '[data-stable-id="luck-3"]');
+      if (i < 1) await page.waitForTimeout(150);
     }
     await page.waitForTimeout(1000);
-    log("AT-26", `Three taps on [data-stable-id="luck-3"] of /midseason/2026/ in the light theme, at +0, +${times[1] - times[0]}, and +${times[2] - times[0]} ms.`);
+    const times = await page.evaluate(() => (window as unknown as { eeTimes: number[] }).eeTimes);
+    log("AT-26", `Two mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ in the light theme. The pointerup times of the page, in ms from the first: ${times.map((t) => t - times[0]).join(", ")}.`);
     log("AT-26", `Checks sent: ${checks.length}`);
     checks.forEach((body) => log("AT-26", `body: ${body}`));
     await page.keyboard.press("Escape");
@@ -272,19 +278,26 @@ test("phase A1: six eggs, none claimed", async ({ browser }) => {
   {
     const { page, checks, close } = await open(browser, 1280, "light");
     await page.goto(`${CPC}/midseason/2026/`);
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
     const cell = page.locator('[data-stable-id="luck-3"]');
     await cell.scrollIntoViewIfNeeded();
     const box = (await cell.boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    const down = Date.now();
-    await page.mouse.down();
-    await page.waitForTimeout(3500);
-    await page.mouse.up();
-    const held = Date.now() - down;
-    await page.waitForTimeout(1000);
-    log("AT-27", `A press on [data-stable-id="luck-3"] of /midseason/2026/, held ${held} ms from the pointer down to the pointer up.`);
-    log("AT-27", `Checks sent: ${checks.length}`);
-    checks.forEach((body) => log("AT-27", `body: ${body}`));
+    // A hold of 3.5 s, then a hold of 1.5 s. The log shows the checks sent after each hold.
+    for (const ms of [3500, 1500]) {
+      const before = checks.length;
+      const down = Date.now();
+      await page.mouse.down();
+      await page.waitForTimeout(ms);
+      await page.mouse.up();
+      const held = Date.now() - down;
+      await page.waitForTimeout(1000);
+      log("AT-27", `A press on [data-stable-id="luck-3"] of /midseason/2026/, held ${held} ms from the pointer down to the pointer up. Checks sent by this press: ${checks.length - before}`);
+      checks.slice(before).forEach((body) => log("AT-27", `body: ${body}`));
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(800);
+    }
+    log("AT-27", `Checks sent in all: ${checks.length}`);
     await close();
   }
   {
@@ -336,6 +349,7 @@ test("phase A1: six eggs, none claimed", async ({ browser }) => {
   {
     const { page, checks, close } = await open(browser, 1280, "light");
     await page.goto(`${CPC}/midseason/2026/`);
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
     await page.getByRole("button", { name: "Sim the season" }).click();
     const row = page.locator('[data-stable-id="sim-row-3"]');
     await row.first().waitFor();
@@ -349,14 +363,14 @@ test("phase A1: six eggs, none claimed", async ({ browser }) => {
       return { live, node, place: rows.indexOf("sim-row-3") + 1, text: element.textContent?.slice(0, 40) };
     });
     const frames = [await frame()];
-    for (let i = 0; i < 3; i += 1) {
+    for (let i = 0; i < 2; i += 1) {
       await row.first().click({ force: true });
       frames.push(await frame());
       await page.waitForTimeout(250);
       frames.push(await frame());
     }
     await page.waitForTimeout(1000);
-    log("AT-30", "The replay runs. Three taps on [data-stable-id=\"sim-row-3\"], 250 ms apart, and the frame read before and after each tap.");
+    log("AT-30", "The replay runs. Two taps on [data-stable-id=\"sim-row-3\"], 250 ms apart, and the frame read before and after each tap.");
     log("AT-30", "Each line: the live line of the replay, a mark of the DOM node (a new number is a new node), the place of the row, and its text.");
     frames.forEach((each, index) => log("AT-30", `read ${index}: ${JSON.stringify(each)}`));
     log("AT-30", `Checks sent: ${checks.length}`);
@@ -420,7 +434,7 @@ test("phase A1: six eggs, none claimed", async ({ browser }) => {
 
   // AT-50: the floor scans of ADR 0025 on the egg board, the claim sheet, and the banner, at 390 and 1280 px in each theme.
   api("A");
-  for (const width of [390, 1280]) for (const theme of THEMES) {
+  for (const width of [340, 390, 1280]) for (const theme of THEMES) {
     for (const part of ["board", "sheet", "banner"] as const) {
       const { page, close } = await open(browser, width, theme, { clock: "2026-11-10T12:00:00-05:00" });
       let scope: string | undefined;
@@ -747,6 +761,7 @@ test("phase E: the EAGLES store", async ({ browser }) => {
   for (const width of WIDTHS) for (const theme of THEMES) {
     const { page, close } = await open(browser, width, theme, { pass: true });
     await page.goto(`${CPC}/midseason/2026/`);
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
     const cell = page.locator('[data-stable-id="luck-5"]');
     await cell.scrollIntoViewIfNeeded();
     await cell.click({ clickCount: 2 });
@@ -765,7 +780,7 @@ test("phase E: the EAGLES store", async ({ browser }) => {
     await close();
   }
   // AT-12 runs its claims with curl here, then AT-44 shows the won word.
-  execFileSync("bash", [join(TOOLS, "api-store-e2.sh")], { stdio: "pipe" });
+  execFileSync("bash", [join(TOOLS, "api-store-e2.sh")], { env: { ...process.env, EV }, stdio: "pipe" });
   api("E");
   for (const width of WIDTHS) for (const theme of THEMES) {
     const { page, close } = await open(browser, width, theme);
@@ -787,12 +802,13 @@ async function tapAt(page: Page, selector: string) {
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 }
 
-test("phase L: the multi-tap, the sim frames, and the callout", async ({ browser }) => {
+test("phase L: the double-tap and the sim frames", async ({ browser }) => {
   PHASE = "L";
   api("A");
   {
     const { page, checks, close } = await open(browser, 1280, "light");
     await page.goto(`${CPC}/midseason/2026/`);
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
     await page.locator('[data-stable-id="luck-3"]').scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
     const at = await page.evaluate(() => {
@@ -802,13 +818,13 @@ test("phase L: the multi-tap, the sim frames, and the callout", async ({ browser
       return 0;
     });
     void at;
-    for (let i = 0; i < 3; i += 1) {
+    for (let i = 0; i < 2; i += 1) {
       await tapAt(page, '[data-stable-id="luck-3"]');
-      if (i < 2) await page.waitForTimeout(150);
+      if (i < 1) await page.waitForTimeout(150);
     }
     await page.waitForTimeout(1200);
     const times = await page.evaluate(() => (window as unknown as { eeTimes: number[] }).eeTimes);
-    log("AT-26", `Three mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ in the light theme. The pointerup times of the page, in ms from the first: ${times.map((t) => t - times[0]).join(", ")}.`);
+    log("AT-26", `Two mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ in the light theme. The pointerup times of the page, in ms from the first: ${times.map((t) => t - times[0]).join(", ")}.`);
     log("AT-26", `Checks sent: ${checks.length}`);
     checks.forEach((body) => log("AT-26", `body: ${body}`));
     log("AT-26", `The card after the answer (store A holds a claim of T1 by Teehee from AT-38, so the card is the claimed-first card): ${(await page.getByRole("dialog").allInnerTexts()).join(" ").replace(/\n+/g, " | ")}`);
@@ -817,6 +833,7 @@ test("phase L: the multi-tap, the sim frames, and the callout", async ({ browser
   {
     const { page, checks, close } = await open(browser, 1280, "light");
     await page.goto(`${CPC}/midseason/2026/`);
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
     await page.getByRole("button", { name: "Sim the season" }).scrollIntoViewIfNeeded();
     // A watch in the page marks the time of each change of the frame: the text of the standings row of roster 3.
     await page.evaluate(() => {
@@ -840,16 +857,16 @@ test("phase L: the multi-tap, the sim frames, and the callout", async ({ browser
     const period = seen.at(-1)!.t - seen.at(-2)!.t;
     const now = await page.evaluate(() => performance.now());
     const next = seen.at(-1)!.t + period;
-    // The first tap lands 150 ms before the next frame, and the next two taps 200 ms apart, so a frame changes between taps.
+    // The first tap lands 150 ms before the next frame, and the second tap 200 ms later, so a frame changes between taps.
     await page.waitForTimeout(Math.max(0, next - 150 - now));
-    for (let i = 0; i < 3; i += 1) {
+    for (let i = 0; i < 2; i += 1) {
       await tapAt(page, '[data-stable-id="sim-row-3"]');
-      if (i < 2) await page.waitForTimeout(200);
+      if (i < 1) await page.waitForTimeout(200);
     }
     await page.waitForTimeout(1200);
     const all = await page.evaluate(() => (window as unknown as { eeChanges: { t: number; text: string }[] }).eeChanges);
-    // The first pointerup is the press of "Sim the season", so the three taps on the row are the last three.
-    const first = all.filter((c) => c.text === "TAP").at(-3)!.t;
+    // The first pointerup is the press of "Sim the season", so the two taps on the row are the last two.
+    const first = all.filter((c) => c.text === "TAP").at(-2)!.t;
     log("AT-30", `The replay runs. One frame lasts about ${period} ms. The taps and the frame changes of [data-stable-id="sim-row-3"] near the taps, in ms from the first tap:`);
     log("AT-30", `Pointerups seen by the page: ${all.filter((c) => c.text === "TAP").length}.`);
     all.filter((c) => c.t - first > -1600 && c.t - first < 2000).forEach((c) => log("AT-30", `${c.t - first}: ${c.text === "TAP" ? "TAP" : `frame: ${c.text}`}`));
@@ -897,13 +914,13 @@ test("phase P47: the hunt hides before the first drop", async ({ browser }) => {
       w.eeTimes = [];
       window.addEventListener("pointerup", () => w.eeTimes.push(Math.round(performance.now())), true);
     });
-    for (let i = 0; i < 3; i += 1) {
+    for (let i = 0; i < 2; i += 1) {
       await tapAt(page, '[data-stable-id="luck-3"]');
-      if (i < 2) await page.waitForTimeout(150);
+      if (i < 1) await page.waitForTimeout(150);
     }
     await page.waitForTimeout(1500);
     const times = await page.evaluate(() => (window as unknown as { eeTimes: number[] }).eeTimes);
-    log("AT-47", `Three mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ at 1280 px, ${theme} theme, pointerups at ${times.map((t) => t - times[0]).join(", ")} ms. Requests to /eggs/check: ${checks.length}${checks.length ? ` ${JSON.stringify(checks)}` : ""}. Dialogs: ${await page.getByRole("dialog").count()}.`);
+    log("AT-47", `Two mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ at 1280 px, ${theme} theme, pointerups at ${times.map((t) => t - times[0]).join(", ")} ms. Requests to /eggs/check: ${checks.length}${checks.length ? ` ${JSON.stringify(checks)}` : ""}. Dialogs: ${await page.getByRole("dialog").count()}.`);
     await close();
   }
   execFileSync("bash", [join(TOOLS, "stop-api.sh")], { env: { ...process.env }, stdio: "pipe" });
@@ -953,10 +970,11 @@ test("phase M32: the motion of the find", async ({ browser }) => {
     await page.waitForTimeout(800);
     await installSampler(page);
     const name = (n: string) => join(folder("AT-32"), `motion-${width}-${theme}-${n}.png`);
-    // The three taps: window.eeT0 is the time of the first tap.
+    // The double-tap: window.eeT0 is the time of the first tap. The listener mounts after the board names a drop.
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
     await page.evaluate(() => { (window as unknown as { eeT0: number }).eeT0 = performance.now(); });
     const t0 = Date.now();
-    await cell.click({ clickCount: 3 });
+    await cell.click({ clickCount: 2 });
     await page.getByRole("heading", { name: "You found an egg" }).waitFor();
     if (theme === "dark") await page.evaluate(() => { document.documentElement.classList.add("dark"); localStorage.setItem("cpc.theme", "dark"); });
     await page.evaluate(() => (window as unknown as { eeSnap: (l: string) => void }).eeSnap("the find card shows"));
@@ -1026,6 +1044,215 @@ test("phase M34: the pulse of the ghost tile", async ({ browser }) => {
         await page.screenshot({ path: join(folder("AT-34"), `ghost-${width}-${theme}-${i + 1}.png`), clip: { x: Math.max(0, box.x - 24), y: Math.max(0, box.y - 24), width: box.width + 48, height: box.height + 48 } });
       }
     }
+    await close();
+  }
+  execFileSync("bash", [join(TOOLS, "stop-api.sh")], { env: { ...process.env }, stdio: "pipe" });
+});
+
+/* Install a log of the pointer events and of the menu events in the page. The log of a menu event runs on the window
+   in the bubble phase, after the listener of the hunt on the document, so it reads the blocked state that the hunt set. */
+async function installEventLog(page: Page) {
+  await page.evaluate(() => {
+    const w = window as unknown as { eeT0: number; eeEvents: string[]; eeLog?: boolean };
+    w.eeT0 = performance.now();
+    w.eeEvents = [];
+    // A second call only clears the log, so each event shows one time.
+    if (w.eeLog) return;
+    w.eeLog = true;
+    const at = () => Math.round(performance.now() - w.eeT0);
+    const where = (event: Event) => {
+      const element = event.target instanceof Element ? event.target : null;
+      const id = element?.closest("[data-stable-id]")?.getAttribute("data-stable-id") ?? "none";
+      return `${element?.tagName.toLowerCase() ?? "?"} in ${id}`;
+    };
+    for (const name of ["pointerdown", "pointerup", "pointercancel"]) {
+      window.addEventListener(name, (event) => w.eeEvents.push(`${at()} ms ${name} ${(event as PointerEvent).pointerType} on ${where(event)}`), true);
+    }
+    window.addEventListener("contextmenu", (event) => w.eeEvents.push(`${at()} ms contextmenu on ${where(event)}: blocked (defaultPrevented) ${event.defaultPrevented}`));
+  });
+}
+const events = (page: Page) => page.evaluate(() => (window as unknown as { eeEvents: string[] }).eeEvents);
+
+/* The middle of the first element that matches. */
+async function middle(page: Page, selector: string) {
+  const box = (await page.locator(selector).first().boundingBox())!;
+  return { x: Math.round(box.x + box.width / 2), y: Math.round(box.y + box.height / 2) };
+}
+
+test("phase N: the touch hold, the burst, the blurb, and the analyzer", async ({ browser }) => {
+  PHASE = "N";
+  api("N", true);
+  const analyzer = { page: "/analyze/", target: "verdict-word", action: "tap2", conditions: { trade_teams: [1, 3] } };
+  const dropped = await drop(9, [T1, analyzer, F5]);
+  for (const at of ["AT-52", "AT-54", "AT-55", "AT-56"]) {
+    log(at, `The setup: a fresh store and the drop of week 9, so the hunt mounts its listener: ${JSON.stringify(dropped.body.eggs.map((egg: { id: number; page: string; target: string; action: string; conditions: unknown }) => [egg.id, egg.page, egg.target, egg.action, egg.conditions]))}`);
+  }
+
+  // AT-52: a touch press of 2.2 s with a menu event during the press, then the menu events that keep their menu.
+  {
+    const context = await browser.newContext({ viewport: { width: 375, height: 900 }, hasTouch: true, isMobile: true });
+    await context.addInitScript(() => { try { localStorage.setItem("cpc.theme", "light"); } catch {} });
+    const page = await context.newPage();
+    const checks: string[] = [];
+    page.on("request", (request) => { if (request.url().includes("/eggs/check")) checks.push(request.postData() ?? ""); });
+    await page.goto(`${CPC}/midseason/2026/`);
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
+    const cdp = await context.newCDPSession(page);
+    const link = "main a[href]";
+    const image = "main img";
+    log("AT-52", `375 px, light, a touch context (hasTouch, isMobile) of Chromium ${browser.version()}. The touch press runs with Input.dispatchTouchEvent of the DevTools protocol.`);
+    log("AT-52", "During each touch press the spec fires a cancelable contextmenu MouseEvent on the element under the press, as Android Chrome does. The event log shows each pointer event and each menu event that the page saw.");
+    const press = async (name: string, selector: string, ms: number) => {
+      await page.locator(selector).first().scrollIntoViewIfNeeded();
+      await page.waitForTimeout(400);
+      const point = await middle(page, selector);
+      await installEventLog(page);
+      const before = checks.length;
+      const start = Date.now();
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: point.x, y: point.y }] });
+      await page.waitForTimeout(700);
+      // dispatchEvent answers false when a listener called preventDefault.
+      const kept = await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)!.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: x, clientY: y })), point);
+      await page.waitForTimeout(Math.max(0, ms - (Date.now() - start)));
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      const held = Date.now() - start;
+      await page.waitForTimeout(1200);
+      log("AT-52", `${name}: a touch press of ${held} ms at (${point.x}, ${point.y}) on ${selector}, with a contextmenu event at about 700 ms. dispatchEvent answered ${kept}, so the menu was ${kept ? "kept" : "blocked"}.`);
+      (await events(page)).forEach((line) => log("AT-52", `  ${line}`));
+      log("AT-52", `  checks sent by this press: ${checks.length - before}`);
+      checks.slice(before).forEach((body) => log("AT-52", `  body: ${body}`));
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(600);
+    };
+    const rightClick = async (name: string, selector: string) => {
+      await page.locator(selector).first().scrollIntoViewIfNeeded();
+      await page.waitForTimeout(400);
+      const point = await middle(page, selector);
+      await installEventLog(page);
+      const before = checks.length;
+      await page.mouse.click(point.x, point.y, { button: "right" });
+      await page.waitForTimeout(1200);
+      log("AT-52", `${name}: a mouse right-click at (${point.x}, ${point.y}) on ${selector}.`);
+      (await events(page)).forEach((line) => log("AT-52", `  ${line}`));
+      log("AT-52", `  checks sent by this right-click: ${checks.length - before}`);
+      await page.keyboard.press("Escape");
+    };
+    log("AT-52", `The link: ${await page.locator(link).first().evaluate((a) => `${a.getAttribute("href")} in ${a.closest("[data-stable-id]")?.getAttribute("data-stable-id") ?? "no stable id"}`)}. The image: ${await page.locator(image).first().evaluate((i) => `${(i.getAttribute("src") ?? "").slice(0, 50)} in ${i.closest("[data-stable-id]")?.getAttribute("data-stable-id") ?? "no stable id"}`)}.`);
+    await press("1. the Luck cell of Lil Fridge", '[data-stable-id="luck-3"]', 2200);
+    await rightClick("2. the Luck cell of Lil Fridge", '[data-stable-id="luck-3"]');
+    await rightClick("3. a link", link);
+    await rightClick("4. an image", image);
+    await press("5. a link", link, 2200);
+    await press("6. an image", image, 2200);
+    log("AT-52", `Checks sent in all: ${checks.length}`);
+    await context.close();
+  }
+
+  // AT-55: three fast taps on the Luck cell of Lil Fridge, then five fast taps on another cell.
+  {
+    const { page, checks, close } = await open(browser, 1280, "light");
+    await page.goto(`${CPC}/midseason/2026/`);
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
+    await page.locator('[data-stable-id="luck-3"]').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+    for (const [target, count] of [["luck-3", 3], ["luck-5", 5]] as const) {
+      await installEventLog(page);
+      const before = checks.length;
+      for (let i = 0; i < count; i += 1) {
+        await tapAt(page, `[data-stable-id="${target}"]`);
+        if (i < count - 1) await page.waitForTimeout(150);
+      }
+      await page.waitForTimeout(1500);
+      const ups = (await events(page)).filter((line) => line.includes("pointerup"));
+      log("AT-55", `${count} mouse taps on [data-stable-id="${target}"] of /midseason/2026/ at 1280 px, light. The pointerups: ${ups.join("; ")}.`);
+      log("AT-55", `  checks sent by these taps: ${checks.length - before}${checks.length - before ? ` ${JSON.stringify(checks.slice(before))}` : ""}; dialogs open: ${await page.getByRole("dialog").count()}`);
+    }
+    log("AT-55", `Checks sent in all: ${checks.length}`);
+    await close();
+  }
+
+  // AT-56: a double-tap at two places of one blurb, by touch at 375 px and by mouse at 1280 px.
+  for (const [width, touch] of [[375, true], [1280, false]] as const) {
+    const context = await browser.newContext({ viewport: { width, height: 900 }, hasTouch: touch, isMobile: touch });
+    await context.addInitScript(() => { try { localStorage.setItem("cpc.theme", "light"); } catch {} });
+    const page = await context.newPage();
+    const checks: string[] = [];
+    page.on("request", (request) => { if (request.url().includes("/eggs/check")) checks.push(request.postData() ?? ""); });
+    await page.goto(`${CPC}/midseason/2026/`);
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
+    // The first blurb of the page. The site makes each blurb id from its text, so the spec names it blurb-luck, the id of the test.
+    const blurb = page.locator('[data-stable-id^="blurb-"]').first();
+    const real = await blurb.getAttribute("data-stable-id");
+    await blurb.evaluate((element) => element.setAttribute("data-stable-id", "blurb-luck"));
+    const target = page.locator('[data-stable-id="blurb-luck"]');
+    await target.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+    const box = (await target.boundingBox())!;
+    log("AT-56", `${width} px, light, ${touch ? "touch taps (page.touchscreen.tap)" : "mouse taps (page.mouse.click)"}. The first blurb of /midseason/2026/ has the real id ${real}. The spec set its data-stable-id to blurb-luck. Its box: ${Math.round(box.width)} x ${Math.round(box.height)} px.`);
+    const places = [{ name: "near the start", x: box.x + 12, y: box.y + 10 }, { name: "near the end", x: box.x + box.width - 24, y: box.y + box.height - 10 }];
+    for (const place of places) {
+      await installEventLog(page);
+      const before = checks.length;
+      for (let i = 0; i < 2; i += 1) {
+        if (touch) await page.touchscreen.tap(place.x, place.y);
+        else await page.mouse.click(place.x, place.y);
+        if (i < 1) await page.waitForTimeout(150);
+      }
+      await page.waitForTimeout(1500);
+      const ups = (await events(page)).filter((line) => line.includes("pointerup"));
+      log("AT-56", `  a double-tap ${place.name} of the blurb at (${Math.round(place.x)}, ${Math.round(place.y)}). The pointerups: ${ups.join("; ")}. The selection after: "${await page.evaluate(() => document.getSelection()?.toString() ?? "")}".`);
+      log("AT-56", `  checks sent by this double-tap: ${checks.length - before}`);
+      checks.slice(before).forEach((body) => log("AT-56", `  body: ${body}`));
+      await page.evaluate(() => document.getSelection()?.removeAllRanges());
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(800);
+    }
+    await context.close();
+  }
+
+  // AT-54: a graded trade of The Blue Tent (1) and Lil Fridge (3), then a double-tap on the verdict word.
+  {
+    const { page, checks, close } = await open(browser, 1280, "light");
+    await page.goto(`${CPC}/analyze/`);
+    await page.locator("input[type=password]").fill("localtest");
+    await page.locator("button[type=submit]").click();
+    await page.getByRole("button", { name: "Pick Your Team" }).click();
+    await page.getByRole("list", { name: "Teams" }).getByRole("button", { name: /The Blue Tent/ }).click();
+    await page.getByRole("button", { name: "Pick Team Two" }).click();
+    await page.getByRole("list", { name: "Teams" }).getByRole("button", { name: /Lil Fridge/ }).click();
+    const pick = async (side: string) => {
+      await page.getByRole("button", { name: `Add a player ${side} gets` }).click();
+      const player = page.getByRole("dialog").last().getByRole("checkbox").first();
+      const name = (await player.innerText()).split("\n")[0];
+      await player.click();
+      await page.getByRole("button", { name: "Done" }).click();
+      await page.waitForTimeout(500);
+      return name;
+    };
+    const gets = [await pick("Your Team"), await pick("Team Two")];
+    log("AT-54", `1280 px, light. /analyze/: Your Team The Blue Tent (1) gets ${gets[0]} from Lil Fridge. Team Two Lil Fridge (3) gets ${gets[1]} from The Blue Tent. The grade is a real call of the local API, with real Sleeper data and a real Claude call.`);
+    const started = Date.now();
+    await page.getByRole("button", { name: "Grade the Trade" }).click();
+    const word = page.locator('[data-stable-id="verdict-word"]');
+    await word.waitFor({ timeout: 240000 });
+    await page.getByRole("link", { name: /^Egg board/ }).first().waitFor({ timeout: 30000 });
+    await word.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1500);
+    const marks = await page.evaluate(() => ({ key: document.querySelector("[data-trade-key]")?.getAttribute("data-trade-key"), answer: document.querySelector("[data-trade-answer]")?.getAttribute("data-trade-answer") }));
+    log("AT-54", `The grade took ${Math.round((Date.now() - started) / 1000)} s. The verdict word reads "${await word.innerText()}". The marks of the result: data-trade-key "${marks.key}", data-trade-answer "${marks.answer}".`);
+    await installEventLog(page);
+    const before = checks.length;
+    for (let i = 0; i < 2; i += 1) {
+      await tapAt(page, '[data-stable-id="verdict-word"]');
+      if (i < 1) await page.waitForTimeout(150);
+    }
+    await page.waitForTimeout(2000);
+    log("AT-54", `A double-tap on [data-stable-id="verdict-word"]. The pointerups: ${(await events(page)).filter((line) => line.includes("pointerup")).join("; ")}.`);
+    log("AT-54", `Checks sent by the double-tap: ${checks.length - before}`);
+    checks.slice(before).forEach((body) => log("AT-54", `body: ${body}`));
+    const dialog = page.getByRole("dialog");
+    log("AT-54", `The dialog after the answer: ${(await dialog.count()) ? (await dialog.first().innerText()).replace(/\n+/g, " | ") : "none"}`);
+    await shot(page, "AT-54", "find", 1280, "light");
     await close();
   }
   execFileSync("bash", [join(TOOLS, "stop-api.sh")], { env: { ...process.env }, stdio: "pipe" });

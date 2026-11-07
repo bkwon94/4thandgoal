@@ -5,7 +5,8 @@ E=$API/clients/cpc/eggs
 J='Content-Type: application/json'
 KEY='X-Commissioner-Key: localkey'
 PASS='X-League-Passphrase: localtest'
-EV=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/.scratch/easter-eggs/evidence
+# EV is the evidence folder. Set EV to a folder outside the repo to run a script again without a change to the files of the other tests.
+EV=${EV:-/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/.scratch/easter-eggs/evidence}
 
 # run <command...>: write the command and its output, with the HTTP status, to OUT.
 run() {

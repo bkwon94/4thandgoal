@@ -1,6 +1,6 @@
-The runner of apps/site (pnpm --dir apps/site evidence easter-eggs) could not run: it serves on its fixed port 4173,
-and a server that is not ours holds 4173 (python3 -m http.server 4173 of the worktree midseason-preview). So the
-shots come from Playwright directly, with tools/site.spec.ts and tools/playwright.config.ts of this evidence folder.
+The runner of apps/site (pnpm --dir apps/site evidence easter-eggs) serves on its fixed port 4173, and this run may
+not use 4173, because another local stack of the commissioner shares the machine. So the shots come from Playwright
+directly, with tools/site.spec.ts and tools/playwright.config.ts of this evidence folder.
 
 1. Build each client against the local API: CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build, and the
    same for CLIENT=norcal. Copy each apps/site/out to <scratch>/out-cpc and <scratch>/out-norcal, outside the repo.
@@ -16,7 +16,7 @@ shots come from Playwright directly, with tools/site.spec.ts and tools/playwrigh
    switches the page to the dark theme as the theme button does: the class "dark" on the root and cpc.theme.
 6. The real path of each route is /clients/cpc/eggs/<route>. The tests write /cpc/eggs/.
 
-Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
+Run: cd apps/site && EGGS_SCRATCH=<scratch> EGGS_EV=<scratch>/ev pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
 
-This test (AT-3, AT-34, AT-41, and AT-50 ran again at 4f87122b with the run of step 3 below):
-Phase A1, store A, six eggs. For 390 and 1280 px in each theme: the egg board /eggs/ after the board loads, the claim sheet after a find of T1, and the home page with the banner (browser clock 2026-11-10 12:00 ET). Each page runs scanText, scanContrast (scoped to the sheet or the banner), scanTargets, and scanScroll of apps/site/e2e/floor.ts, the scans of check:floor, with reduced motion. floor-eggs.txt is the output of CLIENT=cpc pnpm check:floor -g /eggs/.
+This test:
+Phase A1, store A, six eggs. For 340, 390, and 1280 px in each theme: the egg board /eggs/ after the board loads, the claim sheet after a find of T1, and the home page with the banner (browser clock 2026-11-10 12:00 ET). Each page runs scanText, scanContrast (scoped to the sheet or the banner), scanTargets, and scanScroll of apps/site/e2e/floor.ts, the scans of check:floor, with reduced motion, and the raw axe result of the rule color-contrast on the same scope. floor-eggs.txt is the output of CLIENT=cpc pnpm check:floor -g /eggs/.

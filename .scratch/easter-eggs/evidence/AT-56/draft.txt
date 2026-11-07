@@ -1,0 +1,7 @@
+$ uv run --exact --package cpc-eggs python .scratch/easter-eggs/evidence/tools/at56_draft.py
+The temp egg file before the draft: 2026.toml, 0 spots, 44 bytes.
+The answer of the agent port, spot 3: {"page": "/midseason/2026/", "target": "blurb-luck", "action": "hold", "conditions": {}, "reason": "Test reason 3, a hold on a blurb."}
+DraftError: The draft writes nothing:
+- The spot blurb-luck on /midseason/2026/ is not valid: The target 'blurb-luck' is a blurb, and a blurb takes no hold. Use tap2 or select.
+The temp egg file after the draft: 0 spots, 44 bytes, unchanged True.
+exit 0

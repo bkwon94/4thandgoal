@@ -1,6 +1,6 @@
-The runner of apps/site (pnpm --dir apps/site evidence easter-eggs) could not run: it serves on its fixed port 4173,
-and a server that is not ours holds 4173 (python3 -m http.server 4173 of the worktree midseason-preview). So the
-shots come from Playwright directly, with tools/site.spec.ts and tools/playwright.config.ts of this evidence folder.
+The runner of apps/site (pnpm --dir apps/site evidence easter-eggs) serves on its fixed port 4173, and this run may
+not use 4173, because another local stack of the commissioner shares the machine. So the shots come from Playwright
+directly, with tools/site.spec.ts and tools/playwright.config.ts of this evidence folder.
 
 1. Build each client against the local API: CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build, and the
    same for CLIENT=norcal. Copy each apps/site/out to <scratch>/out-cpc and <scratch>/out-norcal, outside the repo.
@@ -16,7 +16,7 @@ shots come from Playwright directly, with tools/site.spec.ts and tools/playwrigh
    switches the page to the dark theme as the theme button does: the class "dark" on the root and cpc.theme.
 6. The real path of each route is /clients/cpc/eggs/<route>. The tests write /cpc/eggs/.
 
-Run: cd apps/site && EGGS_SCRATCH=<scratch> pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
+Run: cd apps/site && EGGS_SCRATCH=<scratch> EGGS_EV=<scratch>/ev pnpm exec playwright test -c ../../.scratch/easter-eggs/evidence/tools/playwright.config.ts -g "<phase>"
 
 This test:
-Phase P47 at c5d68913. Store P47, fresh and empty. board.json is the board answer. For each page (/, /2026/week-08/, /eggs/) and each width and theme: open the page, wait for the board answer, scroll to the end and back, full-page shot <page>-<w>-<theme>.png. The log counts the links whose accessible name starts with "Egg board" and each section[aria-label="Egg drop"]. On /eggs/ it logs the HTTP status, the 404 hero marks, the text of main, and the count of egg copy in main. Then, at 1280 px in each theme, three mouse taps 150 ms apart on [data-stable-id="luck-3"] of /midseason/2026/; the page logs each request to /eggs/check and the pointerup times.
+Phase P47, store P47, empty. board.json is the board answer. For the home page, week 8, and /eggs/, at each width and theme: open the page, wait for the board answer, scroll to the end and back, full-page shot <page>-<w>-<theme>.png, and count the egg buttons and the egg banners. Then at 1280 px in each theme: two mouse taps 150 ms apart on [data-stable-id="luck-3"] of /midseason/2026/, and the count of requests to /eggs/check.
