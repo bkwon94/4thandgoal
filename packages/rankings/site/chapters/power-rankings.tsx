@@ -6,7 +6,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { Card } from "@cpc/design/parts/card";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
@@ -22,6 +22,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, EASE_OUT, INSTANT, stagger } from "@cpc/design/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "../schema/rankings-types";
 import { cn } from "@cpc/design/lib/utils";
+import { rankingsScene } from "./rankings-scene";
 import { useWeekChoice } from "./week-choice";
 
 /* The order and the names of the four part ranks. */
@@ -114,13 +115,17 @@ export function RecordLine({ row }: { row: RankingsRow }) {
 const blurbText = (row: RankingsRow) => row.blurb.map((sentence) => sentence.text).join(" ");
 
 /* The hero: the team at rank 1 of the chosen week, in the hero slots. The week is the eyebrow, the team name the title,
-   and the record line the meta. The tiles take the hero tone, so they sit on the raised surface of the hero. */
-function TopHero({ row, week }: { row: RankingsRow; week: number }) {
+   and the record line the meta. The tiles take the hero tone, so they sit on the raised surface of the hero.
+   The hero is the first hero of the page, so it draws the rankings scene of the chosen week. */
+function TopHero({ row, week }: { row: RankingsRow; week: RankingsWeek }) {
   const odds = row.odds;
+  // One scene object per week, so a render that keeps the week does not start the settle again.
+  const scene = useMemo(() => rankingsScene(week), [week]);
   return (
     <Hero
       label="Rank 1"
-      eyebrow={`WEEK ${week} // POWER RANKINGS`}
+      scene={scene}
+      eyebrow={`WEEK ${week.week} // POWER RANKINGS`}
       title={row.name}
       meta={
         <span className="font-mono tabular-nums">
@@ -286,7 +291,7 @@ export function PowerRankings({
     <>
       {/* On a phone the chapters fill the width, so the hero takes the gutter. From the tablet tier the main spaces it as a card. */}
       <div className="px-gutter pt-sp-5 tablet:px-0">
-        <TopHero key={week.week} row={top} week={week.week} />
+        <TopHero key={week.week} row={top} week={week} />
         {/* The blurb of rank 1 sits directly under the hero, outside its frame, so the hero stays as short as the others. */}
         {top.blurb.length > 0 && (
           <p className="mt-sp-4 mb-0 max-w-measure text-lead leading-body text-ink-2">{blurbText(top)}</p>

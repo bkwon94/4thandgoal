@@ -50,6 +50,17 @@ describe("MidseasonScreen", () => {
     expect(within(slots[4] as HTMLElement).getByRole("link", { name: "See the sim" })).toBeTruthy();
   });
 
+  it("draws the one scene of the report in the opener, and no scene in an act title (AT-22, AT-35)", () => {
+    const { container } = renderReport();
+    const opener = screen.getByRole("region", { name: "The Title Race" });
+    expect(opener.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    for (const [index, act] of midseason.acts.entries()) {
+      const page = screen.getByRole("region", { name: `Act ${["I", "II", "III"][index]}: ${act.title}` });
+      expect(page.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    }
+    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+
   it("shows the rest of the opener blurb as a paragraph directly under the hero", () => {
     renderReport();
     const region = screen.getByRole("region", { name: "The Title Race" });

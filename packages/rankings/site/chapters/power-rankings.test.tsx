@@ -88,6 +88,19 @@ describe("The hero", () => {
       expect(hero().getByText(label).nextElementSibling?.textContent).toMatch(/^–No (odds|seed)$/);
     }
   });
+
+  it("draws the one scene of the page in the hero, and no scene in the Ladder (AT-19, AT-35)", () => {
+    const { container } = render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
+    const hero = screen.getByRole("region", { name: "Rank 1" });
+    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+
+  it("keeps the static grid for a week with no odds, as its lights have no height", () => {
+    const { container } = render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
+    fireEvent.click(chip(firstWeek.week));
+    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+  });
 });
 
 describe("The ladder", () => {

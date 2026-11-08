@@ -3,6 +3,7 @@
  * Next exports it as 404.html, which the Worker of each client serves for a path that no page has.
  */
 import type { Metadata } from "next";
+import { driftScene } from "@cpc/design/parts/drift-scene";
 import { Hero } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
 import { TopBand } from "@cpc/design/shell/top-band";
@@ -27,6 +28,8 @@ export default function NotFound() {
         <Hero
           label="Page not found"
           title="Page not found"
+          // A lost page has no data to chart, so its lights drift and never settle (story 28).
+          scene={driftScene()}
           meta="This page does not exist. The link may be old, or the week is not out yet."
           feature={
             /* The big "404" is art, so the title keeps the one title style of every hero. The plate keeps the grid
