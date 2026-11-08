@@ -5,6 +5,8 @@
 - The chapter frame of the week page in the look, in `week-chapter.tsx`: a region named by its heading, with a mono note.
 - The share bar of a game, in `share-bar.tsx`, and the share of the lead side.
 - The headshot of a player for the round photo frame, or none, in `photo.ts`. The frame then shows the initials.
+- The data of the Matchup scene of the hero, in `matchup-scene.ts`: 12 lights from low to high, the league median,
+  and the two teams of the Matchup as the flare with the margin mark.
 
 ## Ports
 
