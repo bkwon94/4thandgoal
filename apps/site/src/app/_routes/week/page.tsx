@@ -17,7 +17,8 @@ import { Standings } from "@cpc/week/chapters/standings";
 import { Trades } from "@cpc/week/chapters/trades";
 import { WeekFooter } from "@cpc/week/chapters/week-footer";
 import { WeekNumbers } from "@cpc/week/chapters/week-numbers";
-import { seasonManagersHref } from "@/lib/data/manager-data";
+import { weekTrends } from "@cpc/week/chapters/week-trends";
+import { loadSeasonWeeks, seasonManagersHref } from "@/lib/data/manager-data";
 import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/data/week-data";
 import { weekHref } from "@/lib/routes";
 import { shellProps, pageTitle, weekSubtitle } from "@/app/shell-props";
@@ -44,6 +45,9 @@ export default async function WeekPage({ params }: Props) {
   const page = loadWeek(season, week);
   // The page reads the managers file once, and the team names of its chapters link from the one href.
   const managersHref = seasonManagersHref(season);
+  // The Trend tiles of the week numbers read the saved weeks of every team. They stop at the page week.
+  const teamWeeks = loadSeasonWeeks(season);
+  const trends = teamWeeks === null ? null : weekTrends(teamWeeks, page.week);
   // The rail lists the chapters the page renders, in the same order, with the ids the chapters set.
   // The labels use the words of each chapter's own heading, and the hero takes the name of its region.
   // Each id matches the id in that chapter's component. A chapter with no data has no rail link.
@@ -83,7 +87,12 @@ export default async function WeekPage({ params }: Props) {
               headshots={page.headshots}
               blurb={page.blurbs.motw}
             />
-            <WeekNumbers matchups={page.matchups} median={page.median} gameChanger={page.game_changer} />
+            <WeekNumbers
+              matchups={page.matchups}
+              median={page.median}
+              gameChanger={page.game_changer}
+              trends={trends}
+            />
             {page.matchups.length > 0 && (
               <AllMatchups matchups={page.matchups} avatars={page.avatars} managersHref={managersHref} />
             )}
