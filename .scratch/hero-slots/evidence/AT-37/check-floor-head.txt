@@ -1,0 +1,7 @@
+$ CLIENT=cpc pnpm check:floor   (at 09934b46, after CLIENT=cpc pnpm build)
+  129 passed (56.5s)
+exit 0
+$ CLIENT=norcal pnpm check:floor   (at 09934b46, after CLIENT=norcal pnpm build)
+  1 skipped
+  126 passed (55.8s)
+exit 0

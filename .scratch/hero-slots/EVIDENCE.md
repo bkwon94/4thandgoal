@@ -264,8 +264,8 @@ Observation: The tap is on the button "Grade D, how the grade reads". The after 
 
 App: site
 Then: Both runs pass.
-Files: `evidence/AT-37/check-floor-output.txt`
-Observation: The output is the floor part of `pnpm --dir apps/site check` in the Spec worktree, started at 01:25 by the orchestrator, after `f2ddc1a2`. The run of cpc ends "129 passed (1.0m)", the run of norcal ends "1 skipped" and "126 passed (1.0m)", the file holds no failed test, and the log ends "exit 0". The log started at 01:25, while `f6f88ce9` (01:29) and `45a3c724` (01:31) came later; they change the analyzer verdict hero and the shared `sceneLines`, which go into the JavaScript of the export, so this log does not cover the build of `45a3c724`.
+Files: `evidence/AT-37/check-floor-head.txt`, `evidence/AT-37/check-floor-output.txt`
+Observation: `check-floor-head.txt` holds `CLIENT=cpc pnpm check:floor` and `CLIENT=norcal pnpm check:floor`, each run after a build of its client at `09934b46`, whose code is the code of `45a3c724`. The cpc run shows "129 passed (56.5s)" and "exit 0", the norcal run shows "1 skipped", "126 passed (55.8s)", and "exit 0", and the file holds no failed test. `check-floor-output.txt` is the older full site check from 01:25, before `f6f88ce9` and `45a3c724`, with the same counts.
 
 ## AT-38: The math of the scene
 
