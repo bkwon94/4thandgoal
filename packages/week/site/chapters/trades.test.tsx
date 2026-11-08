@@ -1,9 +1,10 @@
 /**
- * Tests for the Trades chapter. They render the week 8 JSON of CPC and read each side and the players it gets.
+ * Tests for the Trades chapter. They render the week 8 JSON of CPC, read each side and the players it gets, and open a card with a tap.
  * A copy of the JSON with no trades checks that the chapter is left out.
  */
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import { avatarSrc } from "@cpc/league/images";
 import { week8 } from "../fixtures/week-page";
 import { Trades } from "./trades";
 
@@ -23,6 +24,16 @@ function gets(chapter: HTMLElement, team: string) {
     .map((item) => item.textContent);
 }
 
+/* The head button of the first trade card. The chevron under the card is a second toggle with its own label. */
+function headOf(chapter: HTMLElement) {
+  return within(within(chapter).getAllByRole("article")[0])
+    .getAllByRole("button")
+    .find((button) => !button.hasAttribute("aria-label"))!;
+}
+
+/* The panel that a toggle opens. */
+const panelOf = (button: HTMLElement) => document.getElementById(button.getAttribute("aria-controls") ?? "")!;
+
 describe("Trades", () => {
   it("shows a card for the trade of week 8 with the count of the week", () => {
     const chapter = renderTrades();
@@ -40,15 +51,63 @@ describe("Trades", () => {
     expect(saquon.querySelector("img")?.getAttribute("src")).toBe("headshots/4866.png");
   });
 
-  it("makes the whole team row of a side the link to its manager page", () => {
+  it("shows the closed trade as one button: both sides, the players each gets, and no link (AT-7)", () => {
     const chapter = renderTrades();
-    const link = within(chapter).getByRole("link", { name: "NFC Least" });
-    expect(link.getAttribute("href")).toMatch(/^\/2026\/managers\/\d+\/$/);
-    expect(link.querySelector("img")).not.toBeNull();
+    const button = headOf(chapter);
+    expect(button.textContent).toBe("NFC LeastGetsSaquon BarkleyCeeDee Lambbehold the lambGetsOmar Cooper Jr.Puka Nacua");
+    expect(within(button).queryByRole("link")).toBeNull();
+    for (const toggle of within(chapter).getAllByRole("button")) expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(within(chapter).getAllByRole("button", { name: "Show the details" })).toHaveLength(1);
   });
 
-  it("shows the team names as plain text when the season has no managers file", () => {
+  it("keeps the records closed until a tap, and findable by find-in-page (AT-7)", () => {
+    const chapter = renderTrades();
+    const panel = panelOf(headOf(chapter));
+    expect(panel.getAttribute("hidden")).toBe("until-found");
+    expect(panel.hasAttribute("inert")).toBe(false);
+    expect(panel.textContent).toContain("NFC Least 3-13");
+  });
+
+  it("opens the trade of week 8 to a record chip for each side, each with the avatar of its team (AT-7)", () => {
+    const chapter = renderTrades();
+    const button = headOf(chapter);
+    fireEvent.click(button);
+    expect(button.getAttribute("aria-expanded")).toBe("true");
+    expect(button.closest("[data-open]")?.getAttribute("data-open")).toBe("true");
+    const panel = panelOf(button);
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    const chips = within(panel).getAllByRole("listitem");
+    expect(chips.map((chip) => chip.textContent)).toEqual(["NFC Least 3-13", "behold the lamb 6-10"]);
+    const [first, second] = week8.trades[0].sides;
+    expect(chips[0].querySelector("img")?.getAttribute("src")).toBe(avatarSrc(week8.avatars, first.team.roster_id));
+    expect(chips[1].querySelector("img")?.getAttribute("src")).toBe(avatarSrc(week8.avatars, second.team.roster_id));
+  });
+
+  it("opens the trade to one manager page link for each side (AT-7)", () => {
+    const chapter = renderTrades();
+    const button = headOf(chapter);
+    fireEvent.click(button);
+    const links = within(panelOf(button)).getAllByRole("link");
+    expect(links.map((link) => link.textContent)).toEqual(["NFC Least, manager page", "behold the lamb, manager page"]);
+    const [first, second] = week8.trades[0].sides;
+    expect(links.map((link) => link.getAttribute("href"))).toEqual([
+      `/2026/managers/${first.team.roster_id}/`,
+      `/2026/managers/${second.team.roster_id}/`,
+    ]);
+  });
+
+  it("closes the trade on a tap of the chevron (AT-7)", async () => {
+    const chapter = renderTrades();
+    const button = headOf(chapter);
+    fireEvent.click(button);
+    fireEvent.click(within(chapter).getByRole("button", { name: "Hide the details" }));
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+    await waitFor(() => expect(panelOf(button).getAttribute("hidden")).toBe("until-found"));
+  });
+
+  it("shows no link when the season has no managers file", () => {
     const chapter = renderTrades(week8.trades, null);
+    fireEvent.click(headOf(chapter));
     expect(within(chapter).queryByRole("link")).toBeNull();
     expect(within(chapter).getByText("NFC Least")).toBeTruthy();
   });
