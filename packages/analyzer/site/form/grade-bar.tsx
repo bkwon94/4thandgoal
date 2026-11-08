@@ -1,6 +1,6 @@
 /**
  * The "Grade the Trade" bar: one wide button fixed on the dock of a phone and a tablet, and at the bottom of the screen from the desktop tier.
- * It stays in reach at every scroll. The analyzer page keeps the same space free under the page, so the bar covers no content.
+ * It stays in reach at every scroll, and the analyzer page keeps the same space free under the page, so the bar covers no content.
  * The button wears the Ready halo, after the method of the Send Halo item: a ring that glows brighter as the trade fills.
  */
 "use client";
@@ -30,8 +30,13 @@ export function GradeBar({ ready, grading, level, onGrade }: GradeBarProps) {
           className="pointer-events-none absolute -inset-sp-0 overflow-hidden rounded-pill bg-accent shadow-orb transition-opacity duration-300 ease-out"
         >
           {/* The sweep of the item: a light arc that orbits the ring. Only its transform moves. Reduced motion hides it,
-              so the halo shows the level with no orbit. */}
-          <span className="absolute top-1/2 left-1/2 aspect-square w-[140%] -translate-x-1/2 -translate-y-1/2 animate-spin bg-[conic-gradient(transparent_0_70%,var(--color-accent-text)_85%,transparent_100%)] [animation-duration:3.4s] motion-reduce:hidden" />
+              so the halo shows the level with no orbit. At level 0 the button is off, so the arc stays out and does not spin. */}
+          {level > 0 && (
+            <span
+              data-orbit=""
+              className="absolute top-1/2 left-1/2 aspect-square w-[140%] -translate-x-1/2 -translate-y-1/2 animate-spin bg-[conic-gradient(transparent_0_70%,var(--color-accent-text)_85%,transparent_100%)] [animation-duration:3.4s] motion-reduce:hidden"
+            />
+          )}
         </span>
         {/* The off bar is a plain opaque surface with no opacity, so its text keeps the contrast of its pair. */}
         <button

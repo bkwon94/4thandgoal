@@ -220,11 +220,15 @@ describe("TradeForm", () => {
     // The halo is decoration, so it carries its level as data, and its opacity is the brightness the reader sees.
     const halo = () => document.querySelector<HTMLElement>("[data-halo]")!;
     const level = () => Number(halo().dataset.level);
+    const orbit = () => document.querySelector("[data-orbit]");
     expect(level()).toBe(0);
+    // The orbit sweep turns only above level 0, so the off button has none.
+    expect(orbit()).toBeNull();
     await pickTeam("Your Team", "Pukancun on 3");
     await pickTeam("Team Two", "Blitz Bakers");
     // Two teams and no player: 2 of 6, brighter than no team and below full.
     expect(level()).toBeCloseTo(2 / 6, 2);
+    expect(orbit()).not.toBeNull();
     expect(Number(halo().style.opacity)).toBeGreaterThan(0);
     await pickPlayers("Your Team", "Blitz Bakers", "Ben Two");
     expect(level()).toBeCloseTo(4 / 6, 2);

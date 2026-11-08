@@ -1,6 +1,5 @@
 /**
- * The tile: a small card with one number, its label above it, and an optional note under it.
- * The page tone sits on a card or the page. The hero tone sits in the hero, on the raised surface of the hero.
+ * The tile: a small card with one number, its label above it, and an optional note under it. The page tone sits on a card or the page, and the hero tone sits on the raised surface of the hero.
  * A Trend tile adds a small chart of the same number from week 1 to the page week, after the Lime Metrics method.
  */
 import { useId, type ReactNode } from "react";
