@@ -8,7 +8,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-9, AT-11, AT-12, and AT
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Season So Far of The Blue Tent shows A, the grade read, and arcs 4th, 6th, 7th, and 7th, with 9, 7, 6, and 6 of 12 blades lit.
 - [x] Each arc has an accessible name with its part, its rank, and its weight.
