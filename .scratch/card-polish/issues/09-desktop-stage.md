@@ -8,7 +8,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-25.
 
 **Blocked by:** 08, and the `hero-slots` spec merged into `main`
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] At 1280 px, a hover on The Blue Tent and a focus on Lil Fridge each swap the stage.
 - [x] The stage uses the hero slots, not the old hero part.
