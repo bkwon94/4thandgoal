@@ -37,10 +37,20 @@ function arcName(part: GradePart, teams: number): string {
   return `${PART_NAMES[part.key]}: ${ordinal(part.rank)} of ${teams}, ${GRADE_WEIGHTS[part.key]}% of the grade`;
 }
 
-type ArcProps = { part: GradePart; teams: number; size: "small" | "large"; off: boolean };
+/* The colors of each tone. The hero tone sits on the band color of a hero in both themes, so its text takes the on-dark
+   roles on a plate, as every hero text does, and an unlit blade takes the rule color of the hero. */
+const TONES = {
+  page: { off: "bg-bar-off", ink: "text-ink", mute: "text-mute", plate: "" },
+  hero: { off: "bg-rule-dark", ink: "text-on-dark", mute: "text-on-dark-2", plate: "plate" },
+} as const;
+
+type Tone = keyof typeof TONES;
+
+type ArcProps = { part: GradePart; teams: number; size: "small" | "large"; off: boolean; tone: Tone };
 
 /* One arc: the blades, the rank in the arc, and the part name and weight under it. */
-function Arc({ part, teams, size, off }: ArcProps) {
+function Arc({ part, teams, size, off, tone }: ArcProps) {
+  const colors = TONES[tone];
   const lit = litCount(part.rank, teams);
   const step = teams > 1 ? SWEEP / (teams - 1) : 0;
   const large = size === "large";
@@ -60,7 +70,7 @@ function Arc({ part, teams, size, off }: ArcProps) {
               // With motion off the blade has no delay, and the reduced-motion rule of globals.css drops the duration.
               className={cn(
                 "absolute rounded-pill transition-[background-color] duration-240 ease-[cubic-bezier(0.4,0,0.2,1)]",
-                on ? "bg-accent group-data-[wait]:bg-bar-off" : "bg-bar-off",
+                on ? cn("bg-accent", tone === "hero" ? "group-data-[wait]:bg-rule-dark" : "group-data-[wait]:bg-bar-off") : colors.off,
               )}
               style={{
                 left: `${((CENTER - BLADE_W / 2) / SIZE) * 100}%`,
@@ -77,14 +87,14 @@ function Arc({ part, teams, size, off }: ArcProps) {
         })}
         {/* The rank sits in the open end of the arc, so a reader gets the rank without a count of blades. */}
         <div className="absolute inset-x-0 bottom-0 flex flex-col items-center leading-none">
-          <span className={cn("font-extrabold text-ink tabular-nums", large ? "text-score" : "text-row")}>
+          <span className={cn("font-extrabold tabular-nums", colors.ink, colors.plate, large ? "text-score" : "text-row")}>
             {ordinal(part.rank)}
           </span>
-          {large && <span className="mt-sp-1 text-meta text-mute tabular-nums">{`of ${teams}`}</span>}
+          {large && <span className={cn("mt-sp-1 text-meta tabular-nums", colors.mute, colors.plate)}>{`of ${teams}`}</span>}
         </div>
       </div>
-      <div className="mt-sp-2 text-meta leading-tight font-semibold text-ink">{PART_NAMES[part.key]}</div>
-      <div className="text-meta leading-tight text-mute tabular-nums">
+      <div className={cn("mt-sp-2 text-meta leading-tight font-semibold", colors.ink, colors.plate)}>{PART_NAMES[part.key]}</div>
+      <div className={cn("text-meta leading-tight tabular-nums", colors.mute, colors.plate)}>
         {large ? `${GRADE_WEIGHTS[part.key]}% of the grade` : `${GRADE_WEIGHTS[part.key]}%`}
       </div>
     </div>
@@ -98,9 +108,11 @@ type GradeDialProps = {
   teams: number;
   // "large" is the 2x2 grid of Season So Far. "small" is one row of four, for a row of the Index list.
   size?: "small" | "large";
+  // "page" sits on a card or the page. "hero" sits on the band color of a hero, such as the stage of the Index list.
+  tone?: Tone;
 };
 
-export function GradeDial({ parts, teams, size = "large" }: GradeDialProps) {
+export function GradeDial({ parts, teams, size = "large", tone = "page" }: GradeDialProps) {
   const off = useMotionOff();
   const ref = useRef<HTMLUListElement>(null);
   // The static HTML holds every arc lit, so a page with no script shows the grade.
@@ -128,7 +140,7 @@ export function GradeDial({ parts, teams, size = "large" }: GradeDialProps) {
     >
       {parts.map((part) => (
         <li key={part.key}>
-          <Arc part={part} teams={teams} size={size} off={off} />
+          <Arc part={part} teams={teams} size={size} off={off} tone={tone} />
         </li>
       ))}
     </ul>

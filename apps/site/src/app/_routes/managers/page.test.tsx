@@ -149,6 +149,36 @@ describe("ManagersIndex", () => {
     expect(rows().filter((row) => row.getAttribute("data-open") === "true")).toHaveLength(1);
   });
 
+  it("shows the first row in the stage, then The Blue Tent on a hover and Lil Fridge on a focus, in the six hero slots", async () => {
+    const { main, rows } = await indexOfClient("cpc");
+    const stage = () => main.getByRole("region", { name: /^Stage: / });
+    const slot = (name: string) => stage().querySelector(`[data-hero-slot="${name}"]`);
+    expect(stage().getAttribute("aria-label")).toBe("Stage: All You Need Is Love");
+    fireEvent.pointerEnter(rows()[4]);
+    expect(stage().getAttribute("aria-label")).toBe("Stage: The Blue Tent");
+    expect(slot("eyebrow")?.textContent).toBe("In");
+    expect(slot("title")?.textContent).toBe("The Blue Tent");
+    expect(slot("meta")?.textContent).toBe("9-7 · Power #5 · 75% playoff");
+    const arcs = within(within(slot("feature") as HTMLElement).getByRole("list", { name: "Grade Dial" })).getAllByRole("img");
+    expect(arcs).toHaveLength(4);
+    expect(within(slot("stats") as HTMLElement).getByText("A")).toBeTruthy();
+    const link = within(slot("action") as HTMLElement).getByRole("link");
+    expect(link.textContent).toBe("Manager page of The Blue Tent");
+    expect(link.getAttribute("href")).toBe("/2026/managers/1/");
+    fireEvent.focus(headOf(rows()[5]));
+    expect(stage().getAttribute("aria-label")).toBe("Stage: Lil Fridge");
+    expect(stage().querySelector('[data-hero-slot="title"]')?.textContent).toBe("Lil Fridge");
+  });
+
+  it("hides the stage under the desktop tier, so a phone and a tablet show only the ledger", async () => {
+    const { main } = await indexOfClient("cpc");
+    const stage = main.getByRole("region", { name: /^Stage: / });
+    // The stage box is display none under the desktop tier. jsdom reads no media query, so the check reads the classes.
+    const box = stage.closest("[data-ix-stage]")!;
+    expect(box.className).toMatch(/(^|\s)hidden(\s|$)/);
+    expect(box.className).toMatch(/(^|\s)desktop:block(\s|$)/);
+  });
+
   it("shows the chips All 12, In 4, Bubble 5, and Out 3 for NorCal week 8, with Mitseeker5000 first", async () => {
     const { rows, chips } = await indexOfClient("norcal");
     expect(chips.getAllByRole("button").map((chip) => chip.textContent)).toEqual(["All12", "In4", "Bubble5", "Out3"]);

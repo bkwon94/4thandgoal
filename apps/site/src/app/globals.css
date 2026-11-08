@@ -547,14 +547,57 @@
         animation: ix-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
         animation-delay: calc(var(--ix-k) * 35ms);
     }
+    /* From the desktop tier the row in the stage rolls its name too, so the ledger shows which row the stage holds. */
+    @variant desktop {
+        .ix-cells[data-staged] .ix-glyph {
+            translate: 0 -100%;
+        }
+    }
+    /* The stage swap of the item: the new layer wipes in from the top while its hero zooms down to size, and the layer
+       under it sinks a little. Each layer clips its own hero, so the zoom stays inside the frame of the stage. */
+    .ix-layer {
+        overflow: hidden;
+        border-radius: var(--radius-hero);
+    }
+    .ix-layer[data-in] {
+        animation: ix-wipe 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .ix-layer[data-in] > * {
+        animation: ix-zoom 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .ix-layer[data-under] > * {
+        animation: ix-sink 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
     /* Reduced motion drops the stagger delays too, so the roll and the rows reach the end state at once. */
     @media (prefers-reduced-motion: reduce) {
         .ix-glyph {
             transition-delay: 0s;
         }
-        .ix-cells {
+        .ix-cells,
+        .ix-layer[data-in],
+        .ix-layer[data-in] > *,
+        .ix-layer[data-under] > * {
             animation: none;
         }
+    }
+}
+@keyframes ix-wipe {
+    from {
+        clip-path: inset(0 0 100% 0);
+    }
+    to {
+        clip-path: inset(0);
+    }
+}
+@keyframes ix-zoom {
+    from {
+        scale: 1.22;
+    }
+}
+@keyframes ix-sink {
+    to {
+        scale: 0.96;
+        translate: 0 6%;
     }
 }
 @keyframes ix-in {

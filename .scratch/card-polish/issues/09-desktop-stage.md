@@ -10,10 +10,10 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-25.
 
 **Status:** ready-for-agent
 
-- [ ] At 1280 px, a hover on The Blue Tent and a focus on Lil Fridge each swap the stage.
-- [ ] The stage uses the hero slots, not the old hero part.
-- [ ] At 390 px and 768 px, the ledger of ticket 08 shows with no stage.
-- [ ] `make check-fast` passes.
+- [x] At 1280 px, a hover on The Blue Tent and a focus on Lil Fridge each swap the stage.
+- [x] The stage uses the hero slots, not the old hero part.
+- [x] At 390 px and 768 px, the ledger of ticket 08 shows with no stage.
+- [x] `make check-fast` passes.
 
 ## Comments
 

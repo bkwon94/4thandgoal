@@ -49,6 +49,8 @@ type OpenCardProps = {
   // A controlled card takes open and onOpenChange. An uncontrolled card keeps its own state.
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  // A hover or a keyboard focus anywhere on the card, such as a row of the Index list that swaps the stage on desktop.
+  onEnter?: () => void;
 };
 
 export function OpenCard({
@@ -67,6 +69,7 @@ export function OpenCard({
   look = "card",
   open: controlled,
   onOpenChange,
+  onEnter,
 }: OpenCardProps) {
   const [own, setOwn] = useState(false);
   const open = controlled ?? own;
@@ -182,7 +185,7 @@ export function OpenCard({
   );
 
   return (
-    <Element data-open={open} className="open-card list-none" style={vars}>
+    <Element data-open={open} className="open-card list-none" style={vars} onPointerEnter={onEnter} onFocus={onEnter}>
       {row ? (
         body
       ) : (

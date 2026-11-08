@@ -214,6 +214,25 @@ describe("Reduced motion on the Index list", () => {
     expect(row.dataset.open).toBe("false");
     expect(panel.getAttribute("hidden")).toBe("until-found");
   });
+
+  it("swaps the stage at once on a hover, with one layer and no wipe", () => {
+    const managers = managersFixture.managers.map((entry, i) => ({
+      ...entry,
+      standing: i + 1,
+      rank: i + 1,
+      movement: 0,
+      odds: { playoff: 50, bye: 10, seed: null, status: "open" as const },
+      odds_change: 0,
+    }));
+    render(<ManagersIndex managers={{ season: 2026, through: 6, managers }} avatars={{}} managersHref="/2026/managers/" />);
+    const rows = within(screen.getByRole("list", { name: "Index List" })).getAllByRole("listitem");
+    fireEvent.pointerEnter(rows[1]);
+    const box = document.querySelector("[data-ix-stage]")!;
+    // With motion off the old row drops in the same hover, so no layer waits under the new one and none wipes in.
+    expect(box.querySelectorAll(".ix-layer")).toHaveLength(1);
+    expect(box.querySelector("[data-in]")).toBeNull();
+    expect(box.querySelector('[data-hero-slot="title"]')?.textContent).toBe(managers[1].team.name);
+  });
 });
 
 describe("Reduced motion on the waiver page", () => {

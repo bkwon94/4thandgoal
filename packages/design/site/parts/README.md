@@ -3,7 +3,7 @@
 ## Knows
 
 - The chapter, the label, the tag, and the blurb.
-- The page column and the chapter rail.
+- The page column, which a wide page widens to the top band from the desktop tier, and the chapter rail.
 - The team name.
 - The one reveal of the site, the week line of a page with no hero, and the error line.
 - The Open card, the one part that opens and closes a card in place (ADR 0028). Its row look has no frame and no chevron, for a row of a ledger.

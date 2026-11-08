@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The managers index and its Index list: a ledger of the teams in power-ranking order, filtered by the race chips All, In, Bubble, and Out. A row opens in place with the Open card, one at a time.
+- The managers index and its Index list: a ledger of the teams in power-ranking order, filtered by the race chips All, In, Bubble, and Out. A row opens in place with the Open card, one at a time. From the desktop tier a sticky stage beside the ledger shows the row under the hover or the focus, in the hero slots.
 - The hero of a manager page in the hero slots, with the grade as the big number, the tiles Playoff, Bye, and Seed, and a W or L chip for each week. Its scene has one light per played week, bright for a win and dim for a loss, against the median of each week.
 - The five chapters under the hero: Roster, Season So Far, Moves, Best Adds, and Top Performers. The Moves tiles are Trend tiles.
 - The slot ranks, the points line, the bench points, and the season numbers.

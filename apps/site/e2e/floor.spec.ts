@@ -195,6 +195,64 @@ for (const entry of FULL_FLOOR_PAGES) {
   }
 }
 
+/* The managers index and the row heads of its Index list. The stage of the list shows from the desktop tier only. */
+const MANAGERS_ROUTE = `/${SEASON}/managers/`;
+const INDEX_ROW = 'ul[aria-label="Index List"] > li';
+
+/* The stage on desktop: the full floor after a hover on the second row swaps the stage, in both themes at 1280px.
+   The run has reduced motion, so the new row is in the stage at once, with no layer under it. */
+for (const theme of THEMES) {
+  test(`stage floor: ${CLIENT} ${MANAGERS_ROUTE} hover on row 2 ${theme} 1280px`, async ({ page }) => {
+    const label = `${CLIENT} ${MANAGERS_ROUTE} stage ${theme} 1280px`;
+    const started = Date.now();
+    await page.setViewportSize(DESKTOP);
+    await openPage(page, `${server.url}${MANAGERS_ROUTE}`, theme);
+    const second = page.locator(`${INDEX_ROW}:nth-child(2)`);
+    await second.hover();
+    const name = (await second.locator(".ix-name").textContent())!;
+    await expect(page.getByRole("region", { name: `Stage: ${name}` })).toBeVisible();
+    const failures = await textFloor(page, label, started);
+    failures.push(...(await scanTargets(page)).failures, ...(await scanContrast(page)));
+    expect(failures, `${label} breaks the readability floor`).toEqual([]);
+  });
+}
+
+/* AT-25: a hover on row 5 and then a focus on row 6 each swap the stage beside the ledger. In cpc week 8 these are
+   The Blue Tent and Lil Fridge. The stage holds the six hero slots. */
+test(`stage swap: ${CLIENT} ${MANAGERS_ROUTE} on a hover and a focus at 1280px`, async ({ page }) => {
+  await page.setViewportSize(DESKTOP);
+  await openPage(page, `${server.url}${MANAGERS_ROUTE}`, "dark");
+  const stage = () => page.getByRole("region", { name: /^Stage: / });
+  for (const [n, act] of [
+    [5, "hover"],
+    [6, "focus"],
+  ] as const) {
+    const row = page.locator(`${INDEX_ROW}:nth-child(${n})`);
+    const head = row.locator("button[aria-expanded]");
+    await (act === "hover" ? head.hover() : head.focus());
+    const name = (await row.locator(".ix-name").textContent())!;
+    await expect(stage()).toHaveAttribute("aria-label", `Stage: ${name}`);
+    await expect(stage().locator('[data-hero-slot="title"]')).toHaveText(name);
+  }
+  const slots = await stage().locator("[data-hero-slot]").evaluateAll((els) => els.map((el) => el.getAttribute("data-hero-slot")));
+  expect(slots).toEqual(["eyebrow", "title", "meta", "feature", "stats", "action"]);
+  // The stage sits beside the ledger, to the right of it, and stays in view as the page scrolls.
+  const ledger = (await page.locator('ul[aria-label="Index List"]').boundingBox())!;
+  const box = (await page.locator("[data-ix-stage]").boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(ledger.x + ledger.width);
+  expect(await page.locator("[data-ix-stage]").evaluate((el) => getComputedStyle(el).position)).toBe("sticky");
+});
+
+/* Under the desktop tier the Index list is the ledger alone, with no stage. */
+for (const width of [390, 768]) {
+  test(`no stage: ${CLIENT} ${MANAGERS_ROUTE} shows the ledger alone at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MANAGERS_ROUTE}`, "dark");
+    await expect(page.getByRole("list", { name: "Index List" })).toBeVisible();
+    await expect(page.locator("[data-ix-stage]")).toBeHidden();
+  });
+}
+
 /* The widths of the word check: a phone, a tablet, and a laptop. The tiles of the week page change columns between them. */
 const WORD_WIDTHS = [375, 768, 1280] as const;
 
