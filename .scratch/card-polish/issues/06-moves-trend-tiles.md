@@ -8,7 +8,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-17 and AT-18.
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The Blue Tent shows Adds bars 5, 1, 2, 4, 1, 1, 6, and 3 for weeks 1 to 8.
 - [x] The Trades tile of The Blue Tent shows dots at week 1 and week 4 only.
