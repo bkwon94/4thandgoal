@@ -210,7 +210,7 @@ test.describe(`the scene of the week page of ${CLIENT}, at rest`, () => {
 test.describe(`the scene of the week page of ${CLIENT}, with motion`, () => {
   test.use({ reducedMotion: "no-preference" });
 
-  test("settles in about 1.9 s, and is not in the chart at 0.5 s (AT-16)", async ({ page }) => {
+  test("settles in about 1.5 s, and is not in the chart at 0.4 s (AT-16)", async ({ page }) => {
     await page.setViewportSize(PHONE);
     // The page records the first time of each state of the canvas, from the first load on.
     await page.addInitScript(() => {
@@ -226,18 +226,19 @@ test.describe(`the scene of the week page of ${CLIENT}, with motion`, () => {
     await openWeek(page);
     const times = () => page.evaluate(() => (window as unknown as { sceneTimes: Record<string, number> }).sceneTimes);
     await expect.poll(async () => (await times()).settle).toBeGreaterThan(0);
-    // At 0.5 s after entry the lights are still on their way, so the frame is not the frame at rest.
+    // At 0.4 s after entry the lights are still on their way, so the frame is not the frame at rest.
     const entry = (await times()).settle;
-    await page.waitForFunction((at) => performance.now() >= at + 500, entry);
+    await page.waitForFunction((at) => performance.now() >= at + 400, entry);
     expect(await stateOf(page)).toBe("settle");
     const moving = await frameOf(page);
     await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest", { timeout: 5000 });
     expect(await frameOf(page)).not.toBe(moving);
     const settled = (await times()).rest - entry;
     console.log(`${CLIENT}: the scene came to rest ${Math.round(settled)} ms after entry`);
-    // The lights settle at 1.9 s and the lines draw by 2.2 s. A frame can land a little late on a busy machine.
-    expect(settled).toBeGreaterThanOrEqual(2200);
-    expect(settled).toBeLessThan(2700);
+    // The lights settle at 1.5 s and the lines draw by 1.75 s, so the scene is at rest at the check at 1.8 s. A frame can
+    // land a little late on a busy machine, so the upper bound has room.
+    expect(settled).toBeGreaterThanOrEqual(1750);
+    expect(settled).toBeLessThan(2200);
   });
 
   test("requests no animation frame for 3 s after the settle (AT-32)", async ({ page }) => {

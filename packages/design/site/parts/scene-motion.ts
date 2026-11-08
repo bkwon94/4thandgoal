@@ -4,9 +4,11 @@
  */
 import type { SceneBox, ScenePoint } from "./scene-math";
 
-/* The lights settle in about 1.9 s (PRD). The thin lines then draw in 0.3 s, so the scene is at rest by 2.2 s (AT-16). */
-export const SETTLE_MS = 1900;
-export const LINES_MS = 300;
+/* The lights settle in about 1.5 s (PRD), so the words of the hero do not wait on a long motion. The thin lines then
+   draw in 0.25 s, so the scene is at rest by 1.75 s, before the check at 1.8 s (AT-16). The strong ease-out keeps the
+   lights visibly away from the chart at 0.4 s. */
+export const SETTLE_MS = 1500;
+export const LINES_MS = 250;
 export const REST_MS = SETTLE_MS + LINES_MS;
 
 /* `settle` runs the frames of the settle. `rest` draws one frame per tap or slide and runs no loop (story 38). */

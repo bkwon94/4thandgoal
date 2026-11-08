@@ -1,5 +1,5 @@
 /**
- * Tests for the motion of the hero scene: the scatter, the settle of about 1.9 s, the dust that stops at rest, and the drift.
+ * Tests for the motion of the hero scene: the scatter, the settle of about 1.5 s, the dust that stops at rest, and the drift.
  * They need no canvas, so they check the places that the canvas draws at each time after entry.
  */
 import { describe, expect, it } from "vitest";
@@ -45,9 +45,9 @@ describe("the settle", () => {
     expect(settleAt(start, chart, 0)).toEqual(start);
   });
 
-  it("is not in the chart at 0.5 s, and is in the chart at 1.9 s (AT-16)", () => {
-    expect(offChart(settleAt(start, chart, 500))).toBeGreaterThan(10);
-    expect(SETTLE_MS).toBe(1900);
+  it("is visibly not in the chart at 0.4 s, and is in the chart at 1.5 s (AT-16)", () => {
+    expect(offChart(settleAt(start, chart, 400))).toBeGreaterThan(10);
+    expect(SETTLE_MS).toBe(1500);
     expect(settleAt(start, chart, SETTLE_MS)).toEqual(chart);
     expect(settleAt(start, chart, SETTLE_MS + 5000)).toEqual(chart);
   });
@@ -57,10 +57,10 @@ describe("the settle", () => {
     expect(half).toBeLessThan(offChart(start) / 4);
   });
 
-  it("draws the lines after the lights settle, and comes to rest by 2.2 s", () => {
+  it("draws the lines after the lights settle, and comes to rest by 1.75 s, before the check at 1.8 s (AT-16)", () => {
     expect(linesAt(SETTLE_MS)).toBe(0);
     expect(linesAt(REST_MS)).toBe(1);
-    expect(REST_MS).toBeLessThanOrEqual(2200);
+    expect(REST_MS).toBeLessThanOrEqual(1750);
     expect(phaseAt(SETTLE_MS)).toBe("settle");
     expect(phaseAt(REST_MS)).toBe("rest");
   });
