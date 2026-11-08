@@ -1,11 +1,11 @@
 /**
- * Tests for the data of the analyzer scenes: the drift of the title hero and the two groups of the verdict hero.
+ * Tests for the data of the analyzer scenes: the two groups of the verdict hero.
  * The verdict scenes come from real answers of the API, among them the recorded answer to grade-clarity trade A.
  */
 import { describe, expect, it } from "vitest";
 import { analyzeResponse, analyzeResponseThree, analyzeResponseTradeA } from "../lib/fixtures/api";
 import type { SceneLight } from "@cpc/design/parts/scene-math";
-import { driftScene, verdictScene } from "./analyzer-scene";
+import { verdictScene } from "./analyzer-scene";
 
 /* The lights of each side, by the team name at the start of each label. */
 function groupsOf(lights: SceneLight[], teams: string[]): SceneLight[][] {
@@ -65,13 +65,5 @@ describe("verdictScene", () => {
     expect(groups.flat()).toHaveLength(three.lights.length);
     const centers = groups.map((group) => group[0].x);
     expect(centers).toEqual([...centers].sort((a, b) => a - b));
-  });
-});
-
-describe("driftScene", () => {
-  it("drifts and never settles, with no label at rest", () => {
-    expect(driftScene.mode).toBe("drift");
-    expect(driftScene.lights.length).toBeGreaterThan(0);
-    expect(driftScene.restIndex).toBeNull();
   });
 });

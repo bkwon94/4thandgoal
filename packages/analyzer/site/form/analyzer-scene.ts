@@ -1,29 +1,9 @@
 /**
- * The data of the analyzer scenes: a drift of lights in the title hero, and one group of lights per side in the verdict hero.
+ * The data of the analyzer scenes: one group of lights per side in the verdict hero.
  * The verdict scene comes from the answer of the API, so the bigger group sits on the side that gets more (decision 07).
  */
 import type { HeroScene, SceneLight } from "@cpc/design/parts/scene-math";
 import type { AnalyzeResponse } from "../lib/analyze-types";
-
-/* The count of the lights of the drift. A drift places each light itself, so only the count and the tones count. */
-const DRIFT_LIGHTS = 12;
-
-/*
- * The scene of the title hero before a grade: lights that drift and never settle (story 25).
- * One plain object for every render, so a render of the form never restarts the drift.
- */
-export const driftScene: HeroScene = {
-  lights: Array.from({ length: DRIFT_LIGHTS }, (_, index) => ({
-    x: index,
-    y: 0,
-    label: "",
-    tone: index % 3 === 0 ? "bright" : "dim",
-  })),
-  guides: [],
-  margin: null,
-  restIndex: null,
-  mode: "drift",
-};
 
 /* The space between the centers of two groups, in the units of the scene. Each group has a radius of one. */
 const GROUP_GAP = 4;

@@ -29,7 +29,7 @@ export default function NotFound() {
           label="Page not found"
           title="Page not found"
           // A lost page has no data to chart, so its lights drift and never settle (story 28).
-          scene={driftScene()}
+          scene={driftScene}
           meta="This page does not exist. The link may be old, or the week is not out yet."
           feature={
             /* The big "404" is art, so the title keeps the one title style of every hero. The plate keeps the grid
