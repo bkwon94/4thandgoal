@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-15, AT-16, AT-17, AT-24 
 
 **Blocked by:** 02 and 06
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The scene of AT-15 shows at 375, 768, and 1280 px, with the margin mark of AT-17 and the label at rest of AT-24.
 - [x] The settle takes about 1.9 s, as the frames of AT-16 show.
