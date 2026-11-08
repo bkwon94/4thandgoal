@@ -132,13 +132,8 @@ describe("the motion of the look (AT-7, AT-8)", () => {
     expect(blocksAt(press, /@media \(prefers-reduced-motion: reduce\)/)[0]).toMatch(/transform: none/);
   });
 
-  it("sweeps the scan line of the hero once, with transform and opacity only, and hides it with reduced motion", () => {
-    const scan = blocksAt(RULES, /\.hero-scan\s*{/)[0];
-    expect(scan).toMatch(/animation: hero-scan [\d.]+s var\(--ease-rise\) [\d.]+s 1 both;/);
-    const frames = blocksAt(RULES, /@keyframes hero-scan/)[0];
-    expect([...new Set([...frames.matchAll(/([a-z-]+):/g)].map((match) => match[1]))].sort()).toEqual(["opacity", "transform"]);
-    const reduced = blocksAt(RULES, /@media \(prefers-reduced-motion: reduce\)/).join("\n");
-    expect(reduced).toMatch(/\.hero-scan\s*{\s*display: none;/);
+  it("holds no scan line of the hero: no scan rule and no scan keyframes (AT-39)", () => {
+    expect(RULES).not.toMatch(/hero-scan/);
   });
 });
 

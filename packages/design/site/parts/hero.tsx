@@ -1,11 +1,12 @@
 /**
- * The hero: the one loud surface of a page, with the grid texture, the brand glow, the four corner brackets, and one scan line.
- * It sits on the band color in both themes, so the hero stays dark in light. The page fills the six hero slots, or passes its content.
+ * The hero: the one loud surface of a page, with the grid texture, the brand glow, and the four corner brackets.
+ * It sits on the band color in both themes, so the hero stays dark in light. The page fills the six hero slots.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";
 
-/* The six hero slots, in the slot order. Only the title is required. An absent slot renders no element and no gap. */
+/* The six hero slots, in the slot order. Only the title is required. An absent slot renders no element and no gap.
+   Hero takes no children, so a page cannot pass free content and every hero keeps the one structure. */
 type HeroSlots = {
   // The small uppercase line above the title, such as "7-9 · 9th of 12".
   eyebrow?: ReactNode;
@@ -23,19 +24,7 @@ type HeroSlots = {
   children?: never;
 };
 
-/* The free content of a hero that does not take the slots yet. */
-type HeroContent = {
-  children: ReactNode;
-  eyebrow?: never;
-  title?: never;
-  meta?: never;
-  feature?: never;
-  stats?: never;
-  action?: never;
-  level?: never;
-};
-
-type HeroProps = (HeroSlots | HeroContent) & {
+type HeroProps = HeroSlots & {
   // The name of the region, for a screen reader, such as "Page not found" or "Matchup of the Week".
   label: string;
   className?: string;
@@ -111,8 +100,7 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1 }: Hero
 /* The text of a hero sits on a plate of the band color (the plate utility of globals.css). The plate keeps the grid and
    the glow from under each letter, so the contrast of the text is the contrast of its role pair, and axe can read it.
    The art layer comes first in the markup and the content box is relative, so the content paints over the art. */
-export function Hero(props: HeroProps) {
-  const { label, className } = props;
+export function Hero({ label, className, ...slots }: HeroProps) {
   return (
     <section
       aria-label={label}
@@ -123,7 +111,6 @@ export function Hero(props: HeroProps) {
     >
       <div aria-hidden="true">
         <div data-hero-art="texture" className="hero-texture pointer-events-none absolute inset-0" />
-        <div data-hero-art="scan" className="hero-scan" />
         {BRACKETS.map((place) => (
           <span
             key={place}
@@ -132,7 +119,9 @@ export function Hero(props: HeroProps) {
           />
         ))}
       </div>
-      <div className="relative">{props.children !== undefined ? props.children : <Slots {...(props as HeroSlots)} />}</div>
+      <div className="relative">
+        <Slots {...slots} />
+      </div>
     </section>
   );
 }

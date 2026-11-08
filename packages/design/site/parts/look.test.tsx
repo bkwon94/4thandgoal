@@ -30,22 +30,20 @@ afterEach(() => cleanup());
 afterAll(() => vi.unstubAllGlobals());
 
 describe("Hero", () => {
-  it("shows its content in a region named by its label", () => {
-    render(
-      <Hero label="Page not found">
-        <h1>404</h1>
-      </Hero>,
-    );
+  it("takes no free content, and renders a hero with only a title in a region named by its label (AT-14)", () => {
+    // The typecheck proves the rule: if Hero took children, this directive would be unused and tsc would fail.
+    // @ts-expect-error Hero takes the six slots and no children.
+    void (<Hero label="Page not found">404</Hero>);
+    render(<Hero label="Page not found" title="Page not found" />);
     const hero = screen.getByRole("region", { name: "Page not found" });
-    expect(within(hero).getByRole("heading", { level: 1, name: "404" })).toBeTruthy();
+    expect(within(hero).getByRole("heading", { level: 1, name: "Page not found" })).toBeTruthy();
   });
 
-  it("draws the grid, the glow, the four brackets, and one scan line, all hidden from a screen reader (AT-7)", () => {
-    const { container } = render(<Hero label="Week 8">Text</Hero>);
+  it("draws the grid, the glow, and the four brackets, all hidden from a screen reader, and no scan line (AT-7, AT-39)", () => {
+    const { container } = render(<Hero label="Week 8" title="Week 8" />);
     const art = container.querySelectorAll("[data-hero-art]");
     expect([...art].map((element) => element.getAttribute("data-hero-art"))).toEqual([
       "texture",
-      "scan",
       "bracket",
       "bracket",
       "bracket",
