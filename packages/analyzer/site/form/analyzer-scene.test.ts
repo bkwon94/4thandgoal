@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { analyzeResponse, analyzeResponseThree, analyzeResponseTradeA } from "../lib/fixtures/api";
-import type { SceneLight } from "@cpc/design/parts/scene-math";
+import { type SceneLight, sceneLines } from "@cpc/design/parts/scene-math";
 import { verdictScene } from "./analyzer-scene";
 
 /* The lights of each side, by the team name at the start of each label. */
@@ -21,6 +21,20 @@ describe("verdictScene", () => {
     expect(lamb.length + girds.length).toBe(scene.lights.length);
     // The groups sit apart: each light of behold the lamb is left of each light of Bo Girds.
     expect(Math.max(...lamb.map((light) => light.x))).toBeLessThan(Math.min(...girds.map((light) => light.x)));
+  });
+
+  it("joins no light of behold the lamb to a light of Bo Girds, so the scene reads as two groups (AT-21)", () => {
+    expect(lamb.every((light) => light.group === lamb[0].group)).toBe(true);
+    expect(girds.every((light) => light.group === girds[0].group)).toBe(true);
+    expect(lamb[0].group).not.toBe(girds[0].group);
+    for (const [a, b] of sceneLines(scene.lights)) expect(scene.lights[a].group).toBe(scene.lights[b].group);
+  });
+
+  it("keeps a clear gap between the groups, wider than a group", () => {
+    const lambXs = lamb.map((light) => light.x);
+    const girdsXs = girds.map((light) => light.x);
+    const width = Math.max(...lambXs) - Math.min(...lambXs);
+    expect(Math.min(...girdsXs) - Math.max(...lambXs)).toBeGreaterThan(width);
   });
 
   it("puts the bigger group on the side of behold the lamb, the side that gets more (AT-21)", () => {

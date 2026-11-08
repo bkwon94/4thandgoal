@@ -13,6 +13,7 @@ import {
   type SceneSize,
   layoutScene,
   nearestLight,
+  sceneLines,
 } from "./scene-math";
 import { type DustPoint, driftAt, dustAt, dustOf, linesAt, phaseAt, scatterOf, settleAt } from "./scene-motion";
 
@@ -121,16 +122,16 @@ function paint(ctx: CanvasRenderingContext2D, scene: HeroScene, colors: SceneCol
     ctx.fillStyle = colors.muted;
     layout.guideLabels.forEach((rect, index) => ctx.fillText(layout.guides[index].label, rect.x, rect.y + rect.height / 2));
 
-    // The thin lines of the star chart, between the lights in x order, drawn from left to right.
-    const order = scene.lights.map((light, index) => ({ x: light.x, index })).sort((a, b) => a.x - b.x);
-    const segments = Math.max(order.length - 1, 0);
+    // The thin lines of the star chart, between the lights in x order inside one group, drawn from left to right.
+    const pairs = sceneLines(scene.lights);
+    const segments = pairs.length;
     const reach = frame.lines * segments;
     ctx.globalAlpha = LINE_ALPHA;
     ctx.strokeStyle = colors.onDark;
     ctx.beginPath();
     for (let step = 0; step < segments && step < reach; step++) {
-      const a = lights[order[step].index];
-      const b = lights[order[step + 1].index];
+      const a = lights[pairs[step][0]];
+      const b = lights[pairs[step][1]];
       const share = Math.min(1, reach - step);
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(a.x + (b.x - a.x) * share, a.y + (b.y - a.y) * share);

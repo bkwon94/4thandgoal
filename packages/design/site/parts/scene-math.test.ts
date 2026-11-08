@@ -11,6 +11,7 @@ import {
   placeLights,
   placeMarginMark,
   sceneGuideScore,
+  sceneLines,
   sceneScore,
 } from "./scene-math";
 
@@ -134,5 +135,32 @@ describe("sceneGuideScore", () => {
   it("always writes two decimals", () => {
     expect(sceneGuideScore(99.6)).toBe("99.60");
     expect(sceneGuideScore(96)).toBe("96.00");
+  });
+});
+
+describe("sceneLines", () => {
+  it("joins each light to the next light in x order when no light has a group", () => {
+    const lights = [
+      { x: 2, y: 0, label: "C", tone: "dim" as const },
+      { x: 0, y: 0, label: "A", tone: "dim" as const },
+      { x: 1, y: 0, label: "B", tone: "dim" as const },
+    ];
+    expect(sceneLines(lights)).toEqual([
+      [1, 2],
+      [2, 0],
+    ]);
+  });
+
+  it("joins only the lights of one group, so two groups read as two groups (AT-21)", () => {
+    const lights = [
+      { x: 0, y: 0, label: "A", tone: "flare" as const, group: 0 },
+      { x: 1, y: 0, label: "B", tone: "flare" as const, group: 0 },
+      { x: 4, y: 0, label: "C", tone: "bright" as const, group: 1 },
+      { x: 5, y: 0, label: "D", tone: "dim" as const, group: 1 },
+    ];
+    expect(sceneLines(lights)).toEqual([
+      [0, 1],
+      [2, 3],
+    ]);
   });
 });

@@ -22,8 +22,11 @@ export function sceneGuideScore(points: number): string {
 /* The tone of a light. `flare` draws in the accent color, `bright` in `on-dark`, and `dim` in `on-dark-muted`. */
 export type SceneTone = "flare" | "bright" | "dim";
 
-/* One light of the scene. The x and y values are in the units of the data, such as a rank and the points. */
-export type SceneLight = { x: number; y: number; label: string; tone: SceneTone };
+/*
+ * One light of the scene. The x and y values are in the units of the data, such as a rank and the points. The
+ * optional group keeps the thin lines inside one group, such as one side of a trade, so two groups read as two.
+ */
+export type SceneLight = { x: number; y: number; label: string; tone: SceneTone; group?: number };
 
 /* A point in the units of the data, or in the pixels of the box after `placeLights`. */
 export type ScenePoint = { x: number; y: number };
@@ -73,6 +76,22 @@ function scaleOf(scene: HeroScene, box: SceneBox): (point: ScenePoint) => SceneP
     x: box.padding + ((point.x - xs.low) / xs.span) * inner.width,
     y: box.padding + (1 - (point.y - ys.low) / ys.span) * inner.height,
   });
+}
+
+/*
+ * The thin lines of the star chart, as pairs of light indices. Each pair is two lights next in x order, from left to
+ * right. A line joins two lights only when both have the same group or neither has a group, so a line never crosses
+ * from one group to another (AT-21).
+ */
+export function sceneLines(lights: SceneLight[]): [number, number][] {
+  const order = lights.map((light, index) => ({ x: light.x, index })).sort((a, b) => a.x - b.x);
+  const pairs: [number, number][] = [];
+  for (let step = 0; step + 1 < order.length; step++) {
+    const a = order[step].index;
+    const b = order[step + 1].index;
+    if (lights[a].group === lights[b].group) pairs.push([a, b]);
+  }
+  return pairs;
 }
 
 /* The place in pixels of each light in the box, in the order of `scene.lights`. */

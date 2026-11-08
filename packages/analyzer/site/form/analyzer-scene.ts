@@ -26,9 +26,10 @@ export function verdictScene(doc: AnalyzeResponse): HeroScene {
       const angle = -Math.PI / 2 + (2 * Math.PI * step) / leans.length;
       return { x: center.x + Math.cos(angle), y: center.y + Math.sin(angle), label: `${side.team} · ${factor.name}` };
     });
+    // Each light takes the index of its side as its group, so the thin lines join only the lights of one side (AT-21).
     return [
-      { ...center, label: side.team, tone: getsMore ? "flare" : "bright" },
-      ...ring.map((light) => ({ ...light, tone: getsMore ? ("flare" as const) : ("dim" as const) })),
+      { ...center, label: side.team, tone: getsMore ? "flare" : "bright", group: index },
+      ...ring.map((light) => ({ ...light, tone: getsMore ? ("flare" as const) : ("dim" as const), group: index })),
     ];
   });
   return { lights, guides: [], margin: null, restIndex: null, mode: "settle" };
