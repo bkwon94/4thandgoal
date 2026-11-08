@@ -135,8 +135,8 @@ App: site
 Stories: 18, 19
 Given: The week page of week 8.
 When: The reader opens the page at 375 px.
-Then: At 0.5 s after entry the lights are not yet in their chart places. At 2.2 s they are settled.
-Evidence: frames of the scene at 0.5, 1.0, and 2.2 s after entry, at 375 px in the dark theme.
+Then: At 0.4 s after entry the lights are not yet in their chart places. At 1.8 s they are settled.
+Evidence: frames of the scene at 0.4, 0.8, and 1.8 s after entry, at 375 px in the dark theme.
 
 AT-17: The margin stays visible
 App: site
@@ -154,7 +154,8 @@ When: The reader opens the page and waits for the settle.
 Then: The scene shows 8 lights from week 1 to week 8. The lights of weeks 3, 4, and 8 are bright, the other five are dim, and a dashed line marks the median of each week.
 Evidence: scene screenshots at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
-AT-19: The rankings scene
+AT-19: Retired: The rankings scene
+Retired: Brian, 2026-11-08: the scene stays only where it shows something the page does not, so this hero keeps the static grid. AT-44 checks it.
 App: site
 Stories: 24
 Given: `/rankings/` for week 8.
@@ -162,7 +163,8 @@ When: The reader opens the page and waits for the settle.
 Then: The scene shows 12 lights in the order of the power rank, each at the height of its playoff odds. The light of the rank-1 team is in the accent color and shows its label.
 Evidence: scene screenshots at 375, 768, and 1280 px, each in the light theme and the dark theme, and the name and odds of the rank-1 team.
 
-AT-20: The analyzer drift
+AT-20: Retired: The analyzer drift
+Retired: Brian, 2026-11-08: the scene stays only where it shows something the page does not, so this hero keeps the static grid. AT-44 checks it.
 App: site
 Stories: 25
 Given: `/analyze/` with no trade graded.
@@ -170,7 +172,8 @@ When: The reader opens the page and waits 6 s.
 Then: The lights of the scene move the whole time and do not settle into a chart.
 Evidence: frames of the scene at 2 s and 6 s after entry, at 375 px in the dark theme.
 
-AT-21: The analyzer settle
+AT-21: Retired: The analyzer settle
+Retired: Brian, 2026-11-08: the scene stays only where it shows something the page does not, so this hero keeps the static grid. AT-44 checks it.
 App: site
 Stories: 26
 Given: `/analyze/` and grade-clarity trade A. The verdict is "Yes" for behold the lamb.
@@ -178,7 +181,8 @@ When: The reader grades trade A.
 Then: When the verdict arrives, the lights settle into two groups, one per side, and the bigger group sits on the side of behold the lamb.
 Evidence: frames of the scene before the grade and 2.5 s after the verdict, at 375 and 1280 px in the dark theme, from a run on the real API.
 
-AT-22: The midseason scene
+AT-22: Retired: The midseason scene
+Retired: Brian, 2026-11-08: the scene stays only where it shows something the page does not, so this hero keeps the static grid. AT-44 checks it.
 App: site
 Stories: 27
 Given: `/midseason/2026/` for the `cpc` client.
@@ -285,10 +289,10 @@ Evidence: scene screenshots at 375, 768, and 1280 px, each in the light theme an
 AT-35: Only the first hero moves
 App: site
 Stories: 41, 45
-Given: The home page, and the midseason report `/midseason/2026/`.
+Given: The week page of week 8, the home page during the midseason takeover, the midseason report `/midseason/2026/`, `/rankings/`, and `/analyze/`.
 When: The reader opens each page.
-Then: The home page has exactly one scene. In the report, the opener has a scene and no act title has one.
-Evidence: the count of scene canvases on each page, from Playwright, and screenshots of the act titles at 375 px in the dark theme.
+Then: The week page has exactly one scene, in its first hero. The home page, the report, `/rankings/`, and `/analyze/` have none.
+Evidence: the count of scene canvases on each page, from Playwright.
 
 AT-36: A tap on the content still works
 App: site
@@ -346,6 +350,30 @@ When: The developer diffs it against `main`.
 Then: No file under `apps/pipeline/` and no published file under `clients/` changes.
 Evidence: the output of `git diff --stat main -- apps/pipeline clients`.
 
+AT-43: The title comes first on a phone
+App: site
+Stories: 9, 17
+Given: The week page of week 8 and the manager page of roster 7.
+When: The reader opens each page at 375 px.
+Then: In each first hero, the title sits above the scene, and the scene band is at most 140 px tall.
+Evidence: screenshots of each first hero at 375 px in the dark theme, and the top of the title, the top of the scene, and the height of the scene, from Playwright.
+
+AT-44: The static heroes
+App: site
+Stories: 45
+Given: `/rankings/`, the midseason report `/midseason/2026/`, the home page during the midseason takeover, and `/analyze/` before and after a grade of grade-clarity trade A.
+When: The reader opens each page.
+Then: Each hero shows the grid, the glow, and the four brackets, and no scene canvas.
+Evidence: screenshots of each hero at 375 px in the dark theme, from a run on the real API for `/analyze/`, and the count of scene canvases in each hero, from Playwright.
+
+AT-45: The manager link of rank 1
+App: site
+Stories: 8
+Given: `/rankings/` for week 8.
+When: The reader taps "Manager page" in the action slot of the hero.
+Then: The link opens the manager page of the rank-1 team.
+Evidence: a screenshot of the hero at 375 px in the dark theme, and the URL after the tap.
+
 ## Trace
 
 Story 1: AT-1
@@ -355,8 +383,8 @@ Story 4: AT-4
 Story 5: AT-4
 Story 6: AT-1
 Story 7: AT-1, AT-8
-Story 8: AT-5
-Story 9: AT-6
+Story 8: AT-5, AT-45
+Story 9: AT-6, AT-43
 Story 10: AT-7
 Story 11: AT-9
 Story 12: AT-10
@@ -364,17 +392,17 @@ Story 13: AT-11
 Story 14: AT-12
 Story 15: AT-1
 Story 16: AT-1
-Story 17: AT-15
+Story 17: AT-15, AT-43
 Story 18: AT-15, AT-16
 Story 19: AT-16
 Story 20: AT-15
 Story 21: AT-15
 Story 22: AT-17
 Story 23: AT-18
-Story 24: AT-19
-Story 25: AT-20
-Story 26: AT-21
-Story 27: AT-22
+Story 24: no test. Reason: Brian dropped the rankings scene on 2026-11-08, and AT-19 is retired.
+Story 25: no test. Reason: Brian dropped the analyzer scene on 2026-11-08, and AT-20 is retired.
+Story 26: no test. Reason: Brian dropped the analyzer scene on 2026-11-08, and AT-21 is retired.
+Story 27: no test. Reason: Brian dropped the midseason scene on 2026-11-08, and AT-22 is retired.
 Story 28: AT-23
 Story 29: AT-24
 Story 30: AT-25
@@ -392,7 +420,7 @@ Story 41: AT-35
 Story 42: AT-36
 Story 43: AT-37
 Story 44: AT-14
-Story 45: AT-35
+Story 45: AT-35, AT-44
 Story 46: AT-14
 Story 47: AT-13
 Story 48: AT-38
@@ -406,4 +434,4 @@ Out of scope "a tap or a slide during the settle": no test. Reason: the spec acc
 
 ## Revisions
 
-None yet.
+- 2026-11-08, Brian: the settle takes about 1.5 s, so AT-16 reads 0.4 s and 1.8 s. The scenes of rankings, midseason, and the analyzer leave the spec, so AT-19 to AT-22 retire and AT-35 changes. AT-43 adds the title before the scene on a phone, AT-44 adds the static heroes, and AT-45 adds the manager link of rank 1.

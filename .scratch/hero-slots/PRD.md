@@ -42,10 +42,10 @@ The first hero of a page draws a hero scene. Points of light start scattered, dr
 21. As a manager, I want the two teams of the Matchup to flare in the brand color, so that the story of the hero stands out of the chart.
 22. As a manager, I want the margin of the Matchup, such as "+1.43", always visible in the scene, so that no label hides it.
 23. As a manager, I want my manager page to show my weeks as lights, bright for a win and dim for a loss, against the median, so that I see my season at a glance.
-24. As a manager, I want the power rankings page to show 12 lights in the order of the power rank, each at its playoff odds, with the rank-1 team in the brand color, so that I see the race at a glance.
-25. As a manager, I want the analyzer to show drifting lights while I build a trade, so that the page feels alive before the answer.
-26. As a manager, I want the lights of the analyzer to settle into two groups when the verdict arrives, with the bigger group on the side that gets more, so that I see the answer as it lands.
-27. As a manager, I want the midseason report to open on a scene of the season totals in the order of the standings, so that the report starts with the whole season.
+24. As a manager, I want the power rankings page to show 12 lights in the order of the power rank, each at its playoff odds, with the rank-1 team in the brand color, so that I see the race at a glance. Dropped by Brian on 2026-11-08.
+25. As a manager, I want the analyzer to show drifting lights while I build a trade, so that the page feels alive before the answer. Dropped by Brian on 2026-11-08.
+26. As a manager, I want the lights of the analyzer to settle into two groups when the verdict arrives, with the bigger group on the side that gets more, so that I see the answer as it lands. Dropped by Brian on 2026-11-08.
+27. As a manager, I want the midseason report to open on a scene of the season totals in the order of the standings, so that the report starts with the whole season. Dropped by Brian on 2026-11-08.
 28. As a manager, I want the 404 page to show lights that drift and never settle, so that a lost page still has a small joke.
 29. As a manager, I want one light to show its label at rest, such as "The Blue Tent · 100.31", so that I learn without a word that a light has a label.
 30. As a manager, I want a tap anywhere in the scene to select the nearest light, so that my finger never misses.
@@ -103,7 +103,7 @@ The spec moves the content that exists. It adds no number and no copy, except th
 | Matchup of the Week, home | the week and the pick | the winner "by" the margin | the reason | the team rows | none | the link to the week |
 | Matchup of the Week, week page | the week and the pick | the winner "by" the margin | the dates | the team rows and the photo frame | none | the share bar |
 | Manager | the record line | the team name | the owner | the avatar, the grade mark with its popover, the week chips | the odds tiles | none |
-| Power rankings | the week | the name of the rank-1 team | the record line | none | the odds tiles | none |
+| Power rankings | the week | the name of the rank-1 team | the record line | none | the odds tiles | the link to the manager page of the rank-1 team |
 | Midseason takeover | the season and the week | the title of the opener | none | none | the leader tiles | the link to the report |
 | Midseason opener | the season and the week | the title of the opener | the lead line | none | the leader tiles | the link to the finale |
 | Act title | the act number | the act title | none | none | none | none |
@@ -127,8 +127,8 @@ The ticket of each hero checks this row against the code and records a change in
   - the index of the light that shows its label at rest
   - a mode: `settle`, or `drift` for a scene that never settles
 - The math of the scene lives in pure functions: the place of each light in a box, the nearest light to a point, the side of a label near an edge, and the place of the margin mark so that no label covers it.
-- **Phone:** the scene is a band of about 200px at the top of the card, above the slots. **From the `tablet` tier up:** the scene fills the open middle. No light sits under text.
-- **The settle:** the lights start scattered, drift in, and settle in about 1.9 s with a strong ease-out. Thin lines then draw between the lights in x order. This is variant A, "Constellation", of decision 06.
+- **Phone:** the scene is a band of about 130px under the eyebrow, the title, and the meta, so the reader gets the words first. **From the `tablet` tier up:** the scene fills the open middle. No light sits under text (Brian, 2026-11-08).
+- **The settle:** the lights start scattered, drift in, and settle in about 1.5 s with a strong ease-out (Brian, 2026-11-08). Thin lines then draw between the lights in x order. This is variant A, "Constellation", of decision 06.
 - **Dust:** a faint dust of 40 to 80 tiny points drifts behind the lights. It stops at rest too.
 - **Entry and re-entry:** an `IntersectionObserver` at about 40 percent starts the settle. The settle plays again after the hero fully left the view and comes back.
 - **At rest the loop stops.** A tap or a slide draws one frame.
@@ -149,14 +149,11 @@ From decision 07.
 | --- | --- | --- | --- | --- | --- |
 | Matchup of the Week, home and week page | settle | 12 teams, sorted low to high by the points of the week | the league median | the two teams of the Matchup, with the margin mark | the winner of the Matchup |
 | Manager | settle | one per played week: x the week, y the points | the median of each week | none: a win is `bright`, a loss is `dim` | the latest week |
-| Power rankings | settle | 12 teams in the order of the power rank, y the playoff odds | none | the rank-1 team | the rank-1 team |
-| Midseason opener and takeover | settle | 12 teams at the season total points, in the order of the standings | none | the leader | the leader |
 | 404 | drift | a scatter | none | none | none |
-| Analyzer form | drift, then settle | before a verdict, a scatter; after it, two groups, one per side of the trade, with the bigger group on the side that gets more | none | the side that gets more | none |
-| Analyzer result, act titles | no scene | | | | |
+| Power rankings, midseason opener and takeover, analyzer form and result, act titles | no scene | | | | |
 
-- The scene of the analyzer form changes from `drift` to `settle` when the verdict of the API arrives. It is the largest scene, so it is the last ticket of the spec. If it leaves the spec, the analyzer form keeps the `drift` of the 404.
-- The data of each scene comes from the published files that the page already loads. The Matchup uses the week file: its teams, its matchups, its median, and its pick. The manager uses the managers file. Power rankings uses the rankings file. The midseason scenes use the midseason file. The analyzer uses the response of the API.
+- **Revision, Brian, 2026-11-08:** the scene stays only where it shows something the page does not show. The power rankings, the midseason, and the analyzer scenes leave the spec, and those heroes keep the static grid. Stories 24 to 27 leave with them. The rankings hero gets a link to the manager page of the rank-1 team, because the ladder starts at rank 2.
+- The data of each scene comes from the published files that the page already loads. The Matchup uses the week file: its teams, its matchups, its median, and its pick. The manager uses the managers file.
 
 ### The colors of the scene
 
@@ -211,6 +208,7 @@ The analyzer result and the analyzer form after a verdict need the live API. The
 - A "Read more" control for the blurb of the Matchup.
 - A tap or a slide during the settle.
 - The variants B, "Comet", and C, "Pulse", of decision 06.
+- A scene on the power rankings, the midseason, or the analyzer heroes (Brian, 2026-11-08).
 
 ## Further Notes
 
