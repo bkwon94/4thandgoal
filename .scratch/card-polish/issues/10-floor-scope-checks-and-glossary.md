@@ -17,3 +17,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-27, AT-28, AT-29, AT-31
 - [ ] The Scrolltide copy search over the diff finds no match.
 - [ ] `GLOSSARY.md` holds the new terms, each with one meaning.
 - [ ] `make check-fast` passes.
+
+## Comments
+
+- 2026-11-08, cpc:implement: Brian chose to build this ticket before 09. The floor check covers every open state except the stage, which waits for ticket 09.
