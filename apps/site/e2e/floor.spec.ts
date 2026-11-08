@@ -47,16 +47,18 @@ function longestNameRoute(): string {
 
 /*
  * The pages and the open states of the full floor: all four rules, in both themes, at both widths.
- * The spec names 7 pages and 3 open states per client. The closed home page is one of the 7 pages, and the open strip
- * of weeks is a tap on that same page.
+ * The spec names 7 pages and 4 open states per client. The closed home page is one of the 7 pages, and the open strip
+ * of weeks is a tap on that same page. The Season So Far dial sits on the manager page of the list, so that page covers it.
  * A page not in the list, such as a past week, gets the fast sweep only, so it still has the text floor.
  */
 const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   NOT_FOUND_ROUTE,
   "/rankings/",
-  // The card at rank 2 is the first card of the Ladder, because rank 1 sits in the hero.
-  { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]" },
+  // The card at rank 2 is the first card of the Ladder, because rank 1 sits in the hero. The chevron has its own label, so the selector names the head.
+  { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]:not([aria-label])" },
   `/${SEASON}/managers/`,
+  // The open first row of the Index list. The row name of each closed row is muted, so axe reads it beside the open row.
+  { route: `/${SEASON}/managers/`, tap: 'ul[aria-label="Index List"] > li:first-child > button[aria-expanded]' },
   // The manager page of the longest team name of the client: To Infinity and Bijan of cpc, The Mean Machine of norcal.
   // In cpc, rosters 7, 9, and 11 tie at 21 characters, and roster 7 stands for the three.
   longestNameRoute(),
@@ -125,13 +127,14 @@ test("each page of the full floor is a built page", () => {
 
 /* No client takes the waiver package, so no client builds a waiver page, even where the week publishes a waiver file.
    The URL of the waiver page of the latest week then gives the 404 page, as the Worker does. */
-/* The spec of the floor names 7 pages and 3 open states per client: home, the latest week, rankings, the managers index,
-   the manager page with the longest team name, the empty analyzer, and 404, then an open recap, card, and strip. */
-test("the full floor holds the 7 pages and the 3 open states of the spec", () => {
+/* The spec of the floor names 7 pages and 4 open states per client: home, the latest week, rankings, the managers index,
+   the manager page with the longest team name, the empty analyzer, and 404, then an open game card, ladder card,
+   Index list row, and strip. */
+test("the full floor holds the 7 pages and the 4 open states of the spec", () => {
   const pages = FULL_FLOOR_PAGES.filter((entry) => typeof entry === "string");
   expect(new Set(pages).size).toBe(pages.length);
   expect(pages.length).toBe(7);
-  expect(FULL_FLOOR_PAGES.length - pages.length).toBe(3);
+  expect(FULL_FLOOR_PAGES.length - pages.length).toBe(4);
 });
 
 test("no waiver page is built, and its URL shows the 404 page", async ({ page }) => {
@@ -139,6 +142,22 @@ test("no waiver page is built, and its URL shows the 404 page", async ({ page })
   const response = await page.goto(`${server.url}${LATEST_WEEK_ROUTE}waiver/`);
   expect(response?.status()).toBe(404);
   await expect(page.getByText("ERROR // PAGE NOT FOUND")).toBeVisible();
+});
+
+/* The ink copy of each rolled letter of the Index list is CSS content with empty alt text, so a screen reader hears each
+   name once. A minifier that drops the alt text form would make each name read twice, so the check reads the built CSS. */
+test("the built CSS keeps the empty alt text of the rolled letters of the Index list", () => {
+  const files: string[] = [];
+  const walk = (dir: string) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) walk(path);
+      else if (entry.name.endsWith(".css")) files.push(path);
+    }
+  };
+  walk(join(OUT, "_next"));
+  const css = files.map((path) => readFileSync(path, "utf8")).join("\n");
+  expect(css).toMatch(/content:\s*attr\(data-ch\)\s*\/\s*""/);
 });
 
 for (const entry of FULL_FLOOR_PAGES) {

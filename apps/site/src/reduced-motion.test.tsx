@@ -354,6 +354,6 @@ describe("Reduced motion on the manager page", () => {
     await new Promise((done) => setTimeout(done, 50));
     expect(dial.hasAttribute("data-wait")).toBe(false);
     expect(lit()).toEqual([12, 9, 6, 3]);
-    dial.querySelectorAll<SVGElement>("[data-blade]").forEach((blade) => expect(blade.style.transitionDelay).toBe(""));
+    dial.querySelectorAll<HTMLElement>("[data-blade]").forEach((blade) => expect(blade.style.transitionDelay).toBe(""));
   });
 });

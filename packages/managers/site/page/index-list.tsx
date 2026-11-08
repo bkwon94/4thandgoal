@@ -83,7 +83,7 @@ function RowGrade({ grade, teams }: { grade: ManagerGrade; teams: number }) {
         >
           {grade.letter}
         </span>
-        <p className="m-0 text-body leading-body text-ink-2">{grade.read}</p>
+        <p className="m-0 text-lead leading-body text-ink-2">{grade.read}</p>
       </div>
       <GradeDial parts={grade.parts} teams={teams} size="small" />
     </div>
@@ -122,7 +122,7 @@ export function IndexList({ rows, teams }: { rows: IndexRow[]; teams: number }) 
               )}
             >
               {label}
-              <sup className="ml-sp-0 font-mono text-meta tabular-nums">{count}</sup>
+              <sup className="ml-sp-0 font-mono text-meta leading-none tabular-nums">{count}</sup>
             </button>
           );
         })}

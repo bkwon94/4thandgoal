@@ -125,7 +125,7 @@ export function OpenCard({
       <div className="oc-drawer">
         <div id={panelId} ref={panel} hidden={shut} className="oc-inner">
           <div className="oc-panel mx-sp-2 mt-sp-3 flex flex-col gap-sp-3 rounded-tile bg-raised p-sp-4">
-            {overview && <p className="m-0 text-body leading-tight font-bold text-ink">{overview}</p>}
+            {overview && <p className="m-0 text-lead leading-tight font-bold text-ink">{overview}</p>}
             {chips.length > 0 && (
               <ul className="m-0 flex list-none flex-wrap gap-sp-2 border-b border-rule p-0 pb-sp-3">
                 {chips.map((chip, index) => (

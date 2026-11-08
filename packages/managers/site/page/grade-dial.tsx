@@ -46,32 +46,35 @@ function Arc({ part, teams, size, off }: ArcProps) {
   const large = size === "large";
   return (
     <div role="img" aria-label={arcName(part, teams)} className="flex flex-col items-center text-center">
-      <div className={cn("relative w-full", large ? "max-w-[10rem]" : "max-w-[6rem]")}>
-        <svg viewBox={`0 0 ${SIZE} ${HEIGHT}`} className="block h-auto w-full overflow-visible">
-          {Array.from({ length: teams }, (_, i) => {
-            const on = i < lit;
-            return (
-              <rect
-                key={i}
-                data-blade
-                data-on={on}
-                x={CENTER - BLADE_W / 2}
-                y={CENTER - RADIUS - BLADE_H / 2}
-                width={BLADE_W}
-                height={BLADE_H}
-                rx={BLADE_W / 2}
-                transform={`rotate(${-SWEEP / 2 + i * step} ${CENTER} ${CENTER})`}
-                // A lit blade stays dark while the dial waits for the view, then fills in a stagger from the left end.
-                // With motion off the blade has no delay, and the reduced-motion rule of globals.css drops the duration.
-                className={cn(
-                  "transition-[fill] duration-240 ease-[cubic-bezier(0.4,0,0.2,1)]",
-                  on ? "fill-accent group-data-[wait]:fill-bar-off" : "fill-bar-off",
-                )}
-                style={off ? undefined : { transitionDelay: `${i * BLADE_STAGGER_MS}ms` }}
-              />
-            );
-          })}
-        </svg>
+      {/* The blades are HTML boxes, not SVG, because axe reads no contrast for text over an SVG node, and the rank sits
+          inside the box of the arc. The box has the ratio of the drawing, so each blade keeps its place in viewBox units. */}
+      <div className={cn("relative w-full", large ? "max-w-[10rem]" : "max-w-[6rem]")} style={{ aspectRatio: `${SIZE} / ${HEIGHT}` }}>
+        {Array.from({ length: teams }, (_, i) => {
+          const on = i < lit;
+          return (
+            <span
+              key={i}
+              data-blade
+              data-on={on}
+              // A lit blade stays dark while the dial waits for the view, then fills in a stagger from the left end.
+              // With motion off the blade has no delay, and the reduced-motion rule of globals.css drops the duration.
+              className={cn(
+                "absolute rounded-pill transition-[background-color] duration-240 ease-[cubic-bezier(0.4,0,0.2,1)]",
+                on ? "bg-accent group-data-[wait]:bg-bar-off" : "bg-bar-off",
+              )}
+              style={{
+                left: `${((CENTER - BLADE_W / 2) / SIZE) * 100}%`,
+                top: `${((CENTER - RADIUS - BLADE_H / 2) / HEIGHT) * 100}%`,
+                width: `${(BLADE_W / SIZE) * 100}%`,
+                height: `${(BLADE_H / HEIGHT) * 100}%`,
+                // The blade turns on the center of the arc, which sits RADIUS plus half a blade under the top of the blade.
+                transformOrigin: `50% ${((RADIUS + BLADE_H / 2) / BLADE_H) * 100}%`,
+                transform: `rotate(${-SWEEP / 2 + i * step}deg)`,
+                ...(off ? {} : { transitionDelay: `${i * BLADE_STAGGER_MS}ms` }),
+              }}
+            />
+          );
+        })}
         {/* The rank sits in the open end of the arc, so a reader gets the rank without a count of blades. */}
         <div className="absolute inset-x-0 bottom-0 flex flex-col items-center leading-none">
           <span className={cn("font-extrabold text-ink tabular-nums", large ? "text-score" : "text-row")}>
