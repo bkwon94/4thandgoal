@@ -1,0 +1,35 @@
+ACCEPTANCE.md: ce39b492f48ce4691774d28e46edf20ebcc94f32
+EVIDENCE.md: 9a90301381558a42f4f07971a416d3d3df361f59
+
+Test verdicts
+AT-1: PASS
+AT-2: PASS
+AT-3: PASS
+AT-4: PASS
+AT-5: PASS
+AT-6: PASS
+AT-8: PASS
+AT-9: PASS
+AT-10: PASS
+AT-11: PASS
+AT-12: PASS
+AT-13: PASS
+AT-14: PASS
+AT-15: PASS
+AT-16: PASS
+AT-17: PASS
+AT-18: PASS
+AT-19: PASS
+AT-20: PASS
+AT-21: PASS
+AT-22: PASS
+AT-23: PASS
+AT-24: FAIL The Then line says the name of The Blue Tent rolls its letters, but the files are still shots only and show no roll.
+AT-25: FAIL The entry lists no files, so nothing shows the stage swap on hover and focus or the hero slots of the Then line.
+AT-26: PASS
+AT-27: FAIL The Then line asks for no axe violation and no axe incomplete result, but floor-cpc.txt and floor-norcal.txt show only passed tests and never show an axe scan.
+AT-28: PASS
+AT-29: PASS
+AT-30: PASS
+AT-31: PASS
+AT-32: PASS
