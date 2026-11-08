@@ -4,9 +4,9 @@
  */
 import { gap, num } from "@cpc/design/format/format";
 import { Rise } from "@cpc/design/parts/rise";
-import { Tile, type TileTrend } from "@cpc/design/parts/tile";
+import { Tile, type TileTrend, type TrendPoint } from "@cpc/design/parts/tile";
 import type { GameChanger, Matchup, Median } from "../schema/week-types";
-import { medianOf, trendText, type TrendPoint, type WeekTrends } from "./week-trends";
+import { medianOf, trendText, type WeekTrends } from "./week-trends";
 
 /* A name suffix is no surname, so "Harold Fannin Jr." gives "Fannin". */
 const SUFFIXES = new Set(["Jr.", "Sr.", "II", "III", "IV", "V"]);

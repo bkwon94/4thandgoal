@@ -3,12 +3,10 @@
  * Each series runs from week 1 to the page week, from the saved weeks of every team, so an older page shows no later week.
  */
 import { num } from "@cpc/design/format/format";
+import type { TrendPoint } from "@cpc/design/parts/tile";
 
 /* One saved week of one team, as the managers file holds it. The median is null for a league with no median game. */
 export type TeamWeek = { week: number; points: number; median: number | null };
-
-/* One point of a trend: the week and its number. */
-export type TrendPoint = { week: number; value: number };
 
 /* The page week and its two series. */
 export type WeekTrends = { week: number; top: TrendPoint[]; median: TrendPoint[] };
