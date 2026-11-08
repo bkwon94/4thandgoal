@@ -8,7 +8,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-27, AT-28, AT-29, AT-31
 
 **Blocked by:** 01, 02, 03, 04, 05, 06, 07, 08, and 09
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] `CLIENT=cpc pnpm check:floor` and `CLIENT=norcal pnpm check:floor` pass with the new open states.
 - [x] No page scrolls sideways at 390 px, and each new control is 44 px or more.
