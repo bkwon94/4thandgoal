@@ -519,6 +519,70 @@
     }
 }
 
+/* The Index list, after the method of the Team Roster item (ADR 0028). The rows use the Open card drawer, so only the
+   letter roll of the name and the entry of the rows live here. A child selector of the open state cannot be a Tailwind class cleanly. */
+@layer components {
+    .ix-name {
+        min-width: 0;
+        font-size: var(--text-lead);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+    }
+    /* A word never breaks inside, so a long name wraps only at a space. */
+    .ix-word {
+        display: inline-block;
+        white-space: nowrap;
+    }
+    /* Each letter is a one-line window. The muted letter sits in it, and an ink copy waits one line under it. */
+    .ix-letter {
+        display: inline-block;
+        overflow: hidden;
+        vertical-align: top;
+    }
+    .ix-glyph {
+        position: relative;
+        display: inline-block;
+        color: var(--color-ink-2);
+        transition: translate 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+        transition-delay: calc(var(--ix-i) * 18ms);
+    }
+    /* The empty alt text keeps the copy out of the name a reader hears, so the name reads once.
+       The first value is for a browser with no alt text syntax. */
+    .ix-glyph::after {
+        content: attr(data-ch);
+        content: attr(data-ch) / "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        color: var(--color-ink);
+    }
+    /* An open row slides each letter up one line, a letter after the one before, so the ink name rolls in from the left. */
+    .open-card[data-open="true"] .ix-glyph {
+        translate: 0 -100%;
+    }
+    /* The rows of a filter enter in a stagger with a short rise, 35ms apart. */
+    .ix-cells {
+        animation: ix-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: calc(var(--ix-k) * 35ms);
+    }
+    /* Reduced motion drops the stagger delays too, so the roll and the rows reach the end state at once. */
+    @media (prefers-reduced-motion: reduce) {
+        .ix-glyph {
+            transition-delay: 0s;
+        }
+        .ix-cells {
+            animation: none;
+        }
+    }
+}
+@keyframes ix-in {
+    from {
+        opacity: 0;
+        translate: 0 10px;
+    }
+}
+
 /* The static HTML holds the start state of every reveal: no opacity and a small rise.
    With reduced motion or with no script, the content shows at rest from the first paint. */
 @media (prefers-reduced-motion: reduce), (scripting: none) {

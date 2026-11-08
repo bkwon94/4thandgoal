@@ -25,7 +25,7 @@ function numbers(): HTMLElement[] {
 
 describe("Manager page motion", () => {
   it("counts the odds up once and ends at the final percent", async () => {
-    render(<ManagerHero manager={managerOf({ playoff: 63, bye: 20, seed: 3 })} avatar="avatars/1.jpg" teams={12} />);
+    render(<ManagerHero manager={managerOf({ playoff: 63, bye: 20, seed: 3, status: "open" })} avatar="avatars/1.jpg" teams={12} />);
     const odds = numbers()[0];
     // The count starts from zero on the next frame, so the percent first reads under the final number.
     await waitFor(() => expect(Number.parseInt(odds.textContent!)).toBeLessThan(63), { timeout: 1000 });

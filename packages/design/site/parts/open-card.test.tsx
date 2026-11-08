@@ -88,4 +88,22 @@ describe("OpenCard", () => {
     expect(links.map((link) => link.textContent)).toEqual(["Team A, manager page", "Team B, manager page"]);
     expect(links.map((link) => link.getAttribute("href"))).toEqual(["/2026/managers/1/", "/2026/managers/2/"]);
   });
+
+  it("draws a row with no frame and no chevron, with the head as the one toggle and the extra panel content", () => {
+    render(
+      <OpenCard panelId="row-1" look="row" head={<span>1 The Blue Tent</span>} text="Strong at QB.">
+        <p>Grade A</p>
+      </OpenCard>,
+    );
+    // A row of a ledger stays short, so the head is the only toggle and the chevron row goes.
+    const toggles = screen.getAllByRole("button");
+    expect(toggles).toHaveLength(1);
+    const card = toggles[0].closest<HTMLElement>(".open-card")!;
+    expect(card.querySelector(".rounded-card")).toBeNull();
+    fireEvent.click(toggles[0]);
+    const panel = document.getElementById("row-1")!;
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    expect(within(panel).getByText("Grade A")).toBeTruthy();
+    expect(within(panel).getByText("Strong at QB.")).toBeTruthy();
+  });
 });

@@ -32,8 +32,13 @@ type OpenCardProps = {
   text?: string | null;
   // One link, or a list of links, such as one for each side of a trade.
   action?: OpenCardAction | readonly OpenCardAction[] | null;
+  // Extra panel content after the text and before the action, such as the Grade dial of an Index list row.
+  children?: ReactNode;
   // The element of the card. A card in a list is an li.
   as?: "li" | "div" | "article";
+  // "card" draws the card frame and the chevron row. "row" is a row of a ledger: no frame and no chevron, so a closed row
+  // stays one line high, and the head is the one toggle.
+  look?: "card" | "row";
   // A controlled card takes open and onOpenChange. An uncontrolled card keeps its own state.
   open?: boolean;
   defaultOpen?: boolean;
@@ -48,7 +53,9 @@ export function OpenCard({
   chips = [],
   text,
   action,
+  children,
   as: Element = "li",
+  look = "card",
   open: controlled,
   defaultOpen = false,
   onOpenChange,
@@ -100,60 +107,63 @@ export function OpenCard({
 
   // With motion off, every duration is 0, so the card reaches its end state at once (ADR 0028).
   const vars = { "--oc-dur": off ? "0s" : `${OPEN_CARD_DURATION}s`, "--oc-spring": SPRING } as CSSProperties;
+  const row = look === "row";
 
-  return (
-    <Element data-open={open} className="open-card list-none" style={vars}>
-      <Card edge={open} className="overflow-hidden p-0">
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={panelId}
-          onClick={() => setOpen(!open)}
-          className={cn(
-            "press flex min-h-touch w-full cursor-pointer flex-col gap-sp-3 border-0 bg-transparent p-sp-4 pb-0 text-left text-inherit [-webkit-tap-highlight-color:transparent]",
-            headClassName,
-          )}
-        >
-          {head}
-        </button>
-        <div className="oc-drawer">
-          <div id={panelId} ref={panel} hidden={shut} className="oc-inner">
-            <div className="oc-panel mx-sp-2 mt-sp-3 flex flex-col gap-sp-3 rounded-tile bg-raised p-sp-4">
-              {overview && <p className="m-0 text-body leading-tight font-bold text-ink">{overview}</p>}
-              {chips.length > 0 && (
-                <ul className="m-0 flex list-none flex-wrap gap-sp-2 border-b border-rule p-0 pb-sp-3">
-                  {chips.map((chip, index) => (
-                    <li
-                      key={index}
-                      className="inline-flex items-center gap-sp-2 rounded-pill bg-card px-sp-3 py-sp-1 font-mono text-meta leading-tight text-ink-2 tabular-nums"
-                    >
-                      {chip}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{text}</p>}
-              {/* The pill has a solid fill under its label, because text on the frosted blur fails the axe floor. */}
-              {actions.length > 0 && (
-                <div className="flex flex-wrap gap-sp-2">
-                  {actions.map((item) => (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      className="press inline-flex min-h-touch w-fit items-center rounded-pill bg-ink px-sp-5 text-body font-bold text-page no-underline"
-                    >
-                      {/* On a fine pointer the label rolls up to a copy of itself. The copy is CSS content, so a reader hears the label once. */}
-                      <span className="oc-roll" data-label={item.label}>
-                        <span>{item.label}</span>
-                      </span>
-                      {item.hiddenLabel && <span className="sr-only">{item.hiddenLabel}</span>}
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
+  const body = (
+    <>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen(!open)}
+        className={cn(
+          "press flex min-h-touch w-full cursor-pointer flex-col gap-sp-3 border-0 bg-transparent p-sp-4 pb-0 text-left text-inherit [-webkit-tap-highlight-color:transparent]",
+          row && "p-0",
+          headClassName,
+        )}
+      >
+        {head}
+      </button>
+      <div className="oc-drawer">
+        <div id={panelId} ref={panel} hidden={shut} className="oc-inner">
+          <div className="oc-panel mx-sp-2 mt-sp-3 flex flex-col gap-sp-3 rounded-tile bg-raised p-sp-4">
+            {overview && <p className="m-0 text-body leading-tight font-bold text-ink">{overview}</p>}
+            {chips.length > 0 && (
+              <ul className="m-0 flex list-none flex-wrap gap-sp-2 border-b border-rule p-0 pb-sp-3">
+                {chips.map((chip, index) => (
+                  <li
+                    key={index}
+                    className="inline-flex items-center gap-sp-2 rounded-pill bg-card px-sp-3 py-sp-1 font-mono text-meta leading-tight text-ink-2 tabular-nums"
+                  >
+                    {chip}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{text}</p>}
+            {children}
+            {/* The pill has a solid fill under its label, because text on the frosted blur fails the axe floor. */}
+            {actions.length > 0 && (
+              <div className="flex flex-wrap gap-sp-2">
+                {actions.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="press inline-flex min-h-touch w-fit items-center rounded-pill bg-ink px-sp-5 text-body font-bold text-page no-underline"
+                  >
+                    {/* On a fine pointer the label rolls up to a copy of itself. The copy is CSS content, so a reader hears the label once. */}
+                    <span className="oc-roll" data-label={item.label}>
+                      <span>{item.label}</span>
+                    </span>
+                    {item.hiddenLabel && <span className="sr-only">{item.hiddenLabel}</span>}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
+      </div>
+      {!row && (
         <button
           type="button"
           aria-expanded={open}
@@ -164,7 +174,19 @@ export function OpenCard({
         >
           <ChevronDown aria-hidden="true" className="oc-chevron size-sp-5" strokeWidth={1.6} />
         </button>
-      </Card>
+      )}
+    </>
+  );
+
+  return (
+    <Element data-open={open} className="open-card list-none" style={vars}>
+      {row ? (
+        body
+      ) : (
+        <Card edge={open} className="overflow-hidden p-0">
+          {body}
+        </Card>
+      )}
     </Element>
   );
 }

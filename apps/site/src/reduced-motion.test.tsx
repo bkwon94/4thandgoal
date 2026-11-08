@@ -14,6 +14,7 @@ import type { Manager } from "@cpc/managers/schema/manager-types";
 import AnalyzeResult from "@cpc/analyzer/form/analyze-result";
 import { managers as managersFixture } from "@cpc/managers/fixtures/managers";
 import { ManagerHero } from "@cpc/managers/page/manager-hero";
+import { ManagersIndex } from "@cpc/managers/page/managers-index";
 import { Roster } from "@cpc/managers/page/roster";
 import { SeasonSoFar } from "@cpc/managers/page/season-so-far";
 import { rankings } from "@cpc/rankings/fixtures/rankings";
@@ -188,6 +189,33 @@ describe("Reduced motion on the Open card", () => {
   });
 });
 
+describe("Reduced motion on the Index list", () => {
+  it("opens and closes a row at once, with no height change, no blur, and no spring", () => {
+    const managers = managersFixture.managers.map((entry, i) => ({
+      ...entry,
+      standing: i + 1,
+      rank: i + 1,
+      movement: 0,
+      odds: { playoff: 50, bye: 10, seed: null, status: "open" as const },
+      odds_change: 0,
+    }));
+    render(<ManagersIndex managers={{ season: 2026, through: 6, managers }} avatars={{}} managersHref="/2026/managers/" />);
+    const list = within(screen.getByRole("list", { name: "Index List" }));
+    const head = within(list.getAllByRole("listitem")[0]).getByRole("button");
+    const row = head.closest<HTMLElement>(".open-card")!;
+    const panel = document.getElementById(head.getAttribute("aria-controls") ?? "")!;
+    // The drawer, the blur, and the rise of the row read --oc-dur, so 0s ends each one at once.
+    expect(row.style.getPropertyValue("--oc-dur")).toBe("0s");
+    fireEvent.click(head);
+    expect(row.dataset.open).toBe("true");
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    // With motion off the close hides the panel in the same tap. The closed row waits on no timer.
+    fireEvent.click(head);
+    expect(row.dataset.open).toBe("false");
+    expect(panel.getAttribute("hidden")).toBe("until-found");
+  });
+});
+
 describe("Reduced motion on the waiver page", () => {
   it("turns the drift off and shows the top six at once", () => {
     render(<WarChest board={waiver} teams={week6.teams} avatars={week6.avatars} TeamPicker={TeamPicker} />);
@@ -271,7 +299,7 @@ function managerWithOdds(): Manager {
     standing: 1,
     rank: 2,
     movement: 0,
-    odds: { playoff: 63, bye: 20, seed: 3 },
+    odds: { playoff: 63, bye: 20, seed: 3, status: "open" },
     odds_change: 0,
   };
 }
