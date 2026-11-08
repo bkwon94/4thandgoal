@@ -1,0 +1,16 @@
+The lights of the scene of /midseason/2026/, cpc, 1280 px, dark theme, after the settle, in the order of x.
+Each light was tapped in turn. label is the data-scene-label of the canvas after the tap. x and y are CSS px in the canvas of 670 x 240. A smaller y is higher. pixel is the canvas color at the center of the light, read before the tap.
+
+index	label	x	y	pixel
+0	All You Need Is Love · 850.17	16	83.4	#b8342a
+1	Lil Fridge · 909.55	74	27.4	#ffffff
+2	Bo Girds · 921.62	132	16	#ffffff
+3	London Cooking · 918.99	190	18.5	#ffffff
+4	Maye d'force B with U · 900.65	248	35.8	#ffffff
+5	The Blue Tent · 871.19	306	63.5	#ffffff
+6	Return of T Mac · 832.55	364	100	#ffffff
+7	Teehee · 885.98	422	49.6	#ffffff
+8	To Infinity and Bijan · 769.09	480	159.8	#ffffff
+9	Unsolicited Dak Picks · 793.58	538	136.7	#ffffff
+10	behold the lamb · 765.42	596	163.2	#ffffff
+11	NFC Least · 700.97	654	224	#ffffff

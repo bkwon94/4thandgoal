@@ -1,0 +1,15 @@
+Source: apps/site/out/2026/midseason.json (the cpc export of CLIENT=cpc pnpm build at a7dbd703), acts[].chapters[key=state].facts.teams, in file order.
+
+rank (standings)	name	wins-losses	season total points (points_for)
+1	All You Need Is Love	11-5	850.17
+2	Lil Fridge	10-6	909.55
+3	Bo Girds	9-7	921.62
+4	London Cooking	9-7	918.99
+5	Maye d'force B with U	9-7	900.65
+6	The Blue Tent	9-7	871.19
+7	Return of T Mac	9-7	832.55
+8	Teehee	8-8	885.98
+9	To Infinity and Bijan	7-9	769.09
+10	Unsolicited Dak Picks	6-10	793.58
+11	behold the lamb	6-10	765.42
+12	NFC Least	3-13	700.97

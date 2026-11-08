@@ -1,17 +1,18 @@
-$ git diff main -- '*package.json' pnpm-lock.yaml
-(exit 0)
-
-$ git diff --stat main -- '*package.json' pnpm-lock.yaml
-
-$ git grep -n -i -E "three|babylon|webgl|pixi" -- '*package.json' pnpm-lock.yaml
-(exit 1; 1 means no match)
-
-$ git grep -n "getContext" -- packages/design/site/parts packages/*/site apps/site/src
-packages/design/site/parts/hero-scene.tsx:21:    const ctx = canvas.current.getContext("2d");
-
 $ git rev-parse --short HEAD; git rev-parse --short main
-c1a7c91c
+a7dbd703
 df2c08c0
 
-$ git diff --stat main -- . | tail -1   # the branch does change files, so the empty diffs above are not an empty branch
- 90 files changed, 4897 insertions(+), 474 deletions(-)
+$ git diff main -- '*package.json' pnpm-lock.yaml
+(exit 0; no output means no change)
+
+$ git diff --stat main -- . | tail -1
+ 284 files changed, 10868 insertions(+), 474 deletions(-)
+
+$ git grep -n -i -E 'three|babylon|webgl|pixi|regl|ogl|playcanvas' -- '*package.json' pnpm-lock.yaml
+packages/midseason/site/package.json:6:  "description": "The site side of the midseason package: the report page with the opener, the three acts, and the chapter rail, the chapters of the three acts, the schema and the types of the midseason file, and its fixture. It ships TSX source with no build step.",
+packages/rankings/site/package.json:6:  "description": "The site side of the rankings package: the power rankings page, the Ladder, the week choice, the top three of the home page, the schema and the types of the rankings file, and its fixture. It ships TSX source with no build step.",
+(exit 0; 1 means no match)
+
+$ git grep -n 'getContext(' -- 'packages/*/site/**/*.ts' 'packages/*/site/**/*.tsx' 'apps/site/src/**' ':!*.test.*'
+packages/design/site/parts/hero-scene.tsx:21:    const ctx = canvas.current.getContext("2d");
+(exit 0)

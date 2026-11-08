@@ -138,8 +138,8 @@ Observation: Each shot shows 8 lights joined by a line, white at the 3rd, 4th, a
 
 App: site
 Then: The scene shows 12 lights in the order of the power rank, each at the height of its playoff odds. The light of the rank-1 team is in the accent color and shows its label.
-Files: `evidence/AT-19/steps.txt`, `evidence/AT-19/scene.json`, `evidence/AT-19/375-light.png`, `evidence/AT-19/375-dark.png`, `evidence/AT-19/768-light.png`, `evidence/AT-19/768-dark.png`, `evidence/AT-19/1280-light.png`, `evidence/AT-19/1280-dark.png`
-Observation: The rank-1 team of week 8 is All You Need Is Love, with playoff odds of 81%. Each shot shows 12 lights, the first one red with the label "All You Need Is Love · 81%", and a shape that matches the odds by rank in `clients/cpc/published/2026/rankings.json`: 81, 61, 77, 42, 75, 86, 76, 83, 7, 8, 4, 1. The scene sits in the hero "Rank 1".
+Files: `evidence/AT-19/steps.txt`, `evidence/AT-19/lights.txt`, `evidence/AT-19/source-rows.txt`, `evidence/AT-19/scene.json`, `evidence/AT-19/375-light.png`, `evidence/AT-19/375-dark.png`, `evidence/AT-19/768-light.png`, `evidence/AT-19/768-dark.png`, `evidence/AT-19/1280-light.png`, `evidence/AT-19/1280-dark.png`
+Observation: `lights.txt` (recorded at `a7dbd703`, which changes no code after `45a3c724`) gives 12 tapped lights, and in the order of x their labels name the teams in the rank order of `source-rows.txt`, from "All You Need Is Love · 81%" at x 16 to "NFC Least · 1%" at x 654. Each label shows the same odds as the playoff odds of `source-rows.txt`. In `lights.txt` y gets smaller as the odds get larger: Lil Fridge 86% at y 16, London Cooking 83% at 23.3, All You Need Is Love 81% at 28.2, then 77% at 38, 76% at 40.5, 75% at 42.9, 61% at 77.2, 42% at 123.7, 8% at 206.9, 7% at 209.3, 4% at 216.7, and 1% at 224. The rank-1 light reads `#b8342a`, the accent of AT-15, and the other 11 read `#ffffff`. `scene.json` gives the label at rest "All You Need Is Love · 81%" in the hero "Rank 1", and each shot shows that label next to the red first light.
 
 ## AT-20: The analyzer drift
 
@@ -159,8 +159,8 @@ Observation: Recorded at `45a3c724` on the live local API. The frames before the
 
 App: site
 Then: The scene shows 12 lights at the season total points in the order of the standings, and the light of the leader is in the accent color.
-Files: `evidence/AT-22/steps.txt`, `evidence/AT-22/scene.json`, `evidence/AT-22/375-light.png`, `evidence/AT-22/375-dark.png`, `evidence/AT-22/768-light.png`, `evidence/AT-22/768-dark.png`, `evidence/AT-22/1280-light.png`, `evidence/AT-22/1280-dark.png`
-Observation: The leader is All You Need Is Love. Each shot shows 12 lights joined by a line, the first one red with the label "All You Need Is Love · 850.17". The scene sits in the opener hero "The Title Race".
+Files: `evidence/AT-22/steps.txt`, `evidence/AT-22/lights.txt`, `evidence/AT-22/source-rows.txt`, `evidence/AT-22/scene.json`, `evidence/AT-22/375-light.png`, `evidence/AT-22/375-dark.png`, `evidence/AT-22/768-light.png`, `evidence/AT-22/768-dark.png`, `evidence/AT-22/1280-light.png`, `evidence/AT-22/1280-dark.png`
+Observation: `lights.txt` (recorded at `a7dbd703`) gives 12 tapped lights, and in the order of x their labels name the teams in the standings order of `source-rows.txt`, rank 1 to 12, from "All You Need Is Love · 850.17" at x 16 to "NFC Least · 700.97" at x 654. Each label shows the same total as the `points_for` of `source-rows.txt`. In `lights.txt` y gets smaller as the total gets larger: Bo Girds 921.62 at y 16, London Cooking 918.99 at 18.5, Lil Fridge 909.55 at 27.4, then 900.65 at 35.8, 885.98 at 49.6, 871.19 at 63.5, 850.17 at 83.4, 832.55 at 100, 793.58 at 136.7, 769.09 at 159.8, 765.42 at 163.2, and 700.97 at 224. The leader light, All You Need Is Love, reads `#b8342a`, the accent of AT-15, and the other 11 read `#ffffff`. Each shot shows the red first light with the label "All You Need Is Love · 850.17" in the opener "The Title Race".
 
 ## AT-23: The 404 drift
 
@@ -286,7 +286,7 @@ Observation: The four hero shots, taken from 311 ms and 809 ms after navigation,
 App: site
 Then: No package of three.js or another 3D engine is added, and the scene asks for a `2d` context only.
 Files: `evidence/AT-40/output.txt`
-Observation: `git diff main -- '*package.json' pnpm-lock.yaml` prints nothing, and the branch changes 90 files in all. A grep of the package files and the lock file for three, babylon, pixi, regl, ogl, and playcanvas finds no match. The one `getContext(` call outside tests is `packages/design/site/parts/hero-scene.tsx:21: const ctx = canvas.current.getContext("2d");`.
+Observation: At `a7dbd703`, `git diff main -- '*package.json' pnpm-lock.yaml` prints nothing, while the branch changes 284 files in all. The command `git grep -n -i -E 'three|babylon|webgl|pixi|regl|ogl|playcanvas' -- '*package.json' pnpm-lock.yaml` finds two lines, both in a `description` text: "the three acts" in `packages/midseason/site/package.json` and "the top three of the home page" in `packages/rankings/site/package.json`; it finds no dependency name and no line of `pnpm-lock.yaml`. The one `getContext(` call outside tests is `packages/design/site/parts/hero-scene.tsx:21: const ctx = canvas.current.getContext("2d");`.
 
 ## AT-41: No "Read more"
 

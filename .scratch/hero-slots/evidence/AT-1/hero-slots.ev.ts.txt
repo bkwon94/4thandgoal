@@ -5,6 +5,8 @@
 import { test, expect, type Page, type BrowserContext } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site/node_modules/@playwright/test/index.js";
 import { SCENE_PADDING, placeLights, nearestLight, type HeroScene, type ScenePoint } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/design/site/parts/scene-math.ts";
 import { matchupScene } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/week/site/parts/matchup-scene.ts";
+import { rankingsScene } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/rankings/site/chapters/rankings-scene.ts";
+import { midseasonScene } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/midseason/site/report/midseason-scene.ts";
 import { serveDir } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site/e2e/serve.ts";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -804,6 +806,46 @@ async function gradeTradeA(page: Page): Promise<unknown> {
   await page.locator("text=Suggested Counters").waitFor({ timeout: 180000 });
   return () => answer;
 }
+
+test.describe("cpc lights", () => {
+  test.skip(CLIENT !== "cpc", "cpc only");
+
+  /* Taps each light of the scene in turn and records what the rendered page shows for it. */
+  const cases = [
+    ["AT-19", "/rankings/", () => rankingsScene(JSON.parse(readFileSync(join(OUT, "2026", "rankings.json"), "utf8")).weeks.at(-1))!],
+    ["AT-22", "/midseason/2026/", () => midseasonScene(JSON.parse(readFileSync(join(OUT, "2026", "midseason.json"), "utf8")))!],
+  ] as const;
+  for (const [id, route, sceneOf] of cases) {
+    test(`${id} each light`, async ({ browser }) => {
+      const { context, page } = await fresh(browser, 1280);
+      await open(page, route, "dark");
+      await settled(page);
+      const scene = sceneOf();
+      const lights = await lightsOf(page, scene);
+      const rows: { index: number; label: string; x: number; y: number; pixel: string }[] = [];
+      for (const [index, light] of lights.entries()) {
+        // The pixel is read before the tap, so the ring of the selection does not cover it.
+        const pixel = await pixelAt(page, light);
+        const at = await onPage(page, light);
+        await page.mouse.click(at.x, at.y);
+        await page.waitForTimeout(150);
+        rows.push({ index, label: (await attrs(page)).label ?? "", x: Math.round(light.x * 10) / 10, y: Math.round(light.y * 10) / 10, pixel });
+      }
+      rows.sort((a, b) => a.x - b.x);
+      const size = await page.locator(CANVAS).first().evaluate((c) => `${c.clientWidth} x ${c.clientHeight}`);
+      const lines = [
+        `The lights of the scene of ${route}, cpc, 1280 px, dark theme, after the settle, in the order of x.`,
+        `Each light was tapped in turn. label is the data-scene-label of the canvas after the tap. x and y are CSS px in the canvas of ${size}. A smaller y is higher. pixel is the canvas color at the center of the light, read before the tap.`,
+        "",
+        "index\tlabel\tx\ty\tpixel",
+        ...rows.map((r) => `${r.index}\t${r.label}\t${r.x}\t${r.y}\t${r.pixel}`),
+        "",
+      ];
+      save(id, "lights.txt", lines.join("\n"));
+      await context.close();
+    });
+  }
+});
 
 test.describe("cpc analyzer", () => {
   test.skip(CLIENT !== "cpc", "cpc only");
