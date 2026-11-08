@@ -54,7 +54,7 @@ When: The reader opens the card.
 Then: The panel shows the chips Stand 6, Form 6, Sched 8, Pts 7, Move ▲3, Bye 22%, and Seed 5, then the blurb of The Blue Tent.
 Evidence: screenshots of the open panel at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
-AT-7: The award and trade cards open the same way
+AT-7: Retired. The award and trade cards open the same way
 App: site
 Stories: 12
 Given: the CPC site built from `clients/cpc/published/2026/`, page week 8, the week page, an AwardTile and a TradeCard
@@ -275,7 +275,7 @@ Story 8: AT-4
 Story 9: AT-5
 Story 10: AT-5
 Story 11: AT-6
-Story 12: AT-7
+Story 12: none, retired with AT-7
 Story 13: AT-8
 Story 14: AT-8
 Story 15: AT-9
@@ -326,3 +326,4 @@ Decision 09 "the weights test": AT-13
 ## Revisions
 
 - 2026-11-07: AT-7 drops ManagerCard, because the Index list replaces the manager cards and its rows use the Open card. Brian approved it.
+- 2026-11-08: AT-7 is retired. The award and trade cards keep their plain look, because their panels had no new content: the award held only the team and the projection, and the trade card hid its manager links. Brian chose it after a phone check.

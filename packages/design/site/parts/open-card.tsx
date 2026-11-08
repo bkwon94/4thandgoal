@@ -30,8 +30,7 @@ type OpenCardProps = {
   overview?: ReactNode;
   chips?: readonly ReactNode[];
   text?: string | null;
-  // One link, or a list of links, such as one for each side of a trade.
-  action?: OpenCardAction | readonly OpenCardAction[] | null;
+  action?: OpenCardAction | null;
   // Extra panel content after the text and before the action, such as the Grade dial of an Index list row.
   children?: ReactNode;
   // The element of the card. A card in a list is an li.
@@ -66,7 +65,6 @@ export function OpenCard({
   // The panel stays hidden while the card is closed and at rest. On a close it stays shown until the height is down.
   const [shut, setShut] = useState(!open);
   const panel = useRef<HTMLDivElement>(null);
-  const actions = action == null ? [] : Array.isArray(action) ? action : [action as OpenCardAction];
 
   const setOpen = (next: boolean) => {
     if (controlled === undefined) setOwn(next);
@@ -143,22 +141,17 @@ export function OpenCard({
             {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{text}</p>}
             {children}
             {/* The pill has a solid fill under its label, because text on the frosted blur fails the axe floor. */}
-            {actions.length > 0 && (
-              <div className="flex flex-wrap gap-sp-2">
-                {actions.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="press inline-flex min-h-touch w-fit items-center rounded-pill bg-ink px-sp-5 text-body font-bold text-page no-underline"
-                  >
-                    {/* On a fine pointer the label rolls up to a copy of itself. The copy is CSS content, so a reader hears the label once. */}
-                    <span className="oc-roll" data-label={item.label}>
-                      <span>{item.label}</span>
-                    </span>
-                    {item.hiddenLabel && <span className="sr-only">{item.hiddenLabel}</span>}
-                  </a>
-                ))}
-              </div>
+            {action && (
+              <a
+                href={action.href}
+                className="press inline-flex min-h-touch w-fit items-center rounded-pill bg-ink px-sp-5 text-body font-bold text-page no-underline"
+              >
+                {/* On a fine pointer the label rolls up to a copy of itself. The copy is CSS content, so a reader hears the label once. */}
+                <span className="oc-roll" data-label={action.label}>
+                  <span>{action.label}</span>
+                </span>
+                {action.hiddenLabel && <span className="sr-only">{action.hiddenLabel}</span>}
+              </a>
             )}
           </div>
         </div>

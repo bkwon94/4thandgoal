@@ -72,23 +72,6 @@ describe("OpenCard", () => {
     expect(panel.hasAttribute("hidden")).toBe(false);
   });
 
-  it("shows one pill per action when a card has a list of actions, such as one link for each side of a trade", () => {
-    render(
-      <OpenCard
-        panelId="trade-0"
-        head={<span>Team A and Team B</span>}
-        action={[
-          { href: "/2026/managers/1/", label: "Team A", hiddenLabel: ", manager page" },
-          { href: "/2026/managers/2/", label: "Team B", hiddenLabel: ", manager page" },
-        ]}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: /Team A/ }));
-    const links = screen.getAllByRole("link");
-    expect(links.map((link) => link.textContent)).toEqual(["Team A, manager page", "Team B, manager page"]);
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/2026/managers/1/", "/2026/managers/2/"]);
-  });
-
   it("draws a row with no frame and no chevron, with the head as the one toggle and the extra panel content", () => {
     render(
       <OpenCard panelId="row-1" look="row" head={<span>1 The Blue Tent</span>} text="Strong at QB.">
