@@ -21,10 +21,10 @@ Rules that hold: ADR 0024 (the hero is the one loud surface), the ADR 0025 reada
 - One Open card part: GameCard keeps its closed layout with the Showcase drawer, LadderCard takes the full Showcase shell with a large rank. GameCard has three chips. `decisions/02-prototype-open-card-content.md`.
 - The Grade dial is four equal arcs, one per part, lit by rank. Index cards keep the letter box with four small arcs in a row. Season So Far shows a 2x2 grid. `decisions/03-prototype-grade-dial-look.md`.
 - Seven Trend tiles: the four week numbers and the three Moves tiles. Bars or a stepped area per tile, from week 1 to the page week. No donut. `decisions/04-grill-trend-tile-scope.md`.
+- The chips of the Index list filter on the playoff race: All, In (75% or more, or clinched), Bubble (25% to 75%), Out (under 25%, or eliminated). `decisions/06-grill-index-list-chips.md`.
 
 ## NOT YET SPECIFIED
 
-- What do the chips of the Index list filter on? `decisions/06-grill-index-list-chips.md`.
 - How does the Index list sit at 390px, and what fills its large picture? `decisions/07-prototype-index-list-phone.md`.
 - Where does the site get the grade weights? `decisions/09-spec-grade-weights-source.md`.
 - What steps fill the Ready halo? `decisions/08-spec-ready-halo-steps.md`.
