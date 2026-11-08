@@ -127,6 +127,17 @@ test.describe(`the scene of the week page of ${CLIENT}, at rest`, () => {
     expect((await counts(page)).contexts).toEqual(["2d"]);
   });
 
+  test("puts the title above the scene, in a band of at most 140 px, at 375 px (AT-43)", async ({ page }) => {
+    await page.setViewportSize(PHONE);
+    await openWeek(page);
+    const hero = page.locator("section").first();
+    const title = (await hero.locator("[data-hero-slot='title']").boundingBox())!;
+    const scene = (await hero.locator(CANVAS).boundingBox())!;
+    console.log(`${CLIENT}: title top ${title.y}, scene top ${scene.y}, scene height ${scene.height}`);
+    expect(title.y + title.height).toBeLessThanOrEqual(scene.y);
+    expect(scene.height).toBeLessThanOrEqual(140);
+  });
+
   test("draws the settled chart at once, the same at 0.1 s and 2.5 s, in both themes (AT-31, AT-33)", async ({ page }) => {
     await page.setViewportSize(PHONE);
     await openWeek(page, "light");

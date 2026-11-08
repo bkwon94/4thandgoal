@@ -112,6 +112,16 @@ test.describe(`the scene of a manager page of ${CLIENT}`, () => {
     });
   }
 
+  test("puts the title above the scene, in a band of at most 140 px, at 375 px (AT-43)", async ({ page }) => {
+    await openManager(page, 375);
+    const hero = page.locator("section").filter({ has: page.locator(CANVAS) });
+    const title = (await hero.locator("[data-hero-slot='title']").boundingBox())!;
+    const scene = (await hero.locator(CANVAS).boundingBox())!;
+    console.log(`${CLIENT}: title top ${title.y}, scene top ${scene.y}, scene height ${scene.height}`);
+    expect(title.y + title.height).toBeLessThanOrEqual(scene.y);
+    expect(scene.height).toBeLessThanOrEqual(140);
+  });
+
   test("draws the weeks of roster 7 in cpc: weeks 3, 4, and 8 bright, and week 8 labeled at rest (AT-18)", async ({ page }) => {
     test.skip(CLIENT !== "cpc" || found!.rosterId !== ROSTER, "The weeks of AT-18 are the weeks of roster 7 in cpc.");
     const { scene } = found!;

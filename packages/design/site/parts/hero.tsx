@@ -72,10 +72,10 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene 
           {meta}
         </div>
       )}
-      {/* The scene is a band at the top of the card on a phone, and fills the open middle from the tablet tier up.
-          It has its own row, so no light sits under text (decision 06). */}
+      {/* The scene is a band under the eyebrow, the title, and the meta on a phone, so the reader gets the words first.
+          It fills the open middle from the tablet tier up. It has its own row, so no light sits under text (decision 06). */}
       {scene !== undefined && (
-        <div className="order-first tablet:order-none tablet:col-span-2">
+        <div className="tablet:col-span-2">
           <HeroSceneCanvas scene={scene} />
         </div>
       )}
