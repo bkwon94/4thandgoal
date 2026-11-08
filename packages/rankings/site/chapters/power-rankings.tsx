@@ -116,9 +116,12 @@ const blurbText = (row: RankingsRow) => row.blurb.map((sentence) => sentence.tex
 
 /* The hero: the team at rank 1 of the chosen week, in the hero slots. The week is the eyebrow, the team name the title,
    and the record line the meta. The tiles take the hero tone, so they sit on the raised surface of the hero.
-   The hero keeps the static grid: the Ladder under it already shows the race, so a scene would say it twice. */
-function TopHero({ row, week }: { row: RankingsRow; week: RankingsWeek }) {
+   The hero keeps the static grid: the Ladder under it already shows the race, so a scene would say it twice.
+   The Ladder starts at rank 2, so the action slot holds the manager link of rank 1, the link that its card would hold.
+   With no managers href the hero has no link and no action slot. */
+function TopHero({ row, week, managersHref }: { row: RankingsRow; week: RankingsWeek; managersHref: string | null }) {
   const odds = row.odds;
+  const href = managerHrefOrNull(managersHref, row.roster_id);
   return (
     <Hero
       label="Rank 1"
@@ -137,6 +140,19 @@ function TopHero({ row, week }: { row: RankingsRow; week: RankingsWeek }) {
             <Tile tone="hero" label="Seed" value={odds?.seed != null ? String(odds.seed) : <Missing what="No seed" />} stable={stableKey("hero-tile", row.roster_id, "seed")} />
           </div>
         </Rise>
+      }
+      action={
+        href === null ? undefined : (
+          <Rise step={2}>
+            {/* A full pill and a 44px tap target in the brand color, as the buttons of the 404 page. */}
+            <a
+              href={href}
+              className="press inline-flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-body font-bold text-on-dark no-underline"
+            >
+              Manager page
+            </a>
+          </Rise>
+        )
       }
     />
   );
@@ -290,7 +306,7 @@ export function PowerRankings({
     <>
       {/* On a phone the chapters fill the width, so the hero takes the gutter. From the tablet tier the main spaces it as a card. */}
       <div className="px-gutter pt-sp-5 tablet:px-0">
-        <TopHero key={week.week} row={top} week={week} />
+        <TopHero key={week.week} row={top} week={week} managersHref={managersHref} />
         {/* The blurb of rank 1 sits directly under the hero, outside its frame, so the hero stays as short as the others. */}
         {top.blurb.length > 0 && (
           <p className="mt-sp-4 mb-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurbText(top))}>{blurbText(top)}</p>

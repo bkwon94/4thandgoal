@@ -1,9 +1,11 @@
 /**
  * The heroes of the rankings page, the midseason report, the home page, the analyzer, and the 404 page, on the static
- * export in out/ of the current CLIENT, in Chromium. It checks the static heroes, the count of scenes, and the drift.
+ * export in out/ of the current CLIENT, in Chromium. It checks the static heroes, the count of scenes, the manager link
+ * of rank 1, and the drift.
  */
 import { DARK_CLASS, THEME_KEY } from "@cpc/design/lib/theme";
 import { midseasonSchema } from "@cpc/midseason/schema/midseason";
+import { rankingsSchema } from "@cpc/rankings/schema/rankings";
 import { expect, test, type Page } from "@playwright/test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -29,6 +31,12 @@ function published<T>(name: string, parse: (json: unknown) => T): T | null {
   const path = join(OUT, SEASON, name);
   return existsSync(path) ? parse(JSON.parse(readFileSync(path, "utf8"))) : null;
 }
+
+/* The rankings file, and the rank-1 team of its latest week, the week that the rankings page opens on. */
+const RANKINGS = published("rankings.json", (json) => rankingsSchema.parse(json));
+const RANK_ONE = RANKINGS?.weeks.at(-1)?.rows[0];
+/* A season with no managers file has no manager page, so the hero shows no manager link. */
+const MANAGERS = existsSync(join(OUT, SEASON, "managers.json"));
 
 /* The midseason report. A client with no report has no report page. */
 const MIDSEASON = published("midseason.json", (json) => midseasonSchema.parse(json));
@@ -110,6 +118,21 @@ test.describe(`the static heroes of ${CLIENT}`, () => {
     await open(page, "/analyze/");
     await expectStatic(page, "Trade Analyzer");
     await expect(page.locator(CANVAS)).toHaveCount(0);
+  });
+});
+
+test.describe(`the hero of the rankings page of ${CLIENT}`, () => {
+  test.use({ viewport: PHONE });
+
+  test("opens the manager page of the rank-1 team on a tap of Manager page (AT-45)", async ({ page }) => {
+    test.skip(!RANK_ONE || !MANAGERS, `${CLIENT} has no rankings week or no managers file`);
+    await open(page, "/rankings/");
+    const link = page.getByRole("region", { name: "Rank 1" }).locator("[data-hero-slot='action']").getByRole("link", { name: "Manager page" });
+    const box = (await link.boundingBox())!;
+    expect(box.height).toBeGreaterThanOrEqual(44);
+    await link.click();
+    await page.waitForURL(`**/${SEASON}/managers/${RANK_ONE!.roster_id}/`);
+    console.log(`${CLIENT}: the link of ${RANK_ONE!.name} opened ${new URL(page.url()).pathname}`);
   });
 });
 

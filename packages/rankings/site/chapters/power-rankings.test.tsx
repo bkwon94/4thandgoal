@@ -155,6 +155,32 @@ describe("The ladder", () => {
   });
 });
 
+describe("The manager link of rank 1", () => {
+  it("puts a Manager page link to the rank-1 team in the action slot of the hero (AT-45)", () => {
+    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />);
+    const region = screen.getByRole("region", { name: "Rank 1" });
+    const action = region.querySelector("[data-hero-slot='action']") as HTMLElement;
+    const link = within(action).getByRole("link", { name: "Manager page" });
+    // London Cooking is rank 1 of the latest week, and the ladder starts at rank 2.
+    expect(lastWeek.rows[0].name).toBe("London Cooking");
+    expect(link.getAttribute("href")).toBe(`/2026/managers/${lastWeek.rows[0].roster_id}/`);
+  });
+
+  it("follows the chosen week, so the link names the rank-1 team of that week", () => {
+    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />);
+    fireEvent.click(chip(firstWeek.week));
+    expect(hero().getByRole("link", { name: "Manager page" }).getAttribute("href")).toBe(
+      `/2026/managers/${firstWeek.rows[0].roster_id}/`,
+    );
+  });
+
+  it("shows no link and no action slot when the season has no managers file", () => {
+    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
+    expect(hero().queryByRole("link", { name: "Manager page" })).toBeNull();
+    expect(screen.getByRole("region", { name: "Rank 1" }).querySelector("[data-hero-slot='action']")).toBeNull();
+  });
+});
+
 describe("An open card", () => {
   it("opens the four part ranks, the blurb, and the manager link on a tap, then closes on a second tap", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />);

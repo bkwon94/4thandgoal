@@ -17,6 +17,8 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-20, AT-21, and AT-42.
 
 ## Comments
 
+- Revision of 2026-11-08, Brian: the analyzer scenes leave, so the form hero and the verdict hero keep the static grid (AT-35, AT-44), and `analyzer-scene.ts` and `firstHero` leave with them. Option 2 below no longer applies.
+
 **Where the settled scene sits: option 2.** The fold of site-redesign hides `TitleHero` while a grade runs and under a result. So the form hero is not on the page when the verdict arrives. The coordinator chose option 2 while Brian was offline. Brian can override it with a FAIL in the PR.
 
 - `TitleHero` draws the drift scene while idle and after Edit (AT-20).
