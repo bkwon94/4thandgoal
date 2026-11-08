@@ -248,7 +248,9 @@ describe("Reduced motion on the static pages", () => {
     expect(main.getAllByText(week6.awards[0].title).length).toBeGreaterThan(0);
     expect(main.getByText("Position leaders")).toBeTruthy();
     expect(main.getAllByText(week6.trades[0].sides[0].players[0].name).length).toBeGreaterThan(0);
-    expect(main.getAllByRole("button", { expanded: false, name: /\d/ })).toHaveLength(week6.matchups.length);
+    // The award and trade cards are Open cards too, so the count of game cards stays inside Every game.
+    const games = within(main.getByRole("region", { name: "Every game" }));
+    expect(games.getAllByRole("button", { expanded: false, name: /\d/ })).toHaveLength(week6.matchups.length);
     expect(main.getByText("The median game")).toBeTruthy();
     expect(main.getByText("Standings")).toBeTruthy();
     expect(main.getByText("Next week")).toBeTruthy();

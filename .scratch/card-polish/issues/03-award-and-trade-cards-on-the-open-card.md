@@ -10,6 +10,6 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-7.
 
 **Status:** ready-for-agent
 
-- [ ] Each AwardTile and each TradeCard of CPC week 8 opens with the same drawer, blur-in, and chevron as the game card.
-- [ ] Part tests prove the toggle states of both cards.
-- [ ] `make check-fast` passes.
+- [x] Each AwardTile and each TradeCard of CPC week 8 opens with the same drawer, blur-in, and chevron as the game card.
+- [x] Part tests prove the toggle states of both cards.
+- [x] `make check-fast` passes.
