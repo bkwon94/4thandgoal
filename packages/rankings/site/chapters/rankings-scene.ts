@@ -12,8 +12,8 @@ function heightOf(odds: Odds): number {
   return odds.playoff;
 }
 
-/* The odds in a label read as the Ladder reads them: "97%", or "In" and "Out" once the race is over for the team. */
-function oddsText(odds: Odds): string {
+/* The odds as text, read the same on the Ladder and in a label: "97%", or "In" and "Out" once the race is over for the team. */
+export function oddsText(odds: Odds): string {
   if (odds.status === "in") return "In";
   if (odds.status === "out") return "Out";
   return `${odds.playoff}%`;

@@ -22,7 +22,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, EASE_OUT, INSTANT, stagger } from "@cpc/design/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "../schema/rankings-types";
 import { cn } from "@cpc/design/lib/utils";
-import { rankingsScene } from "./rankings-scene";
+import { oddsText, rankingsScene } from "./rankings-scene";
 import { useWeekChoice } from "./week-choice";
 
 /* The order and the names of the four part ranks. */
@@ -83,9 +83,7 @@ function Missing({ what }: { what: string }) {
    A row from a week before the odds engine ran has no odds, so it shows a dash. */
 function playoffText(odds: Odds | undefined): ReactNode {
   if (!odds) return <Missing what="No odds" />;
-  if (odds.status === "in") return "In";
-  if (odds.status === "out") return "Out";
-  return `${odds.playoff}%`;
+  return oddsText(odds);
 }
 
 /* The playoff odds as a component, so a server part such as the top three of the home page can render them. */
