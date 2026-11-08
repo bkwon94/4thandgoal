@@ -141,6 +141,29 @@ describe("ManagerPage", () => {
     ]);
   });
 
+  it("shows the hero slots of roster 7 in the slot order, with the week chips in the feature (AT-1)", async () => {
+    await renderManager("7", { rankings: rankingsFixture });
+    const hero = screen.getByRole("region", { name: "To Infinity and Bijan" });
+    const slots = [...hero.querySelectorAll("[data-hero-slot]")];
+    expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual(["eyebrow", "title", "meta", "feature", "stats"]);
+    const [eyebrow, title, meta, feature, stats] = slots;
+    // The fixture holds an older week than the live file, so the record line differs from the "7-9 · 9th of 12" of AT-1.
+    expect(eyebrow.textContent).toBe("4-8 · 11th of 12");
+    expect(title.tagName).toBe("H1");
+    expect(title.textContent).toBe("To Infinity and Bijan");
+    expect(meta.textContent).toBe("bjpicard96");
+    expect(feature.querySelector("img")).not.toBeNull();
+    expect(within(feature as HTMLElement).getByRole("list", { name: "Results By Week" })).toBeTruthy();
+    expect(within(stats as HTMLElement).getByRole("group", { name: "Hero Numbers" })).toBeTruthy();
+  });
+
+  it("draws exactly one scene, in the hero of roster 7, as the first hero of the page (AT-18)", async () => {
+    await renderManager("7", { rankings: rankingsFixture });
+    const hero = screen.getByRole("region", { name: "To Infinity and Bijan" });
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+
   it("shows a W or L chip for each week in the hero", async () => {
     // Maye d'force B with U won weeks 1, 2, 5, and 6, and lost weeks 3 and 4.
     await renderManager("9", { rankings: rankingsFixture });

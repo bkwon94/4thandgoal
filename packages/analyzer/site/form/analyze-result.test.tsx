@@ -4,7 +4,7 @@
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { analyzeResponse as fixtureJson, analyzeResponseThree as threeJson } from "../lib/fixtures/api";
+import { analyzeResponse as fixtureJson, analyzeResponseThree as threeJson, analyzeResponseTradeA as tradeA } from "../lib/fixtures/api";
 import type { AnalyzeResponse, Decision, Fairness } from "../lib/analyze-types";
 import AnalyzeResult from "./analyze-result";
 
@@ -57,6 +57,10 @@ afterEach(() => {
   cleanup();
 });
 
+/* The filled hero slots of a hero, in the order of the markup. */
+const slotsOf = (hero: HTMLElement) => [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
+const slotText = (hero: HTMLElement, slot: string) => hero.querySelector(`[data-hero-slot=${slot}]`)?.textContent;
+
 describe("AnalyzeResult", () => {
   it.each([
     ["yes", "Yes"],
@@ -78,11 +82,39 @@ describe("AnalyzeResult", () => {
     expect(trade.compareDocumentPosition(side) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it("opens the decision chapter with a level-two heading", () => {
+  it("opens the decision chapter with the verdict word as a level-two heading", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const heading = screen.getByRole("heading", { level: 2, name: "Decision for Pukancun on 3" });
+    const heading = screen.getByRole("heading", { level: 2, name: "Not as is" });
     const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
     expect(heading.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  /* AT-9: the verdict fills the slots the spec maps, and the hero ends at the fairness block with no empty stats or action. */
+  it("puts the verdict in the slots: the side, the word, the reason, then the fairness block last", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const hero = screen.getByRole("region", { name: "The Verdict" });
+    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta", "feature"]);
+    expect(slotText(hero, "eyebrow")).toBe("Decision for Pukancun on 3");
+    expect(slotText(hero, "title")).toBe("Not as is");
+    expect(slotText(hero, "meta")).toBe(fixture.decision.reason);
+    const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
+    expect(within(feature).getByText("Fairness")).toBeTruthy();
+    expect(hero.querySelector("[data-hero-rule]")).toBeNull();
+  });
+
+  it("keeps the static grid, the glow, and the brackets in the verdict hero, and draws no scene (AT-35, AT-44)", () => {
+    render(<AnalyzeResult doc={tradeA} />);
+    const hero = screen.getByRole("region", { name: "The Verdict" });
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    expect(hero.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(hero.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
+  });
+
+  it("leaves out the feature slot when the document has no fairness block and no note", () => {
+    render(<AnalyzeResult doc={{ ...fixture, fairness: undefined }} />);
+    const hero = screen.getByRole("region", { name: "The Verdict" });
+    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta"]);
   });
 
   it("shows no letter grade anywhere in the result", () => {

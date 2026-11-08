@@ -1,0 +1,24 @@
+{
+  "heroBottomWhenAwayPx": -5273.046875,
+  "states": [
+    "idle",
+    "settle",
+    "rest",
+    "settle",
+    "rest"
+  ],
+  "frames": [
+    {
+      "target_ms": 500,
+      "actual_ms": 524,
+      "state": "settle",
+      "sameAsRestBeforeLeave": false
+    },
+    {
+      "target_ms": 2500,
+      "actual_ms": 2523,
+      "state": "rest",
+      "sameAsRestBeforeLeave": true
+    }
+  ]
+}

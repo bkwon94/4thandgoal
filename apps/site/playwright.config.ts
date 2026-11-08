@@ -19,8 +19,9 @@ export default defineConfig({
   projects: [
     // The project "rules" proves each scan of the floor, and each rule of the evidence runner, on small real pages.
     { name: "rules", testMatch: ["floor-rules.spec.ts", "evidence-rules.spec.ts"] },
-    // The project "floor" runs the floor on the static export in out/ of the current CLIENT.
-    { name: "floor", testMatch: "floor.spec.ts" },
+    // The project "floor" runs the floor on the static export in out/ of the current CLIENT, and checks the hero scene of
+    // the latest week page, of a manager page, and of the home and 404 pages there, and the static heroes (ADR 0027).
+    { name: "floor", testMatch: ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts"] },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
     { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },
     // The end-to-end run of the egg hunt against the local API. Run make -C apps/api api-evidence first.

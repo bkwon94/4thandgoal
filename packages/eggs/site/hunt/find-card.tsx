@@ -5,7 +5,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Hero } from "@cpc/design/parts/hero";
+import { HeroFrame } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
@@ -49,7 +49,7 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
           <span className="egg-ripple egg-ripple-late" style={{ left: origin.x, top: origin.y }} />
         </div>
       )}
-      <Hero label={phase === "letter" ? "Letter found" : "Egg found"} className="egg-hero egg-hero-in egg-hero-in-late w-full max-w-sm">
+      <HeroFrame label={phase === "letter" ? "Letter found" : "Egg found"} className="egg-hero egg-hero-in egg-hero-in-late w-full max-w-sm">
         <div className="flex flex-col items-center gap-sp-4 text-center">
           <Label dark className="mb-0 self-start text-meta">
             {phase === "letter" ? "Letter found" : "Egg found"}
@@ -120,7 +120,7 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
             Close
           </button>
         </div>
-      </Hero>
+      </HeroFrame>
     </div>
   );
 }

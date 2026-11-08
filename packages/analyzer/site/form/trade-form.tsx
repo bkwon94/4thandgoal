@@ -83,41 +83,42 @@ type TradeToGrade = { sides: Sides; season: number };
 /* The sheet that is open, if any: the team sheet of a slot, the team sheet of "+" for a new side, or the picker of one side. */
 type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
 
-/* The hero while the grade runs: the title, two pulsed bars where the verdict lands, and the sweep.
-   Each text line sits on a plate, so no grid sits under a letter. With motion off, the bars hold still. */
+/* The hero while the grade runs, in the hero slots: Live, the title, the line, and the loading state as the feature.
+   The bars and the sweep sit where the verdict lands. With motion off, the bars hold still. The verdict that replaces
+   it opens with a level-two heading, so this title is level two too. */
 function GradingHero() {
   const off = useMotionOff();
   const pulse = off ? "" : "animate-pulse";
   return (
-    <Hero label="Grading the Trade">
-      <div role="status" aria-busy="true" className="flex flex-col gap-sp-4">
-        <div className="flex items-center justify-between gap-sp-3">
-          {/* A label of the hero, not prose, so it is a div at the meta size. */}
-          <div className="plate m-0 w-fit font-mono text-meta leading-tight font-bold tracking-wide text-on-dark-2 uppercase">Grading the Trade</div>
-          <span className="plate font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase">Live</span>
+    <Hero
+      label="Grading the Trade"
+      level={2}
+      eyebrow="Live"
+      title="Grading the Trade"
+      meta="This can take up to a minute."
+      feature={
+        <div role="status" aria-busy="true" aria-label="Grading the Trade">
+          <div aria-hidden="true" className="flex flex-col gap-sp-3">
+            <div className={`h-sp-6 w-3/4 rounded-tile bg-rule-dark ${pulse}`} />
+            <div className={`h-sp-4 w-11/12 rounded-tile bg-rule-dark ${pulse}`} />
+            <Sweep track="bg-rule-dark" />
+          </div>
         </div>
-        <div aria-hidden="true" className="flex flex-col gap-sp-3">
-          <div className={`h-sp-6 w-3/4 rounded-tile bg-rule-dark ${pulse}`} />
-          <div className={`h-sp-4 w-11/12 rounded-tile bg-rule-dark ${pulse}`} />
-          <Sweep track="bg-rule-dark" />
-        </div>
-        <p className="plate m-0 w-fit text-lead leading-body text-on-dark-2">This can take up to a minute.</p>
-      </div>
-    </Hero>
+      }
+    />
   );
 }
 
-/* The hero of the page: the title and the question of the Stack. Each line sits on a plate, so no grid sits under a letter. */
+/* The hero of the page, in the hero slots: the name of the tool as the eyebrow, the title, and the question of the Stack as the meta line.
+   It keeps the static grid with no scene. The fold hides it while a grade runs and under a result. */
 function TitleHero() {
   return (
-    <Hero label="Trade Analyzer">
-      <Rise step={0}>
-        <h1 className="plate m-0 w-fit text-headline leading-none font-bold">Trade Analyzer</h1>
-      </Rise>
-      <Rise step={1}>
-        <p className="plate mt-sp-3 mb-0 w-fit text-lead leading-body text-on-dark-2">Who gets what?</p>
-      </Rise>
-    </Hero>
+    <Hero
+      label="Trade Analyzer"
+      eyebrow="Trade Analyzer"
+      title="Trade Analyzer"
+      meta={<Rise step={1}>Who gets what?</Rise>}
+    />
   );
 }
 

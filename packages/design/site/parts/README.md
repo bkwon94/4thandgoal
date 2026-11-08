@@ -6,12 +6,13 @@
 - The page column and the chapter rail.
 - The team name.
 - The one reveal of the site, the week line of a page with no hero, and the error line.
-- The parts of the look (ADR 0024): the hero with its grid, glow, brackets, and scan line; the card; the tile; the
+- The parts of the look (ADR 0024): the hero with its grid, glow, brackets, and six hero slots, and no free content; the hero frame, which takes free content for the parts of the egg hunt only; the card; the tile; the
   round photo frame with its initials; and the rise, the staggered entry of a page. Hero text sits on a `plate`.
+- The hero scene (ADR 0027): the math in `scene-math.ts` and `scene-motion.ts`, the canvas, and the drift in `drift-scene.ts`, which the 404 uses.
 
 ## Ports
 
-None.
+The browser storage: `scene-canvas.ts` reads and writes `window.localStorage` for the hint flag.
 
 ## Does not do
 

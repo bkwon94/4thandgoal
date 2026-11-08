@@ -41,36 +41,61 @@ function panelOf(button: HTMLElement) {
   return document.getElementById(button.getAttribute("aria-controls") ?? "")!;
 }
 
+/* The text of each hero slot, in the order of the markup. */
+function slots() {
+  const region = screen.getByRole("region", { name: "Rank 1" });
+  return [...region.querySelectorAll("[data-hero-slot]")].map((slot) => [slot.getAttribute("data-hero-slot"), slot.textContent]);
+}
+
 describe("The hero", () => {
-  it("shows the team at rank 1 with 01, its record, its movement, the three tiles, and the blurb", () => {
+  it("fills the slots: the week, the team at rank 1, its record and movement, then the three tiles", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
     // London Cooking is first in week 6 at 9-3, up 4, with odds of 97, 64, and the 2 seed.
-    expect(hero().getByText("01")).toBeTruthy();
-    expect(hero().getByRole("heading", { name: "London Cooking" })).toBeTruthy();
-    expect(hero().getByText("9-3")).toBeTruthy();
-    expect(hero().getByText("Up").parentElement?.textContent).toBe("Up4");
+    expect(slots()).toEqual([
+      ["eyebrow", "WEEK 6 // POWER RANKINGS"],
+      ["title", "London Cooking"],
+      ["meta", "9-3 · Up4"],
+      ["stats", "Playoff97%Bye64%Seed2"],
+    ]);
     expect(hero().getByText("Up").parentElement?.querySelector("svg")?.dataset.arrow).toBe("up");
     expect(hero().getByText("Playoff").nextElementSibling?.textContent).toBe("97%");
     expect(hero().getByText("Bye").nextElementSibling?.textContent).toBe("64%");
     expect(hero().getByText("Seed").nextElementSibling?.textContent).toBe("2");
-    expect(hero().getByText(lastWeek.rows[0].blurb[0].text)).toBeTruthy();
   });
 
-  it("names the chosen week and the page in the level one heading", () => {
+  it("names the team at rank 1 in the level one heading", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
-    expect(hero().getByRole("heading", { level: 1 }).textContent).toBe("WEEK 6 // POWER RANKINGS");
+    expect(hero().getByRole("heading", { level: 1 }).textContent).toBe("London Cooking");
+  });
+
+  it("shows the blurb of rank 1 as a paragraph directly under the hero, outside its frame", () => {
+    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
+    const text = lastWeek.rows[0].blurb.map((sentence) => sentence.text).join(" ");
+    expect(hero().queryByText(text)).toBeNull();
+    const top = screen.getByRole("region", { name: "Rank 1" });
+    expect(top.nextElementSibling?.tagName).toBe("P");
+    expect(top.nextElementSibling?.textContent).toBe(text);
   });
 
   it("follows the chosen week, with a dash in each tile for a week with no odds", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
     fireEvent.click(chip(firstWeek.week));
     // Lil Fridge is first in week 1, before the odds engine ran.
-    expect(hero().getByRole("heading", { name: "Lil Fridge" })).toBeTruthy();
-    expect(hero().getByRole("heading", { level: 1 }).textContent).toBe("WEEK 1 // POWER RANKINGS");
+    expect(hero().getByRole("heading", { level: 1 }).textContent).toBe("Lil Fridge");
+    expect(slots()[0]).toEqual(["eyebrow", "WEEK 1 // POWER RANKINGS"]);
     expect(hero().getByText("No last week")).toBeTruthy();
     for (const label of ["Playoff", "Bye", "Seed"]) {
       expect(hero().getByText(label).nextElementSibling?.textContent).toMatch(/^–No (odds|seed)$/);
     }
+  });
+
+  it("keeps the static grid, the glow, and the brackets in the hero, and draws no scene on the page (AT-35, AT-44)", () => {
+    const { container } = render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
+    const hero = screen.getByRole("region", { name: "Rank 1" });
+    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    expect(hero.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(hero.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
   });
 });
 
@@ -127,6 +152,32 @@ describe("The ladder", () => {
     for (const card of cards()) {
       expect(card.textContent).not.toMatch(/\d\.\d|\//);
     }
+  });
+});
+
+describe("The manager link of rank 1", () => {
+  it("puts a Manager page link to the rank-1 team in the action slot of the hero (AT-45)", () => {
+    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />);
+    const region = screen.getByRole("region", { name: "Rank 1" });
+    const action = region.querySelector("[data-hero-slot='action']") as HTMLElement;
+    const link = within(action).getByRole("link", { name: "Manager page" });
+    // London Cooking is rank 1 of the latest week, and the ladder starts at rank 2.
+    expect(lastWeek.rows[0].name).toBe("London Cooking");
+    expect(link.getAttribute("href")).toBe(`/2026/managers/${lastWeek.rows[0].roster_id}/`);
+  });
+
+  it("follows the chosen week, so the link names the rank-1 team of that week", () => {
+    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />);
+    fireEvent.click(chip(firstWeek.week));
+    expect(hero().getByRole("link", { name: "Manager page" }).getAttribute("href")).toBe(
+      `/2026/managers/${firstWeek.rows[0].roster_id}/`,
+    );
+  });
+
+  it("shows no link and no action slot when the season has no managers file", () => {
+    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
+    expect(hero().queryByRole("link", { name: "Manager page" })).toBeNull();
+    expect(screen.getByRole("region", { name: "Rank 1" }).querySelector("[data-hero-slot='action']")).toBeNull();
   });
 });
 

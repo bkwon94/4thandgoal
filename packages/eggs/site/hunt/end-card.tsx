@@ -5,7 +5,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Hero } from "@cpc/design/parts/hero";
+import { HeroFrame } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
 import type { ClaimAnswer } from "../lib/api";
 import { ArtGround, SlotRow } from "./egg-art";
@@ -117,7 +117,7 @@ function Shell({
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="egg-end-title" className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-gutter">
       <div aria-hidden="true" className="egg-scrim fixed inset-0 bg-band/80" />
-      <Hero label={label} className="egg-hero egg-hero-in w-full max-w-sm">
+      <HeroFrame label={label} className="egg-hero egg-hero-in w-full max-w-sm">
         <div className="flex flex-col items-center gap-sp-4 text-center">
           <div className="flex w-full items-center justify-between gap-sp-2">
             <Label dark className="mb-0 text-meta">
@@ -155,7 +155,7 @@ function Shell({
             )}
           </div>
         </div>
-      </Hero>
+      </HeroFrame>
     </div>
   );
 }

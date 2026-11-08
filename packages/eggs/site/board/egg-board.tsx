@@ -6,7 +6,7 @@
 
 import { useState, type ReactNode } from "react";
 import { Card } from "@cpc/design/parts/card";
-import { Hero } from "@cpc/design/parts/hero";
+import { HeroFrame } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
 import { cn } from "@cpc/design/lib/utils";
 import type { Board } from "../lib/api";
@@ -99,7 +99,7 @@ function BoardHero({ board }: { board: Board }) {
   return (
     // The class egg-hero hides the full texture of the hero, and the oval of the texture sits behind the grid of the
     // eggs only, so each line of text sits on the flat band color with no plate (the ground of globals.css).
-    <Hero label="Egg hunt" className="egg-hero">
+    <HeroFrame label="Egg hunt" className="egg-hero">
       <div className="flex flex-col gap-sp-5">
         <div className="flex flex-col items-start gap-sp-1">
           <span className={cn(LABEL, "text-accent-text")}>Egg hunt</span>
@@ -150,7 +150,7 @@ function BoardHero({ board }: { board: Board }) {
           </div>
         </div>
       </div>
-    </Hero>
+    </HeroFrame>
   );
 }
 
@@ -198,7 +198,7 @@ function GiftPill({ prize, won }: { prize: number; won: boolean }) {
 function WonCard({ word }: { word: Word & { winner: NonNullable<Word["winner"]> } }) {
   return (
     // The class egg-hero and the ground behind the tiles keep the text on the flat band color, as on the hero of the board.
-    <Hero label={word.word} className="egg-hero rounded-card">
+    <HeroFrame label={word.word} className="egg-hero rounded-card">
       <div className="flex flex-col items-start gap-sp-4">
         <div className="flex w-full items-center gap-sp-2">
           <h2 className={cn(LABEL, "text-accent-text")}>{word.word}</h2>
@@ -225,7 +225,7 @@ function WonCard({ word }: { word: Word & { winner: NonNullable<Word["winner"]> 
         </div>
         <p className="m-0 text-lead text-on-dark-2">{`The $${word.prize} gift card is theirs. The race is over.`}</p>
       </div>
-    </Hero>
+    </HeroFrame>
   );
 }
 

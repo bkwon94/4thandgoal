@@ -75,7 +75,6 @@ export function EggBanner({ board, href, now = new Date() }: EggBannerProps) {
         aria-label="Egg drop"
         className="hero-texture relative flex min-h-banner items-center gap-sp-2 overflow-hidden border-b border-rule-dark bg-band py-sp-1 pl-gutter text-on-dark"
       >
-        <div aria-hidden="true" className="hero-scan" />
         <EggMark />
         {/* The line sits on a plate, so the grid and the glow never sit under a letter.
             The line wraps and the strip grows past its least height, so a narrow phone shows the whole line. */}

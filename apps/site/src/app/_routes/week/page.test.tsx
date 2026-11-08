@@ -174,7 +174,7 @@ describe("WeekPage order of week 8 (AT-16)", () => {
   it("opens on the hero, which holds the one level 1 heading of the page, and no week line under the top band", async () => {
     await renderWeek8();
     const headings = screen.getAllByRole("heading", { level: 1 });
-    expect(headings.map((heading) => heading.textContent)).toEqual(["Week 08 // Matchup of the Week"]);
+    expect(headings.map((heading) => heading.textContent)).toEqual(["The Blue Tent by 1.43"]);
     expect(screen.getByRole("region", { name: "Matchup of the Week" }).contains(headings[0])).toBe(true);
   });
 

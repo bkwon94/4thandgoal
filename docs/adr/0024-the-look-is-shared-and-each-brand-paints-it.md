@@ -2,6 +2,8 @@
 
 The site kept the look of the printed report: Helvetica, a black masthead, white pages, and grey cards (ADR 0006). The site now has one shared look for every client. The look owns the fonts, the radii, the layout, the components, and the motion. Each brand keeps only its color roles, its logo, and its copy, and paints the look with its colors. Dark is the default for every client, and every client keeps a light option with the theme button. We chose a new look over the report look because the goal is a first reaction of "wow" and "so easy to read", and the report look reads as print. We chose one shared look over a look per client because a client on Helvetica loses the feel, and one look is one thing to build and to check.
 
+Superseded in part by ADR 0027: the first hero of a page draws a scene of its data on a canvas in place of the scan line, and that canvas is the one exception to the rule of transform and opacity only.
+
 ## Consequences
 
 - The look uses Space Grotesk for text and JetBrains Mono for numbers and labels, self-hosted (decision 02 of `site-redesign`).

@@ -1,0 +1,50 @@
+[
+  {
+    "width": 375,
+    "theme": "light",
+    "h1": [
+      "Page not found"
+    ],
+    "heroText": "Page not found\nThis page does not exist. The link may be old, or the week is not out yet.\n404\nGo to Week 8\nGo Home"
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "h1": [
+      "Page not found"
+    ],
+    "heroText": "Page not found\nThis page does not exist. The link may be old, or the week is not out yet.\n404\nGo to Week 8\nGo Home"
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "h1": [
+      "Page not found"
+    ],
+    "heroText": "Page not found\nThis page does not exist. The link may be old, or the week is not out yet.\n404\nGo to Week 8\nGo Home"
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "h1": [
+      "Page not found"
+    ],
+    "heroText": "Page not found\nThis page does not exist. The link may be old, or the week is not out yet.\n404\nGo to Week 8\nGo Home"
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "h1": [
+      "Page not found"
+    ],
+    "heroText": "Page not found\nThis page does not exist. The link may be old, or the week is not out yet.\n404\nGo to Week 8\nGo Home"
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "h1": [
+      "Page not found"
+    ],
+    "heroText": "Page not found\nThis page does not exist. The link may be old, or the week is not out yet.\n404\nGo to Week 8\nGo Home"
+  }
+]

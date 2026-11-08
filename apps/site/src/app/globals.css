@@ -103,6 +103,10 @@
     /* The inner space of the hero: 28px on top and bottom, and 24px on the sides (ADR 0024). */
     --spacing-hero-y: 28px;
     --spacing-hero-x: var(--spacing-sp-6);
+    /* The height of the hero scene: a band of 130px under the title on a phone, so the words keep the first screen
+       (Brian, 2026-11-08), and 240px in the open middle of the two rows from the tablet tier up (decision 06). */
+    --spacing-hero-scene: 130px;
+    --spacing-hero-scene-wide: 240px;
     /* The cell of the grid texture of the hero. */
     --spacing-hero-grid: 24px;
     /* The arm of a corner bracket of the hero. */
@@ -201,7 +205,7 @@
 
     /* The press easing. A strong ease-out gives instant feedback on a tap. packages/design/site/lib/motion.ts holds the same curve as numbers. */
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-    /* The curve of the rise of the look and the scan line of the hero (ADR 0024). RISE_EASE in motion.ts holds the same curve. */
+    /* The curve of the rise of the look (ADR 0024). RISE_EASE in motion.ts holds the same curve. */
     --ease-rise: cubic-bezier(0.16, 1, 0.3, 1);
 }
 /*---break---
@@ -426,47 +430,11 @@
             var(--spacing-hero-grid) var(--spacing-hero-grid),
             var(--spacing-hero-grid) var(--spacing-hero-grid);
     }
-    /* The scan line of the hero: a thin line in the accent text color that sweeps from the top to the bottom once on
-       entry, then fades out. The box spans the hero and only its transform and its opacity move. */
-    .hero-scan {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        animation: hero-scan 1.4s var(--ease-rise) 0.1s 1 both;
-    }
-    .hero-scan::before {
-        content: "";
-        position: absolute;
-        inset-inline: 0;
-        top: 0;
-        height: var(--spacing-sp-0);
-        background: linear-gradient(90deg, transparent, var(--color-accent-text), transparent);
-    }
     /* The ground of a photo in its round frame: the brand glow over the raised surface. Initials never sit on it. */
     .photo-ground {
         background: radial-gradient(circle at 50% 65%, var(--color-accent-glow), transparent 70%) var(--color-raised);
     }
 }
-@keyframes hero-scan {
-    from {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    80% {
-        opacity: 1;
-    }
-    to {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-}
-/* Reduced motion turns the scan line off. The rise and the tap scale stop through the rules below and useMotionOff. */
-@media (prefers-reduced-motion: reduce) {
-    .hero-scan {
-        display: none;
-    }
-}
-
 /* The ground of the egg hunt: the grid and the glow sit only behind the art of an egg card, not behind its text.
    An egg card has a two-line headline over the grid and the glow, and the plate of each line painted over the line above
    it and showed as a dark box. So an egg hero hides its full texture, and the art takes a soft oval of the texture.

@@ -1,12 +1,12 @@
 /**
- * The hero of the home page: the matchup of the latest week with its reason, the margin, both teams, the first sentence
- * of the blurb, and a button to the week. It sits on the band in both themes, as the hero of the week page does.
+ * The hero of the home page: the matchup of the latest week with the winner by the margin, its reason, both teams, and a
+ * button to the week, then the first sentence of the blurb under it. The hero sits on the band in both themes.
  */
-import { num } from "@cpc/design/format/format";
 import { Hero } from "@cpc/design/parts/hero";
+import type { HeroScene } from "@cpc/design/parts/scene-math";
 import { Rise } from "@cpc/design/parts/rise";
 import type { AvatarMap, Pick } from "../schema/week-types";
-import { TeamRow } from "./matchup-of-the-week";
+import { matchupTitle, TeamRow } from "./matchup-of-the-week";
 import { textId } from "@cpc/design/lib/stable-id";
 
 /* The week number with two digits, as the week chip writes it: "08". */
@@ -25,6 +25,7 @@ export function HomeMatchup({
   avatars,
   blurb,
   href,
+  scene,
 }: {
   week: number;
   pick: Pick;
@@ -33,39 +34,43 @@ export function HomeMatchup({
   blurb: string;
   // The href of the week page, with the base path.
   href: string;
+  // The scene of the week. The home page passes it when this hero is the first hero of the page.
+  scene?: HeroScene;
 }) {
   // The JSON puts the winner first. A tie has no winner, and the first side still leads the hero.
   const [first, second] = pick.sides;
   return (
-    <Hero label="Matchup of the Week">
-      {/* The intro holds the h1 of the home page, so the label of the hero is plain text. */}
-      <Rise step={0}>
-        <div className="plate w-fit font-mono text-meta leading-tight font-bold tracking-caps text-on-dark-muted uppercase">
-          {`Week ${twoDigits(week)} // Matchup of the Week`}
-        </div>
-      </Rise>
-      <Rise step={1} className="mt-sp-5">
-        <div className="plate w-fit font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase">
-          {`${pick.reason} · Margin`}
-        </div>
-        <div className="plate mt-sp-2 w-fit font-mono text-hero leading-none font-bold tracking-grade tabular-nums">
-          {num(first.score - second.score)}
-        </div>
-      </Rise>
-      <Rise step={2} className="mt-sp-5 flex flex-col gap-sp-3">
-        <TeamRow side={first} avatars={avatars} lead withTop={false} />
-        <TeamRow side={second} avatars={avatars} lead={false} withTop={false} />
-      </Rise>
+    // The first sentence sits under the hero, so the hero stays as short as the others (decision 05).
+    <div className="flex flex-col gap-sp-5">
+      <Hero
+        label="Matchup of the Week"
+        eyebrow={`Week ${twoDigits(week)} // Matchup of the Week`}
+        title={matchupTitle(pick)}
+        scene={scene}
+        // The intro holds the h1 of the home page, so the title of the hero is an h2.
+        level={2}
+        meta={pick.reason}
+        feature={
+          <Rise step={1} className="flex flex-col gap-sp-3">
+            <TeamRow side={first} avatars={avatars} lead withTop={false} />
+            <TeamRow side={second} avatars={avatars} lead={false} withTop={false} />
+          </Rise>
+        }
+        action={
+          <Rise step={2} className="w-full tablet:w-auto">
+            {/* A full pill and a 44px tap target, in the brand color, as the week button of the 404 page. */}
+            <a
+              href={href}
+              className="press flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-body font-bold text-on-dark no-underline"
+            >
+              {`Read Week ${week}`}
+            </a>
+          </Rise>
+        }
+      />
       <Rise step={3}>
-        <p className="plate mt-sp-5 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2" {...textId("blurb", firstSentence(blurb))}>{firstSentence(blurb)}</p>
-        {/* A full pill and a 44px tap target, in the brand color, as the week button of the 404 page. */}
-        <a
-          href={href}
-          className="press mt-sp-5 flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-body font-bold text-on-dark no-underline"
-        >
-          {`Read Week ${week}`}
-        </a>
+        <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", firstSentence(blurb))}>{firstSentence(blurb)}</p>
       </Rise>
-    </Hero>
+    </div>
   );
 }

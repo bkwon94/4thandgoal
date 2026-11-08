@@ -1,0 +1,56 @@
+[
+  {
+    "width": 375,
+    "theme": "light",
+    "body": "rgb(244, 244, 244)",
+    "hero": "rgb(20, 20, 20)",
+    "htmlClass": "bKuuTq_variable hQ5RIa_variable"
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "body": "rgb(20, 20, 20)",
+    "hero": "rgb(20, 20, 20)",
+    "htmlClass": "dark bKuuTq_variable hQ5RIa_variable"
+  },
+  {
+    "width": 375,
+    "canvasPixelsLightEqualDark": true
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "body": "rgb(255, 255, 255)",
+    "hero": "rgb(20, 20, 20)",
+    "htmlClass": "bKuuTq_variable hQ5RIa_variable"
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "body": "rgb(31, 31, 31)",
+    "hero": "rgb(20, 20, 20)",
+    "htmlClass": "dark bKuuTq_variable hQ5RIa_variable"
+  },
+  {
+    "width": 768,
+    "canvasPixelsLightEqualDark": true
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "body": "rgb(255, 255, 255)",
+    "hero": "rgb(20, 20, 20)",
+    "htmlClass": "bKuuTq_variable hQ5RIa_variable"
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "body": "rgb(31, 31, 31)",
+    "hero": "rgb(20, 20, 20)",
+    "htmlClass": "dark bKuuTq_variable hQ5RIa_variable"
+  },
+  {
+    "width": 1280,
+    "canvasPixelsLightEqualDark": true
+  }
+]
