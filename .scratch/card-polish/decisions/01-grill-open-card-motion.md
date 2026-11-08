@@ -16,7 +16,7 @@ The Showcase Card method opens a drawer with a height change on a spring, and th
 
 The Open card keeps the motion of the Showcase Card item. Brian decided it on 2026-11-07, with the rule "follow the Scrolltide item as far as possible".
 
-1. The height animates with `grid-template-rows` from `0fr` to `1fr`. It is the one height method for every Open card. The closed panel stays in the DOM with `inert`, so find-in-page still finds its text.
+1. The height animates with `grid-template-rows` from `0fr` to `1fr`. It is the one height method for every Open card. The closed panel stays in the DOM with `hidden="until-found"`, so find-in-page still finds its text and opens the card. Correction from cpc:implement: Chromium skips `inert` content in find-in-page, so `inert` cannot meet this rule.
 2. The details come into focus from a 6px `filter: blur`, a beat behind the height. An acceptance test records the frame rate on a throttled phone profile. The blur goes only if that test fails.
 3. The card moves on a damped spring, sampled into a CSS `linear()` curve, with the small overshoot of the item.
 

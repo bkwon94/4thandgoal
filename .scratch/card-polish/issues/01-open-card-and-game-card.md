@@ -10,7 +10,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, AT
 
 **Status:** ready-for-agent
 
-- [ ] The Open card part opens and closes a GameCard on the week page of CPC week 8, and a part test proves `aria-expanded`, `aria-controls`, and `inert` on a closed panel.
+- [ ] The Open card part opens and closes a GameCard on the week page of CPC week 8, and a part test proves `aria-expanded`, `aria-controls`, and `hidden="until-found"` on a closed panel.
 - [ ] The open card of All You Need Is Love vs Unsolicited Dak Picks shows exactly three chips: Best J. Burrow 42.48, Best J. Jacobs 20.2, and Records 11-5 · 6-10.
 - [ ] A unit test proves the spring sampler returns a `linear()` curve that starts at 0 and ends at 1.
 - [ ] The reduced-motion test proves the card opens at once.

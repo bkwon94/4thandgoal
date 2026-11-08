@@ -13,7 +13,7 @@ These still win over the item:
 
 ## Consequences
 
-- The Open card animates its height with `grid-template-rows` from `0fr` to `1fr`. It is the one height method of the site. The closed panel stays in the DOM with `inert` (decision 01 of `card-polish`).
+- The Open card animates its height with `grid-template-rows` from `0fr` to `1fr`. It is the one height method of the site. The closed panel stays in the DOM with `hidden="until-found"` (decision 01 of `card-polish`), because Chromium skips `inert` content in find-in-page.
 - The details of an open card come into focus from a `filter: blur` of 6px, a beat behind the height.
 - The Open card moves on a damped spring, sampled into a CSS `linear()` curve, with a small overshoot.
 - An acceptance test of the spec records the frame rate of an open card on a throttled phone profile. If the blur fails it, the blur goes, and the spec records why.

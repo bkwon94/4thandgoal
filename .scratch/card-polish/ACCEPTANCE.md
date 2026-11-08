@@ -67,7 +67,7 @@ App: site
 Stories: 13, 14
 Given: the CPC site built from `clients/cpc/published/2026/`, page week 8, the week page, all cards closed
 When: The reader runs find-in-page for a word of the recap of All You Need Is Love vs Unsolicited Dak Picks.
-Then: The browser finds the word. The closed panel has `inert`, and its toggle has `aria-expanded="false"` and `aria-controls` set to the panel id.
+Then: The browser finds the word and the card opens. The closed panel has `hidden="until-found"`, and its toggle has `aria-expanded="false"` and `aria-controls` set to the panel id.
 Evidence: the find result in a screenshot at 1280 px, and the DOM attributes of the toggle and the panel.
 
 AT-9: Reduced motion opens a card at once

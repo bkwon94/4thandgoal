@@ -107,7 +107,7 @@ The hero stays the one loud surface of each page (ADR 0024). The desktop stage i
 
 - One shared design part. It takes a head, the panel content (an overview line, chips, a rule line, and a text), an optional action link, and a controlled or uncontrolled open state.
 - The head is the only part that differs per card. GameCard keeps the closed layout it has now. LadderCard takes the full Showcase shell: a plain raised media panel with the rank large, then the team, the record, the move, the odds bar, and the playoff chip.
-- The height animates with `grid-template-rows` from `0fr` to `1fr`, the one height method of the site. The closed panel stays in the DOM with `inert`.
+- The height animates with `grid-template-rows` from `0fr` to `1fr`, the one height method of the site. The closed panel stays in the DOM with `hidden="until-found"`, so find-in-page finds its text and opens the card. `inert` would hide the text from find-in-page in Chromium.
 - The panel comes into focus from a 6px `filter: blur`, a short rise, and an opacity change, about 0.1s behind the height.
 - The motion uses a damped spring sampled into a CSS `linear()` curve, with a small overshoot, over about 0.45s. A small design helper builds the curve. The chevron turns 180 degrees on the same curve.
 - The action link is a pill with a solid fill under its label, because text on a frosted blur fails the axe floor. Its label rolls up to a copy of itself on a fine-pointer hover.
@@ -168,7 +168,7 @@ The seams, from the highest down:
 
 1. **The readability floor on the built export.** The existing floor check runs each route at 390px and 1280px in both themes, for both clients. The spec adds the open states: an open game card, an open ladder card, an open Index list row, the stage on desktop, and the Season So Far dial. Prior art: the floor spec and its rules spec in the site e2e folder.
 2. **The page render.** The existing page tests render a route with its real data and check the markup. They prove the Index list order, the chips and their counts, the trend series of an older week, the week 8 median from both sources, and that a tile with no trend is unchanged. Prior art: the page test of the week route and of the home route.
-3. **The part render.** A part test renders one part with real props and checks its behavior: the toggle states and `aria-expanded`, `inert` on a closed panel, the lit blade count of each arc, the text alternative of a Trend tile, the halo level for each count of filled checks. Prior art: the all-matchups, season-so-far, moves, and trade-form tests.
+3. **The part render.** A part test renders one part with real props and checks its behavior: the toggle states and `aria-expanded`, `hidden="until-found"` on a closed panel, the lit blade count of each arc, the text alternative of a Trend tile, the halo level for each count of filled checks. Prior art: the all-matchups, season-so-far, moves, and trade-form tests.
 4. **The pure functions.** Unit tests cover the race group of a team, the four week series, the halo level, and the spring curve sampler. Prior art: the trade helpers test of the analyzer.
 5. **Reduced motion.** The existing reduced-motion test proves each new part changes state at once under `prefers-reduced-motion`. Prior art: the site reduced-motion test.
 6. **The weights.** One site test compares the weight constant to `GRADE_WEIGHTS` in the pipeline tunables file.
