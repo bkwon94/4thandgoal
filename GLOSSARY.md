@@ -95,6 +95,10 @@ _Avoid_: Header, banner, masthead, title block
 One of the six named places of a hero, in a fixed order: eyebrow, title, meta, feature, stats, and action. Only the title is required. The feature holds the one part that is unique to a page.
 _Avoid_: Region, section, area, child
 
+**Hero scene**:
+The art of the first hero of a page: points of light that drift in and settle into a small chart of the page's real data, such as the scores of the week. A reader taps or slides across it to read one light.
+_Avoid_: Animation, visualization, chart, particles, constellation
+
 **Bench points**:
 The points a team left on its bench in a week: the best lineup's points minus the lineup it started.
 _Avoid_: Lineup efficiency, optimal lineup gap, points lost

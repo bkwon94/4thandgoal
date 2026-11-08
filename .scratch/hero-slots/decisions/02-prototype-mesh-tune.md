@@ -4,9 +4,9 @@ Map: `.scratch/hero-slots/MAP.md`.
 
 **Kind:** prototype
 
-**Blocked by:** 03
+**Blocked by:** none
 
-**Status:** open
+**Status:** wontfix
 
 ## Question
 
@@ -23,4 +23,4 @@ The check of the readability floor must still pass with the canvas on the page. 
 
 ## Decision
 
-None yet.
+Replaced on 2026-11-07. Decision 06 made the art of the hero a scene of the week's data, so the bend of Mesh Flow does not ship and needs no tune. Brian decided this in the prototype of decision 06.
