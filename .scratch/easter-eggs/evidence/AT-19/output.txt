@@ -1,0 +1,114 @@
+# The test egg file sits outside the repo. Its four eggs T1 to T4, with each reason:
+$ cat /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/test-eggs.toml
+# The test egg file of the acceptance tests of easter-eggs: T1 to T4, each confirmed, for weeks 9 and 10.
+[[eggs]]
+week = 9
+page = "/midseason/2026/"
+target = "luck-3"
+action = "tap3"
+conditions = { theme = "light" }
+reason = "Lil Fridge has the worst luck of the league, so a reader who taps the luck cell three times finds it"
+confirmed = true
+
+[[eggs]]
+week = 9
+page = "/2026/week-08/"
+target = "number-median"
+action = "tap2"
+conditions = { clock = "23:00-00:00" }
+reason = "The median only matters late at night when the week is over, a night owl egg"
+confirmed = true
+
+[[eggs]]
+week = 9
+page = "/midseason/2026/"
+target = "sim-trophy"
+action = "tap2"
+conditions = { sim_champion = 12 }
+reason = "Teehee lifts the sim trophy in a rare run, so the egg waits for that run"
+confirmed = true
+
+[[eggs]]
+week = 10
+page = "/2026/week-08/"
+target = "number-closest"
+action = "tap3"
+reason = "The closest game of the week deserves a second look, three taps on the margin"
+confirmed = true
+
+
+# Each reason, in the tracked files of the repo and in the built site. The evidence folder of this test is left out, because it quotes the file.
+$ git -C /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs grep -c -F "Lil Fridge has the worst luck of the league, so a reader who taps the luck cell three times finds it" -- ':!.scratch/easter-eggs/evidence' | wc -l | sed 's/^ */repo files: /'; grep -r -l -F "Lil Fridge has the worst luck of the league, so a reader who taps the luck cell three times finds it" /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | wc -l | sed 's/^ */built site files: /'
+repo files: 0
+built site files: 0
+
+
+$ git -C /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs grep -c -F "The median only matters late at night when the week is over, a night owl egg" -- ':!.scratch/easter-eggs/evidence' | wc -l | sed 's/^ */repo files: /'; grep -r -l -F "The median only matters late at night when the week is over, a night owl egg" /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | wc -l | sed 's/^ */built site files: /'
+repo files: 0
+built site files: 0
+
+
+$ git -C /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs grep -c -F "Teehee lifts the sim trophy in a rare run, so the egg waits for that run" -- ':!.scratch/easter-eggs/evidence' | wc -l | sed 's/^ */repo files: /'; grep -r -l -F "Teehee lifts the sim trophy in a rare run, so the egg waits for that run" /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | wc -l | sed 's/^ */built site files: /'
+repo files: 0
+built site files: 0
+
+
+$ git -C /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs grep -c -F "The closest game of the week deserves a second look, three taps on the margin" -- ':!.scratch/easter-eggs/evidence' | wc -l | sed 's/^ */repo files: /'; grep -r -l -F "The closest game of the week deserves a second look, three taps on the margin" /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | wc -l | sed 's/^ */built site files: /'
+repo files: 0
+built site files: 0
+
+
+# Each target. A target is the stable id that the site gives every element of its kind, so a hit is the id of the element and no egg mark.
+$ grep -r -o -h "data-stable-id=\"luck-3\"" /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | wc -l | sed 's/^ */built site elements with this id: /'; grep -r -o -h 'data-stable-id="[^"]*"' /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | sort -u | wc -l | sed 's/^ */distinct stable ids in the built site: /'
+built site elements with this id: 1
+distinct stable ids in the built site: 980
+
+
+$ grep -r -o -h "data-stable-id=\"number-median\"" /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | wc -l | sed 's/^ */built site elements with this id: /'; grep -r -o -h 'data-stable-id="[^"]*"' /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | sort -u | wc -l | sed 's/^ */distinct stable ids in the built site: /'
+built site elements with this id: 3
+distinct stable ids in the built site: 980
+
+
+$ grep -r -o -h "data-stable-id=\"sim-trophy\"" /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | wc -l | sed 's/^ */built site elements with this id: /'; grep -r -o -h 'data-stable-id="[^"]*"' /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | sort -u | wc -l | sed 's/^ */distinct stable ids in the built site: /'
+built site elements with this id: 0
+distinct stable ids in the built site: 980
+
+
+$ grep -r -o -h "data-stable-id=\"number-closest\"" /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | wc -l | sed 's/^ */built site elements with this id: /'; grep -r -o -h 'data-stable-id="[^"]*"' /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | sort -u | wc -l | sed 's/^ */distinct stable ids in the built site: /'
+built site elements with this id: 3
+distinct stable ids in the built site: 980
+
+
+# Where each target name is in the source of the repo: the code that makes the stable id of every element of the kind, and the tests of the eggs, never an egg list.
+$ git -C /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs grep -n -E 'stableId\("(luck|number|sim-trophy)' -- apps packages | cut -c1-160
+packages/design/site/lib/stable-id.test.ts:10:    expect(stableId("luck", 3)).toEqual({ "data-stable-id": "luck-3" });
+packages/midseason/site/act-one/luck.tsx:103:              <td data-luck {...stableId("luck", team.roster_id)} className={cn(CELL, "text-right font-bold")}>
+packages/sim/site/replay/champion-card.tsx:66:          {...stableId("sim-trophy")}
+packages/week/site/chapters/week-numbers.tsx:78:          <li key={item.label} className="min-w-0" {...stableId("number", item.label)}>
+
+
+$ git -C /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs grep -l -E 'luck-3|number-median|sim-trophy|number-closest' -- ':!.scratch' ':!clients' | sort
+apps/api/tests/test_eggs.py
+apps/site/e2e/eggs.spec.ts
+apps/site/src/app/_routes/eggs/targets.test.tsx
+packages/design/site/lib/stable-id.test.ts
+packages/eggs/python/tests/test_store.py
+packages/eggs/site/hunt/egg-hunt-motion-off.test.tsx
+packages/eggs/site/hunt/egg-hunt.test.tsx
+packages/eggs/site/lib/api.test.ts
+packages/eggs/site/listener/listener.test.ts
+packages/sim/site/replay/champion-card.tsx
+packages/sim/site/replay/sim-replay.test.tsx
+
+
+# Each page. A page is a route of the site, so each is a built page of every client of the package and no egg mark.
+$ ls -d /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc/midseason/2026 /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc/2026/week-08
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc/2026/week-08
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc/midseason/2026
+
+
+# A search of the built site for the conditions and the action of the test eggs, which only an egg holds. A grade on a manager page also has the key letter, so the search leaves the key letter out.
+$ grep -r -l -E '"conditions":|"sim_champion":12|23:00-00:00|"action":"tap3"' /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/out-cpc | wc -l | sed 's/^ */built site files: /'
+built site files: 0
+
+

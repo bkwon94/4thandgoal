@@ -1,7 +1,7 @@
 """
 Command line entry point for Cornerstone Weekly.
 It defines the build, publish, rewrite, page-json, rankings, midseason, midseason-publish, history, chart, analyze,
-and find subcommands.
+find, egg-draft, and egg-drop subcommands.
 """
 import argparse
 import logging
@@ -28,6 +28,8 @@ from analyzer.rubric import (
     reason_names,
     verdict,
 )
+from cornerstone.egg_draft import run_egg_draft
+from cornerstone.egg_drop import drop_after_publish, drop_from_env
 from cornerstone.pipeline import (
     BuildStopped,
     has_raw,
@@ -42,6 +44,8 @@ from cornerstone.pipeline import (
 )
 from cornerstone.publish import PublishError, run_midseason_publish, run_publish, site_page_url
 from cornerstone.value_models import VALUE_MODELS
+from eggs.draft import DraftError
+from eggs.eggfile import default_egg_file
 from facts.writer import analyzer_call, claude_call, parse_call
 from league.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
 from league.claude_port import Writer
@@ -142,6 +146,22 @@ def build_parser() -> argparse.ArgumentParser:
 
     settings = sub.add_parser("settings", parents=[named], help="print the League settings and the sizes of a season")
     settings.add_argument("--season", type=int)
+
+    # The egg file sits outside the repo, so the repo never names a spot. A test names a temp file.
+    eggs_file = argparse.ArgumentParser(add_help=False)
+    eggs_file.add_argument("--eggs-file", type=Path, help="the egg file; the default is ~/cpc-eggs/<season>.toml")
+
+    egg_draft = sub.add_parser("egg-draft", parents=[named, eggs_file],
+                               help="propose the spots of the egg drop of a week with an agent, marked not confirmed")
+    egg_draft.add_argument("--week", type=int)
+    egg_draft.add_argument("--season", type=int)
+
+    egg_drop = sub.add_parser("egg-drop", parents=[named, eggs_file],
+                              help="send the confirmed eggs of a week to the API; a failed drop warns and exits 0")
+    egg_drop.add_argument("--week", type=int)
+    egg_drop.add_argument("--season", type=int)
+    # The publish runs the egg drop as its last step, so it takes the egg file too.
+    publish.add_argument("--eggs-file", type=Path, help="the egg file; the default is ~/cpc-eggs/<season>.toml")
 
     check = sub.add_parser("check-client", help="check the client.toml of a client folder and the exported schema")
     check.add_argument("folder", type=Path, help="the client folder, such as ../../clients/cpc")
@@ -567,6 +587,13 @@ def main(
                 return 0
             print(run_midseason_publish(repo, season, week, call, client=client))
             print("Committed and pushed. The report is live after the site deploys.")
+        elif args.command == "egg-draft":
+            egg_file = args.eggs_file or default_egg_file(season)
+            spots = run_egg_draft(client, season, week, egg_file, root)
+            print(f"Wrote {len(spots)} spots of week {week} to {egg_file}, each marked not confirmed.")
+            print("Keep, change, or reject each spot. Set confirmed = true on each spot to drop.")
+        elif args.command == "egg-drop":
+            print(drop_from_env(client, week, args.eggs_file or default_egg_file(season)))
         elif args.command == "rewrite":
             page = run_rewrite(repo, season, week, args.chapter, call, client=client)
             print(page)
@@ -578,7 +605,9 @@ def main(
                 print("Not published.")
                 return 0
             print(run_publish(repo, season, week, client.slug, client.folder))
-    except (BuildStopped, PublishError, ValueError) as err:
+            # The last step of the publish: a failed drop warns and keeps the exit 0, and "make egg-drop" retries.
+            print(drop_after_publish(client, week, args.eggs_file or default_egg_file(season)))
+    except (BuildStopped, PublishError, DraftError, ValueError) as err:
         print(err)
         return 2
     except httpx.HTTPError as err:

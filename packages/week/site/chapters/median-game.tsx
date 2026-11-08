@@ -10,6 +10,7 @@ import type { AvatarMap, Median } from "../schema/week-types";
 import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
 import { WeekChapter } from "../parts/week-chapter";
+import { stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* A week with no median game has no median chapter. */
 export function MedianGame({ median, avatars, blurb }: { median: Median | null; avatars: AvatarMap; blurb?: string }) {
@@ -22,6 +23,7 @@ export function MedianGame({ median, avatars, blurb }: { median: Median | null; 
             // The name column is fixed, so every track starts at one place and the line falls at one place in each.
             <li
               key={bar.team.roster_id}
+              {...stableId("median", bar.team.roster_id)}
               className="grid grid-cols-[auto_minmax(0,6.5rem)_minmax(0,1fr)_auto] items-center gap-sp-2 tablet:grid-cols-[auto_minmax(0,12rem)_minmax(0,1fr)_auto]"
             >
               <Avatar src={avatarSrc(avatars, bar.team.roster_id)} />
@@ -45,7 +47,7 @@ export function MedianGame({ median, avatars, blurb }: { median: Median | null; 
           ))}
         </ul>
       </Card>
-      {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{blurb}</p>}
+      {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>}
     </WeekChapter>
   );
 }

@@ -1,0 +1,30 @@
+# The state of AT-12/setup.txt: Lil Fridge (3) holds E, A, G, L, and S in EAGLES. Egg 28 holds E. The real path is /clients/cpc/eggs/.
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); w=[x for x in b["words"] if x["word"]=="EAGLES"][0]; print("EAGLES winner", w["winner"], "| Lil Fridge", [m["letters"] for m in w["managers"] if m["roster_id"]==3][0])'
+EAGLES winner None | Lil Fridge ['E', 'A', 'G', 'L', 'S']
+
+
+# A token from a check of egg 28, then the claim of Lil Fridge into EAGLES:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"iQ-lzZAeEOsKOsrt9Yqri4bdEh0sh2F-","roster_id":3,"word":"EAGLES"}'
+{"egg_id":28,"letter":"E","roster_id":3,"word":"EAGLES","letters":{"CORNERSTONE":[],"LANSDALE":[],"EAGLES":["E","A","G","L","S","E"]},"winner":{"roster_id":3,"word":"EAGLES"}}
+HTTP 200
+
+# Another E for Teehee (12): the drop of week 12 with 11 eggs. EAGLES has a winner, so the letter rule reads only CORNERSTONE and LANSDALE.
+$ curl -s -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":12,"eggs":[{"page":"/midseason/2026/","target":"look-ahead-1-4","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-5","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-6","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-7","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-8","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-9","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-10","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-11","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-12","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-13","action":"tap2","conditions":{}},{"page":"/midseason/2026/","target":"look-ahead-1-14","action":"tap2","conditions":{}}]}' | python3 -c 'import json,sys; print([(e["id"], e["target"], e["letter"]) for e in json.load(sys.stdin)["eggs"]])' | tee /tmp/ee-w12.txt
+[(29, 'look-ahead-1-4', 'A'), (30, 'look-ahead-1-5', 'C'), (31, 'look-ahead-1-6', 'D'), (32, 'look-ahead-1-7', 'E'), (33, 'look-ahead-1-8', 'L'), (34, 'look-ahead-1-9', 'N'), (35, 'look-ahead-1-10', 'O'), (36, 'look-ahead-1-11', 'R'), (37, 'look-ahead-1-12', 'S'), (38, 'look-ahead-1-13', 'T')]
+
+
+# A token from a check of the E egg on look-ahead-1-7, then the claim of Teehee into EAGLES:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"token":"5xhrdijZO4eePgIzgdjPL0SlrGErI0ZO","roster_id":12,"word":"EAGLES"}'
+{"detail":"EAGLES has a winner."}
+HTTP 422
+
+# The board:
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); print("counts", b["counts"]); [print(w["word"], "winner:", w["winner"]) for w in b["words"]]; print("Teehee in EAGLES", [m["letters"] for m in [x for x in b["words"] if x["word"]=="EAGLES"][0]["managers"] if m["roster_id"]==12][0]); print("latest", b["latest"][:2])'
+counts {'left': 32, 'found': 6, 'to_drop': 16}
+CORNERSTONE winner: None
+LANSDALE winner: None
+EAGLES winner: {'roster_id': 3, 'team': 'Lil Fridge'}
+Teehee in EAGLES []
+latest [{'roster_id': 3, 'team': 'Lil Fridge', 'letter': 'E', 'word': 'EAGLES', 'claimed_at': '2026-11-07T01:23:32.753096-05:00'}, {'roster_id': 3, 'team': 'Lil Fridge', 'letter': 'S', 'word': 'EAGLES', 'claimed_at': '2026-11-07T00:42:14.800172-05:00'}]
+
+

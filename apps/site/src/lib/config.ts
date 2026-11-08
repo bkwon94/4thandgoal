@@ -5,6 +5,7 @@
 // Relative import, not the @ alias: next.config imports this module, and its loader does not resolve the alias.
 // A type import only, so the next.config loader never loads the analyzer package.
 import type { ApiTarget } from "@cpc/analyzer/lib/api";
+import type { EggsTarget } from "@cpc/eggs/lib/api";
 import { clientValues } from "../generated/client-values";
 
 export const apiUrl =
@@ -16,6 +17,9 @@ export const season = clientValues.season;
 // The API of the analyzer: the base URL, the slug of the client of the build, and the season. Each call goes to
 // /clients/<slug>/ of the API.
 export const apiTarget: ApiTarget = { url: apiUrl, client: clientValues.slug, season };
+
+// The eggs routes of the API: the base URL and the slug of the client. Each call goes to /clients/<slug>/eggs/.
+export const eggsTarget: EggsTarget = { url: apiUrl, client: clientValues.slug };
 
 // The trade finder, from finder under [values.analyzer] of client.toml.
 export const finderOn = clientValues.finder;

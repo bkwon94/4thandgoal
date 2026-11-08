@@ -1,0 +1,22 @@
+# A test drop of one egg for week 11, with the passphrase and no X-Commissioner-Key. The real path is /clients/cpc/eggs/drop.
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); print("before", b["counts"], b["last_drop"])'
+before {'left': 10, 'found': 2, 'to_drop': 42} {'week': 10, 'count': 6, 'dropped_at': '2026-11-07T00:40:41.732825-05:00'}
+
+
+$ curl -s -i -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d '{"week":11,"eggs":[{"page":"/2026/week-08/","target":"heading-leaders","action":"tap2","conditions":{}}]}' | tr -d '\r'
+HTTP/1.1 401 Unauthorized
+date: Sat, 07 Nov 2026 05:40:43 GMT
+server: uvicorn
+content-length: 0
+vary: Origin
+
+
+
+$ curl -s http://127.0.0.1:8080/clients/cpc/eggs/board | python3 -c 'import json,sys; b=json.load(sys.stdin); print("after", b["counts"], b["last_drop"])'
+after {'left': 10, 'found': 2, 'to_drop': 42} {'week': 10, 'count': 6, 'dropped_at': '2026-11-07T00:40:41.732825-05:00'}
+
+
+$ sqlite3 $CORNERSTONE_EGGS_DIR/cpc.sqlite 'SELECT count(*) AS eggs_of_week_11 FROM eggs WHERE week=11'
+0
+
+

@@ -11,6 +11,7 @@ members = [
     "cornerstone",
     "cpc-analyzer",
     "cpc-api",
+    "cpc-eggs",
     "cpc-facts",
     "cpc-league",
     "cpc-managers",
@@ -121,6 +122,7 @@ dev = [
     { name = "ruff" },
 ]
 packages = [
+    { name = "cpc-eggs" },
     { name = "cpc-managers" },
     { name = "cpc-midseason" },
     { name = "cpc-rankings" },
@@ -148,6 +150,7 @@ dev = [
     { name = "ruff", specifier = "==0.17.3" },
 ]
 packages = [
+    { name = "cpc-eggs", editable = "packages/eggs/python" },
     { name = "cpc-managers", editable = "packages/managers/python" },
     { name = "cpc-midseason", editable = "packages/midseason/python" },
     { name = "cpc-rankings", editable = "packages/rankings/python" },
@@ -194,6 +197,7 @@ version = "0.1.0"
 source = { editable = "apps/api" }
 dependencies = [
     { name = "cpc-analyzer" },
+    { name = "cpc-eggs" },
     { name = "cpc-facts" },
     { name = "cpc-league" },
     { name = "fastapi" },
@@ -214,6 +218,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "cpc-analyzer", editable = "packages/analyzer/python" },
+    { name = "cpc-eggs", editable = "packages/eggs/python" },
     { name = "cpc-facts", editable = "packages/facts/python" },
     { name = "cpc-league", editable = "packages/league/python" },
     { name = "fastapi", specifier = ">=0.158.0" },
@@ -228,6 +233,37 @@ dev = [
     { name = "pyright", specifier = ">=1.1.414" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
+    { name = "ruff", specifier = "==0.17.3" },
+]
+
+[[package]]
+name = "cpc-eggs"
+version = "0.1.0"
+source = { editable = "packages/eggs/python" }
+dependencies = [
+    { name = "cpc-league" },
+    { name = "fastapi" },
+    { name = "pydantic" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "cpc-league", editable = "packages/league/python" },
+    { name = "fastapi", specifier = ">=0.158.0" },
+    { name = "pydantic", specifier = ">=2.14.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pyright", specifier = ">=1.1.414" },
+    { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = "==0.17.3" },
 ]
 

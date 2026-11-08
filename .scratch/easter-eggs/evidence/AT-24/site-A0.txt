@@ -1,0 +1,7 @@
+norcal 375-light: links to /eggs/ on home 0, egg checks sent after two triple taps 0, /eggs/ status 404, 404 mark 1
+norcal 375-dark: links to /eggs/ on home 0, egg checks sent after two triple taps 0, /eggs/ status 404, 404 mark 1
+norcal 768-light: links to /eggs/ on home 0, egg checks sent after two triple taps 0, /eggs/ status 404, 404 mark 1
+norcal 768-dark: links to /eggs/ on home 0, egg checks sent after two triple taps 0, /eggs/ status 404, 404 mark 1
+norcal 1280-light: links to /eggs/ on home 0, egg checks sent after two triple taps 0, /eggs/ status 404, 404 mark 1
+norcal 1280-dark: links to /eggs/ on home 0, egg checks sent after two triple taps 0, /eggs/ status 404, 404 mark 1
+norcal home: the text "egg" in the HTML of the page: 0; the script names of the eggs package: 0

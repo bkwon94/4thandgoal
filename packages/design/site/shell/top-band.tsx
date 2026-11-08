@@ -1,5 +1,5 @@
 /**
- * The shell of every page: the top band with the brand mark, the pill bar, the week chip, and the theme button,
+ * The shell of every page: the top band with the brand mark, the pill bar, the week chip, the actions, and the theme button,
  * and the dock at the bottom of a phone and a tablet. The top band stays on screen at every scroll.
  */
 import type { ReactNode } from "react";
@@ -21,9 +21,12 @@ type TopBandProps = {
   pageHref?: string;
   // The head of a page with no hero, such as its week line, under the band. A page with a hero passes none.
   children?: ReactNode;
+  // The buttons of the packages of the client, such as the egg button, just before the theme button. The app layer
+  // passes them, so the shell names no package. A client with none passes none.
+  actions?: ReactNode;
 };
 
-export function TopBand({ title, brand, menu, pageHref, children }: TopBandProps) {
+export function TopBand({ title, brand, menu, pageHref, children, actions }: TopBandProps) {
   const current = currentHref(menu.items, menu.weeks, pageHref);
   const week = chipWeek(menu.weeks, pageHref);
   return (
@@ -39,8 +42,9 @@ export function TopBand({ title, brand, menu, pageHref, children }: TopBandProps
           {/* A plain anchor, so the home link works with scripts off. The title names the link, so the logo is decorative.
               Under the rail tier the logo shows alone, so the pill bar has room for its full labels on one row. The title
               stays for a screen reader. A long title cuts at the end.
-              The link is 44px or more on each side, so the logo alone is still a full tap target. */}
-          <a href={brand.home} className="flex min-h-touch min-w-touch items-center gap-sp-3 text-inherit no-underline">
+              The link is 44px or more on each side, so the logo alone is still a full tap target.
+              Its high shrink lets the title cut before the pill bar loses width, so the bar keeps each full label with no scroll. */}
+          <a href={brand.home} className="flex min-h-touch min-w-touch shrink-999 items-center gap-sp-3 text-inherit no-underline">
             {brand.logo !== null && (
               <img src={brand.logo} alt="" width={30} height={30} className="size-logo flex-none rounded-full" />
             )}
@@ -51,13 +55,16 @@ export function TopBand({ title, brand, menu, pageHref, children }: TopBandProps
               {title}
             </span>
           </a>
+          {/* The bar starts at the width of its labels and grows into the free space. A bar that starts at no width
+              leaves the free space to the title, and then a full title makes the bar scroll. */}
           <PillBar
             items={menu.items}
             current={current}
-            className="min-w-0 flex-1 justify-center"
+            className="min-w-0 flex-auto justify-center"
           />
           <div className="ml-auto flex flex-none items-center gap-sp-2">
             {week !== undefined && <WeekChip weeks={menu.weeks} week={week} pageHref={pageHref} />}
+            {actions}
             {/* The theme button needs the script, so it hides with scripts off. The negative margin lines the icon up with the edge. */}
             <ThemeButton className="-mr-sp-3 [@media(scripting:none)]:hidden" />
           </div>

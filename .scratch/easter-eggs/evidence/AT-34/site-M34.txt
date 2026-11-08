@@ -1,0 +1,17 @@
+The setup, as phase B: Teehee claims the C of heading-leaders into CORNERSTONE: {"egg_id":2,"letter":"C","roster_id":12,"word":"CORNERSTONE","letters":{"CORNERSTONE":["C"],"LANSDALE":[],"EAGLES":[]},"winner":null}
+ghost 375-light at +7 ms: opacity 0.873 | egg-ghost running dur 1600ms iter Infinity at 533ms
+ghost 375-light at +408 ms: opacity 0.969 | egg-ghost running dur 1600ms iter Infinity at 933ms
+ghost 375-light at +808 ms: opacity 0.577 | egg-ghost running dur 1600ms iter Infinity at 1333ms
+ghost 375-light at +1207 ms: opacity 0.481 | egg-ghost running dur 1600ms iter Infinity at 1733ms
+ghost 375-dark at +7 ms: opacity 0.873 | egg-ghost running dur 1600ms iter Infinity at 533ms
+ghost 375-dark at +409 ms: opacity 0.969 | egg-ghost running dur 1600ms iter Infinity at 933ms
+ghost 375-dark at +808 ms: opacity 0.577 | egg-ghost running dur 1600ms iter Infinity at 1333ms
+ghost 375-dark at +1211 ms: opacity 0.481 | egg-ghost running dur 1600ms iter Infinity at 1733ms
+ghost 1280-light at +5 ms: opacity 0.903 | egg-ghost running dur 1600ms iter Infinity at 567ms
+ghost 1280-light at +407 ms: opacity 0.951 | egg-ghost running dur 1600ms iter Infinity at 967ms
+ghost 1280-light at +805 ms: opacity 0.547 | egg-ghost running dur 1600ms iter Infinity at 1367ms
+ghost 1280-light at +1206 ms: opacity 0.499 | egg-ghost running dur 1600ms iter Infinity at 1767ms
+ghost 1280-dark at +8 ms: opacity 0.873 | egg-ghost running dur 1600ms iter Infinity at 533ms
+ghost 1280-dark at +406 ms: opacity 0.969 | egg-ghost running dur 1600ms iter Infinity at 933ms
+ghost 1280-dark at +805 ms: opacity 0.577 | egg-ghost running dur 1600ms iter Infinity at 1333ms
+ghost 1280-dark at +1205 ms: opacity 0.481 | egg-ghost running dur 1600ms iter Infinity at 1733ms

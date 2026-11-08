@@ -7,6 +7,8 @@ import { managerHrefFrom, managerHrefOrNull } from "@cpc/league/hrefs";
 export const homeHref = () => "/";
 export const rankingsHref = () => "/rankings/";
 export const analyzeHref = () => "/analyze/";
+/* The egg board of a client of the eggs package. */
+export const eggsHref = () => "/eggs/";
 /* The week is the folder name, such as week-06, as the published folders name it. */
 export const weekHref = (season: string, week: string) => `/${season}/${week}/`;
 export const waiverHref = (season: string, week: string) => `${weekHref(season, week)}waiver/`;

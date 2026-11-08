@@ -1,0 +1,18 @@
+$ cd apps/pipeline && make egg-draft CLIENT=cpc WEEK=8 EGGS_FILE=<temp file outside the repo>
+uv run --exact --package cornerstone cornerstone egg-draft --client cpc --season 2026 --week 8 --eggs-file <scratchpad>/at20-eggs.toml
+Wrote 6 spots of week 8 to <scratchpad>/at20-eggs.toml, each marked not confirmed.
+Keep, change, or reject each spot. Set confirmed = true on each spot to drop.
+exit 0
+seconds 95
+
+# The egg file after the draft. The page, the target, and the reason of each proposed spot are cut, because each is a real candidate spot.
+# Spots before the draft (T1 to T4, weeks 9 and 10): 4. Spots of week 8 after the draft: 6.
+spot 1: week 8, action hold3, condition names ['open'], reason present: True, reason length 158, confirmed = false, repeats a page and target of T1 to T4: False
+spot 2: week 8, action tap4, condition names ['open', 'theme'], reason present: True, reason length 174, confirmed = false, repeats a page and target of T1 to T4: False
+spot 3: week 8, action tap3, condition names ['sim_seeds'], reason present: True, reason length 167, confirmed = false, repeats a page and target of T1 to T4: False
+spot 4: week 8, action hold1, condition names ['open', 'weekday'], reason present: True, reason length 160, confirmed = false, repeats a page and target of T1 to T4: False
+spot 5: week 8, action tap3, condition names ['open'], reason present: True, reason length 133, confirmed = false, repeats a page and target of T1 to T4: False
+spot 6: week 8, action hold5, condition names ['theme'], reason present: True, reason length 178, confirmed = false, repeats a page and target of T1 to T4: False
+# Targets of T1 to T4: ['luck-3', 'number-closest', 'number-median', 'sim-trophy']
+# Any spot of week 8 on the same page and target as T1 to T4: False
+# Any list condition written as a TOML array: True

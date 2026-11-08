@@ -1,0 +1,6 @@
+claim 375-light: board found before 0; card text: CLAIMED | LIL FRIDGE | 1 | /11 | C | C goes to CORNERSTONE. | 10 letters to go for the $50. | Back to the page | See the egg board
+claim 375-dark: board found before 0; card text: CLAIMED | LIL FRIDGE | 1 | /11 | C | C goes to CORNERSTONE. | 10 letters to go for the $50. | Back to the page | See the egg board
+claim 768-light: board found before 0; card text: CLAIMED | LIL FRIDGE | 1 | /11 | C | C goes to CORNERSTONE. | 10 letters to go for the $50. | Back to the page | See the egg board
+claim 768-dark: board found before 0; card text: CLAIMED | LIL FRIDGE | 1 | /11 | C | C goes to CORNERSTONE. | 10 letters to go for the $50. | Back to the page | See the egg board
+claim 1280-light: board found before 0; card text: CLAIMED | LIL FRIDGE | 1 | /11 | C | C goes to CORNERSTONE. | 10 letters to go for the $50. | Back to the page | See the egg board
+claim 1280-dark: board found before 0; card text: CLAIMED | LIL FRIDGE | 1 | /11 | C | C goes to CORNERSTONE. | 10 letters to go for the $50. | Back to the page | See the egg board

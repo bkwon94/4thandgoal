@@ -1,0 +1,7 @@
+60 checks from 127.0.0.1: the 60th answered 200. The 61st answered 429 with Retry-After 3600.
+375-light: LIMIT | 60 | MINUTES LEFT | The eggs need a rest. | Try again in 60 minutes. | Back to the page
+375-dark: LIMIT | 60 | MINUTES LEFT | The eggs need a rest. | Try again in 60 minutes. | Back to the page
+768-light: LIMIT | 60 | MINUTES LEFT | The eggs need a rest. | Try again in 60 minutes. | Back to the page
+768-dark: LIMIT | 60 | MINUTES LEFT | The eggs need a rest. | Try again in 60 minutes. | Back to the page
+1280-light: LIMIT | 60 | MINUTES LEFT | The eggs need a rest. | Try again in 60 minutes. | Back to the page
+1280-dark: LIMIT | 60 | MINUTES LEFT | The eggs need a rest. | Try again in 60 minutes. | Back to the page

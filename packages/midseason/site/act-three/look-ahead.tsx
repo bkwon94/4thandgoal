@@ -9,6 +9,7 @@ import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
 import { WordTag } from "../report/word-tag";
 import type { LookAheadChapter, TeamLookAhead } from "../schema/midseason-types";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 /* A win rate in the box-score form, such as ".440", or "1.000" for a perfect rate. */
 export const rateText = (rate: number) => (rate >= 1 ? "1.000" : `.${String(Math.round(rate * 1000)).padStart(3, "0")}`);
@@ -37,6 +38,7 @@ function Row({ team, end }: { team: TeamLookAhead; end: "Softest" | "Hardest" | 
             <li
               key={game.week}
               data-week={game.week}
+              {...stableId("look-ahead", team.roster_id, game.week)}
               className={cn(
                 "flex flex-col rounded-report border px-sp-2 py-sp-1 text-meta leading-tight",
                 good ? "border-ink" : "border-rule",

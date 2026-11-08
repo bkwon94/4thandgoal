@@ -1,0 +1,4 @@
+A press on [data-stable-id="luck-3"] of /midseason/2026/, held 3531 ms from the pointer down to the pointer up. Checks sent by this press: 1
+body: {"page":"/midseason/2026/","target":"luck-3","action":"hold","conditions":{"theme":"light","open":["chip-rb"]}}
+A press on [data-stable-id="luck-3"] of /midseason/2026/, held 1510 ms from the pointer down to the pointer up. Checks sent by this press: 0
+Checks sent in all: 1

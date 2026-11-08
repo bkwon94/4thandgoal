@@ -1,12 +1,14 @@
 """
-The settings of the API app: the passphrase of each client, the repo, the result cache directory, and the origins.
-Settings.from_env reads them from the environment, so the deploy sets them as secrets and variables.
+The settings of the API app: the passphrase and the commissioner key of each client, the repo, the result cache
+directory, the eggs directory, and the origins. Settings.from_env reads them from the environment, so the deploy sets
+them as secrets and variables.
 """
 import os
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from eggs.keys import commissioner_key_env
 from league.paths import results_cache_dir
 
 # The site of each client at its Worker, the old CPC host for a page that a reader still has open, and the two local dev servers.
@@ -36,12 +38,19 @@ class Settings:
     allowed_origins: tuple[str, ...] = DEFAULT_ORIGINS
     # The count of requests per minute and address. Only an evidence run sets a different one.
     rate_limit_per_minute: int = RATE_LIMIT_PER_MINUTE
+    # The commissioner key of each client of the eggs package, by slug. The drop and the undo need it. It is apart
+    # from the passphrase, because every manager knows the passphrase. Kept out of the repr, as each passphrase is.
+    commissioner_keys: Mapping[str, str] = field(default_factory=dict, repr=False)
+    # The folder of the SQLite file of the egg hunt of each client. On Fly it sits on the volume at /data.
+    eggs_dir: Path | None = None
 
     @classmethod
-    def from_env(cls, slugs: Iterable[str]) -> "Settings":
-        """The settings from the environment for the clients `slugs`. Each client reads passphrase_env(slug).
+    def from_env(cls, slugs: Iterable[str], egg_slugs: Iterable[str] = ()) -> "Settings":
+        """The settings from the environment for the clients `slugs`. Each client reads passphrase_env(slug), and each
+        client of the eggs package in `egg_slugs` reads commissioner_key_env(slug) too.
 
         A client with no passphrase stops the start, so no client runs open and none falls back to another one.
+        A client of the eggs package with no commissioner key stops the start, so no drop runs open.
         """
         passphrases = {}
         for slug in slugs:
@@ -50,7 +59,15 @@ class Settings:
             if not passphrase:
                 raise RuntimeError(f"Set {name} before the API starts.")
             passphrases[slug] = passphrase
+        keys = {}
+        for slug in egg_slugs:
+            name = commissioner_key_env(slug)
+            key = os.environ.get(name)
+            if not key:
+                raise RuntimeError(f"Set {name} before the API starts.")
+            keys[slug] = key
         repo = repo_from_env()
+        eggs = os.environ.get("CORNERSTONE_EGGS_DIR")
         cache = os.environ.get("CORNERSTONE_RESULT_CACHE_DIR")
         origins = os.environ.get("CORNERSTONE_ALLOWED_ORIGINS")
         return cls(
@@ -59,12 +76,19 @@ class Settings:
             result_cache_dir=Path(cache) if cache else results_cache_dir(repo),
             allowed_origins=tuple(o.strip() for o in origins.split(",")) if origins else DEFAULT_ORIGINS,
             rate_limit_per_minute=rate_limit_from_env(),
+            commissioner_keys=keys,
+            eggs_dir=Path(eggs) if eggs else None,
         )
 
 
 def passphrase_env(slug: str) -> str:
     """The env value of the passphrase of the client `slug`, such as CORNERSTONE_PASSPHRASE_CPC for cpc."""
     return f"CORNERSTONE_PASSPHRASE_{slug.upper()}"
+
+
+def eggs_dir(settings: Settings) -> Path:
+    """The folder of the SQLite files of the egg hunts. With no CORNERSTONE_EGGS_DIR, it is data/eggs of the repo."""
+    return settings.eggs_dir or settings.repo / "data" / "eggs"
 
 
 def repo_from_env() -> Path:

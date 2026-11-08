@@ -8,6 +8,7 @@ import { thousands } from "@cpc/design/format/format";
 import { PhotoFrame } from "@cpc/design/parts/photo-frame";
 import { enter, type Pace } from "./pace";
 import type { Champion } from "./season";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 /* The rays: thin wedges of the accent around the avatar, as a conic gradient. */
 const RAYS = "repeating-conic-gradient(from 0deg, var(--color-accent) 0deg 4deg, transparent 4deg 18deg)";
@@ -62,6 +63,7 @@ export function ChampionCard({
         <motion.span
           data-trophy
           aria-hidden="true"
+          {...stableId("sim-trophy")}
           {...enter(pace, { y: -24 }, { spring: true, delay: 0.35 })}
           className="absolute top-0 left-1/2 -translate-x-1/2 text-accent-text"
         >

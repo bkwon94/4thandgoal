@@ -1,0 +1,9 @@
+The replay runs. Two taps on [data-stable-id="sim-row-3"], 250 ms apart, and the frame read before and after each tap.
+Each line: the live line of the replay, a mark of the DOM node (a new number is a new node), the place of the row, and its text.
+read 0: {"live":"","node":0.01334586348867206,"place":2,"text":"02Lil Fridge13-71139.2"}
+read 1: {"live":"","node":0.01334586348867206,"place":2,"text":"02Lil Fridge13-71139.2"}
+read 2: {"live":"","node":0.01334586348867206,"place":2,"text":"02Lil Fridge13-71139.2"}
+read 3: {"live":"","node":0.01334586348867206,"place":2,"text":"02Lil Fridge13-71139.2"}
+read 4: {"live":"","node":0.01334586348867206,"place":2,"text":"02Lil Fridge13-71139.2"}
+Checks sent: 1
+body: {"page":"/midseason/2026/","target":"sim-row-3","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}

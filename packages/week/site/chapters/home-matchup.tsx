@@ -7,6 +7,7 @@ import { Hero } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
 import type { AvatarMap, Pick } from "../schema/week-types";
 import { TeamRow } from "./matchup-of-the-week";
+import { textId } from "@cpc/design/lib/stable-id";
 
 /* The week number with two digits, as the week chip writes it: "08". */
 const twoDigits = (week: number) => String(week).padStart(2, "0");
@@ -56,7 +57,7 @@ export function HomeMatchup({
         <TeamRow side={second} avatars={avatars} lead={false} withTop={false} />
       </Rise>
       <Rise step={3}>
-        <p className="plate mt-sp-5 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2">{firstSentence(blurb)}</p>
+        <p className="plate mt-sp-5 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2" {...textId("blurb", firstSentence(blurb))}>{firstSentence(blurb)}</p>
         {/* A full pill and a 44px tap target, in the brand color, as the week button of the 404 page. */}
         <a
           href={href}
