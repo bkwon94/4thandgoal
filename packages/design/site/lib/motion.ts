@@ -27,8 +27,6 @@ export const DRIFT_EASE = "easeInOut";
 export const DURATION = {
   // The content of a page in the look rises in once, in a stagger (ADR 0024).
   rise: 0.7,
-  // A recap of a game card opens (ADR 0024).
-  recap: 0.3,
   // The content of the route fades and rises in once.
   page: 0.3,
   // A picker list opens or closes. A layout change needs a little more time than a press.

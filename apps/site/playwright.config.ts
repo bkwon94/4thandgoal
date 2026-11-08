@@ -23,5 +23,8 @@ export default defineConfig({
     { name: "floor", testMatch: "floor.spec.ts" },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
     { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },
+    // The project "open-card" checks find-in-page and the frame rate of the Open card on the export of cpc, with motion on.
+    // It records evidence for ADR 0028, so no check of CI runs it.
+    { name: "open-card", testMatch: "open-card.spec.ts", use: { reducedMotion: "no-preference" } },
   ],
 });

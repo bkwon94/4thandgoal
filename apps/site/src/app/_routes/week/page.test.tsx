@@ -188,7 +188,8 @@ describe("WeekPage order of week 8 (AT-16)", () => {
   it("links each open recap to one manager page of the season", async () => {
     await renderWeek8();
     const recap = document.getElementById("recap-3")!;
-    expect(recap.querySelectorAll("a")).toHaveLength(0);
+    // The closed recap stays in the DOM for find-in-page, and hidden="until-found" keeps its link out of the tab order.
+    expect(recap.getAttribute("hidden")).toBe("until-found");
     act(() => {
       screen
         .getAllByRole("button")

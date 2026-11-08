@@ -22,7 +22,8 @@ import { TradeForm } from "@cpc/analyzer/form/trade-form";
 import { waiver } from "@/fixtures/waiver";
 import { WarChest } from "@cpc/waiver/war-chest";
 import { TeamPicker } from "@cpc/analyzer/form/team-picker";
-import { week6 } from "@cpc/week/fixtures/week-page";
+import { week6, week8 } from "@cpc/week/fixtures/week-page";
+import { AllMatchups } from "@cpc/week/chapters/all-matchups";
 
 vi.stubGlobal(
   "matchMedia",
@@ -154,6 +155,24 @@ describe("Reduced motion on the power rankings", () => {
       },
       { timeout: 50 },
     );
+  });
+});
+
+describe("Reduced motion on the Open card", () => {
+  it("opens and closes a game card at once, with no height change, no blur, and no spring", () => {
+    render(<AllMatchups matchups={week8.matchups} avatars={week8.avatars} managersHref="/2026/managers/" />);
+    const button = screen.getAllByRole("button").find((each) => !each.hasAttribute("aria-label") && each.textContent?.includes("All You Need Is Love"))!;
+    const card = button.closest<HTMLElement>(".open-card")!;
+    const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
+    // Every duration of the drawer, the blur, the rise, and the chevron reads --oc-dur, so 0s ends each one at once.
+    expect(card.style.getPropertyValue("--oc-dur")).toBe("0s");
+    fireEvent.click(button);
+    expect(card.dataset.open).toBe("true");
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    // With motion off the close hides the panel in the same tap. The closed card waits on no timer.
+    fireEvent.click(button);
+    expect(card.dataset.open).toBe("false");
+    expect(panel.getAttribute("hidden")).toBe("until-found");
   });
 });
 
