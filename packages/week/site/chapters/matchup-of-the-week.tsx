@@ -5,6 +5,7 @@
 import { num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
 import { Hero } from "@cpc/design/parts/hero";
+import type { HeroScene } from "@cpc/design/parts/scene-math";
 import { PhotoFrame } from "@cpc/design/parts/photo-frame";
 import { Rise } from "@cpc/design/parts/rise";
 import type { AvatarMap, HeadshotMap, MatchupSide, Pick } from "../schema/week-types";
@@ -76,6 +77,7 @@ export function MatchupOfTheWeek({
   avatars,
   headshots,
   blurb,
+  scene,
 }: {
   week: number;
   dates: string;
@@ -84,6 +86,8 @@ export function MatchupOfTheWeek({
   avatars: AvatarMap;
   headshots: HeadshotMap;
   blurb: string;
+  // The scene of the week. The week page passes it, because this hero is the first hero of the page.
+  scene?: HeroScene;
 }) {
   // The JSON puts the winner first. A tie has no winner, and the first side still leads the hero.
   const [first, second] = pick.sides;
@@ -95,6 +99,7 @@ export function MatchupOfTheWeek({
         label="Matchup of the Week"
         eyebrow={`Week ${twoDigits(week)} // Matchup of the Week`}
         title={matchupTitle(pick)}
+        scene={scene}
         // One string, so React writes one text node and the browser kerns the line as one run.
         meta={`${dates} · Published ${publishDate}`}
         feature={

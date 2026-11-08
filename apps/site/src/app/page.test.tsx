@@ -49,6 +49,14 @@ describe("HomePage", () => {
     expect(read.getAttribute("href")).toBe("/2026/week-08/");
   });
 
+  it("has exactly one scene, in the hero of the Matchup, when no report takes over the top (AT-35)", async () => {
+    const Home = await homeOfCpcWithoutReport();
+    const { container } = render(<Home />);
+    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
+    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+
   it("names the season and the league in the intro", () => {
     render(<HomePage />);
     expect(screen.getByText(`${season} // League Weekly`)).toBeTruthy();

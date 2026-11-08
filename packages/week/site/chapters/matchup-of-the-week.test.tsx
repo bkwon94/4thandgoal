@@ -5,15 +5,17 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { firstSentence, week8 } from "../fixtures/week-page";
+import { matchupScene } from "../parts/matchup-scene";
 import { MatchupOfTheWeek } from "./matchup-of-the-week";
 
 afterEach(() => {
   cleanup();
 });
 
-function renderHero(avatars = week8.avatars, headshots = week8.headshots) {
+function renderHero(avatars = week8.avatars, headshots = week8.headshots, scene?: ReturnType<typeof matchupScene>) {
   render(
     <MatchupOfTheWeek
+      scene={scene}
       week={week8.week}
       dates={week8.dates}
       publishDate={week8.publish_date}
@@ -27,6 +29,15 @@ function renderHero(avatars = week8.avatars, headshots = week8.headshots) {
 }
 
 describe("MatchupOfTheWeek", () => {
+  it("draws the scene of the week in its hero when the page passes it, as the first hero of the page (AT-15)", () => {
+    const hero = renderHero(week8.avatars, week8.headshots, matchupScene(week8));
+    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+
+  it("draws no scene when the page passes none, so the hero keeps the static grid", () => {
+    expect(renderHero().querySelector("canvas")).toBeNull();
+  });
+
   it("is the hero of the page, with the winner by the margin in words as the page heading (AT-10)", () => {
     const hero = renderHero();
     // CPC week 8: The Blue Tent over London Cooking, 100.31 to 98.88.

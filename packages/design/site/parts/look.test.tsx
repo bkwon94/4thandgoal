@@ -8,6 +8,7 @@ import { Card } from "./card";
 import { Hero } from "./hero";
 import { PhotoFrame, initialsOf } from "./photo-frame";
 import { Rise } from "./rise";
+import type { HeroScene } from "./scene-math";
 import { Tile } from "./tile";
 
 /* jsdom has no matchMedia, and Framer Motion reads it. The stub matches no query. */
@@ -27,6 +28,18 @@ vi.stubGlobal(
 );
 
 afterEach(() => cleanup());
+
+/* A small scene of two lights, as a page passes it to its first hero. */
+const SCENE: HeroScene = {
+  lights: [
+    { x: 0, y: 98.88, label: "London Cooking · 98.88", tone: "flare" },
+    { x: 1, y: 100.31, label: "The Blue Tent · 100.31", tone: "flare" },
+  ],
+  guides: [],
+  margin: { from: 1, to: 0, text: "+1.43" },
+  restIndex: 1,
+  mode: "settle",
+};
 afterAll(() => vi.unstubAllGlobals());
 
 describe("Hero", () => {
@@ -98,6 +111,21 @@ describe("Hero slots", () => {
     expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
     // The level changes the element, not the look.
     expect(h2.className).toBe(h1.className);
+  });
+  it("draws no scene with no scene, so the hero keeps the static grid", () => {
+    const { container } = render(<Hero label="Rank 1" title="Lil Fridge" />);
+    expect(container.querySelector("canvas")).toBeNull();
+  });
+
+  it("draws one scene canvas, hidden from a screen reader, and keeps the text of the slots as it is", () => {
+    const { container } = render(
+      <Hero label="Matchup of the Week" eyebrow="Week 08" title="The Blue Tent by 1.43" scene={SCENE} />,
+    );
+    const canvases = container.querySelectorAll("canvas");
+    expect(canvases).toHaveLength(1);
+    expect(canvases[0].closest("[aria-hidden='true']")).not.toBeNull();
+    expect(slotsOf(container)).toEqual(["eyebrow", "title"]);
+    expect(screen.getByRole("region", { name: "Matchup of the Week" }).textContent).toBe("Week 08The Blue Tent by 1.43");
   });
 });
 

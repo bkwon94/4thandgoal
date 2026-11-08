@@ -5,6 +5,7 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { week8 } from "../fixtures/week-page";
+import { matchupScene } from "../parts/matchup-scene";
 import { firstSentence, HomeMatchup } from "./home-matchup";
 
 afterEach(() => {
@@ -29,6 +30,25 @@ function renderHome() {
 }
 
 describe("HomeMatchup", () => {
+  it("draws the scene of the week when the home page passes it, so the home page has one scene (AT-35)", () => {
+    render(
+      <HomeMatchup
+        week={8}
+        pick={week8.pick}
+        avatars={{}}
+        blurb={week8.blurbs.motw}
+        href="/2026/week-08/"
+        scene={matchupScene(week8)}
+      />,
+    );
+    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
+    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+
+  it("draws no scene when the home page passes none", () => {
+    expect(renderHome().querySelector("canvas")).toBeNull();
+  });
+
   it("has the winner by the margin in words as its title, at level 2 under the h1 of the intro (AT-10)", () => {
     const hero = renderHome();
     // CPC week 8: The Blue Tent over London Cooking, 100.31 to 98.88.

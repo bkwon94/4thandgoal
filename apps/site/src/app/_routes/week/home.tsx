@@ -6,6 +6,7 @@ import { Blurb } from "@cpc/design/parts/blurb";
 import { Card } from "@cpc/design/parts/card";
 import { HomeMatchup } from "@cpc/week/chapters/home-matchup";
 import { WeekNumbers } from "@cpc/week/chapters/week-numbers";
+import { matchupScene } from "@cpc/week/parts/matchup-scene";
 import type { WeekSummary } from "@cpc/week/schema/week-types";
 import { latestAvatars } from "@/lib/data/rankings-data";
 import { listWeeks, listWeekSummaries, loadWeek } from "@/lib/data/week-data";
@@ -32,6 +33,8 @@ function latestWeekPart(): HomeSection[] {
             avatars={latestAvatars(Number(ref.season))}
             blurb={page.blurbs.motw}
             href={weekHref(ref.season, ref.week)}
+            // The top part shows only with no takeover, so this hero is then the first hero of the home page.
+            scene={matchupScene(page)}
           />
           {page.matchups.length > 0 && (
             <HomeChapter id="numbers" title={`Week ${page.week} in four numbers`}>

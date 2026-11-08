@@ -4,6 +4,8 @@
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";
+import { HeroSceneCanvas } from "./hero-scene";
+import type { HeroScene } from "./scene-math";
 
 /* The six hero slots, in the slot order. Only the title is required. An absent slot renders no element and no gap.
    Hero takes no children, so a page cannot pass free content and every hero keeps the one structure. */
@@ -21,6 +23,8 @@ type HeroSlots = {
   action?: ReactNode;
   // The level of the title element. The level changes the element, not the look.
   level?: 1 | 2;
+  // The data of the hero scene. The page sets it on its first hero only. A hero with no scene keeps the static grid.
+  scene?: HeroScene;
   children?: never;
 };
 
@@ -49,7 +53,7 @@ const META = "plate w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-b
    The title has the priority in the top row: the meta column takes the width of the meta up to 40 percent of the hero,
    so a long meta wraps and the title keeps its width. The action takes the free width of the bottom row, so content
    with no width of its own, such as the share bar, fills it. */
-function Slots({ eyebrow, title, meta, feature, stats, action, level = 1 }: HeroSlots) {
+function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene }: HeroSlots) {
   const Heading = level === 1 ? "h1" : "h2";
   return (
     <div className="flex flex-col gap-sp-6 tablet:grid tablet:grid-cols-[minmax(0,1fr)_fit-content(40%)] tablet:gap-x-sp-6">
@@ -66,6 +70,13 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1 }: Hero
       {meta !== undefined && (
         <div data-hero-slot="meta" className={cn(META, "tablet:col-start-2 tablet:justify-self-end")}>
           {meta}
+        </div>
+      )}
+      {/* The scene is a band at the top of the card on a phone, and fills the open middle from the tablet tier up.
+          It has its own row, so no light sits under text (decision 06). */}
+      {scene !== undefined && (
+        <div className="order-first tablet:order-none tablet:col-span-2">
+          <HeroSceneCanvas scene={scene} />
         </div>
       )}
       {feature !== undefined && (

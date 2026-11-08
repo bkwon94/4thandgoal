@@ -34,6 +34,9 @@ export type HeroScene = {
 /* The box of the scene in CSS pixels. No light sits closer to an edge than the padding. */
 export type SceneBox = { width: number; height: number; padding: number };
 
+/* The padding of the box of the canvas: 16px, so a light and the ring of a selected light stay inside the scene. */
+export const SCENE_PADDING = 16;
+
 /* The low and the high value of a list. A list of one value gets a span of one, so the scale never divides by zero. */
 function rangeOf(values: number[]): { low: number; span: number } {
   const low = Math.min(...values);
@@ -122,6 +125,62 @@ export function placeLabel(
   };
 }
 
+/* The square that a light takes, with the space that a label or a mark keeps around it, so no text sits on a dot. */
+function lightRect(point: ScenePoint): SceneRect {
+  return {
+    x: point.x - LIGHT_CLEARANCE,
+    y: point.y - LIGHT_CLEARANCE,
+    width: 2 * LIGHT_CLEARANCE,
+    height: 2 * LIGHT_CLEARANCE,
+  };
+}
+
+/*
+ * The rectangle of the label of the light at `index`, clear of every other light. The label first takes the side of
+ * `placeLabel`, then the other side, each level with its light, then under it, then over it. A label too long for
+ * either side on a narrow phone then sits under or over its light, held inside the box, and slides along the row
+ * until it is clear. Two close lights, such as
+ * the two teams of a close Matchup, then never hide a dot under a label. The label takes the place of `placeLabel`
+ * only when no place is clear.
+ */
+export function placeLightLabel(
+  points: ScenePoint[],
+  index: number,
+  size: SceneSize,
+  box: Pick<SceneBox, "width" | "height">,
+): SceneRect & { side: LabelSide } {
+  const point = points[index];
+  const first = placeLabel(point, size, box);
+  const others = points.filter((_, other) => other !== index).map(lightRect);
+  const sides: LabelSide[] = first.side === "right" ? ["right", "left"] : ["left", "right"];
+  const level = -size.height / 2;
+  const under = LIGHT_CLEARANCE;
+  const over = -LIGHT_CLEARANCE - size.height;
+  const beside = sides.flatMap((side) =>
+    [level, under, over].map((rise) => ({
+      side,
+      x: side === "right" ? point.x + LABEL_GAP : point.x - LABEL_GAP - size.width,
+      y: point.y + rise,
+    })),
+  );
+  // Under or over its light, the label never covers its own dot, so it may slide along the row. It starts centered on
+  // the light and slides out by the gap in each step, then tries one row farther from the light.
+  const centered = clamp(point.x - size.width / 2, 0, box.width - size.width);
+  const slides: number[] = [];
+  for (let x = 0; x <= box.width - size.width; x += LABEL_GAP) slides.push(x);
+  slides.sort((a, b) => Math.abs(a - centered) - Math.abs(b - centered));
+  const rows = [under, over, under + size.height, over - size.height];
+  const around = rows.flatMap((rise) =>
+    [centered, ...slides].map((x) => ({ side: first.side, x, y: point.y + rise })),
+  );
+  for (const place of [...beside, ...around]) {
+    const label = { ...place, width: size.width, height: size.height };
+    const inside = label.x >= 0 && label.y >= 0 && label.x + label.width <= box.width && label.y + label.height <= box.height;
+    if (inside && !others.some((rect) => overlaps(label, rect))) return label;
+  }
+  return first;
+}
+
 /* The font of a label and of the margin mark: the mono meta size of 12px. */
 export const LABEL_FONT_PX = 12;
 
@@ -161,13 +220,7 @@ export function placeMarginMark(
   const bottom = Math.max(a.y, b.y);
   const left = Math.min(a.x, b.x);
   const right = Math.max(a.x, b.x);
-  const lights = points.map((point) => ({
-    x: point.x - LIGHT_CLEARANCE,
-    y: point.y - LIGHT_CLEARANCE,
-    width: 2 * LIGHT_CLEARANCE,
-    height: 2 * LIGHT_CLEARANCE,
-  }));
-  const blocked = [...labels, ...lights];
+  const blocked = [...labels, ...points.map(lightRect)];
 
   const step = size.height;
   const farthest = Math.max(box.width, box.height);
@@ -185,4 +238,96 @@ export function placeMarginMark(
     }
   }
   return null;
+}
+
+/* The caption that tells a reader the scene takes a tap or a slide (story 33). */
+export const HINT_TEXT = "TAP OR SLIDE";
+
+/* The space in pixels between the hint and the corner of the box. */
+const HINT_INSET = 8;
+
+/* Everything that the canvas draws at rest, in the pixels of one box. The page box changes only on a resize. */
+export type SceneLayout = {
+  points: ScenePoint[];
+  guides: SceneGuide[];
+  // The label of each light, in the order of the lights. The canvas shows one at a time: the selected light or the light at rest.
+  labels: (SceneRect & { side: LabelSide })[];
+  // The label of each guide, at one end of its line.
+  guideLabels: SceneRect[];
+  mark: SceneRect | null;
+  hint: SceneRect | null;
+};
+
+/*
+ * The label of a guide at one end of its line: over the left end, over the right end, under the left end, or under the
+ * right end, whichever first is clear of `blocked`. It takes the first place, held inside the box, when none is clear.
+ */
+function placeGuideLabel(
+  guide: SceneGuide,
+  size: SceneSize,
+  blocked: SceneRect[],
+  box: Pick<SceneBox, "width" | "height">,
+): SceneRect {
+  const ends = [...guide.points].sort((a, b) => a.x - b.x);
+  const left = ends[0];
+  const right = ends[ends.length - 1];
+  const over = (point: ScenePoint) => point.y - LABEL_GAP / 2 - size.height;
+  const under = (point: ScenePoint) => point.y + LABEL_GAP / 2;
+  const places = [
+    { x: left.x, y: over(left) },
+    { x: right.x - size.width, y: over(right) },
+    { x: left.x, y: under(left) },
+    { x: right.x - size.width, y: under(right) },
+  ].map((place) => ({
+    x: clamp(place.x, 0, box.width - size.width),
+    y: clamp(place.y, 0, box.height - size.height),
+    width: size.width,
+    height: size.height,
+  }));
+  return places.find((place) => !blocked.some((rect) => overlaps(place, rect))) ?? places[0];
+}
+
+/* The hint in the first corner that no light and no other text takes: top left, top right, bottom right, bottom left. */
+function placeHint(size: SceneSize, blocked: SceneRect[], box: Pick<SceneBox, "width" | "height">): SceneRect | null {
+  const left = HINT_INSET;
+  const right = box.width - HINT_INSET - size.width;
+  const top = HINT_INSET;
+  const bottom = box.height - HINT_INSET - size.height;
+  const corners = [
+    { x: left, y: top },
+    { x: right, y: top },
+    { x: right, y: bottom },
+    { x: left, y: bottom },
+  ];
+  for (const corner of corners) {
+    const hint = { ...corner, width: size.width, height: size.height };
+    if (!blocked.some((rect) => overlaps(hint, rect))) return hint;
+  }
+  return null;
+}
+
+/*
+ * The layout of a scene in one box. The margin mark comes once from the labels of its two ends and the label at rest,
+ * so it stays in place when the winner or the loser is selected. The canvas passes `measureText` as `measure`.
+ */
+export function layoutScene(
+  scene: HeroScene,
+  box: SceneBox,
+  measure: (text: string) => SceneSize = (text) => estimateTextSize(text),
+): SceneLayout {
+  const points = placeLights(scene, box);
+  const guides = placeGuides(scene, box);
+  const labels = scene.lights.map((light, index) => placeLightLabel(points, index, measure(light.label), box));
+  const ends = scene.margin ? [scene.margin.from, scene.margin.to] : [];
+  const shown = [...new Set([...ends, ...(scene.restIndex === null ? [] : [scene.restIndex])])].map((index) => labels[index]);
+  const mark = scene.margin ? placeMarginMark(points, scene.margin, measure(scene.margin.text), shown, box) : null;
+  // The label of each guide keeps clear of the lights, the labels that show most, the mark, and each guide label before it.
+  const blocked = [...points.map(lightRect), ...shown, ...(mark ? [mark] : [])];
+  const guideLabels: SceneRect[] = [];
+  for (const guide of guides) {
+    const label = placeGuideLabel(guide, measure(guide.label), [...blocked, ...guideLabels], box);
+    guideLabels.push(label);
+  }
+  const hint = placeHint(measure(HINT_TEXT), [...blocked, ...guideLabels], box);
+  return { points, guides, labels, guideLabels, mark, hint };
 }
