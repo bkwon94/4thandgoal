@@ -10,9 +10,9 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-14, AT-15, AT-16, AT-18
 
 **Status:** ready-for-agent
 
-- [ ] The CPC week 8 Top score tile shows 134.1 and bars 156.92, 156.52, 140.6, 145.63, 158.96, 126.79, 148.13, and 134.1, with week 8 lit.
-- [ ] The CPC Median trend ends at 99.6, and the NorCal Median trend ends at the number of the NorCal tile.
-- [ ] The week 6 page shows six bars and no later week.
-- [ ] A unit test of the series function covers both median sources.
-- [ ] Closest and Game Changer show no chart.
-- [ ] `make check-fast` passes.
+- [x] The CPC week 8 Top score tile shows 134.1 and bars 156.92, 156.52, 140.6, 145.63, 158.96, 126.79, 148.13, and 134.1, with week 8 lit.
+- [x] The CPC Median trend ends at 99.6, and the NorCal Median trend ends at the number of the NorCal tile.
+- [x] The week 6 page shows six bars and no later week.
+- [x] A unit test of the series function covers both median sources.
+- [x] Closest and Game Changer show no chart.
+- [x] `make check-fast` passes.

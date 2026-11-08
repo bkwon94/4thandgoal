@@ -6,7 +6,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { managersHref } from "../routes";
 import { managersFileSchema } from "@cpc/managers/schema/managers";
-import type { Manager, ManagerEntry, Managers } from "@cpc/managers/schema/manager-types";
+import type { Manager, ManagerEntry, Managers, SeasonWeek } from "@cpc/managers/schema/manager-types";
 import { clientValues } from "../../generated/client-values";
 import { readPublished } from "./published-file";
 import { latestSeason, loadRankings } from "./rankings-data";
@@ -69,4 +69,12 @@ export function currentManagersHref(): string | null {
    Only the latest season builds the managers routes, so a page of an older season gets null and plain names. */
 export function seasonManagersHref(season: string): string | null {
   return season === latestSeason() ? currentManagersHref() : null;
+}
+
+/* The saved weeks of every team of a season, one list per team, for the Trend tiles of the week page of that season.
+   An older season keeps its own managers file, so its pages read it and not the latest file. No file gives null. */
+export function loadSeasonWeeks(season: string): SeasonWeek[][] | null {
+  const file = join(process.cwd(), "public", season, "managers.json");
+  const data = readPublished(file, SCHEMA_VERSION, managersFileSchema);
+  return data === null ? null : data.managers.map((entry) => entry.weeks);
 }
