@@ -5,13 +5,13 @@
     "timesFromNavigationStart": [
       {
         "target_ms": 300,
-        "shot_start_ms": 311,
-        "shot_end_ms": 470
+        "shot_start_ms": 307,
+        "shot_end_ms": 448
       },
       {
         "target_ms": 800,
-        "shot_start_ms": 809,
-        "shot_end_ms": 969
+        "shot_start_ms": 807,
+        "shot_end_ms": 924
       }
     ],
     "cssAnimationsInHeroAt08s": []
@@ -22,13 +22,13 @@
     "timesFromNavigationStart": [
       {
         "target_ms": 300,
-        "shot_start_ms": 309,
-        "shot_end_ms": 470
+        "shot_start_ms": 312,
+        "shot_end_ms": 463
       },
       {
         "target_ms": 800,
-        "shot_start_ms": 813,
-        "shot_end_ms": 964
+        "shot_start_ms": 807,
+        "shot_end_ms": 925
       }
     ],
     "cssAnimationsInHeroAt08s": []

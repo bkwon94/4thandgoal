@@ -1,0 +1,20 @@
+[
+  {
+    "page": "week",
+    "route": "/2026/week-08/",
+    "heroLabel": "Matchup of the Week",
+    "titleTopPx": 59,
+    "titleBottomPx": 167,
+    "sceneTopPx": 268,
+    "sceneHeightPx": 130
+  },
+  {
+    "page": "manager",
+    "route": "/2026/managers/7/",
+    "heroLabel": "To Infinity and Bijan",
+    "titleTopPx": 59,
+    "titleBottomPx": 167,
+    "sceneTopPx": 245,
+    "sceneHeightPx": 130
+  }
+]

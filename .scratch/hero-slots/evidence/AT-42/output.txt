@@ -1,6 +1,29 @@
-$ git diff --stat main -- apps/pipeline clients
+$ git fetch origin main; git rev-parse --short HEAD; git rev-parse --short main; git rev-parse --short origin/main
+6cb285d8
+df2c08c0
+25f98a02
+
+$ git merge-base --is-ancestor origin/main HEAD && echo yes
+yes
+
+# The local branch main is stale at df2c08c0. origin/main at 25f98a02 holds the easter eggs (#19), and the spec branch merged it.
+
+$ git diff --stat origin/main -- apps/pipeline clients
 (exit 0; empty output means no file changed)
 
-$ git rev-parse --short HEAD; git rev-parse --short main
-c1a7c91c
-df2c08c0
+$ git diff --stat main -- apps/pipeline clients   # the stale local main, so it also shows the changes of #19
+ apps/pipeline/Makefile                        | 29 ++++++++++++-
+ apps/pipeline/pyproject.toml                  | 13 +++---
+ apps/pipeline/src/cornerstone/cli.py          | 33 +++++++++++++-
+ apps/pipeline/src/cornerstone/egg_draft.py    | 39 +++++++++++++++++
+ apps/pipeline/src/cornerstone/egg_drop.py     | 62 +++++++++++++++++++++++++++
+ apps/pipeline/src/cornerstone/value_models.py |  3 +-
+ apps/pipeline/tests/test_cli.py               | 31 +++++++++++++-
+ apps/pipeline/tests/test_client.py            | 12 +++---
+ apps/pipeline/tests/test_layers.py            |  2 +
+ clients/cpc/client.toml                       |  6 ++-
+ 10 files changed, 211 insertions(+), 19 deletions(-)
+(exit 0)
+
+$ git diff --stat df2c08c0 origin/main -- apps/pipeline clients   # the same files come from #19 on main
+ 10 files changed, 211 insertions(+), 19 deletions(-)

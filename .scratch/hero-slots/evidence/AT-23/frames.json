@@ -3,7 +3,7 @@
   "states": [
     {
       "state": "idle",
-      "ms_after_drift_entry": -14
+      "ms_after_drift_entry": -4
     },
     {
       "state": "drift",
@@ -13,12 +13,12 @@
   "frames": [
     {
       "target_ms": 2000,
-      "actual_ms": 2035,
+      "actual_ms": 2049,
       "state": "drift"
     },
     {
       "target_ms": 6000,
-      "actual_ms": 6026,
+      "actual_ms": 6014,
       "state": "drift"
     }
   ],

@@ -1,0 +1,12 @@
+{
+  "linkHref": "/2026/managers/2/",
+  "urlBefore": "http://127.0.0.1:4174/rankings/",
+  "urlAfter": "http://127.0.0.1:4174/2026/managers/2/",
+  "titleAfter": "All You Need Is Love",
+  "rank1InSource": {
+    "source": "apps/site/out/2026/rankings.json weeks[-1].rows[0]",
+    "rank": 1,
+    "roster_id": 2,
+    "name": "All You Need Is Love"
+  }
+}

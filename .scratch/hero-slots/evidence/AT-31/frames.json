@@ -4,17 +4,17 @@
     "states": [
       {
         "state": "idle",
-        "ms_after_navigation": 91
+        "ms_after_navigation": 90
       },
       {
         "state": "rest",
         "ms_after_navigation": 97
       }
     ],
-    "entry_ms_after_navigation": 91,
+    "entry_ms_after_navigation": 90,
     "frames": [
       {
-        "ms_after_entry": 110,
+        "ms_after_entry": 108,
         "state": "rest"
       },
       {
@@ -29,21 +29,21 @@
     "states": [
       {
         "state": "idle",
-        "ms_after_navigation": 82
+        "ms_after_navigation": 87
       },
       {
         "state": "rest",
-        "ms_after_navigation": 95
+        "ms_after_navigation": 96
       }
     ],
-    "entry_ms_after_navigation": 82,
+    "entry_ms_after_navigation": 87,
     "frames": [
       {
-        "ms_after_entry": 103,
+        "ms_after_entry": 111,
         "state": "rest"
       },
       {
-        "ms_after_entry": 2510,
+        "ms_after_entry": 2511,
         "state": "rest"
       }
     ],

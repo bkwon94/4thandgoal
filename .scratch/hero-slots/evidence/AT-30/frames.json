@@ -1,5 +1,5 @@
 {
-  "heroBottomWhenAwayPx": -5249.046875,
+  "heroBottomWhenAwayPx": -5273.046875,
   "states": [
     "idle",
     "settle",
@@ -10,7 +10,7 @@
   "frames": [
     {
       "target_ms": 500,
-      "actual_ms": 528,
+      "actual_ms": 524,
       "state": "settle",
       "sameAsRestBeforeLeave": false
     },

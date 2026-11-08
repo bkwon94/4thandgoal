@@ -5,8 +5,6 @@
 import { test, expect, type Page, type BrowserContext } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site/node_modules/@playwright/test/index.js";
 import { SCENE_PADDING, placeLights, nearestLight, type HeroScene, type ScenePoint } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/design/site/parts/scene-math.ts";
 import { matchupScene } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/week/site/parts/matchup-scene.ts";
-import { rankingsScene } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/rankings/site/chapters/rankings-scene.ts";
-import { midseasonScene } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/midseason/site/report/midseason-scene.ts";
 import { serveDir } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site/e2e/serve.ts";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -15,7 +13,9 @@ const W = "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slo
 const OUT = join(W, "apps/site/out");
 const EV = join(W, ".scratch/hero-slots/evidence");
 const CLIENT = process.env.CLIENT ?? "cpc";
-const BASE = "http://127.0.0.1:4173";
+// The analyzer tests need port 4173, the one origin the local API allows. Other tests may run on another port.
+const PORT = Number(process.env.EV_PORT ?? 4173);
+const BASE = `http://127.0.0.1:${PORT}`;
 const CANVAS = "canvas[data-hero-scene]";
 const HERO = 'section[aria-label]:has([data-hero-slot="title"])';
 const WIDTHS = [375, 768, 1280];
@@ -49,7 +49,7 @@ function save(id: string, name: string, data: unknown): void {
 
 let server: { url: string; close: () => Promise<void> };
 test.beforeAll(async () => {
-  server = await serveDir(OUT, 4173);
+  server = await serveDir(OUT, PORT);
 });
 test.afterAll(async () => {
   await server.close();
@@ -118,6 +118,18 @@ async function sceneReady(page: Page): Promise<void> {
   const first = (await statesOf(page)).find((s) => s.state === "settle" || s.state === "drift")!;
   if (first.state === "settle") await settled(page);
   else await until(page, first.at + 2500);
+}
+
+/* The art of a hero: its label, the art layers, the count of scene canvases in it, and the count on the page. */
+async function heroArt(hero: import("@playwright/test").Locator) {
+  return hero.evaluate((section) => ({
+    heroLabel: section.getAttribute("aria-label"),
+    texture: section.querySelectorAll('[data-hero-art="texture"]').length,
+    brackets: section.querySelectorAll('[data-hero-art="bracket"]').length,
+    textureBackground: getComputedStyle(section.querySelector('[data-hero-art="texture"]') ?? section).backgroundImage.slice(0, 160),
+    canvasesInHero: section.querySelectorAll("canvas[data-hero-scene]").length,
+    canvasesOnPage: document.querySelectorAll("canvas[data-hero-scene]").length,
+  }));
 }
 
 /* One frame of the canvas, drawn on the band color of the hero, written as a PNG. The capture runs in the page at once. */
@@ -366,7 +378,8 @@ test.describe("cpc", () => {
   test("AT-13 headings", async ({ browser }) => {
     const { context, page } = await fresh(browser, 375);
     await open(page, "/midseason/2026/", "dark");
-    await settled(page);
+    // The report has no scene, so the read waits a fixed time for the reveal.
+    await page.waitForTimeout(1500);
     const rows = await page.evaluate(() =>
       [...document.querySelectorAll('section[aria-label] [data-hero-slot="title"]')].map((h) => {
         const cs = getComputedStyle(h);
@@ -398,19 +411,44 @@ test.describe("cpc", () => {
 
   test("AT-16 settle time", async ({ browser }) => {
     const { context, page } = await fresh(browser, 375, { scale: 2 });
+    const times = [400, 800, 1800, 3300];
+    // The page itself takes each frame: at the first change to "settle" it sets one timer per time, and each timer reads
+    // the canvas pixels on the band color of the hero. A poll from outside the page lands too late for 0.4 s.
+    await page.addInitScript((marks) => {
+      const w = window as unknown as Record<string, unknown>;
+      const shots: { mark: number; at: number; entry: number; state: string; data: string; png: string }[] = [];
+      w.settleShots = shots;
+      let entry: number | null = null;
+      new MutationObserver((changes) => {
+        for (const change of changes) {
+          const canvas = change.target as HTMLCanvasElement;
+          if (entry === null && canvas.dataset.sceneState === "settle") {
+            entry = performance.now();
+            for (const mark of marks) {
+              setTimeout(() => {
+                const hero = canvas.closest("section") as HTMLElement;
+                const copy = document.createElement("canvas");
+                copy.width = canvas.width;
+                copy.height = canvas.height;
+                const ctx = copy.getContext("2d")!;
+                ctx.fillStyle = getComputedStyle(hero).backgroundColor;
+                ctx.fillRect(0, 0, copy.width, copy.height);
+                ctx.drawImage(canvas, 0, 0);
+                shots.push({ mark, at: performance.now(), entry: entry!, state: canvas.dataset.sceneState ?? "", data: canvas.toDataURL(), png: copy.toDataURL("image/png") });
+              }, mark);
+            }
+          }
+        }
+      }).observe(document, { subtree: true, attributeFilter: ["data-scene-state"] });
+    }, times);
     await open(page, WEEK, "dark");
-    const entry = await entryOf(page, "settle");
-    const rows = [];
-    let last = "";
-    for (const ms of [500, 1000, 2200]) {
-      await until(page, entry + ms);
-      const f = await frame(page, join(dir("AT-16"), `frame-${ms}ms-375-dark.png`));
-      rows.push({ target_ms: ms, actual_ms: Math.round(f.at - entry), state: f.state, sameAsPrevious: f.data === last });
-      last = f.data;
-    }
-    await page.waitForTimeout(1500);
-    const rest = await frame(page, join(dir("AT-16"), "frame-3700ms-375-dark.png"));
-    rows.push({ target_ms: 3700, actual_ms: Math.round(rest.at - entry), state: rest.state, sameAs2200: rest.data === last });
+    await expect.poll(() => page.evaluate(() => ((window as unknown as { settleShots: unknown[] }).settleShots).length), { timeout: 10000 }).toBe(times.length);
+    const shots = await page.evaluate(() => (window as unknown as { settleShots: { mark: number; at: number; entry: number; state: string; data: string; png: string }[] }).settleShots);
+    const entry = shots[0].entry;
+    const rows = shots.map((shot, index) => {
+      writeFileSync(join(dir("AT-16"), `frame-${shot.mark}ms-375-dark.png`), Buffer.from(shot.png.split(",")[1], "base64"));
+      return { target_ms: shot.mark, actual_ms: Math.round(shot.at - entry), state: shot.state, sameAsPrevious: index > 0 && shot.data === shots[index - 1].data };
+    });
     save("AT-16", "frames.json", { states: (await statesOf(page)).map((s) => ({ state: s.state, ms_after_settle_entry: Math.round(s.at - entry) })), frames: rows });
     await context.close();
   });
@@ -707,26 +745,84 @@ test.describe("cpc", () => {
 
   test("AT-35 one scene", async ({ browser }) => {
     const out: Record<string, unknown> = {};
-    for (const route of ["/", "/midseason/2026/"]) {
+    for (const route of [WEEK, "/", "/midseason/2026/", "/rankings/", "/analyze/"]) {
       const { context, page } = await fresh(browser, 375);
       await open(page, route, "dark");
-      await page.waitForTimeout(1500);
+      // The scroll to the end and back mounts each part of the page that loads on scroll, so the count sees the whole page.
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await page.waitForTimeout(800);
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForTimeout(800);
       out[route] = await page.evaluate(() => ({
         canvases: document.querySelectorAll("canvas[data-hero-scene]").length,
-        heroes: [...document.querySelectorAll("section[aria-label]")].filter((s) => s.querySelector('[data-hero-slot="title"]')).map((s) => ({ label: s.getAttribute("aria-label"), canvases: s.querySelectorAll("canvas[data-hero-scene]").length })),
+        heroes: [...document.querySelectorAll("section[aria-label]")].filter((s) => s.querySelector('[data-hero-slot="title"]')).map((s, index) => ({ index, label: s.getAttribute("aria-label"), canvases: s.querySelectorAll("canvas[data-hero-scene]").length })),
       }));
-      if (route !== "/") {
-        const acts = page.locator('section[aria-label^="Act "]');
-        const n = await acts.count();
-        for (let i = 0; i < n; i++) {
-          await acts.nth(i).scrollIntoViewIfNeeded();
-          await page.waitForTimeout(1200);
-          await acts.nth(i).screenshot({ path: join(dir("AT-35"), `act-${i + 1}-375-dark.png`) });
-        }
-      }
       await context.close();
     }
     save("AT-35", "counts.json", out);
+  });
+
+  test("AT-43 title first on a phone", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const [name, route] of [["week", WEEK], ["manager", MANAGER]] as const) {
+      const { context, page } = await fresh(browser, 375, { height: 1600 });
+      await open(page, route, "dark");
+      await sceneReady(page);
+      const hero = page.locator(HERO).first();
+      await hero.screenshot({ path: join(dir("AT-43"), `${name}-375-dark.png`) });
+      rows.push({
+        page: name,
+        route,
+        ...(await hero.evaluate((section) => {
+          const top = section.getBoundingClientRect().top;
+          const title = section.querySelector('[data-hero-slot="title"]')!.getBoundingClientRect();
+          const canvas = section.querySelector("canvas[data-hero-scene]")!;
+          const band = (canvas.parentElement as HTMLElement).getBoundingClientRect();
+          return {
+            heroLabel: section.getAttribute("aria-label"),
+            titleTopPx: Math.round(title.top - top),
+            titleBottomPx: Math.round(title.bottom - top),
+            sceneTopPx: Math.round(band.top - top),
+            sceneHeightPx: Math.round(band.height),
+          };
+        })),
+      });
+      await context.close();
+    }
+    save("AT-43", "places.json", rows);
+  });
+
+  test("AT-44 static heroes", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const [name, route] of [["rankings", "/rankings/"], ["midseason", "/midseason/2026/"], ["home", "/"]] as const) {
+      const { context, page } = await fresh(browser, 375, { height: 1600 });
+      await open(page, route, "dark");
+      await page.waitForTimeout(1500);
+      const hero = page.locator(HERO).first();
+      await hero.screenshot({ path: join(dir("AT-44"), `${name}-375-dark.png`) });
+      rows.push({ page: name, route, ...(await heroArt(hero)) });
+      await context.close();
+    }
+    save("AT-44", "heroes-static.json", rows);
+  });
+
+  test("AT-45 manager link", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375, { height: 1600 });
+    await open(page, "/rankings/", "dark");
+    await page.waitForTimeout(1500);
+    const hero = page.locator(HERO).first();
+    await hero.screenshot({ path: join(dir("AT-45"), "375-dark.png") });
+    const link = hero.locator('[data-hero-slot="action"] a', { hasText: "Manager page" }).first();
+    const href = await link.getAttribute("href");
+    const before = await page.evaluate(() => location.href);
+    await link.click();
+    await page.waitForURL((now) => now.href !== before);
+    await page.waitForLoadState("networkidle");
+    const after = await page.evaluate(() => ({ url: location.href, h1: document.querySelector('[data-hero-slot="title"]')?.textContent }));
+    const rankings = JSON.parse(readFileSync(join(OUT, "2026", "rankings.json"), "utf8"));
+    const first = rankings.weeks.at(-1).rows[0];
+    save("AT-45", "url.json", { linkHref: href, urlBefore: before, urlAfter: after.url, titleAfter: after.h1, rank1InSource: { source: "apps/site/out/2026/rankings.json weeks[-1].rows[0]", rank: first.rank, roster_id: first.roster_id, name: first.name } });
+    await context.close();
   });
 
   test("AT-36 grade popover", async ({ browser }) => {
@@ -807,48 +903,40 @@ async function gradeTradeA(page: Page): Promise<unknown> {
   return () => answer;
 }
 
-test.describe("cpc lights", () => {
-  test.skip(CLIENT !== "cpc", "cpc only");
-
-  /* Taps each light of the scene in turn and records what the rendered page shows for it. */
-  const cases = [
-    ["AT-19", "/rankings/", () => rankingsScene(JSON.parse(readFileSync(join(OUT, "2026", "rankings.json"), "utf8")).weeks.at(-1))!],
-    ["AT-22", "/midseason/2026/", () => midseasonScene(JSON.parse(readFileSync(join(OUT, "2026", "midseason.json"), "utf8")))!],
-  ] as const;
-  for (const [id, route, sceneOf] of cases) {
-    test(`${id} each light`, async ({ browser }) => {
-      const { context, page } = await fresh(browser, 1280);
-      await open(page, route, "dark");
-      await settled(page);
-      const scene = sceneOf();
-      const lights = await lightsOf(page, scene);
-      const rows: { index: number; label: string; x: number; y: number; pixel: string }[] = [];
-      for (const [index, light] of lights.entries()) {
-        // The pixel is read before the tap, so the ring of the selection does not cover it.
-        const pixel = await pixelAt(page, light);
-        const at = await onPage(page, light);
-        await page.mouse.click(at.x, at.y);
-        await page.waitForTimeout(150);
-        rows.push({ index, label: (await attrs(page)).label ?? "", x: Math.round(light.x * 10) / 10, y: Math.round(light.y * 10) / 10, pixel });
-      }
-      rows.sort((a, b) => a.x - b.x);
-      const size = await page.locator(CANVAS).first().evaluate((c) => `${c.clientWidth} x ${c.clientHeight}`);
-      const lines = [
-        `The lights of the scene of ${route}, cpc, 1280 px, dark theme, after the settle, in the order of x.`,
-        `Each light was tapped in turn. label is the data-scene-label of the canvas after the tap. x and y are CSS px in the canvas of ${size}. A smaller y is higher. pixel is the canvas color at the center of the light, read before the tap.`,
-        "",
-        "index\tlabel\tx\ty\tpixel",
-        ...rows.map((r) => `${r.index}\t${r.label}\t${r.x}\t${r.y}\t${r.pixel}`),
-        "",
-      ];
-      save(id, "lights.txt", lines.join("\n"));
-      await context.close();
-    });
-  }
-});
-
 test.describe("cpc analyzer", () => {
   test.skip(CLIENT !== "cpc", "cpc only");
+
+  test("AT-44 analyzer static", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375, { height: 1600 });
+    await open(page, "/analyze/", "dark");
+    await page.locator("input[type=password]").fill("localtest");
+    await page.locator("button[type=submit]").click();
+    await page.locator('button[aria-label="Pick Your Team"]').waitFor();
+    await page.waitForTimeout(1500);
+    await page.locator(HERO).first().screenshot({ path: join(dir("AT-44"), "analyze-before-375-dark.png") });
+    const before = await heroArt(page.locator(HERO).first());
+    // The passphrase is in, so the grade of trade A starts at the team pickers.
+    await page.locator('button[aria-label="Pick Your Team"]').click();
+    await page.locator('ul[aria-label="Teams"] button:has-text("behold the lamb")').click();
+    await page.locator('button[aria-label="Pick Team Two"]').click();
+    await page.locator('ul[aria-label="Teams"] button:has-text("Bo Girds")').click();
+    await page.locator('button:has-text("Add a player Your Team gets")').click();
+    await page.locator('ul[aria-label^="Players of"]').waitFor();
+    await page.locator('ul[aria-label^="Players of"] button:has-text("Parker Washington")').click();
+    await page.locator('button:has-text("Done")').click();
+    await page.locator('button:has-text("Add a player Team Two gets")').click();
+    await page.locator('ul[aria-label^="Players of"]').waitFor();
+    await page.locator('ul[aria-label^="Players of"] button:has-text("Omar Cooper")').click();
+    await page.locator('button:has-text("Done")').click();
+    await page.locator('button:has-text("Grade the Trade")').click();
+    await page.locator("text=Suggested Counters").waitFor({ timeout: 180000 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(1500);
+    await page.locator(HERO).first().screenshot({ path: join(dir("AT-44"), "analyze-after-375-dark.png") });
+    const after = await heroArt(page.locator(HERO).first());
+    save("AT-44", "heroes-analyze.json", { beforeGrade: before, afterVerdict: after });
+    await context.close();
+  });
 
   test("AT-9 no empty gap", async ({ browser }) => {
     const rows: unknown[] = [];
@@ -857,7 +945,8 @@ test.describe("cpc analyzer", () => {
         const { context, page } = await fresh(browser, width, { height: 1600 });
         await open(page, "/analyze/", theme);
         const answer = (await gradeTradeA(page)) as () => unknown;
-        await expect.poll(async () => (await statesOf(page)).some((s) => s.state === "rest"), { timeout: 10000 }).toBe(true);
+        // The verdict hero may have no scene, so the shot waits a fixed time for the reveal.
+        await page.waitForTimeout(1500);
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.waitForTimeout(1500);
         const hero = page.locator(HERO).first();

@@ -127,6 +127,17 @@ describe("Hero slots", () => {
     expect(slotsOf(container)).toEqual(["eyebrow", "title"]);
     expect(screen.getByRole("region", { name: "Matchup of the Week" }).textContent).toBe("Week 08The Blue Tent by 1.43");
   });
+
+  it("puts the scene after the title and the meta and before the feature, in the markup and on a phone (AT-43)", () => {
+    const { container } = render(
+      <Hero label="Matchup of the Week" title="The Blue Tent by 1.43" meta="Five points" feature="Rows" scene={SCENE} />,
+    );
+    const band = container.querySelector("canvas")!.closest("[aria-hidden='true']")!.parentElement!;
+    expect(band.previousElementSibling?.getAttribute("data-hero-slot")).toBe("meta");
+    expect(band.nextElementSibling?.getAttribute("data-hero-slot")).toBe("feature");
+    // No order class moves the band, so a phone shows the words first and the scene under them.
+    expect(band.className).not.toMatch(/(^|\s)order-/);
+  });
 });
 
 describe("Card", () => {

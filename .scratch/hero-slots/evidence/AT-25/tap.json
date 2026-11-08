@@ -1,15 +1,15 @@
 {
   "tapInCanvasPx": {
     "x": 19,
-    "y": 194
+    "y": 124
   },
   "tapOnPagePx": {
     "x": 60,
-    "y": 300
+    "y": 468.578125
   },
   "lightOfLilFridgeInCanvasPx": {
     "x": 16,
-    "y": 184
+    "y": 114
   },
   "nearestByMath": "Lil Fridge · 80.11",
   "distances": [
@@ -19,47 +19,47 @@
     },
     {
       "label": "NFC Least · 85.08",
-      "px": 32.8
+      "px": 28.1
     },
     {
       "label": "behold the lamb · 85.76",
-      "px": 52.3
+      "px": 48.9
     },
     {
       "label": "Bo Girds · 88.2",
-      "px": 76.7
+      "px": 72.5
     },
     {
       "label": "Unsolicited Dak Picks · 92.55",
-      "px": 104
+      "px": 97.5
     },
     {
       "label": "London Cooking · 98.88",
-      "px": 134.4
+      "px": 123.7
     },
     {
       "label": "The Blue Tent · 100.31",
-      "px": 157.3
+      "px": 147
     },
     {
       "label": "Return of T Mac · 111.97",
-      "px": 196.2
+      "px": 176.6
     },
     {
       "label": "All You Need Is Love · 116.83",
-      "px": 224.4
+      "px": 201.9
     },
     {
       "label": "To Infinity and Bijan · 118.89",
-      "px": 247.8
+      "px": 225.4
     },
     {
       "label": "Maye d'force B with U · 121.16",
-      "px": 271.8
+      "px": 249.1
     },
     {
       "label": "Teehee · 134.1",
-      "px": 313.4
+      "px": 279.7
     }
   ],
   "attrsAfter": {

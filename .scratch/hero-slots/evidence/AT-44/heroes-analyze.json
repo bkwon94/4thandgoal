@@ -1,0 +1,18 @@
+{
+  "beforeGrade": {
+    "heroLabel": "Trade Analyzer",
+    "texture": 1,
+    "brackets": 4,
+    "textureBackground": "radial-gradient(70% 90% at 100% 100%, color(srgb 0.721569 0.203922 0.164706 / 0.45), rgba(0, 0, 0, 0) 70%), linear-gradient(rgb(28, 28, 28) 1px, rgba(0, 0, 0, 0",
+    "canvasesInHero": 0,
+    "canvasesOnPage": 0
+  },
+  "afterVerdict": {
+    "heroLabel": "The Verdict",
+    "texture": 1,
+    "brackets": 4,
+    "textureBackground": "radial-gradient(70% 90% at 100% 100%, color(srgb 0.721569 0.203922 0.164706 / 0.45), rgba(0, 0, 0, 0) 70%), linear-gradient(rgb(28, 28, 28) 1px, rgba(0, 0, 0, 0",
+    "canvasesInHero": 0,
+    "canvasesOnPage": 0
+  }
+}

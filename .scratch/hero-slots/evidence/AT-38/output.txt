@@ -15,6 +15,7 @@ $ pnpm --dir apps/site exec vitest run --reporter=verbose packages/design/site/p
  ✓ ../../packages/design/site/parts/scene-math.test.ts > sceneScore > drops a trailing zero 0ms
  ✓ ../../packages/design/site/parts/scene-math.test.ts > sceneScore > keeps up to two decimals 0ms
  ✓ ../../packages/design/site/parts/scene-math.test.ts > sceneGuideScore > always writes two decimals 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > sceneLines > joins each light to the next light in x order 0ms
  ✓ ../../packages/week/site/parts/matchup-scene.test.ts > matchupScene > has one light per team of the week, sorted from low to high by the points of the week 1ms
  ✓ ../../packages/week/site/parts/matchup-scene.test.ts > matchupScene > draws the league median of 99.60 as its one guide 0ms
  ✓ ../../packages/week/site/parts/matchup-scene.test.ts > matchupScene > draws no guide for a week with no median, as a league with no median game publishes 0ms
@@ -40,8 +41,8 @@ $ pnpm --dir apps/site exec vitest run --reporter=verbose packages/design/site/p
  ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > labels the median line at one end, clear of every light, the label at rest, and the mark, in a box of 590 0ms
 
  Test Files  2 passed (2)
-      Tests  36 passed (36)
-   Start at  01:11:53
-   Duration  671ms (environment 91%, import 6%, transform 2%, tests 1%)
+      Tests  37 passed (37)
+   Start at  08:43:39
+   Duration  647ms (environment 91%, import 5%, transform 2%, tests 1%, worker 1%)
 
 (exit 0)
