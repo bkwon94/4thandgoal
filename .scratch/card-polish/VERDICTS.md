@@ -1,5 +1,5 @@
 ACCEPTANCE.md: ce39b492f48ce4691774d28e46edf20ebcc94f32
-EVIDENCE.md: 4b652831a112f386f63c861b174b2db295813eb0
+EVIDENCE.md: 937f514567f606125acec406cc14fcb1d13c92a7
 
 Test verdicts
 AT-1: PASS
@@ -25,7 +25,7 @@ AT-21: PASS
 AT-22: PASS
 AT-23: PASS
 AT-24: PASS
-AT-25: FAIL The entry lists no files, so nothing shows the stage swap on hover and focus or the hero slots of the Then line.
+AT-25: PASS
 AT-26: PASS
 AT-27: PASS
 AT-28: PASS
