@@ -136,22 +136,22 @@ Observation: `accessible-text.txt` holds the five Trend tiles from the built pag
 
 App: site
 Then: The halo glows at the level of 2 of 6 checks, brighter than with no team and below full.
-Files: none.
-Observation: STUCK: the analyzer form needs the API for its teams. Port 8080 holds the API of hero-slots (uvicorn from .claude/worktrees/hero-slots-api), and it does not serve the evidence origin. A CORS preflight from Origin http://127.0.0.1:4173 to http://localhost:8080 answered 400 "Disallowed CORS origin". The guide says to start nothing on 8080, so no shot of the halo exists. The full floor checks the empty /analyze/ page at 390 px and 1280 px (see AT-28), and src/reduced-motion.test.tsx holds "shows the Ready halo at its level at once" (see AT-9).
+Files: `evidence/AT-19/halo-pass.sh`, `evidence/AT-19/levels.txt`, `evidence/AT-19/round.txt`, `evidence/AT-19/steps.json`, `evidence/AT-19/full-375-dark.png`, `evidence/AT-19/full-375-light.png`, `evidence/AT-19/no-team-375-dark.png`, `evidence/AT-19/no-team-375-light.png`, `evidence/AT-19/two-teams-375-dark.png`, `evidence/AT-19/two-teams-375-light.png`
+Observation: The API is the hero-slots-api worktree build on port 8080, with http://127.0.0.1:4173 in its allowed origins; card-polish changes no API code. The runner build calls it, and the passphrase is localtest. `round.txt` is the runner output of AT-19 to AT-21: 13 shots in 63.8 s. The shots show the Grade the Trade bar at 375 px in both themes: with no team it is grey with no ring; with The Blue Tent and Lil Fridge picked a faint accent ring shows around the grey bar; with a full trade the bar is accent red with a strong glow. `levels.txt` reads level 0.000 with no team, 0.167 with one team, 0.333 with two teams, 0.667 with one player, and 1.000 with the full trade, in both themes.
 
 ## AT-20: The Ready halo is full only when the trade is ready
 
 App: site
 Then: The halo reaches full when the Grade button can grade, and it dims when the player goes.
-Files: none.
-Observation: STUCK: the analyzer form needs the API for its teams. Port 8080 holds the API of hero-slots (uvicorn from .claude/worktrees/hero-slots-api), and it does not serve the evidence origin. A CORS preflight from Origin http://127.0.0.1:4173 to http://localhost:8080 answered 400 "Disallowed CORS origin". The guide says to start nothing on 8080, so no shot of the halo exists. The full floor checks the empty /analyze/ page at 390 px and 1280 px (see AT-28), and src/reduced-motion.test.tsx holds "shows the Ready halo at its level at once" (see AT-9).
+Files: `evidence/AT-20/levels.txt`, `evidence/AT-20/steps.json`, `evidence/AT-20/full-375-dark.png`, `evidence/AT-20/full-375-light.png`, `evidence/AT-20/one-player-375-dark.png`, `evidence/AT-20/one-player-375-light.png`, `evidence/AT-20/one-removed-375-dark.png`, `evidence/AT-20/one-removed-375-light.png`, `evidence/AT-19/halo-pass.sh`
+Observation: The API is the hero-slots-api worktree build on port 8080, with http://127.0.0.1:4173 in its allowed origins; card-polish changes no API code. The runner build calls it, and the passphrase is localtest. The shots at 375 px in both themes show four states with two teams picked: one player for Your Team, with a grey bar and a ring; each team with one player, with the bar accent red, its label active, and a strong glow; and the player of Team Two removed through its sheet, with the bar grey again and a fainter ring. `levels.txt` reads 0.667 with one player, 1.000 with the Grade button enabled at the full trade, and 0.667 with the button disabled after the removal.
 
 ## AT-21: The Ready halo works in the light theme and with reduced motion
 
 App: site
 Then: The halo reads against the light page. With reduced motion it shows the level with no pulse or orbit.
-Files: none.
-Observation: STUCK: the analyzer form needs the API for its teams. Port 8080 holds the API of hero-slots (uvicorn from .claude/worktrees/hero-slots-api), and it does not serve the evidence origin. A CORS preflight from Origin http://127.0.0.1:4173 to http://localhost:8080 answered 400 "Disallowed CORS origin". The guide says to start nothing on 8080, so no shot of the halo exists. The full floor checks the empty /analyze/ page at 390 px and 1280 px (see AT-28), and src/reduced-motion.test.tsx holds "shows the Ready halo at its level at once" (see AT-9).
+Files: `evidence/AT-21/levels-reduced-motion.txt`, `evidence/AT-21/steps.json`, `evidence/AT-21/full-375-light.png`, `evidence/AT-21/reduced-full-375-dark.png`, `evidence/AT-21/reduced-full-375-light.png`, `evidence/AT-19/halo-pass.sh`
+Observation: The API is the hero-slots-api worktree build on port 8080, with http://127.0.0.1:4173 in its allowed origins; card-polish changes no API code. The runner build calls it, and the passphrase is localtest. `full-375-light.png` (runner, motion on) shows the full trade in the light theme, with the accent red bar and its glow against the light page. The reduced-motion shots (agent-browser, `set media <theme> reduced-motion`, viewport only) show the same full trade in light and dark; the Team Two avatar shows a focus ring after its sheet closed. `levels-reduced-motion.txt` shows matchMedia reduce true, the same levels 0.000 to 1.000, a halo transition-duration of 0s, and the orbit arc at display:none with an animation duration of 0s. With motion on, `evidence/AT-19/levels.txt` shows the orbit at display:block with spin 3.4s.
 
 ## AT-22: The Index list shows every team on one phone screen
 

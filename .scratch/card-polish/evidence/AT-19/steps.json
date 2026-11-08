@@ -1,0 +1,92 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[type=submit]"
+    },
+    {
+      "wait": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "shot": "no-team"
+    },
+    {
+      "click": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "wait": "ul[aria-label=\"Teams\"] li:nth-child(1) button"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] li:nth-child(1) button"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "button[aria-label=\"Pick Team Two\"]"
+    },
+    {
+      "wait": "ul[aria-label=\"Teams\"] li:nth-child(3) button"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] li:nth-child(3) button"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "shot": "two-teams"
+    },
+    {
+      "click": "button:has-text(\"Add a player Your Team gets\")"
+    },
+    {
+      "wait": "[role=dialog] ul[aria-label^=\"Players of\"] li:first-child button"
+    },
+    {
+      "click": "[role=dialog] ul[aria-label^=\"Players of\"] li:first-child button"
+    },
+    {
+      "wait": 400
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Done\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "button:has-text(\"Add a player Team Two gets\")"
+    },
+    {
+      "wait": "[role=dialog] ul[aria-label^=\"Players of\"] li:first-child button"
+    },
+    {
+      "click": "[role=dialog] ul[aria-label^=\"Players of\"] li:first-child button"
+    },
+    {
+      "wait": 400
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Done\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "shot": "full"
+    }
+  ],
+  "widths": [
+    375
+  ]
+}

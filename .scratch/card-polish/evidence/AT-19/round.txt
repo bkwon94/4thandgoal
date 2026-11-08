@@ -1,0 +1,15 @@
+
+> cpcfantasyfootball-site@0.1.0 evidence /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/card-polish/apps/site
+> node scripts/evidence.mjs card-polish AT-19 AT-20 AT-21
+
+
+Running 1 test using 1 worker
+
+build cpc: 3.1 s
+AT-19 /analyze/ cpc: 6 shots in 23.9 s
+AT-20 /analyze/ cpc: 6 shots in 27.7 s
+AT-21 /analyze/ cpc: 1 shot in 9.1 s
+Total: 3 tests of card-polish in 63.8 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of card-polish (1.1m)
+
+  1 passed (1.1m)
