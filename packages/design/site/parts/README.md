@@ -8,6 +8,7 @@
 - The one reveal of the site, the week line of a page with no hero, and the error line.
 - The parts of the look (ADR 0024): the hero with its grid, glow, brackets, scan line, and six hero slots; the card; the tile; the
   round photo frame with its initials; and the rise, the staggered entry of a page. Hero text sits on a `plate`.
+- The data shape of the hero scene and its pure math, with no canvas, in `scene-math.ts` (ADR 0027).
 
 ## Ports
 
