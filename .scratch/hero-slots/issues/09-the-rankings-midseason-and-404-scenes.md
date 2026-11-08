@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-19, AT-22, AT-23, and AT
 
 **Blocked by:** 03, 04, and 07
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The rankings scene of AT-19 shows, and the evidence names the rank-1 team and its odds.
 - [x] The midseason scene of AT-22 shows, and the evidence names the leader.
