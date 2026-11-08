@@ -31,4 +31,4 @@ Decided on 2026-11-07 from the research in `03-research-canvas-brand-color.notes
 
 No client uses `oklch` or `color-mix` for these three roles, so the path does not depend on how Safari on iOS reads those strings in `fillStyle`. No primary source confirms that, and the research did not test a real iPhone.
 
-The color of the flare on NorCal is open for Brian: `accent` there is `#c2410c`, an orange, and `accent_text` is a gold.
+The flare uses `accent` on every client. On NorCal that is the orange `#c2410c`, not the gold `accent_text`. Brian, 2026-11-07.
