@@ -1,6 +1,6 @@
 /**
  * The Index list: the ledger of the Managers index, after the method of the Team Roster item (ADR 0028), with the chips of the playoff race.
- * A tap opens a row in place with the Open card drawer, one row at a time, and the name of the open row rolls its letters.
+ * A tap opens a row in place with the Open card, one row at a time, and the name of the open row rolls its letters.
  */
 "use client";
 

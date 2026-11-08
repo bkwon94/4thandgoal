@@ -159,7 +159,7 @@ describe("Reduced motion on the power rankings", () => {
     const button = screen.getByRole("button", { name: /Lil Fridge/ });
     const card = button.closest<HTMLElement>(".open-card")!;
     const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
-    // Every duration of the drawer, the blur, the rise, and the chevron reads --oc-dur, so 0s ends each one at once.
+    // Every duration of the height, the blur, the rise, and the chevron reads --oc-dur, so 0s ends each one at once.
     expect(card.style.getPropertyValue("--oc-dur")).toBe("0s");
     fireEvent.click(button);
     expect(button.getAttribute("aria-expanded")).toBe("true");
@@ -177,7 +177,7 @@ describe("Reduced motion on the Open card", () => {
     const button = screen.getAllByRole("button").find((each) => !each.hasAttribute("aria-label") && each.textContent?.includes("All You Need Is Love"))!;
     const card = button.closest<HTMLElement>(".open-card")!;
     const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
-    // Every duration of the drawer, the blur, the rise, and the chevron reads --oc-dur, so 0s ends each one at once.
+    // Every duration of the height, the blur, the rise, and the chevron reads --oc-dur, so 0s ends each one at once.
     expect(card.style.getPropertyValue("--oc-dur")).toBe("0s");
     fireEvent.click(button);
     expect(card.dataset.open).toBe("true");
@@ -204,7 +204,7 @@ describe("Reduced motion on the Index list", () => {
     const head = within(list.getAllByRole("listitem")[0]).getByRole("button");
     const row = head.closest<HTMLElement>(".open-card")!;
     const panel = document.getElementById(head.getAttribute("aria-controls") ?? "")!;
-    // The drawer, the blur, and the rise of the row read --oc-dur, so 0s ends each one at once.
+    // The height, the blur, and the rise of the row read --oc-dur, so 0s ends each one at once.
     expect(row.style.getPropertyValue("--oc-dur")).toBe("0s");
     fireEvent.click(head);
     expect(row.dataset.open).toBe("true");

@@ -459,12 +459,12 @@
    long linear() curve cannot be Tailwind classes cleanly, so they live here. */
 @layer components {
     /* The height grows from 0fr to 1fr, the one height method of the site. The inner box clips the panel while it grows. */
-    .oc-drawer {
+    .oc-body {
         display: grid;
         grid-template-rows: 0fr;
         transition: grid-template-rows var(--oc-dur) var(--oc-spring);
     }
-    .open-card[data-open="true"] .oc-drawer {
+    .open-card[data-open="true"] .oc-body {
         grid-template-rows: 1fr;
     }
     .oc-inner {
@@ -519,7 +519,7 @@
     }
 }
 
-/* The Index list, after the method of the Team Roster item (ADR 0028). The rows use the Open card drawer, so only the
+/* The Index list, after the method of the Team Roster item (ADR 0028). The rows use the Open card, so only the
    letter roll of the name and the entry of the rows live here. A child selector of the open state cannot be a Tailwind class cleanly. */
 @layer components {
     .ix-name {

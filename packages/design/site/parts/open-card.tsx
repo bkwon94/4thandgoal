@@ -122,7 +122,7 @@ export function OpenCard({
       >
         {head}
       </button>
-      <div className="oc-drawer">
+      <div className="oc-body">
         <div id={panelId} ref={panel} hidden={shut} className="oc-inner">
           <div className="oc-panel mx-sp-2 mt-sp-3 flex flex-col gap-sp-3 rounded-tile bg-raised p-sp-4">
             {overview && <p className="m-0 text-lead leading-tight font-bold text-ink">{overview}</p>}
