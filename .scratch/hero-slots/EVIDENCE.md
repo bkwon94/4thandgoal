@@ -1,8 +1,8 @@
 # Hero slots: evidence
 
 Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests: `.scratch/hero-slots/ACCEPTANCE.md`.
-Built from: `c1a7c91c`, on 2026-11-08. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
-Round time: 7 min for 37 site tests.
+Built from: `45a3c724` for AT-9, AT-21, and AT-37, and `c1a7c91c` for the other tests, on 2026-11-08. The commits between them are `f2ddc1a2`, `f6f88ce9`, and `45a3c724`. They change `apps/site/e2e/manager-scene.spec.ts`, the analyzer verdict hero and its scene (`packages/analyzer/site/form/`), and the shared line code of the scene (`sceneLines` in `packages/design/site/parts/scene-math.ts`, used by `scene-canvas.ts`). For lights with no `group`, `sceneLines` joins the same pairs as the code before it. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
+Round time: 7 min for 37 site tests, then 1.4 min for AT-9 and AT-21 again at `45a3c724`.
 
 The instrument of the site tests is a Playwright script, `evidence/AT-1/hero-slots.ev.ts.txt`, with its config `evidence/AT-1/ev.config.ts.txt`. Each `steps.txt` gives the method. The runner of `pnpm evidence` takes full-page shots after a scroll pass, and the pass plays the scene again, so its shot shows the scene before the settle. No runner verb times a frame, reads a computed style, counts frames, or taps a point of the canvas. The round time is the sum of the script runs: 4.5 min, 1.8 min, 0.6 min, 0.3 min, and 0.1 min.
 
@@ -69,7 +69,7 @@ Observation: The 768 and 1280 px shots show a faint line between the week chips 
 App: site
 Then: The hero ends at the fairness block, with the same space under it as above the eyebrow. No empty area for stats or an action shows.
 Files: `evidence/AT-9/steps.txt`, `evidence/AT-9/space.json`, `evidence/AT-9/tradeA.response.json`, `evidence/AT-9/375-light.png`, `evidence/AT-9/375-dark.png`, `evidence/AT-9/768-light.png`, `evidence/AT-9/768-dark.png`, `evidence/AT-9/1280-light.png`, `evidence/AT-9/1280-dark.png`
-Observation: Each shot shows the verdict hero "DECISION FOR BEHOLD THE LAMB", "Yes", ending at the FAIRNESS card "Lopsided: Bo Girds gives more.", with no stats row and no action row. `space.json` gives the slots eyebrow, title, meta, feature, and 29 px under the card at each width. At 768 and 1280 px the space above the eyebrow is also 29 px; at 375 px the scene band sits above the eyebrow, so the eyebrow is 253 px under the top edge. In the light theme the fairness card is white.
+Observation: Recorded at `45a3c724` on the live local API. Each shot shows the verdict hero start at "DECISION FOR BEHOLD THE LAMB", then "Yes", the reason, the scene, and the FAIRNESS card "Lopsided: Bo Girds gives more.", where the hero ends, with no stats row and no action row. `space.json` gives the slots eyebrow, title, meta, feature, 29 px above the eyebrow and 29 px under the card at 375, 768, and 1280 px, the scene inside `feature`, and 1 scene canvas on the page after the verdict. In the light theme the fairness card is white.
 
 ## AT-10: The Matchup title is words
 
@@ -153,7 +153,7 @@ Observation: The frames at 2025 ms and 6013 ms after the drift starts show scatt
 App: site
 Then: When the verdict arrives, the lights settle into two groups, one per side, and the bigger group sits on the side of behold the lamb.
 Files: `evidence/AT-21/steps.txt`, `evidence/AT-21/frames.json`, `evidence/AT-21/tradeA.response.json`, `evidence/AT-21/before-grade-375-dark.png`, `evidence/AT-21/after-verdict-2.5s-375-dark.png`, `evidence/AT-21/before-grade-1280-dark.png`, `evidence/AT-21/after-verdict-2.5s-1280-dark.png`
-Observation: The frames before the grade show scattered drift lights. The frames 2.5 s after the verdict show 5 red lights on the left, a cross of four around one, and 2 lights on the right, one white and one gray. One gray line joins all 7 lights, so the line runs from the left group to the right group. The verdict hero reads "DECISION FOR BEHOLD THE LAMB", "Yes", "Lopsided: Bo Girds gives more."; `tradeA.response.json` lists roster 10 first, with 4 factors "for", and roster 6 with 1 factor "for" (upside).
+Observation: Recorded at `45a3c724` on the live local API. The frames before the grade show scattered drift lights with no line. The frames 2.5 s after the verdict, in the state `rest`, show 5 red lights on the left, joined by lines, and 2 lights on the right, one white and one gray, joined by one vertical line; no line runs between the left and the right lights. `tradeA.response.json` lists behold the lamb (roster 10) as the first side, with 4 factors "for", and Bo Girds (roster 6) with 1 factor "for" (upside); the verdict hero reads "DECISION FOR BEHOLD THE LAMB" and "Yes".
 
 ## AT-22: The midseason scene
 
@@ -264,8 +264,8 @@ Observation: The tap is on the button "Grade D, how the grade reads". The after 
 
 App: site
 Then: Both runs pass.
-Files: `evidence/AT-37/check-floor-cpc.txt`, `evidence/AT-37/check-floor-norcal.txt`
-Observation: The output is the `check:floor` part of the `make check` log at `c1a7c91c`. For cpc it ends "129 passed (56.7s)". For norcal it ends "3 failed, 1 skipped, 123 passed (55.9s)" and "The site check:floor of the client norcal failed.": the three failures are `manager-scene.spec.ts:80` "draws one light per played week … (AT-18)" at 375, 768, and 1280 px, each with "TypeError: Cannot read properties of undefined (reading 'points')" at `guide.points.length`.
+Files: `evidence/AT-37/check-floor-output.txt`
+Observation: The output is the floor part of `pnpm --dir apps/site check` in the Spec worktree, started at 01:25 by the orchestrator, after `f2ddc1a2`. The run of cpc ends "129 passed (1.0m)", the run of norcal ends "1 skipped" and "126 passed (1.0m)", the file holds no failed test, and the log ends "exit 0". The log started at 01:25, while `f6f88ce9` (01:29) and `45a3c724` (01:31) came later; they change the analyzer verdict hero and the shared `sceneLines`, which go into the JavaScript of the export, so this log does not cover the build of `45a3c724`.
 
 ## AT-38: The math of the scene
 

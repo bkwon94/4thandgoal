@@ -9,14 +9,18 @@
       "meta",
       "feature"
     ],
-    "spaceAboveEyebrowPx": 253,
+    "spaceAboveEyebrowPx": 29,
     "spaceUnderLowestContentPx": 29,
     "lowestContentText": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedu",
     "contentBottomToHeroBottom": 29,
     "heroPadding": [
       "28px",
       "28px"
-    ]
+    ],
+    "sceneInsideSlot": "feature",
+    "sceneTopPx": 244,
+    "canvasesOnPage": 1,
+    "firstSlotTopPx": 29
   },
   {
     "width": 375,
@@ -28,14 +32,18 @@
       "meta",
       "feature"
     ],
-    "spaceAboveEyebrowPx": 253,
+    "spaceAboveEyebrowPx": 29,
     "spaceUnderLowestContentPx": 29,
     "lowestContentText": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedu",
     "contentBottomToHeroBottom": 29,
     "heroPadding": [
       "28px",
       "28px"
-    ]
+    ],
+    "sceneInsideSlot": "feature",
+    "sceneTopPx": 244,
+    "canvasesOnPage": 1,
+    "firstSlotTopPx": 29
   },
   {
     "width": 768,
@@ -54,7 +62,11 @@
     "heroPadding": [
       "28px",
       "28px"
-    ]
+    ],
+    "sceneInsideSlot": "feature",
+    "sceneTopPx": 156,
+    "canvasesOnPage": 1,
+    "firstSlotTopPx": 29
   },
   {
     "width": 768,
@@ -73,7 +85,11 @@
     "heroPadding": [
       "28px",
       "28px"
-    ]
+    ],
+    "sceneInsideSlot": "feature",
+    "sceneTopPx": 156,
+    "canvasesOnPage": 1,
+    "firstSlotTopPx": 29
   },
   {
     "width": 1280,
@@ -92,7 +108,11 @@
     "heroPadding": [
       "28px",
       "28px"
-    ]
+    ],
+    "sceneInsideSlot": "feature",
+    "sceneTopPx": 162,
+    "canvasesOnPage": 1,
+    "firstSlotTopPx": 29
   },
   {
     "width": 1280,
@@ -111,6 +131,10 @@
     "heroPadding": [
       "28px",
       "28px"
-    ]
+    ],
+    "sceneInsideSlot": "feature",
+    "sceneTopPx": 162,
+    "canvasesOnPage": 1,
+    "firstSlotTopPx": 29
   }
 ]

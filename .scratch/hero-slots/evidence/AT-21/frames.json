@@ -1,7 +1,7 @@
 [
   {
     "width": 375,
-    "frameAt_ms_after_settle": 2531,
+    "frameAt_ms_after_settle": 2525,
     "state": "rest",
     "hero": {
       "label": "The Verdict",
@@ -18,7 +18,7 @@
   },
   {
     "width": 1280,
-    "frameAt_ms_after_settle": 2527,
+    "frameAt_ms_after_settle": 2526,
     "state": "rest",
     "hero": {
       "label": "The Verdict",

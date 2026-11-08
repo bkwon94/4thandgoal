@@ -839,6 +839,11 @@ test.describe("cpc analyzer", () => {
             lowestContentText: (lowestEl as HTMLElement).innerText?.replace(/\s+/g, " ").slice(0, 120),
             contentBottomToHeroBottom: Math.round(box.bottom - content.getBoundingClientRect().bottom),
             heroPadding: [getComputedStyle(section).paddingTop, getComputedStyle(section).paddingBottom],
+            // Where the scene sits, and the count of scenes on the whole page after the verdict (AT-35).
+            sceneInsideSlot: section.querySelector("canvas[data-hero-scene]")?.closest("[data-hero-slot]")?.getAttribute("data-hero-slot") ?? null,
+            sceneTopPx: Math.round((section.querySelector("canvas[data-hero-scene]")?.getBoundingClientRect().top ?? box.top) - box.top),
+            canvasesOnPage: document.querySelectorAll("canvas[data-hero-scene]").length,
+            firstSlotTopPx: Math.round(slots[0].getBoundingClientRect().top - box.top),
           };
         });
         rows.push({ width, theme, ...space });
