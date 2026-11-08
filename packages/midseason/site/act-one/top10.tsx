@@ -12,6 +12,7 @@ import { ReportCard } from "../report/report-card";
 import { ReportPhoto } from "../report/report-photo";
 import { ReportChapter } from "../report/report-chapter";
 import type { PositionBoard, Top10Chapter, TopPlayer } from "../schema/midseason-types";
+import { openId, stableId } from "@cpc/design/lib/stable-id";
 
 /* The board that the chapter opens on (decision ticket 10). A league with no RB board opens on its first board. */
 export const FIRST_POSITION = "RB";
@@ -23,7 +24,10 @@ const DEFENSE = "DEF";
    has his tag, such as "Free agent", in the second line in place of a manager, as a fact about him (decision ticket 15). */
 function Row({ player }: { player: TopPlayer }) {
   return (
-    <li className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0">
+    <li
+      className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0"
+      {...stableId("top10", player.position, player.rank)}
+    >
       <span className="font-mono text-meta text-mute tabular-nums">{String(player.rank).padStart(2, "0")}</span>
       <ReportPhoto
         src={player.position === DEFENSE ? null : sleeperHeadshot(player.player_id)}
@@ -71,6 +75,7 @@ export function Top10({ chapter }: { chapter: Top10Chapter }) {
               type="button"
               aria-pressed={on}
               onClick={() => setChosen(position)}
+              {...openId("chip", position)}
               className={cn(
                 "press min-h-touch min-w-touch flex-1 cursor-pointer font-mono text-meta font-bold tracking-caps",
                 on ? "text-ink" : "text-mute hover-fine:text-ink-2",

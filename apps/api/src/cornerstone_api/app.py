@@ -1,8 +1,8 @@
 """
 The app factory of the Cornerstone API: CORS, the passphrase check, the rate limits, and the routes of each client.
-The service needs CORNERSTONE_PASSPHRASE_<SLUG> for each client, such as CORNERSTONE_PASSPHRASE_CPC, and
-ANTHROPIC_API_KEY for the Claude call. It reads CORNERSTONE_REPO,
-CORNERSTONE_RESULT_CACHE_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
+The service needs CORNERSTONE_PASSPHRASE_<SLUG> for each client, such as CORNERSTONE_PASSPHRASE_CPC,
+CORNERSTONE_COMMISSIONER_KEY_<SLUG> for each client of the eggs package, and ANTHROPIC_API_KEY for the Claude call.
+It reads CORNERSTONE_REPO, CORNERSTONE_RESULT_CACHE_DIR, CORNERSTONE_EGGS_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
 Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.0.0.0 --port 8080`.
 At start it reads each client folder under clients/, and a bad client.toml stops the start.
 Each client answers at /clients/<slug>/. The old paths with no client answer as cpc, so an old page still works.
@@ -26,9 +26,13 @@ from analyzer.finder_reasons import write_reasons
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import refresh as refresh_routes
-from cornerstone_api.settings import Settings, passphrase_env, repo_from_env
+from cornerstone_api.settings import Settings, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
+from eggs import routes as eggs_routes
+from eggs.store import EggStore
+from eggs.tunables import BOARD_READS_PER_MINUTE, BOARD_WINDOW_SECONDS, CHECK_WINDOW_SECONDS, CHECKS_PER_HOUR
+from eggs.values import EggsValues
 from league.client import Client, SettingsFetch, load_client
 from league.paths import provider_cache_dir
 from league.provider.sleeper import SleeperProvider, fetch_settings
@@ -42,6 +46,9 @@ DEFAULT_SLUG = "cpc"
 CLIENT_PREFIX = "/clients/{slug}"
 
 PASSPHRASE_HEADER = "X-League-Passphrase"
+COMMISSIONER_HEADER = "X-Commissioner-Key"
+# The prefix of the eggs routes of each client. Only the clients paths serve them, because no old page calls them.
+EGGS_PREFIX = f"{CLIENT_PREFIX}/eggs"
 # The file of the daily grade counts of a client, in the result cache dir of the client.
 GRADE_COUNTS_FILE = "grade-counts.json"
 
@@ -59,7 +66,8 @@ class _RateLimited(Exception):
 
 
 def _guard(request: Request) -> None:
-    """Stop a request past the rate limit or without the passphrase of its client. Every route except health runs it.
+    """Stop a request past the rate limit or without the passphrase of its client. Every route runs it, except health,
+    the open eggs routes, and the commissioner routes of the eggs, which run their own guard.
 
     The client is the slug of the path. An old path with no client checks the passphrase of DEFAULT_SLUG.
     """
@@ -75,6 +83,45 @@ def _guard(request: Request) -> None:
         return
     given = request.headers.get(PASSPHRASE_HEADER, "")
     # A constant-time compare, so the response time does not leak how much of a guess was right.
+    if not hmac.compare_digest(given.encode(), expected.encode()):
+        raise _Unauthorized()
+
+
+def _limit(request: Request) -> None:
+    """Stop a request past the rate limit of its address. The commissioner guard runs it before the key check."""
+    retry_after = request.app.state.limiter.hit(request_address(request))
+    if retry_after is not None:
+        raise _RateLimited(retry_after)
+
+
+def _check_limit(request: Request) -> None:
+    """Stop an egg check past the limit of the egg check of its address. The check counts apart from the other routes,
+    so a hunt spends none of the limit of the analyzer, and a sweep of the site stops at the limit of one hour."""
+    retry_after = request.app.state.check_limiter.hit(request_address(request))
+    if retry_after is not None:
+        raise _RateLimited(retry_after)
+
+
+def _board_limit(request: Request) -> None:
+    """Stop a board read past the limit of the board of its address. The egg button and the egg banner read the board
+    on each page, so the board counts apart from the other routes and a page read spends none of the analyzer limit."""
+    retry_after = request.app.state.board_limiter.hit(request_address(request))
+    if retry_after is not None:
+        raise _RateLimited(retry_after)
+
+
+def _commissioner_guard(request: Request) -> None:
+    """Stop a request past the rate limit or without the commissioner key of its client. The drop and the undo run it.
+
+    Every manager knows the passphrase, so the passphrase alone never drops an egg or undoes a claim.
+    """
+    _limit(request)
+    expected = request.app.state.settings.commissioner_keys.get(request.path_params.get("slug"))
+    if expected is None:
+        # Each client of the eggs package has a key, so only a client with no hunt has none. With no key, nothing can
+        # prove the commissioner, so the guard refuses the request and never lets it pass open.
+        raise _Unauthorized()
+    given = request.headers.get(COMMISSIONER_HEADER, "")
     if not hmac.compare_digest(given.encode(), expected.encode()):
         raise _Unauthorized()
 
@@ -109,6 +156,21 @@ def _served(settings: Settings, client: Client, sources: Sources) -> analyzer_ro
                                   teams_cache=TeamsCache(TEAMS_CACHE_SECONDS), grade_limiter=limiter)
 
 
+def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) -> eggs_routes.Hunt:
+    """The egg hunt of one client. Its SQLite file is <slug>.sqlite in the eggs folder, on the volume on Fly.
+
+    The rosters come from the teams route of the analyzer, so the board shares its cache of the live Sleeper rosters.
+    """
+    season = client.values.latest_season
+
+    def rosters() -> dict[int, str]:
+        return {team["roster_id"]: team["team"] for team in analyzer_routes.teams(season, served)["teams"]}
+
+    return eggs_routes.Hunt(store=EggStore(eggs_dir(settings) / f"{client.slug}.sqlite"),
+                            values=client.values.package(EggsValues), rosters=rosters,
+                            clock=lambda: datetime.now(client.tz), tz=client.tz)
+
+
 def create_app(
         settings: Settings, clients: Sequence[Client], sources: Mapping[str, Sources] | None = None,
         analyzer: analyzer_routes.Analyzer | None = None, finder_reasons: analyzer_routes.ReasonWriter | None = None,
@@ -122,13 +184,22 @@ def create_app(
     for client in clients:
         if client.slug not in settings.passphrases:
             raise ValueError(f"The client {client.slug} has no passphrase. Set {passphrase_env(client.slug)}.")
+    # A client of the eggs package with no commissioner key would let anyone drop an egg, so the app refuses it too.
+    for client in clients:
+        if "eggs" in client.values.packages and client.slug not in settings.commissioner_keys:
+            raise ValueError(f"The client {client.slug} has no commissioner key. Set {commissioner_key_env(client.slug)}.")
     app = FastAPI(title="Cornerstone API")
     app.state.settings = settings
     given = sources or {}
     app.state.sources = {client.slug: given.get(client.slug) or _real_sources(client) for client in clients}
     app.state.served = {client.slug: _served(settings, client, app.state.sources[client.slug]) for client in clients}
     app.state.default_slug = DEFAULT_SLUG
+    # Only a client of the eggs package has a hunt, so the eggs routes of any other client answer 404.
+    app.state.hunts = {client.slug: _hunt(settings, client, app.state.served[client.slug])
+                       for client in clients if "eggs" in client.values.packages}
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
+    app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
+    app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
     # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
     app.state.analyzer = analyzer or analyze
     # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
@@ -154,6 +225,14 @@ def create_app(
     for prefix in (CLIENT_PREFIX, ""):
         app.include_router(analyzer_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
         app.include_router(refresh_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
+
+    # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
+    # commissioner key. The check and the board each have their own limit of each address, and each other group keeps
+    # the rate limit.
+    app.include_router(eggs_routes.check_router, prefix=EGGS_PREFIX, dependencies=[Depends(_check_limit)])
+    app.include_router(eggs_routes.open_router, prefix=EGGS_PREFIX, dependencies=[Depends(_board_limit)])
+    app.include_router(eggs_routes.claim_router, prefix=EGGS_PREFIX, dependencies=[Depends(_guard)])
+    app.include_router(eggs_routes.commissioner_router, prefix=EGGS_PREFIX, dependencies=[Depends(_commissioner_guard)])
 
     @app.get("/health")
     def health() -> dict[str, str]:
@@ -187,6 +266,8 @@ def app_from_env() -> FastAPI:
     A missing or bad client.toml stops the start, so a bad value never reaches a reader.
     """
     clients = load_clients(repo_from_env())
-    # The passphrases stay in the settings, because each one is a secret, so client.toml never holds one.
-    settings = Settings.from_env(client.slug for client in clients)
+    # The passphrases and the commissioner keys stay in the settings, because each one is a secret, so client.toml
+    # never holds one.
+    settings = Settings.from_env((client.slug for client in clients),
+                                 (client.slug for client in clients if "eggs" in client.values.packages))
     return create_app(settings, clients, refresh_on_start=True)

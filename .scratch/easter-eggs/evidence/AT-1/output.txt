@@ -1,0 +1,5 @@
+# T1 is egg 2 of week 9, letter C. The real path is /clients/cpc/eggs/check.
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/midseason/2026/","target":"luck-3","action":"tap2","conditions":{"theme":"light"}}' | tee .scratch/easter-eggs/evidence/AT-1/.answer
+{"match":true,"claimed":false,"letter":"C","token":"51exlMFC39yI--0X09kZo7LbwE4PENNk"}
+HTTP 200
+

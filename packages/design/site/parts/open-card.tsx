@@ -20,6 +20,9 @@ const SPRING = springCurve();
 /* The link at the foot of an open panel. The hidden label reads after the label, for a screen reader only. */
 export type OpenCardAction = { href: string; label: string; hiddenLabel?: string };
 
+/* Data attributes to spread on an element of the card. */
+type Marks = Record<`data-${string}`, string>;
+
 type OpenCardProps = {
   // The id of the panel. The toggles name it in aria-controls, and a check can open one card by it.
   panelId: string;
@@ -33,6 +36,11 @@ type OpenCardProps = {
   action?: OpenCardAction | null;
   // Extra panel content after the text and before the action, such as the Grade dial of an Index list row.
   children?: ReactNode;
+  // Data attributes of the head toggle, the panel, and the text, such as the stable ids that the egg hunt names.
+  // The panel takes its marks only while open, so a closed card shows no target of its panel.
+  headMarks?: Marks;
+  panelMarks?: Marks;
+  textMarks?: Marks;
   // The element of the card. A card in a list is an li.
   as?: "li" | "div";
   // "card" draws the card frame and the chevron row. "row" is a row of a ledger: no frame and no chevron, so a closed row
@@ -52,6 +60,9 @@ export function OpenCard({
   text,
   action,
   children,
+  headMarks,
+  panelMarks,
+  textMarks,
   as: Element = "li",
   look = "card",
   open: controlled,
@@ -111,6 +122,7 @@ export function OpenCard({
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
+        {...headMarks}
         onClick={() => setOpen(!open)}
         className={cn(
           "press flex min-h-touch w-full cursor-pointer flex-col gap-sp-3 border-0 bg-transparent p-sp-4 pb-0 text-left text-inherit [-webkit-tap-highlight-color:transparent]",
@@ -122,7 +134,7 @@ export function OpenCard({
       </button>
       <div className="oc-body">
         <div id={panelId} ref={panel} hidden={shut} className="oc-inner">
-          <div className="oc-panel mx-sp-2 mt-sp-3 flex flex-col gap-sp-3 rounded-tile bg-raised p-sp-4">
+          <div {...(open ? panelMarks : {})} className="oc-panel mx-sp-2 mt-sp-3 flex flex-col gap-sp-3 rounded-tile bg-raised p-sp-4">
             {overview && <p className="m-0 text-lead leading-tight font-bold text-ink">{overview}</p>}
             {chips.length > 0 && (
               <ul className="m-0 flex list-none flex-wrap gap-sp-2 border-b border-rule p-0 pb-sp-3">
@@ -136,7 +148,7 @@ export function OpenCard({
                 ))}
               </ul>
             )}
-            {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{text}</p>}
+            {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textMarks}>{text}</p>}
             {children}
             {/* The pill has a solid fill under its label, because text on the frosted blur fails the axe floor. */}
             {action && (

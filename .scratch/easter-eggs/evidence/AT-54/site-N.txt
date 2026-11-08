@@ -1,0 +1,7 @@
+The setup: a fresh store and the drop of week 9, so the hunt mounts its listener: [[1,"/midseason/2026","luck-3","tap2",{"theme":"light"}],[2,"/analyze","verdict-word","tap2",{"trade_teams":[1,3]}],[3,"/midseason/2026","heading-luck","tap2",{}]]
+1280 px, light. /analyze/: Your Team The Blue Tent (1) gets Caleb Williams from Lil Fridge. Team Two Lil Fridge (3) gets Chris Rodriguez Jr. from The Blue Tent. The grade is a real call of the local API, with real Sleeper data and a real Claude call.
+The grade took 8 s. The verdict word reads "Not as is". The marks of the result: data-trade-key "1:10219|3:11560", data-trade-answer "not_as_is".
+A double-tap on [data-stable-id="verdict-word"]. The pointerups: 8 ms pointerup mouse on p in verdict-word; 168 ms pointerup mouse on p in verdict-word.
+Checks sent by the double-tap: 1
+body: {"page":"/analyze/","target":"verdict-word","action":"tap2","conditions":{"theme":"light","trade_teams":[1,3],"trade_answer":"not_as_is"}}
+The dialog after the answer: EGG FOUND | You found an egg | Tap it to crack it open. | Close

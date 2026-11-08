@@ -123,12 +123,13 @@ class TheRepoWorkspace(unittest.TestCase):
         self.assertEqual(select_apps(REPO, ["apps/pipeline/src/cornerstone/odds.py"]), ["pipeline", "api"])
 
     def test_a_change_in_the_league_package_of_the_repo_selects_each_app_and_each_package_on_it(self):
-        # The facts, the analyzer, the managers, the midseason, the rankings, the sim, the waiver, and the week packages
-        # list the league package, so a change in league checks each.
+        # The facts, the analyzer, the eggs, the managers, the midseason, the rankings, the sim, the waiver, and the
+        # week packages list the league package, so a change in league checks each.
         files = ["packages/league/python/src/league/models.py"]
         self.assertEqual(select_apps(REPO, files), ["site", "pipeline", "api"])
         self.assertEqual(select_packages(REPO, files),
-                         ["analyzer", "facts", "league", "managers", "midseason", "rankings", "sim", "waiver", "week"])
+                         ["analyzer", "eggs", "facts", "league", "managers", "midseason", "rankings", "sim", "waiver",
+                          "week"])
 
     def test_a_change_in_the_facts_package_of_the_repo_selects_the_apps_that_import_it_and_not_league(self):
         # The analyzer, the managers, the midseason, the rankings, the sim, the waiver, and the week packages list the

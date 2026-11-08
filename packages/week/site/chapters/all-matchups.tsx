@@ -13,6 +13,7 @@ import { avatarSrc } from "@cpc/league/images";
 import { managerHrefOrNull } from "@cpc/league/hrefs";
 import { ShareBar, shareOf } from "../parts/share-bar";
 import { WeekChapter } from "../parts/week-chapter";
+import { openId, stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* One team of a card. The card is one button, so the name is plain text. A long name cuts at the end of its row. */
 function TeamRow({ side, avatars, lead }: { side: MatchupSide; avatars: AvatarMap; lead: boolean }) {
@@ -62,6 +63,10 @@ function GameCard({ matchup, avatars, managersHref }: { matchup: Matchup; avatar
     <OpenCard
       // The id names the game, so a check of the readability floor can open the recap of one game by its control.
       panelId={`recap-${matchup.id}`}
+      // The egg hunt names the toggle, the panel, and the recap text by ids from the data.
+      headMarks={openId("game", matchup.id)}
+      panelMarks={stableId("recap", matchup.id)}
+      textMarks={matchup.recap === null ? undefined : textId("blurb", matchup.recap)}
       head={
         <>
           <TeamRow side={first} avatars={avatars} lead />

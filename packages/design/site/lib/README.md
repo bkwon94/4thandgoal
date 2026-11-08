@@ -1,4 +1,4 @@
-# packages/design/site/lib: the theme, the motion timings, the usage count, and the cn helper
+# packages/design/site/lib: the theme, the motion timings, the usage count, the stable ids, and the cn helper
 
 ## Knows
 
@@ -8,6 +8,7 @@
 - The spring sampler of the Open card, in `spring.ts`: a damped spring as a CSS `linear()` curve.
 - The count URL and the event call of GoatCounter, in `usage.ts`.
 - The `cn` class-name helper of the shadcn primitives, in `utils.ts`.
+- The stable id of an element that the egg hunt can name, and the marks of the state that an egg check reads, in `stable-id.ts`. Each content package tags its elements with them, so no content package imports the eggs package.
 
 ## Ports
 

@@ -15,6 +15,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `analyzer-multi-team` | site | 10 the headshot strip gap | none | |
 | `card-polish` | site | 01 Open card and GameCard | none | |
 | `clients` | both | 01 the root workspaces and the API app | none | |
+| `easter-eggs` | both | 01 one egg from the drop to the board | none | |
 | `fast-cycle` | both | 07 the midseason tests share one build | PR #13 | `fast-cycle` merges after PR #13 |
 | `faster-evidence` | both | 01 the rate limit setting and make api-evidence | none | |
 | `known-games` | pipeline | 08 the-site-renders-the-known-games-line | | |

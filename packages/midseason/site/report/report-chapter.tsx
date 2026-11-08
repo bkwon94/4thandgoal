@@ -8,6 +8,7 @@ import { DURATION, RISE_EASE } from "@cpc/design/lib/motion";
 import { Reveal } from "@cpc/design/parts/reveal";
 import type { Blurb } from "../schema/midseason-types";
 import { ChapterProse } from "./chapter-prose";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 export function ReportChapter({
   id,
@@ -33,7 +34,11 @@ export function ReportChapter({
     <section id={id} aria-labelledby={heading}>
       <Reveal duration={DURATION.rise} ease={RISE_EASE} className="flex flex-col gap-sp-3">
         <div className="flex flex-wrap items-baseline justify-between gap-x-sp-3 gap-y-sp-1">
-          <Heading id={heading} className={`m-0 leading-tight font-bold ${level === 3 ? "text-stat" : "text-lead"}`}>
+          <Heading
+            id={heading}
+            className={`m-0 leading-tight font-bold ${level === 3 ? "text-stat" : "text-lead"}`}
+            {...stableId("heading", id)}
+          >
             {title}
           </Heading>
           {note !== undefined && (

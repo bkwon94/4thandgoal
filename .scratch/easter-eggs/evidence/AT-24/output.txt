@@ -1,0 +1,21 @@
+# The drop step of the publish for NorCal, with the AT-21 file of four confirmed spots. NorCal has no eggs package in its client.toml.
+$ grep -n "^packages" /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/apps/pipeline/../../clients/norcal/client.toml
+3:packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim"]
+
+
+$ cd /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/apps/pipeline && CORNERSTONE_API_URL=http://127.0.0.1:8080 CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey uv run --exact --package cornerstone python ../../.scratch/easter-eggs/evidence/tools/drop_step.py norcal 2026 8 <scratchpad>/at21-eggs.toml 2>&1 | grep -v "^INFO\|nstalled"; echo "exit ${PIPESTATUS[0]}"
+The client norcal has no eggs package, so no eggs dropped.
+exit 0
+
+
+# The eggs routes of NorCal on the local API:
+$ curl -s -w " HTTP %{http_code}\n" http://127.0.0.1:8080/clients/norcal/eggs/board
+{"detail":"This client has no egg hunt."} HTTP 404
+
+
+# The NorCal export has no /eggs/ page:
+$ ls -d <scratchpad>/out-norcal/eggs 2>&1; ls -d <scratchpad>/out-cpc/eggs
+ls: <scratchpad>/out-norcal/eggs: No such file or directory
+<scratchpad>/out-cpc/eggs
+
+

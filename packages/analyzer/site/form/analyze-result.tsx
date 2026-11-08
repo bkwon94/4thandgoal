@@ -17,6 +17,7 @@ import { Hero } from "@cpc/design/parts/hero";
 import { Headshot } from "@cpc/league/headshot";
 import { Label } from "@cpc/design/parts/label";
 import { cn } from "@cpc/design/lib/utils";
+import { openId, stableId, textId, TRADE_ANSWER, TRADE_KEY } from "@cpc/design/lib/stable-id";
 
 /* A trade side with the asker flag. The swap card and the fairness line need no more, so the finder cards reuse them with a side that has no read. */
 export type SwapSide = TradeSide & { mine: boolean };
@@ -138,7 +139,7 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
   // An arrow fits two sides only, so three or more sides read as one row per side, in the order given.
   if (sides.length > 2) {
     return (
-      <div className="flex flex-col gap-sp-4 rounded-card bg-card p-sp-3">
+      <div className="flex flex-col gap-sp-4 rounded-card bg-card p-sp-3" {...stableId("swap-card")}>
         {sides.map((side) => (
           <SwapRow key={side.roster_id} side={side} sides={sides} />
         ))}
@@ -147,7 +148,7 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
   }
   const [left, right] = sides;
   return (
-    <div className="rounded-card bg-card p-sp-3">
+    <div className="rounded-card bg-card p-sp-3" {...stableId("swap-card")}>
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-x-sp-2 gap-y-sp-4">
         <SwapColumn side={left} />
         {/* The divider runs the full card height. The tag sits on it, level with the team names. */}
@@ -217,11 +218,12 @@ function VerdictHero({ decision, team, asOf, sides, fairness }: { decision: Deci
       </h2>
       <motion.p
         className={cn("plate mt-sp-4 mb-0 w-fit text-headline leading-none font-black tracking-grade", answer.color)}
+        {...stableId("verdict-word")}
         {...rise(off, { duration: DURATION.decision })}
       >
         {answer.word}
       </motion.p>
-      <p className="plate mt-sp-3 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark">{decision.reason}</p>
+      <p className="plate mt-sp-3 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark" {...textId("blurb", decision.reason)}>{decision.reason}</p>
       {(note || fairness) && (
         <Card className="mt-sp-5">
           <NoChartLine asOf={asOf} />
@@ -347,7 +349,7 @@ function SideRead({ side }: { side: Side }) {
 
       <WeekLines side={side} />
 
-      <details className="mt-sp-4">
+      <details className="mt-sp-4" {...openId("fold", side.roster_id)}>
         <summary className="cursor-pointer py-sp-2">
           <Caps className="text-ink">{foldSummary(side.factors.length)}</Caps>
         </summary>
@@ -355,6 +357,7 @@ function SideRead({ side }: { side: Side }) {
           {side.factors.map((f) => (
             <li
               key={f.name}
+              {...stableId("factor", side.roster_id, f.name)}
               className="grid grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)] gap-x-sp-1 border-b border-rule px-sp-1 py-sp-2 text-ink-2 last:border-b-0"
             >
               <Mark lean={f.lean} />
@@ -410,6 +413,15 @@ export function NoChartLine({ asOf }: { asOf: AsOf }) {
   return <p className="m-0 pt-sp-3 text-lead text-mute">{asOf.no_chart_note}</p>;
 }
 
+/* The key of a trade: each side by roster id, with the ids of the players it gives in order, as "3:4046,4881|12:6794".
+   One trade always gives one key, whatever the order of the form, so the egg hunt can match one exact trade. */
+export function tradeKey(doc: AnalyzeResponse): string {
+  return [...doc.trade.sides]
+    .sort((a, b) => a.roster_id - b.roster_id)
+    .map((side) => `${side.roster_id}:${side.gives.map((player) => player.player_id).sort().join(",")}`)
+    .join("|");
+}
+
 export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
   const sides = joinSides(doc);
   const decisionTeam = sides.find((s) => s.roster_id === doc.decision.for_roster)?.team;
@@ -417,7 +429,8 @@ export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
   /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has five chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
-    <div className="tablet:flex tablet:flex-col tablet:gap-card-gap">
+    // The root carries the trade key and the answer of the decision, so the egg hunt reads them as a condition.
+    <div className="tablet:flex tablet:flex-col tablet:gap-card-gap" {...{ [TRADE_KEY]: tradeKey(doc), [TRADE_ANSWER]: doc.decision.answer }}>
       <VerdictHero decision={doc.decision} team={decisionTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
 
       <Chapter>

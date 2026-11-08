@@ -1,0 +1,21 @@
+The board answer of the empty store: counts {"left":0,"found":0,"to_drop":54}, last_drop null.
+home 375-light: egg buttons 0, egg banners 0
+home 375-dark: egg buttons 0, egg banners 0
+home 768-light: egg buttons 0, egg banners 0
+home 768-dark: egg buttons 0, egg banners 0
+home 1280-light: egg buttons 0, egg banners 0
+home 1280-dark: egg buttons 0, egg banners 0
+week-08 375-light: egg buttons 0, egg banners 0
+week-08 375-dark: egg buttons 0, egg banners 0
+week-08 768-light: egg buttons 0, egg banners 0
+week-08 768-dark: egg buttons 0, egg banners 0
+week-08 1280-light: egg buttons 0, egg banners 0
+week-08 1280-dark: egg buttons 0, egg banners 0
+eggs 375-light: egg buttons 0, egg banners 0; HTTP status 200; 404 hero marks 1; text "ERROR // PAGE NOT FOUND 404 This page does not exist. The link may be old, or th"; egg copy matches in main 0
+eggs 375-dark: egg buttons 0, egg banners 0; HTTP status 200; 404 hero marks 1; text "ERROR // PAGE NOT FOUND 404 This page does not exist. The link may be old, or th"; egg copy matches in main 0
+eggs 768-light: egg buttons 0, egg banners 0; HTTP status 200; 404 hero marks 1; text "ERROR // PAGE NOT FOUND 404 This page does not exist. The link may be old, or th"; egg copy matches in main 0
+eggs 768-dark: egg buttons 0, egg banners 0; HTTP status 200; 404 hero marks 1; text "ERROR // PAGE NOT FOUND 404 This page does not exist. The link may be old, or th"; egg copy matches in main 0
+eggs 1280-light: egg buttons 0, egg banners 0; HTTP status 200; 404 hero marks 1; text "ERROR // PAGE NOT FOUND 404 This page does not exist. The link may be old, or th"; egg copy matches in main 0
+eggs 1280-dark: egg buttons 0, egg banners 0; HTTP status 200; 404 hero marks 1; text "ERROR // PAGE NOT FOUND 404 This page does not exist. The link may be old, or th"; egg copy matches in main 0
+Two mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ at 1280 px, light theme, pointerups at 0, 156 ms. Requests to /eggs/check: 0. Dialogs: 0.
+Two mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ at 1280 px, dark theme, pointerups at 0, 164 ms. Requests to /eggs/check: 0. Dialogs: 0.

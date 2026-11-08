@@ -1,10 +1,11 @@
 /**
- * Builds the shell props that every page shares: the title, the brand, and the menu, from client.toml, brand.toml, and copy.toml.
+ * Builds the shell props of every page from client.toml, brand.toml, and copy.toml: the title, the brand, the menu, and the band buttons.
  * It reads public/ at build time in the app layer, so the shell itself reads no file and builds no route.
  */
 import type { Brand, NavItem, NavKind, SiteMenu } from "@cpc/design/shell/nav";
 import { clientValues } from "@/generated/client-values";
-import { menuLinks } from "@/generated/registry";
+import { createElement, type ReactNode } from "react";
+import { bandParts, menuLinks } from "@/generated/registry";
 import type { ClientValues, MenuItem, MenuLinks } from "@/lib/client-values";
 import { listWeekSummaries } from "@/lib/data/week-data";
 import { homeHref, logoSrc } from "@/lib/routes";
@@ -27,6 +28,8 @@ export function menuPages(items: MenuItem[], links: MenuLinks, home: string): Na
     if ("page" in item) return [{ kind: "home", label: item.label ?? "Home", short: "Home", href: home }];
     // The sim adds no menu item and no dock item (midseason PRD), so it has no kind.
     if (item.package === "sim") return [];
+    // The egg board is not a menu item, so the dock keeps its five items. The egg button of the top band opens it.
+    if (item.package === "eggs") return [];
     // The midseason report adds no menu item yet: a sixth item overflows the pill bar of CPC at 1280px. The home
     // takeover and the report tile link to the report.
     if (item.package === "midseason") return [];
@@ -47,7 +50,13 @@ export function weekSubtitle(): string {
   return clientValues.copy.tagline;
 }
 
-export function shellProps(): { title: string; brand: Brand; menu: SiteMenu } {
+/* True when the client takes the eggs package. The registry lists the packages of the client, so this is the same
+   switch that gives the egg button to the top band. The layout and the CSS use it to scope the marks of the hunt. */
+export function takesEggs(): boolean {
+  return clientValues.packages.includes("eggs");
+}
+
+export function shellProps(): { title: string; brand: Brand; menu: SiteMenu; actions: ReactNode } {
   // The registry holds only the packages of the client, so an omitted package has no link and no code in the bundle.
   const home = homeHref();
   // Every published week, newest first, for the week chip and the strip. A client with no week lists none.
@@ -58,5 +67,7 @@ export function shellProps(): { title: string; brand: Brand; menu: SiteMenu } {
     title: clientValues.copy.masthead,
     brand: { home, logo: logoSrc(clientValues.brand.logo) },
     menu: { items: menuPages(clientValues.menu.items, menuLinks, home), weeks },
+    // The button of each package of the client, such as the egg button. The registry lists only the packages of the client.
+    actions: bandParts.map((Part, index) => createElement(Part, { key: index })),
   };
 }

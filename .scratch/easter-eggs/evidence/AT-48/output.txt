@@ -1,0 +1,18 @@
+$ grep -rn -i 'rival' packages/eggs/site apps/site/src/app/_routes/eggs --include='*.tsx' --include='*.ts' | grep -v '\.test\.' ; echo "matches: $(grep -rn -i 'rival' packages/eggs/site apps/site/src/app/_routes/eggs --include='*.tsx' --include='*.ts' | grep -v '\.test\.' | wc -l | tr -d ' ')"
+matches: 0
+
+$ grep -rn 'Brian' packages/eggs/site apps/site/src/app/_routes/eggs --include='*.tsx' --include='*.ts' | grep -v '\.test\.'; echo "matches: $(grep -rn 'Brian' packages/eggs/site apps/site/src/app/_routes/eggs --include='*.tsx' --include='*.ts' | grep -v '\.test\.' | wc -l | tr -d ' ')"
+matches: 0
+
+$ grep -rn -E 'midseason|week-0|/analyze|/rankings|managers/|luck-|sim-trophy|number-|award-|leader-|median-|blurb-|recap|heading-' packages/eggs/site --include='*.tsx' | grep -v '\.test\.' | grep -v '^[^:]*:[0-9]*:\s*//\|^[^:]*:[0-9]*:\s*/\*\|^[^:]*:[0-9]*:\s*\*' ; echo "matches in tsx copy: $(grep -rn -E 'midseason|week-0|/analyze|/rankings|managers/|luck-|sim-trophy|number-|award-|leader-|median-|blurb-|recap|heading-' packages/eggs/site --include='*.tsx' | grep -v '\.test\.' | wc -l | tr -d ' ')"
+matches in tsx copy: 0
+
+$ grep -c -i 'rival' <built>/eggs/index.html
+0
+
+$ grep -c 'Brian' <built>/eggs/index.html
+0
+
+$ grep -rn -E 'luck-|sim-trophy|number-|award-|leader-|median-|blurb-|recap-|heading-' apps/site/src/app/_routes/eggs --include='*.tsx' | grep -v '\.test\.' | wc -l
+       0
+

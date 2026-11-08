@@ -6,6 +6,7 @@ import type { ComponentProps } from "react";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
 import { PlayerRow, PlayerRows } from "./player-row";
+import { stableKey } from "@cpc/design/lib/stable-id";
 
 export type PlayerChapterItem = ComponentProps<typeof PlayerRow>;
 
@@ -16,7 +17,7 @@ export function PlayerChapter({ id, title, empty, items }: { id: string; title: 
       <Label heading className="text-meta">{title}</Label>
       <PlayerRows empty={empty}>
         {items.map((item) => (
-          <PlayerRow key={item.player.player_id} {...item} />
+          <PlayerRow key={item.player.player_id} {...item} stable={stableKey(id, item.player.player_id)} />
         ))}
       </PlayerRows>
     </Chapter>

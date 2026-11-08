@@ -1,0 +1,4 @@
+Lil Fridge claims the A of week 9 into LANSDALE: {"egg_id":1,"letter":"A","roster_id":3,"word":"LANSDALE","letters":{"CORNERSTONE":[],"LANSDALE":["A"],"EAGLES":[]},"winner":null}
+Teehee claims T1, letter C, as a block: {"egg_id":8,"letter":"C","roster_id":12,"word":null,"letters":{"CORNERSTONE":["C"],"LANSDALE":[],"EAGLES":[]},"winner":null}
+The board: counts {"left":9,"found":3,"to_drop":42}; latest [{"roster_id":3,"team":"Lil Fridge","letter":"A","word":"LANSDALE","claimed_at":"2026-11-07T01:22:07.155915-05:00"},{"roster_id":12,"team":"Teehee","letter":"C","word":"CORNERSTONE","claimed_at":"2026-11-07T01:21:25.308370-05:00"}]
+The feed text: LATEST CLAIMS | A | Lil Fridge claimed an A for LANSDALE. | NOW | C | Teehee claimed a C for CORNERSTONE. | NOW

@@ -21,6 +21,7 @@ import { stagger } from "@cpc/design/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "../schema/rankings-types";
 import { cn } from "@cpc/design/lib/utils";
 import { useWeekChoice } from "./week-choice";
+import { openId, stableId, stableKey, textId } from "@cpc/design/lib/stable-id";
 
 /* The order and the names of the four part ranks. */
 const COMPONENTS: { key: keyof Components; name: string }[] = [
@@ -123,7 +124,12 @@ function TopHero({ row, week }: { row: RankingsRow; week: number }) {
         </h1>
       </Rise>
       <Rise step={1}>
-        <div className="plate mt-sp-4 w-fit font-mono text-hero leading-none font-bold tracking-grade">{twoDigits(row.rank)}</div>
+        <div
+          className="plate mt-sp-4 w-fit font-mono text-hero leading-none font-bold tracking-grade"
+          {...stableId("rank-hero", row.roster_id)}
+        >
+          {twoDigits(row.rank)}
+        </div>
       </Rise>
       <Rise step={2}>
         <h2 className="plate mt-sp-3 mb-0 w-fit text-headline leading-tight font-bold">{row.name}</h2>
@@ -132,13 +138,13 @@ function TopHero({ row, week }: { row: RankingsRow; week: number }) {
         </div>
       </Rise>
       <Rise step={3} className="mt-sp-5 grid grid-cols-3 gap-sp-2">
-        <Tile tone="hero" label="Playoff" value={playoffText(odds)} />
-        <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : <Missing what="No odds" />} />
-        <Tile tone="hero" label="Seed" value={odds?.seed != null ? String(odds.seed) : <Missing what="No seed" />} />
+        <Tile tone="hero" label="Playoff" value={playoffText(odds)} stable={stableKey("hero-tile", row.roster_id, "playoff")} />
+        <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : <Missing what="No odds" />} stable={stableKey("hero-tile", row.roster_id, "bye")} />
+        <Tile tone="hero" label="Seed" value={odds?.seed != null ? String(odds.seed) : <Missing what="No seed" />} stable={stableKey("hero-tile", row.roster_id, "seed")} />
       </Rise>
       {row.blurb.length > 0 && (
         <Rise step={4}>
-          <p className="plate mt-sp-5 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2">{blurbText(row)}</p>
+          <p className="plate mt-sp-5 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2" {...textId("blurb", blurbText(row))}>{blurbText(row)}</p>
         </Rise>
       )}
     </Hero>
@@ -149,7 +155,8 @@ function TopHero({ row, week }: { row: RankingsRow; week: number }) {
 function chipsOf(row: RankingsRow): ReactNode[] {
   const odds = row.odds;
   return [
-    ...COMPONENTS.map(({ key, name }) => `${name} ${row.components[key]}`),
+    // The egg hunt names each part of the rank by the same id as the tile of the ladder before it.
+    ...COMPONENTS.map(({ key, name }) => <span {...stableId("ladder", row.roster_id, name)}>{`${name} ${row.components[key]}`}</span>),
     <>
       Move <Movement movement={row.movement} />
     </>,
@@ -180,6 +187,9 @@ function LadderCard({
         as="div"
         // The id names the team, so a check can open the card of one team by its control.
         panelId={`ladder-${row.roster_id}`}
+        // The egg hunt names the toggle and the blurb by ids from the data.
+        headMarks={openId("card", row.roster_id)}
+        textMarks={row.blurb.length > 0 ? textId("blurb", blurbText(row)) : undefined}
         // The head takes the inset of the panel, so the rank panel and the open panel line up, as in the shell of the item.
         headClassName="p-sp-2 pb-0"
         head={
@@ -194,7 +204,7 @@ function LadderCard({
               <Avatar src={avatarSrc(avatars, row.roster_id)} />
               <span className="flex min-w-0 flex-col">
                 <span className="truncate text-row leading-tight font-bold text-ink">{row.name}</span>
-                <span className="mt-sp-0 font-mono text-meta leading-tight text-ink-2 tabular-nums">
+                <span className="mt-sp-0 font-mono text-meta leading-tight text-ink-2 tabular-nums" {...stableId("movement", row.roster_id)}>
                   <RecordLine row={row} />
                 </span>
               </span>
@@ -249,6 +259,7 @@ function WeekChips({ weeks, chosen, choose }: { weeks: RankingsWeek[]; chosen: n
           type="button"
           aria-pressed={week === chosen}
           aria-label={`Week ${week}`}
+          {...openId("week", week)}
           onClick={() => choose(week)}
           className={cn(
             "press min-h-touch min-w-touch flex-none cursor-pointer rounded-card border-0 px-sp-3 text-row font-extrabold tabular-nums",

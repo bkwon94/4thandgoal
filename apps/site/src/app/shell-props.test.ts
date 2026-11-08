@@ -2,9 +2,13 @@
  * Tests for the shell props: the menu items of client.toml become the destinations of the menu, in order.
  * One test reads the real generated client values of cpc and the real published weeks.
  */
+import { cleanup, render, screen, within } from "@testing-library/react";
+import { createElement, type ReactElement } from "react";
 import { describe, expect, it } from "vitest";
+import { TopBand } from "@cpc/design/shell/top-band";
 import type { MenuLinks } from "@/lib/client-values";
-import { shellProps, menuPages, pageTitle } from "./shell-props";
+import { BandPart } from "./_routes/eggs/band";
+import { shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
 
 /* The menu links of a client that takes each package, as the registry gives them. */
 const LINKS: MenuLinks = {
@@ -89,6 +93,21 @@ describe("shellProps of cpc", () => {
     const { title, brand } = shellProps();
     expect(title).toBe("Cornerstone Fantasy Football League");
     expect(brand).toEqual({ home: "/", logo: "/brand/logo.png" });
+  });
+
+  it("puts the egg button of the eggs package in the top band, and the dock keeps its five items", () => {
+    const shell = shellProps();
+    // The egg button renders only after the board of the API names a drop, so the test reads the part in the slot.
+    expect((shell.actions as ReactElement[]).map((part) => part.type)).toEqual([BandPart]);
+    render(createElement(TopBand, { ...shell, pageHref: "/" }));
+    expect(within(screen.getByRole("navigation", { name: "Bottom menu" })).getAllByRole("link")).toHaveLength(5);
+    cleanup();
+  });
+});
+
+describe("takesEggs", () => {
+  it("is true for cpc, which lists the eggs package, the same switch that gives it the egg button", () => {
+    expect(takesEggs()).toBe(true);
   });
 });
 

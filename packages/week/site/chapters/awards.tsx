@@ -8,13 +8,14 @@ import { PhotoFrame } from "@cpc/design/parts/photo-frame";
 import type { Award, HeadshotMap } from "../schema/week-types";
 import { photoOf } from "../parts/photo";
 import { WeekChapter } from "../parts/week-chapter";
+import { stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* A tile with no projections this week shows a note in place of the player.
    The name of the award has the full width of the tile, so a long word such as "Underperformer" fits whole.
    The photo sits beside the points, and the player and the team have the full width under them. */
 function AwardTile({ award, headshots }: { award: Award; headshots: HeadshotMap }) {
   return (
-    <li className="min-w-0 list-none">
+    <li className="min-w-0 list-none" {...stableId("award", award.title)}>
       <Card className="flex h-full flex-col gap-sp-3">
         <div className="font-mono text-meta leading-tight font-bold tracking-caps text-accent-ink uppercase">
           {award.title}
@@ -46,7 +47,7 @@ export function Awards({ awards, headshots, blurb }: { awards: Award[]; headshot
           <AwardTile key={award.title} award={award} headshots={headshots} />
         ))}
       </ul>
-      <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{blurb}</p>
+      <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>
     </WeekChapter>
   );
 }

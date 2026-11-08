@@ -1101,6 +1101,38 @@ _Avoid_: Flag, feature flag, setting, option
 One thing that we deploy, such as the site or the API. An app holds only the build config, the routes, and the code that wires the packages. It holds no rule of a domain.
 _Avoid_: Shell (that is the frame of a page), service, project
 
+**Egg**:
+One hidden spot on the site that holds one letter. The first manager who finds it and claims it gets the letter, and then the egg is gone. Only a client that takes the eggs package has eggs.
+_Avoid_: Easter egg (in the code), secret, prize, hidden spot
+
+**Egg kind**:
+The way to find one egg: a target, such as an avatar or a cell of a table, an action, such as a double-tap or a long press, and an optional condition, such as light mode.
+_Avoid_: Egg type, template, egg idea, trigger
+
+**Egg word**:
+One of the three words that a manager fills with letters: CORNERSTONE, LANSDALE, and EAGLES. A claimed letter counts toward one egg word only. The first manager to fill an egg word wins its prize.
+_Avoid_: Word (alone), target word, puzzle
+
+**Egg drop**:
+The batch of six eggs that goes live each Tuesday with the weekly publish. The API gives each egg of a drop its letter by a public rule.
+_Avoid_: Release, batch, spawn
+
+**Hunter**:
+The manager who claims one egg. Each egg has at most one hunter.
+_Avoid_: Finder (that is the trade code of the analyzer), winner, claimer
+
+**Egg board**:
+The page of the site that shows the letters of each manager in each egg word, the count of eggs left, and the winner of each egg word. It never shows where an egg hides.
+_Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board score)
+
+**Egg banner**:
+The slim strip under the top band of the home page that shows the count of eggs of the last egg drop, its day, and the count of eggs left to find. It links to the egg board and names no spot.
+_Avoid_: Drop banner, alert, announcement, toast
+
+**Commissioner**:
+The person who places the eggs, cannot hunt, and can undo a claim. Site copy says "the commissioner" and never names the person.
+_Avoid_: Admin, owner, a real name
+
 ## Workflow
 
 **Map**:

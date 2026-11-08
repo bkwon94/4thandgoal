@@ -1,0 +1,358 @@
+{
+  "counts": {
+    "left": 1,
+    "found": 1,
+    "to_drop": 52
+  },
+  "weeks": [
+    {
+      "week": 9,
+      "slots": [
+        "found",
+        "out",
+        "future",
+        "future",
+        "future",
+        "future"
+      ]
+    },
+    {
+      "week": 10,
+      "slots": [
+        "future",
+        "future",
+        "future",
+        "future",
+        "future",
+        "future"
+      ]
+    },
+    {
+      "week": 11,
+      "slots": [
+        "future",
+        "future",
+        "future",
+        "future",
+        "future",
+        "future"
+      ]
+    },
+    {
+      "week": 12,
+      "slots": [
+        "future",
+        "future",
+        "future",
+        "future",
+        "future",
+        "future"
+      ]
+    },
+    {
+      "week": 13,
+      "slots": [
+        "future",
+        "future",
+        "future",
+        "future",
+        "future",
+        "future"
+      ]
+    },
+    {
+      "week": 14,
+      "slots": [
+        "future",
+        "future",
+        "future",
+        "future",
+        "future",
+        "future"
+      ]
+    },
+    {
+      "week": 15,
+      "slots": [
+        "future",
+        "future",
+        "future",
+        "future",
+        "future",
+        "future"
+      ]
+    },
+    {
+      "week": 16,
+      "slots": [
+        "future",
+        "future",
+        "future",
+        "future",
+        "future",
+        "future"
+      ]
+    },
+    {
+      "week": 17,
+      "slots": [
+        "future",
+        "future",
+        "future",
+        "future",
+        "future",
+        "future"
+      ]
+    }
+  ],
+  "words": [
+    {
+      "word": "CORNERSTONE",
+      "prize": 50,
+      "winner": null,
+      "managers": [
+        {
+          "roster_id": 1,
+          "team": "Brock \u2018N\u2019 Roll",
+          "letters": []
+        },
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love",
+          "letters": []
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge",
+          "letters": [
+            "C"
+          ]
+        },
+        {
+          "roster_id": 4,
+          "team": "Pukancun on 3",
+          "letters": []
+        },
+        {
+          "roster_id": 5,
+          "team": "London Cooking",
+          "letters": []
+        },
+        {
+          "roster_id": 7,
+          "team": "To Infinity and Bijan",
+          "letters": []
+        },
+        {
+          "roster_id": 8,
+          "team": "Return of T Mac",
+          "letters": []
+        },
+        {
+          "roster_id": 9,
+          "team": "Maye d'force B with U",
+          "letters": []
+        },
+        {
+          "roster_id": 10,
+          "team": "behold the lamb",
+          "letters": []
+        },
+        {
+          "roster_id": 11,
+          "team": "Unsolicited Dak Picks",
+          "letters": []
+        },
+        {
+          "roster_id": 12,
+          "team": "Amon-Ra Dawg Your Team",
+          "letters": []
+        }
+      ]
+    },
+    {
+      "word": "LANSDALE",
+      "prize": 30,
+      "winner": null,
+      "managers": [
+        {
+          "roster_id": 1,
+          "team": "Brock \u2018N\u2019 Roll",
+          "letters": []
+        },
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love",
+          "letters": []
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge",
+          "letters": []
+        },
+        {
+          "roster_id": 4,
+          "team": "Pukancun on 3",
+          "letters": []
+        },
+        {
+          "roster_id": 5,
+          "team": "London Cooking",
+          "letters": []
+        },
+        {
+          "roster_id": 7,
+          "team": "To Infinity and Bijan",
+          "letters": []
+        },
+        {
+          "roster_id": 8,
+          "team": "Return of T Mac",
+          "letters": []
+        },
+        {
+          "roster_id": 9,
+          "team": "Maye d'force B with U",
+          "letters": []
+        },
+        {
+          "roster_id": 10,
+          "team": "behold the lamb",
+          "letters": []
+        },
+        {
+          "roster_id": 11,
+          "team": "Unsolicited Dak Picks",
+          "letters": []
+        },
+        {
+          "roster_id": 12,
+          "team": "Amon-Ra Dawg Your Team",
+          "letters": []
+        }
+      ]
+    },
+    {
+      "word": "EAGLES",
+      "prize": 20,
+      "winner": null,
+      "managers": [
+        {
+          "roster_id": 1,
+          "team": "Brock \u2018N\u2019 Roll",
+          "letters": []
+        },
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love",
+          "letters": []
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge",
+          "letters": []
+        },
+        {
+          "roster_id": 4,
+          "team": "Pukancun on 3",
+          "letters": []
+        },
+        {
+          "roster_id": 5,
+          "team": "London Cooking",
+          "letters": []
+        },
+        {
+          "roster_id": 7,
+          "team": "To Infinity and Bijan",
+          "letters": []
+        },
+        {
+          "roster_id": 8,
+          "team": "Return of T Mac",
+          "letters": []
+        },
+        {
+          "roster_id": 9,
+          "team": "Maye d'force B with U",
+          "letters": []
+        },
+        {
+          "roster_id": 10,
+          "team": "behold the lamb",
+          "letters": []
+        },
+        {
+          "roster_id": 11,
+          "team": "Unsolicited Dak Picks",
+          "letters": []
+        },
+        {
+          "roster_id": 12,
+          "team": "Amon-Ra Dawg Your Team",
+          "letters": []
+        }
+      ]
+    }
+  ],
+  "latest": [
+    {
+      "roster_id": 3,
+      "team": "Lil Fridge",
+      "letter": "C",
+      "word": "CORNERSTONE",
+      "claimed_at": "2026-10-19T12:00:00-04:00"
+    }
+  ],
+  "managers": [
+    {
+      "roster_id": 1,
+      "team": "Brock \u2018N\u2019 Roll"
+    },
+    {
+      "roster_id": 2,
+      "team": "All You Need Is Love"
+    },
+    {
+      "roster_id": 3,
+      "team": "Lil Fridge"
+    },
+    {
+      "roster_id": 4,
+      "team": "Pukancun on 3"
+    },
+    {
+      "roster_id": 5,
+      "team": "London Cooking"
+    },
+    {
+      "roster_id": 7,
+      "team": "To Infinity and Bijan"
+    },
+    {
+      "roster_id": 8,
+      "team": "Return of T Mac"
+    },
+    {
+      "roster_id": 9,
+      "team": "Maye d'force B with U"
+    },
+    {
+      "roster_id": 10,
+      "team": "behold the lamb"
+    },
+    {
+      "roster_id": 11,
+      "team": "Unsolicited Dak Picks"
+    },
+    {
+      "roster_id": 12,
+      "team": "Amon-Ra Dawg Your Team"
+    }
+  ],
+  "last_drop": {
+    "week": 9,
+    "count": 2,
+    "dropped_at": "2026-10-19T12:00:00-04:00"
+  }
+}

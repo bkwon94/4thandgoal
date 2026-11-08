@@ -1,0 +1,5 @@
+# The token of AT-1, a claim with no X-League-Passphrase header. The real path is /clients/cpc/eggs/claim.
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/claim -H 'Content-Type: application/json' -d '{"token":"24cOyEPctkPaJgJryg5Qol3EqC2CUA4H","roster_id":3,"word":"CORNERSTONE"}'
+
+HTTP 401
+

@@ -1,0 +1,34 @@
+# A test egg on the verdict word of the analyzer (route /analyze/) with the action tap2 and trade_teams [1, 3]: The Blue Tent (1) and Lil Fridge (3).
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":10,"eggs":[{"page":"/analyze/","target":"verdict-word","action":"tap2","conditions":{"trade_teams":[1,3]}}]}'
+{"week":10,"dropped":1,"eggs":[{"id":2,"page":"/analyze","target":"verdict-word","action":"tap2","conditions":{"trade_teams":[1,3]},"letter":"A"}]}
+HTTP 200
+
+# The check with trade_teams [1,3]:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/analyze/","target":"verdict-word","action":"tap2","conditions":{"theme":"light","trade_teams":[1,3],"trade_answer":"yes"}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":true,"claimed":false,"letter":"A","token":"<cut>"}
+HTTP 200
+
+# The check with trade_teams [3,1]:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/analyze/","target":"verdict-word","action":"tap2","conditions":{"theme":"light","trade_teams":[3,1],"trade_answer":"yes"}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":true,"claimed":false,"letter":"A","token":"<cut>"}
+HTTP 200
+
+# The check with trade_teams [1,12]:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/analyze/","target":"verdict-word","action":"tap2","conditions":{"theme":"light","trade_teams":[1,12],"trade_answer":"yes"}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":false}
+HTTP 200
+
+# The check with trade_teams [1,3,12]:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/analyze/","target":"verdict-word","action":"tap2","conditions":{"theme":"light","trade_teams":[1,3,12],"trade_answer":"yes"}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":false}
+HTTP 200
+
+# The drop of an egg with the old trade condition, an exact trade key:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":11,"eggs":[{"page":"/analyze/","target":"verdict-word","action":"tap2","conditions":{"trade":"1:4046|3:6794"}}]}'
+{"detail":[{"type":"value_error","loc":["body","eggs",0,"conditions"],"msg":"Value error, The condition \"trade\" is gone. Name two roster ids as \"trade_teams\".","input":{"trade":"1:4046|3:6794"},"ctx":{"error":{}}}]}
+HTTP 422
+
+$ sqlite3 $CORNERSTONE_EGGS_DIR/cpc.sqlite 'SELECT count(*) AS eggs_of_week_11 FROM eggs WHERE week=11'
+0
+
+

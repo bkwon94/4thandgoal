@@ -6,6 +6,7 @@ import { gap, num } from "@cpc/design/format/format";
 import { Rise } from "@cpc/design/parts/rise";
 import { Tile, type TileTrend, type TrendPoint } from "@cpc/design/parts/tile";
 import type { GameChanger, Matchup, Median } from "../schema/week-types";
+import { stableId } from "@cpc/design/lib/stable-id";
 import { medianOf, trendText, type WeekTrends } from "./week-trends";
 
 /* A name suffix is no surname, so "Harold Fannin Jr." gives "Fannin". */
@@ -91,7 +92,7 @@ export function WeekNumbers({
       <ul className="m-0 grid list-none grid-cols-2 gap-sp-2 p-0 tablet:grid-cols-4">
         {numbersOf(matchups, median, gameChanger, trends).map((item, index) => (
           // The hero takes the first four steps of the stagger, so the tiles rise after it.
-          <li key={item.label} className="min-w-0">
+          <li key={item.label} className="min-w-0" {...stableId("number", item.label)}>
             <Rise step={index + 4} className="h-full">
               <Tile label={item.label} value={item.value} note={item.note} trend={item.trend} className="h-full" />
             </Rise>

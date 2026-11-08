@@ -1,0 +1,4 @@
+Two mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ in the light theme. The pointerup times of the page, in ms from the first: 0, 161.
+Checks sent: 1
+body: {"page":"/midseason/2026/","target":"luck-3","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}
+The card after the answer (store A holds a claim of T1 by Teehee from AT-38, so the card is the claimed-first card): TOO LATE | C | Another manager claimed first. | The first claim wins the egg. | Back to the page | See the egg board

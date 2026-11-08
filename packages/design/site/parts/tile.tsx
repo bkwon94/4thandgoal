@@ -3,6 +3,7 @@
  * A Trend tile adds a small chart of the same number from week 1 to the page week, after the Lime Metrics method.
  */
 import { useId, type ReactNode } from "react";
+import { STABLE_ID } from "../lib/stable-id";
 import { cn } from "../lib/utils";
 
 /* One point of a trend: the week and its number. */
@@ -22,6 +23,8 @@ type TileProps = {
   // The chart under the note. A tile with no trend has no chart.
   trend?: TileTrend;
   tone?: "page" | "hero";
+  // The stable id of the tile, from the data that it renders, so the egg hunt can name it.
+  stable?: string;
   className?: string;
 };
 
@@ -155,10 +158,10 @@ function TrendChart({ trend }: { trend: TileTrend }) {
   );
 }
 
-export function Tile({ label, value, note, trend, tone = "page", className }: TileProps) {
+export function Tile({ label, value, note, trend, tone = "page", stable, className }: TileProps) {
   const colors = TONES[tone];
   return (
-    <div className={cn("rounded-tile p-sp-4", colors.box, className)}>
+    <div className={cn("rounded-tile p-sp-4", colors.box, className)} {...(stable ? { [STABLE_ID]: stable } : {})}>
       {/* The label and the number are mono, so the numbers of a row of tiles line up. */}
       <div className={cn("font-mono text-meta leading-tight font-bold tracking-caps uppercase", colors.label)}>{label}</div>
       <div className="mt-sp-1 font-mono text-stat leading-stat font-bold tabular-nums">{value}</div>

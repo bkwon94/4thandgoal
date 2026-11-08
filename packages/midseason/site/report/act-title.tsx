@@ -3,6 +3,7 @@
  * The hero sits on the band color in both themes, so each title page stays dark in the light theme too.
  */
 import { Hero } from "@cpc/design/parts/hero";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 /* The act number as a roman numeral, as a book numbers its acts. The report has three acts. */
 const NUMERALS = ["I", "II", "III"];
@@ -16,7 +17,7 @@ export function ActTitle({ index, title, headingId }: { index: number; title: st
         <span className="plate font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase">
           {number}
         </span>
-        <h2 id={headingId} className="plate m-0 text-headline leading-tight font-bold tracking-tight">
+        <h2 id={headingId} className="plate m-0 text-headline leading-tight font-bold tracking-tight" {...stableId("heading", title)}>
           {title}
         </h2>
       </div>
