@@ -1,0 +1,151 @@
+[
+  {
+    "page": "week",
+    "route": "/2026/week-08/",
+    "label": "Matchup of the Week",
+    "title": {
+      "tag": "h1",
+      "text": "The Blue Tent by 1.43",
+      "fontSize": "40px",
+      "fontWeight": "300"
+    },
+    "eyebrow": {
+      "text": "WEEK 08 // MATCHUP OF THE WEEK",
+      "fontFamily": "jetbrainsMono, \"JetBrains Mono Fallback\", Menlo, \"Courier New\", monospace",
+      "fontSize": "12px",
+      "textTransform": "uppercase",
+      "letterSpacing": "1.92px",
+      "color": "rgb(242, 165, 158)"
+    },
+    "meta": {
+      "text": "Oct 29 – Nov 2, 2026 · Published Tue Nov 3, 2026",
+      "fontSize": "16px",
+      "lineHeight": "22.4px",
+      "height": 53,
+      "lines": 2
+    }
+  },
+  {
+    "page": "manager",
+    "route": "/2026/managers/7/",
+    "label": "To Infinity and Bijan",
+    "title": {
+      "tag": "h1",
+      "text": "To Infinity and Bijan",
+      "fontSize": "40px",
+      "fontWeight": "300"
+    },
+    "eyebrow": {
+      "text": "7-9 · 9TH OF 12",
+      "fontFamily": "jetbrainsMono, \"JetBrains Mono Fallback\", Menlo, \"Courier New\", monospace",
+      "fontSize": "12px",
+      "textTransform": "uppercase",
+      "letterSpacing": "1.92px",
+      "color": "rgb(242, 165, 158)"
+    },
+    "meta": {
+      "text": "bjpicard96",
+      "fontSize": "16px",
+      "lineHeight": "22.4px",
+      "height": 30,
+      "lines": 1
+    }
+  },
+  {
+    "page": "rankings",
+    "route": "/rankings/",
+    "label": "Rank 1",
+    "title": {
+      "tag": "h1",
+      "text": "All You Need Is Love",
+      "fontSize": "40px",
+      "fontWeight": "300"
+    },
+    "eyebrow": {
+      "text": "WEEK 8 // POWER RANKINGS",
+      "fontFamily": "jetbrainsMono, \"JetBrains Mono Fallback\", Menlo, \"Courier New\", monospace",
+      "fontSize": "12px",
+      "textTransform": "uppercase",
+      "letterSpacing": "1.92px",
+      "color": "rgb(242, 165, 158)"
+    },
+    "meta": {
+      "text": "11-5 · Up 4",
+      "fontSize": "16px",
+      "lineHeight": "22.4px",
+      "height": 31,
+      "lines": 1
+    }
+  },
+  {
+    "page": "midseason",
+    "route": "/midseason/2026/",
+    "label": "The Title Race",
+    "title": {
+      "tag": "h1",
+      "text": "The Title Race",
+      "fontSize": "40px",
+      "fontWeight": "300"
+    },
+    "eyebrow": {
+      "text": "2026 MIDSEASON REPORT // WEEK 8",
+      "fontFamily": "jetbrainsMono, \"JetBrains Mono Fallback\", Menlo, \"Courier New\", monospace",
+      "fontSize": "12px",
+      "textTransform": "uppercase",
+      "letterSpacing": "1.92px",
+      "color": "rgb(242, 165, 158)"
+    },
+    "meta": {
+      "text": "All You Need Is Love leads the standings at 11-5.",
+      "fontSize": "16px",
+      "lineHeight": "22.4px",
+      "height": 53,
+      "lines": 2
+    }
+  },
+  {
+    "page": "analyze",
+    "route": "/analyze/",
+    "label": "Trade Analyzer",
+    "title": {
+      "tag": "h1",
+      "text": "Trade Analyzer",
+      "fontSize": "40px",
+      "fontWeight": "300"
+    },
+    "eyebrow": {
+      "text": "TRADE ANALYZER",
+      "fontFamily": "jetbrainsMono, \"JetBrains Mono Fallback\", Menlo, \"Courier New\", monospace",
+      "fontSize": "12px",
+      "textTransform": "uppercase",
+      "letterSpacing": "1.92px",
+      "color": "rgb(242, 165, 158)"
+    },
+    "meta": {
+      "text": "Who gets what?",
+      "fontSize": "16px",
+      "lineHeight": "22.4px",
+      "height": 30,
+      "lines": 1
+    }
+  },
+  {
+    "page": "404",
+    "route": "/no-such-page/",
+    "label": "Page not found",
+    "title": {
+      "tag": "h1",
+      "text": "Page not found",
+      "fontSize": "40px",
+      "fontWeight": "300"
+    },
+    "eyebrow": null,
+    "meta": {
+      "text": "This page does not exist. The link may be old, or the week is not out yet.",
+      "fontSize": "16px",
+      "lineHeight": "22.4px",
+      "height": 53,
+      "lines": 2
+    }
+  }
+]

@@ -1,0 +1,19 @@
+How the files of this test were made.
+
+Instrument: a Playwright script, evidence/AT-1/hero-slots.ev.ts.txt, with its config evidence/AT-1/ev.config.ts.txt (saved as .txt, so no tool of the repo reads them as code).
+Reason for a script, not the runner: the runner takes full-page shots after a scroll pass. The pass leaves the hero and comes back, so the scene plays again and sits mid-settle at the shot. No verb waits for the settle, times a frame, reads a computed style, counts frames, or taps a point of the canvas.
+
+Build: CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build, in apps/site of the Spec worktree at 6cb285d8, on 2026-11-08.
+The norcal export of AT-34 is CLIENT=norcal pnpm build of AT-37, at the same commit.
+Server: apps/site/e2e/serve.ts serves apps/site/out on http://127.0.0.1:4173 for the analyzer tests and AT-13, and on port 4174 for the others, because another session held port 4173 at that time. A missing path gets 404.html with the status 404.
+Browser: Chromium of Playwright, Desktop Chrome settings, motion on unless the test says reduced motion.
+Theme: an init script sets localStorage "cpc.theme" to "light" or "dark" before each load.
+Each width and theme runs in a fresh browser context, so local storage starts empty and no hint flag is set.
+
+Times: an init script records each change of data-scene-state of the canvas, with performance.now().
+"Entry" is the first change to "settle" (or "drift") after the hero enters the view.
+A "scene screenshot" is an element shot of the scene box, taken 2.5 s after entry, when data-scene-state is "rest". Scene shots use a device scale of 2.
+A "frame" is the canvas pixels, read in the page with toDataURL at the named time and drawn on the background color of the hero. The read runs inside the page, so the time is exact to a few ms. Each data file gives the real time of each frame.
+Hero shots are element shots of the first hero, section[aria-label] with a [data-hero-slot="title"], in a viewport of 1600 px height, so the fixed tab bar of a phone covers no part of the hero.
+
+Run: EV_PORT=<port> CLIENT=cpc pnpm exec playwright test --config ev.config.ts -g "<the test name>", from apps/site.

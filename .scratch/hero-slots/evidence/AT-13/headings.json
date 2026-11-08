@@ -1,0 +1,30 @@
+[
+  {
+    "hero": "The Title Race",
+    "level": "h1",
+    "text": "The Title Race",
+    "fontSize": "40px",
+    "fontWeight": "300"
+  },
+  {
+    "hero": "Act I: How We Got Here",
+    "level": "h2",
+    "text": "How We Got Here",
+    "fontSize": "40px",
+    "fontWeight": "300"
+  },
+  {
+    "hero": "Act II: The Moves",
+    "level": "h2",
+    "text": "The Moves",
+    "fontSize": "40px",
+    "fontWeight": "300"
+  },
+  {
+    "hero": "Act III: What Comes Next",
+    "level": "h2",
+    "text": "What Comes Next",
+    "fontSize": "40px",
+    "fontWeight": "300"
+  }
+]

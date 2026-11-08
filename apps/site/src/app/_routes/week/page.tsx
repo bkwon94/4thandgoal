@@ -18,6 +18,7 @@ import { Trades } from "@cpc/week/chapters/trades";
 import { WeekFooter } from "@cpc/week/chapters/week-footer";
 import { WeekNumbers } from "@cpc/week/chapters/week-numbers";
 import { weekTrends } from "@cpc/week/chapters/week-trends";
+import { matchupScene } from "@cpc/week/parts/matchup-scene";
 import { loadSeasonWeeks, seasonManagersHref } from "@/lib/data/manager-data";
 import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/data/week-data";
 import { weekHref } from "@/lib/routes";
@@ -86,6 +87,8 @@ export default async function WeekPage({ params }: Props) {
               avatars={page.avatars}
               headshots={page.headshots}
               blurb={page.blurbs.motw}
+              // The hero of the Matchup is the first hero of the page, so it draws the scene of the week (decision 07).
+              scene={matchupScene(page)}
             />
             <WeekNumbers
               matchups={page.matchups}

@@ -1,0 +1,19 @@
+{
+  "flagAtStart": null,
+  "beforeTap": {
+    "state": "rest",
+    "label": "The Blue Tent · 100.31",
+    "hint": "shown"
+  },
+  "afterTap": {
+    "state": "rest",
+    "label": "Lil Fridge · 80.11",
+    "hint": "gone"
+  },
+  "flagAfterTap": "1",
+  "afterReload": {
+    "state": "rest",
+    "label": "The Blue Tent · 100.31",
+    "hint": "gone"
+  }
+}

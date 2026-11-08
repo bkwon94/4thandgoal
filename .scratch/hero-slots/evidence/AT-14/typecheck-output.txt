@@ -1,0 +1,8 @@
+$ pnpm --dir apps/site typecheck   # next typegen && tsc --noEmit; the site tsconfig covers packages/*/site
+
+> cpcfantasyfootball-site@0.1.0 typecheck /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+(exit 0)

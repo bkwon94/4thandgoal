@@ -1,0 +1,12 @@
+[
+  {
+    "width": 375,
+    "trigger": "Grade D, how the grade reads",
+    "dialogVisible": true
+  },
+  {
+    "width": 1280,
+    "trigger": "Grade D, how the grade reads",
+    "dialogVisible": true
+  }
+]

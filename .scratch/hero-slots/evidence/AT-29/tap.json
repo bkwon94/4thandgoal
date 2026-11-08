@@ -1,0 +1,35 @@
+[
+  {
+    "width": 375,
+    "tappedLight": "Teehee · 134.1",
+    "tapOnPagePx": {
+      "x": 318,
+      "y": 360.578125
+    },
+    "state": "rest",
+    "label": "Teehee · 134.1",
+    "hint": "gone"
+  },
+  {
+    "width": 768,
+    "tappedLight": "Teehee · 134.1",
+    "tapOnPagePx": {
+      "x": 663,
+      "y": 293
+    },
+    "state": "rest",
+    "label": "Teehee · 134.1",
+    "hint": "gone"
+  },
+  {
+    "width": 1280,
+    "tappedLight": "Teehee · 134.1",
+    "tapOnPagePx": {
+      "x": 959,
+      "y": 302.25
+    },
+    "state": "rest",
+    "label": "Teehee · 134.1",
+    "hint": "gone"
+  }
+]

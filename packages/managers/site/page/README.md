@@ -3,7 +3,7 @@
 ## Knows
 
 - The managers index and its Index list: a ledger of the teams in power-ranking order, filtered by the race chips All, In, Bubble, and Out. A row opens in place with the Open card, one at a time.
-- The hero of a manager page, with the grade as the big number, the tiles Playoff, Bye, and Seed, and a W or L chip for each week.
+- The hero of a manager page in the hero slots, with the grade as the big number, the tiles Playoff, Bye, and Seed, and a W or L chip for each week. Its scene has one light per played week, bright for a win and dim for a loss, against the median of each week.
 - The five chapters under the hero: Roster, Season So Far, Moves, Best Adds, and Top Performers. The Moves tiles are Trend tiles.
 - The slot ranks, the points line, the bench points, and the season numbers.
 - The Grade dial: four arcs, one for each part of the roster grade, each lit by its rank. Season So Far shows it under the letter and the read, and an open row of the Index list shows it small, in one row of four.

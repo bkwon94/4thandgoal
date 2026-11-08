@@ -268,7 +268,8 @@ describe("Reduced motion on the static pages", () => {
     // One line from each chapter, from the top story to next week. The text must be there on the first render.
     // The chapter rail repeats the chapter labels, so the queries stay inside the page column.
     const main = within(screen.getByRole("main"));
-    expect(main.getByRole("heading", { level: 1 }).textContent).toBe("Week 06 // Matchup of the Week");
+    expect(main.getByText("Week 06 // Matchup of the Week")).toBeTruthy();
+    expect(main.getByRole("heading", { level: 1 }).textContent).toBe("behold the lamb by 5.34");
     expect(main.getByRole("region", { name: "The week in numbers" })).toBeTruthy();
     expect(main.getByText("Every game")).toBeTruthy();
     expect(main.getByRole("heading", { level: 2, name: "Game Changer" })).toBeTruthy();

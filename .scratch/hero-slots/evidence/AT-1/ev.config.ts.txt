@@ -1,0 +1,14 @@
+/**
+ * Playwright config of the evidence script of hero-slots. It runs the one spec in this folder, one worker at a time.
+ * The timed frames need a quiet machine, so one worker runs.
+ */
+import { defineConfig, devices } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site/node_modules/@playwright/test/index.js";
+
+export default defineConfig({
+  testDir: __dirname,
+  testMatch: "hero-slots.ev.ts",
+  workers: 1,
+  reporter: "list",
+  timeout: 240000,
+  use: { ...devices["Desktop Chrome"], reducedMotion: "no-preference" },
+});

@@ -1,0 +1,74 @@
+[
+  {
+    "width": 375,
+    "theme": "light",
+    "rule": {
+      "exists": true,
+      "display": "none",
+      "height": 0,
+      "ruleTop": 0,
+      "statsTop": 747,
+      "backgroundImage": "linear-gradient(to right in oklab, rgba(0, 0, 0, 0) 0%, rgb(51, 51, 51) 50%, rgba(0, 0, 0, 0) 100%)"
+    }
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "rule": {
+      "exists": true,
+      "display": "none",
+      "height": 0,
+      "ruleTop": 0,
+      "statsTop": 747,
+      "backgroundImage": "linear-gradient(to right in oklab, rgba(0, 0, 0, 0) 0%, rgb(68, 68, 68) 50%, rgba(0, 0, 0, 0) 100%)"
+    }
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "rule": {
+      "exists": true,
+      "display": "block",
+      "height": 1,
+      "ruleTop": 776,
+      "statsTop": 788,
+      "backgroundImage": "linear-gradient(to right in oklab, rgba(0, 0, 0, 0) 0%, rgb(51, 51, 51) 50%, rgba(0, 0, 0, 0) 100%)"
+    }
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "rule": {
+      "exists": true,
+      "display": "block",
+      "height": 1,
+      "ruleTop": 776,
+      "statsTop": 788,
+      "backgroundImage": "linear-gradient(to right in oklab, rgba(0, 0, 0, 0) 0%, rgb(68, 68, 68) 50%, rgba(0, 0, 0, 0) 100%)"
+    }
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "rule": {
+      "exists": true,
+      "display": "block",
+      "height": 1,
+      "ruleTop": 791,
+      "statsTop": 803,
+      "backgroundImage": "linear-gradient(to right in oklab, rgba(0, 0, 0, 0) 0%, rgb(51, 51, 51) 50%, rgba(0, 0, 0, 0) 100%)"
+    }
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "rule": {
+      "exists": true,
+      "display": "block",
+      "height": 1,
+      "ruleTop": 791,
+      "statsTop": 803,
+      "backgroundImage": "linear-gradient(to right in oklab, rgba(0, 0, 0, 0) 0%, rgb(68, 68, 68) 50%, rgba(0, 0, 0, 0) 100%)"
+    }
+  }
+]

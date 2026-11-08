@@ -36,6 +36,56 @@ describe("MidseasonScreen", () => {
     expect(opener.getByText("All You Need Is Love, 11-5, 6th in title odds")).toBeTruthy();
   });
 
+  it("fills the slots of the opener: the season and week, the title, the lead line, the tiles, then See the sim", () => {
+    renderReport(<div>The sim</div>);
+    const region = screen.getByRole("region", { name: "The Title Race" });
+    const slots = [...region.querySelectorAll("[data-hero-slot]")];
+    expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual(["eyebrow", "title", "meta", "stats", "action"]);
+    expect(slots[0].textContent).toBe("2026 Midseason Report // Week 8");
+    expect(slots[1].textContent).toBe("The Title Race");
+    // The lead line is the first sentence of the blurb, so the meta holds one or two lines.
+    expect(slots[2].textContent).toBe(midseason.opener.blurb!.sentences[0].text);
+    expect(within(slots[3] as HTMLElement).getAllByRole("listitem")).toHaveLength(3);
+    expect(within(slots[3] as HTMLElement).getByText("Record leader")).toBeTruthy();
+    expect(within(slots[4] as HTMLElement).getByRole("link", { name: "See the sim" })).toBeTruthy();
+  });
+
+  it("keeps the static grid, the glow, and the brackets in the opener, and draws no scene in the report (AT-35, AT-44)", () => {
+    const { container } = renderReport();
+    const opener = screen.getByRole("region", { name: "The Title Race" });
+    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    expect(opener.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(opener.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
+  });
+
+  it("shows the rest of the opener blurb as a paragraph directly under the hero", () => {
+    renderReport();
+    const region = screen.getByRole("region", { name: "The Title Race" });
+    const rest = midseason.opener.blurb!.sentences.slice(1).map((sentence) => sentence.text).join(" ");
+    expect(region.nextElementSibling?.tagName).toBe("P");
+    expect(region.nextElementSibling?.textContent).toBe(rest);
+  });
+
+  it("gives each act title the eyebrow and the title slots, an h2 with the look of the opener h1", () => {
+    // AT-13. The level changes the element, not the look, so both titles carry one class list.
+    renderReport();
+    const h1 = screen.getByRole("heading", { level: 1, name: "The Title Race" });
+    for (const [index, act] of midseason.acts.entries()) {
+      const number = `Act ${["I", "II", "III"][index]}`;
+      const page = screen.getByRole("region", { name: `${number}: ${act.title}` });
+      const slots = [...page.querySelectorAll("[data-hero-slot]")];
+      expect(slots.map((slot) => [slot.getAttribute("data-hero-slot"), slot.textContent])).toEqual([
+        ["eyebrow", number],
+        ["title", act.title],
+      ]);
+      expect(slots[1].tagName).toBe("H2");
+      expect(slots[1].className).toBe(h1.className);
+      // The section of the act takes its name from the act title.
+      expect(screen.getByRole("region", { name: act.title }).id).toBe(act.key);
+    }
+  });
+
   it("renders the three acts in order, each opened by a title page on the dark hero surface", () => {
     renderReport();
     const titles = screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent);

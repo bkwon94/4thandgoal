@@ -141,7 +141,7 @@ test("no waiver page is built, and its URL shows the 404 page", async ({ page })
   expect(routes.filter((route) => route.includes("waiver"))).toEqual([]);
   const response = await page.goto(`${server.url}${LATEST_WEEK_ROUTE}waiver/`);
   expect(response?.status()).toBe(404);
-  await expect(page.getByText("ERROR // PAGE NOT FOUND")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Page not found" })).toBeVisible();
 });
 
 /* The ink copy of each rolled letter of the Index list is CSS content with empty alt text, so a screen reader hears each

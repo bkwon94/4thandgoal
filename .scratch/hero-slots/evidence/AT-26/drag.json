@@ -1,0 +1,79 @@
+{
+  "startOnPagePx": {
+    "x": 57,
+    "y": 424.50774159566583
+  },
+  "endOnPagePx": {
+    "x": 175.63636363636363,
+    "y": 424.50774159566583
+  },
+  "path": [
+    {
+      "x": 66.9,
+      "y": 424.5
+    },
+    {
+      "x": 76.8,
+      "y": 424.5
+    },
+    {
+      "x": 86.7,
+      "y": 424.5
+    },
+    {
+      "x": 96.5,
+      "y": 424.5
+    },
+    {
+      "x": 106.4,
+      "y": 424.5
+    },
+    {
+      "x": 116.3,
+      "y": 424.5
+    },
+    {
+      "x": 126.2,
+      "y": 424.5
+    },
+    {
+      "x": 136.1,
+      "y": 424.5
+    },
+    {
+      "x": 146,
+      "y": 424.5
+    },
+    {
+      "x": 155.9,
+      "y": 424.5
+    },
+    {
+      "x": 165.8,
+      "y": 424.5
+    },
+    {
+      "x": 175.6,
+      "y": 424.5
+    }
+  ],
+  "labelAfterEachMove": [
+    "NFC Least · 85.08",
+    "NFC Least · 85.08",
+    "NFC Least · 85.08",
+    "behold the lamb · 85.76",
+    "behold the lamb · 85.76",
+    "Bo Girds · 88.2",
+    "Bo Girds · 88.2",
+    "Unsolicited Dak Picks · 92.55",
+    "Unsolicited Dak Picks · 92.55",
+    "Unsolicited Dak Picks · 92.55",
+    "London Cooking · 98.88",
+    "London Cooking · 98.88"
+  ],
+  "attrsAtEnd": {
+    "state": "rest",
+    "label": "London Cooking · 98.88",
+    "hint": "gone"
+  }
+}

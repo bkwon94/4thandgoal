@@ -34,7 +34,7 @@ const COMPONENTS: { key: keyof Components; name: string }[] = [
 /* The avatar of each roster id, with paths relative to the week folder, as the week page file holds them. */
 type AvatarMap = Readonly<Record<string, string>>;
 
-/* The rank in two digits, as the hero shows "01". The cards use the same width, so the ranks line up. */
+/* The rank in two digits, such as "02". The cards use the same width, so the ranks line up. */
 const twoDigits = (rank: number) => String(rank).padStart(2, "0");
 
 /* The arrow carries the direction in its shape, and the screen reader text names it, so the color is never the only sign.
@@ -112,42 +112,47 @@ export function RecordLine({ row }: { row: RankingsRow }) {
 /* The sentences join in their order in the file, as plain text. The fact IDs are for the checks, not the reader. */
 const blurbText = (row: RankingsRow) => row.blurb.map((sentence) => sentence.text).join(" ");
 
-/* The hero: the team at rank 1 of the chosen week. Each line of text sits on a plate, so the grid and the glow never sit
-   under a letter. The tiles take the hero tone, so they sit on the raised surface of the hero. */
-function TopHero({ row, week }: { row: RankingsRow; week: number }) {
+/* The hero: the team at rank 1 of the chosen week, in the hero slots. The week is the eyebrow, the team name the title,
+   and the record line the meta. The tiles take the hero tone, so they sit on the raised surface of the hero.
+   The hero keeps the static grid: the Ladder under it already shows the race, so a scene would say it twice.
+   The Ladder starts at rank 2, so the action slot holds the manager link of rank 1, the link that its card would hold.
+   With no managers href the hero has no link and no action slot. */
+function TopHero({ row, week, managersHref }: { row: RankingsRow; week: RankingsWeek; managersHref: string | null }) {
   const odds = row.odds;
+  const href = managerHrefOrNull(managersHref, row.roster_id);
   return (
-    <Hero label="Rank 1">
-      <Rise step={0}>
-        <h1 className="plate m-0 w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase">
-          WEEK {week} // POWER RANKINGS
-        </h1>
-      </Rise>
-      <Rise step={1}>
-        <div
-          className="plate mt-sp-4 w-fit font-mono text-hero leading-none font-bold tracking-grade"
-          {...stableId("rank-hero", row.roster_id)}
-        >
-          {twoDigits(row.rank)}
-        </div>
-      </Rise>
-      <Rise step={2}>
-        <h2 className="plate mt-sp-3 mb-0 w-fit text-headline leading-tight font-bold">{row.name}</h2>
-        <div className="plate mt-sp-2 w-fit font-mono text-lead leading-tight text-on-dark-2 tabular-nums">
+    <Hero
+      label="Rank 1"
+      eyebrow={`WEEK ${week.week} // POWER RANKINGS`}
+      title={<span {...stableId("rank-hero", row.roster_id)}>{row.name}</span>}
+      meta={
+        <span className="font-mono tabular-nums">
           <RecordLine row={row} />
-        </div>
-      </Rise>
-      <Rise step={3} className="mt-sp-5 grid grid-cols-3 gap-sp-2">
-        <Tile tone="hero" label="Playoff" value={playoffText(odds)} stable={stableKey("hero-tile", row.roster_id, "playoff")} />
-        <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : <Missing what="No odds" />} stable={stableKey("hero-tile", row.roster_id, "bye")} />
-        <Tile tone="hero" label="Seed" value={odds?.seed != null ? String(odds.seed) : <Missing what="No seed" />} stable={stableKey("hero-tile", row.roster_id, "seed")} />
-      </Rise>
-      {row.blurb.length > 0 && (
-        <Rise step={4}>
-          <p className="plate mt-sp-5 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2" {...textId("blurb", blurbText(row))}>{blurbText(row)}</p>
+        </span>
+      }
+      stats={
+        <Rise step={1} className="w-full tablet:w-auto">
+          <div className="grid grid-cols-3 gap-sp-2">
+            <Tile tone="hero" label="Playoff" value={playoffText(odds)} stable={stableKey("hero-tile", row.roster_id, "playoff")} />
+            <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : <Missing what="No odds" />} stable={stableKey("hero-tile", row.roster_id, "bye")} />
+            <Tile tone="hero" label="Seed" value={odds?.seed != null ? String(odds.seed) : <Missing what="No seed" />} stable={stableKey("hero-tile", row.roster_id, "seed")} />
+          </div>
         </Rise>
-      )}
-    </Hero>
+      }
+      action={
+        href === null ? undefined : (
+          <Rise step={2}>
+            {/* A full pill and a 44px tap target in the brand color, as the buttons of the 404 page. */}
+            <a
+              href={href}
+              className="press inline-flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-body font-bold text-on-dark no-underline"
+            >
+              Manager page
+            </a>
+          </Rise>
+        )
+      }
+    />
   );
 }
 
@@ -291,7 +296,11 @@ export function PowerRankings({
     <>
       {/* On a phone the chapters fill the width, so the hero takes the gutter. From the tablet tier the main spaces it as a card. */}
       <div className="px-gutter pt-sp-5 tablet:px-0">
-        <TopHero key={week.week} row={top} week={week.week} />
+        <TopHero key={week.week} row={top} week={week} managersHref={managersHref} />
+        {/* The blurb of rank 1 sits directly under the hero, outside its frame, so the hero stays as short as the others. */}
+        {top.blurb.length > 0 && (
+          <p className="mt-sp-4 mb-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurbText(top))}>{blurbText(top)}</p>
+        )}
       </div>
       <Chapter>
         <Reveal delay={stagger(0)}>

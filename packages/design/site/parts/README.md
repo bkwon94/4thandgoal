@@ -7,18 +7,18 @@
 - The team name.
 - The one reveal of the site, the week line of a page with no hero, and the error line.
 - The Open card, the one part that opens and closes a card in place (ADR 0028). Its row look has no frame and no chevron, for a row of a ledger.
-- The parts of the look (ADR 0024): the hero with its grid, glow, brackets, and scan line; the card; the tile, and the
-  Trend tile with its bars, stepped area, or dots of a week series; the round photo frame with its initials; and the rise, the staggered entry of a page. Hero text sits on a `plate`.
+- The parts of the look (ADR 0024): the hero with its grid, glow, brackets, and six hero slots, and no free content; the hero frame, which takes free content for the parts of the egg hunt only; the card; the tile, and the Trend tile with its bars, stepped area, or dots of a week series; the
+  round photo frame with its initials; and the rise, the staggered entry of a page. Hero text sits on a `plate`.
+- The hero scene (ADR 0027): the math in `scene-math.ts` and `scene-motion.ts`, the canvas, and the drift in `drift-scene.ts`, which the 404 uses.
 
 ## Ports
 
-None.
+The browser storage: `scene-canvas.ts` reads and writes `window.localStorage` for the hint flag.
 
 ## Does not do
 
 - It holds no primitive. The shadcn primitives live in `site/ui/`.
-- It holds no shell. The top band, the dock, and the theme button live in `site/shell/`.
-- It holds no photo. The page passes the src of each avatar and headshot to the photo frame.
+- It holds no shell or photo. The top band, the dock, and the theme button live in `site/shell/`, and the page passes the src of each avatar and headshot to the photo frame.
 - Most parts serve two or more pages. `tag.tsx` and `error-line.tsx` serve one page today.
 - It builds no route. The page passes each href, and a part only shows it (ADR 0012).
 - It reads no file, no env, and no config, and it calls no loader (ADR 0012).

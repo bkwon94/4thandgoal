@@ -1,0 +1,80 @@
+{
+  "tapInCanvasPx": {
+    "x": 19,
+    "y": 124
+  },
+  "tapOnPagePx": {
+    "x": 60,
+    "y": 468.578125
+  },
+  "lightOfLilFridgeInCanvasPx": {
+    "x": 16,
+    "y": 114
+  },
+  "nearestByMath": "Lil Fridge · 80.11",
+  "distances": [
+    {
+      "label": "Lil Fridge · 80.11",
+      "px": 10.4
+    },
+    {
+      "label": "NFC Least · 85.08",
+      "px": 28.1
+    },
+    {
+      "label": "behold the lamb · 85.76",
+      "px": 48.9
+    },
+    {
+      "label": "Bo Girds · 88.2",
+      "px": 72.5
+    },
+    {
+      "label": "Unsolicited Dak Picks · 92.55",
+      "px": 97.5
+    },
+    {
+      "label": "London Cooking · 98.88",
+      "px": 123.7
+    },
+    {
+      "label": "The Blue Tent · 100.31",
+      "px": 147
+    },
+    {
+      "label": "Return of T Mac · 111.97",
+      "px": 176.6
+    },
+    {
+      "label": "All You Need Is Love · 116.83",
+      "px": 201.9
+    },
+    {
+      "label": "To Infinity and Bijan · 118.89",
+      "px": 225.4
+    },
+    {
+      "label": "Maye d'force B with U · 121.16",
+      "px": 249.1
+    },
+    {
+      "label": "Teehee · 134.1",
+      "px": 279.7
+    }
+  ],
+  "attrsAfter": {
+    "state": "rest",
+    "label": "Lil Fridge · 80.11",
+    "hint": "gone"
+  },
+  "statesBeforeTap": [
+    "idle",
+    "settle",
+    "rest"
+  ],
+  "statesAfterTap": [
+    "idle",
+    "settle",
+    "rest"
+  ]
+}

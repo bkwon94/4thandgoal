@@ -1,10 +1,11 @@
 /**
- * The hero of the week page: the matchup of the week with its reason, the margin, both teams and their top players,
- * the share bar, and the full blurb. It sits on the band in both themes, so the hero stays dark in light.
+ * The hero of the week page, in the hero slots: the week, the winner by the margin, the dates, the reason with both teams
+ * and their top players, and the share bar, then the full blurb under it. The hero stays dark in light.
  */
 import { num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
 import { Hero } from "@cpc/design/parts/hero";
+import type { HeroScene } from "@cpc/design/parts/scene-math";
 import { PhotoFrame } from "@cpc/design/parts/photo-frame";
 import { Rise } from "@cpc/design/parts/rise";
 import type { AvatarMap, HeadshotMap, MatchupSide, Pick } from "../schema/week-types";
@@ -58,6 +59,17 @@ export function TeamRow({
   );
 }
 
+/* The title of a Matchup hero in words: the winner "by" the margin, such as "The Blue Tent by 1.43". The JSON puts the
+   winner first. A tie has no winner, so its title names both teams. */
+export function matchupTitle(pick: Pick): string {
+  const [first, second] = pick.sides;
+  const margin = first.score - second.score;
+  return margin === 0 ? `${first.team.name} and ${second.team.name} tie` : `${first.team.name} by ${num(margin)}`;
+}
+
+/* The small caps line of the reason in the hero, such as "Closest Finish". It sits on a plate, as every text line of a hero. */
+const REASON = "plate w-fit font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase";
+
 export function MatchupOfTheWeek({
   week,
   dates,
@@ -66,6 +78,7 @@ export function MatchupOfTheWeek({
   avatars,
   headshots,
   blurb,
+  scene,
 }: {
   week: number;
   dates: string;
@@ -74,42 +87,44 @@ export function MatchupOfTheWeek({
   avatars: AvatarMap;
   headshots: HeadshotMap;
   blurb: string;
+  // The scene of the week. The week page passes it, because this hero is the first hero of the page.
+  scene?: HeroScene;
 }) {
   // The JSON puts the winner first. A tie has no winner, and the first side still leads the hero.
   const [first, second] = pick.sides;
   return (
     // The rail links the hero by this id, and the scroll padding keeps it clear of the top band.
-    <div id="motw">
-      <Hero label="Matchup of the Week">
-        <Rise step={0}>
-          <h1 className="plate m-0 w-fit font-mono text-meta leading-tight font-bold tracking-caps text-on-dark-muted uppercase">
-            {`Week ${twoDigits(week)} // Matchup of the Week`}
-          </h1>
-          {/* One string, so React writes one text node and the browser kerns the line as one run. */}
-          <div className="plate mt-sp-2 w-fit font-mono text-meta leading-tight text-on-dark-2 tabular-nums">
-            {`${dates} · Published ${publishDate}`}
-          </div>
-        </Rise>
-        <Rise step={1} className="mt-sp-5 flex items-center justify-between gap-sp-4">
-          <div className="min-w-0">
-            <div className="plate w-fit font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase">
-              {`${pick.reason} · Margin`}
+    // The blurb sits under the hero in the same chapter, so the hero stays as short as the others (decision 05).
+    <div id="motw" className="flex flex-col gap-sp-5">
+      <Hero
+        label="Matchup of the Week"
+        eyebrow={`Week ${twoDigits(week)} // Matchup of the Week`}
+        title={matchupTitle(pick)}
+        scene={scene}
+        // One string, so React writes one text node and the browser kerns the line as one run.
+        meta={`${dates} · Published ${publishDate}`}
+        feature={
+          <Rise step={1} className="flex flex-col gap-sp-3">
+            <div className="flex items-center justify-between gap-sp-4">
+              <div className={REASON}>{pick.reason}</div>
+              {first.top !== null && (
+                <PhotoFrame src={photoOf(headshots, first.top.player_id)} name={first.top.name} size="lg" />
+              )}
             </div>
-            <div className="plate mt-sp-2 w-fit font-mono text-hero leading-none font-bold tracking-grade tabular-nums">
-              {num(first.score - second.score)}
-            </div>
-          </div>
-          {first.top !== null && <PhotoFrame src={photoOf(headshots, first.top.player_id)} name={first.top.name} size="lg" />}
-        </Rise>
-        <Rise step={2} className="mt-sp-5 flex flex-col gap-sp-3">
-          <TeamRow side={first} avatars={avatars} lead />
-          <TeamRow side={second} avatars={avatars} lead={false} />
-          <ShareBar share={shareOf(first.score, second.score)} tone="hero" />
-        </Rise>
-        <Rise step={3}>
-          <p className="plate mt-sp-5 mb-0 max-w-measure text-lead leading-body text-on-dark-2" {...textId("blurb", blurb)}>{blurb}</p>
-        </Rise>
-      </Hero>
+            <TeamRow side={first} avatars={avatars} lead />
+            <TeamRow side={second} avatars={avatars} lead={false} />
+          </Rise>
+        }
+        // The share bar has no width of its own, so it takes the full width of the action slot.
+        action={
+          <Rise step={2} className="w-full">
+            <ShareBar share={shareOf(first.score, second.score)} tone="hero" />
+          </Rise>
+        }
+      />
+      <Rise step={3}>
+        <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>
+      </Rise>
     </div>
   );
 }

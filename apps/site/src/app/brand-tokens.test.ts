@@ -6,7 +6,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "smol-toml";
 import { describe, expect, it } from "vitest";
-import { brandCss, type BrandFile } from "@cpc/design/brand/brand";
+import { brandCss, colorsOf, type BrandFile } from "@cpc/design/brand/brand";
 import { DURATION, RISE_EASE } from "@cpc/design/lib/motion";
 
 const ROOT = join(process.cwd(), "..", "..");
@@ -92,6 +92,31 @@ describe("the color tokens of the site", () => {
 
 });
 
+/* Each client folder with a brand. The scene of the hero reads its colors once at mount, so a client that is added later is held too. */
+const BRAND_CLIENTS = readdirSync(join(ROOT, "clients")).filter((slug) => {
+  try {
+    readFileSync(join(ROOT, "clients", slug, "brand.toml"));
+    return true;
+  } catch {
+    return false;
+  }
+});
+
+describe("the three colors of the hero scene (decision 03)", () => {
+  it("finds the brand of each client", () => {
+    // An empty list would pass with no brand read.
+    expect(BRAND_CLIENTS).toEqual(expect.arrayContaining(["cpc", "norcal"]));
+  });
+
+  // The canvas reads accent, on-dark, and on-dark-muted once at mount. Equal sets keep that read right after a theme switch.
+  it.each(BRAND_CLIENTS)("keeps accent, on-dark, and on-dark-muted equal in the light and the dark set of %s", (slug) => {
+    const brand = parse(readFileSync(join(ROOT, "clients", slug, "brand.toml"), "utf8")) as unknown as BrandFile;
+    const light = colorsOf(brand, "light");
+    const dark = colorsOf(brand, "dark");
+    for (const role of ["accent", "on_dark", "on_dark_muted"] as const) expect(light[role], role).toEqual(dark[role]);
+  });
+});
+
 /* The @theme static block of globals.css, where the look keeps its tokens beside the spacing and the type scale. */
 const LOOK = declarations(blocksAt(GLOBALS.replace(/\/\*[\s\S]*?\*\//g, ""), /@theme static/)[0] ?? "");
 
@@ -132,13 +157,8 @@ describe("the motion of the look (AT-7, AT-8)", () => {
     expect(blocksAt(press, /@media \(prefers-reduced-motion: reduce\)/)[0]).toMatch(/transform: none/);
   });
 
-  it("sweeps the scan line of the hero once, with transform and opacity only, and hides it with reduced motion", () => {
-    const scan = blocksAt(RULES, /\.hero-scan\s*{/)[0];
-    expect(scan).toMatch(/animation: hero-scan [\d.]+s var\(--ease-rise\) [\d.]+s 1 both;/);
-    const frames = blocksAt(RULES, /@keyframes hero-scan/)[0];
-    expect([...new Set([...frames.matchAll(/([a-z-]+):/g)].map((match) => match[1]))].sort()).toEqual(["opacity", "transform"]);
-    const reduced = blocksAt(RULES, /@media \(prefers-reduced-motion: reduce\)/).join("\n");
-    expect(reduced).toMatch(/\.hero-scan\s*{\s*display: none;/);
+  it("holds no scan line of the hero: no scan rule and no scan keyframes (AT-39)", () => {
+    expect(RULES).not.toMatch(/hero-scan/);
   });
 });
 

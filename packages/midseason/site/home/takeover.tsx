@@ -15,42 +15,45 @@ export const takeoverOn = (report: Midseason, latestWeek: number) => latestWeek 
 export function Takeover({ report, href }: { report: Midseason; href: string }) {
   const { leaders, record_leader: top } = report.opener.facts;
   return (
-    <Hero label={`${report.season} Midseason Report`}>
-      <Rise step={0}>
-        <div className="plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase">
-          {report.season} Midseason Report // Week {report.week}
-        </div>
-      </Rise>
-      <Rise step={1}>
-        {/* The intro of the home page holds the h1, so the title of the opener is a level 2 heading here. */}
-        <h2 className="plate mt-sp-3 mb-0 w-fit text-headline leading-tight font-bold">{report.opener.title}</h2>
-      </Rise>
-      <Rise step={2}>
-        {/* The leaders by title odds, best first, as the opener of the report shows them. */}
-        <ol aria-label="Title odds" className="m-0 mt-sp-5 grid list-none grid-cols-1 gap-sp-2 p-0 tablet:grid-cols-3">
-          {leaders.map((leader) => (
-            <li key={leader.roster_id}>
-              <Tile tone="hero" label="Title odds" value={`${oneDecimal(leader.title_odds)}%`} note={leader.name} />
-            </li>
-          ))}
-        </ol>
-      </Rise>
-      <Rise step={3}>
-        <Tile
-          tone="hero"
-          label="Record leader"
-          value={top.title_odds === null ? "No odds" : `${oneDecimal(top.title_odds)}%`}
-          note={`${top.name}, ${fullRecord(top.wins, top.losses, top.ties)}${top.title_rank === null ? "" : `, ${ordinal(top.title_rank)} in title odds`}`}
-          className="mt-sp-2"
-        />
-        {/* A full pill and a 44px tap target in the brand color, as the button of the home hero. */}
-        <a
-          href={href}
-          className="press mt-sp-5 flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-body font-bold text-on-dark no-underline"
-        >
-          Read the Midseason Report
-        </a>
-      </Rise>
-    </Hero>
+    // The intro of the home page holds the h1, so the title of the opener is a level 2 heading here.
+    <Hero
+      label={`${report.season} Midseason Report`}
+      eyebrow={`${report.season} Midseason Report // Week ${report.week}`}
+      title={report.opener.title}
+      level={2}
+      stats={
+        // From the tablet tier up the stats share the bottom row with the wide pill of the action. The row of tiles
+        // keeps its max-content width there, so a long team name such as "Mitseeker5000" never breaks over 2 lines,
+        // and the pill wraps between its words instead.
+        <Rise step={1} className="w-full tablet:min-w-max">
+          {/* The leaders by title odds, best first, as the opener of the report shows them. */}
+          <ol aria-label="Title odds" className="m-0 grid list-none grid-cols-1 gap-sp-2 p-0 tablet:grid-cols-3">
+            {leaders.map((leader) => (
+              <li key={leader.roster_id}>
+                <Tile tone="hero" label="Title odds" value={`${oneDecimal(leader.title_odds)}%`} note={leader.name} />
+              </li>
+            ))}
+          </ol>
+          <Tile
+            tone="hero"
+            label="Record leader"
+            value={top.title_odds === null ? "No odds" : `${oneDecimal(top.title_odds)}%`}
+            note={`${top.name}, ${fullRecord(top.wins, top.losses, top.ties)}${top.title_rank === null ? "" : `, ${ordinal(top.title_rank)} in title odds`}`}
+            className="mt-sp-2"
+          />
+        </Rise>
+      }
+      action={
+        <Rise step={2} className="w-full tablet:w-auto">
+          {/* A full pill and a 44px tap target in the brand color, as the button of the home hero. */}
+          <a
+            href={href}
+            className="press flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-center text-body font-bold text-on-dark no-underline"
+          >
+            Read the Midseason Report
+          </a>
+        </Rise>
+      }
+    />
   );
 }

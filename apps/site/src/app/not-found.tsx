@@ -3,7 +3,9 @@
  * Next exports it as 404.html, which the Worker of each client serves for a path that no page has. The egg board reuses the hero.
  */
 import type { Metadata } from "next";
+import { driftScene } from "@cpc/design/parts/drift-scene";
 import { Hero } from "@cpc/design/parts/hero";
+import type { HeroScene } from "@cpc/design/parts/scene-math";
 import { Rise } from "@cpc/design/parts/rise";
 import { NOT_FOUND, stableId } from "@cpc/design/lib/stable-id";
 import { TopBand } from "@cpc/design/shell/top-band";
@@ -17,43 +19,45 @@ export const metadata: Metadata = {
 const BUTTON =
   "press inline-flex min-h-touch items-center justify-center rounded-pill px-sp-6 text-body font-bold no-underline";
 
-/* The hero of the 404 page. The egg board shows it before the first egg drop, so the board looks like no page. */
-export function NotFoundHero() {
+/* The hero of the 404 page. The egg board shows it before the first egg drop, so the board looks like no page.
+   The 404 page passes the drift scene. The egg board passes none, because only the first hero of a page draws a scene (ADR 0027). */
+export function NotFoundHero({ scene }: { scene?: HeroScene }) {
   const shell = shellProps();
   const latest = shell.menu.weeks[0];
   return (
-    <Hero label="Page not found">
-      {/* Each line of text sits on a plate, so the grid and the glow never sit under a letter. */}
-      <Rise step={0}>
-        <div className="plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase">
-          ERROR // PAGE NOT FOUND
-        </div>
-      </Rise>
-      <Rise step={1}>
-        <h1
-          className="plate mt-sp-4 mb-0 w-fit font-mono text-hero leading-none font-bold tracking-grade"
-          {...stableId("not-found-hero")}
-        >
-          404
-        </h1>
-      </Rise>
-      <Rise step={2}>
-        <p className="plate mt-sp-4 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2">
-          This page does not exist. The link may be old, or the week is not out yet.
-        </p>
-      </Rise>
-      <Rise step={3} className="mt-sp-6 flex flex-wrap gap-sp-3">
-        {/* A client with no published week has no week to go to, so it shows only the home button. */}
-        {latest !== undefined && (
-          <a href={latest.href} className={`${BUTTON} bg-accent text-on-dark`}>
-            Go to Week {latest.number}
+    <Hero
+      label="Page not found"
+      title="Page not found"
+      scene={scene}
+      meta="This page does not exist. The link may be old, or the week is not out yet."
+      feature={
+        /* The big "404" is art, so the title keeps the one title style of every hero. The plate keeps the grid
+           and the glow from under each digit. The title names the page, so a screen reader skips the art.
+           The art keeps the stable id of the egg hunt. */
+        <Rise step={1}>
+          <div
+            aria-hidden="true"
+            className="plate w-fit font-mono text-hero leading-none font-bold tracking-grade"
+            {...stableId("not-found-hero")}
+          >
+            404
+          </div>
+        </Rise>
+      }
+      action={
+        <Rise step={2} className="flex flex-wrap gap-sp-3">
+          {/* A client with no published week has no week to go to, so it shows only the home button. */}
+          {latest !== undefined && (
+            <a href={latest.href} className={`${BUTTON} bg-accent text-on-dark`}>
+              Go to Week {latest.number}
+            </a>
+          )}
+          <a href={shell.brand.home} className={`${BUTTON} border border-rule-dark bg-chip-dark text-on-dark`}>
+            Go Home
           </a>
-        )}
-        <a href={shell.brand.home} className={`${BUTTON} border border-rule-dark bg-chip-dark text-on-dark`}>
-          Go Home
-        </a>
-      </Rise>
-    </Hero>
+        </Rise>
+      }
+    />
   );
 }
 
@@ -64,7 +68,8 @@ export default function NotFound() {
       <TopBand {...shellProps()} />
       {/* The mark tells the egg hunt that the page is the 404 page, whatever path the reader typed. */}
       <main className="mx-auto w-full max-w-page px-gutter py-sp-6" {...{ [NOT_FOUND]: true }}>
-        <NotFoundHero />
+        {/* A lost page has no data to chart, so its lights drift and never settle (story 28). */}
+        <NotFoundHero scene={driftScene} />
       </main>
     </>
   );
