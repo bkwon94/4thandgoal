@@ -94,16 +94,19 @@ test.describe(`the scene of a manager page of ${CLIENT}`, () => {
       });
 
       // The median of each week: the samples along the line, away from each light, hit both the dashes and the gaps.
+      // A league with no median game, such as norcal, gets no guide, so it has no line to sample.
       const [guide] = placeGuides(scene, box);
-      const samples: ScenePoint[] = [];
-      for (let step = 0; step < guide.points.length - 1; step++) {
-        const [a, b] = [guide.points[step], guide.points[step + 1]];
-        for (let share = 0; share < 1; share += 0.02) samples.push({ x: a.x + (b.x - a.x) * share, y: a.y + (b.y - a.y) * share });
+      if (guide !== undefined) {
+        const samples: ScenePoint[] = [];
+        for (let step = 0; step < guide.points.length - 1; step++) {
+          const [a, b] = [guide.points[step], guide.points[step + 1]];
+          for (let share = 0; share < 1; share += 0.02) samples.push({ x: a.x + (b.x - a.x) * share, y: a.y + (b.y - a.y) * share });
+        }
+        const clear = samples.filter((point) => lights.every((light) => Math.hypot(light.x - point.x, light.y - point.y) > 10));
+        const alphas = (await pixelsAt(page, clear)).map(([, , , a]) => a);
+        expect(alphas.filter((a) => a > 0).length).toBeGreaterThan(clear.length / 5);
+        expect(alphas.filter((a) => a === 0).length).toBeGreaterThan(clear.length / 5);
       }
-      const clear = samples.filter((point) => lights.every((light) => Math.hypot(light.x - point.x, light.y - point.y) > 10));
-      const alphas = (await pixelsAt(page, clear)).map(([, , , a]) => a);
-      expect(alphas.filter((a) => a > 0).length).toBeGreaterThan(clear.length / 5);
-      expect(alphas.filter((a) => a === 0).length).toBeGreaterThan(clear.length / 5);
 
       await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-label", scene.lights.at(-1)!.label);
     });
