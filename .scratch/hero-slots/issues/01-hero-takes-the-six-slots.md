@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-1, AT-7, and AT-8.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `Hero` renders `eyebrow`, `title`, `meta`, `feature`, `stats`, and `action` in that order, and an absent slot renders no element. A Vitest test proves it.
 - [ ] The title style is 40px, Space Grotesk 300, tight tracking, on every hero that uses the slots.
