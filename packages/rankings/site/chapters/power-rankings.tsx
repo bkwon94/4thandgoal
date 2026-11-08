@@ -1,15 +1,14 @@
 /**
  * The power rankings Ladder: the hero for the team at rank 1, the week chips, one card for each other team, and the note on the four parts.
- * A tap on a card opens the ranks of Stand, Form, Sched, and Pts, the blurb, and a link to the manager page.
+ * Each card is an Open card. A tap opens the ranks of Stand, Form, Sched, and Pts, the move, the bye and seed odds, the blurb, and a link to the manager page.
  * Every part number is a rank, never a score. The cards and the chips hold state, so this file is a client component.
  */
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { Card } from "@cpc/design/parts/card";
+import { useEffect, useRef, type ReactNode } from "react";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
+import { OpenCard } from "@cpc/design/parts/open-card";
 import { BarFill } from "@cpc/design/parts/bar-fill";
 import { Reveal } from "@cpc/design/parts/reveal";
 import { Rise } from "@cpc/design/parts/rise";
@@ -18,8 +17,7 @@ import { Avatar } from "@cpc/league/avatar";
 import { managerHrefOrNull } from "@cpc/league/hrefs";
 import { avatarSrc } from "@cpc/league/images";
 import { record } from "@cpc/design/format/format";
-import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { DURATION, EASE_OUT, INSTANT, stagger } from "@cpc/design/lib/motion";
+import { stagger } from "@cpc/design/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "../schema/rankings-types";
 import { cn } from "@cpc/design/lib/utils";
 import { useWeekChoice } from "./week-choice";
@@ -147,9 +145,22 @@ function TopHero({ row, week }: { row: RankingsRow; week: number }) {
   );
 }
 
-/* One card of the ladder. The head is the button, so the whole head is the tap target, never under 44px tall.
-   The open part animates height, the same exception as the recap panel of a game card. It stays in the DOM when closed,
-   so find-in-page still finds the blurb. aria-hidden and inert hide it from assistive tech. The brand edge marks the open card. */
+/* The chips of an open card: the four part ranks, the move, and the bye and seed odds. A week with no odds shows a dash. */
+function chipsOf(row: RankingsRow): ReactNode[] {
+  const odds = row.odds;
+  return [
+    ...COMPONENTS.map(({ key, name }) => `${name} ${row.components[key]}`),
+    <>
+      Move <Movement movement={row.movement} />
+    </>,
+    odds ? `Bye ${odds.bye}%` : <>Bye <Missing what="No odds" /></>,
+    odds?.seed != null ? `Seed ${odds.seed}` : <>Seed <Missing what="No seed" /></>,
+  ];
+}
+
+/* One card of the ladder on the Open card, in the full Showcase shell. The head is the button, so the whole head is the tap target.
+   The rank sits large in a plain raised panel, the media of the shell. The team, the record, the move, the playoff chip, and the odds bar sit under it.
+   The open panel holds the overview line, the chips, the blurb, and the manager link. */
 function LadderCard({
   row,
   avatars,
@@ -161,76 +172,52 @@ function LadderCard({
   index: number;
   managersHref: string | null;
 }) {
-  const [open, setOpen] = useState(false);
-  const off = useMotionOff();
-  const panelId = useId();
   const href = managerHrefOrNull(managersHref, row.roster_id);
   return (
     // Each card reveals once with the capped stagger, so a card low in the list never shows late.
     <Reveal delay={stagger(index + 1)}>
-      <Card as="div" edge={open} className="overflow-hidden p-0">
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={panelId}
-          onClick={() => setOpen(!open)}
-          className={cn(
-            "grid min-h-touch w-full cursor-pointer grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-x-sp-3",
-            "border-0 bg-transparent p-sp-4 text-left text-ink [-webkit-tap-highlight-color:transparent]",
-            "focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent",
-          )}
-        >
-          <span className="font-mono text-row font-bold text-mute tabular-nums">{twoDigits(row.rank)}</span>
-          <Avatar src={avatarSrc(avatars, row.roster_id)} />
-          <span className="flex flex-col">
-            <span className="text-row leading-tight font-bold">{row.name}</span>
-            <span className="mt-sp-0 font-mono text-meta leading-tight text-ink-2 tabular-nums">
-              <RecordLine row={row} />
+      <OpenCard
+        as="div"
+        // The id names the team, so a check can open the card of one team by its control.
+        panelId={`ladder-${row.roster_id}`}
+        // The head takes the inset of the panel, so the rank panel and the open panel line up, as in the shell of the item.
+        headClassName="p-sp-2 pb-0"
+        head={
+          <>
+            <span
+              data-rank-panel
+              className="block rounded-tile bg-raised px-sp-4 py-sp-4 font-mono text-hero leading-none font-bold tracking-grade text-ink tabular-nums"
+            >
+              {twoDigits(row.rank)}
             </span>
-          </span>
-          <span className="flex flex-col items-end">
-            <span className="sr-only">Playoff odds </span>
-            <span className="font-mono text-row font-bold tabular-nums">{playoffText(row.odds)}</span>
+            <span className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 px-sp-2">
+              <Avatar src={avatarSrc(avatars, row.roster_id)} />
+              <span className="flex min-w-0 flex-col">
+                <span className="truncate text-row leading-tight font-bold text-ink">{row.name}</span>
+                <span className="mt-sp-0 font-mono text-meta leading-tight text-ink-2 tabular-nums">
+                  <RecordLine row={row} />
+                </span>
+              </span>
+              <span className="rounded-pill bg-raised px-sp-3 py-sp-1 font-mono text-meta leading-tight font-bold text-ink tabular-nums">
+                Playoff {playoffText(row.odds)}
+              </span>
+            </span>
             {row.odds && (
-              <span aria-hidden className="mt-sp-1 block h-sp-1 w-rankings-col overflow-hidden rounded-pill bg-raised">
+              <span aria-hidden className="mx-sp-2 block h-sp-1 overflow-hidden rounded-pill bg-raised">
                 <BarFill data-odds-bar pct={playoffFill(row.odds)} className="block h-full rounded-pill bg-accent" />
               </span>
             )}
-          </span>
-        </button>
-        <motion.div
-          id={panelId}
-          aria-hidden={!open}
-          inert={!open}
-          initial={false}
-          animate={open ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
-          transition={off ? INSTANT : { duration: DURATION.collapse, ease: EASE_OUT }}
-          className="overflow-hidden"
-        >
-          <div className="px-sp-4 pb-sp-4">
-            <div className="grid grid-cols-2 gap-sp-2 page:grid-cols-4">
-              {COMPONENTS.map(({ key, name }) => (
-                <Tile key={key} label={name} value={row.components[key]} />
-              ))}
-            </div>
-            {row.blurb.length > 0 && (
-              <p className="mt-sp-3 mb-0 max-w-measure text-lead leading-body text-ink-2">{blurbText(row)}</p>
-            )}
-            {href !== null && (
-              <a
-                href={href}
-                className="mt-sp-2 inline-flex min-h-touch items-center font-mono text-meta font-bold tracking-wide text-accent-ink uppercase no-underline hover-fine:underline"
-              >
-                Manager page
-                {/* A drawn arrow, for the same reason as the movement arrow: axe cannot read the contrast of a glyph. */}
-                <svg aria-hidden viewBox="0 0 10 10" className="ml-sp-1 size-[0.8em] fill-none stroke-current stroke-[1.5]">
-                  <path d="M1 5h8M5.5 1.5 9 5l-3.5 3.5" />
-                </svg>
-              </a>
-            )}
-          </div>
-        </motion.div>
-      </Card>
+          </>
+        }
+        overview={
+          <>
+            Rank {row.rank} · <RecordLine row={row} />
+          </>
+        }
+        chips={chipsOf(row)}
+        text={row.blurb.length > 0 ? blurbText(row) : null}
+        action={href === null ? null : { href, label: "Manager page", hiddenLabel: ` of ${row.name}` }}
+      />
     </Reveal>
   );
 }
