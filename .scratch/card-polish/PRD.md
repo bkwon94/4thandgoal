@@ -5,7 +5,7 @@ Date: 2026-11-07
 Apps: site. The site builds five parts from the methods of Scrolltide items. The pipeline does not change.
 Spec branch: `card-polish`.
 Source: the map `.scratch/card-polish/MAP.md` and decision tickets 01 to 09, from the session of 2026-11-07. ADR 0024, ADR 0025, ADR 0028.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 10, in `issues/`.
 
 ## Problem Statement
 
@@ -15,7 +15,7 @@ A reader of the site, most often a league manager on a phone, gets the story of 
 
 Five parts upgrade the cards, the tiles, the analyzer, and the Managers index. Each part follows the method of one Scrolltide item as far as the hard rules allow (ADR 0028). The team writes its own code from each method. No Scrolltide source enters the repo.
 
-1. The **Open card**, from the Showcase Card item. One part opens and closes every card that holds more detail. It opens with a height change on a spring, and its details come into focus from a blur. GameCard and LadderCard use it first, then ManagerCard, AwardTile, and TradeCard.
+1. The **Open card**, from the Showcase Card item. One part opens and closes every card that holds more detail. It opens with a height change on a spring, and its details come into focus from a blur. GameCard and LadderCard use it first, then AwardTile, TradeCard, and the rows of the Index list.
 2. The **Grade dial**, from the Health Tracker item. Four equal arcs, one for each part of the Roster grade, each lit by its rank among the teams.
 3. The **Trend tile**, from the Lime Metrics item. Five tiles add a small chart of the same number from week 1 to the page week.
 4. The **Ready halo**, from the Send Halo item. The submit button of the Stack glows brighter as each side of the trade fills.
@@ -38,7 +38,7 @@ The hero stays the one loud surface of each page (ADR 0024). The desktop stage i
 9. As a reader on the rankings page, I want each ladder card to show the rank large, so that the order reads at a glance.
 10. As a reader, I want a closed ladder card to show the team, the record, the move, the odds bar, and the playoff chip, so that I see the race without a tap.
 11. As a reader, I want an open ladder card to show Stand, Form, Sched, Pts, Move, Bye, and Seed as chips and the blurb as text, so that I see why the team sits at that rank.
-12. As a reader, I want the manager, award, and trade cards to open in the same way, so that every card on the site behaves the same.
+12. As a reader, I want the award and trade cards to open in the same way, so that every card on the site behaves the same.
 13. As a reader who uses find-in-page, I want the text of a closed card to stay findable, so that a search finds a recap or a blurb.
 14. As a reader with a screen reader, I want each card toggle to say if it is open and which panel it controls, so that I can use the cards without sight.
 15. As a reader who sets reduced motion, I want each card to open and close at once, so that no motion makes me unwell.
@@ -113,7 +113,7 @@ The hero stays the one loud surface of each page (ADR 0024). The desktop stage i
 - The action link is a pill with a solid fill under its label, because text on a frosted blur fails the axe floor. Its label rolls up to a copy of itself on a fine-pointer hover.
 - The GameCard chips are three: the best player of the winner, the best player of the loser, and both records. Each best-player chip starts with the small avatar of its team, then "Best", the player, and the points. Margin and vs projection are not chips.
 - The LadderCard chips are Stand, Form, Sched, Pts, Move, Bye, and Seed. The overview line is the rank, the record, and the move. The text is the blurb.
-- ManagerCard, AwardTile, and TradeCard use the same part with a head of their own. Their chips come from the fields they show now. No new prototype is needed.
+- AwardTile and TradeCard use the same part with a head of their own. ManagerCard goes, because the Index list replaces the cards of the Managers index, and its rows use the Open card. Their chips come from the fields they show now. No new prototype is needed.
 - The two accordions of GameCard and LadderCard go, and the shared part replaces them.
 
 ### Grade dial

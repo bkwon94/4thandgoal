@@ -54,10 +54,10 @@ When: The reader opens the card.
 Then: The panel shows the chips Stand 6, Form 6, Sched 8, Pts 7, Move ▲3, Bye 22%, and Seed 5, then the blurb of The Blue Tent.
 Evidence: screenshots of the open panel at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
-AT-7: The manager, award, and trade cards open the same way
+AT-7: The award and trade cards open the same way
 App: site
 Stories: 12
-Given: the CPC site built from `clients/cpc/published/2026/`, page week 8, the week page for AwardTile and TradeCard, and the page of each manager card
+Given: the CPC site built from `clients/cpc/published/2026/`, page week 8, the week page, an AwardTile and a TradeCard
 When: The reader opens one card of each kind.
 Then: Each card opens with the same drawer, blur-in, and chevron as the game card.
 Evidence: screenshots of each card open at 375, 768, and 1280 px, each in the light theme and the dark theme.
@@ -325,4 +325,4 @@ Decision 09 "the weights test": AT-13
 
 ## Revisions
 
-None yet.
+- 2026-11-07: AT-7 drops ManagerCard, because the Index list replaces the manager cards and its rows use the Open card. Brian approved it.
