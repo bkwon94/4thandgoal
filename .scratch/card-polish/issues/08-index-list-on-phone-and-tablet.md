@@ -8,7 +8,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-9, AT-22, AT-23, AT-24,
 
 **Blocked by:** 01 and 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] CPC week 8 shows all 12 rows on one 390 px screen, with the chips All 12, In 6, Bubble 2, and Out 4.
 - [x] A tap on Bubble shows only Teehee and Return of T Mac.
