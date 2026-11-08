@@ -6,6 +6,9 @@ import type { JoinedOdds } from "../schema/manager-types";
 
 export type RaceGroup = "in" | "bubble" | "out";
 
+/* The race word of each group. The chips of the Index list and the eyebrow of the stage both use it, so they say one word. */
+export const RACE_WORDS: Record<RaceGroup, string> = { in: "In", bubble: "Bubble", out: "Out" };
+
 /* The lowest odds of In and of Bubble, in whole percents. 75% is In and 25% is Bubble, so each edge has one group. */
 const IN_FROM = 75;
 const BUBBLE_FROM = 25;

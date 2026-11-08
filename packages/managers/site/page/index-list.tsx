@@ -11,7 +11,7 @@ import { cn } from "@cpc/design/lib/utils";
 import type { ManagerGrade } from "../schema/manager-types";
 import { GradeDial } from "./grade-dial";
 import { IndexStage } from "./index-stage";
-import type { RaceGroup } from "./race-group";
+import { RACE_WORDS, type RaceGroup } from "./race-group";
 
 /* One row of the ledger, as the managers index builds it from a joined manager. The props are plain data (ADR 0012). */
 export type IndexRow = {
@@ -33,9 +33,9 @@ type Filter = "all" | RaceGroup;
 
 const CHIPS: { filter: Filter; label: string }[] = [
   { filter: "all", label: "All" },
-  { filter: "in", label: "In" },
-  { filter: "bubble", label: "Bubble" },
-  { filter: "out", label: "Out" },
+  { filter: "in", label: RACE_WORDS.in },
+  { filter: "bubble", label: RACE_WORDS.bubble },
+  { filter: "out", label: RACE_WORDS.out },
 ];
 
 /* The words of a name, each a run of letters, so a long name wraps between words and never inside one.

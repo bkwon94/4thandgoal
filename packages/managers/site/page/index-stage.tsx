@@ -10,13 +10,10 @@ import { Tile } from "@cpc/design/parts/tile";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { GradeDial } from "./grade-dial";
 import type { IndexRow } from "./index-list";
-import type { RaceGroup } from "./race-group";
+import { RACE_WORDS } from "./race-group";
 
 /* The ms of the wipe and the zoom, the duration of the item. An old layer drops a beat after the new layer lands. */
 const SWAP_MS = 1000;
-
-/* The race word of the eyebrow. It is the label of the chip of the group, so the stage and the chips say one word. */
-const RACE_WORDS: Record<RaceGroup, string> = { in: "In", bubble: "Bubble", out: "Out" };
 
 /* One layer of the stage. The key grows with each swap, so React mounts a new layer and its wipe plays once. */
 type Layer = { row: IndexRow; key: number };
