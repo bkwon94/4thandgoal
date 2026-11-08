@@ -1,6 +1,6 @@
 /**
  * The stage of the Index list: the hero of the Managers index on desktop, in the six hero slots, for the row in the stage.
- * A new row wipes in from the top over the old one and zooms down to size, after the method of the Team Roster item (ADR 0028).
+ * A new row wipes in from the top over the old one. It zooms down to size, after the method of the Team Roster item (ADR 0028).
  */
 "use client";
 
@@ -12,7 +12,7 @@ import { GradeDial } from "./grade-dial";
 import type { IndexRow } from "./index-list";
 import { RACE_WORDS } from "./race-group";
 
-/* The ms of the wipe and the zoom, the duration of the item. An old layer drops a beat after the new layer lands. */
+/* The milliseconds of the wipe and the zoom, the duration of the item. An old layer drops a beat after the new layer lands. */
 const SWAP_MS = 1000;
 
 /* One layer of the stage. The key grows with each swap, so React mounts a new layer and its wipe plays once. */
