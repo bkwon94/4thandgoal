@@ -10,7 +10,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-5 and AT-6.
 
 **Status:** ready-for-agent
 
-- [ ] The card of The Blue Tent at week 8 shows 05, 9-7, ▲3, the odds bar, and Playoff 75%.
-- [ ] The open card shows Stand 6, Form 6, Sched 8, Pts 7, Move ▲3, Bye 22%, and Seed 5, then the blurb.
-- [ ] The page test of the rankings route passes with the new card.
-- [ ] `make check-fast` passes.
+- [x] The card of The Blue Tent at week 8 shows 05, 9-7, ▲3, the odds bar, and Playoff 75%.
+- [x] The open card shows Stand 6, Form 6, Sched 8, Pts 7, Move ▲3, Bye 22%, and Seed 5, then the blurb.
+- [x] The page test of the rankings route passes with the new card.
+- [x] `make check-fast` passes.

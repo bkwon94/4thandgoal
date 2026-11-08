@@ -153,22 +153,20 @@ describe("Reduced motion on the trade form", () => {
 });
 
 describe("Reduced motion on the power rankings", () => {
-  it("opens a card at once", async () => {
+  it("opens and closes a ladder card at once on the Open card", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={week6.avatars} />);
     const button = screen.getByRole("button", { name: /Lil Fridge/ });
+    const card = button.closest<HTMLElement>(".open-card")!;
+    const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
+    // Every duration of the drawer, the blur, the rise, and the chevron reads --oc-dur, so 0s ends each one at once.
+    expect(card.style.getPropertyValue("--oc-dur")).toBe("0s");
     fireEvent.click(button);
     expect(button.getAttribute("aria-expanded")).toBe("true");
-    const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
-    expect(panel.getAttribute("aria-hidden")).toBe("false");
-    // With motion off the panel takes the instant transition, so it is at rest and fully open by the next frame.
-    // The wait is far shorter than the collapse duration, so a real animation fails it.
-    await waitFor(
-      () => {
-        expect(panel.style.opacity).toBe("1");
-        expect(panel.style.height).toBe("auto");
-      },
-      { timeout: 50 },
-    );
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    // With motion off the close hides the panel in the same tap. The closed card waits on no timer.
+    fireEvent.click(button);
+    expect(card.dataset.open).toBe("false");
+    expect(panel.getAttribute("hidden")).toBe("until-found");
   });
 });
 
