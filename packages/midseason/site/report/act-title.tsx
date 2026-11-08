@@ -3,6 +3,7 @@
  * The hero sits on the band color in both themes, so each title page stays dark in the light theme too.
  */
 import { Hero } from "@cpc/design/parts/hero";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 /* The act number as a roman numeral, as a book numbers its acts. The report has three acts. */
 const NUMERALS = ["I", "II", "III"];
@@ -16,7 +17,7 @@ export function ActTitle({ index, title, headingId }: { index: number; title: st
       label={`${number}: ${title}`}
       className="rounded-report py-sp-6 tablet:min-h-[12rem]"
       eyebrow={number}
-      title={<span id={headingId}>{title}</span>}
+      title={<span id={headingId} {...stableId("heading", title)}>{title}</span>}
       level={2}
     />
   );

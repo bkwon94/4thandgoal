@@ -13,6 +13,7 @@ import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
 import { ShareBar, shareOf } from "../parts/share-bar";
 import { photoOf } from "../parts/photo";
+import { textId } from "@cpc/design/lib/stable-id";
 
 /* The week number with two digits, as the week chip writes it: "08". */
 const twoDigits = (week: number) => String(week).padStart(2, "0");
@@ -122,7 +123,7 @@ export function MatchupOfTheWeek({
         }
       />
       <Rise step={3}>
-        <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{blurb}</p>
+        <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>
       </Rise>
     </div>
   );

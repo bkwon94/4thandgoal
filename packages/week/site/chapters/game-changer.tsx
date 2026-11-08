@@ -9,6 +9,7 @@ import { Tile } from "@cpc/design/parts/tile";
 import type { GameChanger as GameChangerData, HeadshotMap } from "../schema/week-types";
 import { photoOf } from "../parts/photo";
 import { WeekChapter } from "../parts/week-chapter";
+import { textId } from "@cpc/design/lib/stable-id";
 
 /* A player with no projection has no gap, so both tiles show a dash. */
 const DASH = "—";
@@ -50,7 +51,7 @@ export function GameChanger({
             </li>
           ))}
         </ul>
-        {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{blurb}</p>}
+        {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>}
       </Card>
     </WeekChapter>
   );

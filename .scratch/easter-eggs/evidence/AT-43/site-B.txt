@@ -1,0 +1,7 @@
+Managers with letters: 7: The Blue Tent, All You Need Is Love, Teehee, Lil Fridge, NFC Least, To Infinity and Bijan, London Cooking. Counts {"left":4,"found":8,"to_drop":42}.
+375-light: CORNERSTONE rows before 5, after the tap 11; prizes on the page: $100 $50 $30 $20 $50 $30 $20
+375-dark: CORNERSTONE rows before 5, after the tap 11; prizes on the page: $100 $50 $30 $20 $50 $30 $20
+768-light: CORNERSTONE rows before 5, after the tap 11; prizes on the page: $100 $50 $30 $20 $50 $30 $20
+768-dark: CORNERSTONE rows before 5, after the tap 11; prizes on the page: $100 $50 $30 $20 $50 $30 $20
+1280-light: CORNERSTONE rows before 5, after the tap 11; prizes on the page: $100 $50 $30 $20 $50 $30 $20
+1280-dark: CORNERSTONE rows before 5, after the tap 11; prizes on the page: $100 $50 $30 $20 $50 $30 $20

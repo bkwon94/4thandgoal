@@ -1,0 +1,78 @@
+{
+  "$defs": {
+    "EggWord": {
+      "additionalProperties": false,
+      "description": "One egg word and the value of its gift card in dollars.",
+      "properties": {
+        "word": {
+          "title": "Word",
+          "type": "string"
+        },
+        "prize": {
+          "title": "Prize",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "word",
+        "prize"
+      ],
+      "title": "EggWord",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The package values of eggs: the egg words, the weeks of the hunt, the count of each egg drop, and the roster of\nthe commissioner.\n\nThe commissioner places every egg, so the roster of the commissioner cannot hunt. It is a roster id, not a name.",
+  "properties": {
+    "words": {
+      "default": [
+        {
+          "word": "CORNERSTONE",
+          "prize": 50
+        },
+        {
+          "word": "LANSDALE",
+          "prize": 30
+        },
+        {
+          "word": "EAGLES",
+          "prize": 20
+        }
+      ],
+      "items": {
+        "$ref": "#/$defs/EggWord"
+      },
+      "title": "Words",
+      "type": "array"
+    },
+    "first_week": {
+      "default": 9,
+      "title": "First Week",
+      "type": "integer"
+    },
+    "last_week": {
+      "default": 17,
+      "title": "Last Week",
+      "type": "integer"
+    },
+    "drop_size": {
+      "default": 6,
+      "title": "Drop Size",
+      "type": "integer"
+    },
+    "commissioner": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Commissioner"
+    }
+  },
+  "title": "EggsValues",
+  "type": "object"
+}

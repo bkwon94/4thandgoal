@@ -7,6 +7,7 @@ import { oneDecimal, record } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
 import { enter, type Pace, SPRING } from "./pace";
 import type { StandingRow } from "./season";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 /* The marks of the final standings: the count of seeds and the count of byes. */
 type Marks = { spots: number; byes: number };
@@ -52,6 +53,7 @@ export function Standings({
             layout={moving ? "position" : false}
             transition={SPRING}
             data-roster={row.roster_id}
+            {...stableId("sim-row", row.roster_id)}
             data-cut={cut || undefined}
             data-out={out || undefined}
             className={cn(

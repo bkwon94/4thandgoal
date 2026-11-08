@@ -1,0 +1,11 @@
+# The temp egg file: six spots for week 8, none confirmed.
+$ grep -c '^\[\[eggs\]\]' /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/at23-eggs.toml; grep -c 'confirmed = true' /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/at23-eggs.toml
+6
+0
+
+
+$ cd /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/easter-eggs/apps/pipeline && CORNERSTONE_API_URL=http://127.0.0.1:8080 CORNERSTONE_COMMISSIONER_KEY_CPC=localkey uv run --exact --package cornerstone python ../../.scratch/easter-eggs/evidence/tools/drop_step.py cpc 2026 8 /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/at23-eggs.toml 2>&1 | grep -v '^INFO\|nstalled'; echo "exit ${PIPESTATUS[0]}"
+No eggs dropped: week 8 has no confirmed egg in /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/c2ef5ad0-01a7-4386-a724-4e00b3d6b9b2/scratchpad/at23-eggs.toml.
+exit 0
+
+

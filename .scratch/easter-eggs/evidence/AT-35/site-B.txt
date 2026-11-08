@@ -1,0 +1,6 @@
+teehee 375-light: block notice shows 1; its text: C fits none of your egg words. | Claim it as a block. Then no other manager can put it in a word.
+teehee 375-dark: block notice shows 1; its text: C fits none of your egg words. | Claim it as a block. Then no other manager can put it in a word.
+teehee 768-light: block notice shows 1; its text: C fits none of your egg words. | Claim it as a block. Then no other manager can put it in a word.
+teehee 768-dark: block notice shows 1; its text: C fits none of your egg words. | Claim it as a block. Then no other manager can put it in a word.
+teehee 1280-light: block notice shows 1; its text: C fits none of your egg words. | Claim it as a block. Then no other manager can put it in a word.
+teehee 1280-dark: block notice shows 1; its text: C fits none of your egg words. | Claim it as a block. Then no other manager can put it in a word.

@@ -1,0 +1,6 @@
+The setup: a fresh store and the drop of week 9, so the hunt mounts its listener: [[1,"/midseason/2026","luck-3","tap2",{"theme":"light"}],[2,"/analyze","verdict-word","tap2",{"trade_teams":[1,3]}],[3,"/midseason/2026","heading-luck","tap2",{}]]
+3 mouse taps on [data-stable-id="luck-3"] of /midseason/2026/ at 1280 px, light. The pointerups: 10 ms pointerup mouse on span in luck-3; 168 ms pointerup mouse on span in luck-3; 327 ms pointerup mouse on span in luck-3.
+  checks sent by these taps: 0; dialogs open: 0
+5 mouse taps on [data-stable-id="luck-5"] of /midseason/2026/ at 1280 px, light. The pointerups: 9 ms pointerup mouse on span in luck-5; 170 ms pointerup mouse on span in luck-5; 334 ms pointerup mouse on span in luck-5; 497 ms pointerup mouse on span in luck-5; 663 ms pointerup mouse on span in luck-5.
+  checks sent by these taps: 0; dialogs open: 0
+Checks sent in all: 0

@@ -1,0 +1,30 @@
+# A test egg on the 404 hero (not-found-hero) with the action tap2 and the condition not_found = true, dropped with the page /golden-egg/.
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":9,"eggs":[{"page":"/golden-egg/","target":"not-found-hero","action":"tap2","conditions":{"not_found":true}}]}'
+{"week":9,"dropped":1,"eggs":[{"id":1,"page":"*404","target":"not-found-hero","action":"tap2","conditions":{"not_found":true},"letter":"A"}]}
+HTTP 200
+
+$ sqlite3 -header $CORNERSTONE_EGGS_DIR/cpc.sqlite 'SELECT id, week, page, target, action, conditions FROM eggs'
+id|week|page|target|action|conditions
+1|9|*404|not-found-hero|tap2|{"not_found": true}
+
+
+# The check from the 404 page of /golden-egg, with not_found true:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/golden-egg","target":"not-found-hero","action":"tap2","conditions":{"theme":"light","not_found":true}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":true,"claimed":false,"letter":"A","token":"<cut>"}
+HTTP 200
+
+# The check from the 404 page of /no-such-page/, with not_found true:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/no-such-page/","target":"not-found-hero","action":"tap2","conditions":{"theme":"light","not_found":true}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":true,"claimed":false,"letter":"A","token":"<cut>"}
+HTTP 200
+
+# The check from the 404 page of /2026/week-99, with not_found true:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/2026/week-99","target":"not-found-hero","action":"tap2","conditions":{"theme":"light","not_found":true}}' | sed -E 's/"token":"[^"]+"/"token":"<cut>"/'
+{"match":true,"claimed":false,"letter":"A","token":"<cut>"}
+HTTP 200
+
+# The check from /golden-egg/ with no not_found:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/golden-egg/","target":"not-found-hero","action":"tap2","conditions":{"theme":"light"}}'
+{"match":false}
+HTTP 200
+

@@ -1,0 +1,27 @@
+home 375-light: egg button "6", aria-label "Egg board, 6 eggs left to find"
+home 375-light: the tap opens /eggs/
+home 375-dark: egg button "6", aria-label "Egg board, 6 eggs left to find"
+home 768-light: egg button "6", aria-label "Egg board, 6 eggs left to find"
+home 768-light: the tap opens /eggs/
+home 768-dark: egg button "6", aria-label "Egg board, 6 eggs left to find"
+home 1280-light: egg button "6", aria-label "Egg board, 6 eggs left to find"
+home 1280-light: the tap opens /eggs/
+home 1280-dark: egg button "6", aria-label "Egg board, 6 eggs left to find"
+week-08 375-light: egg button "6", aria-label "Egg board, 6 eggs left to find"
+week-08 375-light: the tap opens /eggs/
+week-08 375-dark: egg button "6", aria-label "Egg board, 6 eggs left to find"
+week-08 768-light: egg button "6", aria-label "Egg board, 6 eggs left to find"
+week-08 768-light: the tap opens /eggs/
+week-08 768-dark: egg button "6", aria-label "Egg board, 6 eggs left to find"
+week-08 1280-light: egg button "6", aria-label "Egg board, 6 eggs left to find"
+week-08 1280-light: the tap opens /eggs/
+week-08 1280-dark: egg button "6", aria-label "Egg board, 6 eggs left to find"
+midseason 375-light: egg button "6", aria-label "Egg board, 6 eggs left to find"
+midseason 375-light: the tap opens /eggs/
+midseason 375-dark: egg button "6", aria-label "Egg board, 6 eggs left to find"
+midseason 768-light: egg button "6", aria-label "Egg board, 6 eggs left to find"
+midseason 768-light: the tap opens /eggs/
+midseason 768-dark: egg button "6", aria-label "Egg board, 6 eggs left to find"
+midseason 1280-light: egg button "6", aria-label "Egg board, 6 eggs left to find"
+midseason 1280-light: the tap opens /eggs/
+midseason 1280-dark: egg button "6", aria-label "Egg board, 6 eggs left to find"

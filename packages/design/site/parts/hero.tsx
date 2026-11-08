@@ -113,8 +113,11 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene 
 
 /* The text of a hero sits on a plate of the band color (the plate utility of globals.css). The plate keeps the grid and
    the glow from under each letter, so the contrast of the text is the contrast of its role pair, and axe can read it.
-   The art layer comes first in the markup and the content box is relative, so the content paints over the art. */
-export function Hero({ label, className, ...slots }: HeroProps) {
+   The art layer comes first in the markup and the content box is relative, so the content paints over the art.
+   The frame takes free content for the parts of the egg hunt only: the find card, the end card, the word cards, and
+   the hero of the egg board. Each has its own tuned layout over the ground of the egg hunt. Every other hero uses Hero
+   and its six slots. */
+export function HeroFrame({ label, className, children }: { label: string; className?: string; children: ReactNode }) {
   return (
     <section
       aria-label={label}
@@ -133,9 +136,15 @@ export function Hero({ label, className, ...slots }: HeroProps) {
           />
         ))}
       </div>
-      <div className="relative">
-        <Slots {...slots} />
-      </div>
+      <div className="relative">{children}</div>
     </section>
+  );
+}
+
+export function Hero({ label, className, ...slots }: HeroProps) {
+  return (
+    <HeroFrame label={label} className={className}>
+      <Slots {...slots} />
+    </HeroFrame>
   );
 }

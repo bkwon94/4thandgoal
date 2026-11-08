@@ -1,0 +1,3 @@
+Tap A [data-stable-id="number-top-score"], wait 600 ms, tap B [data-stable-id="number-median"], wait 600 ms, then two taps 120 ms apart on C [data-stable-id="number-closest"] of /2026/week-08/. First tap to last tap: 1472 ms.
+Checks sent: 1
+body: {"page":"/2026/week-08/","target":"number-closest","action":"tap2","conditions":{"theme":"light","open":["chip-qb"]},"trail":["number-top-score","number-median"]}

@@ -1,0 +1,37 @@
+The setup: a fresh store and the drop of week 9, so the hunt mounts its listener: [[1,"/midseason/2026","luck-3","tap2",{"theme":"light"}],[2,"/analyze","verdict-word","tap2",{"trade_teams":[1,3]}],[3,"/midseason/2026","heading-luck","tap2",{}]]
+375 px, light, a touch context (hasTouch, isMobile) of Chromium 156.0.8078.4. The touch press runs with Input.dispatchTouchEvent of the DevTools protocol.
+During each touch press the spec fires a cancelable contextmenu MouseEvent on the element under the press, as Android Chrome does. The event log shows each pointer event and each menu event that the page saw.
+The link: #sim in no stable id. The image: https://sleepercdn.com/content/nfl/players/9221.jp in top10-rb-1.
+1. the Luck cell of Lil Fridge: a touch press of 2215 ms at (280, 472) on [data-stable-id="luck-3"], with a contextmenu event at about 700 ms. dispatchEvent answered false, so the menu was blocked.
+  28 ms pointerdown touch on span in luck-3
+  734 ms contextmenu on span in luck-3: blocked (defaultPrevented) true
+  2208 ms pointerup touch on span in luck-3
+  checks sent by this press: 1
+  body: {"page":"/midseason/2026/","target":"luck-3","action":"hold","conditions":{"theme":"light","open":["chip-rb"]}}
+2. the Luck cell of Lil Fridge: a mouse right-click at (280, 472) on [data-stable-id="luck-3"].
+  1 ms pointerdown mouse on span in luck-3
+  1 ms contextmenu on span in luck-3: blocked (defaultPrevented) false
+  5 ms pointerup mouse on span in luck-3
+  checks sent by this right-click: 0
+3. a link: a mouse right-click at (95, 480) on main a[href].
+  2 ms pointerdown mouse on a in none
+  3 ms contextmenu on a in none: blocked (defaultPrevented) false
+  8 ms pointerup mouse on a in none
+  checks sent by this right-click: 0
+4. an image: a mouse right-click at (73, 472) on main img.
+  3 ms pointerdown mouse on img in top10-rb-1
+  4 ms contextmenu on img in top10-rb-1: blocked (defaultPrevented) false
+  4 ms pointerup mouse on img in top10-rb-1
+  checks sent by this right-click: 0
+5. a link: a touch press of 2207 ms at (95, 480) on main a[href], with a contextmenu event at about 700 ms. dispatchEvent answered true, so the menu was kept.
+  2 ms pointerdown touch on a in none
+  710 ms contextmenu on a in none: blocked (defaultPrevented) false
+  2203 ms pointerup touch on a in none
+  checks sent by this press: 0
+6. an image: a touch press of 2209 ms at (73, 480) on main img, with a contextmenu event at about 700 ms. dispatchEvent answered true, so the menu was kept.
+  3 ms pointerdown touch on img in top10-rb-1
+  707 ms contextmenu on img in top10-rb-1: blocked (defaultPrevented) false
+  2207 ms pointerup touch on img in top10-rb-1
+  checks sent by this press: 1
+  body: {"page":"/midseason/2026/","target":"top10-rb-1","action":"hold","conditions":{"theme":"light","open":["chip-rb"]}}
+Checks sent in all: 2

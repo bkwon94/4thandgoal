@@ -1,0 +1,15 @@
+The setup: a fresh store and the drop of week 9, so the hunt mounts its listener: [[1,"/midseason/2026","luck-3","tap2",{"theme":"light"}],[2,"/analyze","verdict-word","tap2",{"trade_teams":[1,3]}],[3,"/midseason/2026","heading-luck","tap2",{}]]
+375 px, light, touch taps (page.touchscreen.tap). The first blurb of /midseason/2026/ has the real id blurb-1jo5mqe. The spec set its data-stable-id to blurb-luck. Its box: 343 x 112 px.
+  a double-tap near the start of the blurb at (28, 426). The pointerups: 5 ms pointerup touch on p in blurb-luck; 170 ms pointerup touch on p in blurb-luck. The selection after: "".
+  checks sent by this double-tap: 1
+  body: {"page":"/midseason/2026/","target":"blurb-luck","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}
+  a double-tap near the end of the blurb at (335, 518). The pointerups: 5 ms pointerup touch on p in blurb-luck; 166 ms pointerup touch on p in blurb-luck. The selection after: "".
+  checks sent by this double-tap: 1
+  body: {"page":"/midseason/2026/","target":"blurb-luck","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}
+1280 px, light, mouse taps (page.mouse.click). The first blurb of /midseason/2026/ has the real id blurb-1jo5mqe. The spec set its data-stable-id to blurb-luck. Its box: 720 x 76 px.
+  a double-tap near the start of the blurb at (292, 445). The pointerups: 5 ms pointerup mouse on p in blurb-luck; 158 ms pointerup mouse on p in blurb-luck. The selection after: "".
+  checks sent by this double-tap: 1
+  body: {"page":"/midseason/2026/","target":"blurb-luck","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}
+  a double-tap near the end of the blurb at (976, 500). The pointerups: 6 ms pointerup mouse on p in blurb-luck; 163 ms pointerup mouse on p in blurb-luck. The selection after: "".
+  checks sent by this double-tap: 1
+  body: {"page":"/midseason/2026/","target":"blurb-luck","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}

@@ -1,0 +1,62 @@
+"""
+The egg drop step of the publish: it sends the confirmed eggs of the week in the egg file to the drop route of the API.
+A failed drop warns and never fails the publish, so "make egg-drop" retries it.
+"""
+import os
+from pathlib import Path
+
+import httpx
+
+from eggs.eggfile import EggFileError, confirmed_spots
+from eggs.keys import API_URL, commissioner_key_env
+from league.client import Client
+
+
+def run_egg_drop(client: Client, week: int, egg_file: Path, http: httpx.Client, key: str | None) -> str:
+    """Drop the confirmed eggs of the week of `client` through `http`, and return the one line that says the result.
+
+    `http` has the base URL of the API, and `key` is the commissioner key of the client.
+    """
+    if "eggs" not in client.values.packages:
+        return f"The client {client.slug} has no eggs package, so no eggs dropped."
+    spots = confirmed_spots(egg_file, week)
+    if not spots:
+        return f"No eggs dropped: week {week} has no confirmed egg in {egg_file}."
+    retry = f"Run make egg-drop CLIENT={client.slug} WEEK={week} to retry."
+    if not key:
+        return f"WARNING: the egg drop of week {week} failed: no commissioner key. {retry}"
+    try:
+        response = http.post(f"/clients/{client.slug}/eggs/drop", headers={"X-Commissioner-Key": key},
+                             json={"week": week, "eggs": [spot.egg() for spot in spots]})
+    except httpx.HTTPError as err:
+        return f"WARNING: the egg drop of week {week} failed: {err}. {retry}"
+    # The status check is by hand, because the test client of the API raises its own error type, not the one of httpx.
+    if response.status_code != 200:
+        return f"WARNING: the egg drop of week {week} failed: HTTP {response.status_code} {response.text}. {retry}"
+    answer = response.json()
+    # One line per egg, so the commissioner finds the id for "make egg-undo". It goes to the terminal only, never to a file.
+    lines = [f"Egg {egg['id']}  letter {egg['letter']}  {egg['page']}  {egg['target']}" for egg in answer["eggs"]]
+    dropped = answer["dropped"]
+    if dropped == 0:
+        # A second drop of one week adds nothing, so the eggs of the first drop stay.
+        head = f"Week {week} already holds its eggs, so no eggs dropped."
+    else:
+        head = f"Dropped {dropped} eggs of week {week}."
+    return "\n".join([head, *lines])
+
+
+def drop_from_env(client: Client, week: int, egg_file: Path) -> str:
+    """Run the egg drop against the API of CORNERSTONE_API_URL, with the commissioner key of the env."""
+    with httpx.Client(base_url=os.environ.get("CORNERSTONE_API_URL", API_URL), timeout=30) as http:
+        return run_egg_drop(client, week, egg_file, http, os.environ.get(commissioner_key_env(client.slug)))
+
+
+def drop_after_publish(client: Client, week: int, egg_file: Path) -> str:
+    """The egg drop as the last step of the publish: a bad egg file gives a warning, so the publish still exits 0.
+
+    "make egg-drop" calls drop_from_env, which lets the EggFileError through, so it exits non-zero with the same message.
+    """
+    try:
+        return drop_from_env(client, week, egg_file)
+    except EggFileError as err:
+        return f"WARNING: the egg drop of week {week} failed: {err} Fix the file, then run make egg-drop CLIENT={client.slug} WEEK={week}."

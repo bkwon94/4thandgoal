@@ -1,0 +1,19 @@
+# The drop of an egg with the action hold on the target blurb-luck:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":13,"eggs":[{"page":"/midseason/2026/","target":"blurb-luck","action":"hold","conditions":{}}]}'
+{"detail":[{"type":"value_error","loc":["body","eggs",0],"msg":"Value error, The target 'blurb-luck' is a blurb, and a blurb takes no hold. Use tap2 or select.","input":{"page":"/midseason/2026/","target":"blurb-luck","action":"hold","conditions":{}},"ctx":{"error":{}}}]}
+HTTP 422
+
+$ sqlite3 $CORNERSTONE_EGGS_DIR/cpc.sqlite "SELECT count(*) AS eggs_on_blurb_luck FROM eggs WHERE target='blurb-luck'"
+0
+
+
+# The drop of an egg with the action tap2 on the target blurb-luck:
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/drop -H 'X-Commissioner-Key: localkey' -H 'Content-Type: application/json' -d '{"week":13,"eggs":[{"page":"/midseason/2026/","target":"blurb-luck","action":"tap2","conditions":{}}]}'
+{"week":13,"dropped":1,"eggs":[{"id":3,"page":"/midseason/2026","target":"blurb-luck","action":"tap2","conditions":{},"letter":"A"}]}
+HTTP 200
+
+$ sqlite3 -header $CORNERSTONE_EGGS_DIR/cpc.sqlite "SELECT id, week, page, target, action FROM eggs WHERE target='blurb-luck'"
+id|week|page|target|action
+3|13|/midseason/2026|blurb-luck|tap2
+
+

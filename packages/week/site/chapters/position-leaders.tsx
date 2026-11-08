@@ -13,11 +13,12 @@ import { PhotoFrame } from "@cpc/design/parts/photo-frame";
 import type { HeadshotMap, LeaderBoard, LeaderRow } from "../schema/week-types";
 import { photoOf } from "../parts/photo";
 import { WeekChapter } from "../parts/week-chapter";
+import { openId, stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* One row: the rank, the round photo, the player over the fantasy team, and the points. A long name cuts at its end. */
-function Row({ row, headshots }: { row: LeaderRow; headshots: HeadshotMap }) {
+function Row({ row, position, headshots }: { row: LeaderRow; position: string; headshots: HeadshotMap }) {
   return (
-    <li className="grid list-none grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-sp-3 py-sp-2">
+    <li className="grid list-none grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-sp-3 py-sp-2" {...stableId("leader", position, row.rank)}>
       <span className="font-mono text-meta text-mute tabular-nums">{row.rank}</span>
       <PhotoFrame src={photoOf(headshots, row.player_id)} name={row.player} size="md" />
       <span className="min-w-0">
@@ -68,6 +69,7 @@ export function PositionLeaders({
               key={position}
               type="button"
               aria-pressed={on}
+              {...openId("chip", position)}
               onClick={() => setChosen(position)}
               className={cn(
                 "press min-h-touch min-w-touch flex-1 cursor-pointer rounded-pill border font-mono text-meta font-bold",
@@ -84,7 +86,7 @@ export function PositionLeaders({
           {board.rows.length > 0 ? (
             <ol aria-label={`${board.position} leaders`} className="m-0 p-0">
               {board.rows.map((row) => (
-                <Row key={row.rank} row={row} headshots={headshots} />
+                <Row key={row.rank} row={row} position={board.position} headshots={headshots} />
               ))}
             </ol>
           ) : (
@@ -92,7 +94,7 @@ export function PositionLeaders({
           )}
         </Card>
       )}
-      {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{text}</p>}
+      {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", text)}>{text}</p>}
     </WeekChapter>
   );
 }

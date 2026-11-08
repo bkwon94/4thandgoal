@@ -1,0 +1,26 @@
+# T2 is egg 3 of week 9, letter D, with the clock window 23:00-00:00 on the clock of the client, America/New_York.
+$ TZ=America/New_York date '+%Y-%m-%d %H:%M:%S %Z'
+2026-11-07 00:40:42 EST
+
+
+$ curl -s -w '\nHTTP %{http_code}' -X POST http://127.0.0.1:8080/clients/cpc/eggs/check -H 'Content-Type: application/json' -d '{"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{}}'
+{"match":false}
+HTTP 200
+
+# The real clock of this machine is outside the window 23:00-00:00 ET, so the run below sets the clock of the hunt in the real API app.
+# The app is create_app with the real clients of the repo and a temp egg store. Each request goes over HTTP through the FastAPI test client.
+# T2 is the only egg of this store, so the letter rule gives it A here; in the store of AT-1 it is D.
+$ cd apps/api && uv run --exact --package cpc-api python ../../.scratch/easter-eggs/evidence/AT-3/clock-check.py
+The app: the real clients ['cpc', 'norcal'], the temp egg store <temp>/cpc.sqlite.
+POST /clients/cpc/eggs/drop {"week": 9, "eggs": [{"page": "/2026/week-08/", "target": "number-median", "action": "tap2", "conditions": {"clock": "23:00-00:00"}}]}
+  -> HTTP 200 {"week":9,"dropped":1,"eggs":[{"id":1,"page":"/2026/week-08/","target":"number-median","action":"tap2","conditions":{"clock":"23:00-00:00"},"letter":"A"}]}
+clock of the hunt set to 2026-11-10T22:59:00-05:00 (22:59 EST)
+  POST /clients/cpc/eggs/check {"page": "/2026/week-08/", "target": "number-median", "action": "tap2", "conditions": {"theme": "dark"}}
+  -> HTTP 200 {"match":false}
+clock of the hunt set to 2026-11-10T23:30:00-05:00 (23:30 EST)
+  POST /clients/cpc/eggs/check {"page": "/2026/week-08/", "target": "number-median", "action": "tap2", "conditions": {"theme": "dark"}}
+  -> HTTP 200 {"match":true,"claimed":false,"letter":"A","token":"8ljMAhR8ZNTrDBs0L0RPWsrf0rCx2SX5"}
+clock of the hunt set to 2026-11-11T00:00:00-05:00 (00:00 EST)
+  POST /clients/cpc/eggs/check {"page": "/2026/week-08/", "target": "number-median", "action": "tap2", "conditions": {"theme": "dark"}}
+  -> HTTP 200 {"match":false}
+exit 0

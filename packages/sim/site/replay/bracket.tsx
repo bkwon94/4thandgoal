@@ -11,6 +11,7 @@ import { oneDecimal } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
 import { enter, type Pace, SPRING } from "./pace";
 import type { BracketGame, BracketTeam, ReplayRound } from "./season";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 /* The count-up of a score, in seconds. */
 const COUNT = 0.6;
@@ -32,11 +33,13 @@ function Score({ value, live }: { value: number; live: boolean }) {
 }
 
 /* The red seed chip of a team. The chip of a winner slides into its seat in the next round, so the chip of the seat
-   and the chip of the winner share one layout id. */
-function Chip({ team, flight, pace }: { team: { roster_id: number; seed: number }; flight?: string; pace: Pace }) {
+   and the chip of the winner share one layout id. The stable id names the round and the team, so a frame of the
+   replay keeps it. */
+function Chip({ team, round, flight, pace }: { team: { roster_id: number; seed: number }; round: number; flight?: string; pace: Pace }) {
   const moving = !pace.off && !pace.still;
   return (
     <motion.span
+      {...stableId("bracket", round, team.roster_id)}
       layoutId={moving ? flight : undefined}
       transition={SPRING}
       className="inline-flex size-sp-6 flex-none items-center justify-center rounded-report bg-accent font-mono text-meta font-bold text-white"
@@ -48,6 +51,7 @@ function Chip({ team, flight, pace }: { team: { roster_id: number; seed: number 
 
 function TeamRow({
   team,
+  round,
   decided,
   won,
   live,
@@ -55,6 +59,7 @@ function TeamRow({
   pace,
 }: {
   team: BracketTeam;
+  round: number;
   decided: boolean;
   won: boolean;
   live: boolean;
@@ -64,7 +69,7 @@ function TeamRow({
 }) {
   return (
     <div className={cn("relative flex items-center gap-sp-2 py-sp-1", decided && !won ? "text-on-dark-muted" : "text-on-dark")}>
-      <Chip team={team} flight={flight} pace={pace} />
+      <Chip team={team} round={round} flight={flight} pace={pace} />
       {/* A long name wraps between its words, so each name shows in full in the narrow columns of three rounds. */}
       <span data-team-name className="min-w-0 flex-1 text-meta leading-tight font-semibold">
         {team.name}
@@ -138,6 +143,7 @@ function Game({
         <TeamRow
           key={team.roster_id}
           team={team}
+          round={round}
           decided={decided}
           won={winner === team.roster_id}
           live={live}
@@ -153,7 +159,7 @@ function Game({
           aria-hidden="true"
           className="absolute top-full left-1/2 -translate-x-1/2 @xl:top-1/2 @xl:left-full @xl:translate-x-0 @xl:-translate-y-1/2"
         >
-          <Chip team={winner === high.roster_id ? high : low} flight={`seat-${round}-${winner}`} pace={pace} />
+          <Chip team={winner === high.roster_id ? high : low} round={round + 1} flight={`seat-${round}-${winner}`} pace={pace} />
         </span>
       )}
       <Line lit={decided} last={last} pace={pace} />
@@ -216,7 +222,7 @@ export function Bracket({
                     key={team.roster_id}
                     className="flex items-center gap-sp-2 rounded-report border border-dashed border-rule-dark px-sp-2 py-sp-2 text-on-dark"
                   >
-                    <Chip team={team} pace={pace} />
+                    <Chip team={team} round={r} pace={pace} />
                     {/* A long name wraps between its words, so each name shows in full in the narrow columns of three rounds. */}
       <span data-team-name className="min-w-0 flex-1 text-meta leading-tight font-semibold">
         {team.name}

@@ -17,3 +17,6 @@ apps/site/public/brand/
 apps/site/wrangler.jsonc
 # Playwright writes the trace and the page snapshot of each failed floor test here.
 apps/site/test-results/
+# The API stores the eggs of each client here when CORNERSTONE_EGGS_DIR is not set. The eggs table names each secret
+# spot, and the repo is public, so no commit may hold these files.
+data/eggs/

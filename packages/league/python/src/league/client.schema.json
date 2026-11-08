@@ -50,7 +50,8 @@
                 "waiver",
                 "analyzer",
                 "sim",
-                "midseason"
+                "midseason",
+                "eggs"
               ],
               "type": "string"
             },
@@ -111,7 +112,8 @@
           "waiver",
           "analyzer",
           "sim",
-          "midseason"
+          "midseason",
+          "eggs"
         ],
         "type": "string"
       },

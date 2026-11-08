@@ -1,0 +1,6 @@
+375-light: 100 ms after the tap: tile "C"; running animations 0; animation name and transition of the tile and its parent: none/0s none/0s
+375-dark: 100 ms after the tap: tile "C"; running animations 0; animation name and transition of the tile and its parent: none/0s none/0s
+768-light: 100 ms after the tap: tile "C"; running animations 0; animation name and transition of the tile and its parent: none/0s none/0s
+768-dark: 100 ms after the tap: tile "C"; running animations 0; animation name and transition of the tile and its parent: none/0s none/0s
+1280-light: 100 ms after the tap: tile "C"; running animations 0; animation name and transition of the tile and its parent: none/0s none/0s
+1280-dark: 100 ms after the tap: tile "C"; running animations 0; animation name and transition of the tile and its parent: none/0s none/0s

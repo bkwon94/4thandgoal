@@ -11,6 +11,7 @@
    A glob over packages/ finds no file, so each package takes its own line. */
 @source "../../../../packages/analyzer/site";
 @source "../../../../packages/design/site";
+@source "../../../../packages/eggs/site";
 @source "../../../../packages/league/site";
 @source "../../../../packages/managers/site";
 @source "../../../../packages/midseason/site";
@@ -59,6 +60,8 @@
     --radius-card: 20px;
     --radius-tile: 18px;
     --radius-pill: 9999px;
+    /* A letter tile of the egg hunt: a square with a soft corner, as the squares of the logo. */
+    --radius-letter: 4px;
     --radius-sm: var(--radius-pill);
     /* The midseason report keeps its corners small and draws no full pill (decision ticket 15): 8px on each card. */
     --radius-report: 8px;
@@ -87,6 +90,16 @@
     /* The space the dock takes at the bottom of a phone: the item, the 4px inset of the dock, its 1px edges, and its
        12px offset from the bottom edge. The body keeps it free, so the dock never covers the end of the page. */
     --spacing-dock-space: calc(var(--spacing-dock) + 2 * var(--spacing-sp-1) + 2px + var(--spacing-sp-3));
+    /* The egg banner of the home page: one strip, edge to edge under the top band (ticket 07 of easter-eggs). */
+    --spacing-banner: 52px;
+    /* The letter tiles of the egg board. A long egg word, such as CORNERSTONE, takes the small tile, so its row fits a
+       phone. The feed tile leads a row of Latest claims, and the win tile spells a won egg word in its hero card. */
+    --spacing-letter: 24px;
+    --spacing-letter-sm: 20px;
+    --spacing-feed-tile: 32px;
+    --spacing-win-tile: 36px;
+    /* The glow of an egg still out on the grid of the egg board. */
+    --drop-shadow-egg: 0 0 4px var(--color-accent-text);
     /* The inner space of the hero: 28px on top and bottom, and 24px on the sides (ADR 0024). */
     --spacing-hero-y: 28px;
     --spacing-hero-x: var(--spacing-sp-6);
@@ -422,6 +435,411 @@
         background: radial-gradient(circle at 50% 65%, var(--color-accent-glow), transparent 70%) var(--color-raised);
     }
 }
+/* The ground of the egg hunt: the grid and the glow sit only behind the art of an egg card, not behind its text.
+   An egg card has a two-line headline over the grid and the glow, and the plate of each line painted over the line above
+   it and showed as a dark box. So an egg hero hides its full texture, and the art takes a soft oval of the texture.
+   The text then sits on the flat band color, its contrast is the contrast of its role pair, and axe can read it.
+   The ground comes first in its parent and the art after it is positioned, so the art paints over the ground. A negative
+   z-index would do the same, but axe then misreads the stack and cannot read the contrast of the art. Each use sets its
+   inset, so the box of the ground never reaches a line of text. */
+@layer components {
+    .egg-hero [data-hero-art="texture"] {
+        display: none;
+    }
+    .egg-art-ground {
+        position: absolute;
+        pointer-events: none;
+        mask-image: radial-gradient(closest-side, #000 45%, transparent);
+    }
+}
+
+/* The motion of the egg hunt (ADR 0024): the find, the crack, the claim sheet, and the hero card at the end of each path.
+   Each part takes the rise curve of the look. Keyframes with many steps cannot be Tailwind classes cleanly, so they live here. */
+@layer components {
+    /* The blur of the page under a find. */
+    .egg-scrim {
+        backdrop-filter: blur(6px);
+        animation: egg-fade 0.35s ease-out both;
+    }
+    /* The red ring that ripples out from the spot of the find, twice. */
+    .egg-ripple {
+        position: fixed;
+        width: 28px;
+        height: 28px;
+        margin: -14px 0 0 -14px;
+        border-radius: var(--radius-pill);
+        border: 2px solid var(--color-accent-text);
+        pointer-events: none;
+        animation: egg-ripple 1s var(--ease-rise) both;
+    }
+    .egg-ripple-late {
+        animation-delay: 0.18s;
+    }
+    /* A hero card rises in, and its four brackets close in from the corners. */
+    .egg-hero-in {
+        animation: egg-hero-in 0.6s var(--ease-rise) both;
+        box-shadow: 0 24px 80px rgb(0 0 0 / 0.6);
+    }
+    .egg-hero-in-late {
+        animation-delay: 0.4s;
+    }
+    .egg-hero-in [data-hero-art="bracket"] {
+        animation: 0.6s var(--ease-rise) 0.3s both;
+    }
+    .egg-hero-in [data-hero-art="bracket"]:nth-of-type(1) {
+        animation-name: egg-bracket-tl;
+    }
+    .egg-hero-in [data-hero-art="bracket"]:nth-of-type(2) {
+        animation-name: egg-bracket-tr;
+    }
+    .egg-hero-in [data-hero-art="bracket"]:nth-of-type(3) {
+        animation-name: egg-bracket-bl;
+    }
+    .egg-hero-in [data-hero-art="bracket"]:nth-of-type(4) {
+        animation-name: egg-bracket-br;
+    }
+    /* The egg bobs, and it wobbles once each bob. It turns on its base, as an egg on a table does. */
+    .egg-bob {
+        transform-origin: 50% 92%;
+        animation:
+            egg-bob 3.2s ease-in-out infinite,
+            egg-wobble 3.2s ease-in-out 1.2s infinite;
+    }
+    /* The red glow behind the egg breathes with the bob. */
+    .egg-halo {
+        position: absolute;
+        inset: -20px -30px;
+        border-radius: var(--radius-pill);
+        background: radial-gradient(closest-side, var(--color-accent-glow), transparent);
+        animation: egg-halo 3.2s ease-in-out infinite;
+    }
+    /* Each half of the egg turns on its own middle as it flies off. */
+    .egg-half {
+        transform-box: fill-box;
+        transform-origin: 50% 50%;
+    }
+    .egg-split-top {
+        animation: egg-split-top 0.55s cubic-bezier(0.3, 0, 0.2, 1) 0.32s both;
+    }
+    .egg-split-bottom {
+        animation: egg-split-bottom 0.55s cubic-bezier(0.3, 0, 0.2, 1) 0.32s both;
+    }
+    /* The red zigzag crack draws across the egg, then fades as the halves part. */
+    .egg-crack {
+        stroke-dasharray: 260;
+        stroke-dashoffset: 260;
+        animation:
+            egg-draw 0.32s ease-in forwards,
+            egg-fade-out 0.2s ease-out 0.4s forwards;
+    }
+    /* The letter tile springs up out of the egg. The curve overshoots, so the tile lands with a bounce. */
+    .egg-tile-rise {
+        animation: egg-tile-rise 0.8s cubic-bezier(0.2, 1.45, 0.4, 1) 0.5s both;
+    }
+    /* The red burst behind a tile as it lands. */
+    .egg-burst {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 120px;
+        height: 120px;
+        margin: -60px 0 0 -60px;
+        border-radius: var(--radius-pill);
+        background: radial-gradient(closest-side, var(--color-accent-text), var(--color-accent-glow) 45%, transparent);
+        pointer-events: none;
+        animation: egg-burst 0.9s var(--ease-rise) 0.5s both;
+    }
+    .egg-burst-land {
+        animation-delay: 0.6s;
+    }
+    /* The claim sheet rises from the bottom edge. */
+    .egg-sheet-rise {
+        animation: egg-sheet-rise 0.5s var(--ease-rise) both;
+    }
+    /* The steps of the claim sheet rise in a stagger. */
+    .egg-up {
+        animation: egg-up 0.5s var(--ease-rise) both;
+    }
+    .egg-up-1 {
+        animation-delay: 0.08s;
+    }
+    .egg-up-2 {
+        animation-delay: 0.16s;
+    }
+    .egg-up-3 {
+        animation-delay: 0.24s;
+    }
+    .egg-up-4 {
+        animation-delay: 0.32s;
+    }
+    /* The picked team and a tile pop in. The curve overshoots a little. */
+    .egg-pop {
+        animation: egg-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+    }
+    /* The ghost tile pulses where the letter lands. */
+    .egg-ghost {
+        animation: egg-ghost 1.6s ease-in-out infinite;
+    }
+    /* The red tile of the picked egg word beats. */
+    .egg-beat {
+        animation:
+            egg-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) both,
+            egg-beat 1.6s ease-in-out 0.5s infinite;
+    }
+    /* The red tile drops into its slot on the hero card of a claim. */
+    .egg-land {
+        animation: egg-land 0.75s cubic-bezier(0.2, 1.4, 0.4, 1) 0.45s both;
+    }
+    /* The count of the egg word ticks up. */
+    .egg-tick {
+        animation: egg-tick 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) 0.7s both;
+    }
+    /* The BLOCKED stamp lands on the tile of a block. */
+    .egg-stamp {
+        transform: rotate(-12deg);
+        animation: egg-stamp 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) 0.6s both;
+    }
+    .egg-fade-in {
+        animation: egg-fade 0.4s ease-out both;
+    }
+    .egg-fade-in-late {
+        animation-delay: 0.9s;
+    }
+}
+@keyframes egg-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes egg-fade-out {
+    to {
+        opacity: 0;
+    }
+}
+@keyframes egg-ripple {
+    from {
+        transform: scale(0.4);
+        opacity: 1;
+    }
+    to {
+        transform: scale(5);
+        opacity: 0;
+    }
+}
+@keyframes egg-hero-in {
+    from {
+        transform: translateY(24px) scale(0.92);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+@keyframes egg-bracket-tl {
+    from {
+        transform: translate(-10px, -10px);
+        opacity: 0;
+    }
+}
+@keyframes egg-bracket-tr {
+    from {
+        transform: translate(10px, -10px);
+        opacity: 0;
+    }
+}
+@keyframes egg-bracket-bl {
+    from {
+        transform: translate(-10px, 10px);
+        opacity: 0;
+    }
+}
+@keyframes egg-bracket-br {
+    from {
+        transform: translate(10px, 10px);
+        opacity: 0;
+    }
+}
+@keyframes egg-bob {
+    0%,
+    100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: 0 -6px;
+    }
+}
+@keyframes egg-wobble {
+    0%,
+    72%,
+    100% {
+        rotate: 0deg;
+    }
+    77% {
+        rotate: -6deg;
+    }
+    82% {
+        rotate: 5deg;
+    }
+    87% {
+        rotate: -3deg;
+    }
+    92% {
+        rotate: 1deg;
+    }
+}
+@keyframes egg-halo {
+    0%,
+    100% {
+        opacity: 0.45;
+        transform: scale(0.92);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.06);
+    }
+}
+@keyframes egg-split-top {
+    to {
+        transform: translate(-22px, -70px) rotate(-22deg);
+        opacity: 0;
+    }
+}
+@keyframes egg-split-bottom {
+    to {
+        transform: translate(16px, 60px) rotate(14deg);
+        opacity: 0;
+    }
+}
+@keyframes egg-draw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+@keyframes egg-tile-rise {
+    from {
+        transform: translateY(46px) scale(0.3) rotate(-14deg);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+@keyframes egg-burst {
+    from {
+        transform: scale(0.2);
+        opacity: 1;
+    }
+    to {
+        transform: scale(2.6);
+        opacity: 0;
+    }
+}
+@keyframes egg-sheet-rise {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: none;
+    }
+}
+@keyframes egg-up {
+    from {
+        transform: translateY(8px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+@keyframes egg-pop {
+    from {
+        transform: scale(0.3) rotate(-14deg);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+@keyframes egg-ghost {
+    0%,
+    100% {
+        opacity: 0.45;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+@keyframes egg-beat {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 var(--color-accent-glow);
+    }
+    50% {
+        box-shadow: 0 0 0 6px transparent;
+    }
+}
+@keyframes egg-land {
+    from {
+        transform: translateY(-90px) scale(1.7) rotate(-10deg);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+@keyframes egg-tick {
+    from {
+        transform: translateY(14px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+@keyframes egg-stamp {
+    from {
+        transform: scale(2.4) rotate(-12deg);
+        opacity: 0;
+    }
+    to {
+        transform: rotate(-12deg);
+        opacity: 1;
+    }
+}
+/* Reduced motion shows each part of the hunt at rest, with no ring, no burst, and no pulse. The hunt also skips the crack. */
+@media (prefers-reduced-motion: reduce) {
+    .egg-scrim,
+    .egg-hero-in,
+    .egg-hero-in [data-hero-art="bracket"],
+    .egg-bob,
+    .egg-halo,
+    .egg-tile-rise,
+    .egg-sheet-rise,
+    .egg-up,
+    .egg-pop,
+    .egg-ghost,
+    .egg-beat,
+    .egg-land,
+    .egg-tick,
+    .egg-stamp,
+    .egg-fade-in {
+        animation: none !important;
+    }
+    .egg-ripple,
+    .egg-burst {
+        display: none;
+    }
+}
+
 /* The static HTML holds the start state of every reveal: no opacity and a small rise.
    With reduced motion or with no script, the content shows at rest from the first paint. */
 @media (prefers-reduced-motion: reduce), (scripting: none) {
@@ -458,4 +876,18 @@ html:not([data-hydrated]) [data-draw] {
         animation-duration: 0ms !important;
         scroll-behavior: auto !important;
     }
+}
+
+/* The egg hunt reads a long press on each element with a stable id, so iOS opens no callout there. A link and an
+   image keep the callout, so a long press on them still opens the menu of the browser. Text selection stays on, so
+   a manager can select a word of a blurb. The layout sets data-eggs on the root of a client that takes eggs, so
+   another client keeps the callout everywhere. */
+[data-eggs] [data-stable-id] {
+    -webkit-touch-callout: none;
+}
+[data-eggs] [data-stable-id] a,
+[data-eggs] [data-stable-id] img,
+[data-eggs] a[data-stable-id],
+[data-eggs] img[data-stable-id] {
+    -webkit-touch-callout: default;
 }

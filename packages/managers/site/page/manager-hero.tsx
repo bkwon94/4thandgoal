@@ -12,6 +12,7 @@ import { cn } from "@cpc/design/lib/utils";
 import type { Manager, SeasonWeek } from "../schema/manager-types";
 import { GradeMark, GradePopover } from "./grade-popover";
 import { OddsCount } from "./odds-count";
+import { stableId } from "@cpc/design/lib/stable-id";
 
 /* A change in words. Positive is up, so the odds change reads up or down. */
 function changeWords(change: number): string {
@@ -31,6 +32,7 @@ function WeekChip({ week }: { week: SeasonWeek }) {
     <li className="flex flex-col items-center gap-sp-1">
       <span
         data-result={week.won === null ? "none" : week.won ? "win" : "loss"}
+        {...stableId("result", week.week)}
         className={cn(
           "flex size-avatar items-center justify-center rounded-sm font-mono text-meta leading-none font-bold text-on-dark",
           week.won ? "bg-accent" : "border border-rule-dark bg-chip-dark",
@@ -108,9 +110,10 @@ export function ManagerHero({
               label="Playoff"
               value={odds ? <OddsCount value={odds.playoff} /> : "—"}
               note={odds && manager.odds_change !== null ? changeWords(manager.odds_change) : undefined}
+              stable="odds-playoff"
             />
-            <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : "—"} />
-            <Tile tone="hero" label="Seed" value={odds && odds.seed !== null ? ordinal(odds.seed) : "—"} />
+            <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : "—"} stable="odds-bye" />
+            <Tile tone="hero" label="Seed" value={odds && odds.seed !== null ? ordinal(odds.seed) : "—"} stable="odds-seed" />
           </div>
         </Rise>
       }

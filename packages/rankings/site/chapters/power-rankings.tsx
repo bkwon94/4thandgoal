@@ -24,6 +24,7 @@ import type { Components, Odds, RankingsRow, RankingsWeek } from "../schema/rank
 import { cn } from "@cpc/design/lib/utils";
 import { oddsText, rankingsScene } from "./rankings-scene";
 import { useWeekChoice } from "./week-choice";
+import { openId, stableId, stableKey, textId } from "@cpc/design/lib/stable-id";
 
 /* The order and the names of the four part ranks. */
 const COMPONENTS: { key: keyof Components; name: string }[] = [
@@ -124,7 +125,7 @@ function TopHero({ row, week }: { row: RankingsRow; week: RankingsWeek }) {
       label="Rank 1"
       scene={scene}
       eyebrow={`WEEK ${week.week} // POWER RANKINGS`}
-      title={row.name}
+      title={<span {...stableId("rank-hero", row.roster_id)}>{row.name}</span>}
       meta={
         <span className="font-mono tabular-nums">
           <RecordLine row={row} />
@@ -133,9 +134,9 @@ function TopHero({ row, week }: { row: RankingsRow; week: RankingsWeek }) {
       stats={
         <Rise step={1} className="w-full tablet:w-auto">
           <div className="grid grid-cols-3 gap-sp-2">
-            <Tile tone="hero" label="Playoff" value={playoffText(odds)} />
-            <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : <Missing what="No odds" />} />
-            <Tile tone="hero" label="Seed" value={odds?.seed != null ? String(odds.seed) : <Missing what="No seed" />} />
+            <Tile tone="hero" label="Playoff" value={playoffText(odds)} stable={stableKey("hero-tile", row.roster_id, "playoff")} />
+            <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : <Missing what="No odds" />} stable={stableKey("hero-tile", row.roster_id, "bye")} />
+            <Tile tone="hero" label="Seed" value={odds?.seed != null ? String(odds.seed) : <Missing what="No seed" />} stable={stableKey("hero-tile", row.roster_id, "seed")} />
           </div>
         </Rise>
       }
@@ -170,6 +171,7 @@ function LadderCard({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={() => setOpen(!open)}
+          {...openId("card", row.roster_id)}
           className={cn(
             "grid min-h-touch w-full cursor-pointer grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-x-sp-3",
             "border-0 bg-transparent p-sp-4 text-left text-ink [-webkit-tap-highlight-color:transparent]",
@@ -180,7 +182,7 @@ function LadderCard({
           <Avatar src={avatarSrc(avatars, row.roster_id)} />
           <span className="flex flex-col">
             <span className="text-row leading-tight font-bold">{row.name}</span>
-            <span className="mt-sp-0 font-mono text-meta leading-tight text-ink-2 tabular-nums">
+            <span className="mt-sp-0 font-mono text-meta leading-tight text-ink-2 tabular-nums" {...stableId("movement", row.roster_id)}>
               <RecordLine row={row} />
             </span>
           </span>
@@ -206,11 +208,11 @@ function LadderCard({
           <div className="px-sp-4 pb-sp-4">
             <div className="grid grid-cols-2 gap-sp-2 page:grid-cols-4">
               {COMPONENTS.map(({ key, name }) => (
-                <Tile key={key} label={name} value={row.components[key]} />
+                <Tile key={key} label={name} value={row.components[key]} stable={stableKey("ladder", row.roster_id, name)} />
               ))}
             </div>
             {row.blurb.length > 0 && (
-              <p className="mt-sp-3 mb-0 max-w-measure text-lead leading-body text-ink-2">{blurbText(row)}</p>
+              <p className="mt-sp-3 mb-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurbText(row))}>{blurbText(row)}</p>
             )}
             {href !== null && (
               <a
@@ -258,6 +260,7 @@ function WeekChips({ weeks, chosen, choose }: { weeks: RankingsWeek[]; chosen: n
           type="button"
           aria-pressed={week === chosen}
           aria-label={`Week ${week}`}
+          {...openId("week", week)}
           onClick={() => choose(week)}
           className={cn(
             "press min-h-touch min-w-touch flex-none cursor-pointer rounded-card border-0 px-sp-3 text-row font-extrabold tabular-nums",
@@ -292,7 +295,7 @@ export function PowerRankings({
         <TopHero key={week.week} row={top} week={week} />
         {/* The blurb of rank 1 sits directly under the hero, outside its frame, so the hero stays as short as the others. */}
         {top.blurb.length > 0 && (
-          <p className="mt-sp-4 mb-0 max-w-measure text-lead leading-body text-ink-2">{blurbText(top)}</p>
+          <p className="mt-sp-4 mb-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurbText(top))}>{blurbText(top)}</p>
         )}
       </div>
       <Chapter>
