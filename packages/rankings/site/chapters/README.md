@@ -4,8 +4,7 @@
 
 - The Ladder of the chosen week: the hero for the team at rank 1, a chip per week, one card for each other team, and the note on the four parts.
 - The hero: "01", the team, the record, the movement, the tiles Playoff, Bye, and Seed, and the blurb.
-- The data of the rankings scene of the hero, in `rankings-scene.ts`: 12 lights in rank order at the playoff odds, with
-  rank 1 as the flare and its label at rest. A week with no odds gets no scene.
+- The hero keeps the static grid with no scene, because the Ladder under it already shows the race.
 - Each card: the rank, the avatar, the team, the record with the movement, and the playoff odds with a short bar. A tap opens the four part ranks, the blurb, and a link to the manager page.
 - The chosen week, which the hero and the cards share. The URL hash carries it, such as `#week-5`.
 - `RankingsScreen`, the whole page with its top band or its empty state.

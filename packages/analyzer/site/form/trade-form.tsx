@@ -7,7 +7,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import AnalyzeResult from "./analyze-result";
-import { driftScene } from "@cpc/design/parts/drift-scene";
 import { CircleAlertIcon } from "lucide-react";
 import { Card } from "@cpc/design/parts/card";
 import { ErrorLine } from "@cpc/design/parts/error-line";
@@ -111,7 +110,7 @@ function GradingHero() {
 }
 
 /* The hero of the page, in the hero slots: the name of the tool as the eyebrow, the title, and the question of the Stack as the meta line.
-   It is the first hero of the page before a grade, so it draws the drift scene. The fold hides it while a grade runs and under a result. */
+   It keeps the static grid with no scene. The fold hides it while a grade runs and under a result. */
 function TitleHero() {
   return (
     <Hero
@@ -119,7 +118,6 @@ function TitleHero() {
       eyebrow="Trade Analyzer"
       title="Trade Analyzer"
       meta={<Rise step={1}>Who gets what?</Rise>}
-      scene={driftScene}
     />
   );
 }
@@ -417,7 +415,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
 
   const result = grade.status === "done" && (
     <div ref={resultRef}>
-      <AnalyzeResult doc={grade.doc} firstHero={folded} />
+      <AnalyzeResult doc={grade.doc} />
     </div>
   );
 

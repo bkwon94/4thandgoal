@@ -7,7 +7,6 @@ import { Hero } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
 import { Tile } from "@cpc/design/parts/tile";
 import type { Midseason } from "../schema/midseason-types";
-import { midseasonScene } from "../report/midseason-scene";
 import { fullRecord } from "../report/numbers";
 
 /* True while the latest published week is at or before the takeover end week, the week of the report plus 1 (PRD). */
@@ -22,8 +21,6 @@ export function Takeover({ report, href }: { report: Midseason; href: string }) 
       eyebrow={`${report.season} Midseason Report // Week ${report.week}`}
       title={report.opener.title}
       level={2}
-      // The takeover replaces the top of the home page, so it is the first hero there and draws the midseason scene.
-      scene={midseasonScene(report)}
       stats={
         // From the tablet tier up the stats share the bottom row with the wide pill of the action. The row of tiles
         // keeps its max-content width there, so a long team name such as "Mitseeker5000" never breaks over 2 lines,

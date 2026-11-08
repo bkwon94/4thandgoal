@@ -89,17 +89,13 @@ describe("The hero", () => {
     }
   });
 
-  it("draws the one scene of the page in the hero, and no scene in the Ladder (AT-19, AT-35)", () => {
+  it("keeps the static grid, the glow, and the brackets in the hero, and draws no scene on the page (AT-35, AT-44)", () => {
     const { container } = render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
     const hero = screen.getByRole("region", { name: "Rank 1" });
-    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
-    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
-  });
-
-  it("keeps the static grid for a week with no odds, as its lights have no height", () => {
-    const { container } = render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
-    fireEvent.click(chip(firstWeek.week));
     expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    expect(hero.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(hero.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
   });
 });
 

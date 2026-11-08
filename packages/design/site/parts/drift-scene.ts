@@ -1,6 +1,6 @@
 /**
  * The data of the drift scene: a scatter of lights that never settles into a chart, as on the 404 page (decision 07).
- * It holds no data of the league, so it lives in the design package. The 404 page and the analyzer form use it.
+ * It holds no data of the league, so it lives in the design package. The 404 page uses it.
  */
 import type { HeroScene, SceneLight } from "./scene-math";
 

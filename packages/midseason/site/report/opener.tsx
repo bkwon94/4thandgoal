@@ -4,7 +4,6 @@
  */
 import { oneDecimal, ordinal } from "@cpc/design/format/format";
 import { Hero } from "@cpc/design/parts/hero";
-import type { HeroScene } from "@cpc/design/parts/scene-math";
 import { Rise } from "@cpc/design/parts/rise";
 import { Tile } from "@cpc/design/parts/tile";
 import type { Opener as OpenerFacts } from "../schema/midseason-types";
@@ -18,15 +17,12 @@ export function Opener({
   season,
   week,
   finaleHref,
-  scene,
 }: {
   opener: OpenerFacts;
   season: number;
   week: number;
   // The fragment link of the sim at the end of the report. Undefined when the page has no sim, so the link hides.
   finaleHref?: string;
-  // The midseason scene. The opener is the first hero of the report, so it draws the scene and no act title does.
-  scene?: HeroScene;
 }) {
   const { leaders, record_leader: top } = opener.facts;
   // The first sentence of the blurb is the lead line of the meta, so the meta holds one or two lines. The rest of the
@@ -37,7 +33,6 @@ export function Opener({
       <Hero
         label={opener.title}
         className="rounded-report"
-        scene={scene}
         eyebrow={`${season} Midseason Report // Week ${week}`}
         title={opener.title}
         meta={lead?.text}

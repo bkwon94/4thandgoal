@@ -122,7 +122,7 @@ function paint(ctx: CanvasRenderingContext2D, scene: HeroScene, colors: SceneCol
     ctx.fillStyle = colors.muted;
     layout.guideLabels.forEach((rect, index) => ctx.fillText(layout.guides[index].label, rect.x, rect.y + rect.height / 2));
 
-    // The thin lines of the star chart, between the lights in x order inside one group, drawn from left to right.
+    // The thin lines of the star chart, between the lights in x order, drawn from left to right.
     const pairs = sceneLines(scene.lights);
     const segments = pairs.length;
     const reach = frame.lines * segments;

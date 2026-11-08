@@ -1,13 +1,9 @@
 /**
- * The hero scenes of the rankings page, the midseason report, the home page, and the 404 page, on the static export in
- * out/ of the current CLIENT, in Chromium. It checks the flare, the label at rest, the count of scenes, and the drift.
+ * The heroes of the rankings page, the midseason report, the home page, the analyzer, and the 404 page, on the static
+ * export in out/ of the current CLIENT, in Chromium. It checks the static heroes, the count of scenes, and the drift.
  */
 import { DARK_CLASS, THEME_KEY } from "@cpc/design/lib/theme";
-import { type HeroScene, SCENE_PADDING, placeLights } from "@cpc/design/parts/scene-math";
-import { midseasonScene } from "@cpc/midseason/report/midseason-scene";
 import { midseasonSchema } from "@cpc/midseason/schema/midseason";
-import { rankingsScene } from "@cpc/rankings/chapters/rankings-scene";
-import { rankingsSchema } from "@cpc/rankings/schema/rankings";
 import { expect, test, type Page } from "@playwright/test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -34,13 +30,8 @@ function published<T>(name: string, parse: (json: unknown) => T): T | null {
   return existsSync(path) ? parse(JSON.parse(readFileSync(path, "utf8"))) : null;
 }
 
-/* The scene of the latest week of the rankings file, as the rankings page opens on that week. */
-const RANKINGS = published("rankings.json", (json) => rankingsSchema.parse(json));
-const RANKINGS_SCENE = RANKINGS ? rankingsScene(RANKINGS.weeks.at(-1)!) : undefined;
-
-/* The midseason report and its scene. A client with no report has no report page. */
+/* The midseason report. A client with no report has no report page. */
 const MIDSEASON = published("midseason.json", (json) => midseasonSchema.parse(json));
-const MIDSEASON_SCENE = MIDSEASON ? midseasonScene(MIDSEASON) : undefined;
 
 let server: { url: string; close: () => Promise<void> };
 test.beforeAll(async () => {
@@ -72,70 +63,53 @@ const statesOf = (page: Page) =>
 
 const frameOf = (page: Page) => page.locator(CANVAS).evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
 
-/* The accent token as the long lower-case hex, as the canvas pixel reads. */
-const accentOf = (page: Page) =>
-  page
-    .evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--color-accent"))
-    .then((value) => value.trim().toLowerCase().replace(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/, "#$1$1$2$2$3$3"));
-
-/* The color of the pixel at the light of an index, from the same pure math that the canvas draws with. */
-async function lightPixel(page: Page, scene: HeroScene, index: number): Promise<string> {
-  const size = await page.locator(CANVAS).evaluate((canvas) => ({ width: canvas.clientWidth, height: canvas.clientHeight }));
-  const at = placeLights(scene, { ...size, padding: SCENE_PADDING })[index];
-  return page.locator(CANVAS).evaluate((canvas: HTMLCanvasElement, point) => {
-    const ratio = canvas.width / canvas.clientWidth;
-    const [r, g, b] = canvas.getContext("2d")!.getImageData(Math.round(point.x * ratio), Math.round(point.y * ratio), 1, 1).data;
-    return `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
-  }, at);
+/* Checks that a hero is static: the texture layer of the grid and the glow, the four brackets, and no scene canvas.
+   It finds the hero by its label in the markup, not by its role, because the passphrase dialog of the analyzer hides
+   the page under it from the tree of roles. */
+async function expectStatic(page: Page, name: string): Promise<void> {
+  const hero = page.locator(`section[aria-label="${name}"]`);
+  await expect(hero).toHaveCount(1);
+  await expect(hero.locator("[data-hero-art='texture']")).toHaveCount(1);
+  await expect(hero.locator("[data-hero-art='bracket']")).toHaveCount(4);
+  await expect(hero.locator(CANVAS)).toHaveCount(0);
+  console.log(`${CLIENT}: the hero "${name}" is static, with ${await page.locator(CANVAS).count()} scene canvases on the page`);
 }
 
-/* The Playwright config turns reduced motion on, so a settle scene draws its chart at once in these tests. */
-test.describe(`the scenes of the pages of ${CLIENT}, at rest`, () => {
-  for (const width of [375, 768, 1280]) {
-    test(`the rankings scene flares rank 1 and shows its label at ${width} px (AT-19)`, async ({ page }) => {
-      test.skip(!RANKINGS_SCENE, `${CLIENT} has no rankings week with odds`);
-      const scene = RANKINGS_SCENE!;
-      await page.setViewportSize({ width, height: 900 });
-      await open(page, "/rankings/");
-      await expect(page.locator(CANVAS)).toHaveCount(1);
-      await expect(page.getByRole("region", { name: "Rank 1" }).locator(CANVAS)).toHaveCount(1);
-      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest");
-      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-label", scene.lights[0].label);
-      expect(await lightPixel(page, scene, 0)).toBe(await accentOf(page));
-      console.log(`${CLIENT}: the rank-1 light reads "${scene.lights[0].label}"`);
-    });
+/* The rankings, the midseason report, the home takeover, and the analyzer keep the static grid. Only the week page, the
+   home Matchup hero, the manager pages, and the 404 draw a scene. */
+test.describe(`the static heroes of ${CLIENT}`, () => {
+  test.use({ viewport: PHONE });
 
-    test(`the midseason scene flares the leader and shows its label at ${width} px (AT-22)`, async ({ page }) => {
-      test.skip(!MIDSEASON_SCENE, `${CLIENT} has no midseason report`);
-      const scene = MIDSEASON_SCENE!;
-      await page.setViewportSize({ width, height: 900 });
-      await open(page, `/midseason/${SEASON}/`);
-      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest");
-      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-label", scene.lights[0].label);
-      expect(await lightPixel(page, scene, 0)).toBe(await accentOf(page));
-      console.log(`${CLIENT}: the leader light reads "${scene.lights[0].label}"`);
-    });
-  }
+  test("the rankings page has no scene, and its hero is static (AT-35, AT-44)", async ({ page }) => {
+    await open(page, "/rankings/");
+    await expectStatic(page, "Rank 1");
+    await expect(page.locator(CANVAS)).toHaveCount(0);
+  });
 
-  test("the report has one scene, in the opener, and none in an act title (AT-35)", async ({ page }) => {
+  test("the report has no scene, and its opener is static (AT-35, AT-44)", async ({ page }) => {
     test.skip(!MIDSEASON, `${CLIENT} has no midseason report`);
-    await page.setViewportSize(PHONE);
     await open(page, `/midseason/${SEASON}/`);
-    await expect(page.locator(CANVAS)).toHaveCount(1);
-    await expect(page.getByRole("region", { name: MIDSEASON!.opener.title, exact: true }).locator(CANVAS)).toHaveCount(1);
-    for (const [index, act] of MIDSEASON!.acts.entries()) {
-      const title = page.getByRole("region", { name: `Act ${["I", "II", "III"][index]}: ${act.title}`, exact: true });
-      await expect(title).toHaveCount(1);
-      await expect(title.locator(CANVAS)).toHaveCount(0);
+    await expectStatic(page, MIDSEASON!.opener.title);
+    await expect(page.locator(CANVAS)).toHaveCount(0);
+  });
+
+  test("the home page has no scene under the takeover, and one in the Matchup hero without it (AT-35, AT-44)", async ({ page }) => {
+    await open(page, "/");
+    const takeover = page.getByRole("region", { name: `${SEASON} Midseason Report`, exact: true });
+    if ((await takeover.count()) > 0) {
+      await expectStatic(page, `${SEASON} Midseason Report`);
+      await expect(page.locator(CANVAS)).toHaveCount(0);
+    } else {
+      await expect(page.locator(CANVAS)).toHaveCount(1);
+      await expect(page.getByRole("region", { name: "Matchup of the Week" }).locator(CANVAS)).toHaveCount(1);
+      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest");
     }
   });
 
-  test("the home page has exactly one scene, in its first hero (AT-35)", async ({ page }) => {
-    await page.setViewportSize(PHONE);
-    await open(page, "/");
-    await expect(page.locator(CANVAS)).toHaveCount(1);
-    await expect(page.locator("section[aria-label]").filter({ has: page.locator(CANVAS) })).toHaveCount(1);
-    await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest");
+  test("the analyzer has no scene before a grade, and its title hero is static (AT-35, AT-44)", async ({ page }) => {
+    await open(page, "/analyze/");
+    await expectStatic(page, "Trade Analyzer");
+    await expect(page.locator(CANVAS)).toHaveCount(0);
   });
 });
 

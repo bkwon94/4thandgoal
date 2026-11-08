@@ -102,42 +102,17 @@ describe("AnalyzeResult", () => {
     expect(hero.querySelector("[data-hero-rule]")).toBeNull();
   });
 
-  it("draws the settled scene of the two sides in the verdict hero, the first hero after the grade (AT-21)", () => {
+  it("keeps the static grid, the glow, and the brackets in the verdict hero, and draws no scene (AT-35, AT-44)", () => {
     render(<AnalyzeResult doc={tradeA} />);
     const hero = screen.getByRole("region", { name: "The Verdict" });
-    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
-    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
-  });
-
-  /* AT-9: the scene sits in the feature above the fairness card, so the hero starts at the eyebrow at every width. */
-  it("draws the scene inside the feature, above the fairness card, so nothing sits above the eyebrow (AT-9)", () => {
-    render(<AnalyzeResult doc={tradeA} />);
-    const hero = screen.getByRole("region", { name: "The Verdict" });
-    const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
-    const canvas = feature.querySelector("canvas[data-hero-scene]") as HTMLElement;
-    expect(canvas).toBeTruthy();
-    const fairness = within(feature).getByText("Fairness");
-    expect(canvas.compareDocumentPosition(fairness) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    // The eyebrow is the first content of the hero: no scene band comes before it in the markup.
-    const eyebrow = hero.querySelector("[data-hero-slot=eyebrow]") as HTMLElement;
-    expect(eyebrow.compareDocumentPosition(canvas) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  });
-
-  it("draws no scene in a verdict hero that is not the first hero of the page", () => {
-    render(<AnalyzeResult doc={tradeA} firstHero={false} />);
     expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    expect(hero.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(hero.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
   });
 
-  it("keeps the scene as the only feature when the document has no fairness block and no note", () => {
+  it("leaves out the feature slot when the document has no fairness block and no note", () => {
     render(<AnalyzeResult doc={{ ...fixture, fairness: undefined }} />);
-    const hero = screen.getByRole("region", { name: "The Verdict" });
-    const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
-    expect(feature.querySelector("canvas[data-hero-scene]")).toBeTruthy();
-    expect(within(feature).queryByText("Fairness")).toBeNull();
-  });
-
-  it("leaves out the feature slot when the document has no fairness block, no note, and no scene", () => {
-    render(<AnalyzeResult doc={{ ...fixture, fairness: undefined }} firstHero={false} />);
     const hero = screen.getByRole("region", { name: "The Verdict" });
     expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta"]);
   });

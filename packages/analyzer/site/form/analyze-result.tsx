@@ -5,7 +5,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, TradeSide, TradedPlayer } from "../lib/analyze-types";
 import { knownGamesSegments } from "../lib/known-games-segments";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -14,12 +14,9 @@ import { Blurb } from "@cpc/design/parts/blurb";
 import { Card } from "@cpc/design/parts/card";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
-import { HeroSceneCanvas } from "@cpc/design/parts/hero-scene";
 import { Headshot } from "@cpc/league/headshot";
 import { Label } from "@cpc/design/parts/label";
 import { cn } from "@cpc/design/lib/utils";
-import { verdictScene } from "./analyzer-scene";
-import type { HeroScene } from "@cpc/design/parts/scene-math";
 import { openId, stableId, textId, TRADE_ANSWER, TRADE_KEY } from "@cpc/design/lib/stable-id";
 
 /* A trade side with the asker flag. The swap card and the fairness line need no more, so the finder cards reuse them with a side that has no read. */
@@ -208,25 +205,22 @@ const ANSWER_WORD = {
 /* The verdict fills the hero slots: the side as the eyebrow, the answer word as the title, and the reason as the meta.
    Each chapter of the result opens with a level-two heading, so the title is level two. The answer word rises in once,
    so the call lands with a beat. With motion off, it shows at rest at once. The no-values note and the fairness block
-   sit on a card in the feature, so their text keeps the colors of the card. The scene sits in the feature above the
-   card, not in the scene band of `Hero`, which sits above the eyebrow on a phone. So the hero starts at the eyebrow
-   and ends at the fairness block at every width (AT-9). The scene has its own row, so no light sits under text.
-   A result with no note, no fairness block, and no scene has no feature, and the hero ends at the reason. The verdict
-   has no stats and no action, so the hero shows no empty area. */
+   sit on a card in the feature, so their text keeps the colors of the card. So the hero starts at the eyebrow and ends
+   at the fairness block at every width (AT-9). The hero keeps the static grid: the fairness block already shows the
+   answer, so a scene would say it twice. A result with no note and no fairness block has no feature, and the hero ends
+   at the reason. The verdict has no stats and no action, so the hero shows no empty area. */
 function VerdictHero({
   decision,
   team,
   asOf,
   sides,
   fairness,
-  scene,
 }: {
   decision: Decision;
   team?: string;
   asOf: AsOf;
   sides: SwapSide[];
   fairness?: Fairness | null;
-  scene?: HeroScene;
 }) {
   const off = useMotionOff();
   const answer = ANSWER_WORD[decision.answer];
@@ -254,14 +248,7 @@ function VerdictHero({
         </motion.span>
       }
       meta={<span {...textId("blurb", decision.reason)}>{decision.reason}</span>}
-      feature={
-        scene || card ? (
-          <div className="flex flex-col gap-sp-6">
-            {scene && <HeroSceneCanvas scene={scene} />}
-            {card}
-          </div>
-        ) : undefined
-      }
+      feature={card}
     />
   );
 }
@@ -449,20 +436,16 @@ export function tradeKey(doc: AnalyzeResponse): string {
     .join("|");
 }
 
-/* `firstHero` is false when the open form puts its title hero above the result. Only the first hero of a page moves (story 41). */
-export default function AnalyzeResult({ doc, firstHero = true }: { doc: AnalyzeResponse; firstHero?: boolean }) {
+export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
   const sides = joinSides(doc);
   const decisionTeam = sides.find((s) => s.roster_id === doc.decision.for_roster)?.team;
-  /* The fold hides the title hero under a result, so the verdict hero is the first hero of the page and draws the scene.
-     The scene settles into one group per side when the verdict arrives. One object per document, so a render never restarts it. */
-  const scene = useMemo(() => verdictScene(doc), [doc]);
 
   /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has five chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
     // The root carries the trade key and the answer of the decision, so the egg hunt reads them as a condition.
     <div className="tablet:flex tablet:flex-col tablet:gap-card-gap" {...{ [TRADE_KEY]: tradeKey(doc), [TRADE_ANSWER]: doc.decision.answer }}>
-      <VerdictHero decision={doc.decision} team={decisionTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} scene={firstHero ? scene : undefined} />
+      <VerdictHero decision={doc.decision} team={decisionTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
 
       <Chapter>
         <Label heading>The Trade</Label>

@@ -51,11 +51,14 @@ describe("The takeover slots", () => {
   });
 });
 
-describe("The takeover scene", () => {
-  it("draws the midseason scene, so the home page has one scene while the takeover holds its top (AT-35)", () => {
+describe("The takeover hero", () => {
+  it("keeps the static grid, the glow, and the brackets, and draws no scene (AT-35, AT-44)", () => {
     render(<Takeover report={midseason} href="/midseason/2026/" />);
     const region = screen.getByRole("region", { name: "2026 Midseason Report" });
-    expect(region.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(region.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    expect(region.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(region.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
   });
 });
 

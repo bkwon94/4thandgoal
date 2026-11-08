@@ -278,9 +278,12 @@ describe("TradeForm", () => {
     expect(slotText(hero, "meta")).toBe("Who gets what?");
   });
 
-  it("draws the drift scene in the title hero before a grade, as the first hero of the page (AT-20)", () => {
+  it("keeps the static grid, the glow, and the brackets in the title hero before a grade, with no scene (AT-35, AT-44)", () => {
     const hero = screen.getByRole("region", { name: "Trade Analyzer" });
-    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    expect(hero.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(hero.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
   });
 
   it("draws no scene in the grading hero", async () => {
@@ -351,18 +354,18 @@ describe("TradeForm", () => {
     expect(verdict.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it("draws the scene in the verdict hero under a folded result, and in the title hero alone after Edit (AT-21)", async () => {
+  it("draws no scene under a folded result or after Edit, as each hero of the analyzer is static (AT-35, AT-44)", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
     const verdict = await screen.findByRole("region", { name: "The Verdict" });
-    expect(verdict.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
-    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    expect(verdict.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(verdict.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
     edit();
-    // Only the first hero of a page moves (story 41), so the verdict under the open form keeps the static grid.
-    const title = screen.getByRole("region", { name: "Trade Analyzer" });
-    expect(title.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
-    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(screen.getByRole("region", { name: "Trade Analyzer" })).toBeTruthy();
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
   });
 
   it("opens the form again with Edit and keeps the result under it", async () => {

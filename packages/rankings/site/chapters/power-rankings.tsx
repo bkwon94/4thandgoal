@@ -6,7 +6,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Card } from "@cpc/design/parts/card";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
@@ -22,7 +22,6 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, EASE_OUT, INSTANT, stagger } from "@cpc/design/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "../schema/rankings-types";
 import { cn } from "@cpc/design/lib/utils";
-import { oddsText, rankingsScene } from "./rankings-scene";
 import { useWeekChoice } from "./week-choice";
 import { openId, stableId, stableKey, textId } from "@cpc/design/lib/stable-id";
 
@@ -84,7 +83,9 @@ function Missing({ what }: { what: string }) {
    A row from a week before the odds engine ran has no odds, so it shows a dash. */
 function playoffText(odds: Odds | undefined): ReactNode {
   if (!odds) return <Missing what="No odds" />;
-  return oddsText(odds);
+  if (odds.status === "in") return "In";
+  if (odds.status === "out") return "Out";
+  return `${odds.playoff}%`;
 }
 
 /* The playoff odds as a component, so a server part such as the top three of the home page can render them. */
@@ -115,15 +116,12 @@ const blurbText = (row: RankingsRow) => row.blurb.map((sentence) => sentence.tex
 
 /* The hero: the team at rank 1 of the chosen week, in the hero slots. The week is the eyebrow, the team name the title,
    and the record line the meta. The tiles take the hero tone, so they sit on the raised surface of the hero.
-   The hero is the first hero of the page, so it draws the rankings scene of the chosen week. */
+   The hero keeps the static grid: the Ladder under it already shows the race, so a scene would say it twice. */
 function TopHero({ row, week }: { row: RankingsRow; week: RankingsWeek }) {
   const odds = row.odds;
-  // One scene object per week, so a render that keeps the week does not start the settle again.
-  const scene = useMemo(() => rankingsScene(week), [week]);
   return (
     <Hero
       label="Rank 1"
-      scene={scene}
       eyebrow={`WEEK ${week.week} // POWER RANKINGS`}
       title={<span {...stableId("rank-hero", row.roster_id)}>{row.name}</span>}
       meta={

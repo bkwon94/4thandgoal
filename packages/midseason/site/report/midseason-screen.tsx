@@ -9,7 +9,6 @@ import type { Midseason } from "../schema/midseason-types";
 import type { Avatars } from "./chapter-part";
 import { ActRail } from "./act-rail";
 import { ActSection } from "./act-section";
-import { midseasonScene } from "./midseason-scene";
 import { Opener } from "./opener";
 
 /* The title, the brand, and the menu of the top band, as the app builds them for every page. */
@@ -53,7 +52,6 @@ export function MidseasonScreen({
               opener={report.opener}
               season={report.season}
               week={report.week}
-              scene={midseasonScene(report)}
               finaleHref={finale === undefined ? undefined : `#${FINALE_ID}`}
             />
             {report.acts.map((act, index) => (

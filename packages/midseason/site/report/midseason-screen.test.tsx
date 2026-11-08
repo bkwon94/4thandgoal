@@ -50,15 +50,13 @@ describe("MidseasonScreen", () => {
     expect(within(slots[4] as HTMLElement).getByRole("link", { name: "See the sim" })).toBeTruthy();
   });
 
-  it("draws the one scene of the report in the opener, and no scene in an act title (AT-22, AT-35)", () => {
+  it("keeps the static grid, the glow, and the brackets in the opener, and draws no scene in the report (AT-35, AT-44)", () => {
     const { container } = renderReport();
     const opener = screen.getByRole("region", { name: "The Title Race" });
-    expect(opener.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
-    for (const [index, act] of midseason.acts.entries()) {
-      const page = screen.getByRole("region", { name: `Act ${["I", "II", "III"][index]}: ${act.title}` });
-      expect(page.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
-    }
-    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    expect(opener.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(opener.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
   });
 
   it("shows the rest of the opener blurb as a paragraph directly under the hero", () => {

@@ -57,13 +57,12 @@ describe("HomePage", () => {
     expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
   });
 
-  it("has exactly one scene, in the takeover, when the midseason report takes over the top (AT-35)", async () => {
+  it("has no scene when the midseason report takes over the top, as the takeover keeps the static grid (AT-35, AT-44)", async () => {
     const Home = await homeOfClient("cpc");
     const { container } = render(<Home />);
-    const takeover = screen.getByRole("region", { name: "2026 Midseason Report" });
+    expect(screen.getByRole("region", { name: "2026 Midseason Report" })).toBeTruthy();
     expect(screen.queryByRole("region", { name: "Matchup of the Week" })).toBeNull();
-    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
-    expect(takeover.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
   });
 
   it("names the season and the league in the intro", () => {

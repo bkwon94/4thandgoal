@@ -2,8 +2,8 @@
 
 ## Knows
 
-- `Takeover`, the opener of the report, the title race, with a link to the report. It draws the midseason scene, so
-  the home page has one scene while the takeover holds its top.
+- `Takeover`, the opener of the report, the title race, with a link to the report. It keeps the static grid, so the
+  home page has no scene while the takeover holds its top.
 - `takeoverOn`, true while the latest published week is at or before the takeover end week of the file.
 - `ReportTile`, the one big fact of the file's tile and a link to the report, in the shape of the R3 tile.
 
