@@ -6,7 +6,7 @@ Map: `.scratch/card-polish/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ The Grade dial shows the weight of each part: 45, 30, 10, and 15. The weights li
 
 ## Decision
 
-None yet.
+The spec records it under Grade dial, approved by Brian on 2026-11-07. A site constant holds 45, 30, 10, and 15. A site test reads `GRADE_WEIGHTS` from the pipeline tunables file and fails if the two differ. The spec stays on the site only.

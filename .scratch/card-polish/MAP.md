@@ -23,11 +23,11 @@ Rules that hold: ADR 0024 (the hero is the one loud surface), the ADR 0025 reada
 - Seven Trend tiles: the four week numbers and the three Moves tiles. Bars or a stepped area per tile, from week 1 to the page week. No donut. `decisions/04-grill-trend-tile-scope.md`.
 - The chips of the Index list filter on the playoff race: All, In (75% or more, or clinched), Bubble (25% to 75%), Out (under 25%, or eliminated). `decisions/06-grill-index-list-chips.md`.
 - The Index list is a ledger that opens rows in place on phone and tablet, and a ledger beside a sticky stage on desktop. Each row adds a small avatar. The stage is built from the `hero-slots` slots, and only its ticket waits for that spec to merge. `decisions/07-prototype-index-list-phone.md`.
+- The Ready halo brightens with the share of passed checks: a team, a get, and a give per side. `decisions/08-spec-ready-halo-steps.md`.
+- The grade weights are a site constant with a test against the pipeline tunables. `decisions/09-spec-grade-weights-source.md`.
 
 ## NOT YET SPECIFIED
 
-- Where does the site get the grade weights? `decisions/09-spec-grade-weights-source.md`.
-- What steps fill the Ready halo? `decisions/08-spec-ready-halo-steps.md`.
 
 ## OUT OF SCOPE
 

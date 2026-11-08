@@ -6,7 +6,7 @@ Map: `.scratch/card-polish/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ The Ready halo on the submit button of the Stack gets brighter as the trade fill
 
 ## Decision
 
-None yet.
+The spec records it under Ready halo, approved by Brian on 2026-11-07. Each side has three checks: a team, at least one player it gets, and at least one player it gives. The level is the passed checks over three times the count of sides. The glow reaches full only when the ready rule passes. It uses the accent role, so it works in both themes. Reduced motion keeps the brightness change and drops any pulse.
