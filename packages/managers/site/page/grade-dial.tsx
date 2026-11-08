@@ -38,10 +38,11 @@ function arcName(part: GradePart, teams: number): string {
 }
 
 /* The colors of each tone. The hero tone sits on the band color of a hero in both themes, so its text takes the on-dark
-   roles on a plate, as every hero text does, and an unlit blade takes the rule color of the hero. */
+   roles on a plate, as every hero text does, and an unlit blade takes the rule color of the hero.
+   The wait color is the unlit color, spelled in full so Tailwind finds the class. */
 const TONES = {
-  page: { off: "bg-bar-off", ink: "text-ink", mute: "text-mute", plate: "" },
-  hero: { off: "bg-rule-dark", ink: "text-on-dark", mute: "text-on-dark-2", plate: "plate" },
+  page: { off: "bg-bar-off", wait: "group-data-[wait]:bg-bar-off", ink: "text-ink", mute: "text-mute", plate: "" },
+  hero: { off: "bg-rule-dark", wait: "group-data-[wait]:bg-rule-dark", ink: "text-on-dark", mute: "text-on-dark-2", plate: "plate" },
 } as const;
 
 type Tone = keyof typeof TONES;
@@ -70,7 +71,7 @@ function Arc({ part, teams, size, off, tone }: ArcProps) {
               // With motion off the blade has no delay, and the reduced-motion rule of globals.css drops the duration.
               className={cn(
                 "absolute rounded-pill transition-[background-color] duration-240 ease-[cubic-bezier(0.4,0,0.2,1)]",
-                on ? cn("bg-accent", tone === "hero" ? "group-data-[wait]:bg-rule-dark" : "group-data-[wait]:bg-bar-off") : colors.off,
+                on ? cn("bg-accent", colors.wait) : colors.off,
               )}
               style={{
                 left: `${((CENTER - BLADE_W / 2) / SIZE) * 100}%`,
