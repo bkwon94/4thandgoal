@@ -1,6 +1,6 @@
 /**
  * The "Grade the Trade" bar: one wide button fixed on the dock of a phone and a tablet, and at the bottom of the screen from the desktop tier.
- * It stays in reach at every scroll. The analyzer page keeps the same space free under the page, so the bar covers no content.
+ * It stays in reach at every scroll, and the analyzer page keeps the same space free under the page, so the bar covers no content.
  * The button wears the Ready halo, after the method of the Send Halo item: a ring that glows brighter as the trade fills.
  */
 "use client";
