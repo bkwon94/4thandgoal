@@ -10,16 +10,14 @@ const NUMERALS = ["I", "II", "III"];
 export function ActTitle({ index, title, headingId }: { index: number; title: string; headingId: string }) {
   const number = `Act ${NUMERALS[index] ?? index + 1}`;
   return (
-    <Hero label={`${number}: ${title}`} className="rounded-report py-sp-6 tablet:min-h-[12rem]">
-      {/* Each line sits on a plate, so the grid and the glow never sit under a letter. */}
-      <div className="flex flex-col items-start gap-sp-3">
-        <span className="plate font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase">
-          {number}
-        </span>
-        <h2 id={headingId} className="plate m-0 text-headline leading-tight font-bold tracking-tight">
-          {title}
-        </h2>
-      </div>
-    </Hero>
+    // The act number is the eyebrow and the act title the title, at level 2 with the look of the opener title.
+    // The id sits on a span in the title, so the section of the act takes its name from the act title.
+    <Hero
+      label={`${number}: ${title}`}
+      className="rounded-report py-sp-6 tablet:min-h-[12rem]"
+      eyebrow={number}
+      title={<span id={headingId}>{title}</span>}
+      level={2}
+    />
   );
 }

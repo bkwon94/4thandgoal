@@ -36,6 +36,21 @@ describe("Takeover", () => {
   });
 });
 
+describe("The takeover slots", () => {
+  it("fills the eyebrow, the title at level 2, the leader tiles, and the link, with no meta", () => {
+    render(<Takeover report={midseason} href="/midseason/2026/" />);
+    const region = screen.getByRole("region", { name: "2026 Midseason Report" });
+    const slots = [...region.querySelectorAll("[data-hero-slot]")];
+    expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual(["eyebrow", "title", "stats", "action"]);
+    expect(slots[0].textContent).toBe("2026 Midseason Report // Week 8");
+    expect(slots[1].tagName).toBe("H2");
+    expect(slots[1].textContent).toBe("The Title Race");
+    expect(within(slots[2] as HTMLElement).getAllByRole("listitem")).toHaveLength(3);
+    expect(within(slots[2] as HTMLElement).getByText("Record leader")).toBeTruthy();
+    expect(within(slots[3] as HTMLElement).getByRole("link", { name: "Read the Midseason Report" })).toBeTruthy();
+  });
+});
+
 describe("ReportTile", () => {
   it("shows one big fact, the title odds of the favorite, as one link to the report", () => {
     render(<ReportTile report={midseason} href="/midseason/2026/" />);

@@ -10,6 +10,6 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-13.
 
 **Status:** ready-for-agent
 
-- [ ] The power-rankings hero, the takeover, the opener, and the act titles use the slots, as the table of the spec maps them.
-- [ ] In the report the opener title is an `h1`, each act title is an `h2`, and both have the same computed font size and weight (AT-13).
-- [ ] The tests of the rankings and midseason heroes pass with the new slots.
+- [x] The power-rankings hero, the takeover, the opener, and the act titles use the slots, as the table of the spec maps them.
+- [x] In the report the opener title is an `h1`, each act title is an `h2`, and both have the same computed font size and weight (AT-13).
+- [x] The tests of the rankings and midseason heroes pass with the new slots.
