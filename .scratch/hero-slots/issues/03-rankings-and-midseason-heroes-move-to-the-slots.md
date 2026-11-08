@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-13.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The power-rankings hero, the takeover, the opener, and the act titles use the slots, as the table of the spec maps them.
 - [x] In the report the opener title is an `h1`, each act title is an `h2`, and both have the same computed font size and weight (AT-13).
