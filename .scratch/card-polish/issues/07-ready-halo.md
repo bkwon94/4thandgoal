@@ -8,7 +8,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-19, AT-20, and AT-21.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A unit test proves the level for zero, two, and six passed checks of a two-side trade, and full only when the ready rule passes.
 - [x] On `/analyze/`, two teams and no player give the level of 2 of 6, below full.
