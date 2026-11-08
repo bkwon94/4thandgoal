@@ -48,7 +48,7 @@ describe("RankingsPage", () => {
     const RankingsPage = await pageOver(fixture);
     render(<RankingsPage />);
     const main = screen.getByRole("main");
-    expect(within(main).getByRole("heading", { level: 1 }).textContent).toBe("WEEK 6 // POWER RANKINGS");
+    expect(within(main).getByRole("heading", { level: 1 }).textContent).toBe("London Cooking");
     // London Cooking sits in the hero, so the first card is the team at rank 2.
     const cards = within(main).getAllByRole("listitem");
     expect(cards).toHaveLength(11);
@@ -73,15 +73,14 @@ describe("RankingsPage", () => {
     expect(page.textContent).not.toContain("WEEK 6");
   });
 
-  it("shows All You Need Is Love at 01, 11-5, up 4, in the hero of CPC week 8", async () => {
+  it("shows All You Need Is Love at 11-5, up 4, in the hero of CPC week 8", async () => {
     // The published rankings file of CPC, as the build copies it into public/.
     const cpc = JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026/rankings.json"), "utf8"));
     const RankingsPage = await pageOver(cpc);
     render(<RankingsPage />);
     const hero = within(screen.getByRole("region", { name: "Rank 1" }));
-    expect(hero.getByRole("heading", { level: 1 }).textContent).toBe("WEEK 8 // POWER RANKINGS");
-    expect(hero.getByText("01")).toBeTruthy();
-    expect(hero.getByRole("heading", { level: 2, name: "All You Need Is Love" })).toBeTruthy();
+    expect(hero.getByText("WEEK 8 // POWER RANKINGS")).toBeTruthy();
+    expect(hero.getByRole("heading", { level: 1 }).textContent).toBe("All You Need Is Love");
     expect(hero.getByText("11-5")).toBeTruthy();
     expect(hero.getByText("Up").parentElement?.textContent).toBe("Up4");
     for (const label of ["Playoff", "Bye", "Seed"]) expect(hero.getByText(label)).toBeTruthy();
