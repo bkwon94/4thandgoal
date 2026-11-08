@@ -17,15 +17,15 @@ Rules that hold: ADR 0024 (the hero is the one loud surface), the ADR 0025 reada
 
 - Each part follows its Scrolltide item as far as possible. Only a hard rule of ADR 0028 overrules the item. Brian, 2026-11-07.
 - The Open card keeps the height, the focus blur, and the spring of the Showcase Card item. ADR 0028 records it. `decisions/01-grill-open-card-motion.md`.
+- The large picture of the Index list is not the team avatar. Sleeper serves 400px at most, and only 8 of 24 teams have that size. `decisions/05-research-avatar-size.md`.
 
 ## NOT YET SPECIFIED
 
 - What does each Open card show closed and open? `decisions/02-prototype-open-card-content.md`.
 - How does the Grade dial look? `decisions/03-prototype-grade-dial-look.md`.
 - Which tiles become Trend tiles, and what does each trend plot? `decisions/04-grill-trend-tile-scope.md`.
-- How large are the Sleeper avatars? `decisions/05-research-avatar-size.md`.
 - What do the chips of the Index list filter on? `decisions/06-grill-index-list-chips.md`.
-- How does the Index list sit at 390px? `decisions/07-prototype-index-list-phone.md`.
+- How does the Index list sit at 390px, and what fills its large picture? `decisions/07-prototype-index-list-phone.md`.
 - What steps fill the Ready halo? `decisions/08-spec-ready-halo-steps.md`.
 
 ## OUT OF SCOPE
@@ -34,3 +34,4 @@ Rules that hold: ADR 0024 (the hero is the one loud surface), the ADR 0025 reada
 - A pipeline series for the trends. The spec changes the site only.
 - The other Scrolltide items: Morph Navbar, Wordmark Bleed, and the easter-egg ideas. They wait for a later round.
 - A link variant of `Card`, one section wrapper in place of four, and a refresh of `apps/site/.impeccable.md`. Each is a cleanup with its own ticket.
+- A fetch of the 168px full-size avatar in place of the 80px thumb. It is a pipeline change, and this spec changes the site only.

@@ -6,7 +6,7 @@ Map: `.scratch/card-polish/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,10 @@ The Index list shows one large picture of the chosen team, about 400px wide. The
 
 ## Decision
 
-None yet.
+The large picture of the Index list is not the team avatar. The facts decide it, from the notes at `decisions/05-research-avatar-size.notes.md`, measured on 2026-11-07.
+
+- Sleeper serves 400px at most, and only for a custom upload. 8 of 24 teams have one. Those 8 are soft at 2x.
+- The other 16 teams top out at 168px or 192px, and the pipeline stores 80px for most of them. One team has no avatar.
+- The headshots are 350x254, so they are not a team picture.
+
+Ticket 07 chooses what fills the large picture, in the prototype. The ticket names the panel of the hero look as the first try. The avatar can still sit small inside that panel.
