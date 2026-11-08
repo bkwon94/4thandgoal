@@ -47,6 +47,10 @@ async function addTeam(team: string) {
   await chooseTeam(team);
 }
 
+/* The filled hero slots of a hero, in the order of the markup. */
+const slotsOf = (hero: HTMLElement) => [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
+const slotText = (hero: HTMLElement, slot: string) => hero.querySelector(`[data-hero-slot=${slot}]`)?.textContent;
+
 const removeButton = (name: string) => screen.getByRole("button", { name: `Remove ${name}` }) as HTMLButtonElement;
 
 /* The text of each row of a card. */
@@ -266,6 +270,26 @@ describe("TradeForm", () => {
     delete window.goatcounter;
   });
 
+  it("puts the title hero in the slots: the title and the line under it, with no empty slot", () => {
+    const hero = screen.getByRole("region", { name: "Trade Analyzer" });
+    expect(slotsOf(hero)).toEqual(["title", "meta"]);
+    expect(within(hero).getByRole("heading", { level: 1 }).textContent).toBe("Trade Analyzer");
+    expect(slotText(hero, "meta")).toBe("Who gets what?");
+  });
+
+  it("puts the grading hero in the slots: Live, the title, the line, and the loading state", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta", "feature"]);
+    expect(slotText(hero, "eyebrow")).toBe("Live");
+    expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("Grading the Trade");
+    expect(slotText(hero, "meta")).toBe("This can take up to a minute.");
+    const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
+    expect(within(feature).getByRole("status").getAttribute("aria-busy")).toBe("true");
+  });
+
   it("shows the loading line while the grade runs", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
@@ -299,8 +323,8 @@ describe("TradeForm", () => {
     await pickTrade(TRADE);
     fireEvent.click(submit());
     const verdict = await screen.findByRole("region", { name: "The Verdict" });
-    expect(within(verdict).getByRole("heading", { level: 2, name: "Decision for Pukancun on 3" })).toBeTruthy();
-    expect(within(verdict).getByText("Not as is")).toBeTruthy();
+    expect(within(verdict).getByText("Decision for Pukancun on 3")).toBeTruthy();
+    expect(within(verdict).getByRole("heading", { level: 2, name: "Not as is" })).toBeTruthy();
     expect(within(verdict).getByText("Fairness")).toBeTruthy();
     // The verdict is the hero, so the title hero and the grading hero are gone.
     expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
