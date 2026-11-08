@@ -10,8 +10,9 @@ import { cn } from "../lib/utils";
 export type TrendPoint = { week: number; value: number };
 
 /* The trend of a Trend tile. Bars light the bar of the page week. A step is a stepped area with the page week marked.
+   Dots mark each week with a count above zero, for a rare count such as trades.
    The text is one sentence of the trend, so the chart is not the only source for a screen reader. */
-export type TileTrend = { points: TrendPoint[]; week: number; kind: "bars" | "step"; text: string };
+export type TileTrend = { points: TrendPoint[]; week: number; kind: "bars" | "step" | "dots"; text: string };
 
 type TileProps = {
   label: string;
@@ -48,6 +49,7 @@ function Bars({ points, week }: { points: TrendPoint[]; week: number }) {
       <rect
         key={point.week}
         data-week={point.week}
+        data-value={point.value}
         data-lit={lit || undefined}
         x={index * width * (1 + BAR_GAP)}
         y={CHART_H - height}
@@ -101,6 +103,41 @@ function Step({ points, week }: { points: TrendPoint[]; week: number }) {
   );
 }
 
+/* A thin base line with one dot for each week that has a count above zero. A rare count reads best as marks on a
+   line, since a bar of 1 among zeros looks like noise. Each week holds one slot, as the bars do, and a dot of the
+   page week takes the accent. */
+function Dots({ points, week }: { points: TrendPoint[]; week: number }) {
+  const slot = CHART_W / points.length;
+  return (
+    <>
+      <line x1={0} x2={CHART_W} y1={CHART_H / 2} y2={CHART_H / 2} strokeWidth={1} vectorEffect="non-scaling-stroke" className="stroke-current opacity-35" />
+      {points
+        .map((point, index) => ({ point, x: (index + 0.5) * slot }))
+        .filter(({ point }) => point.value > 0)
+        .map(({ point, x }) => {
+          const lit = point.week === week;
+          return (
+            // A zero-length line with a round cap draws a true circle, though the SVG stretches to the tile width.
+            <line
+              key={point.week}
+              data-week={point.week}
+              data-value={point.value}
+              data-lit={lit || undefined}
+              x1={x}
+              x2={x}
+              y1={CHART_H / 2}
+              y2={CHART_H / 2}
+              strokeWidth={8}
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+              className={lit ? "stroke-accent" : "stroke-ink"}
+            />
+          );
+        })}
+    </>
+  );
+}
+
 /* The chart of a Trend tile. The SVG is one image named by the text of the trend, so a screen reader reads one sentence. */
 function TrendChart({ trend }: { trend: TileTrend }) {
   if (trend.points.length === 0) return null;
@@ -112,7 +149,9 @@ function TrendChart({ trend }: { trend: TileTrend }) {
       preserveAspectRatio="none"
       className="mt-sp-2 block h-8 w-full overflow-visible text-mute"
     >
-      {trend.kind === "bars" ? <Bars points={trend.points} week={trend.week} /> : <Step points={trend.points} week={trend.week} />}
+      {trend.kind === "bars" && <Bars points={trend.points} week={trend.week} />}
+      {trend.kind === "step" && <Step points={trend.points} week={trend.week} />}
+      {trend.kind === "dots" && <Dots points={trend.points} week={trend.week} />}
     </svg>
   );
 }

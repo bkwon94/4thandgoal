@@ -1,6 +1,6 @@
 /**
  * Tests for the Moves chapter. They render fixture entries and spread variants of them.
- * They read the three totals, the week order, the empty line, the add and drop lines, and both sides of a trade, and the teams it names.
+ * They read the three totals and the text of their trends, the week order, the empty line, the add and drop lines, and both sides of a trade, and the teams it names.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
@@ -22,10 +22,10 @@ function managerOf(rosterId: number, moves?: Partial<Manager["moves"]>): Manager
   return { ...entry, moves: { ...entry.moves, ...moves }, standing: 1, rank: null, movement: null, odds: null, odds_change: null };
 }
 
-/* The label and the count of each total tile, as a reader reads them. */
+/* The label and the count of each total tile, as a reader reads them. The chart of the trend follows them. */
 function totalsIn() {
   const group = screen.getByRole("group", { name: "Move Totals" });
-  return [...group.children].map((tile) => [...tile.children].map((line) => line.textContent));
+  return [...group.children].map((tile) => [...tile.children].slice(0, 2).map((line) => line.textContent));
 }
 
 function week(label: string) {
@@ -46,6 +46,19 @@ describe("Moves", () => {
   it("shows a zero total as a count", () => {
     render(<Moves manager={managerOf(1, { trades: 0 })} managers={managers} managersHref={MANAGERS_HREF} />);
     expect(totalsIn()[2]).toEqual(["Trades", "0"]);
+  });
+
+  it("names the one week with a trade in the text of the Trades trend", () => {
+    // The Blue Tent traded with Lil Fridge in week 4. Weeks 1 to 3 are not in the file, so each counts as zero.
+    const weeks = managerOf(1).moves.weeks.filter((item) => item.week >= 4);
+    render(<Moves manager={managerOf(1, { weeks })} managers={managers} managersHref={MANAGERS_HREF} />);
+    const totals = screen.getByRole("group", { name: "Move Totals" });
+    expect(within(totals).getByRole("img", { name: "A trade in week 4." })).toBeTruthy();
+  });
+
+  it("shows no trend on the totals of a file with no weeks", () => {
+    render(<Moves manager={managerOf(1, { weeks: [] })} managers={managers} managersHref={MANAGERS_HREF} />);
+    expect(within(screen.getByRole("group", { name: "Move Totals" })).queryByRole("img")).toBeNull();
   });
 
   it("lists the weeks newest first, in the order of the file", () => {
