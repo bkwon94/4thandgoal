@@ -7,7 +7,7 @@ import { driftScene } from "./drift-scene";
 import { layoutScene } from "./scene-math";
 
 describe("driftScene", () => {
-  const scene = driftScene();
+  const scene = driftScene;
 
   it("never settles, so the lights drift the whole time (AT-23)", () => {
     expect(scene.mode).toBe("drift");
@@ -24,10 +24,6 @@ describe("driftScene", () => {
   it("has no flare, and mixes bright and dim lights, so the scatter has depth", () => {
     const tones = new Set(scene.lights.map((light) => light.tone));
     expect(tones).toEqual(new Set(["bright", "dim"]));
-  });
-
-  it("is the same on each call, so the server and the client draw one scene", () => {
-    expect(driftScene()).toEqual(scene);
   });
 
   it("lays out inside a phone box with no error", () => {

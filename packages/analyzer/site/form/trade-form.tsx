@@ -7,7 +7,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import AnalyzeResult from "./analyze-result";
-import { driftScene } from "./analyzer-scene";
+import { driftScene } from "@cpc/design/parts/drift-scene";
 import { CircleAlertIcon } from "lucide-react";
 import { Card } from "@cpc/design/parts/card";
 import { ErrorLine } from "@cpc/design/parts/error-line";
