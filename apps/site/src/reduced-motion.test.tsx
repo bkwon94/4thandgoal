@@ -105,6 +105,20 @@ describe("Reduced motion", () => {
     expectAtRest(card);
   });
 
+  it("shows the Ready halo at its level at once", async () => {
+    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    await pickTeam("Pick Your Team", "Pukancun on 3");
+    await pickTeam("Pick Team Two", "Blitz Bakers");
+    const halo = document.querySelector<HTMLElement>("[data-halo]")!;
+    // Two teams and no player: the brightness is 2 of 6 by the next render, and no box of the halo moves.
+    expect(Number(halo.style.opacity)).toBeCloseTo(2 / 6, 2);
+    expectAtRest(halo);
+    await pickPlayer("Your Team", "Blitz Bakers", "Ben One");
+    await pickPlayer("Team Two", "Pukancun on 3", "Ana One");
+    expect(halo.style.opacity).toBe("1");
+    expectAtRest(halo);
+  });
+
   it("shows no sweep while the grade runs", async () => {
     vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
     render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);

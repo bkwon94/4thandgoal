@@ -31,14 +31,27 @@ export function teamOf(teams: Team[], rosterId: number | null): Team | undefined
   return teams.find((t) => t.roster_id === rosterId);
 }
 
+/* The three checks of one side: it has a team, it gets at least one player, and it gives at least one player.
+   The ready rule and the halo level read the same checks, so a full halo always means the trade can be graded. */
+function sideChecks(side: Side, sides: Sides): boolean[] {
+  return [
+    side.rosterId !== null,
+    side.gets.length > 0,
+    sides.some((other) => other !== side && other.gets.some((get) => get.fromSide === side.id)),
+  ];
+}
+
 /* Every side has a team, gets at least one player, and gives at least one player. The grade bar reads it. */
 export function everySideTrades(sides: Sides): boolean {
-  return sides.every(
-    (side) =>
-      side.rosterId !== null &&
-      side.gets.length > 0 &&
-      sides.some((other) => other !== side && other.gets.some((get) => get.fromSide === side.id)),
-  );
+  return sides.every((side) => sideChecks(side, sides).every(Boolean));
+}
+
+/* The level of the Ready halo, from 0 to 1: the passed checks over three times the count of sides (decision 08 of
+   card-polish). It is 1 only when the ready rule passes. */
+export function haloLevel(sides: Sides): number {
+  if (everySideTrades(sides)) return 1;
+  const passed = sides.flatMap((side) => sideChecks(side, sides)).filter(Boolean).length;
+  return passed / (3 * sides.length);
 }
 
 /* The body of POST /analyze, or null until each side has a team. Each pick is a give of its source side, with to set
