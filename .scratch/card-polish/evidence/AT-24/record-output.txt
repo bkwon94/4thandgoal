@@ -1,0 +1,10 @@
+$ cd apps/site && pnpm exec node ../../.scratch/card-polish/evidence/AT-24/record.mjs <scratch dir>
+# Build: CLIENT=cpc pnpm build of the spec head 4866459c (code of a44daee5), served on http://127.0.0.1:4173. Viewport 375x812, light theme, reducedMotion no-preference.
+tap The Blue Tent: 2.29 s after the context opened
+tap Lil Fridge: 3.90 s after the context opened
+open rows at the end: ["6 Lil Fridge 86%"]
+video: saved as evidence/AT-24/roll-375-light.webm (5.52 s, 374x812)
+
+# The stills: ffmpeg -ss <t> -i roll-375-light.webm -frames:v 1 <name>.png
+# The tap on The Blue Tent shows in the video at about 2.20 s (the first frame with the panel), and the tap on Lil Fridge 1.61 s later, at about 3.81 s.
+# roll-blue-tent-NNNms = 2.20 s + NNN ms; roll-lil-fridge-NNNms = 3.81 s + NNN ms, for NNN in 000, 100, 200, 300, 400, 600. The times are within about one frame (40 ms).

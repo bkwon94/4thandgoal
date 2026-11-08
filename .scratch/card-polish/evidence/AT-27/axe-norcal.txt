@@ -1,0 +1,53 @@
+$ CLIENT=norcal pnpm exec playwright test -c axe-evidence.config.ts   (apps/site, after CLIENT=norcal pnpm build of the spec head 4866459c, code of a44daee5; e2e/axe-floor-evidence.spec.ts and axe-evidence.config.ts copied in from evidence/AT-27/ for the run, then deleted)
+
+Running 1 test using 1 worker
+
+norcal | /404-floor-check/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 12
+norcal | /404-floor-check/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 12
+norcal | /404-floor-check/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 12
+norcal | /404-floor-check/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 12
+norcal | /rankings/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 97
+norcal | /rankings/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 97
+norcal | /rankings/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 97
+norcal | /rankings/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 97
+norcal | /rankings/ | tap main ol > li:first-child button[aria-expanded]:not([aria-label]) | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 111
+norcal | /rankings/ | tap main ol > li:first-child button[aria-expanded]:not([aria-label]) | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 111
+norcal | /rankings/ | tap main ol > li:first-child button[aria-expanded]:not([aria-label]) | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 111
+norcal | /rankings/ | tap main ol > li:first-child button[aria-expanded]:not([aria-label]) | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 111
+norcal | /2026/managers/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 166
+norcal | /2026/managers/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 166
+norcal | /2026/managers/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 166
+norcal | /2026/managers/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 166
+norcal | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 169
+norcal | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 169
+norcal | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 169
+norcal | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 169
+norcal | /2026/managers/4/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 171
+norcal | /2026/managers/4/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 176
+norcal | /2026/managers/4/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 171
+norcal | /2026/managers/4/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 176
+norcal | /analyze/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 15
+norcal | /analyze/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 20
+norcal | /analyze/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 15
+norcal | /analyze/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 20
+norcal | /2026/week-08/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 227
+norcal | /2026/week-08/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 235
+norcal | /2026/week-08/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 227
+norcal | /2026/week-08/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 235
+norcal | /2026/week-08/ | tap button[aria-controls="recap-3"]:not([aria-label]) | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 232
+norcal | /2026/week-08/ | tap button[aria-controls="recap-3"]:not([aria-label]) | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 240
+norcal | /2026/week-08/ | tap button[aria-controls="recap-3"]:not([aria-label]) | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 232
+norcal | /2026/week-08/ | tap button[aria-controls="recap-3"]:not([aria-label]) | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 240
+norcal | / | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 55
+norcal | / | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 55
+norcal | / | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 55
+norcal | / | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 55
+norcal | / | tap header details > summary | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 1
+norcal | / | tap header details > summary | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 1
+norcal | / | tap header details > summary | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 1
+norcal | / | tap header details > summary | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 1
+norcal total: 44 scans, violations 0, incomplete 0
+  ✓  1 e2e/axe-floor-evidence.spec.ts:68:5 › axe color-contrast of the full floor of norcal (19.0s)
+
+  1 passed (19.5s)
+(exit 0)

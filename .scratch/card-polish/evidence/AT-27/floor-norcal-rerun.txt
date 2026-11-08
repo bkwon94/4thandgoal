@@ -1,0 +1,226 @@
+$ CLIENT=norcal pnpm build && CLIENT=norcal pnpm check:floor   (apps/site, spec head 4866459c, code of a44daee5)
+
+> cpcfantasyfootball-site@0.1.0 check:floor /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/card-polish/apps/site
+> playwright test --project=floor
+
+
+Running 103 tests using 2 workers
+
+  ✓    2 [floor] › e2e/floor.spec.ts:124:5 › each page of the full floor is a built page (2ms)
+  ✓    3 [floor] › e2e/floor.spec.ts:133:5 › the full floor holds the 7 pages and the 4 open states of the spec (0ms)
+  ✓    4 [floor] › e2e/floor.spec.ts:140:5 › no waiver page is built, and its URL shows the 404 page (142ms)
+  ✓    5 [floor] › e2e/floor.spec.ts:149:5 › the built CSS keeps the empty alt text of the rolled letters of the Index list (0ms)
+norcal /404-floor-check/ dark 390px: prose 1, other text 12, in 79 ms
+norcal /404-floor-check/ dark 390px: exempt links inside prose: none
+  ✓    6 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /404-floor-check/ dark 390px (359ms)
+  ✓    1 [floor] › e2e/floor.spec.ts:227:5 › chapter rail: norcal /2026/week-08/ marks each chapter after a jump at 1280px (587ms)
+norcal /404-floor-check/ dark 1280px: prose 1, other text 12, in 79 ms
+norcal /404-floor-check/ dark 1280px: exempt links inside prose: none
+norcal /2026/managers/1/ dark 390px: prose 2, other text 155, in 93 ms
+  ✓    8 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/1/ dark 390px (130ms)
+norcal /2026/managers/10/ dark 390px: prose 2, other text 199, in 97 ms
+  ✓    9 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/10/ dark 390px (139ms)
+  ✓    7 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /404-floor-check/ dark 1280px (353ms)
+norcal /404-floor-check/ light 390px: prose 1, other text 12, in 80 ms
+norcal /404-floor-check/ light 390px: exempt links inside prose: none
+norcal /2026/managers/11/ dark 390px: prose 2, other text 231, in 99 ms
+  ✓   11 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/11/ dark 390px (136ms)
+norcal /2026/managers/12/ dark 390px: prose 2, other text 182, in 97 ms
+  ✓   12 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/12/ dark 390px (132ms)
+  ✓   10 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /404-floor-check/ light 390px (356ms)
+norcal /2026/managers/2/ dark 390px: prose 2, other text 181, in 101 ms
+  ✓   13 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/2/ dark 390px (143ms)
+norcal /404-floor-check/ light 1280px: prose 1, other text 12, in 82 ms
+norcal /404-floor-check/ light 1280px: exempt links inside prose: none
+norcal /2026/managers/3/ dark 390px: prose 2, other text 209, in 99 ms
+  ✓   15 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/3/ dark 390px (134ms)
+norcal /2026/managers/5/ dark 390px: prose 2, other text 189, in 104 ms
+  ✓   16 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/5/ dark 390px (139ms)
+  ✓   14 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /404-floor-check/ light 1280px (357ms)
+norcal /2026/managers/6/ dark 390px: prose 2, other text 153, in 95 ms
+  ✓   17 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/6/ dark 390px (138ms)
+norcal /rankings/ dark 390px: prose 69, other text 239, in 98 ms
+norcal /rankings/ dark 390px: exempt links inside prose: none
+norcal /2026/managers/7/ dark 390px: prose 2, other text 265, in 101 ms
+  ✓   19 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/7/ dark 390px (137ms)
+norcal /2026/managers/8/ dark 390px: prose 2, other text 195, in 101 ms
+  ✓   20 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/8/ dark 390px (137ms)
+  ✓   18 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ dark 390px (452ms)
+norcal /2026/managers/9/ dark 390px: prose 2, other text 180, in 98 ms
+  ✓   21 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /2026/managers/9/ dark 390px (138ms)
+norcal /rankings/ dark 1280px: prose 69, other text 239, in 96 ms
+norcal /rankings/ dark 1280px: exempt links inside prose: none
+norcal /midseason/2026/ dark 390px: prose 20, other text 972, in 121 ms
+  ✓   23 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: norcal /midseason/2026/ dark 390px (157ms)
+  ✓   24 [floor] › e2e/floor.spec.ts:268:7 › the top band of norcal is one row at 768px, with the dock (149ms)
+  ✓   22 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ dark 1280px (461ms)
+  ✓   25 [floor] › e2e/floor.spec.ts:268:7 › the top band of norcal is one row at 1024px, with the pill bar (166ms)
+norcal /rankings/ light 390px: prose 69, other text 239, in 98 ms
+norcal /rankings/ light 390px: exempt links inside prose: none
+  ✓   27 [floor] › e2e/floor.spec.ts:268:7 › the top band of norcal is one row at 1280px, with the pill bar (155ms)
+  ✓   28 [floor] › e2e/floor.spec.ts:285:7 › the open strip of weeks of norcal covers no page title at 375px (178ms)
+  ✓   26 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ light 390px (453ms)
+norcal /rankings/ light 1280px: prose 69, other text 239, in 98 ms
+norcal /rankings/ light 1280px: exempt links inside prose: none
+  ✓   29 [floor] › e2e/floor.spec.ts:285:7 › the open strip of weeks of norcal covers no page title at 768px (182ms)
+  ✓   31 [floor] › e2e/floor.spec.ts:285:7 › the open strip of weeks of norcal covers no page title at 1280px (177ms)
+  ✓   30 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ light 1280px (452ms)
+  ✓   32 [floor] › e2e/floor.spec.ts:299:5 › the week chips of the Ladder of norcal stay on one row at 375px (161ms)
+norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px: prose 69, other text 239, in 176 ms
+norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px: exempt links inside prose: none
+norcal /midseason/2026/ dark 375px: prose 20, other text 972, in 12 ms
+  ✓   33 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px (556ms)
+norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 1280px: prose 69, other text 239, in 143 ms
+norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 1280px: exempt links inside prose: none
+  ✓   34 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: norcal /midseason/2026/ dark 375px (918ms)
+  ✓   35 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 1280px (507ms)
+  ✓   36 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: norcal /midseason/2026/ jumps to Act III and stays at the top, dark 375px (208ms)
+norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px: prose 69, other text 239, in 142 ms
+norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px: exempt links inside prose: none
+norcal /midseason/2026/ dark 768px: prose 20, other text 984, in 12 ms
+  ✓   37 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px (486ms)
+norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 1280px: prose 69, other text 239, in 145 ms
+norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 1280px: exempt links inside prose: none
+  ✓   39 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 1280px (497ms)
+  ✓   38 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: norcal /midseason/2026/ dark 768px (902ms)
+norcal /2026/managers/ dark 390px: prose 24, other text 348, in 108 ms
+norcal /2026/managers/ dark 390px: exempt links inside prose: none
+  ✓   41 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: norcal /midseason/2026/ jumps to Act III and stays at the top, dark 768px (205ms)
+norcal /midseason/2026/ dark 1280px: prose 20, other text 984, in 11 ms
+  ✓   40 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ dark 390px (502ms)
+norcal /2026/managers/ dark 1280px: prose 24, other text 348, in 106 ms
+norcal /2026/managers/ dark 1280px: exempt links inside prose: none
+  ✓   43 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ dark 1280px (495ms)
+norcal /2026/managers/ light 390px: prose 24, other text 348, in 104 ms
+norcal /2026/managers/ light 390px: exempt links inside prose: none
+  ✓   42 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: norcal /midseason/2026/ dark 1280px (887ms)
+  ✓   45 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: norcal /midseason/2026/ jumps to Act III and stays at the top, dark 1280px (212ms)
+  ✓   44 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ light 390px (497ms)
+norcal /midseason/2026/ light 375px: prose 20, other text 972, in 14 ms
+norcal /2026/managers/ light 1280px: prose 24, other text 348, in 102 ms
+norcal /2026/managers/ light 1280px: exempt links inside prose: none
+  ✓   47 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ light 1280px (486ms)
+norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px: prose 24, other text 348, in 169 ms
+norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px: exempt links inside prose: none
+  ✓   46 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: norcal /midseason/2026/ light 375px (866ms)
+  ✓   49 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: norcal /midseason/2026/ jumps to Act III and stays at the top, light 375px (206ms)
+  ✓   48 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px (560ms)
+norcal /midseason/2026/ light 768px: prose 20, other text 984, in 15 ms
+norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 1280px: prose 24, other text 348, in 153 ms
+norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 1280px: exempt links inside prose: none
+  ✓   51 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 1280px (550ms)
+norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px: prose 24, other text 348, in 167 ms
+norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px: exempt links inside prose: none
+  ✓   50 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: norcal /midseason/2026/ light 768px (895ms)
+  ✓   53 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: norcal /midseason/2026/ jumps to Act III and stays at the top, light 768px (210ms)
+  ✓   52 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px (568ms)
+norcal /midseason/2026/ light 1280px: prose 20, other text 984, in 13 ms
+norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 1280px: prose 24, other text 348, in 153 ms
+norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 1280px: exempt links inside prose: none
+  ✓   55 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 1280px (545ms)
+norcal /2026/managers/4/ dark 390px: prose 2, other text 172, in 95 ms
+norcal /2026/managers/4/ dark 390px: exempt links inside prose: none
+  ✓   54 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: norcal /midseason/2026/ light 1280px (889ms)
+  ✓   57 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: norcal /midseason/2026/ jumps to Act III and stays at the top, light 1280px (211ms)
+  ✓   56 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/4/ dark 390px (462ms)
+norcal / takeover dark 375px: prose 0, other text 63, in 3 ms
+norcal /2026/managers/4/ dark 1280px: prose 2, other text 177, in 94 ms
+norcal /2026/managers/4/ dark 1280px: exempt links inside prose: none
+  ✓   58 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: norcal / dark 375px (388ms)
+  ✓   59 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/4/ dark 1280px (462ms)
+norcal / takeover dark 768px: prose 0, other text 63, in 5 ms
+norcal /2026/managers/4/ light 390px: prose 2, other text 172, in 98 ms
+norcal /2026/managers/4/ light 390px: exempt links inside prose: none
+  ✓   60 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: norcal / dark 768px (387ms)
+norcal / takeover dark 1280px: prose 0, other text 63, in 4 ms
+  ✓   61 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/4/ light 390px (463ms)
+norcal /2026/managers/4/ light 1280px: prose 2, other text 177, in 101 ms
+norcal /2026/managers/4/ light 1280px: exempt links inside prose: none
+  ✓   62 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: norcal / dark 1280px (398ms)
+norcal / takeover light 375px: prose 0, other text 63, in 5 ms
+  ✓   63 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/4/ light 1280px (467ms)
+norcal /analyze/ dark 390px: prose 3, other text 24, in 95 ms
+norcal /analyze/ dark 390px: exempt links inside prose: none
+  ✓   64 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: norcal / light 375px (396ms)
+norcal / takeover light 768px: prose 0, other text 63, in 4 ms
+  ✓   65 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /analyze/ dark 390px (391ms)
+norcal /analyze/ dark 1280px: prose 3, other text 24, in 91 ms
+norcal /analyze/ dark 1280px: exempt links inside prose: none
+  ✓   66 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: norcal / light 768px (385ms)
+norcal / takeover light 1280px: prose 0, other text 63, in 3 ms
+  ✓   67 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /analyze/ dark 1280px (384ms)
+norcal /analyze/ light 390px: prose 3, other text 24, in 93 ms
+norcal /analyze/ light 390px: exempt links inside prose: none
+  ✓   68 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: norcal / light 1280px (388ms)
+  ✓   70 [floor] › e2e/floor.spec.ts:373:7 › midseason swap rows: norcal /midseason/2026/ text rows and no All-play, 375px (158ms)
+  ✓   69 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /analyze/ light 390px (376ms)
+  ✓   71 [floor] › e2e/floor.spec.ts:373:7 › midseason swap rows: norcal /midseason/2026/ text rows and no All-play, 768px (161ms)
+norcal /analyze/ light 1280px: prose 3, other text 24, in 93 ms
+norcal /analyze/ light 1280px: exempt links inside prose: none
+  ✓   73 [floor] › e2e/floor.spec.ts:373:7 › midseason swap rows: norcal /midseason/2026/ text rows and no All-play, 1280px (164ms)
+  ✓   72 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /analyze/ light 1280px (375ms)
+  ✓   74 [floor] › e2e/floor.spec.ts:387:5 › midseason tables: norcal /midseason/2026/ fit their cards or scroll with the team column fixed, 375px (162ms)
+norcal /2026/week-08/ dark 390px: prose 11, other text 259, in 106 ms
+norcal /2026/week-08/ dark 390px: exempt links inside prose: none
+  ✓   76 [floor] › e2e/floor.spec.ts:412:5 › midseason top 10: norcal /midseason/2026/ opens on RB at 375px (158ms)
+  ✓   77 [floor] › e2e/floor.spec.ts:426:7 › sim odds: norcal /midseason/2026/ below the replay at full width, 375px (179ms)
+  ✓   75 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ dark 390px (509ms)
+  ✓   78 [floor] › e2e/floor.spec.ts:426:7 › sim odds: norcal /midseason/2026/ below the replay at full width, 768px (183ms)
+norcal /2026/week-08/ dark 1280px: prose 11, other text 267, in 105 ms
+norcal /2026/week-08/ dark 1280px: exempt links inside prose: none
+  ✓   80 [floor] › e2e/floor.spec.ts:426:7 › sim odds: norcal /midseason/2026/ below the replay at full width, 1280px (173ms)
+  ✓   79 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ dark 1280px (516ms)
+norcal /2026/week-08/ light 390px: prose 11, other text 259, in 98 ms
+norcal /2026/week-08/ light 390px: exempt links inside prose: none
+  ✓   82 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ light 390px (481ms)
+norcal /2026/week-08/ light 1280px: prose 11, other text 267, in 96 ms
+norcal /2026/week-08/ light 1280px: exempt links inside prose: none
+  ✓   83 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ light 1280px (480ms)
+norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px: prose 11, other text 259, in 157 ms
+norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px: exempt links inside prose: none
+  ✓   84 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px (547ms)
+norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 1280px: prose 11, other text 267, in 157 ms
+norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 1280px: exempt links inside prose: none
+  ✓   85 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 1280px (552ms)
+norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px: prose 11, other text 259, in 138 ms
+norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px: exempt links inside prose: none
+  ✓   86 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px (538ms)
+norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px: prose 11, other text 267, in 128 ms
+norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px: exempt links inside prose: none
+  ✓   87 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px (525ms)
+norcal / dark 390px: prose 0, other text 63, in 80 ms
+norcal / dark 390px: exempt links inside prose: none
+  ✓   88 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal / dark 390px (367ms)
+norcal / dark 1280px: prose 0, other text 63, in 80 ms
+norcal / dark 1280px: exempt links inside prose: none
+  ✓   89 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal / dark 1280px (366ms)
+norcal / light 390px: prose 0, other text 63, in 80 ms
+norcal / light 390px: exempt links inside prose: none
+  ✓   90 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal / light 390px (368ms)
+norcal / light 1280px: prose 0, other text 63, in 81 ms
+norcal / light 1280px: exempt links inside prose: none
+  ✓   91 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal / light 1280px (373ms)
+norcal / tap header details > summary dark 390px: prose 0, other text 63, in 126 ms
+norcal / tap header details > summary dark 390px: exempt links inside prose: none
+  ✓   92 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal / tap header details > summary dark 390px (388ms)
+norcal / tap header details > summary dark 1280px: prose 0, other text 63, in 126 ms
+norcal / tap header details > summary dark 1280px: exempt links inside prose: none
+  ✓   93 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal / tap header details > summary dark 1280px (378ms)
+norcal / tap header details > summary light 390px: prose 0, other text 63, in 127 ms
+norcal / tap header details > summary light 390px: exempt links inside prose: none
+  ✓   94 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal / tap header details > summary light 390px (380ms)
+norcal / tap header details > summary light 1280px: prose 0, other text 63, in 125 ms
+norcal / tap header details > summary light 1280px: exempt links inside prose: none
+  ✓   95 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal / tap header details > summary light 1280px (378ms)
+  ✓   96 [floor] › e2e/floor.spec.ts:203:7 › no split word: norcal /2026/week-08/ 375px (135ms)
+  ✓   97 [floor] › e2e/floor.spec.ts:203:7 › no split word: norcal /2026/week-08/ 768px (130ms)
+  ✓   98 [floor] › e2e/floor.spec.ts:203:7 › no split word: norcal /2026/week-08/ 1280px (131ms)
+  ✓   99 [floor] › e2e/floor.spec.ts:215:5 › chapter rail: norcal /2026/week-08/ marks Position leaders in view at 1280px (168ms)
+  ✓   81 [floor] › e2e/floor.spec.ts:446:7 › sim bracket: norcal /midseason/2026/ shows full team names and no chip on a card, 375px (13.7s)
+  ✓  100 [floor] › e2e/floor.spec.ts:446:7 › sim bracket: norcal /midseason/2026/ shows full team names and no chip on a card, 768px (13.8s)
+  ✓  101 [floor] › e2e/floor.spec.ts:446:7 › sim bracket: norcal /midseason/2026/ shows full team names and no chip on a card, 1280px (13.8s)
+  ✓  102 [floor] › e2e/floor.spec.ts:474:7 › sim replay: norcal /midseason/2026/ plays a run and skips to the champion and the bracket at 375px (301ms)
+  ✓  103 [floor] › e2e/floor.spec.ts:474:7 › sim replay: norcal /midseason/2026/ plays a run and skips to the champion and the bracket at 1280px (305ms)
+
+  103 passed (56.4s)
+(exit 0)
