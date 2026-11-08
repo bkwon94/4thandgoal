@@ -1,5 +1,5 @@
 ACCEPTANCE.md: b5219f69b3909b36a785c1aab287b73427e9ed55
-EVIDENCE.md: 7bbdf67e3e15543ae40d394368e03d3b3e6062b5
+EVIDENCE.md: 29da1f85df47ae9a0b8c78f81768bbfb5b15c02a
 
 Test verdicts
 AT-1: PASS
@@ -20,10 +20,10 @@ AT-15: PASS
 AT-16: PASS
 AT-17: PASS
 AT-18: PASS
-AT-19: FAIL The Then line says each light sits at the height of its playoff odds, but `scene.json` gives only the odds of the rank-1 team, and the odds list in the Observation comes from `rankings.json`, which is not an evidence file.
+AT-19: PASS
 AT-20: PASS
 AT-21: PASS
-AT-22: FAIL The Then line says the 12 lights sit at the season total points in the order of the standings, but no file gives the totals or the standings, only the leader label "All You Need Is Love · 850.17".
+AT-22: PASS
 AT-23: PASS
 AT-24: PASS
 AT-25: PASS
@@ -41,6 +41,6 @@ AT-36: PASS
 AT-37: PASS
 AT-38: PASS
 AT-39: PASS
-AT-40: FAIL The Observation says a grep found no regl, ogl, or playcanvas, but `output.txt` shows a grep for only three, babylon, webgl, and pixi.
+AT-40: PASS
 AT-41: PASS
 AT-42: PASS
