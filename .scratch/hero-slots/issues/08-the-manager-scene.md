@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-18 and AT-36.
 
 **Blocked by:** 01 and 07
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The scene of AT-18 shows 8 lights with the right tones and the median line, at 375, 768, and 1280 px.
 - [x] The label "Week 8 · 118.89 · W" shows at rest.
