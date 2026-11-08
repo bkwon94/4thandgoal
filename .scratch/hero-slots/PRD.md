@@ -5,7 +5,7 @@ Date: 2026-11-07
 Apps: site. `Hero` takes six hero slots, all 11 heroes move to them, and the first hero of a page draws a hero scene. The pipeline does not change. The scene draws data that the pipeline already publishes.
 Spec branch: `hero-slots`.
 Source: the map `.scratch/hero-slots/MAP.md` and decision tickets 01 to 07. ADR 0024, ADR 0025, ADR 0027.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 10, in `issues/`.
 
 ## Problem Statement
 
