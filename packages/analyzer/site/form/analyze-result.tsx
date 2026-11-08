@@ -14,6 +14,7 @@ import { Blurb } from "@cpc/design/parts/blurb";
 import { Card } from "@cpc/design/parts/card";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
+import { HeroSceneCanvas } from "@cpc/design/parts/hero-scene";
 import { Headshot } from "@cpc/league/headshot";
 import { Label } from "@cpc/design/parts/label";
 import { cn } from "@cpc/design/lib/utils";
@@ -206,8 +207,11 @@ const ANSWER_WORD = {
 /* The verdict fills the hero slots: the side as the eyebrow, the answer word as the title, and the reason as the meta.
    Each chapter of the result opens with a level-two heading, so the title is level two. The answer word rises in once,
    so the call lands with a beat. With motion off, it shows at rest at once. The no-values note and the fairness block
-   sit on a card in the feature, so their text keeps the colors of the card. A result with neither has no feature,
-   and the hero ends at the reason. The verdict has no stats and no action, so the hero shows no empty area. */
+   sit on a card in the feature, so their text keeps the colors of the card. The scene sits in the feature above the
+   card, not in the scene band of `Hero`, which sits above the eyebrow on a phone. So the hero starts at the eyebrow
+   and ends at the fairness block at every width (AT-9). The scene has its own row, so no light sits under text.
+   A result with no note, no fairness block, and no scene has no feature, and the hero ends at the reason. The verdict
+   has no stats and no action, so the hero shows no empty area. */
 function VerdictHero({
   decision,
   team,
@@ -226,11 +230,22 @@ function VerdictHero({
   const off = useMotionOff();
   const answer = ANSWER_WORD[decision.answer];
   const note = asOf.no_chart && asOf.no_chart_note;
+  const card =
+    note || fairness ? (
+      <Card>
+        <NoChartLine asOf={asOf} />
+        {/* The fairness line sits under the decision, so the decision stays the lead. The ticket asks the page to render a document with no block, as a guard, so it shows no line then. */}
+        {fairness && (
+          <div className={note ? "mt-sp-4" : undefined}>
+            <FairnessBlock sides={sides} fairness={fairness} />
+          </div>
+        )}
+      </Card>
+    ) : undefined;
   return (
     <Hero
       label="The Verdict"
       level={2}
-      scene={scene}
       eyebrow={`Decision for ${team ?? "Your Side"}`}
       title={
         <motion.span className={cn("inline-block", answer.color)} {...rise(off, { duration: DURATION.decision })}>
@@ -239,16 +254,11 @@ function VerdictHero({
       }
       meta={decision.reason}
       feature={
-        note || fairness ? (
-          <Card>
-            <NoChartLine asOf={asOf} />
-            {/* The fairness line sits under the decision, so the decision stays the lead. The ticket asks the page to render a document with no block, as a guard, so it shows no line then. */}
-            {fairness && (
-              <div className={note ? "mt-sp-4" : undefined}>
-                <FairnessBlock sides={sides} fairness={fairness} />
-              </div>
-            )}
-          </Card>
+        scene || card ? (
+          <div className="flex flex-col gap-sp-6">
+            {scene && <HeroSceneCanvas scene={scene} />}
+            {card}
+          </div>
         ) : undefined
       }
     />

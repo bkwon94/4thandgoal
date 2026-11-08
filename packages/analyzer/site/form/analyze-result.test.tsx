@@ -109,8 +109,35 @@ describe("AnalyzeResult", () => {
     expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
   });
 
-  it("leaves out the feature slot when the document has no fairness block and no note", () => {
+  /* AT-9: the scene sits in the feature above the fairness card, so the hero starts at the eyebrow at every width. */
+  it("draws the scene inside the feature, above the fairness card, so nothing sits above the eyebrow (AT-9)", () => {
+    render(<AnalyzeResult doc={tradeA} />);
+    const hero = screen.getByRole("region", { name: "The Verdict" });
+    const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
+    const canvas = feature.querySelector("canvas[data-hero-scene]") as HTMLElement;
+    expect(canvas).toBeTruthy();
+    const fairness = within(feature).getByText("Fairness");
+    expect(canvas.compareDocumentPosition(fairness) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // The eyebrow is the first content of the hero: no scene band comes before it in the markup.
+    const eyebrow = hero.querySelector("[data-hero-slot=eyebrow]") as HTMLElement;
+    expect(eyebrow.compareDocumentPosition(canvas) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("draws no scene in a verdict hero that is not the first hero of the page", () => {
+    render(<AnalyzeResult doc={tradeA} firstHero={false} />);
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
+  });
+
+  it("keeps the scene as the only feature when the document has no fairness block and no note", () => {
     render(<AnalyzeResult doc={{ ...fixture, fairness: undefined }} />);
+    const hero = screen.getByRole("region", { name: "The Verdict" });
+    const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
+    expect(feature.querySelector("canvas[data-hero-scene]")).toBeTruthy();
+    expect(within(feature).queryByText("Fairness")).toBeNull();
+  });
+
+  it("leaves out the feature slot when the document has no fairness block, no note, and no scene", () => {
+    render(<AnalyzeResult doc={{ ...fixture, fairness: undefined }} firstHero={false} />);
     const hero = screen.getByRole("region", { name: "The Verdict" });
     expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta"]);
   });
