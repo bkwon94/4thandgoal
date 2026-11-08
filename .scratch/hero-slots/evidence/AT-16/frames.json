@@ -1,0 +1,42 @@
+{
+  "states": [
+    {
+      "state": "idle",
+      "ms_after_settle_entry": -5
+    },
+    {
+      "state": "settle",
+      "ms_after_settle_entry": 0
+    },
+    {
+      "state": "rest",
+      "ms_after_settle_entry": 2206
+    }
+  ],
+  "frames": [
+    {
+      "target_ms": 500,
+      "actual_ms": 520,
+      "state": "settle",
+      "sameAsPrevious": false
+    },
+    {
+      "target_ms": 1000,
+      "actual_ms": 1017,
+      "state": "settle",
+      "sameAsPrevious": false
+    },
+    {
+      "target_ms": 2200,
+      "actual_ms": 2218,
+      "state": "rest",
+      "sameAsPrevious": false
+    },
+    {
+      "target_ms": 3700,
+      "actual_ms": 3736,
+      "state": "rest",
+      "sameAs2200": true
+    }
+  ]
+}

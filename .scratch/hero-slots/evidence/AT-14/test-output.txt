@@ -1,0 +1,28 @@
+$ pnpm --dir apps/site exec vitest run --reporter=verbose packages/design/site/parts/look.test.tsx
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ ../../packages/design/site/parts/look.test.tsx > Hero > takes no free content, and renders a hero with only a title in a region named by its label (AT-14) 69ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Hero > draws the grid, the glow, and the four brackets, all hidden from a screen reader, and no scan line (AT-7, AT-39) 2ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Hero slots > renders the six slots in the slot order, whatever the order of the props 4ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Hero slots > renders no element for an absent slot, and no hairline with no stats 2ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Hero slots > draws one hairline, hidden from a screen reader, directly before the stats 1ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Hero slots > renders the title as an h1 by default and as an h2 with level 2 6ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Hero slots > draws no scene with no scene, so the hero keeps the static grid 1ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Hero slots > draws one scene canvas, hidden from a screen reader, and keeps the text of the slots as it is 4ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Card > holds its content 1ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Card > renders as the element that the list asks for 3ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Tile > shows the label, the one number, and the note 1ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > PhotoFrame > shows the photo, named by the player 3ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > PhotoFrame > shows the initials when no image exists, and keeps the name for a screen reader (AT-33) 1ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > PhotoFrame > hides a photo from a screen reader when the row already names the player 1ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > PhotoFrame > takes the first letters of the first two words of a name 0ms
+ ✓ ../../packages/design/site/parts/look.test.tsx > Rise > holds its content in a reveal box that shows at rest with no script 5ms
+
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
+   Start at  01:11:54
+   Duration  701ms (environment 42%, import 38%, tests 16%, transform 3%)
+
+(exit 0)

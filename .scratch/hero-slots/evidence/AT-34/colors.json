@@ -1,0 +1,116 @@
+[
+  {
+    "width": 375,
+    "theme": "light",
+    "route": "/2026/week-08/",
+    "accentToken": "#c2410c",
+    "flares": [
+      {
+        "label": "The Mean Machine · 121.76",
+        "pixel": "#c2410c"
+      },
+      {
+        "label": "kaiedmonds · 132.38",
+        "pixel": "#c2410c"
+      }
+    ],
+    "state": "rest",
+    "label": "kaiedmonds · 132.38",
+    "hint": "shown"
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "route": "/2026/week-08/",
+    "accentToken": "#c2410c",
+    "flares": [
+      {
+        "label": "The Mean Machine · 121.76",
+        "pixel": "#c2410c"
+      },
+      {
+        "label": "kaiedmonds · 132.38",
+        "pixel": "#c2410c"
+      }
+    ],
+    "state": "rest",
+    "label": "kaiedmonds · 132.38",
+    "hint": "shown"
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "route": "/2026/week-08/",
+    "accentToken": "#c2410c",
+    "flares": [
+      {
+        "label": "The Mean Machine · 121.76",
+        "pixel": "#c2410c"
+      },
+      {
+        "label": "kaiedmonds · 132.38",
+        "pixel": "#c2410c"
+      }
+    ],
+    "state": "rest",
+    "label": "kaiedmonds · 132.38",
+    "hint": "shown"
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "route": "/2026/week-08/",
+    "accentToken": "#c2410c",
+    "flares": [
+      {
+        "label": "The Mean Machine · 121.76",
+        "pixel": "#c2410c"
+      },
+      {
+        "label": "kaiedmonds · 132.38",
+        "pixel": "#c2410c"
+      }
+    ],
+    "state": "rest",
+    "label": "kaiedmonds · 132.38",
+    "hint": "shown"
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "route": "/2026/week-08/",
+    "accentToken": "#c2410c",
+    "flares": [
+      {
+        "label": "The Mean Machine · 121.76",
+        "pixel": "#c2410c"
+      },
+      {
+        "label": "kaiedmonds · 132.38",
+        "pixel": "#c2410c"
+      }
+    ],
+    "state": "rest",
+    "label": "kaiedmonds · 132.38",
+    "hint": "shown"
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "route": "/2026/week-08/",
+    "accentToken": "#c2410c",
+    "flares": [
+      {
+        "label": "The Mean Machine · 121.76",
+        "pixel": "#c2410c"
+      },
+      {
+        "label": "kaiedmonds · 132.38",
+        "pixel": "#c2410c"
+      }
+    ],
+    "state": "rest",
+    "label": "kaiedmonds · 132.38",
+    "hint": "shown"
+  }
+]

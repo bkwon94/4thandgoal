@@ -1,0 +1,12 @@
+{
+  "swipeStartOnPagePx": {
+    "x": 188,
+    "y": 286
+  },
+  "swipeEndOnPagePx": {
+    "x": 188,
+    "y": -14
+  },
+  "scrollYBefore": 0,
+  "scrollYAfter": 445
+}

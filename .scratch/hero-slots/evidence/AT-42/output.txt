@@ -1,0 +1,6 @@
+$ git diff --stat main -- apps/pipeline clients
+(exit 0; empty output means no file changed)
+
+$ git rev-parse --short HEAD; git rev-parse --short main
+c1a7c91c
+df2c08c0

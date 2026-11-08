@@ -1,0 +1,36 @@
+[
+  {
+    "width": 375,
+    "frameAt_ms_after_settle": 2531,
+    "state": "rest",
+    "hero": {
+      "label": "The Verdict",
+      "text": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedule. FAIRNESS Lopsided: Bo Girds gives more. It gives more than it gets. BEHOLD THE LAMB You keep 3 WRs in the top 36, and you get the better player. BO GIRDS Cooper gets more work while Wilson is out.",
+      "canvases": 1
+    },
+    "states": [
+      "idle",
+      "drift",
+      "idle",
+      "settle",
+      "rest"
+    ]
+  },
+  {
+    "width": 1280,
+    "frameAt_ms_after_settle": 2527,
+    "state": "rest",
+    "hero": {
+      "label": "The Verdict",
+      "text": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedule. FAIRNESS Lopsided: Bo Girds gives more. It gives more than it gets. BEHOLD THE LAMB You keep 3 WRs in the top 36, and you get the better player. BO GIRDS Cooper gets more work while Wilson is out.",
+      "canvases": 1
+    },
+    "states": [
+      "idle",
+      "drift",
+      "idle",
+      "settle",
+      "rest"
+    ]
+  }
+]

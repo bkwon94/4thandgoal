@@ -1,0 +1,32 @@
+{
+  "/": {
+    "canvases": 1,
+    "heroes": [
+      {
+        "label": "2026 Midseason Report",
+        "canvases": 1
+      }
+    ]
+  },
+  "/midseason/2026/": {
+    "canvases": 1,
+    "heroes": [
+      {
+        "label": "The Title Race",
+        "canvases": 1
+      },
+      {
+        "label": "Act I: How We Got Here",
+        "canvases": 0
+      },
+      {
+        "label": "Act II: The Moves",
+        "canvases": 0
+      },
+      {
+        "label": "Act III: What Comes Next",
+        "canvases": 0
+      }
+    ]
+  }
+}

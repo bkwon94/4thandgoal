@@ -1,0 +1,17 @@
+$ git diff main -- '*package.json' pnpm-lock.yaml
+(exit 0)
+
+$ git diff --stat main -- '*package.json' pnpm-lock.yaml
+
+$ git grep -n -i -E "three|babylon|webgl|pixi" -- '*package.json' pnpm-lock.yaml
+(exit 1; 1 means no match)
+
+$ git grep -n "getContext" -- packages/design/site/parts packages/*/site apps/site/src
+packages/design/site/parts/hero-scene.tsx:21:    const ctx = canvas.current.getContext("2d");
+
+$ git rev-parse --short HEAD; git rev-parse --short main
+c1a7c91c
+df2c08c0
+
+$ git diff --stat main -- . | tail -1   # the branch does change files, so the empty diffs above are not an empty branch
+ 90 files changed, 4897 insertions(+), 474 deletions(-)

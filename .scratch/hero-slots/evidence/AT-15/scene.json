@@ -1,0 +1,470 @@
+[
+  {
+    "width": 375,
+    "theme": "light",
+    "accent": "#b8342a",
+    "state": "rest",
+    "label": "The Blue Tent · 100.31",
+    "hint": "shown",
+    "lights": [
+      {
+        "label": "Lil Fridge · 80.11",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "NFC Least · 85.08",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "behold the lamb · 85.76",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Bo Girds · 88.2",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Unsolicited Dak Picks · 92.55",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "London Cooking · 98.88",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "The Blue Tent · 100.31",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "Return of T Mac · 111.97",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "All You Need Is Love · 116.83",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "To Infinity and Bijan · 118.89",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Maye d'force B with U · 121.16",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Teehee · 134.1",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      }
+    ],
+    "guides": [
+      "MEDIAN 99.60"
+    ],
+    "margin": {
+      "from": 6,
+      "to": 5,
+      "text": "+1.43"
+    }
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "accent": "#b8342a",
+    "state": "rest",
+    "label": "The Blue Tent · 100.31",
+    "hint": "shown",
+    "lights": [
+      {
+        "label": "Lil Fridge · 80.11",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "NFC Least · 85.08",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "behold the lamb · 85.76",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Bo Girds · 88.2",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Unsolicited Dak Picks · 92.55",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "London Cooking · 98.88",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "The Blue Tent · 100.31",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "Return of T Mac · 111.97",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "All You Need Is Love · 116.83",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "To Infinity and Bijan · 118.89",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Maye d'force B with U · 121.16",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Teehee · 134.1",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      }
+    ],
+    "guides": [
+      "MEDIAN 99.60"
+    ],
+    "margin": {
+      "from": 6,
+      "to": 5,
+      "text": "+1.43"
+    }
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "accent": "#b8342a",
+    "state": "rest",
+    "label": "The Blue Tent · 100.31",
+    "hint": "shown",
+    "lights": [
+      {
+        "label": "Lil Fridge · 80.11",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "NFC Least · 85.08",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "behold the lamb · 85.76",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Bo Girds · 88.2",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Unsolicited Dak Picks · 92.55",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "London Cooking · 98.88",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "The Blue Tent · 100.31",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "Return of T Mac · 111.97",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "All You Need Is Love · 116.83",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "To Infinity and Bijan · 118.89",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Maye d'force B with U · 121.16",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Teehee · 134.1",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      }
+    ],
+    "guides": [
+      "MEDIAN 99.60"
+    ],
+    "margin": {
+      "from": 6,
+      "to": 5,
+      "text": "+1.43"
+    }
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "accent": "#b8342a",
+    "state": "rest",
+    "label": "The Blue Tent · 100.31",
+    "hint": "shown",
+    "lights": [
+      {
+        "label": "Lil Fridge · 80.11",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "NFC Least · 85.08",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "behold the lamb · 85.76",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Bo Girds · 88.2",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Unsolicited Dak Picks · 92.55",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "London Cooking · 98.88",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "The Blue Tent · 100.31",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "Return of T Mac · 111.97",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "All You Need Is Love · 116.83",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "To Infinity and Bijan · 118.89",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Maye d'force B with U · 121.16",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Teehee · 134.1",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      }
+    ],
+    "guides": [
+      "MEDIAN 99.60"
+    ],
+    "margin": {
+      "from": 6,
+      "to": 5,
+      "text": "+1.43"
+    }
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "accent": "#b8342a",
+    "state": "rest",
+    "label": "The Blue Tent · 100.31",
+    "hint": "shown",
+    "lights": [
+      {
+        "label": "Lil Fridge · 80.11",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "NFC Least · 85.08",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "behold the lamb · 85.76",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Bo Girds · 88.2",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Unsolicited Dak Picks · 92.55",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "London Cooking · 98.88",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "The Blue Tent · 100.31",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "Return of T Mac · 111.97",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "All You Need Is Love · 116.83",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "To Infinity and Bijan · 118.89",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Maye d'force B with U · 121.16",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Teehee · 134.1",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      }
+    ],
+    "guides": [
+      "MEDIAN 99.60"
+    ],
+    "margin": {
+      "from": 6,
+      "to": 5,
+      "text": "+1.43"
+    }
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "accent": "#b8342a",
+    "state": "rest",
+    "label": "The Blue Tent · 100.31",
+    "hint": "shown",
+    "lights": [
+      {
+        "label": "Lil Fridge · 80.11",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "NFC Least · 85.08",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "behold the lamb · 85.76",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Bo Girds · 88.2",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Unsolicited Dak Picks · 92.55",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "London Cooking · 98.88",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "The Blue Tent · 100.31",
+        "tone": "flare",
+        "pixel": "#b8342a"
+      },
+      {
+        "label": "Return of T Mac · 111.97",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "All You Need Is Love · 116.83",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "To Infinity and Bijan · 118.89",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Maye d'force B with U · 121.16",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      },
+      {
+        "label": "Teehee · 134.1",
+        "tone": "bright",
+        "pixel": "#ffffff"
+      }
+    ],
+    "guides": [
+      "MEDIAN 99.60"
+    ],
+    "margin": {
+      "from": 6,
+      "to": 5,
+      "text": "+1.43"
+    }
+  }
+]

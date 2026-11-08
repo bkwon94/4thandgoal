@@ -1,0 +1,116 @@
+[
+  {
+    "width": 375,
+    "theme": "light",
+    "label": "The Verdict",
+    "slots": [
+      "eyebrow",
+      "title",
+      "meta",
+      "feature"
+    ],
+    "spaceAboveEyebrowPx": 253,
+    "spaceUnderLowestContentPx": 29,
+    "lowestContentText": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedu",
+    "contentBottomToHeroBottom": 29,
+    "heroPadding": [
+      "28px",
+      "28px"
+    ]
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "label": "The Verdict",
+    "slots": [
+      "eyebrow",
+      "title",
+      "meta",
+      "feature"
+    ],
+    "spaceAboveEyebrowPx": 253,
+    "spaceUnderLowestContentPx": 29,
+    "lowestContentText": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedu",
+    "contentBottomToHeroBottom": 29,
+    "heroPadding": [
+      "28px",
+      "28px"
+    ]
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "label": "The Verdict",
+    "slots": [
+      "eyebrow",
+      "title",
+      "meta",
+      "feature"
+    ],
+    "spaceAboveEyebrowPx": 29,
+    "spaceUnderLowestContentPx": 29,
+    "lowestContentText": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedu",
+    "contentBottomToHeroBottom": 29,
+    "heroPadding": [
+      "28px",
+      "28px"
+    ]
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "label": "The Verdict",
+    "slots": [
+      "eyebrow",
+      "title",
+      "meta",
+      "feature"
+    ],
+    "spaceAboveEyebrowPx": 29,
+    "spaceUnderLowestContentPx": 29,
+    "lowestContentText": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedu",
+    "contentBottomToHeroBottom": 29,
+    "heroPadding": [
+      "28px",
+      "28px"
+    ]
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "label": "The Verdict",
+    "slots": [
+      "eyebrow",
+      "title",
+      "meta",
+      "feature"
+    ],
+    "spaceAboveEyebrowPx": 29,
+    "spaceUnderLowestContentPx": 29,
+    "lowestContentText": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedu",
+    "contentBottomToHeroBottom": 29,
+    "heroPadding": [
+      "28px",
+      "28px"
+    ]
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "label": "The Verdict",
+    "slots": [
+      "eyebrow",
+      "title",
+      "meta",
+      "feature"
+    ],
+    "spaceAboveEyebrowPx": 29,
+    "spaceUnderLowestContentPx": 29,
+    "lowestContentText": "DECISION FOR BEHOLD THE LAMB Yes Out of the playoff race, this side gets the better player and the softer playoff schedu",
+    "contentBottomToHeroBottom": 29,
+    "heroPadding": [
+      "28px",
+      "28px"
+    ]
+  }
+]

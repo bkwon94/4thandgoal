@@ -1,0 +1,894 @@
+/**
+ * The evidence script of hero-slots: it serves the export in apps/site/out on port 4173 and records each site test.
+ * It writes shots, frames, and data files under .scratch/hero-slots/evidence/AT-<n>/. It gives no verdict.
+ */
+import { test, expect, type Page, type BrowserContext } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site/node_modules/@playwright/test/index.js";
+import { SCENE_PADDING, placeLights, nearestLight, type HeroScene, type ScenePoint } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/design/site/parts/scene-math.ts";
+import { matchupScene } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/packages/week/site/parts/matchup-scene.ts";
+import { serveDir } from "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site/e2e/serve.ts";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+
+const W = "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots";
+const OUT = join(W, "apps/site/out");
+const EV = join(W, ".scratch/hero-slots/evidence");
+const CLIENT = process.env.CLIENT ?? "cpc";
+const BASE = "http://127.0.0.1:4173";
+const CANVAS = "canvas[data-hero-scene]";
+const HERO = 'section[aria-label]:has([data-hero-slot="title"])';
+const WIDTHS = [375, 768, 1280];
+const THEMES = ["light", "dark"] as const;
+type Theme = (typeof THEMES)[number];
+
+/* The latest week of the export. */
+function latestWeek(): { route: string; scene: HeroScene } {
+  const seasons = readdirSync(OUT).filter((name) => /^\d{4}$/.test(name)).sort().reverse();
+  for (const season of seasons) {
+    const weeks = readdirSync(join(OUT, season)).filter((name) => /^week-\d{2}$/.test(name)).sort();
+    const week = weeks.at(-1);
+    if (week) {
+      const page = JSON.parse(readFileSync(join(OUT, season, week, "page.json"), "utf8"));
+      return { route: `/${season}/${week}/`, scene: matchupScene(page) };
+    }
+  }
+  throw new Error("no week");
+}
+const { route: WEEK, scene: SCENE } = latestWeek();
+const MANAGER = "/2026/managers/7/";
+
+function dir(id: string): string {
+  const path = join(EV, id);
+  mkdirSync(path, { recursive: true });
+  return path;
+}
+function save(id: string, name: string, data: unknown): void {
+  writeFileSync(join(dir(id), name), typeof data === "string" ? data : `${JSON.stringify(data, null, 2)}\n`);
+}
+
+let server: { url: string; close: () => Promise<void> };
+test.beforeAll(async () => {
+  server = await serveDir(OUT, 4173);
+});
+test.afterAll(async () => {
+  await server.close();
+});
+
+/* A fresh context with a viewport, a scale, and a motion setting. Each context has empty storage, so no hint flag. */
+async function fresh(
+  browser: import("@playwright/test").Browser,
+  width: number,
+  opts: { scale?: number; reduced?: boolean; touch?: boolean; height?: number } = {},
+): Promise<{ context: BrowserContext; page: Page }> {
+  const context = await browser.newContext({
+    viewport: { width, height: opts.height ?? 900 },
+    deviceScaleFactor: opts.scale ?? 1,
+    reducedMotion: opts.reduced ? "reduce" : "no-preference",
+    hasTouch: opts.touch ?? false,
+    isMobile: opts.touch ?? false,
+  });
+  return { context, page: await context.newPage() };
+}
+
+/* Opens a route in a theme. The page records each state change of each canvas, and counts animation frames. */
+async function open(page: Page, route: string, theme: Theme): Promise<void> {
+  await page.addInitScript((value) => localStorage.setItem("cpc.theme", value), theme);
+  await page.addInitScript(() => {
+    const w = window as unknown as Record<string, unknown>;
+    const states: { state: string; at: number }[] = [];
+    w.sceneStates = states;
+    w.rafCount = 0;
+    const request = window.requestAnimationFrame.bind(window);
+    window.requestAnimationFrame = (callback) => {
+      (w.rafCount as number)++;
+      return request(callback);
+    };
+    new MutationObserver((changes) => {
+      for (const change of changes) {
+        const state = (change.target as HTMLElement).dataset.sceneState;
+        if (state && states.at(-1)?.state !== state) states.push({ state, at: performance.now() });
+      }
+    }).observe(document, { subtree: true, attributeFilter: ["data-scene-state"] });
+  });
+  await page.goto(BASE + route);
+  await page.waitForLoadState("networkidle");
+}
+
+const statesOf = (page: Page) =>
+  page.evaluate(() => (window as unknown as { sceneStates: { state: string; at: number }[] }).sceneStates);
+
+/* The time of the n-th entry (from 0) into a state. */
+async function entryOf(page: Page, state: string, nth = 0): Promise<number> {
+  await expect.poll(async () => (await statesOf(page)).filter((s) => s.state === state).length, { timeout: 15000 }).toBeGreaterThan(nth);
+  return (await statesOf(page)).filter((s) => s.state === state)[nth].at;
+}
+const until = (page: Page, at: number) => page.waitForFunction((time) => performance.now() >= time, at, { timeout: 30000 });
+
+/* Waits for 2.5 s after the first settle, the time of a scene screenshot. */
+async function settled(page: Page): Promise<void> {
+  const entry = await entryOf(page, "settle");
+  await until(page, entry + 2500);
+  await expect(page.locator(CANVAS).first()).toHaveAttribute("data-scene-state", "rest", { timeout: 5000 });
+}
+
+/* Waits for a settle scene to rest 2.5 s after its entry, or for a drift scene to run 2.5 s. */
+async function sceneReady(page: Page): Promise<void> {
+  await expect.poll(async () => (await statesOf(page)).some((s) => s.state === "settle" || s.state === "drift"), { timeout: 15000 }).toBe(true);
+  const first = (await statesOf(page)).find((s) => s.state === "settle" || s.state === "drift")!;
+  if (first.state === "settle") await settled(page);
+  else await until(page, first.at + 2500);
+}
+
+/* One frame of the canvas, drawn on the band color of the hero, written as a PNG. The capture runs in the page at once. */
+async function frame(page: Page, path: string, canvas = page.locator(CANVAS).first()): Promise<{ at: number; state: string; data: string }> {
+  const result = await canvas.evaluate((element: HTMLCanvasElement) => {
+    const at = performance.now();
+    const hero = element.closest("section") as HTMLElement;
+    const copy = document.createElement("canvas");
+    copy.width = element.width;
+    copy.height = element.height;
+    const ctx = copy.getContext("2d")!;
+    ctx.fillStyle = getComputedStyle(hero).backgroundColor;
+    ctx.fillRect(0, 0, copy.width, copy.height);
+    ctx.drawImage(element, 0, 0);
+    return { at, state: element.dataset.sceneState ?? "", data: element.toDataURL(), png: copy.toDataURL("image/png") };
+  });
+  writeFileSync(path, Buffer.from(result.png.split(",")[1], "base64"));
+  return { at: result.at, state: result.state, data: result.data };
+}
+
+const sceneBox = (page: Page) => page.locator(CANVAS).first().locator("xpath=..");
+
+async function lightsOf(page: Page, scene: HeroScene): Promise<ScenePoint[]> {
+  const size = await page.locator(CANVAS).first().evaluate((c) => ({ width: c.clientWidth, height: c.clientHeight }));
+  return placeLights(scene, { ...size, padding: SCENE_PADDING });
+}
+async function onPage(page: Page, point: ScenePoint): Promise<ScenePoint> {
+  const box = (await page.locator(CANVAS).first().boundingBox())!;
+  return { x: box.x + point.x, y: box.y + point.y };
+}
+async function pixelAt(page: Page, point: ScenePoint): Promise<string> {
+  return page.locator(CANVAS).first().evaluate((canvas: HTMLCanvasElement, at) => {
+    const ratio = canvas.width / canvas.clientWidth;
+    const [r, g, b] = canvas.getContext("2d")!.getImageData(Math.round(at.x * ratio), Math.round(at.y * ratio), 1, 1).data;
+    return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+  }, point);
+}
+const token = (page: Page, name: string) =>
+  page.evaluate((t) => getComputedStyle(document.documentElement).getPropertyValue(t).trim(), name);
+const attrs = (page: Page) =>
+  page.locator(CANVAS).first().evaluate((c) => ({ state: c.dataset.sceneState, label: c.dataset.sceneLabel, hint: c.dataset.sceneHint }));
+
+/* Shots of the first hero of a route at each width and theme, after the settle when the page has a scene. */
+async function heroShots(
+  browser: import("@playwright/test").Browser,
+  id: string,
+  route: string,
+  widths: number[],
+  themes: readonly Theme[],
+  extra?: (page: Page, width: number, theme: Theme) => Promise<void>,
+): Promise<void> {
+  for (const width of widths) {
+    for (const theme of themes) {
+      // A tall viewport keeps the whole hero above the fixed tab bar of a phone, so the bar covers no part of the shot.
+      const { context, page } = await fresh(browser, width, { height: 1600 });
+      await open(page, route, theme);
+      if ((await page.locator(CANVAS).count()) > 0) await sceneReady(page);
+      else await page.waitForTimeout(1500);
+      await page.locator(HERO).first().screenshot({ path: join(dir(id), `${width}-${theme}.png`) });
+      if (extra) await extra(page, width, theme);
+      await context.close();
+    }
+  }
+}
+
+/* The six pages of AT-2, AT-3, and AT-4. */
+const SIX = [
+  ["week", WEEK],
+  ["manager", MANAGER],
+  ["rankings", "/rankings/"],
+  ["midseason", "/midseason/2026/"],
+  ["analyze", "/analyze/"],
+  ["404", "/no-such-page/"],
+] as const;
+
+test.describe("cpc", () => {
+  test.skip(CLIENT !== "cpc", "cpc only");
+
+  test("AT-1 slot order", async ({ browser }) => {
+    const rows: unknown[] = [];
+    await heroShots(browser, "AT-1", MANAGER, WIDTHS, THEMES, async (page, width, theme) => {
+      const slots = await page.locator(HERO).first().evaluate((hero) =>
+        [...hero.querySelectorAll("[data-hero-slot]")].map((el) => {
+          const box = el.getBoundingClientRect();
+          return { slot: el.getAttribute("data-hero-slot"), top: Math.round(box.top), left: Math.round(box.left), text: (el as HTMLElement).innerText.replace(/\s+/g, " ").trim() };
+        }),
+      );
+      rows.push({ width, theme, slots });
+    });
+    save("AT-1", "slots.json", rows);
+  });
+
+  test("AT-2 AT-3 AT-4 title eyebrow meta", async ({ browser }) => {
+    const rows: Record<string, unknown>[] = [];
+    for (const [name, route] of SIX) {
+      const { context, page } = await fresh(browser, 375, { height: 1600 });
+      await open(page, route, "dark");
+      if (name === "analyze") {
+        // The passphrase sheet blurs the page, so the shot unlocks the analyzer first.
+        await page.locator("input[type=password]").fill("localtest");
+        await page.locator("button[type=submit]").click();
+        await page.locator('button[aria-label="Pick Your Team"]').waitFor();
+      }
+      if ((await page.locator(CANVAS).count()) > 0) await sceneReady(page);
+      else await page.waitForTimeout(1500);
+      const hero = page.locator(HERO).first();
+      await hero.screenshot({ path: join(dir("AT-2"), `${name}-375-dark.png`) });
+      const row = await hero.evaluate((section) => {
+        const pick = (slot: string) => section.querySelector(`[data-hero-slot="${slot}"]`) as HTMLElement | null;
+        const title = pick("title")!;
+        const eyebrow = pick("eyebrow");
+        const meta = pick("meta");
+        const t = getComputedStyle(title);
+        const e = eyebrow ? getComputedStyle(eyebrow) : null;
+        const m = meta ? getComputedStyle(meta) : null;
+        let lines: number | null = null;
+        if (meta) {
+          // The line count: the rects of the text of the meta, grouped into lines. A rect starts a new line when its top
+          // sits at least half a line height under the top of the line before, so an inline icon or tag on the same line
+          // counts as that line.
+          const range = document.createRange();
+          range.selectNodeContents(meta);
+          const step = parseFloat(getComputedStyle(meta).lineHeight) / 2;
+          const tops = [...range.getClientRects()].filter((r) => r.width > 0 && r.height > 0).map((r) => r.top).sort((x, y) => x - y);
+          let count = 0;
+          let line = -Infinity;
+          for (const top of tops) {
+            if (top >= line + step) {
+              count++;
+              line = top;
+            }
+          }
+          lines = count;
+        }
+        return {
+          label: section.getAttribute("aria-label"),
+          title: { tag: title.tagName.toLowerCase(), text: title.innerText.trim(), fontSize: t.fontSize, fontWeight: t.fontWeight },
+          eyebrow: e && { text: eyebrow!.innerText.trim(), fontFamily: e.fontFamily, fontSize: e.fontSize, textTransform: e.textTransform, letterSpacing: e.letterSpacing, color: e.color },
+          meta: m && { text: meta!.innerText.replace(/\s+/g, " ").trim(), fontSize: m.fontSize, lineHeight: m.lineHeight, height: Math.round(meta!.getBoundingClientRect().height), lines },
+        };
+      });
+      rows.push({ page: name, route, ...row });
+      await context.close();
+    }
+    save("AT-2", "styles.json", rows);
+    const md = (head: string[], body: string[][]) => [`| ${head.join(" | ")} |`, `| ${head.map(() => "---").join(" | ")} |`, ...body.map((r) => `| ${r.join(" | ")} |`)].join("\n");
+    type Row = { page: string; route: string; title: { tag: string; text: string; fontSize: string; fontWeight: string }; eyebrow: null | Record<string, string>; meta: null | { text: string; fontSize: string; lineHeight: string; height: number; lines: number } };
+    const r = rows as unknown as Row[];
+    save("AT-2", "table.md", `Computed style of the hero title, 375 px, dark theme, from Playwright getComputedStyle.\n\n${md(["page", "route", "tag", "title text", "font-size", "font-weight"], r.map((x) => [x.page, x.route, x.title.tag, x.title.text, x.title.fontSize, x.title.fontWeight]))}\n`);
+    save("AT-3", "table.md", `Computed style of the hero eyebrow, 375 px, dark theme, from Playwright getComputedStyle.\n\n${md(["page", "eyebrow text", "font-family", "font-size", "text-transform", "letter-spacing", "color"], r.map((x) => (x.eyebrow ? [x.page, x.eyebrow.text, x.eyebrow.fontFamily, x.eyebrow.fontSize, x.eyebrow.textTransform, x.eyebrow.letterSpacing, x.eyebrow.color] : [x.page, "(no eyebrow)", "", "", "", "", ""])))}\n`);
+    save("AT-4", "table.md", `Computed font size and line count of the hero meta, 375 px, dark theme, from Playwright. The line count is the count of distinct tops of the line boxes of the meta text.\n\n${md(["page", "meta text", "font-size", "line-height", "height px", "lines"], r.map((x) => (x.meta ? [x.page, x.meta.text, x.meta.fontSize, x.meta.lineHeight, String(x.meta.height), String(x.meta.lines)] : [x.page, "(no meta)", "", "", "", ""])))}\n`);
+  });
+
+  test("AT-5 week hero", async ({ browser }) => {
+    const rows: unknown[] = [];
+    await heroShots(browser, "AT-5", WEEK, WIDTHS, THEMES, async (page, width, theme) => {
+      const order = await page.locator(HERO).first().evaluate((hero) => {
+        const parts = [...hero.querySelectorAll("[data-hero-slot], canvas[data-hero-scene]")].map((el) => {
+          const box = el.getBoundingClientRect();
+          return { part: el.getAttribute("data-hero-slot") ?? "scene", top: Math.round(box.top), bottom: Math.round(box.bottom), left: Math.round(box.left), right: Math.round(box.right), text: (el as HTMLElement).innerText?.replace(/\s+/g, " ").trim().slice(0, 120) ?? "" };
+        });
+        const action = hero.querySelector('[data-hero-slot="action"]');
+        const last = [...hero.querySelectorAll("[data-hero-slot]")].at(-1);
+        return { parts, lastSlot: last?.getAttribute("data-hero-slot"), actionHTMLStart: action?.innerHTML.slice(0, 200), title: hero.querySelector('[data-hero-slot="title"]')?.textContent };
+      });
+      rows.push({ width, theme, ...order });
+    });
+    save("AT-5", "parts.json", rows);
+  });
+
+  test("AT-11 blurb under the hero", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of WIDTHS) {
+      for (const theme of THEMES) {
+        const { context, page } = await fresh(browser, width, { height: 2400 });
+        await open(page, WEEK, theme);
+        await settled(page);
+        const hero = page.locator(HERO).first();
+        const blurb = page.locator("p", { hasText: "stole this one" }).first();
+        await blurb.scrollIntoViewIfNeeded();
+        await page.evaluate(() => window.scrollTo(0, 0));
+        // The return to the top plays the scene again, so the shot waits past its settle.
+        await page.waitForTimeout(2800);
+        const a = (await hero.boundingBox())!;
+        const b = (await blurb.boundingBox())!;
+        const y = a.y;
+        await page.screenshot({ path: join(dir("AT-11"), `${width}-${theme}.png`), fullPage: true, clip: { x: 0, y, width, height: b.y + b.height - y + 24 } });
+        const info = await blurb.evaluate((p, heroSel) => {
+          const heroEl = document.querySelector(heroSel)!;
+          return {
+            insideHero: heroEl.contains(p),
+            text: p.textContent,
+            gapAfterHeroPx: Math.round(p.getBoundingClientRect().top - heroEl.getBoundingClientRect().bottom),
+            heroHasBlurbText: (heroEl as HTMLElement).innerText.includes("stole this one"),
+            readMore: /read more/i.test(document.body.innerText),
+            details: p.closest("details") !== null,
+            clamp: getComputedStyle(p).webkitLineClamp,
+            overflow: getComputedStyle(p).overflow,
+            scrollVsClient: [p.scrollHeight, p.clientHeight],
+          };
+        }, HERO);
+        rows.push({ width, theme, ...info });
+        await context.close();
+      }
+    }
+    save("AT-11", "blurb.json", rows);
+  });
+
+  test("AT-8 hairline", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of WIDTHS) {
+      for (const theme of THEMES) {
+        const { context, page } = await fresh(browser, width, { scale: 2, height: 1600 });
+        await open(page, MANAGER, theme);
+        await settled(page);
+        const hero = page.locator(HERO).first();
+        const stats = hero.locator('[data-hero-slot="stats"]');
+        const h = (await hero.boundingBox())!;
+        const s = (await stats.boundingBox())!;
+        const top = Math.max(h.y, s.y - 60);
+        await page.screenshot({ path: join(dir("AT-8"), `${width}-${theme}.png`), fullPage: true, clip: { x: h.x, y: top, width: h.width, height: h.y + h.height - top } });
+        const rule = await hero.evaluate((section) => {
+          const el = section.querySelector("[data-hero-rule]") as HTMLElement | null;
+          const stats = section.querySelector('[data-hero-slot="stats"]')!.getBoundingClientRect();
+          if (!el) return { exists: false };
+          const box = el.getBoundingClientRect();
+          const cs = getComputedStyle(el);
+          return { exists: true, display: cs.display, height: box.height, ruleTop: Math.round(box.top), statsTop: Math.round(stats.top), backgroundImage: cs.backgroundImage };
+        });
+        rows.push({ width, theme, rule });
+        await context.close();
+      }
+    }
+    save("AT-8", "rule.json", rows);
+  });
+
+  test("AT-12 404", async ({ browser }) => {
+    const rows: unknown[] = [];
+    await heroShots(browser, "AT-12", "/no-such-page/", WIDTHS, THEMES, async (page, width, theme) => {
+      const res = await page.evaluate(() => ({ h1: [...document.querySelectorAll("h1")].map((h) => h.textContent), heroText: (document.querySelector("section[aria-label]") as HTMLElement).innerText }));
+      rows.push({ width, theme, ...res });
+    });
+    save("AT-12", "h1.json", rows);
+  });
+
+  test("AT-13 headings", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375);
+    await open(page, "/midseason/2026/", "dark");
+    await settled(page);
+    const rows = await page.evaluate(() =>
+      [...document.querySelectorAll('section[aria-label] [data-hero-slot="title"]')].map((h) => {
+        const cs = getComputedStyle(h);
+        return { hero: h.closest("section")!.getAttribute("aria-label"), level: h.tagName.toLowerCase(), text: h.textContent, fontSize: cs.fontSize, fontWeight: cs.fontWeight };
+      }),
+    );
+    save("AT-13", "headings.json", rows);
+    await context.close();
+  });
+
+  test("AT-15 AT-17 AT-24 matchup scene", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of WIDTHS) {
+      for (const theme of THEMES) {
+        const { context, page } = await fresh(browser, width, { scale: 2 });
+        await open(page, WEEK, theme);
+        await settled(page);
+        await sceneBox(page).screenshot({ path: join(dir("AT-15"), `${width}-${theme}.png`) });
+        const lights = await lightsOf(page, SCENE);
+        const accent = await token(page, "--color-accent");
+        const colors = [];
+        for (const [i, light] of SCENE.lights.entries()) colors.push({ label: light.label, tone: light.tone, pixel: await pixelAt(page, lights[i]) });
+        rows.push({ width, theme, accent, ...(await attrs(page)), lights: colors, guides: SCENE.guides.map((g) => g.label), margin: SCENE.margin });
+        await context.close();
+      }
+    }
+    save("AT-15", "scene.json", rows);
+  });
+
+  test("AT-16 settle time", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375, { scale: 2 });
+    await open(page, WEEK, "dark");
+    const entry = await entryOf(page, "settle");
+    const rows = [];
+    let last = "";
+    for (const ms of [500, 1000, 2200]) {
+      await until(page, entry + ms);
+      const f = await frame(page, join(dir("AT-16"), `frame-${ms}ms-375-dark.png`));
+      rows.push({ target_ms: ms, actual_ms: Math.round(f.at - entry), state: f.state, sameAsPrevious: f.data === last });
+      last = f.data;
+    }
+    await page.waitForTimeout(1500);
+    const rest = await frame(page, join(dir("AT-16"), "frame-3700ms-375-dark.png"));
+    rows.push({ target_ms: 3700, actual_ms: Math.round(rest.at - entry), state: rest.state, sameAs2200: rest.data === last });
+    save("AT-16", "frames.json", { states: (await statesOf(page)).map((s) => ({ state: s.state, ms_after_settle_entry: Math.round(s.at - entry) })), frames: rows });
+    await context.close();
+  });
+
+  test("AT-18 manager scene", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of WIDTHS) {
+      for (const theme of THEMES) {
+        const { context, page } = await fresh(browser, width, { scale: 2 });
+        await open(page, MANAGER, theme);
+        await settled(page);
+        await sceneBox(page).screenshot({ path: join(dir("AT-18"), `${width}-${theme}.png`) });
+        rows.push({ width, theme, ...(await attrs(page)) });
+        await context.close();
+      }
+    }
+    save("AT-18", "scene.json", rows);
+  });
+
+  test("AT-19 rankings scene", async ({ browser }) => {
+    const rows: unknown[] = [];
+    const rankings = JSON.parse(readFileSync(join(OUT, "2026", "rankings.json"), "utf8"));
+    const week = rankings.weeks.at(-1);
+    for (const width of WIDTHS) {
+      for (const theme of THEMES) {
+        const { context, page } = await fresh(browser, width, { scale: 2 });
+        await open(page, "/rankings/", theme);
+        await settled(page);
+        await sceneBox(page).screenshot({ path: join(dir("AT-19"), `${width}-${theme}.png`) });
+        const hero = await page.locator(CANVAS).first().evaluate((c) => c.closest("section")!.getAttribute("aria-label"));
+        rows.push({ width, theme, hero, ...(await attrs(page)) });
+        await context.close();
+      }
+    }
+    save("AT-19", "scene.json", { week: week.week, rank1: week.teams?.[0] ?? week.rows?.[0] ?? null, shots: rows });
+  });
+
+  test("AT-22 midseason scene", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of WIDTHS) {
+      for (const theme of THEMES) {
+        const { context, page } = await fresh(browser, width, { scale: 2 });
+        await open(page, "/midseason/2026/", theme);
+        await settled(page);
+        await sceneBox(page).screenshot({ path: join(dir("AT-22"), `${width}-${theme}.png`) });
+        const hero = await page.locator(CANVAS).first().evaluate((c) => c.closest("section")!.getAttribute("aria-label"));
+        rows.push({ width, theme, hero, ...(await attrs(page)) });
+        await context.close();
+      }
+    }
+    save("AT-22", "scene.json", rows);
+  });
+
+  for (const [id, route] of [["AT-20", "/analyze/"], ["AT-23", "/no-such-page/"]] as const) {
+    test(`${id} drift`, async ({ browser }) => {
+      const { context, page } = await fresh(browser, 375, { scale: 2 });
+      await open(page, route, "dark");
+      const entry = await entryOf(page, "drift");
+      const rows = [];
+      for (const ms of [2000, 6000]) {
+        await until(page, entry + ms);
+        const f = await frame(page, join(dir(id), `frame-${ms / 1000}s-375-dark.png`));
+        rows.push({ target_ms: ms, actual_ms: Math.round(f.at - entry), state: f.state, data: f.data });
+      }
+      save(id, "frames.json", {
+        hero: await page.locator(CANVAS).first().evaluate((c) => c.closest("section")!.getAttribute("aria-label")),
+        states: (await statesOf(page)).map((s) => ({ state: s.state, ms_after_drift_entry: Math.round(s.at - entry) })),
+        frames: rows.map(({ data, ...rest }) => rest),
+        framesDiffer: rows[0].data !== rows[1].data,
+        attrsAt6s: await attrs(page),
+      });
+      await context.close();
+    });
+  }
+
+  test("AT-25 tap nearest", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375, { scale: 2 });
+    await open(page, WEEK, "dark");
+    await settled(page);
+    await sceneBox(page).screenshot({ path: join(dir("AT-25"), "before-375-dark.png") });
+    const lights = await lightsOf(page, SCENE);
+    const tap = { x: lights[0].x + 3, y: lights[0].y + 10 };
+    const distances = lights.map((l, i) => ({ label: SCENE.lights[i].label, px: Math.round(Math.hypot(l.x - tap.x, l.y - tap.y) * 10) / 10 }));
+    const at = await onPage(page, tap);
+    const before = await statesOf(page);
+    await page.mouse.click(at.x, at.y);
+    await page.waitForTimeout(800);
+    await sceneBox(page).screenshot({ path: join(dir("AT-25"), "after-375-dark.png") });
+    const after = await statesOf(page);
+    save("AT-25", "tap.json", {
+      tapInCanvasPx: tap,
+      tapOnPagePx: at,
+      lightOfLilFridgeInCanvasPx: lights[0],
+      nearestByMath: SCENE.lights[nearestLight(lights, tap)!].label,
+      distances,
+      attrsAfter: await attrs(page),
+      statesBeforeTap: before.map((s) => s.state),
+      statesAfterTap: after.map((s) => s.state),
+    });
+    await context.close();
+  });
+
+  test("AT-26 slide", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375, { scale: 2 });
+    await open(page, WEEK, "dark");
+    await settled(page);
+    const lights = await lightsOf(page, SCENE);
+    const target = SCENE.lights.findIndex((l) => l.label.startsWith("London Cooking"));
+    const from = await onPage(page, { x: lights[0].x, y: lights[target].y });
+    const to = await onPage(page, lights[target]);
+    const path: unknown[] = [];
+    const labels: string[] = [];
+    await page.mouse.move(from.x, from.y);
+    await page.mouse.down();
+    for (let step = 1; step <= 12; step++) {
+      const x = from.x + ((to.x - from.x) * step) / 12;
+      const y = from.y + ((to.y - from.y) * step) / 12;
+      await page.mouse.move(x, y);
+      path.push({ x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 });
+      labels.push((await attrs(page)).label ?? "");
+    }
+    await page.mouse.up();
+    await page.waitForTimeout(300);
+    await sceneBox(page).screenshot({ path: join(dir("AT-26"), "end-375-dark.png") });
+    save("AT-26", "drag.json", { startOnPagePx: from, endOnPagePx: to, path, labelAfterEachMove: labels, attrsAtEnd: await attrs(page) });
+    await context.close();
+  });
+
+  test("AT-27 swipe", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375, { touch: true, height: 812 });
+    await open(page, WEEK, "dark");
+    await settled(page);
+    await page.screenshot({ path: join(dir("AT-27"), "before-375-dark.png") });
+    const box = (await page.locator(CANVAS).first().boundingBox())!;
+    const x = Math.round(box.x + box.width / 2);
+    const y = Math.round(box.y + box.height - 20);
+    const before = await page.evaluate(() => window.scrollY);
+    const session = await context.newCDPSession(page);
+    await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+    for (let step = 1; step <= 10; step++) {
+      await session.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: y - step * 30 }] });
+    }
+    await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await page.waitForTimeout(1500);
+    const after = await page.evaluate(() => window.scrollY);
+    await page.screenshot({ path: join(dir("AT-27"), "after-375-dark.png") });
+    save("AT-27", "scroll.json", { swipeStartOnPagePx: { x, y }, swipeEndOnPagePx: { x, y: y - 300 }, scrollYBefore: before, scrollYAfter: after });
+    await context.close();
+  });
+
+  test("AT-28 hint", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375, { scale: 2 });
+    await open(page, WEEK, "dark");
+    const flagAtStart = await page.evaluate(() => localStorage.getItem("cpc-scene-hint-seen"));
+    await settled(page);
+    const a = await attrs(page);
+    await sceneBox(page).screenshot({ path: join(dir("AT-28"), "before-tap-375-dark.png") });
+    const lights = await lightsOf(page, SCENE);
+    const at = await onPage(page, lights[0]);
+    await page.mouse.click(at.x, at.y);
+    await page.waitForTimeout(800);
+    const b = await attrs(page);
+    await sceneBox(page).screenshot({ path: join(dir("AT-28"), "after-tap-375-dark.png") });
+    const flagAfterTap = await page.evaluate(() => localStorage.getItem("cpc-scene-hint-seen"));
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+    await settled(page);
+    const c = await attrs(page);
+    await sceneBox(page).screenshot({ path: join(dir("AT-28"), "after-reload-375-dark.png") });
+    save("AT-28", "hint.json", { flagAtStart, beforeTap: a, afterTap: b, flagAfterTap, afterReload: c });
+    await context.close();
+  });
+
+  test("AT-29 edge label", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of WIDTHS) {
+      const { context, page } = await fresh(browser, width, { scale: 2 });
+      await open(page, WEEK, "dark");
+      await settled(page);
+      const lights = await lightsOf(page, SCENE);
+      const last = SCENE.lights.length - 1;
+      const at = await onPage(page, lights[last]);
+      await page.mouse.click(at.x, at.y);
+      await page.waitForTimeout(500);
+      await sceneBox(page).screenshot({ path: join(dir("AT-29"), `${width}-dark.png`) });
+      rows.push({ width, tappedLight: SCENE.lights[last].label, tapOnPagePx: at, ...(await attrs(page)) });
+      await context.close();
+    }
+    save("AT-29", "tap.json", rows);
+  });
+
+  test("AT-30 replay", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375, { scale: 2 });
+    await open(page, WEEK, "dark");
+    await settled(page);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(600);
+    const away = await page.locator(HERO).first().evaluate((h) => h.getBoundingClientRect().bottom);
+    const rest = await frame(page, join(dir("AT-30"), "frame-before-leave-375-dark.png"));
+    await page.evaluate(() => window.scrollTo(0, 0));
+    const back = await entryOf(page, "settle", 1);
+    const rows = [];
+    for (const ms of [500, 2500]) {
+      await until(page, back + ms);
+      const f = await frame(page, join(dir("AT-30"), `frame-${ms}ms-after-back-375-dark.png`));
+      rows.push({ target_ms: ms, actual_ms: Math.round(f.at - back), state: f.state, sameAsRestBeforeLeave: f.data === rest.data });
+    }
+    save("AT-30", "frames.json", { heroBottomWhenAwayPx: away, states: (await statesOf(page)).map((s) => s.state), frames: rows });
+    await context.close();
+  });
+
+  test("AT-31 reduced motion", async ({ browser }) => {
+    const rows = [];
+    for (const theme of THEMES) {
+      const { context, page } = await fresh(browser, 375, { scale: 2, reduced: true });
+      // The page itself takes both frames: at the first state change of the canvas (the entry) it sets two timers, at
+      // 100 ms and at 2500 ms, and each timer reads the canvas pixels on the band color of the hero.
+      await page.addInitScript(() => {
+        const w = window as unknown as Record<string, unknown>;
+        const shots: { at: number; entry: number; state: string; data: string; png: string }[] = [];
+        w.reducedShots = shots;
+        let entry: number | null = null;
+        const grab = (canvas: HTMLCanvasElement) => {
+          const hero = canvas.closest("section") as HTMLElement;
+          const copy = document.createElement("canvas");
+          copy.width = canvas.width;
+          copy.height = canvas.height;
+          const ctx = copy.getContext("2d")!;
+          ctx.fillStyle = getComputedStyle(hero).backgroundColor;
+          ctx.fillRect(0, 0, copy.width, copy.height);
+          ctx.drawImage(canvas, 0, 0);
+          shots.push({ at: performance.now(), entry: entry!, state: canvas.dataset.sceneState ?? "", data: canvas.toDataURL(), png: copy.toDataURL("image/png") });
+        };
+        new MutationObserver((changes) => {
+          for (const change of changes) {
+            const canvas = change.target as HTMLCanvasElement;
+            if (entry === null && canvas.dataset.sceneState) {
+              entry = performance.now();
+              setTimeout(() => grab(canvas), 100);
+              setTimeout(() => grab(canvas), 2500);
+            }
+          }
+        }).observe(document, { subtree: true, attributeFilter: ["data-scene-state"] });
+      });
+      await open(page, WEEK, theme);
+      await expect.poll(() => page.evaluate(() => ((window as unknown as { reducedShots: unknown[] }).reducedShots).length), { timeout: 10000 }).toBe(2);
+      const shots = await page.evaluate(() => (window as unknown as { reducedShots: { at: number; entry: number; state: string; data: string; png: string }[] }).reducedShots);
+      shots.forEach((shot, index) => writeFileSync(join(dir("AT-31"), `frame-${index === 0 ? "0.1" : "2.5"}s-375-${theme}.png`), Buffer.from(shot.png.split(",")[1], "base64")));
+      rows.push({
+        theme,
+        states: (await statesOf(page)).map((s) => ({ state: s.state, ms_after_navigation: Math.round(s.at) })),
+        entry_ms_after_navigation: Math.round(shots[0].entry),
+        frames: shots.map((shot) => ({ ms_after_entry: Math.round(shot.at - shot.entry), state: shot.state })),
+        framesEqual: shots[0].data === shots[1].data,
+      });
+      await context.close();
+    }
+    save("AT-31", "frames.json", rows);
+  });
+
+  test("AT-32 loop at rest", async ({ browser }) => {
+    const { context, page } = await fresh(browser, 375);
+    await open(page, WEEK, "dark");
+    await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest", { timeout: 8000 });
+    await page.waitForTimeout(200);
+    const count = () => page.evaluate(() => (window as unknown as { rafCount: number }).rafCount);
+    const before = await count();
+    const t0 = await page.evaluate(() => performance.now());
+    await page.waitForTimeout(3000);
+    const after = await count();
+    const t1 = await page.evaluate(() => performance.now());
+    save("AT-32", "raf.json", { method: "requestAnimationFrame wrapped by an init script; count read before and after a 3 s wait that starts 200 ms after data-scene-state turns rest", countBefore: before, countAfter: after, callsInWindow: after - before, windowMs: Math.round(t1 - t0), state: (await attrs(page)).state });
+    await context.close();
+  });
+
+  test("AT-33 light theme", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of WIDTHS) {
+      const data: Record<string, string> = {};
+      for (const theme of THEMES) {
+        const { context, page } = await fresh(browser, width);
+        await open(page, WEEK, theme);
+        await settled(page);
+        if (theme === "light") await page.screenshot({ path: join(dir("AT-33"), `${width}-light.png`) });
+        data[theme] = await page.locator(CANVAS).first().evaluate((c: HTMLCanvasElement) => c.toDataURL());
+        const colors = await page.evaluate(() => ({ body: getComputedStyle(document.body).backgroundColor, hero: getComputedStyle(document.querySelector("section[aria-label]")!).backgroundColor, htmlClass: document.documentElement.className }));
+        rows.push({ width, theme, ...colors });
+        await context.close();
+      }
+      rows.push({ width, canvasPixelsLightEqualDark: data.light === data.dark });
+    }
+    save("AT-33", "colors.json", rows);
+  });
+
+  test("AT-35 one scene", async ({ browser }) => {
+    const out: Record<string, unknown> = {};
+    for (const route of ["/", "/midseason/2026/"]) {
+      const { context, page } = await fresh(browser, 375);
+      await open(page, route, "dark");
+      await page.waitForTimeout(1500);
+      out[route] = await page.evaluate(() => ({
+        canvases: document.querySelectorAll("canvas[data-hero-scene]").length,
+        heroes: [...document.querySelectorAll("section[aria-label]")].filter((s) => s.querySelector('[data-hero-slot="title"]')).map((s) => ({ label: s.getAttribute("aria-label"), canvases: s.querySelectorAll("canvas[data-hero-scene]").length })),
+      }));
+      if (route !== "/") {
+        const acts = page.locator('section[aria-label^="Act "]');
+        const n = await acts.count();
+        for (let i = 0; i < n; i++) {
+          await acts.nth(i).scrollIntoViewIfNeeded();
+          await page.waitForTimeout(1200);
+          await acts.nth(i).screenshot({ path: join(dir("AT-35"), `act-${i + 1}-375-dark.png`) });
+        }
+      }
+      await context.close();
+    }
+    save("AT-35", "counts.json", out);
+  });
+
+  test("AT-36 grade popover", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of [375, 1280]) {
+      const { context, page } = await fresh(browser, width);
+      await open(page, MANAGER, "dark");
+      await settled(page);
+      const trigger = page.getByRole("button", { name: /^Grade [A-F][+-]?, how the grade reads$/ });
+      await trigger.scrollIntoViewIfNeeded();
+      await page.screenshot({ path: join(dir("AT-36"), `before-${width}-dark.png`) });
+      const name = await trigger.getAttribute("aria-label") ?? await trigger.innerText();
+      await trigger.click();
+      const dialog = page.getByRole("dialog", { name: "How The Grade Reads" });
+      await dialog.waitFor({ state: "visible", timeout: 5000 }).catch(() => undefined);
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: join(dir("AT-36"), `after-${width}-dark.png`) });
+      rows.push({ width, trigger: name, dialogVisible: await dialog.isVisible() });
+      await context.close();
+    }
+    save("AT-36", "tap.json", rows);
+  });
+
+  test("AT-39 no scan line", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const [name, route] of [["week", WEEK], ["manager", MANAGER]] as const) {
+      const { context, page } = await fresh(browser, 375, { scale: 2, height: 1600 });
+      await page.addInitScript((v) => localStorage.setItem("cpc.theme", v), "dark");
+      await page.goto(BASE + route, { waitUntil: "commit" });
+      await page.locator(HERO).first().waitFor();
+      const shots = [];
+      for (const ms of [300, 800]) {
+        await until(page, ms);
+        const start = await page.evaluate(() => performance.now());
+        await page.locator(HERO).first().screenshot({ path: join(dir("AT-39"), `${name}-${ms / 1000}s-375-dark.png`), animations: "allow" });
+        const end = await page.evaluate(() => performance.now());
+        shots.push({ target_ms: ms, shot_start_ms: Math.round(start), shot_end_ms: Math.round(end) });
+      }
+      const animated = await page.locator(HERO).first().evaluate((hero) =>
+        [hero, ...hero.querySelectorAll("*")].flatMap((el) => el.getAnimations().map((a) => ({ el: el.tagName.toLowerCase() + (el.getAttribute("data-hero-art") ? `[data-hero-art=${el.getAttribute("data-hero-art")}]` : ""), name: (a as CSSAnimation).animationName ?? a.id }))),
+      );
+      rows.push({ page: name, route, timesFromNavigationStart: shots, cssAnimationsInHeroAt08s: animated });
+      await context.close();
+    }
+    save("AT-39", "frames.json", rows);
+  });
+});
+
+/* The analyzer: trade A of grade-clarity on the local API. */
+async function gradeTradeA(page: Page): Promise<unknown> {
+  let answer: unknown = null;
+  page.on("response", async (response) => {
+    if (response.url().startsWith("http://localhost:8080") && response.request().method() === "POST" && /analy/.test(response.url())) {
+      try {
+        answer = await response.json();
+      } catch {
+        // A stream or an empty body has no JSON.
+      }
+    }
+  });
+  await page.locator("input[type=password]").fill("localtest");
+  await page.locator("button[type=submit]").click();
+  await page.locator('button[aria-label="Pick Your Team"]').waitFor();
+  await page.locator('button[aria-label="Pick Your Team"]').click();
+  await page.locator('ul[aria-label="Teams"] button:has-text("behold the lamb")').click();
+  await page.locator('button[aria-label="Pick Team Two"]').click();
+  await page.locator('ul[aria-label="Teams"] button:has-text("Bo Girds")').click();
+  await page.locator('button:has-text("Add a player Your Team gets")').click();
+  await page.locator('ul[aria-label^="Players of"]').waitFor();
+  await page.locator('ul[aria-label^="Players of"] button:has-text("Parker Washington")').click();
+  await page.locator('button:has-text("Done")').click();
+  await page.locator('button:has-text("Add a player Team Two gets")').click();
+  await page.locator('ul[aria-label^="Players of"]').waitFor();
+  await page.locator('ul[aria-label^="Players of"] button:has-text("Omar Cooper")').click();
+  await page.locator('button:has-text("Done")').click();
+  await page.locator('button:has-text("Grade the Trade")').click();
+  await page.locator("text=Suggested Counters").waitFor({ timeout: 180000 });
+  return () => answer;
+}
+
+test.describe("cpc analyzer", () => {
+  test.skip(CLIENT !== "cpc", "cpc only");
+
+  test("AT-9 no empty gap", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of WIDTHS) {
+      for (const theme of THEMES) {
+        const { context, page } = await fresh(browser, width, { height: 1600 });
+        await open(page, "/analyze/", theme);
+        const answer = (await gradeTradeA(page)) as () => unknown;
+        await expect.poll(async () => (await statesOf(page)).some((s) => s.state === "rest"), { timeout: 10000 }).toBe(true);
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.waitForTimeout(1500);
+        const hero = page.locator(HERO).first();
+        await hero.screenshot({ path: join(dir("AT-9"), `${width}-${theme}.png`) });
+        const space = await hero.evaluate((section) => {
+          const box = section.getBoundingClientRect();
+          const slots = [...section.querySelectorAll("[data-hero-slot]")];
+          const eyebrow = section.querySelector('[data-hero-slot="eyebrow"]') ?? slots[0];
+          const content = section.querySelector(":scope > div.relative")!;
+          const all = [...content.querySelectorAll("*")].filter((el) => {
+            const r = el.getBoundingClientRect();
+            return r.height > 0 && r.width > 0;
+          });
+          const lowest = Math.max(...all.map((el) => el.getBoundingClientRect().bottom));
+          const lowestEl = all.find((el) => el.getBoundingClientRect().bottom === lowest)!;
+          return {
+            label: section.getAttribute("aria-label"),
+            slots: slots.map((s) => s.getAttribute("data-hero-slot")),
+            spaceAboveEyebrowPx: Math.round(eyebrow.getBoundingClientRect().top - box.top),
+            spaceUnderLowestContentPx: Math.round(box.bottom - lowest),
+            lowestContentText: (lowestEl as HTMLElement).innerText?.replace(/\s+/g, " ").slice(0, 120),
+            contentBottomToHeroBottom: Math.round(box.bottom - content.getBoundingClientRect().bottom),
+            heroPadding: [getComputedStyle(section).paddingTop, getComputedStyle(section).paddingBottom],
+          };
+        });
+        rows.push({ width, theme, ...space });
+        if (width === 375 && theme === "dark") save("AT-9", "tradeA.response.json", answer());
+        await context.close();
+      }
+    }
+    save("AT-9", "space.json", rows);
+  });
+
+  test("AT-21 analyzer settle", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of [375, 1280]) {
+      const { context, page } = await fresh(browser, width, { scale: 2 });
+      await open(page, "/analyze/", "dark");
+      const drift = await entryOf(page, "drift");
+      await until(page, drift + 2500);
+      await frame(page, join(dir("AT-21"), `before-grade-${width}-dark.png`));
+      const answer = (await gradeTradeA(page)) as () => unknown;
+      const settle = await entryOf(page, "settle");
+      await until(page, settle + 2500);
+      const f = await frame(page, join(dir("AT-21"), `after-verdict-2.5s-${width}-dark.png`));
+      await page.locator(HERO).first().screenshot({ path: join(dir("AT-21"), `verdict-hero-${width}-dark.png`) });
+      const hero = await page.locator(HERO).first().evaluate((s) => ({ label: s.getAttribute("aria-label"), text: (s as HTMLElement).innerText.replace(/\s+/g, " ").slice(0, 400), canvases: s.querySelectorAll("canvas[data-hero-scene]").length }));
+      rows.push({ width, frameAt_ms_after_settle: Math.round(f.at - settle), state: f.state, hero, states: (await statesOf(page)).map((s) => s.state) });
+      if (width === 375) save("AT-21", "tradeA.response.json", answer());
+      await context.close();
+    }
+    save("AT-21", "frames.json", rows);
+  });
+});
+
+test.describe("norcal", () => {
+  test.skip(CLIENT !== "norcal", "norcal only");
+
+  test("AT-34 norcal colors", async ({ browser }) => {
+    const rows: unknown[] = [];
+    for (const width of WIDTHS) {
+      for (const theme of THEMES) {
+        const { context, page } = await fresh(browser, width, { scale: 2 });
+        await open(page, WEEK, theme);
+        await settled(page);
+        await sceneBox(page).screenshot({ path: join(dir("AT-34"), `${width}-${theme}.png`) });
+        const lights = await lightsOf(page, SCENE);
+        const flares = [];
+        for (const [i, light] of SCENE.lights.entries()) if (light.tone === "flare") flares.push({ label: light.label, pixel: await pixelAt(page, lights[i]) });
+        rows.push({ width, theme, route: WEEK, accentToken: await token(page, "--color-accent"), flares, ...(await attrs(page)) });
+        await context.close();
+      }
+    }
+    save("AT-34", "colors.json", rows);
+  });
+});

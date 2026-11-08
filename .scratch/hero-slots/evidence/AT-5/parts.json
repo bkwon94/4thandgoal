@@ -1,0 +1,344 @@
+[
+  {
+    "width": 375,
+    "theme": "light",
+    "parts": [
+      {
+        "part": "eyebrow",
+        "top": 330,
+        "bottom": 352,
+        "left": 37,
+        "right": 319,
+        "text": "WEEK 08 // MATCHUP OF THE WEEK"
+      },
+      {
+        "part": "title",
+        "top": 360,
+        "bottom": 468,
+        "left": 37,
+        "right": 338,
+        "text": "The Blue Tent by 1.43"
+      },
+      {
+        "part": "meta",
+        "top": 492,
+        "bottom": 545,
+        "left": 37,
+        "right": 338,
+        "text": "Oct 29 – Nov 2, 2026 · Published Tue Nov 3, 2026"
+      },
+      {
+        "part": "scene",
+        "top": 106,
+        "bottom": 306,
+        "left": 41,
+        "right": 334,
+        "text": ""
+      },
+      {
+        "part": "feature",
+        "top": 569,
+        "bottom": 761,
+        "left": 41,
+        "right": 334,
+        "text": "CLOSEST FINISH The Blue Tent Brock Bowers · TE · 24.7 100.31 London Cooking Michael Wilson · WR · 22.8 98.88"
+      },
+      {
+        "part": "action",
+        "top": 785,
+        "bottom": 789,
+        "left": 41,
+        "right": 334,
+        "text": ""
+      }
+    ],
+    "lastSlot": "action",
+    "actionHTMLStart": "<div data-reveal=\"true\" class=\"w-full\" style=\"opacity: 1; transform: none;\"><div role=\"meter\" aria-label=\"Share of the points\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"50.4\" class=\"h-sp-1 ",
+    "title": "The Blue Tent by 1.43"
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "parts": [
+      {
+        "part": "eyebrow",
+        "top": 330,
+        "bottom": 352,
+        "left": 37,
+        "right": 319,
+        "text": "WEEK 08 // MATCHUP OF THE WEEK"
+      },
+      {
+        "part": "title",
+        "top": 360,
+        "bottom": 468,
+        "left": 37,
+        "right": 338,
+        "text": "The Blue Tent by 1.43"
+      },
+      {
+        "part": "meta",
+        "top": 492,
+        "bottom": 545,
+        "left": 37,
+        "right": 338,
+        "text": "Oct 29 – Nov 2, 2026 · Published Tue Nov 3, 2026"
+      },
+      {
+        "part": "scene",
+        "top": 106,
+        "bottom": 306,
+        "left": 41,
+        "right": 334,
+        "text": ""
+      },
+      {
+        "part": "feature",
+        "top": 569,
+        "bottom": 761,
+        "left": 41,
+        "right": 334,
+        "text": "CLOSEST FINISH The Blue Tent Brock Bowers · TE · 24.7 100.31 London Cooking Michael Wilson · WR · 22.8 98.88"
+      },
+      {
+        "part": "action",
+        "top": 785,
+        "bottom": 789,
+        "left": 41,
+        "right": 334,
+        "text": ""
+      }
+    ],
+    "lastSlot": "action",
+    "actionHTMLStart": "<div data-reveal=\"true\" class=\"w-full\" style=\"opacity: 1; transform: none;\"><div role=\"meter\" aria-label=\"Share of the points\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"50.4\" class=\"h-sp-1 ",
+    "title": "The Blue Tent by 1.43"
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "parts": [
+      {
+        "part": "eyebrow",
+        "top": 106,
+        "bottom": 129,
+        "left": 85,
+        "right": 389,
+        "text": "WEEK 08 // MATCHUP OF THE WEEK"
+      },
+      {
+        "part": "title",
+        "top": 137,
+        "bottom": 253,
+        "left": 85,
+        "right": 423,
+        "text": "The Blue Tent by 1.43"
+      },
+      {
+        "part": "meta",
+        "top": 106,
+        "bottom": 253,
+        "left": 439,
+        "right": 683,
+        "text": "Oct 29 – Nov 2, 2026 · Published Tue Nov 3, 2026"
+      },
+      {
+        "part": "scene",
+        "top": 277,
+        "bottom": 517,
+        "left": 89,
+        "right": 679,
+        "text": ""
+      },
+      {
+        "part": "feature",
+        "top": 541,
+        "bottom": 738,
+        "left": 89,
+        "right": 679,
+        "text": "CLOSEST FINISH The Blue Tent Brock Bowers · TE · 24.7 100.31 London Cooking Michael Wilson · WR · 22.8 98.88"
+      },
+      {
+        "part": "action",
+        "top": 762,
+        "bottom": 766,
+        "left": 89,
+        "right": 679,
+        "text": ""
+      }
+    ],
+    "lastSlot": "action",
+    "actionHTMLStart": "<div data-reveal=\"true\" class=\"w-full\" style=\"opacity: 1; transform: none;\"><div role=\"meter\" aria-label=\"Share of the points\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"50.4\" class=\"h-sp-1 ",
+    "title": "The Blue Tent by 1.43"
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "parts": [
+      {
+        "part": "eyebrow",
+        "top": 106,
+        "bottom": 129,
+        "left": 85,
+        "right": 389,
+        "text": "WEEK 08 // MATCHUP OF THE WEEK"
+      },
+      {
+        "part": "title",
+        "top": 137,
+        "bottom": 253,
+        "left": 85,
+        "right": 423,
+        "text": "The Blue Tent by 1.43"
+      },
+      {
+        "part": "meta",
+        "top": 106,
+        "bottom": 253,
+        "left": 439,
+        "right": 683,
+        "text": "Oct 29 – Nov 2, 2026 · Published Tue Nov 3, 2026"
+      },
+      {
+        "part": "scene",
+        "top": 277,
+        "bottom": 517,
+        "left": 89,
+        "right": 679,
+        "text": ""
+      },
+      {
+        "part": "feature",
+        "top": 541,
+        "bottom": 738,
+        "left": 89,
+        "right": 679,
+        "text": "CLOSEST FINISH The Blue Tent Brock Bowers · TE · 24.7 100.31 London Cooking Michael Wilson · WR · 22.8 98.88"
+      },
+      {
+        "part": "action",
+        "top": 762,
+        "bottom": 766,
+        "left": 89,
+        "right": 679,
+        "text": ""
+      }
+    ],
+    "lastSlot": "action",
+    "actionHTMLStart": "<div data-reveal=\"true\" class=\"w-full\" style=\"opacity: 1; transform: none;\"><div role=\"meter\" aria-label=\"Share of the points\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"50.4\" class=\"h-sp-1 ",
+    "title": "The Blue Tent by 1.43"
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "parts": [
+      {
+        "part": "eyebrow",
+        "top": 106,
+        "bottom": 130,
+        "left": 301,
+        "right": 628,
+        "text": "WEEK 08 // MATCHUP OF THE WEEK"
+      },
+      {
+        "part": "title",
+        "top": 138,
+        "bottom": 262,
+        "left": 301,
+        "right": 687,
+        "text": "The Blue Tent by 1.43"
+      },
+      {
+        "part": "meta",
+        "top": 106,
+        "bottom": 262,
+        "left": 703,
+        "right": 979,
+        "text": "Oct 29 – Nov 2, 2026 · Published Tue Nov 3, 2026"
+      },
+      {
+        "part": "scene",
+        "top": 286,
+        "bottom": 526,
+        "left": 305,
+        "right": 975,
+        "text": ""
+      },
+      {
+        "part": "feature",
+        "top": 550,
+        "bottom": 752,
+        "left": 305,
+        "right": 975,
+        "text": "CLOSEST FINISH The Blue Tent Brock Bowers · TE · 24.7 100.31 London Cooking Michael Wilson · WR · 22.8 98.88"
+      },
+      {
+        "part": "action",
+        "top": 776,
+        "bottom": 780,
+        "left": 305,
+        "right": 975,
+        "text": ""
+      }
+    ],
+    "lastSlot": "action",
+    "actionHTMLStart": "<div data-reveal=\"true\" class=\"w-full\" style=\"opacity: 1; transform: none;\"><div role=\"meter\" aria-label=\"Share of the points\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"50.4\" class=\"h-sp-1 ",
+    "title": "The Blue Tent by 1.43"
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "parts": [
+      {
+        "part": "eyebrow",
+        "top": 106,
+        "bottom": 130,
+        "left": 301,
+        "right": 628,
+        "text": "WEEK 08 // MATCHUP OF THE WEEK"
+      },
+      {
+        "part": "title",
+        "top": 138,
+        "bottom": 262,
+        "left": 301,
+        "right": 687,
+        "text": "The Blue Tent by 1.43"
+      },
+      {
+        "part": "meta",
+        "top": 106,
+        "bottom": 262,
+        "left": 703,
+        "right": 979,
+        "text": "Oct 29 – Nov 2, 2026 · Published Tue Nov 3, 2026"
+      },
+      {
+        "part": "scene",
+        "top": 286,
+        "bottom": 526,
+        "left": 305,
+        "right": 975,
+        "text": ""
+      },
+      {
+        "part": "feature",
+        "top": 550,
+        "bottom": 752,
+        "left": 305,
+        "right": 975,
+        "text": "CLOSEST FINISH The Blue Tent Brock Bowers · TE · 24.7 100.31 London Cooking Michael Wilson · WR · 22.8 98.88"
+      },
+      {
+        "part": "action",
+        "top": 776,
+        "bottom": 780,
+        "left": 305,
+        "right": 975,
+        "text": ""
+      }
+    ],
+    "lastSlot": "action",
+    "actionHTMLStart": "<div data-reveal=\"true\" class=\"w-full\" style=\"opacity: 1; transform: none;\"><div role=\"meter\" aria-label=\"Share of the points\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"50.4\" class=\"h-sp-1 ",
+    "title": "The Blue Tent by 1.43"
+  }
+]

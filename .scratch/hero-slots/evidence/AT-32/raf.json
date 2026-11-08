@@ -1,0 +1,8 @@
+{
+  "method": "requestAnimationFrame wrapped by an init script; count read before and after a 3 s wait that starts 200 ms after data-scene-state turns rest",
+  "countBefore": 141,
+  "countAfter": 141,
+  "callsInWindow": 0,
+  "windowMs": 3007,
+  "state": "rest"
+}

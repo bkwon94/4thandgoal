@@ -1,0 +1,36 @@
+[
+  {
+    "page": "week",
+    "route": "/2026/week-08/",
+    "timesFromNavigationStart": [
+      {
+        "target_ms": 300,
+        "shot_start_ms": 311,
+        "shot_end_ms": 470
+      },
+      {
+        "target_ms": 800,
+        "shot_start_ms": 809,
+        "shot_end_ms": 969
+      }
+    ],
+    "cssAnimationsInHeroAt08s": []
+  },
+  {
+    "page": "manager",
+    "route": "/2026/managers/7/",
+    "timesFromNavigationStart": [
+      {
+        "target_ms": 300,
+        "shot_start_ms": 309,
+        "shot_end_ms": 470
+      },
+      {
+        "target_ms": 800,
+        "shot_start_ms": 813,
+        "shot_end_ms": 964
+      }
+    ],
+    "cssAnimationsInHeroAt08s": []
+  }
+]

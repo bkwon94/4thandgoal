@@ -1,0 +1,47 @@
+$ pnpm --dir apps/site exec vitest run --reporter=verbose packages/design/site/parts/scene-math.test.ts packages/week/site/parts/matchup-scene.test.ts
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/hero-slots/apps/site
+
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > placeLights > spreads the lights across the box inside the padding, with the high value at the top 1ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > placeGuides > places a guide on the same scale as the lights, so a median line runs at its value 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > placeGuides > widens the scale to hold a guide outside the range of the lights 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > nearestLight > selects the closest light for a tap in empty space, so no tap misses 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > nearestLight > selects no light in a scene with no light 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > placeLabel > puts a label on the right side of its light when it fits 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > placeLabel > flips a label near the right edge to the inner side, and keeps it inside the box 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > placeLabel > keeps a label at the top or the bottom edge inside the box 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > placeMarginMark > moves the mark off a label that covers its first place 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > placeMarginMark > gives no mark when a label covers the whole box 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > sceneScore > drops a trailing zero 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > sceneScore > keeps up to two decimals 0ms
+ ✓ ../../packages/design/site/parts/scene-math.test.ts > sceneGuideScore > always writes two decimals 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > matchupScene > has one light per team of the week, sorted from low to high by the points of the week 1ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > matchupScene > draws the league median of 99.60 as its one guide 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > matchupScene > draws no guide for a week with no median, as a league with no median game publishes 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > matchupScene > flares the two teams of the Matchup, The Blue Tent and London Cooking, and no other team 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > matchupScene > shows the label of the winner at rest, and marks the margin of +1.43 between the two teams 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the labels of week 8 > flips the label of the top score, at the right edge, to the inner side and keeps it inside the box 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the labels of the Matchup of week 8 > cover no light of the scene in a box of 293 by 200 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the labels of the Matchup of week 8 > cover no light of the scene in a box of 343 by 200 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the labels of the Matchup of week 8 > cover no light of the scene in a box of 590 by 240 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the labels of the Matchup of week 8 > cover no light of the scene in a box of 1100 by 320 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the margin mark of week 8 > overlaps no label of the two teams in a box of 293 by 200, also while the winner is selected 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the margin mark of week 8 > overlaps no label of the two teams in a box of 343 by 200, also while the winner is selected 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the margin mark of week 8 > overlaps no label of the two teams in a box of 590 by 240, also while the winner is selected 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the margin mark of week 8 > overlaps no label of the two teams in a box of 1100 by 320, also while the winner is selected 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > keeps one margin mark, from the labels of its two ends, in a box of 293 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > keeps one margin mark, from the labels of its two ends, in a box of 343 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > keeps one margin mark, from the labels of its two ends, in a box of 590 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > puts the hint in a corner with no light, no label at rest, no mark, and no guide label, in a box of 293 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > puts the hint in a corner with no light, no label at rest, no mark, and no guide label, in a box of 343 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > puts the hint in a corner with no light, no label at rest, no mark, and no guide label, in a box of 590 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > labels the median line at one end, clear of every light, the label at rest, and the mark, in a box of 293 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > labels the median line at one end, clear of every light, the label at rest, and the mark, in a box of 343 0ms
+ ✓ ../../packages/week/site/parts/matchup-scene.test.ts > the layout of the scene of week 8 > labels the median line at one end, clear of every light, the label at rest, and the mark, in a box of 590 0ms
+
+ Test Files  2 passed (2)
+      Tests  36 passed (36)
+   Start at  01:11:53
+   Duration  671ms (environment 91%, import 6%, transform 2%, tests 1%)
+
+(exit 0)

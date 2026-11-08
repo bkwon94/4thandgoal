@@ -1,0 +1,197 @@
+{
+  "trade": {
+    "asker": 10,
+    "sides": [
+      {
+        "roster_id": 10,
+        "team": "behold the lamb",
+        "gives": [
+          {
+            "player_id": "13276",
+            "name": "Omar Cooper Jr.",
+            "position": "WR",
+            "nfl_team": "NYJ",
+            "headshot": "https://sleepercdn.com/content/nfl/players/13276.jpg",
+            "season_rank": "WR60",
+            "recent_rank": "WR18",
+            "to": 6
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "9487",
+            "name": "Parker Washington",
+            "position": "WR",
+            "nfl_team": "JAX",
+            "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg",
+            "season_rank": "WR12",
+            "recent_rank": "WR40",
+            "from": 6
+          }
+        ]
+      },
+      {
+        "roster_id": 6,
+        "team": "Bo Girds",
+        "gives": [
+          {
+            "player_id": "9487",
+            "name": "Parker Washington",
+            "position": "WR",
+            "nfl_team": "JAX",
+            "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg",
+            "season_rank": "WR12",
+            "recent_rank": "WR40",
+            "to": 10
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "13276",
+            "name": "Omar Cooper Jr.",
+            "position": "WR",
+            "nfl_team": "NYJ",
+            "headshot": "https://sleepercdn.com/content/nfl/players/13276.jpg",
+            "season_rank": "WR60",
+            "recent_rank": "WR18",
+            "from": 10
+          }
+        ]
+      }
+    ]
+  },
+  "decision": {
+    "for_roster": 10,
+    "answer": "yes",
+    "reason": "Out of the playoff race, this side gets the better player and the softer playoff schedule.",
+    "differs": false
+  },
+  "fairness": {
+    "state": "lopsided",
+    "gives_more": 6,
+    "sides": [
+      {
+        "roster_id": 10,
+        "reason": "You keep 3 WRs in the top 36, and you get the better player."
+      },
+      {
+        "roster_id": 6,
+        "reason": "Cooper gets more work while Wilson is out."
+      }
+    ]
+  },
+  "sides": [
+    {
+      "roster_id": 10,
+      "bullets": [
+        "Washington ranks WR12 by total points this season, against WR60 for Cooper.",
+        "Out of the playoff race at 6-10, this side gets the better player for the rest of the season.",
+        "Washington draws HOU and DAL in the fantasy playoffs, 5th and 7th most points to WRs."
+      ],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: WRs in the top 36 who play stay at 3. Washington plays at BAL, 9th most points to WRs. Bernard has a bye. Samuel is listed Out."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: WRs in the top 36 who play stay at 2. Washington plays at TEN, the most points to WRs. Egbuka has a bye."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "for",
+          "reason": "You get far more than you give."
+        },
+        {
+          "name": "roster fit",
+          "lean": "for",
+          "reason": "You keep 3 WRs in the top 36, and you get the better player."
+        },
+        {
+          "name": "standing",
+          "lean": "for",
+          "reason": "Out of the playoff race, so you want the better player for the rest of the season, and you get him."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "even",
+          "reason": "Washington plays 67% of the snaps (down), sees 21% of the targets, and averages 3.7 air yards per target; Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target."
+        },
+        {
+          "name": "schedule",
+          "lean": "for",
+          "reason": "Washington faces HOU (5th most points to WRs), DAL (7th), and WAS (14th) in weeks 15 to 17."
+        }
+      ]
+    },
+    {
+      "roster_id": 6,
+      "bullets": [
+        "Cooper ranks WR18 by points per game lately, against WR40 for Washington.",
+        "Cooper's snap share rose to 72 percent, but his target share fell to 8 percent.",
+        "Cooper has his bye in week 13 and draws MIN, 29th most points to WRs, in the playoffs."
+      ],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, 31st most points to WRs. Cooper steps up."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: WRs in the top 36 who play stay at 3. Cooper plays BUF at home, 3rd most points to WRs."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "against",
+          "reason": "You give far more than you get."
+        },
+        {
+          "name": "roster fit",
+          "lean": "even",
+          "reason": "You keep 3 WRs in the top 36."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "In a playoff spot, so you need points now, and this trade keeps your points about the same."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "even",
+          "reason": "Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target; Washington plays 67% of the snaps (down), sees 21% of the targets, and averages 3.7 air yards per target."
+        },
+        {
+          "name": "upside",
+          "lean": "for",
+          "reason": "Cooper gets more work while Wilson is out."
+        },
+        {
+          "name": "schedule",
+          "lean": "against",
+          "reason": "Cooper has his bye in week 13 and faces ARI (10th most points to WRs), NE (11th), and MIN (29th) in weeks 15 to 17."
+        }
+      ]
+    }
+  ],
+  "as_of": {
+    "chart_week": 9,
+    "stats_through": 9,
+    "completed_through": 8,
+    "rosters_fetched": "2026-11-08T01:16:30.277492-05:00",
+    "known_games": {
+      "week": 9,
+      "games": 1,
+      "in_progress": 0,
+      "pending": {}
+    },
+    "no_chart": false,
+    "no_chart_note": null
+  },
+  "fallback": false,
+  "missing": [],
+  "stale": []
+}

@@ -1,0 +1,31 @@
+{
+  "hero": "Trade Analyzer",
+  "states": [
+    {
+      "state": "idle",
+      "ms_after_drift_entry": -21
+    },
+    {
+      "state": "drift",
+      "ms_after_drift_entry": 0
+    }
+  ],
+  "frames": [
+    {
+      "target_ms": 2000,
+      "actual_ms": 2025,
+      "state": "drift"
+    },
+    {
+      "target_ms": 6000,
+      "actual_ms": 6013,
+      "state": "drift"
+    }
+  ],
+  "framesDiffer": true,
+  "attrsAt6s": {
+    "state": "drift",
+    "label": "",
+    "hint": "gone"
+  }
+}

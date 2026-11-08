@@ -1,0 +1,89 @@
+{
+  "week": 8,
+  "rank1": {
+    "roster_id": 2,
+    "name": "All You Need Is Love",
+    "wins": 11,
+    "losses": 5,
+    "rank": 1,
+    "movement": 4,
+    "components": {
+      "standing": 1,
+      "form": 1,
+      "schedule_played": 7,
+      "scoring": 6
+    },
+    "blurb": [
+      {
+        "text": "All You Need Is Love climbs 4 places to the top spot on a 24-point win.",
+        "fact_ids": [
+          "PR.2",
+          "PR.2.why"
+        ]
+      },
+      {
+        "text": "They've won 3 straight and sit 2 games above the cut.",
+        "fact_ids": [
+          "H.2.streak",
+          "S.1"
+        ]
+      }
+    ],
+    "odds": {
+      "playoff": 81,
+      "bye": 33,
+      "seed": 1,
+      "status": "open"
+    }
+  },
+  "shots": [
+    {
+      "width": 375,
+      "theme": "light",
+      "hero": "Rank 1",
+      "state": "rest",
+      "label": "All You Need Is Love · 81%",
+      "hint": "shown"
+    },
+    {
+      "width": 375,
+      "theme": "dark",
+      "hero": "Rank 1",
+      "state": "rest",
+      "label": "All You Need Is Love · 81%",
+      "hint": "shown"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "hero": "Rank 1",
+      "state": "rest",
+      "label": "All You Need Is Love · 81%",
+      "hint": "shown"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "hero": "Rank 1",
+      "state": "rest",
+      "label": "All You Need Is Love · 81%",
+      "hint": "shown"
+    },
+    {
+      "width": 1280,
+      "theme": "light",
+      "hero": "Rank 1",
+      "state": "rest",
+      "label": "All You Need Is Love · 81%",
+      "hint": "shown"
+    },
+    {
+      "width": 1280,
+      "theme": "dark",
+      "hero": "Rank 1",
+      "state": "rest",
+      "label": "All You Need Is Love · 81%",
+      "hint": "shown"
+    }
+  ]
+}

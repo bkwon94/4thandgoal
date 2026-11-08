@@ -1,0 +1,52 @@
+[
+  {
+    "theme": "light",
+    "states": [
+      {
+        "state": "idle",
+        "ms_after_navigation": 91
+      },
+      {
+        "state": "rest",
+        "ms_after_navigation": 97
+      }
+    ],
+    "entry_ms_after_navigation": 91,
+    "frames": [
+      {
+        "ms_after_entry": 110,
+        "state": "rest"
+      },
+      {
+        "ms_after_entry": 2502,
+        "state": "rest"
+      }
+    ],
+    "framesEqual": true
+  },
+  {
+    "theme": "dark",
+    "states": [
+      {
+        "state": "idle",
+        "ms_after_navigation": 82
+      },
+      {
+        "state": "rest",
+        "ms_after_navigation": 95
+      }
+    ],
+    "entry_ms_after_navigation": 82,
+    "frames": [
+      {
+        "ms_after_entry": 103,
+        "state": "rest"
+      },
+      {
+        "ms_after_entry": 2510,
+        "state": "rest"
+      }
+    ],
+    "framesEqual": true
+  }
+]
