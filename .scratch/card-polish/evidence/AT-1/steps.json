@@ -1,0 +1,10 @@
+{
+  "route": "/2026/week-08/",
+  "steps": [
+    {"scroll": "button[aria-controls=\"recap-4\"]:not([aria-label])"},
+    {"shot": "closed"},
+    {"click": "button[aria-controls=\"recap-4\"]:not([aria-label])"},
+    {"wait": 1000},
+    {"shot": "open"}
+  ]
+}

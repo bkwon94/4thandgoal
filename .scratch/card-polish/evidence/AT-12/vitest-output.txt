@@ -1,0 +1,16 @@
+$ pnpm --dir apps/site exec vitest run --reporter=verbose ../../packages/managers/site/page/grade-dial.test.tsx
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/card-polish/apps/site
+
+ ✓ ../../packages/managers/site/page/grade-dial.test.tsx > GradeDial > names each arc with its part, its rank, and its weight 78ms
+ ✓ ../../packages/managers/site/page/grade-dial.test.tsx > GradeDial > draws 12 blades per arc and lights the count of teams plus one minus the rank 13ms
+ ✓ ../../packages/managers/site/page/grade-dial.test.tsx > GradeDial > lights every blade for rank 1 and one blade for the last rank 10ms
+ ✓ ../../packages/managers/site/page/grade-dial.test.tsx > GradeDial > shows the rank in the arc and the part name and weight under it as text 8ms
+ ✓ ../../packages/managers/site/page/grade-dial.test.tsx > GradeDial > drops the count of teams under the rank in the small size 8ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  08:37:29
+   Duration  655ms (environment 49%, import 27%, tests 20%, transform 4%)
+
+(exit 0)

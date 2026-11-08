@@ -1,0 +1,10 @@
+{
+  "route": "/rankings/",
+  "steps": [
+    {"scroll": "button[aria-controls=\"ladder-1\"]:not([aria-label])"},
+    {"shot": "closed"},
+    {"click": "button[aria-controls=\"ladder-1\"]:not([aria-label])"},
+    {"wait": 1000},
+    {"shot": "open"}
+  ]
+}

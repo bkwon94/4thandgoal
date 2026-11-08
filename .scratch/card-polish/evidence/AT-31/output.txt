@@ -1,0 +1,24 @@
+$ git diff origin/main --stat -- apps/pipeline 'packages/*/python'
+(exit 0, no lines above means an empty diff)
+
+$ git diff origin/main...HEAD --stat -- apps/pipeline 'packages/*/python'
+(exit 0, no lines above means an empty diff)
+
+$ git rev-parse --short origin/main; git rev-parse --short main; git rev-parse --short HEAD
+25f98a02
+df2c08c0
+a44daee5
+
+Note: the local ref main is at df2c08c0 and is behind origin/main 25f98a02. origin/main is the record branch, so the diff uses it.
+
+$ git diff main --stat -- apps/pipeline 'packages/*/python' (the stale local ref, for reference)
+ apps/pipeline/Makefile                        | 29 ++++++++++++-
+ apps/pipeline/pyproject.toml                  | 13 +++---
+ apps/pipeline/src/cornerstone/cli.py          | 33 +++++++++++++-
+ apps/pipeline/src/cornerstone/egg_draft.py    | 39 +++++++++++++++++
+ apps/pipeline/src/cornerstone/egg_drop.py     | 62 +++++++++++++++++++++++++++
+ apps/pipeline/src/cornerstone/value_models.py |  3 +-
+ apps/pipeline/tests/test_cli.py               | 31 +++++++++++++-
+ apps/pipeline/tests/test_client.py            | 12 +++---
+ apps/pipeline/tests/test_layers.py            |  2 +
+ 9 files changed, 206 insertions(+), 18 deletions(-)

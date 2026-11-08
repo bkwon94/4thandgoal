@@ -1,0 +1,8 @@
+# The DOM of the closed card of game 4 (All You Need Is Love vs Unsolicited Dak Picks), read after hydration.
+# Page: http://127.0.0.1:4173/2026/week-08/ of CLIENT=cpc pnpm build at a44daee5, viewport 1280x900, all cards closed.
+# Command: agent-browser eval, with the attributes of each element but class.
+head toggle: <button type="button" aria-expanded="false" aria-controls="recap-4" data-open-id="game-4">
+chevron toggle: <button type="button" aria-expanded="false" aria-controls="recap-4" aria-label="Show the details">
+panel: <div id="recap-4" hidden="until-found">
+panel.hidden property: "until-found"
+panel getAttribute(hidden): "until-found"

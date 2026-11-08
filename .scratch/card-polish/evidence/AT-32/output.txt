@@ -1,0 +1,21 @@
+# The prompts sit in the session scratchpad at /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/9f5d54ad-4099-4572-b6c8-cf81cda24483/scratchpad/scrolltide-prompts/, never in the repo.
+# Each prompt is the Scrolltide get_prompt text of one item: showcase-card, health-tracker, lime-metrics, send-button (Send Halo), team-roster.
+
+$ git diff origin/main...HEAD | python3 -I scrolltide_search.py showcase-card.md health-tracker.md lime-metrics.md send-button.md team-roster.md
+diff: 2980 added non-empty lines, 2973 runs of 8
+showcase-card.md: 619 non-empty lines, 0 matching runs of 8
+health-tracker.md: 974 non-empty lines, 0 matching runs of 8
+lime-metrics.md: 603 non-empty lines, 0 matching runs of 8
+send-button.md: 1010 non-empty lines, 0 matching runs of 8
+team-roster.md: 771 non-empty lines, 0 matching runs of 8
+total matching runs: 0
+
+$ git diff main | python3 -I scrolltide_search.py showcase-card.md health-tracker.md lime-metrics.md send-button.md team-roster.md
+# The local ref main is df2c08c0, behind origin/main, so this diff also holds the easter eggs.
+diff: 15705 added non-empty lines, 14676 runs of 8
+showcase-card.md: 619 non-empty lines, 0 matching runs of 8
+health-tracker.md: 974 non-empty lines, 0 matching runs of 8
+lime-metrics.md: 603 non-empty lines, 0 matching runs of 8
+send-button.md: 1010 non-empty lines, 0 matching runs of 8
+team-roster.md: 771 non-empty lines, 0 matching runs of 8
+total matching runs: 0

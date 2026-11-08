@@ -1,0 +1,5 @@
+# The crop-*.png files are cuts of the runner shots beside them, made with sips, so a reader sees the tested part at full size.
+# Each cut takes the full width and the box of the part, from 40 px above to 40 px below. The box was measured with
+# getBoundingClientRect on the same cpc build at the same width. The full-page shots stay the source.
+# The fixed bottom bar of the phone layout and the sticky top bar show at their scroll position in a full-page shot, so they
+# can sit over the middle of a page in a shot or a cut.

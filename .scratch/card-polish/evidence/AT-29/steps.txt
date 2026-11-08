@@ -1,0 +1,16 @@
+# Shots of AT-29: the hero of /2026/managers/1/ (The Blue Tent) at 375 px, on origin/main and on the spec branch.
+# main: a detached worktree of origin/main 25f98a02, pnpm install --frozen-lockfile, CLIENT=cpc pnpm build, served on 127.0.0.1:4175.
+#   The worktree is removed.
+# spec: CLIENT=cpc pnpm build of the spec worktree at a44daee5, served on 127.0.0.1:4173.
+# Each server answers a missing path with 404.html and the status 404.
+For each theme in light, dark:
+  agent-browser set viewport 375 900
+  agent-browser open <server>/2026/managers/1/
+  agent-browser eval "localStorage.setItem('cpc.theme','<theme>')" ; agent-browser reload ; agent-browser wait 1500
+  agent-browser eval "window.scrollTo(0,0)" ; agent-browser wait 500
+  agent-browser screenshot <main|spec>-hero-375-<theme>.png      # the viewport at the top of the page
+$ md5 -q main-hero-375-light.png spec-hero-375-light.png main-hero-375-dark.png spec-hero-375-dark.png
+273ea0ac322777b70a70f7d12c71bf7d
+273ea0ac322777b70a70f7d12c71bf7d
+ca1840714714e3f81305fae6027dbc78
+ca1840714714e3f81305fae6027dbc78

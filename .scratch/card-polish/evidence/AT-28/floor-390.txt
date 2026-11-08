@@ -1,0 +1,59 @@
+# The 390 px lines of the full floor of both clients, from evidence/AT-27/floor-cpc.txt and floor-norcal.txt (make check at a44daee5).
+# Each full floor test runs the text floor with the sideways scan (apps/site/e2e/floor.ts: "the page scrolls sideways"), the 44 px tap target scan (scanTargets), and axe.
+# A test fails on any finding, so a check mark line has no finding. Lines of the five pages and their open states:
+
+## cpc
+✓   18 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ dark 390px (583ms)
+✓   23 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ light 390px (565ms)
+✓   30 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px (676ms)
+✓   37 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px (742ms)
+✓   41 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ dark 390px (636ms)
+✓   44 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ light 390px (520ms)
+✓   48 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px (582ms)
+✓   52 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px (570ms)
+✓   56 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/7/ dark 390px (619ms)
+✓   60 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/7/ light 390px (623ms)
+✓   66 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /analyze/ dark 390px (427ms)
+✓   70 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /analyze/ light 390px (404ms)
+✓   74 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ dark 390px (546ms)
+✓   82 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ light 390px (551ms)
+✓   86 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px (594ms)
+✓   88 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px (589ms)
+cpc /rankings/ dark 390px: exempt links inside prose: none
+cpc /rankings/ light 390px: exempt links inside prose: none
+cpc /2026/managers/ dark 390px: exempt links inside prose: none
+cpc /2026/managers/ light 390px: exempt links inside prose: none
+cpc /2026/managers/7/ dark 390px: exempt links inside prose: none
+cpc /2026/managers/7/ light 390px: exempt links inside prose: none
+cpc /analyze/ dark 390px: exempt links inside prose: none
+cpc /analyze/ light 390px: exempt links inside prose: none
+cpc /2026/week-08/ dark 390px: exempt links inside prose: none
+cpc /2026/week-08/ light 390px: exempt links inside prose: none
+
+## norcal
+✓   18 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ dark 390px (487ms)
+✓   26 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ light 390px (454ms)
+✓   34 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px (503ms)
+✓   37 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px (508ms)
+✓   40 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ dark 390px (498ms)
+✓   44 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ light 390px (496ms)
+✓   48 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px (563ms)
+✓   52 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px (564ms)
+✓   56 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/4/ dark 390px (458ms)
+✓   61 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/managers/4/ light 390px (464ms)
+✓   65 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /analyze/ dark 390px (394ms)
+✓   69 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /analyze/ light 390px (402ms)
+✓   75 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ dark 390px (522ms)
+✓   82 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ light 390px (494ms)
+✓   84 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px (546ms)
+✓   86 [floor] › e2e/floor.spec.ts:168:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px (546ms)
+norcal /rankings/ dark 390px: exempt links inside prose: none
+norcal /rankings/ light 390px: exempt links inside prose: none
+norcal /2026/managers/ dark 390px: exempt links inside prose: none
+norcal /2026/managers/ light 390px: exempt links inside prose: none
+norcal /2026/managers/4/ dark 390px: exempt links inside prose: none
+norcal /2026/managers/4/ light 390px: exempt links inside prose: none
+norcal /analyze/ dark 390px: exempt links inside prose: none
+norcal /analyze/ light 390px: exempt links inside prose: none
+norcal /2026/week-08/ dark 390px: exempt links inside prose: none
+norcal /2026/week-08/ light 390px: exempt links inside prose: none
