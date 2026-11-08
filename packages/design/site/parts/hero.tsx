@@ -4,6 +4,8 @@
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";
+import { HeroSceneCanvas } from "./hero-scene";
+import type { HeroScene } from "./scene-math";
 
 /* The six hero slots, in the slot order. Only the title is required. An absent slot renders no element and no gap. */
 type HeroSlots = {
@@ -20,6 +22,8 @@ type HeroSlots = {
   action?: ReactNode;
   // The level of the title element. The level changes the element, not the look.
   level?: 1 | 2;
+  // The data of the hero scene. The page sets it on its first hero only. A hero with no scene keeps the static grid.
+  scene?: HeroScene;
   children?: never;
 };
 
@@ -33,6 +37,7 @@ type HeroContent = {
   stats?: never;
   action?: never;
   level?: never;
+  scene?: never;
 };
 
 type HeroProps = (HeroSlots | HeroContent) & {
@@ -57,7 +62,7 @@ const META = "plate w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-b
 /* The slots on a phone stack in one column. From the tablet tier up the hero takes two rows: the eyebrow and the title
    top left with the meta top right, the feature in the open middle, then the stats bottom left and the action bottom
    right. The grid keeps the markup in the slot order, so a screen reader reads the same order at each width. */
-function Slots({ eyebrow, title, meta, feature, stats, action, level = 1 }: HeroSlots) {
+function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene }: HeroSlots) {
   const Heading = level === 1 ? "h1" : "h2";
   return (
     <div className="flex flex-col gap-sp-6 tablet:grid tablet:grid-cols-[minmax(0,1fr)_auto] tablet:gap-x-sp-6">
@@ -74,6 +79,13 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1 }: Hero
       {meta !== undefined && (
         <div data-hero-slot="meta" className={cn(META, "tablet:col-start-2 tablet:justify-self-end")}>
           {meta}
+        </div>
+      )}
+      {/* The scene is a band at the top of the card on a phone, and fills the open middle from the tablet tier up.
+          It has its own row, so no light sits under text (decision 06). */}
+      {scene !== undefined && (
+        <div className="order-first tablet:order-none tablet:col-span-2">
+          <HeroSceneCanvas scene={scene} />
         </div>
       )}
       {feature !== undefined && (

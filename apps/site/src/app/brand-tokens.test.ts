@@ -6,7 +6,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "smol-toml";
 import { describe, expect, it } from "vitest";
-import { brandCss, type BrandFile } from "@cpc/design/brand/brand";
+import { brandCss, colorsOf, type BrandFile } from "@cpc/design/brand/brand";
 import { DURATION, RISE_EASE } from "@cpc/design/lib/motion";
 
 const ROOT = join(process.cwd(), "..", "..");
@@ -90,6 +90,31 @@ describe("the color tokens of the site", () => {
     expect(value("dark", token)).toBe(longHex(dark));
   });
 
+});
+
+/* Each client folder with a brand. The scene of the hero reads its colors once at mount, so a client that is added later is held too. */
+const BRAND_CLIENTS = readdirSync(join(ROOT, "clients")).filter((slug) => {
+  try {
+    readFileSync(join(ROOT, "clients", slug, "brand.toml"));
+    return true;
+  } catch {
+    return false;
+  }
+});
+
+describe("the three colors of the hero scene (decision 03)", () => {
+  it("finds the brand of each client", () => {
+    // An empty list would pass with no brand read.
+    expect(BRAND_CLIENTS).toEqual(expect.arrayContaining(["cpc", "norcal"]));
+  });
+
+  // The canvas reads accent, on-dark, and on-dark-muted once at mount. Equal sets keep that read right after a theme switch.
+  it.each(BRAND_CLIENTS)("keeps accent, on-dark, and on-dark-muted equal in the light and the dark set of %s", (slug) => {
+    const brand = parse(readFileSync(join(ROOT, "clients", slug, "brand.toml"), "utf8")) as unknown as BrandFile;
+    const light = colorsOf(brand, "light");
+    const dark = colorsOf(brand, "dark");
+    for (const role of ["accent", "on_dark", "on_dark_muted"] as const) expect(light[role], role).toEqual(dark[role]);
+  });
 });
 
 /* The @theme static block of globals.css, where the look keeps its tokens beside the spacing and the type scale. */

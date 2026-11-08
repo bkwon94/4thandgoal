@@ -3,6 +3,7 @@
  * button to the week, then the first sentence of the blurb under it. The hero sits on the band in both themes.
  */
 import { Hero } from "@cpc/design/parts/hero";
+import type { HeroScene } from "@cpc/design/parts/scene-math";
 import { Rise } from "@cpc/design/parts/rise";
 import type { AvatarMap, Pick } from "../schema/week-types";
 import { matchupTitle, TeamRow } from "./matchup-of-the-week";
@@ -23,6 +24,7 @@ export function HomeMatchup({
   avatars,
   blurb,
   href,
+  scene,
 }: {
   week: number;
   pick: Pick;
@@ -31,6 +33,8 @@ export function HomeMatchup({
   blurb: string;
   // The href of the week page, with the base path.
   href: string;
+  // The scene of the week. The home page passes it when this hero is the first hero of the page.
+  scene?: HeroScene;
 }) {
   // The JSON puts the winner first. A tie has no winner, and the first side still leads the hero.
   const [first, second] = pick.sides;
@@ -41,6 +45,7 @@ export function HomeMatchup({
         label="Matchup of the Week"
         eyebrow={`Week ${twoDigits(week)} // Matchup of the Week`}
         title={matchupTitle(pick)}
+        scene={scene}
         // The intro holds the h1 of the home page, so the title of the hero is an h2.
         level={2}
         meta={pick.reason}
