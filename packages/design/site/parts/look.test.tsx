@@ -55,6 +55,54 @@ describe("Hero", () => {
   });
 });
 
+/* The hero slots that a hero renders, in the order of the markup. */
+function slotsOf(container: HTMLElement): (string | null)[] {
+  return [...container.querySelectorAll("[data-hero-slot]")].map((element) => element.getAttribute("data-hero-slot"));
+}
+
+describe("Hero slots", () => {
+  it("renders the six slots in the slot order, whatever the order of the props", () => {
+    const { container } = render(
+      <Hero
+        label="To Infinity and Bijan"
+        action={<a href="/week-08/">Week 8</a>}
+        stats={<span>Playoff 41%</span>}
+        feature={<span>Week chips</span>}
+        meta="bjpicard96"
+        title="To Infinity and Bijan"
+        eyebrow="7-9 · 9th of 12"
+      />,
+    );
+    expect(slotsOf(container)).toEqual(["eyebrow", "title", "meta", "feature", "stats", "action"]);
+    const hero = screen.getByRole("region", { name: "To Infinity and Bijan" });
+    expect(hero.textContent).toBe("7-9 · 9th of 12To Infinity and Bijanbjpicard96Week chipsPlayoff 41%Week 8");
+  });
+
+  it("renders no element for an absent slot, and no hairline with no stats", () => {
+    const { container } = render(<Hero label="Rank 1" title="Lil Fridge" />);
+    expect(slotsOf(container)).toEqual(["title"]);
+    expect(container.querySelector("[data-hero-rule]")).toBeNull();
+  });
+
+  it("draws one hairline, hidden from a screen reader, directly before the stats", () => {
+    const { container } = render(<Hero label="Rank 1" title="Lil Fridge" stats={<span>Playoff 99%</span>} />);
+    const rule = container.querySelector("[data-hero-rule]")!;
+    expect(rule.getAttribute("aria-hidden")).toBe("true");
+    expect(rule.nextElementSibling?.getAttribute("data-hero-slot")).toBe("stats");
+  });
+
+  it("renders the title as an h1 by default and as an h2 with level 2", () => {
+    render(<Hero label="Week 8" title="The Blue Tent by 1.43" />);
+    const h1 = screen.getByRole("heading", { level: 1, name: "The Blue Tent by 1.43" });
+    cleanup();
+    render(<Hero label="Week 8" title="The Blue Tent by 1.43" level={2} />);
+    const h2 = screen.getByRole("heading", { level: 2, name: "The Blue Tent by 1.43" });
+    expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
+    // The level changes the element, not the look.
+    expect(h2.className).toBe(h1.className);
+  });
+});
+
 describe("Card", () => {
   it("holds its content", () => {
     render(<Card>Week 8 recap</Card>);

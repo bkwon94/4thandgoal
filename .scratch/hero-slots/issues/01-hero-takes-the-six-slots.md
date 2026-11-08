@@ -10,10 +10,10 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-1, AT-7, and AT-8.
 
 **Status:** ready-for-agent
 
-- [ ] `Hero` renders `eyebrow`, `title`, `meta`, `feature`, `stats`, and `action` in that order, and an absent slot renders no element. A Vitest test proves it.
+- [x] `Hero` renders `eyebrow`, `title`, `meta`, `feature`, `stats`, and `action` in that order, and an absent slot renders no element. A Vitest test proves it.
 - [ ] The title style is 40px, Space Grotesk 300, tight tracking, on every hero that uses the slots.
-- [ ] The heading-level prop renders an `h1` or an `h2` with the same look. A Vitest test proves it.
-- [ ] The manager hero of roster 7 shows the slot order of AT-1, with the week chips in `feature`.
+- [x] The heading-level prop renders an `h1` or an `h2` with the same look. A Vitest test proves it.
+- [x] The manager hero of roster 7 shows the slot order of AT-1, with the week chips in `feature`.
 - [ ] At 768 px the title sits top left, the meta top right, and the odds tiles bottom left (AT-7).
 - [ ] The hairline shows above the odds tiles at 768 and 1280 px and not at 375 px (AT-8).
-- [ ] The other ten heroes render as before, and `make check-fast` passes.
+- [x] The other ten heroes render as before, and `make check-fast` passes.

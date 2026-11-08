@@ -1,14 +1,43 @@
 /**
  * The hero: the one loud surface of a page, with the grid texture, the brand glow, the four corner brackets, and one scan line.
- * It sits on the band color in both themes, so the hero stays dark in light. The page passes its content.
+ * It sits on the band color in both themes, so the hero stays dark in light. The page fills the six hero slots, or passes its content.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";
 
-type HeroProps = {
+/* The six hero slots, in the slot order. Only the title is required. An absent slot renders no element and no gap. */
+type HeroSlots = {
+  // The small uppercase line above the title, such as "7-9 · 9th of 12".
+  eyebrow?: ReactNode;
+  title: ReactNode;
+  // One or two lines next to the title, such as the owner or the reason of a verdict.
+  meta?: ReactNode;
+  // The unique part of the page, such as the team rows or the grade. The page lays it out.
+  feature?: ReactNode;
+  // A row of tiles.
+  stats?: ReactNode;
+  // The links, the buttons, and the share bar.
+  action?: ReactNode;
+  // The level of the title element. The level changes the element, not the look.
+  level?: 1 | 2;
+  children?: never;
+};
+
+/* The free content of a hero that does not take the slots yet. */
+type HeroContent = {
+  children: ReactNode;
+  eyebrow?: never;
+  title?: never;
+  meta?: never;
+  feature?: never;
+  stats?: never;
+  action?: never;
+  level?: never;
+};
+
+type HeroProps = (HeroSlots | HeroContent) & {
   // The name of the region, for a screen reader, such as "Page not found" or "Matchup of the Week".
   label: string;
-  children: ReactNode;
   className?: string;
 };
 
@@ -20,10 +49,70 @@ const BRACKETS = [
   "bottom-sp-3 right-sp-3 border-b-2 border-r-2",
 ];
 
+/* The fixed style of each text slot. A page cannot pass a class to a slot, so every hero reads as one family. */
+const EYEBROW = "plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
+const TITLE = "plate m-0 w-fit font-sans text-headline leading-tight font-light tracking-tight text-balance break-words";
+const META = "plate w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-body text-on-dark-2";
+
+/* The slots on a phone stack in one column. From the tablet tier up the hero takes two rows: the eyebrow and the title
+   top left with the meta top right, the feature in the open middle, then the stats bottom left and the action bottom
+   right. The grid keeps the markup in the slot order, so a screen reader reads the same order at each width. */
+function Slots({ eyebrow, title, meta, feature, stats, action, level = 1 }: HeroSlots) {
+  const Heading = level === 1 ? "h1" : "h2";
+  return (
+    <div className="flex flex-col gap-sp-6 tablet:grid tablet:grid-cols-[minmax(0,1fr)_auto] tablet:gap-x-sp-6">
+      <div className="flex flex-col gap-sp-2 tablet:col-start-1">
+        {eyebrow !== undefined && (
+          <div data-hero-slot="eyebrow" className={EYEBROW}>
+            {eyebrow}
+          </div>
+        )}
+        <Heading data-hero-slot="title" className={TITLE}>
+          {title}
+        </Heading>
+      </div>
+      {meta !== undefined && (
+        <div data-hero-slot="meta" className={cn(META, "tablet:col-start-2 tablet:justify-self-end")}>
+          {meta}
+        </div>
+      )}
+      {feature !== undefined && (
+        <div data-hero-slot="feature" className="tablet:col-span-2">
+          {feature}
+        </div>
+      )}
+      {(stats !== undefined || action !== undefined) && (
+        <div className="relative flex flex-col gap-sp-6 tablet:col-span-2 tablet:flex-row tablet:items-end tablet:justify-between">
+          {/* The faded hairline above the stats, from the tablet tier up only. It sits in the middle of the gap above
+              the row and is transparent at both ends. */}
+          {stats !== undefined && (
+            <div
+              aria-hidden="true"
+              data-hero-rule
+              className="pointer-events-none absolute inset-x-0 -top-sp-3 hidden h-px bg-linear-to-r from-transparent via-rule-dark to-transparent tablet:block"
+            />
+          )}
+          {stats !== undefined && (
+            <div data-hero-slot="stats" className="flex flex-wrap gap-sp-2">
+              {stats}
+            </div>
+          )}
+          {action !== undefined && (
+            <div data-hero-slot="action" className="flex flex-wrap items-center gap-sp-2 tablet:justify-end">
+              {action}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* The text of a hero sits on a plate of the band color (the plate utility of globals.css). The plate keeps the grid and
    the glow from under each letter, so the contrast of the text is the contrast of its role pair, and axe can read it.
    The art layer comes first in the markup and the content box is relative, so the content paints over the art. */
-export function Hero({ label, children, className }: HeroProps) {
+export function Hero(props: HeroProps) {
+  const { label, className } = props;
   return (
     <section
       aria-label={label}
@@ -43,7 +132,7 @@ export function Hero({ label, children, className }: HeroProps) {
           />
         ))}
       </div>
-      <div className="relative">{children}</div>
+      <div className="relative">{props.children !== undefined ? props.children : <Slots {...(props as HeroSlots)} />}</div>
     </section>
   );
 }
