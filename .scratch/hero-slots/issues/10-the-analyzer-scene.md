@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-20, AT-21, and AT-42.
 
 **Blocked by:** 04 and 07
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Before a grade the lights move for 6 s and do not settle (AT-20).
 - [ ] After the verdict of trade A the lights settle into two groups, with the bigger group on the side of behold the lamb, from a run on the real API (AT-21).
