@@ -103,8 +103,8 @@
     /* The inner space of the hero: 28px on top and bottom, and 24px on the sides (ADR 0024). */
     --spacing-hero-y: 28px;
     --spacing-hero-x: var(--spacing-sp-6);
-    /* The height of the hero scene: a band of 130px under the title on a phone, so the words keep the first screen,
-       and 240px in the open middle of the two rows from the tablet tier up (decision 06). */
+    /* The height of the hero scene: a band of 130px under the title on a phone, so the words keep the first screen
+       (Brian, 2026-11-08), and 240px in the open middle of the two rows from the tablet tier up (decision 06). */
     --spacing-hero-scene: 130px;
     --spacing-hero-scene-wide: 240px;
     /* The cell of the grid texture of the hero. */
