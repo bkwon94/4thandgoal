@@ -61,7 +61,7 @@ describe("the labels of week 8", () => {
     const scene = matchupScene(week8);
     const box = { width: 343, height: 200, padding: 16 };
     const top = scene.lights.length - 1;
-    expect(scene.lights[top].label).toBe("Teehee · 134.10");
+    expect(scene.lights[top].label).toBe("Teehee · 134.1");
     const label = placeLabel(placeLights(scene, box)[top], estimateTextSize(scene.lights[top].label), box);
     expect(label.side).toBe("left");
     expect(label.x).toBeGreaterThanOrEqual(0);

@@ -3,8 +3,19 @@
  * Each function takes plain numbers and returns plain numbers, so a test checks it with no canvas.
  */
 
-/* Two decimals on every score, as "99.60", so the labels of every scene line up as a set. */
+/*
+ * The score in the label of a light: up to two decimals and no trailing zero, as "134.1" and "120". The acceptance
+ * tests, such as AT-29, read the label of a light this way, as a reader says the score.
+ */
 export function sceneScore(points: number): string {
+  return String(Number(points.toFixed(2)));
+}
+
+/*
+ * The score in the label of a guide: always two decimals, as "99.60". A guide label is a fixed caption, such as
+ * "MEDIAN 99.60" in AT-15, so it keeps the zero that `sceneScore` drops.
+ */
+export function sceneGuideScore(points: number): string {
   return points.toFixed(2);
 }
 

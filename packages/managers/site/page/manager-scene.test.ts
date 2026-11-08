@@ -27,7 +27,7 @@ describe("managerScene", () => {
   it("labels each light with the week, the points, and the result, and shows the latest week at rest", () => {
     expect(scene.lights.map((light) => light.label)).toEqual([
       "Week 1 · 109.21 · L",
-      "Week 2 · 96.10 · L",
+      "Week 2 · 96.1 · L",
       "Week 3 · 107.39 · W",
       "Week 4 · 118.28 · W",
       "Week 5 · 66.82 · L",
@@ -57,7 +57,7 @@ describe("managerScene", () => {
   it("draws a week with no result, such as a tie, dim with a dash for its result", () => {
     const tie: ManagerEntry = { ...roster7, weeks: [{ week: 1, points: 100, median: 99, won: null }] };
     const [light] = managerScene(tie).lights;
-    expect(light).toEqual({ x: 1, y: 100, label: "Week 1 · 100.00 · —", tone: "dim" });
+    expect(light).toEqual({ x: 1, y: 100, label: "Week 1 · 100 · —", tone: "dim" });
   });
 
   it("has no light and no label at rest before the first played week", () => {

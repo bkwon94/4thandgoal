@@ -10,6 +10,7 @@ import {
   placeLabel,
   placeLights,
   placeMarginMark,
+  sceneGuideScore,
   sceneScore,
 } from "./scene-math";
 
@@ -118,13 +119,20 @@ describe("placeMarginMark", () => {
 });
 
 describe("sceneScore", () => {
-  it("writes two decimals", () => {
-    expect(sceneScore(134.1)).toBe("134.10");
-    expect(sceneScore(99.6)).toBe("99.60");
-    expect(sceneScore(850.172)).toBe("850.17");
+  it("drops a trailing zero", () => {
+    expect(sceneScore(134.1)).toBe("134.1");
+    expect(sceneScore(120)).toBe("120");
   });
 
-  it("pads a whole number", () => {
-    expect(sceneScore(96)).toBe("96.00");
+  it("keeps up to two decimals", () => {
+    expect(sceneScore(100.31)).toBe("100.31");
+    expect(sceneScore(850.172)).toBe("850.17");
+  });
+});
+
+describe("sceneGuideScore", () => {
+  it("always writes two decimals", () => {
+    expect(sceneGuideScore(99.6)).toBe("99.60");
+    expect(sceneGuideScore(96)).toBe("96.00");
   });
 });

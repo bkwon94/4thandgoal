@@ -3,7 +3,7 @@
  * the two teams of the Matchup of the Week as the flare with the margin mark between them (decision 07).
  */
 import { gap } from "@cpc/design/format/format";
-import { sceneScore, type HeroScene, type SceneLight } from "@cpc/design/parts/scene-math";
+import { sceneGuideScore, sceneScore, type HeroScene, type SceneLight } from "@cpc/design/parts/scene-math";
 import type { Matchup, Median, Pick } from "../schema/week-types";
 
 /*
@@ -33,7 +33,7 @@ export function matchupScene(week: { matchups: Matchup[]; median: Median | null;
       ? []
       : [
           {
-            label: `MEDIAN ${sceneScore(median)}`,
+            label: `MEDIAN ${sceneGuideScore(median)}`,
             points: [
               { x: 0, y: median },
               { x: lights.length - 1, y: median },
