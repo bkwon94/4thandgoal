@@ -270,9 +270,10 @@ describe("TradeForm", () => {
     delete window.goatcounter;
   });
 
-  it("puts the title hero in the slots: the title and the line under it, with no empty slot", () => {
+  it("puts the title hero in the slots: the name of the tool, the title, and the line under it, with no empty slot", () => {
     const hero = screen.getByRole("region", { name: "Trade Analyzer" });
-    expect(slotsOf(hero)).toEqual(["title", "meta"]);
+    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta"]);
+    expect(slotText(hero, "eyebrow")).toBe("Trade Analyzer");
     expect(within(hero).getByRole("heading", { level: 1 }).textContent).toBe("Trade Analyzer");
     expect(slotText(hero, "meta")).toBe("Who gets what?");
   });

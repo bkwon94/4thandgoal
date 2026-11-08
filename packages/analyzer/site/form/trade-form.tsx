@@ -109,9 +109,9 @@ function GradingHero() {
   );
 }
 
-/* The hero of the page, in the hero slots: the title and the question of the Stack as the meta line. */
+/* The hero of the page, in the hero slots: the name of the tool as the eyebrow, the title, and the question of the Stack as the meta line. */
 function TitleHero() {
-  return <Hero label="Trade Analyzer" title="Trade Analyzer" meta={<Rise step={1}>Who gets what?</Rise>} />;
+  return <Hero label="Trade Analyzer" eyebrow="Trade Analyzer" title="Trade Analyzer" meta={<Rise step={1}>Who gets what?</Rise>} />;
 }
 
 export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized, onRostersStale, children = stackParts }: TradeFormProps) {
