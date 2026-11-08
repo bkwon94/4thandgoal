@@ -51,6 +51,14 @@ describe("The takeover slots", () => {
   });
 });
 
+describe("The takeover scene", () => {
+  it("draws the midseason scene, so the home page has one scene while the takeover holds its top (AT-35)", () => {
+    render(<Takeover report={midseason} href="/midseason/2026/" />);
+    const region = screen.getByRole("region", { name: "2026 Midseason Report" });
+    expect(region.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+});
+
 describe("ReportTile", () => {
   it("shows one big fact, the title odds of the favorite, as one link to the report", () => {
     render(<ReportTile report={midseason} href="/midseason/2026/" />);

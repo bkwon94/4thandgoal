@@ -51,6 +51,13 @@ describe("The 404 page (AT-32)", () => {
     expect(within(action).getByRole("link", { name: "Go Home" })).toBeTruthy();
   });
 
+  it("draws one scene in the hero, a drift that never settles (AT-23)", () => {
+    render(<NotFound />);
+    const hero = screen.getByRole("region", { name: "Page not found" });
+    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+
   it("gives the buttons Go to Week 8, to the latest week, and Go Home", () => {
     render(<NotFound />);
     const main = screen.getByRole("main");
