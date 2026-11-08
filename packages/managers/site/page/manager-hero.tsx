@@ -4,6 +4,7 @@
  */
 import { Avatar } from "@cpc/league/avatar";
 import { Hero } from "@cpc/design/parts/hero";
+import type { HeroScene } from "@cpc/design/parts/scene-math";
 import { Rise } from "@cpc/design/parts/rise";
 import { Tile } from "@cpc/design/parts/tile";
 import { ordinal, record } from "@cpc/design/format/format";
@@ -42,11 +43,23 @@ function WeekChip({ week }: { week: SeasonWeek }) {
   );
 }
 
-export function ManagerHero({ manager, avatar, teams }: { manager: Manager; avatar: string; teams: number }) {
+export function ManagerHero({
+  manager,
+  avatar,
+  teams,
+  scene,
+}: {
+  manager: Manager;
+  avatar: string;
+  teams: number;
+  // The scene of the weeks. The manager page passes it, because this hero is the first hero of the page.
+  scene?: HeroScene;
+}) {
   const { grade, odds } = manager;
   return (
     <Hero
       label={manager.team.name}
+      scene={scene}
       eyebrow={`${record(manager.wins, manager.losses)} · ${ordinal(manager.standing)} of ${teams}`}
       title={manager.team.name}
       meta={manager.team.owner}

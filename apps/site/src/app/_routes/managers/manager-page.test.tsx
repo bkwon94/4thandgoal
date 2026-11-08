@@ -157,6 +157,13 @@ describe("ManagerPage", () => {
     expect(within(stats as HTMLElement).getByRole("group", { name: "Hero Numbers" })).toBeTruthy();
   });
 
+  it("draws exactly one scene, in the hero of roster 7, as the first hero of the page (AT-18)", async () => {
+    await renderManager("7", { rankings: rankingsFixture });
+    const hero = screen.getByRole("region", { name: "To Infinity and Bijan" });
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+
   it("shows a W or L chip for each week in the hero", async () => {
     // Maye d'force B with U won weeks 1, 2, 5, and 6, and lost weeks 3 and 4.
     await renderManager("9", { rankings: rankingsFixture });

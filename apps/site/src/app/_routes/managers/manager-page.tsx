@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { TopBand } from "@cpc/design/shell/top-band";
 import { ManagerChapters, MANAGER_CHAPTERS } from "@cpc/managers/page/manager-chapters";
 import { ManagerHero } from "@cpc/managers/page/manager-hero";
+import { managerScene } from "@cpc/managers/page/manager-scene";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { ChapterRail } from "@cpc/design/parts/chapter-rail";
 import { avatarSrc } from "@cpc/league/images";
@@ -58,6 +59,7 @@ export default async function ManagerPage({ params }: Props) {
             manager={manager}
             avatar={avatarSrc(latestAvatars(managers.season), manager.roster_id)}
             teams={managers.managers.length}
+            scene={managerScene(manager)}
           />
         </div>
         <ManagerChapters manager={manager} managers={managers.managers} managersHref={seasonManagersHref(season)} />

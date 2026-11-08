@@ -10,7 +10,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-18 and AT-36.
 
 **Status:** ready-for-agent
 
-- [ ] The scene of AT-18 shows 8 lights with the right tones and the median line, at 375, 768, and 1280 px.
-- [ ] The label "Week 8 · 118.89 · W" shows at rest.
-- [ ] A tap on the grade mark opens the grade popover (AT-36).
-- [ ] `pnpm check:floor` passes for `cpc`.
+- [x] The scene of AT-18 shows 8 lights with the right tones and the median line, at 375, 768, and 1280 px.
+- [x] The label "Week 8 · 118.89 · W" shows at rest.
+- [x] A tap on the grade mark opens the grade popover (AT-36).
+- [x] `pnpm check:floor` passes for `cpc`.
