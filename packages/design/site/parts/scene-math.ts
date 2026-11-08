@@ -3,6 +3,11 @@
  * Each function takes plain numbers and returns plain numbers, so a test checks it with no canvas.
  */
 
+/* Two decimals on every score, as "99.60", so the labels of every scene line up as a set. */
+export function sceneScore(points: number): string {
+  return points.toFixed(2);
+}
+
 /* The tone of a light. `flare` draws in the accent color, `bright` in `on-dark`, and `dim` in `on-dark-muted`. */
 export type SceneTone = "flare" | "bright" | "dim";
 
