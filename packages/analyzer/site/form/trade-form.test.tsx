@@ -278,6 +278,19 @@ describe("TradeForm", () => {
     expect(slotText(hero, "meta")).toBe("Who gets what?");
   });
 
+  it("draws the drift scene in the title hero before a grade, as the first hero of the page (AT-20)", () => {
+    const hero = screen.getByRole("region", { name: "Trade Analyzer" });
+    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  });
+
+  it("draws no scene in the grading hero", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(hero.querySelector("canvas[data-hero-scene]")).toBeNull();
+  });
+
   it("puts the grading hero in the slots: Live, the title, the line, and the loading state", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
@@ -336,6 +349,20 @@ describe("TradeForm", () => {
     expect(fold.compareDocumentPosition(verdict) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
     expect(verdict.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("draws the scene in the verdict hero under a folded result, and in the title hero alone after Edit (AT-21)", async () => {
+    answer(200, fixtureJson);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const verdict = await screen.findByRole("region", { name: "The Verdict" });
+    expect(verdict.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    edit();
+    // Only the first hero of a page moves (story 41), so the verdict under the open form keeps the static grid.
+    const title = screen.getByRole("region", { name: "Trade Analyzer" });
+    expect(title.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
   });
 
   it("opens the form again with Edit and keeps the result under it", async () => {

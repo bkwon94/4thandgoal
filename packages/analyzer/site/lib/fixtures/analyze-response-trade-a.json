@@ -1,0 +1,192 @@
+{
+  "trade": {
+    "asker": 10,
+    "sides": [
+      {
+        "roster_id": 10,
+        "team": "behold the lamb",
+        "gives": [
+          {
+            "player_id": "13276",
+            "name": "Omar Cooper Jr.",
+            "position": "WR",
+            "nfl_team": "NYJ",
+            "headshot": "https://sleepercdn.com/content/nfl/players/13276.jpg",
+            "season_rank": "WR60",
+            "recent_rank": "WR18",
+            "to": 6
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "9487",
+            "name": "Parker Washington",
+            "position": "WR",
+            "nfl_team": "JAX",
+            "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg",
+            "season_rank": "WR21",
+            "recent_rank": null,
+            "from": 6
+          }
+        ]
+      },
+      {
+        "roster_id": 6,
+        "team": "Bo Girds",
+        "gives": [
+          {
+            "player_id": "9487",
+            "name": "Parker Washington",
+            "position": "WR",
+            "nfl_team": "JAX",
+            "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg",
+            "season_rank": "WR21",
+            "recent_rank": null,
+            "to": 10
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "13276",
+            "name": "Omar Cooper Jr.",
+            "position": "WR",
+            "nfl_team": "NYJ",
+            "headshot": "https://sleepercdn.com/content/nfl/players/13276.jpg",
+            "season_rank": "WR60",
+            "recent_rank": "WR18",
+            "from": 10
+          }
+        ]
+      }
+    ]
+  },
+  "decision": {
+    "for_roster": 10,
+    "answer": "yes",
+    "reason": "Washington outranks Cooper with WR21 season production and 22 percent of the targets, so this side gets more in the trade.",
+    "differs": false
+  },
+  "fairness": {
+    "state": "lopsided",
+    "gives_more": 6,
+    "sides": [
+      {
+        "roster_id": 10,
+        "reason": "You keep 4 WRs in the top 36, and you get the better player."
+      },
+      {
+        "roster_id": 6,
+        "reason": "You give far more than you get."
+      }
+    ]
+  },
+  "sides": [
+    {
+      "roster_id": 10,
+      "bullets": [
+        "This side gets the better player, as Washington ranks WR21 by season points against WR60 for Cooper.",
+        "Washington has seen 22 percent of the targets over the last 2 weeks, while Cooper saw 8 percent.",
+        "Washington also brings 8 red-zone targets this season and a playoff run that includes HOU and DAL."
+      ],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: WRs in the top 36 who play stay at 4. Washington plays at BAL, 9th most points to WRs. Bernard has a bye."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: WRs in the top 36 who play stay at 3. Washington plays at TEN, the most points to WRs. Egbuka has a bye."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "for",
+          "reason": "You get far more than you give."
+        },
+        {
+          "name": "roster fit",
+          "lean": "for",
+          "reason": "You keep 4 WRs in the top 36, and you get the better player."
+        },
+        {
+          "name": "standing",
+          "lean": "for",
+          "reason": "Out of the playoff race, so you want the better player for the rest of the season, and you get him."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "even",
+          "reason": "Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target; Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target."
+        },
+        {
+          "name": "schedule",
+          "lean": "for",
+          "reason": "Washington faces HOU (5th most points to WRs), DAL (7th), and WAS (14th) in weeks 15 to 17."
+        }
+      ]
+    },
+    {
+      "roster_id": 6,
+      "bullets": [
+        "Bo Girds gives up the better player while sitting 3rd of 12 in a playoff spot.",
+        "Cooper has drawn only 8 percent of the targets over the last 2 weeks, down from the 2 weeks before.",
+        "They keep 3 WRs in the top 36 playing in week 9, but Cooper faces KC, 31st in points to WRs."
+      ],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, 31st most points to WRs."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: WRs in the top 36 who play stay at 3. Cooper plays BUF at home, 3rd most points to WRs."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "against",
+          "reason": "You give far more than you get."
+        },
+        {
+          "name": "roster fit",
+          "lean": "even",
+          "reason": "You keep 3 WRs in the top 36."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "In a playoff spot, so you need points now, and this trade keeps your points about the same."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "even",
+          "reason": "Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target; Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target."
+        },
+        {
+          "name": "schedule",
+          "lean": "against",
+          "reason": "Cooper has his bye in week 13 and faces ARI (10th most points to WRs), NE (11th), and MIN (29th) in weeks 15 to 17."
+        }
+      ]
+    }
+  ],
+  "as_of": {
+    "chart_week": 9,
+    "stats_through": 8,
+    "completed_through": 8,
+    "rosters_fetched": "2026-11-05T03:35:20.350109-05:00",
+    "known_games": {
+      "week": 9,
+      "games": 0,
+      "in_progress": 0,
+      "pending": {}
+    },
+    "no_chart": false,
+    "no_chart_note": null
+  },
+  "fallback": false,
+  "missing": [],
+  "stale": []
+}

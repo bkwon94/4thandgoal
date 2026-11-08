@@ -4,7 +4,7 @@
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { analyzeResponse as fixtureJson, analyzeResponseThree as threeJson } from "../lib/fixtures/api";
+import { analyzeResponse as fixtureJson, analyzeResponseThree as threeJson, analyzeResponseTradeA as tradeA } from "../lib/fixtures/api";
 import type { AnalyzeResponse, Decision, Fairness } from "../lib/analyze-types";
 import AnalyzeResult from "./analyze-result";
 
@@ -100,6 +100,13 @@ describe("AnalyzeResult", () => {
     const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
     expect(within(feature).getByText("Fairness")).toBeTruthy();
     expect(hero.querySelector("[data-hero-rule]")).toBeNull();
+  });
+
+  it("draws the settled scene of the two sides in the verdict hero, the first hero after the grade (AT-21)", () => {
+    render(<AnalyzeResult doc={tradeA} />);
+    const hero = screen.getByRole("region", { name: "The Verdict" });
+    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+    expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
   });
 
   it("leaves out the feature slot when the document has no fairness block and no note", () => {

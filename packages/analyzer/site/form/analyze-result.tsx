@@ -5,7 +5,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, TradeSide, TradedPlayer } from "../lib/analyze-types";
 import { knownGamesSegments } from "../lib/known-games-segments";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -17,6 +17,8 @@ import { Hero } from "@cpc/design/parts/hero";
 import { Headshot } from "@cpc/league/headshot";
 import { Label } from "@cpc/design/parts/label";
 import { cn } from "@cpc/design/lib/utils";
+import { verdictScene } from "./analyzer-scene";
+import type { HeroScene } from "@cpc/design/parts/scene-math";
 
 /* A trade side with the asker flag. The swap card and the fairness line need no more, so the finder cards reuse them with a side that has no read. */
 export type SwapSide = TradeSide & { mine: boolean };
@@ -206,7 +208,21 @@ const ANSWER_WORD = {
    so the call lands with a beat. With motion off, it shows at rest at once. The no-values note and the fairness block
    sit on a card in the feature, so their text keeps the colors of the card. A result with neither has no feature,
    and the hero ends at the reason. The verdict has no stats and no action, so the hero shows no empty area. */
-function VerdictHero({ decision, team, asOf, sides, fairness }: { decision: Decision; team?: string; asOf: AsOf; sides: SwapSide[]; fairness?: Fairness | null }) {
+function VerdictHero({
+  decision,
+  team,
+  asOf,
+  sides,
+  fairness,
+  scene,
+}: {
+  decision: Decision;
+  team?: string;
+  asOf: AsOf;
+  sides: SwapSide[];
+  fairness?: Fairness | null;
+  scene?: HeroScene;
+}) {
   const off = useMotionOff();
   const answer = ANSWER_WORD[decision.answer];
   const note = asOf.no_chart && asOf.no_chart_note;
@@ -214,6 +230,7 @@ function VerdictHero({ decision, team, asOf, sides, fairness }: { decision: Deci
     <Hero
       label="The Verdict"
       level={2}
+      scene={scene}
       eyebrow={`Decision for ${team ?? "Your Side"}`}
       title={
         <motion.span className={cn("inline-block", answer.color)} {...rise(off, { duration: DURATION.decision })}>
@@ -411,15 +428,19 @@ export function NoChartLine({ asOf }: { asOf: AsOf }) {
   return <p className="m-0 pt-sp-3 text-lead text-mute">{asOf.no_chart_note}</p>;
 }
 
-export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
+/* `firstHero` is false when the open form puts its title hero above the result. Only the first hero of a page moves (story 41). */
+export default function AnalyzeResult({ doc, firstHero = true }: { doc: AnalyzeResponse; firstHero?: boolean }) {
   const sides = joinSides(doc);
   const decisionTeam = sides.find((s) => s.roster_id === doc.decision.for_roster)?.team;
+  /* The fold hides the title hero under a result, so the verdict hero is the first hero of the page and draws the scene.
+     The scene settles into one group per side when the verdict arrives. One object per document, so a render never restarts it. */
+  const scene = useMemo(() => verdictScene(doc), [doc]);
 
   /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has five chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
     <div className="tablet:flex tablet:flex-col tablet:gap-card-gap">
-      <VerdictHero decision={doc.decision} team={decisionTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
+      <VerdictHero decision={doc.decision} team={decisionTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} scene={firstHero ? scene : undefined} />
 
       <Chapter>
         <Label heading>The Trade</Label>
