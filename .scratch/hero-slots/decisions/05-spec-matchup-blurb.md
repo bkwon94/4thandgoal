@@ -6,7 +6,7 @@ Map: `.scratch/hero-slots/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -19,4 +19,4 @@ Path 1 needs no new control and no new test of a toggle, so it is the default. T
 
 ## Decision
 
-None yet.
+Path 1, the default of this ticket. The blurb moves out of the hero, into a paragraph directly under it in the same chapter, with no "Read more" control. `PRD.md` records it under Implementation Decisions, 2026-11-07.

@@ -6,7 +6,7 @@ Map: `.scratch/hero-slots/MAP.md`.
 
 **Blocked by:** 03, 05
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ When decisions 03 and 05 are done, `cpc:to-spec hero-slots` writes `PRD.md`. The
 
 ## Decision
 
-None yet.
+`cpc:to-spec hero-slots` wrote `PRD.md` on 2026-11-07. It records the slots, the move of each hero, the scene of each hero, the colors, the seams, and the order of the tickets.
