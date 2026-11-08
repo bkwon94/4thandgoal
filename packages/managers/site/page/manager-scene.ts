@@ -2,7 +2,7 @@
  * The data of the manager scene of the hero: one light per played week at its points, bright for a win and dim for a
  * loss, against the dashed median of each week, with the latest week as the label at rest (decision 07).
  */
-import type { HeroScene, SceneGuide, SceneLight } from "@cpc/design/parts/scene-math";
+import { sceneScore, type HeroScene, type SceneGuide, type SceneLight } from "@cpc/design/parts/scene-math";
 import type { ManagerEntry } from "../schema/manager-types";
 import { mediansOf } from "./medians";
 
@@ -17,8 +17,7 @@ export function managerScene(manager: Pick<ManagerEntry, "weeks">): HeroScene {
   const lights: SceneLight[] = weeks.map((week) => ({
     x: week.week,
     y: week.points,
-    // Two decimals on every score, as "96.10", so the labels of the scene line up as a set.
-    label: `Week ${week.week} · ${week.points.toFixed(2)} · ${resultOf(week.won)}`,
+    label: `Week ${week.week} · ${sceneScore(week.points)} · ${resultOf(week.won)}`,
     // A week with no result reads as no win, so only a win is bright.
     tone: week.won ? "bright" : "dim",
   }));

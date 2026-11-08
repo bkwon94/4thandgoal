@@ -10,6 +10,8 @@ import {
   placeLabel,
   placeLights,
   placeMarginMark,
+  sceneGuideScore,
+  sceneScore,
 } from "./scene-math";
 
 /* A small scene of three lights. Each test that needs real data reads the week 8 fixture in the week package. */
@@ -113,5 +115,24 @@ describe("placeMarginMark", () => {
 
   it("gives no mark when a label covers the whole box", () => {
     expect(placeMarginMark(points, margin, size, [{ x: 0, y: 0, width: 300, height: 200 }], box)).toBeNull();
+  });
+});
+
+describe("sceneScore", () => {
+  it("drops a trailing zero", () => {
+    expect(sceneScore(134.1)).toBe("134.1");
+    expect(sceneScore(120)).toBe("120");
+  });
+
+  it("keeps up to two decimals", () => {
+    expect(sceneScore(100.31)).toBe("100.31");
+    expect(sceneScore(850.172)).toBe("850.17");
+  });
+});
+
+describe("sceneGuideScore", () => {
+  it("always writes two decimals", () => {
+    expect(sceneGuideScore(99.6)).toBe("99.60");
+    expect(sceneGuideScore(96)).toBe("96.00");
   });
 });

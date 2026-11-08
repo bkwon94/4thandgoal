@@ -3,13 +3,8 @@
  * the two teams of the Matchup of the Week as the flare with the margin mark between them (decision 07).
  */
 import { gap } from "@cpc/design/format/format";
-import type { HeroScene, SceneLight } from "@cpc/design/parts/scene-math";
+import { sceneGuideScore, sceneScore, type HeroScene, type SceneLight } from "@cpc/design/parts/scene-math";
 import type { Matchup, Median, Pick } from "../schema/week-types";
-
-/* Two decimals on every score, as "99.60", so the labels of the scene line up as a set. */
-function points(score: number): string {
-  return score.toFixed(2);
-}
 
 /*
  * The scene of the week from the parts of the week page that the hero already loads. The lights run from the low
@@ -25,7 +20,7 @@ export function matchupScene(week: { matchups: Matchup[]; median: Median | null;
   const lights: SceneLight[] = sides.map((side, index) => ({
     x: index,
     y: side.score,
-    label: `${side.team.name} · ${points(side.score)}`,
+    label: `${side.team.name} · ${sceneScore(side.score)}`,
     tone: pickIds.has(side.team.roster_id) ? "flare" : "bright",
   }));
   const indexOf = (rosterId: number) => sides.findIndex((side) => side.team.roster_id === rosterId);
@@ -38,7 +33,7 @@ export function matchupScene(week: { matchups: Matchup[]; median: Median | null;
       ? []
       : [
           {
-            label: `MEDIAN ${points(median)}`,
+            label: `MEDIAN ${sceneGuideScore(median)}`,
             points: [
               { x: 0, y: median },
               { x: lights.length - 1, y: median },
