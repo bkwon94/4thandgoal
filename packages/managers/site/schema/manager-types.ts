@@ -26,9 +26,9 @@ export type ManagerEntry = z.infer<typeof schema.managerEntrySchema>;
 export type ManagersFile = z.infer<typeof schema.managersFileSchema>;
 
 /* The playoff odds of a roster as the site app joins them from the rankings file. The manager page reads the playoff
-   percent, the bye percent, and the most likely seed, so the managers package holds no rankings type.
-   Seed is null when the team makes the playoffs in no simulation. */
-export type JoinedOdds = { playoff: number; bye: number; seed: number | null };
+   percent, the bye percent, and the most likely seed, and the Index list reads the status word, so the managers package holds no rankings type.
+   Seed is null when the team makes the playoffs in no simulation. Status is "in" when the team has clinched, "out" when it cannot make it, and "open" for all others. */
+export type JoinedOdds = { playoff: number; bye: number; seed: number | null; status: "in" | "out" | "open" };
 
 /* One entry joined with the last week of the rankings file.
    Standing is the place in the standings, 1 to 12. Rank and movement are the power rank and its move, null with no rankings row.

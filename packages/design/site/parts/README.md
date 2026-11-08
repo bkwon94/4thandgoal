@@ -6,7 +6,7 @@
 - The page column and the chapter rail.
 - The team name.
 - The one reveal of the site, the week line of a page with no hero, and the error line.
-- The Open card, the one part that opens and closes a card in place (ADR 0028).
+- The Open card, the one part that opens and closes a card in place (ADR 0028). Its row look has no frame and no chevron, for a row of a ledger.
 - The parts of the look (ADR 0024): the hero with its grid, glow, brackets, and scan line; the card; the tile, and the
   Trend tile with its bars or stepped area of a week series; the round photo frame with its initials; and the rise, the staggered entry of a page. Hero text sits on a `plate`.
 

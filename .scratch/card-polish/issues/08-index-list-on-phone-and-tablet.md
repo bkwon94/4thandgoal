@@ -11,9 +11,9 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-9, AT-22, AT-23, AT-24,
 **Status:** ready-for-agent
 
 - [ ] CPC week 8 shows all 12 rows on one 390 px screen, with the chips All 12, In 6, Bubble 2, and Out 4.
-- [ ] A tap on Bubble shows only Teehee and Return of T Mac.
-- [ ] A tap on The Blue Tent opens it with A and four arcs, and a tap on Lil Fridge closes it and opens Lil Fridge.
-- [ ] A unit test of the race group covers clinched, eliminated, 75%, and 25%.
-- [ ] The NorCal index shows In 4, Bubble 5, and Out 3.
-- [ ] The reduced-motion test proves a row opens at once.
-- [ ] `make check-fast` passes.
+- [x] A tap on Bubble shows only Teehee and Return of T Mac.
+- [x] A tap on The Blue Tent opens it with A and four arcs, and a tap on Lil Fridge closes it and opens Lil Fridge.
+- [x] A unit test of the race group covers clinched, eliminated, 75%, and 25%.
+- [x] The NorCal index shows In 4, Bubble 5, and Out 3.
+- [x] The reduced-motion test proves a row opens at once.
+- [x] `make check-fast` passes.
