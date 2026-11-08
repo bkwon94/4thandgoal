@@ -12,7 +12,7 @@ import { cn } from "../lib/utils";
 import { Card } from "./card";
 
 /* Seconds to open or close, the duration of the item. The curve, the chevron, and the rise of the details share it. */
-export const OPEN_CARD_DURATION = 0.45;
+const OPEN_CARD_DURATION = 0.45;
 
 /* The curve is the same for every card, so the sampler runs once. */
 const SPRING = springCurve();
@@ -34,13 +34,12 @@ type OpenCardProps = {
   // Extra panel content after the text and before the action, such as the Grade dial of an Index list row.
   children?: ReactNode;
   // The element of the card. A card in a list is an li.
-  as?: "li" | "div" | "article";
+  as?: "li" | "div";
   // "card" draws the card frame and the chevron row. "row" is a row of a ledger: no frame and no chevron, so a closed row
   // stays one line high, and the head is the one toggle.
   look?: "card" | "row";
   // A controlled card takes open and onOpenChange. An uncontrolled card keeps its own state.
   open?: boolean;
-  defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 };
 
@@ -56,10 +55,9 @@ export function OpenCard({
   as: Element = "li",
   look = "card",
   open: controlled,
-  defaultOpen = false,
   onOpenChange,
 }: OpenCardProps) {
-  const [own, setOwn] = useState(defaultOpen);
+  const [own, setOwn] = useState(false);
   const open = controlled ?? own;
   const off = useMotionOff();
   // The panel stays hidden while the card is closed and at rest. On a close it stays shown until the height is down.
