@@ -1,0 +1,21 @@
+# The stage tests of the floor, from evidence/AT-27/floor-cpc-rerun.txt and floor-norcal-rerun.txt (CLIENT=<client> pnpm check:floor at ed3af523).
+# "stage swap" is the AT-25 check of apps/site/e2e/floor.spec.ts: a hover on row 5 and a focus on row 6 each set the stage label and its title slot,
+# the slots read eyebrow, title, meta, feature, stats, action, and the stage sits right of the ledger with position sticky.
+
+## cpc
+cpc /2026/managers/ stage dark 1280px: prose 24, other text 392, in 172 ms
+✓  100 [floor] › e2e/floor.spec.ts:205:7 › stage floor: cpc /2026/managers/ hover on row 2 dark 1280px (574ms)
+cpc /2026/managers/ stage light 1280px: prose 24, other text 392, in 173 ms
+✓  101 [floor] › e2e/floor.spec.ts:205:7 › stage floor: cpc /2026/managers/ hover on row 2 light 1280px (583ms)
+✓  102 [floor] › e2e/floor.spec.ts:222:5 › stage swap: cpc /2026/managers/ on a hover and a focus at 1280px (238ms)
+✓  103 [floor] › e2e/floor.spec.ts:248:7 › no stage: cpc /2026/managers/ shows the ledger alone at 390px (139ms)
+✓  104 [floor] › e2e/floor.spec.ts:248:7 › no stage: cpc /2026/managers/ shows the ledger alone at 768px (139ms)
+
+## norcal
+norcal /2026/managers/ stage dark 1280px: prose 24, other text 367, in 176 ms
+✓   99 [floor] › e2e/floor.spec.ts:205:7 › stage floor: norcal /2026/managers/ hover on row 2 dark 1280px (590ms)
+norcal /2026/managers/ stage light 1280px: prose 24, other text 367, in 176 ms
+✓  100 [floor] › e2e/floor.spec.ts:205:7 › stage floor: norcal /2026/managers/ hover on row 2 light 1280px (567ms)
+✓  101 [floor] › e2e/floor.spec.ts:222:5 › stage swap: norcal /2026/managers/ on a hover and a focus at 1280px (220ms)
+✓  102 [floor] › e2e/floor.spec.ts:248:7 › no stage: norcal /2026/managers/ shows the ledger alone at 390px (133ms)
+✓  103 [floor] › e2e/floor.spec.ts:248:7 › no stage: norcal /2026/managers/ shows the ledger alone at 768px (132ms)

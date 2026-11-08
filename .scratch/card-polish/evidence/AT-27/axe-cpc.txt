@@ -1,4 +1,4 @@
-$ CLIENT=cpc pnpm exec playwright test -c axe-evidence.config.ts   (apps/site, after CLIENT=cpc pnpm build of the spec head 4866459c, code of a44daee5; e2e/axe-floor-evidence.spec.ts and axe-evidence.config.ts copied in from evidence/AT-27/ for the run, then deleted)
+$ CLIENT=cpc pnpm exec playwright test -c axe-evidence.config.ts   (apps/site, after CLIENT=cpc pnpm build at ed3af523; e2e/axe-floor-evidence.spec.ts and axe-evidence.config.ts copied in from evidence/AT-27/ for the run, then deleted)
 
 Running 1 test using 1 worker
 
@@ -15,21 +15,21 @@ cpc | /rankings/ | tap main ol > li:first-child button[aria-expanded]:not([aria-
 cpc | /rankings/ | tap main ol > li:first-child button[aria-expanded]:not([aria-label]) | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 110
 cpc | /rankings/ | tap main ol > li:first-child button[aria-expanded]:not([aria-label]) | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 111
 cpc | /2026/managers/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 188
-cpc | /2026/managers/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 189
+cpc | /2026/managers/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 191
 cpc | /2026/managers/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 188
-cpc | /2026/managers/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 189
+cpc | /2026/managers/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 191
 cpc | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 188
-cpc | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 189
+cpc | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 207
 cpc | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 188
-cpc | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 189
+cpc | /2026/managers/ | tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 207
 cpc | /2026/managers/7/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 373
 cpc | /2026/managers/7/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 379
 cpc | /2026/managers/7/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 373
 cpc | /2026/managers/7/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 379
-cpc | /analyze/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 19
-cpc | /analyze/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 20
-cpc | /analyze/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 19
-cpc | /analyze/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 20
+cpc | /analyze/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 20
+cpc | /analyze/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 21
+cpc | /analyze/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 20
+cpc | /analyze/ | closed | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 21
 cpc | /2026/week-08/ | closed | 390px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 251
 cpc | /2026/week-08/ | closed | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 261
 cpc | /2026/week-08/ | closed | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 251
@@ -46,8 +46,10 @@ cpc | / | tap header details > summary | 390px | dark | axe 4.14.0 color-contras
 cpc | / | tap header details > summary | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 3
 cpc | / | tap header details > summary | 390px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 3
 cpc | / | tap header details > summary | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 3
-cpc total: 44 scans, violations 0, incomplete 0
-  ✓  1 e2e/axe-floor-evidence.spec.ts:68:5 › axe color-contrast of the full floor of cpc (21.7s)
+cpc | /2026/managers/ | hover ul[aria-label="Index List"] > li:nth-child(2) | 1280px | dark | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 201
+cpc | /2026/managers/ | hover ul[aria-label="Index List"] > li:nth-child(2) | 1280px | light | axe 4.14.0 color-contrast | violations 0 | incomplete 0 | nodes checked with no finding 201
+cpc total: 46 scans, violations 0, incomplete 0
+  ✓  1 e2e/axe-floor-evidence.spec.ts:71:5 › axe color-contrast of the full floor of cpc (23.2s)
 
-  1 passed (22.1s)
+  1 passed (23.7s)
 (exit 0)

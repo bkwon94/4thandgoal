@@ -10,11 +10,12 @@ import { join, relative, sep } from "node:path";
 import { openPage } from "./floor";
 import { serveDir } from "./serve";
 
-// The same pages, open states, widths, and themes as FULL_FLOOR_PAGES of e2e/floor.spec.ts at a44daee5.
+// The same pages, open states, widths, and themes as FULL_FLOOR_PAGES of e2e/floor.spec.ts, plus the stage state of its stage floor:
+// a hover on row 2 of the Index list at 1280 px, in both themes.
 const OUT = join(process.cwd(), "out");
 const CLIENT = process.env.CLIENT ?? "cpc";
 const NOT_FOUND_ROUTE = "/404-floor-check/";
-type OpenState = { route: string; tap: string; scope?: string };
+type OpenState = { route: string; tap: string; scope?: string; hover?: boolean; widths?: number[] };
 
 function builtRoutes(): string[] {
   const routes: string[] = [];
@@ -53,6 +54,8 @@ const PAGES: readonly (string | OpenState)[] = [
   { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]:not([aria-label])' },
   "/",
   { route: "/", tap: "header details > summary", scope: 'header nav[aria-label="Weeks of the season"]' },
+  // The stage on desktop, as the stage floor checks it: a hover on the second row swaps the stage, at 1280 px only.
+  { route: `/${SEASON}/managers/`, tap: 'ul[aria-label="Index List"] > li:nth-child(2)', hover: true, widths: [1280] },
 ];
 const THEMES: readonly Theme[] = ["dark", "light"];
 const SIZES = [{ width: 390, height: 844 }, { width: 1280, height: 800 }];
@@ -72,19 +75,26 @@ test(`axe color-contrast of the full floor of ${CLIENT}`, async ({ browser }) =>
   let scans = 0;
   for (const entry of PAGES) {
     const route = typeof entry === "string" ? entry : entry.route;
-    const state = typeof entry === "string" ? "closed" : `tap ${entry.tap}`;
+    const state = typeof entry === "string" ? "closed" : `${entry.hover ? "hover" : "tap"} ${entry.tap}`;
     for (const theme of THEMES) {
-      for (const size of SIZES) {
+      for (const size of SIZES.filter((s) => typeof entry === "string" || entry.widths === undefined || entry.widths.includes(s.width))) {
         // axe-core/playwright needs a page of its own context, so each scan opens one.
         const context = await browser.newContext({ viewport: size, reducedMotion: "reduce" });
         const page = await context.newPage();
         await openPage(page, `${server.url}${route}`, theme);
         if (typeof entry !== "string") {
           const control = page.locator(entry.tap);
+          if (entry.hover) {
+            // The stage floor waits for the stage of the hovered row, as e2e/floor.spec.ts does.
+            await control.hover();
+            const name = (await control.locator(".ix-name").textContent())!;
+            await expect(page.getByRole("region", { name: `Stage: ${name}` })).toBeVisible();
+          } else {
           await control.click();
           await expect
             .poll(() => control.evaluate((el) => (el.tagName === "SUMMARY" ? el.parentElement?.hasAttribute("open") === true : el.getAttribute("aria-expanded") === "true")))
             .toBe(true);
+          }
         }
         // The same rule as scanContrast of e2e/floor.ts: color-contrast only, limited to the scope of an open state.
         const builder = new AxeBuilder({ page }).withRules(["color-contrast"]);
