@@ -2,7 +2,7 @@
  * Tests for the Ladder of the power rankings: the hero for rank 1, the week chips, the cards, and the note on the parts.
  * They render the fixture and read what a reader sees and taps, not the class names.
  */
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { rankings } from "../fixtures/rankings";
 import { Movement, PowerRankings } from "./power-rankings";
@@ -108,17 +108,17 @@ describe("The ladder", () => {
     );
   });
 
-  it("shows the rank, the avatar, the name, the record with the movement, and the playoff odds with a bar", () => {
+  it("shows the rank large in its panel, the avatar, the name, the record with the movement, and the playoff chip with a bar", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
     // Bo Girds is third at 8-4, with no change, and playoff odds of 89.
     const card = cards()[1];
     const head = within(card.querySelector("button")!);
-    expect(head.getByText("03")).toBeTruthy();
+    expect(head.getByText("03").closest("[data-rank-panel]")).toBeTruthy();
     expect(card.querySelector("img")?.getAttribute("src")).toBe(`avatars/${lastWeek.rows[2].roster_id}.jpg`);
     expect(head.getByText("Bo Girds")).toBeTruthy();
     expect(head.getByText("8-4")).toBeTruthy();
     expect(head.getByText("No change")).toBeTruthy();
-    expect(head.getByText("89%")).toBeTruthy();
+    expect(head.getByText(/^Playoff/).textContent).toBe("Playoff 89%");
     expect((card.querySelector("[data-odds-bar]") as HTMLElement).style.width).toBe("89%");
   });
 
@@ -126,16 +126,16 @@ describe("The ladder", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
     const fridge = cards()[0];
     const pukancun = cards()[10];
-    expect(within(fridge).getByText("In")).toBeTruthy();
+    expect(within(fridge).getByText(/^Playoff/).textContent).toBe("Playoff In");
     expect((fridge.querySelector("[data-odds-bar]") as HTMLElement).style.width).toBe("100%");
-    expect(within(pukancun).getByText("Out")).toBeTruthy();
+    expect(within(pukancun).getByText(/^Playoff/).textContent).toBe("Playoff Out");
     expect((pukancun.querySelector("[data-odds-bar]") as HTMLElement).style.width).toBe("0%");
   });
 
   it("shows a dash and no bar for a team with no odds", () => {
     render(<PowerRankings weeks={[firstWeek]} avatars={avatars} />);
     for (const card of cards()) {
-      expect(within(card).getByText("No odds")).toBeTruthy();
+      expect(within(card.querySelector("button")!).getByText("No odds")).toBeTruthy();
       expect(card.querySelector("[data-odds-bar]")).toBeNull();
     }
   });
@@ -182,21 +182,27 @@ describe("The manager link of rank 1", () => {
 });
 
 describe("An open card", () => {
-  it("opens the four part ranks, the blurb, and the manager link on a tap, then closes on a second tap", () => {
+  it("opens the chips, the blurb, and the manager link on a tap, then closes on a second tap", async () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />);
     // Lil Fridge is second, and ranks 1, 3, 6, and 2 on standing, form, schedule played, and scoring.
     const button = cardButton("Lil Fridge");
     const panel = panelOf(button);
     expect(button.getAttribute("aria-expanded")).toBe("false");
-    expect(panel.getAttribute("aria-hidden")).toBe("true");
+    expect(panel.getAttribute("hidden")).toBe("until-found");
     fireEvent.click(button);
     expect(button.getAttribute("aria-expanded")).toBe("true");
-    expect(panel.getAttribute("aria-hidden")).toBe("false");
+    expect(panel.hasAttribute("hidden")).toBe(false);
     const open = within(panel);
-    expect(open.getByText("Stand").nextElementSibling?.textContent).toBe("1");
-    expect(open.getByText("Form").nextElementSibling?.textContent).toBe("3");
-    expect(open.getByText("Sched").nextElementSibling?.textContent).toBe("6");
-    expect(open.getByText("Pts").nextElementSibling?.textContent).toBe("2");
+    // Lil Fridge is down 1, with a bye at 88% and the 1 seed.
+    expect(open.getAllByRole("listitem").map((chip) => chip.textContent)).toEqual([
+      "Stand 1",
+      "Form 3",
+      "Sched 6",
+      "Pts 2",
+      "Move Down1",
+      "Bye 88%",
+      "Seed 1",
+    ]);
     expect(open.getByText(lastWeek.rows[1].blurb.map((sentence) => sentence.text).join(" "))).toBeTruthy();
     expect(panel.textContent).not.toMatch(/PR\./);
     expect(open.getByRole("link", { name: /Manager page/ }).getAttribute("href")).toBe(
@@ -204,7 +210,8 @@ describe("An open card", () => {
     );
     fireEvent.click(button);
     expect(button.getAttribute("aria-expanded")).toBe("false");
-    expect(panel.getAttribute("aria-hidden")).toBe("true");
+    // The panel hides once the close ends, and find-in-page can still find its text.
+    await waitFor(() => expect(panel.getAttribute("hidden")).toBe("until-found"));
   });
 
   it("shows no manager link when the season has no managers file", () => {
@@ -213,11 +220,14 @@ describe("An open card", () => {
     expect(screen.queryByRole("link", { name: /Manager page/ })).toBeNull();
   });
 
-  it("opens a card with no blurb to the four part ranks only", () => {
+  it("opens a card with no blurb to the overview line and the chips only", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
     const button = cardButton("Bo Girds");
     fireEvent.click(button);
-    expect(panelOf(button).textContent).toMatch(/^Stand\d+Form\d+Sched\d+Pts\d+$/);
+    const panel = panelOf(button);
+    // The one line of text is the overview: the rank, the record, and the move.
+    expect([...panel.querySelectorAll("p")].map((line) => line.textContent)).toEqual(["Rank 3 · 8-4 · –No change"]);
+    expect(within(panel).getAllByRole("listitem")).toHaveLength(7);
   });
 
   it("closes every card when the week changes", () => {

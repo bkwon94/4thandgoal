@@ -1,0 +1,11 @@
+{
+  "route": "/2026/managers/",
+  "steps": [
+    {"click": "button[aria-controls=\"index-row-1\"]"},
+    {"wait": 1200},
+    {"shot": "blue-tent-open"},
+    {"click": "button[aria-controls=\"index-row-3\"]"},
+    {"wait": 1200},
+    {"shot": "lil-fridge-open"}
+  ]
+}

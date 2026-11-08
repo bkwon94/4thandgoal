@@ -1,0 +1,28 @@
+$ pnpm --dir apps/site exec vitest run --reporter=verbose ../../packages/week/site/chapters/week-numbers.test.tsx ../../packages/managers/site/page/moves.test.tsx
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/card-polish/apps/site
+
+ ✓ ../../packages/week/site/chapters/week-numbers.test.tsx > WeekNumbers > shows the top score, the median, the closest margin, and the Game Changer gap (AT-16) 76ms
+ ✓ ../../packages/week/site/chapters/week-numbers.test.tsx > WeekNumbers > takes the median of the scores for a league with no median game 8ms
+ ✓ ../../packages/week/site/chapters/week-numbers.test.tsx > WeekNumbers > shows three numbers for a week with no Game Changer or no projection 5ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > shows the heading and a tile for each of the three season totals 92ms
+ ✓ ../../packages/week/site/chapters/week-numbers.test.tsx > WeekNumbers with the trends of the season > draws the top score of each week as bars, with week 8 lit (AT-14) 11ms
+ ✓ ../../packages/week/site/chapters/week-numbers.test.tsx > WeekNumbers with the trends of the season > draws the median as a stepped area with a text of its trend (AT-15, AT-18) 8ms
+ ✓ ../../packages/week/site/chapters/week-numbers.test.tsx > WeekNumbers with the trends of the season > keeps Closest and Game Changer plain tiles (AT-30) 10ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > shows a zero total as a count 17ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > names the one week with a trade in the text of the Trades trend 12ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > shows no trend on the totals of a file with no weeks 3ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > lists the weeks newest first, in the order of the file 13ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > shows one quiet line for a week with no moves 11ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > shows a free agent add before a drop, each with its position line and headshot 12ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > shows the bid of a waiver add 10ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > shows both sides of a trade with headshots 13ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > names the other team of a trade and links the name to its manager page 12ms
+ ✓ ../../packages/managers/site/page/moves.test.tsx > Moves > names a trade with two other rosters by both team names 5ms
+
+ Test Files  2 passed (2)
+      Tests  17 passed (17)
+   Start at  08:37:30
+   Duration  772ms (environment 46%, import 26%, tests 24%, transform 4%)
+
+(exit 0)

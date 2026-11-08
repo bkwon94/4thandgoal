@@ -5,7 +5,7 @@
 import { Fragment } from "react";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
-import { Tile } from "@cpc/design/parts/tile";
+import { Tile, type TileTrend, type TrendPoint } from "@cpc/design/parts/tile";
 import { managerHrefOrNull } from "@cpc/league/hrefs";
 import type { Manager, ManagerEntry, ManagerPlayer, MoveAdd, MoveTrade, MoveWeek } from "../schema/manager-types";
 import { cn } from "@cpc/design/lib/utils";
@@ -119,13 +119,49 @@ function Week({ week, first, managers, managersHref }: { week: MoveWeek; first: 
   );
 }
 
-/* The three season totals, a tile each, in one row. A zero is a count too, so it shows as a plain 0. */
-function Totals({ adds, drops, trades }: { adds: number; drops: number; trades: number }) {
+/* The weeks as a list for a sentence: "week 7", "week 1 and week 4", or "week 1, week 4, and week 6". */
+function weekList(weeks: number[]) {
+  const names = weeks.map((week) => `week ${week}`);
+  if (names.length <= 2) return names.join(" and ");
+  return `${names.slice(0, -1).join(", ")}, and ${names.at(-1)}`;
+}
+
+/* One count of each week from week 1 to the newest week of the file. The file holds a week with no moves as empty
+   lists, and a week it lacks counts as zero, so each chart has one slot per week. */
+function weekCounts(weeks: MoveWeek[], count: (week: MoveWeek) => number): TrendPoint[] {
+  const newest = Math.max(0, ...weeks.map((week) => week.week));
+  return Array.from({ length: newest }, (_, index) => {
+    const saved = weeks.find((week) => week.week === index + 1);
+    return { week: index + 1, value: saved ? count(saved) : 0 };
+  });
+}
+
+/* Bars of the adds or the drops of each week. The text names the busiest week, the news of a run of moves. */
+function barsTrend(points: TrendPoint[], noun: string): TileTrend {
+  const high = Math.max(0, ...points.map((point) => point.value));
+  const text =
+    high === 0
+      ? `No ${noun} this season.`
+      : `The most ${noun} in one week: ${high}, in ${weekList(points.filter((point) => point.value === high).map((point) => point.week))}.`;
+  return { points, week: points.length, kind: "bars", text };
+}
+
+/* A dot for each week with a trade. A trade is rare, so the text names each week that had one. */
+function dotsTrend(points: TrendPoint[]): TileTrend {
+  const weeks = points.filter((point) => point.value > 0).map((point) => point.week);
+  const text = weeks.length === 0 ? "No trades this season." : `${weeks.length === 1 ? "A trade" : "Trades"} in ${weekList(weeks)}.`;
+  return { points, week: points.length, kind: "dots", text };
+}
+
+/* The three season totals, a tile each, in one row. A zero is a count too, so it shows as a plain 0.
+   Each tile is a Trend tile of its count in each week. A file with no weeks has no trend. */
+function Totals({ moves }: { moves: Manager["moves"] }) {
+  const trend = (make: () => TileTrend) => (moves.weeks.length === 0 ? undefined : make());
   return (
     <div role="group" aria-label="Move Totals" className="mb-sp-6 grid grid-cols-3 gap-sp-2">
-      <Tile label="Adds" value={adds} />
-      <Tile label="Drops" value={drops} />
-      <Tile label="Trades" value={trades} />
+      <Tile label="Adds" value={moves.adds} trend={trend(() => barsTrend(weekCounts(moves.weeks, (week) => week.adds.length), "adds"))} />
+      <Tile label="Drops" value={moves.drops} trend={trend(() => barsTrend(weekCounts(moves.weeks, (week) => week.drops.length), "drops"))} />
+      <Tile label="Trades" value={moves.trades} trend={trend(() => dotsTrend(weekCounts(moves.weeks, (week) => week.trades.length)))} />
     </div>
   );
 }
@@ -137,7 +173,7 @@ export function Moves({ manager, managers, managersHref }: { manager: Manager; m
     <Chapter reveal id="moves">
       {/* The meta size keeps the heading over the text floor of 11px on a phone. */}
       <Label heading className="text-meta">Moves</Label>
-      <Totals adds={moves.adds} drops={moves.drops} trades={moves.trades} />
+      <Totals moves={moves} />
       {moves.weeks.map((week, i) => (
         <Week key={week.week} week={week} first={i === 0} managers={managers} managersHref={managersHref} />
       ))}

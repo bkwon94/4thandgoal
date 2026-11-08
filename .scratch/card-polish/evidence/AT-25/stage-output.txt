@@ -1,0 +1,44 @@
+$ cd apps/site && pnpm exec node ../../.scratch/card-polish/evidence/AT-25/stage.mjs ../../.scratch/card-polish/evidence/AT-25
+# Build: CLIENT=cpc pnpm build at ed3af523, served on http://127.0.0.1:4173. Viewport 1280x900, motion on. Each shot is the viewport.
+light load: region "Stage: All You Need Is Love" | focus on: none | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow: IN
+  title: All You Need Is Love
+  meta: 11-5 · Power #1 · 81% playoff
+  feature: 7th Projection Ahead 45% 7th Season Production 30% 3rd Trade Value 10% 11th Depth And Holes 15%
+  stats: GRADE C
+  action: Manager page of All You Need Is Love
+light hover-blue-tent: region "Stage: The Blue Tent" | focus on: none | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow: IN
+  title: The Blue Tent
+  meta: 9-7 · Power #5 · 75% playoff
+  feature: 4th Projection Ahead 45% 6th Season Production 30% 7th Trade Value 10% 7th Depth And Holes 15%
+  stats: GRADE A
+  action: Manager page of The Blue Tent
+light focus-lil-fridge: region "Stage: Lil Fridge" | focus on: Lil Fridge | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow: IN
+  title: Lil Fridge
+  meta: 10-6 · Power #6 · 86% playoff
+  feature: 5th Projection Ahead 45% 5th Season Production 30% 6th Trade Value 10% 9th Depth And Holes 15%
+  stats: GRADE A
+  action: Manager page of Lil Fridge
+dark load: region "Stage: All You Need Is Love" | focus on: none | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow: IN
+  title: All You Need Is Love
+  meta: 11-5 · Power #1 · 81% playoff
+  feature: 7th Projection Ahead 45% 7th Season Production 30% 3rd Trade Value 10% 11th Depth And Holes 15%
+  stats: GRADE C
+  action: Manager page of All You Need Is Love
+dark hover-blue-tent: region "Stage: The Blue Tent" | focus on: none | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow: IN
+  title: The Blue Tent
+  meta: 9-7 · Power #5 · 75% playoff
+  feature: 4th Projection Ahead 45% 6th Season Production 30% 7th Trade Value 10% 7th Depth And Holes 15%
+  stats: GRADE A
+  action: Manager page of The Blue Tent
+dark focus-lil-fridge: region "Stage: Lil Fridge" | focus on: Lil Fridge | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow: IN
+  title: Lil Fridge
+  meta: 10-6 · Power #6 · 86% playoff
+  feature: 5th Projection Ahead 45% 5th Season Production 30% 6th Trade Value 10% 9th Depth And Holes 15%
+  stats: GRADE A
+  action: Manager page of Lil Fridge

@@ -4,6 +4,7 @@
 
 - The hero of the week page: the matchup of the week. It stays dark in light.
 - The four numbers under the hero: the top score, the median, the closest margin, and the Game Changer gap.
+- The two week series of the Trend tiles: the top score and the median of each week, from week 1 to the page week.
 - Every game, with the recap of each game behind a tap, the Game Changer, the awards, and the position leaders.
 - The trades, the median game, the standings, and next week with its byes.
 - The week footer, with a link to the prior week and the next week.

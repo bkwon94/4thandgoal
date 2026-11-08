@@ -1,0 +1,12 @@
+# The accessible text of the five Trend tiles. Build: CLIENT=cpc pnpm build at a44daee5, served on http://127.0.0.1:4173.
+# Read with agent-browser eval: for each svg[role=img] with an aria-label, the text of its tile and the aria-label of the chart.
+# Each chart is one image, so a screen reader reads the tile text, then the chart name.
+
+## /2026/week-08/
+tile text: TOP SCORE 134.1 Teehee | chart name: Down from 148.13 in week 7.
+tile text: MEDIAN 99.6 6 above, 6 below | chart name: Down from 103.87 in week 7.
+
+## /2026/managers/1/ (The Blue Tent), Moves
+tile text: ADDS 23 | chart name: The most adds in one week: 6, in week 7.
+tile text: DROPS 22 | chart name: The most drops in one week: 6, in week 7.
+tile text: TRADES 2 | chart name: Trades in week 1 and week 4.

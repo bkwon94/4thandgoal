@@ -1,0 +1,38 @@
+$ pnpm --dir apps/site exec vitest run --reporter=verbose src/reduced-motion.test.tsx ../../packages/design/site/parts/open-card.test.tsx
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/card-polish/apps/site
+
+ ✓ ../../packages/design/site/parts/open-card.test.tsx > OpenCard > starts closed, with the toggle bound to a panel that find-in-page can still find 73ms
+ ✓ ../../packages/design/site/parts/open-card.test.tsx > OpenCard > opens on a tap of the head, with the chips, the text, and the action pill 16ms
+stderr | src/reduced-motion.test.tsx > Reduced motion > shows the decision word at once
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+ ✓ src/reduced-motion.test.tsx > Reduced motion > shows the decision word at once 57ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion > shows the fairness line at once 17ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion > shows the picked team on its card at once 104ms
+ ✓ ../../packages/design/site/parts/open-card.test.tsx > OpenCard > closes on a tap of the chevron, and hides the panel when the close ends 462ms
+ ✓ ../../packages/design/site/parts/open-card.test.tsx > OpenCard > opens when find-in-page finds a word of the closed panel 6ms
+ ✓ ../../packages/design/site/parts/open-card.test.tsx > OpenCard > draws a row with no frame and no chevron, with the head as the one toggle and the extra panel content 4ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion > shows the Ready halo at its level at once 107ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion > shows no sweep while the grade runs 99ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the trade form > adds a side and a picked row at rest, and removes a side at once 104ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the power rankings > opens and closes a ladder card at once on the Open card 42ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the Open card > opens and closes a game card at once, with no height change, no blur, and no spring 15ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the Index list > opens and closes a row at once, with no height change, no blur, and no spring 100ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the waiver page > turns the drift off and shows the top six at once 24ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the bars > shows every share bar and median bar of the week page at its width at once 85ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the bars > shows every playoff odds bar of the power rankings at its width at once 66ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the bars > shows every budget bar of the war chest at its height at once 64ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the static pages > shows every week page chapter at once 85ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the static pages > shows every home page row at once 38ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the manager page > shows the final grade letter and the final playoff percent at once 61ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the manager page > shows the four slot tiles at rest at once 19ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the manager page > shows the points line whole, with no draw in progress 20ms
+ ✓ src/reduced-motion.test.tsx > Reduced motion on the manager page > shows each arc of the Grade dial lit at once, with no wait and no stagger 62ms
+
+ Test Files  2 passed (2)
+      Tests  24 passed (24)
+   Start at  08:37:26
+   Duration  1.99s (tests 58%, environment 20%, import 18%, transform 4%)
+
+(exit 0)

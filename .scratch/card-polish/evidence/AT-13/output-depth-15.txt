@@ -1,0 +1,14 @@
+# Step 2: the constant back at 15 (git checkout -- packages/managers/site/page/grade-weights.ts). git diff of the file:
+(no diff lines above means the file equals HEAD)
+$ pnpm --dir apps/site exec vitest run --reporter=verbose src/grade-weights.test.ts
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/card-polish/apps/site
+
+ ✓ src/grade-weights.test.ts > GRADE_WEIGHTS > equals GRADE_WEIGHTS of the pipeline 1ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:37:45
+   Duration  342ms (environment 96%, import 2%, transform 1%, worker 1%, tests 1%)
+
+(exit 0)

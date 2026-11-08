@@ -4,7 +4,7 @@
 
 - The shadcn primitives in `site/ui/`, the shared parts in `site/parts/`, and the shell in `site/shell/`.
 - The shell of every page: the top band, the pill bar, the dock, the week chip, and the theme button. The look owns the navigation, so a client picks no layout (ADR 0024).
-- The parts of the look: the hero, the card, the tile, the round photo frame, the rise, and the bar fill that grows once.
+- The parts of the look: the hero, the card, the Open card, the tile, the round photo frame, the rise, and the bar fill that grows once.
 - The theme store and its boot script, the motion timings and hooks, the pure number formats, and the `cn` helper.
 - The usage count: the count script tag and the event call.
 - The brand: the schema of `brand.toml` and `copy.toml`, the formula of each derived role, and the brand CSS, in `site/brand/`.

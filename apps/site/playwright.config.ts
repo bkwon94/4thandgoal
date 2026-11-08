@@ -24,6 +24,9 @@ export default defineConfig({
     { name: "floor", testMatch: ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts"] },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
     { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },
+    // The project "open-card" checks find-in-page and the frame rate of the Open card on the export of cpc, with motion on.
+    // It records evidence for ADR 0028, so no check of CI runs it.
+    { name: "open-card", testMatch: "open-card.spec.ts", use: { reducedMotion: "no-preference" } },
     // The end-to-end run of the egg hunt against the local API. Run make -C apps/api api-evidence first.
     // One worker, because the two widths claim the same test egg one after the other.
     { name: "eggs", testMatch: "eggs.spec.ts", fullyParallel: false },

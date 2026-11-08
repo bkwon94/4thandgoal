@@ -1,0 +1,7 @@
+# The accessible names of the four arcs of the Grade Dial, on /2026/managers/1/ (The Blue Tent).
+# Build: CLIENT=cpc pnpm build at a44daee5, served on http://127.0.0.1:4173. Read with agent-browser eval:
+# the aria-label of each [role=img] inside [aria-label="Grade Dial"].
+Projection Ahead: 4th of 12, 45% of the grade
+Season Production: 6th of 12, 30% of the grade
+Trade Value: 7th of 12, 10% of the grade
+Depth And Holes: 7th of 12, 15% of the grade

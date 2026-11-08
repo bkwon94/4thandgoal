@@ -1,0 +1,13 @@
+# Shots of AT-9: reduced motion, 375 px, light theme. No runner verb sets reduced motion, so agent-browser took them.
+# Build: CLIENT=cpc pnpm build at a44daee5, served on http://127.0.0.1:4173 (404.html for a missing path).
+agent-browser set viewport 375 900
+agent-browser set media light reduced-motion      # matchMedia("(prefers-reduced-motion: reduce)").matches gave true
+agent-browser open http://127.0.0.1:4173/2026/week-08/ ; set cpc.theme=light ; reload ; wait 1500
+scroll the head of recap-4 to the top ; click button[aria-controls="recap-4"]:not([aria-label]) ; wait 50 ; screenshot game-card-375-light.png
+agent-browser open http://127.0.0.1:4173/rankings/ ; wait 1500
+scroll the head of ladder-1 to the top ; click button[aria-controls="ladder-1"]:not([aria-label]) ; wait 50 ; screenshot ladder-card-375-light.png
+agent-browser open http://127.0.0.1:4173/2026/managers/ ; wait 1500
+click button[aria-controls="index-row-1"] ; wait 50 ; screenshot index-row-375-light.png
+agent-browser open http://127.0.0.1:4173/2026/managers/1/ ; wait 1000
+scroll [aria-label="Grade Dial"] to the center ; wait 50 ; screenshot grade-dial-375-light.png
+# Each screenshot is the viewport, not the full page. computed.txt holds the styles read at the same time.

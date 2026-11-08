@@ -1,0 +1,11 @@
+# The computed styles of each part right after the tap, with prefers-reduced-motion: reduce.
+# Build: CLIENT=cpc pnpm build at a44daee5, served on http://127.0.0.1:4173. Browser: agent-browser, viewport 375x900,
+# `agent-browser set media light reduced-motion`; matchMedia("(prefers-reduced-motion: reduce)").matches gave true.
+# Each read ran about 50 ms after the click, the same time as the screenshot beside it.
+
+game card (/2026/week-08/, recap-4): .oc-body: transition-duration=0s transition-property=grid-template-rows; .oc-panel: transition-duration=0s transition-property=opacity, filter, translate filter=blur(0px) opacity=1; .oc-chevron: transition-duration=0s rotate=180deg; data-open=true
+  note: the inline --oc-dur of the card read 0.45s; the computed transition-duration of each part read 0s.
+ladder card (/rankings/, ladder-1): .oc-body: transition-duration=0s; .oc-panel: transition-duration=0s filter=blur(0px) opacity=1; .oc-chevron: transition-duration=0s rotate=180deg; data-open=true
+index row (/2026/managers/, index-row-1): .oc-body: transition-duration=0s; .oc-panel: transition-duration=0s filter=blur(0px) opacity=1; no chevron (row look); data-open=true
+  ix-glyph transition-duration=0s,0s,0s delay=0s,0s,0s; ix-cells animation-name=none
+grade dial (/2026/managers/1/, scrolled into view): data-wait=false blades=48 on=28 blade transition-duration=0s animation-name=none

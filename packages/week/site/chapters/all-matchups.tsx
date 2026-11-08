@@ -1,16 +1,12 @@
 /**
  * Every game: one card per game, by top score, with both avatars, both scores, and a share bar.
- * A tap on a card opens its recap with a brand edge, the margin, and one link to a manager page.
+ * A tap opens the card in place: the best player of each side, both records, the recap, and one link to a manager page.
  */
 "use client";
 
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { num } from "@cpc/design/format/format";
-import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { DURATION, INSTANT, RISE, RISE_EASE } from "@cpc/design/lib/motion";
+import { num, record, shortName } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "@cpc/design/parts/card";
+import { OpenCard } from "@cpc/design/parts/open-card";
 import type { AvatarMap, Matchup, MatchupSide } from "../schema/week-types";
 import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
@@ -34,61 +30,55 @@ function TeamRow({ side, avatars, lead }: { side: MatchupSide; avatars: AvatarMa
   );
 }
 
+/* A chip of the best player of one side: the small avatar of its team, then "Best", the player, and the points. */
+function BestChip({ side, avatars }: { side: MatchupSide; avatars: AvatarMap }) {
+  if (side.top === null) return null;
+  return (
+    <>
+      <Avatar src={avatarSrc(avatars, side.team.roster_id)} size={CHIP_AVATAR} />
+      {`Best ${shortName(side.top.name)} ${num(side.top.points)}`}
+    </>
+  );
+}
+
+/* The avatar of a chip, in pixels. It sits inside one line of meta text. */
+const CHIP_AVATAR = 20;
+
+/* The chips of an open game card: the best player of each side, then both records. A side with no top player has no chip. */
+function chipsOf(matchup: Matchup, avatars: AvatarMap) {
+  const [first, second] = matchup.sides;
+  const best = [first, second]
+    .filter((side) => side.top !== null)
+    .map((side) => <BestChip key={side.team.roster_id} side={side} avatars={avatars} />);
+  const records = `Records ${record(first.team.wins, first.team.losses)} · ${record(second.team.wins, second.team.losses)}`;
+  return [...best, records];
+}
+
+/* One game on the Open card. The closed card is the scoreboard, and the open panel holds the chips, the recap, and one link. */
 function GameCard({ matchup, avatars, managersHref }: { matchup: Matchup; avatars: AvatarMap; managersHref: string | null }) {
-  const [open, setOpen] = useState(false);
-  const off = useMotionOff();
   // The JSON puts the winner first. A tie has no winner, and the first side still leads the card.
   const [first, second] = matchup.sides;
-  // The id names the game, so a check of the readability floor can open the recap of one game by its control.
-  const panelId = `recap-${matchup.id}`;
   const href = managerHrefOrNull(managersHref, first.team.roster_id);
   return (
-    <li data-open={open} className="list-none">
-      <Card edge={open} className="overflow-hidden p-0">
-        {/* The whole card is one button of 44px or more, so the team names inside it are plain text. */}
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={panelId}
-          {...openId("game", matchup.id)}
-          onClick={() => setOpen(!open)}
-          className="press flex min-h-touch w-full cursor-pointer flex-col gap-sp-3 border-0 bg-transparent p-sp-4 text-left text-inherit [-webkit-tap-highlight-color:transparent]"
-        >
+    <OpenCard
+      // The id names the game, so a check of the readability floor can open the recap of one game by its control.
+      panelId={`recap-${matchup.id}`}
+      // The egg hunt names the toggle, the panel, and the recap text by ids from the data.
+      headMarks={openId("game", matchup.id)}
+      panelMarks={stableId("recap", matchup.id)}
+      textMarks={matchup.recap === null ? undefined : textId("blurb", matchup.recap)}
+      head={
+        <>
           <TeamRow side={first} avatars={avatars} lead />
           <ShareBar share={shareOf(first.score, second.score)} tone="page" />
           <TeamRow side={second} avatars={avatars} lead={false} />
-        </button>
-        {/* The panel stays in the DOM when closed, so the button always controls an element. Hidden keeps it from
-            sight, from a screen reader, and from the tab order. It opens in 0.3s with transform and opacity only. */}
-        <div id={panelId} hidden={!open}>
-          {open && (
-            <motion.div
-              initial={off ? false : { opacity: 0, y: `calc(${RISE} * -1)` }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={off ? INSTANT : { duration: DURATION.recap, ease: RISE_EASE }}
-              className="flex flex-col gap-sp-3 border-t border-rule px-sp-4 pt-sp-3 pb-sp-4"
-            >
-              <span
-                className="font-mono text-meta leading-tight font-bold tracking-caps text-accent-ink uppercase"
-                {...stableId("recap", matchup.id)}
-              >
-                {`Won by ${num(first.score - second.score)}`}
-              </span>
-              {matchup.recap !== null && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", matchup.recap)}>{matchup.recap}</p>}
-              {/* One link per recap: the manager page of the team that leads the card. It is a full tap target. */}
-              {href !== null && (
-                <a
-                  href={href}
-                  className="press inline-flex min-h-touch w-fit items-center rounded-pill border border-rule bg-raised px-sp-5 text-body font-bold text-ink no-underline"
-                >
-                  Manager page<span className="sr-only">{` of ${first.team.name}`}</span>
-                </a>
-              )}
-            </motion.div>
-          )}
-        </div>
-      </Card>
-    </li>
+        </>
+      }
+      chips={chipsOf(matchup, avatars)}
+      text={matchup.recap}
+      // One link per recap: the manager page of the team that leads the card.
+      action={href === null ? null : { href, label: "Manager page", hiddenLabel: ` of ${first.team.name}` }}
+    />
   );
 }
 

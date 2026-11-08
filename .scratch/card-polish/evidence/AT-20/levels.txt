@@ -1,0 +1,25 @@
+# The Ready halo at each state of the Trade Analyzer, read with agent-browser on http://127.0.0.1:4173/analyze/ at 375x900.
+# Build: CLIENT=cpc pnpm build of the spec at a44daee5, with NEXT_PUBLIC_API_URL=http://localhost:8080 (the runner build).
+# API: the hero-slots-api worktree build on port 8080, with http://127.0.0.1:4173 in its allowed origins. card-polish changes no API code.
+# Passphrase: localtest. Teams: Your Team = The Blue Tent (first in the sheet), Team Two = Lil Fridge (third).
+# A player is the first in the sheet: Caleb Williams from Lil Fridge, Chris Rodriguez Jr. from The Blue Tent. A sheet closes with Escape.
+# level is data-level of [data-halo]; the halo opacity is the level. orbit is the [data-orbit] arc; it exists only above level 0.
+# The script: evidence/AT-19/halo-pass.sh.
+
+## motion on, dark
+reduced-motion matches: false
+no team: "level=0.000 opacity=0 halo transition-duration=0.3s orbit=none grade button disabled=true"
+one team (The Blue Tent): "level=0.167 opacity=0.166667 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=true"
+two teams (The Blue Tent, Lil Fridge): "level=0.333 opacity=0.333333 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=true"
+one player (Your Team gets the first player of Lil Fridge): "level=0.667 opacity=0.666667 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=true"
+full trade (each team gets one player): "level=1.000 opacity=1 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=false"
+one player removed (Team Two gets none): "level=0.667 opacity=0.666667 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=true"
+
+## motion on, light
+reduced-motion matches: false
+no team: "level=0.000 opacity=0 halo transition-duration=0.3s orbit=none grade button disabled=true"
+one team (The Blue Tent): "level=0.167 opacity=0.166667 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=true"
+two teams (The Blue Tent, Lil Fridge): "level=0.333 opacity=0.333333 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=true"
+one player (Your Team gets the first player of Lil Fridge): "level=0.667 opacity=0.666667 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=true"
+full trade (each team gets one player): "level=1.000 opacity=1 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=false"
+one player removed (Team Two gets none): "level=0.667 opacity=0.666667 halo transition-duration=0.3s orbit=display:block animation:spin 3.4s grade button disabled=true"

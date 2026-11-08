@@ -136,6 +136,30 @@ _Avoid_: Rankings table, leaderboard, list
 The layout of the analyzer page: one scroll with the teams row and one card for each team of the trade.
 _Avoid_: Trade form layout, wizard, steps
 
+**Open card**:
+The one part that opens and closes a card with more detail: a head, then a panel with an overview line, chips, a text, and an optional link. GameCard, LadderCard, and the rows of the Index list use it. A closed panel stays in the page, so find-in-page finds its text.
+_Avoid_: Accordion, expander, collapsible, drawer
+
+**Grade dial**:
+Four arcs, one for each part of the Roster grade, each lit by the rank of the team on that part. Each arc has one blade per team, and rank 1 lights every blade. Season So Far shows it large, and an open row of the Index list shows it small.
+_Avoid_: Gauge, meter, health ring, radar
+
+**Trend tile**:
+A tile of the week page or the manager page with a small chart of its number from week 1 to the page week, as bars, a stepped area, or dots. A text gives the number and one short sentence of the trend.
+_Avoid_: Sparkline, metric card, chart tile
+
+**Ready halo**:
+The glow around the grade button of the Stack. It brightens with each passed check of each side, and it is full only when the trade can grade.
+_Avoid_: Progress glow, submit glow, pulse
+
+**Index list**:
+The ledger of the Managers index: one row per team in power rank order, with the place, the avatar, the team name, and the playoff odds. The chips All, In, Bubble, and Out filter the rows by race group. On a phone and a tablet a tap opens a row in place. On desktop the ledger sits beside a sticky stage, the hero of the page.
+_Avoid_: Manager cards, roster table, team list
+
+**Race group**:
+The group of a team in the chips of the Index list: In, Bubble, or Out. In is clinched or odds of 75% or more. Bubble is odds of 25% to under 75%. Out is eliminated or odds under 25%, so the group Out is wider than the term Out of the pipeline.
+_Avoid_: Tier, bracket, playoff status
+
 ### The code
 
 **Part**:

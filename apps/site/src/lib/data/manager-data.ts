@@ -6,7 +6,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { managersHref } from "../routes";
 import { managersFileSchema } from "@cpc/managers/schema/managers";
-import type { Manager, ManagerEntry, Managers } from "@cpc/managers/schema/manager-types";
+import type { Manager, ManagerEntry, Managers, SeasonWeek } from "@cpc/managers/schema/manager-types";
 import { clientValues } from "../../generated/client-values";
 import { readPublished } from "./published-file";
 import { latestSeason, loadRankings } from "./rankings-data";
@@ -15,10 +15,15 @@ import type { RankingsRow } from "@cpc/rankings/schema/rankings-types";
 /* The managers file layout version this site reads. It counts apart from the page JSON version. */
 const SCHEMA_VERSION = 1;
 
+/* The managers file of a season. */
+function managersFileOf(season: string): string {
+  return join(process.cwd(), "public", season, "managers.json");
+}
+
 /* The managers file of the latest season, or null when no season has a week page. */
 function managersFile(): string | null {
   const season = latestSeason();
-  return season === null ? null : join(process.cwd(), "public", season, "managers.json");
+  return season === null ? null : managersFileOf(season);
 }
 
 /* The standings order with no rankings file: more wins first, then more points. */
@@ -69,4 +74,11 @@ export function currentManagersHref(): string | null {
    Only the latest season builds the managers routes, so a page of an older season gets null and plain names. */
 export function seasonManagersHref(season: string): string | null {
   return season === latestSeason() ? currentManagersHref() : null;
+}
+
+/* The saved weeks of every team of a season, one list per team, for the Trend tiles of the week page of that season.
+   An older season keeps its own managers file, so its pages read it and not the latest file. No file gives null. */
+export function loadSeasonWeeks(season: string): SeasonWeek[][] | null {
+  const data = readPublished(managersFileOf(season), SCHEMA_VERSION, managersFileSchema);
+  return data === null ? null : data.managers.map((entry) => entry.weeks);
 }

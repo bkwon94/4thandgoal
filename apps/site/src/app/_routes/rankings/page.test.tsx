@@ -85,4 +85,59 @@ describe("RankingsPage", () => {
     expect(hero.getByText("Up").parentElement?.textContent).toBe("Up4");
     for (const label of ["Playoff", "Bye", "Seed"]) expect(hero.getByText(label)).toBeTruthy();
   });
+
+  it("shows The Blue Tent of CPC week 8 closed at 05 large, with 9-7, up 3, the odds bar, and Playoff 75%", async () => {
+    const RankingsPage = await pageOver(cpcRankings());
+    render(<RankingsPage />);
+    const head = blueTent();
+    const card = head.closest("li")!;
+    // The rank sits large in the plain raised panel at the top of the card, before the team.
+    const rank = within(head).getByText("05");
+    expect(rank.closest("[data-rank-panel]")).toBeTruthy();
+    expect(rank.compareDocumentPosition(within(head).getByText("The Blue Tent")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(head).getByText("9-7")).toBeTruthy();
+    expect(within(head).getByText("Up").parentElement?.textContent).toBe("Up3");
+    expect((card.querySelector("[data-odds-bar]") as HTMLElement).style.width).toBe("75%");
+    expect(within(head).getByText(/^Playoff/).textContent).toBe("Playoff 75%");
+    // The details stay closed until a tap.
+    expect(head.getAttribute("aria-expanded")).toBe("false");
+    expect(document.getElementById(head.getAttribute("aria-controls")!)!.getAttribute("hidden")).toBe("until-found");
+  });
+
+  it("opens The Blue Tent of CPC week 8 to the overview, the seven chips, and then the blurb", async () => {
+    const cpc = cpcRankings();
+    const RankingsPage = await pageOver(cpc);
+    render(<RankingsPage />);
+    const head = blueTent();
+    fireEvent.click(head);
+    expect(head.getAttribute("aria-expanded")).toBe("true");
+    const panel = document.getElementById(head.getAttribute("aria-controls")!)!;
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    const chips = within(panel).getAllByRole("listitem");
+    expect(chips.map((chip) => chip.textContent)).toEqual([
+      "Stand 6",
+      "Form 6",
+      "Sched 8",
+      "Pts 7",
+      "Move Up3",
+      "Bye 22%",
+      "Seed 5",
+    ]);
+    expect(chips[4].querySelector("svg")?.dataset.arrow).toBe("up");
+    // The overview line is the rank, the record, and the move, and the blurb follows the chips.
+    expect(panel.querySelector("p")?.textContent).toBe("Rank 5 · 9-7 · Up3");
+    const row = cpc.weeks.at(-1).rows.find((each: { name: string }) => each.name === "The Blue Tent");
+    const blurb = within(panel).getByText(row.blurb.map((sentence: { text: string }) => sentence.text).join(" "));
+    expect(chips[6].compareDocumentPosition(blurb) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 });
+
+/* The published rankings file of CPC, as the build copies it into public/. */
+function cpcRankings() {
+  return JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026/rankings.json"), "utf8"));
+}
+
+/* The head of the card of The Blue Tent: the toggle whose name holds the team name. */
+function blueTent() {
+  return within(screen.getByRole("main")).getByRole("button", { name: /The Blue Tent/ });
+}

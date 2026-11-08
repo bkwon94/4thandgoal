@@ -47,23 +47,26 @@ function longestNameRoute(): string {
 
 /*
  * The pages and the open states of the full floor: all four rules, in both themes, at both widths.
- * The spec names 7 pages and 3 open states per client. The closed home page is one of the 7 pages, and the open strip
- * of weeks is a tap on that same page.
+ * The spec names 7 pages and 4 open states per client. The closed home page is one of the 7 pages, and the open strip
+ * of weeks is a tap on that same page. The Season So Far dial sits on the manager page of the list, so that page covers it.
  * A page not in the list, such as a past week, gets the fast sweep only, so it still has the text floor.
  */
 const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   NOT_FOUND_ROUTE,
   "/rankings/",
-  // The card at rank 2 is the first card of the Ladder, because rank 1 sits in the hero.
-  { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]" },
+  // The card at rank 2 is the first card of the Ladder, because rank 1 sits in the hero. The chevron has its own label, so the selector names the head.
+  { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]:not([aria-label])" },
   `/${SEASON}/managers/`,
+  // The open first row of the Index list. The row name of each closed row is muted, so axe reads it beside the open row.
+  { route: `/${SEASON}/managers/`, tap: 'ul[aria-label="Index List"] > li:first-child > button[aria-expanded]' },
   // The manager page of the longest team name of the client: To Infinity and Bijan of cpc, The Mean Machine of norcal.
   // In cpc, rosters 7, 9, and 11 tie at 21 characters, and roster 7 stands for the three.
   longestNameRoute(),
   "/analyze/",
   LATEST_WEEK_ROUTE,
-  // The open recap of game 3 of the latest week. Each game card button controls the recap panel of its game.
-  { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]' },
+  // The open recap of game 3 of the latest week. The head button and the chevron of each game card control the recap
+  // panel of its game. The chevron has its own label, so the selector names the head.
+  { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]:not([aria-label])' },
   "/",
   // The open strip of weeks: a tap on the week chip of the top band opens the strip of the weeks of the season.
   { route: "/", tap: "header details > summary", scope: 'header nav[aria-label="Weeks of the season"]' },
@@ -124,13 +127,14 @@ test("each page of the full floor is a built page", () => {
 
 /* No client takes the waiver package, so no client builds a waiver page, even where the week publishes a waiver file.
    The URL of the waiver page of the latest week then gives the 404 page, as the Worker does. */
-/* The spec of the floor names 7 pages and 3 open states per client: home, the latest week, rankings, the managers index,
-   the manager page with the longest team name, the empty analyzer, and 404, then an open recap, card, and strip. */
-test("the full floor holds the 7 pages and the 3 open states of the spec", () => {
+/* The spec of the floor names 7 pages and 4 open states per client: home, the latest week, rankings, the managers index,
+   the manager page with the longest team name, the empty analyzer, and 404, then an open game card, ladder card,
+   Index list row, and strip. */
+test("the full floor holds the 7 pages and the 4 open states of the spec", () => {
   const pages = FULL_FLOOR_PAGES.filter((entry) => typeof entry === "string");
   expect(new Set(pages).size).toBe(pages.length);
   expect(pages.length).toBe(7);
-  expect(FULL_FLOOR_PAGES.length - pages.length).toBe(3);
+  expect(FULL_FLOOR_PAGES.length - pages.length).toBe(4);
 });
 
 test("no waiver page is built, and its URL shows the 404 page", async ({ page }) => {
@@ -138,6 +142,22 @@ test("no waiver page is built, and its URL shows the 404 page", async ({ page })
   const response = await page.goto(`${server.url}${LATEST_WEEK_ROUTE}waiver/`);
   expect(response?.status()).toBe(404);
   await expect(page.getByRole("heading", { level: 1, name: "Page not found" })).toBeVisible();
+});
+
+/* The ink copy of each rolled letter of the Index list is CSS content with empty alt text, so a screen reader hears each
+   name once. A minifier that drops the alt text form would make each name read twice, so the check reads the built CSS. */
+test("the built CSS keeps the empty alt text of the rolled letters of the Index list", () => {
+  const files: string[] = [];
+  const walk = (dir: string) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) walk(path);
+      else if (entry.name.endsWith(".css")) files.push(path);
+    }
+  };
+  walk(join(OUT, "_next"));
+  const css = files.map((path) => readFileSync(path, "utf8")).join("\n");
+  expect(css).toMatch(/content:\s*attr\(data-ch\)\s*\/\s*""/);
 });
 
 for (const entry of FULL_FLOOR_PAGES) {
@@ -173,6 +193,64 @@ for (const entry of FULL_FLOOR_PAGES) {
       });
     }
   }
+}
+
+/* The managers index and the row heads of its Index list. The stage of the list shows from the desktop tier only. */
+const MANAGERS_ROUTE = `/${SEASON}/managers/`;
+const INDEX_ROW = 'ul[aria-label="Index List"] > li';
+
+/* The stage on desktop: the full floor after a hover on the second row swaps the stage, in both themes at 1280px.
+   The run has reduced motion, so the new row is in the stage at once, with no layer under it. */
+for (const theme of THEMES) {
+  test(`stage floor: ${CLIENT} ${MANAGERS_ROUTE} hover on row 2 ${theme} 1280px`, async ({ page }) => {
+    const label = `${CLIENT} ${MANAGERS_ROUTE} stage ${theme} 1280px`;
+    const started = Date.now();
+    await page.setViewportSize(DESKTOP);
+    await openPage(page, `${server.url}${MANAGERS_ROUTE}`, theme);
+    const second = page.locator(`${INDEX_ROW}:nth-child(2)`);
+    await second.hover();
+    const name = (await second.locator(".ix-name").textContent())!;
+    await expect(page.getByRole("region", { name: `Stage: ${name}` })).toBeVisible();
+    const failures = await textFloor(page, label, started);
+    failures.push(...(await scanTargets(page)).failures, ...(await scanContrast(page)));
+    expect(failures, `${label} breaks the readability floor`).toEqual([]);
+  });
+}
+
+/* AT-25: a hover on row 5 and then a focus on row 6 each swap the stage beside the ledger. In cpc week 8 these are
+   The Blue Tent and Lil Fridge. The stage holds the six hero slots. */
+test(`stage swap: ${CLIENT} ${MANAGERS_ROUTE} on a hover and a focus at 1280px`, async ({ page }) => {
+  await page.setViewportSize(DESKTOP);
+  await openPage(page, `${server.url}${MANAGERS_ROUTE}`, "dark");
+  const stage = () => page.getByRole("region", { name: /^Stage: / });
+  for (const [n, act] of [
+    [5, "hover"],
+    [6, "focus"],
+  ] as const) {
+    const row = page.locator(`${INDEX_ROW}:nth-child(${n})`);
+    const head = row.locator("button[aria-expanded]");
+    await (act === "hover" ? head.hover() : head.focus());
+    const name = (await row.locator(".ix-name").textContent())!;
+    await expect(stage()).toHaveAttribute("aria-label", `Stage: ${name}`);
+    await expect(stage().locator('[data-hero-slot="title"]')).toHaveText(name);
+  }
+  const slots = await stage().locator("[data-hero-slot]").evaluateAll((els) => els.map((el) => el.getAttribute("data-hero-slot")));
+  expect(slots).toEqual(["eyebrow", "title", "meta", "feature", "stats", "action"]);
+  // The stage sits beside the ledger, to the right of it, and stays in view as the page scrolls.
+  const ledger = (await page.locator('ul[aria-label="Index List"]').boundingBox())!;
+  const box = (await page.locator("[data-ix-stage]").boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(ledger.x + ledger.width);
+  expect(await page.locator("[data-ix-stage]").evaluate((el) => getComputedStyle(el).position)).toBe("sticky");
+});
+
+/* Under the desktop tier the Index list is the ledger alone, with no stage. */
+for (const width of [390, 768]) {
+  test(`no stage: ${CLIENT} ${MANAGERS_ROUTE} shows the ledger alone at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MANAGERS_ROUTE}`, "dark");
+    await expect(page.getByRole("list", { name: "Index List" })).toBeVisible();
+    await expect(page.locator("[data-ix-stage]")).toBeHidden();
+  });
 }
 
 /* The widths of the word check: a phone, a tablet, and a laptop. The tiles of the week page change columns between them. */

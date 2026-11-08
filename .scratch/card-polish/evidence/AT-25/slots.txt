@@ -1,0 +1,47 @@
+# The data-hero-slot values of the stage, in DOM order, on http://127.0.0.1:4173/2026/managers/ at 1280x900.
+# Build: CLIENT=cpc pnpm build at ed3af523. Read with agent-browser eval at load: [data-ix-stage] [data-hero-slot].
+all elements at load: "eyebrow, title, meta, feature, stats, action"
+
+# The visible slots and their text in each state, from stage.mjs (stage-output.txt):
+light load: region "Stage: All You Need Is Love" | focus on: none | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow
+  title
+  meta
+  feature
+  stats
+  action
+light hover-blue-tent: region "Stage: The Blue Tent" | focus on: none | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow
+  title
+  meta
+  feature
+  stats
+  action
+light focus-lil-fridge: region "Stage: Lil Fridge" | focus on: Lil Fridge | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow
+  title
+  meta
+  feature
+  stats
+  action
+dark load: region "Stage: All You Need Is Love" | focus on: none | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow
+  title
+  meta
+  feature
+  stats
+  action
+dark hover-blue-tent: region "Stage: The Blue Tent" | focus on: none | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow
+  title
+  meta
+  feature
+  stats
+  action
+dark focus-lil-fridge: region "Stage: Lil Fridge" | focus on: Lil Fridge | stage x=736 w=504, ledger x=40 w=636, position sticky
+  eyebrow
+  title
+  meta
+  feature
+  stats
+  action

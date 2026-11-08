@@ -1,0 +1,233 @@
+# The floor run of CLIENT=cpc, from the background make check of the spec worktree at a44daee5 (started 08:25).
+# scripts/build-each-client.mjs ran CLIENT=cpc pnpm build, then CLIENT=cpc pnpm check:export, then CLIENT=cpc pnpm check:floor. This is the check:floor part of the log, verbatim.
+==> site check:floor: cpc
+
+> cpcfantasyfootball-site@0.1.0 check:floor /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/card-polish/apps/site
+> playwright test --project=floor
+
+
+Running 106 tests using 2 workers
+
+  ✓    2 [floor] › e2e/floor.spec.ts:124:5 › each page of the full floor is a built page (2ms)
+  ✓    3 [floor] › e2e/floor.spec.ts:133:5 › the full floor holds the 7 pages and the 4 open states of the spec (0ms)
+  ✓    4 [floor] › e2e/floor.spec.ts:140:5 › no waiver page is built, and its URL shows the 404 page (417ms)
+  ✓    5 [floor] › e2e/floor.spec.ts:149:5 › the built CSS keeps the empty alt text of the rolled letters of the Index list (3ms)
+cpc /2026/managers/1/ dark 390px: prose 2, other text 264, in 363 ms
+  ✓    1 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/1/ dark 390px (496ms)
+cpc /404-floor-check/ dark 390px: prose 1, other text 14, in 113 ms
+cpc /404-floor-check/ dark 390px: exempt links inside prose: none
+cpc /2026/managers/10/ dark 390px: prose 2, other text 269, in 173 ms
+  ✓    7 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/10/ dark 390px (235ms)
+  ✓    6 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /404-floor-check/ dark 390px (500ms)
+cpc /2026/managers/11/ dark 390px: prose 2, other text 258, in 166 ms
+  ✓    8 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/11/ dark 390px (215ms)
+cpc /404-floor-check/ dark 1280px: prose 1, other text 14, in 105 ms
+cpc /404-floor-check/ dark 1280px: exempt links inside prose: none
+cpc /2026/managers/12/ dark 390px: prose 2, other text 259, in 153 ms
+  ✓   10 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/12/ dark 390px (211ms)
+  ✓    9 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /404-floor-check/ dark 1280px (492ms)
+cpc /404-floor-check/ light 390px: prose 1, other text 14, in 99 ms
+cpc /404-floor-check/ light 390px: exempt links inside prose: none
+cpc /2026/managers/2/ dark 390px: prose 2, other text 218, in 506 ms
+  ✓   11 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/2/ dark 390px (581ms)
+cpc /2026/managers/3/ dark 390px: prose 2, other text 230, in 139 ms
+  ✓   13 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/3/ dark 390px (209ms)
+  ✓   12 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /404-floor-check/ light 390px (538ms)
+cpc /404-floor-check/ light 1280px: prose 1, other text 14, in 137 ms
+cpc /2026/managers/4/ dark 390px: prose 2, other text 344, in 149 ms
+cpc /404-floor-check/ light 1280px: exempt links inside prose: none
+  ✓   14 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/4/ dark 390px (204ms)
+cpc /2026/managers/5/ dark 390px: prose 2, other text 167, in 138 ms
+  ✓   16 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/5/ dark 390px (203ms)
+  ✓   15 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /404-floor-check/ light 1280px (505ms)
+cpc /2026/managers/6/ dark 390px: prose 2, other text 345, in 143 ms
+  ✓   17 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/6/ dark 390px (194ms)
+cpc /rankings/ dark 390px: prose 69, other text 241, in 127 ms
+cpc /rankings/ dark 390px: exempt links inside prose: none
+cpc /2026/managers/8/ dark 390px: prose 2, other text 293, in 134 ms
+  ✓   19 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/8/ dark 390px (212ms)
+  ✓   18 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ dark 390px (583ms)
+cpc /rankings/ dark 1280px: prose 69, other text 241, in 121 ms
+cpc /rankings/ dark 1280px: exempt links inside prose: none
+cpc /2026/managers/9/ dark 390px: prose 2, other text 294, in 735 ms
+  ✓   20 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/managers/9/ dark 390px (849ms)
+  ✓   21 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ dark 1280px (625ms)
+cpc /2026/week-06/ dark 390px: prose 11, other text 299, in 135 ms
+  ✓   22 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/week-06/ dark 390px (202ms)
+cpc /rankings/ light 390px: prose 69, other text 241, in 134 ms
+cpc /rankings/ light 390px: exempt links inside prose: none
+cpc /2026/week-07/ dark 390px: prose 12, other text 284, in 169 ms
+  ✓   24 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /2026/week-07/ dark 390px (242ms)
+  ✓   23 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ light 390px (565ms)
+cpc /eggs/ dark 390px: prose 0, other text 10, in 118 ms
+  ✓   25 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /eggs/ dark 390px (187ms)
+cpc /rankings/ light 1280px: prose 69, other text 241, in 153 ms
+cpc /rankings/ light 1280px: exempt links inside prose: none
+cpc /midseason/2026/ dark 390px: prose 29, other text 1008, in 162 ms
+  ✓   27 [floor] › e2e/floor.spec.ts:239:7 › fast sweep: cpc /midseason/2026/ dark 390px (225ms)
+  ✓   28 [floor] › e2e/floor.spec.ts:268:7 › the top band of cpc is one row at 768px, with the dock (235ms)
+  ✓   26 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ light 1280px (591ms)
+  ✓   29 [floor] › e2e/floor.spec.ts:268:7 › the top band of cpc is one row at 1024px, with the pill bar (248ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px: prose 69, other text 241, in 218 ms
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px: exempt links inside prose: none
+  ✓   31 [floor] › e2e/floor.spec.ts:268:7 › the top band of cpc is one row at 1280px, with the pill bar (241ms)
+  ✓   30 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px (676ms)
+  ✓   32 [floor] › e2e/floor.spec.ts:285:7 › the open strip of weeks of cpc covers no page title at 375px (271ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 1280px: prose 69, other text 241, in 219 ms
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 1280px: exempt links inside prose: none
+  ✓   34 [floor] › e2e/floor.spec.ts:285:7 › the open strip of weeks of cpc covers no page title at 768px (282ms)
+  ✓   35 [floor] › e2e/floor.spec.ts:285:7 › the open strip of weeks of cpc covers no page title at 1280px (231ms)
+  ✓   33 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 1280px (671ms)
+  ✓   36 [floor] › e2e/floor.spec.ts:299:5 › the week chips of the Ladder of cpc stay on one row at 375px (260ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px: prose 69, other text 241, in 254 ms
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px: exempt links inside prose: none
+cpc /midseason/2026/ dark 375px: prose 29, other text 1008, in 9 ms
+  ✓   37 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px (742ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 1280px: prose 69, other text 241, in 204 ms
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 1280px: exempt links inside prose: none
+  ✓   38 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: cpc /midseason/2026/ dark 375px (1.2s)
+  ✓   39 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 1280px (694ms)
+  ✓   40 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, dark 375px (276ms)
+cpc /2026/managers/ dark 390px: prose 24, other text 373, in 160 ms
+cpc /2026/managers/ dark 390px: exempt links inside prose: none
+cpc /midseason/2026/ dark 768px: prose 29, other text 1020, in 6 ms
+  ✓   41 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ dark 390px (636ms)
+cpc /2026/managers/ dark 1280px: prose 24, other text 373, in 116 ms
+cpc /2026/managers/ dark 1280px: exempt links inside prose: none
+  ✓   43 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ dark 1280px (518ms)
+  ✓   42 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: cpc /midseason/2026/ dark 768px (967ms)
+cpc /2026/managers/ light 390px: prose 24, other text 373, in 120 ms
+cpc /2026/managers/ light 390px: exempt links inside prose: none
+  ✓   45 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, dark 768px (233ms)
+cpc /midseason/2026/ dark 1280px: prose 29, other text 1020, in 5 ms
+  ✓   44 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ light 390px (520ms)
+cpc /2026/managers/ light 1280px: prose 24, other text 373, in 112 ms
+cpc /2026/managers/ light 1280px: exempt links inside prose: none
+  ✓   47 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ light 1280px (513ms)
+  ✓   46 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: cpc /midseason/2026/ dark 1280px (920ms)
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px: prose 24, other text 373, in 174 ms
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px: exempt links inside prose: none
+  ✓   49 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, dark 1280px (208ms)
+cpc /midseason/2026/ light 375px: prose 29, other text 1008, in 5 ms
+  ✓   48 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px (582ms)
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 1280px: prose 24, other text 373, in 167 ms
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 1280px: exempt links inside prose: none
+  ✓   51 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 1280px (568ms)
+  ✓   50 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: cpc /midseason/2026/ light 375px (904ms)
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px: prose 24, other text 373, in 167 ms
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px: exempt links inside prose: none
+  ✓   53 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, light 375px (222ms)
+cpc /midseason/2026/ light 768px: prose 29, other text 1020, in 5 ms
+  ✓   52 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px (570ms)
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 1280px: prose 24, other text 373, in 169 ms
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 1280px: exempt links inside prose: none
+  ✓   55 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 1280px (571ms)
+  ✓   54 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: cpc /midseason/2026/ light 768px (923ms)
+cpc /2026/managers/7/ dark 390px: prose 2, other text 377, in 120 ms
+cpc /2026/managers/7/ dark 390px: exempt links inside prose: none
+  ✓   57 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, light 768px (228ms)
+cpc /midseason/2026/ light 1280px: prose 29, other text 1020, in 6 ms
+  ✓   56 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/7/ dark 390px (619ms)
+cpc /2026/managers/7/ dark 1280px: prose 2, other text 382, in 122 ms
+cpc /2026/managers/7/ dark 1280px: exempt links inside prose: none
+  ✓   59 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/7/ dark 1280px (594ms)
+  ✓   58 [floor] › e2e/floor.spec.ts:323:9 › midseason floor: cpc /midseason/2026/ light 1280px (954ms)
+cpc /2026/managers/7/ light 390px: prose 2, other text 377, in 144 ms
+cpc /2026/managers/7/ light 390px: exempt links inside prose: none
+  ✓   61 [floor] › e2e/floor.spec.ts:334:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, light 1280px (250ms)
+cpc / takeover dark 375px: prose 0, other text 73, in 3 ms
+  ✓   60 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/7/ light 390px (623ms)
+  ✓   62 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: cpc / dark 375px (410ms)
+cpc /2026/managers/7/ light 1280px: prose 2, other text 382, in 124 ms
+cpc /2026/managers/7/ light 1280px: exempt links inside prose: none
+cpc / takeover dark 768px: prose 0, other text 73, in 3 ms
+  ✓   64 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: cpc / dark 768px (421ms)
+  ✓   63 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/managers/7/ light 1280px (605ms)
+cpc / takeover dark 1280px: prose 0, other text 73, in 2 ms
+cpc /analyze/ dark 390px: prose 3, other text 26, in 122 ms
+cpc /analyze/ dark 390px: exempt links inside prose: none
+  ✓   65 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: cpc / dark 1280px (421ms)
+  ✓   66 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /analyze/ dark 390px (427ms)
+cpc / takeover light 375px: prose 0, other text 73, in 3 ms
+cpc /analyze/ dark 1280px: prose 3, other text 26, in 118 ms
+cpc /analyze/ dark 1280px: exempt links inside prose: none
+  ✓   67 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: cpc / light 375px (418ms)
+  ✓   68 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /analyze/ dark 1280px (417ms)
+cpc / takeover light 768px: prose 0, other text 73, in 3 ms
+cpc /analyze/ light 390px: prose 3, other text 26, in 111 ms
+cpc /analyze/ light 390px: exempt links inside prose: none
+  ✓   69 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: cpc / light 768px (417ms)
+  ✓   70 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /analyze/ light 390px (404ms)
+cpc / takeover light 1280px: prose 0, other text 73, in 3 ms
+cpc /analyze/ light 1280px: prose 3, other text 26, in 110 ms
+cpc /analyze/ light 1280px: exempt links inside prose: none
+  ✓   71 [floor] › e2e/floor.spec.ts:356:9 › midseason takeover: cpc / light 1280px (412ms)
+  ✓   72 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /analyze/ light 1280px (403ms)
+  ✓   73 [floor] › e2e/floor.spec.ts:373:7 › midseason swap rows: cpc /midseason/2026/ text rows and no All-play, 375px (184ms)
+cpc /2026/week-08/ dark 390px: prose 12, other text 297, in 114 ms
+cpc /2026/week-08/ dark 390px: exempt links inside prose: none
+  ✓   75 [floor] › e2e/floor.spec.ts:373:7 › midseason swap rows: cpc /midseason/2026/ text rows and no All-play, 768px (177ms)
+  ✓   76 [floor] › e2e/floor.spec.ts:373:7 › midseason swap rows: cpc /midseason/2026/ text rows and no All-play, 1280px (174ms)
+  ✓   74 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ dark 390px (546ms)
+  ✓   77 [floor] › e2e/floor.spec.ts:387:5 › midseason tables: cpc /midseason/2026/ fit their cards or scroll with the team column fixed, 375px (177ms)
+cpc /2026/week-08/ dark 1280px: prose 12, other text 306, in 122 ms
+cpc /2026/week-08/ dark 1280px: exempt links inside prose: none
+  ✓   79 [floor] › e2e/floor.spec.ts:412:5 › midseason top 10: cpc /midseason/2026/ opens on RB at 375px (174ms)
+  ✓   80 [floor] › e2e/floor.spec.ts:426:7 › sim odds: cpc /midseason/2026/ below the replay at full width, 375px (183ms)
+  ✓   78 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ dark 1280px (562ms)
+  ✓   81 [floor] › e2e/floor.spec.ts:426:7 › sim odds: cpc /midseason/2026/ below the replay at full width, 768px (191ms)
+cpc /2026/week-08/ light 390px: prose 12, other text 297, in 121 ms
+cpc /2026/week-08/ light 390px: exempt links inside prose: none
+  ✓   83 [floor] › e2e/floor.spec.ts:426:7 › sim odds: cpc /midseason/2026/ below the replay at full width, 1280px (185ms)
+  ✓   82 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ light 390px (551ms)
+cpc /2026/week-08/ light 1280px: prose 12, other text 306, in 117 ms
+cpc /2026/week-08/ light 1280px: exempt links inside prose: none
+  ✓   85 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ light 1280px (530ms)
+cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px: prose 12, other text 297, in 177 ms
+cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px: exempt links inside prose: none
+  ✓   86 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px (594ms)
+cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 1280px: prose 12, other text 306, in 161 ms
+cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 1280px: exempt links inside prose: none
+  ✓   87 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 1280px (593ms)
+cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px: prose 12, other text 297, in 178 ms
+cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px: exempt links inside prose: none
+  ✓   88 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px (589ms)
+cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px: prose 12, other text 306, in 155 ms
+cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px: exempt links inside prose: none
+  ✓   89 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px (563ms)
+cpc / dark 390px: prose 0, other text 73, in 91 ms
+cpc / dark 390px: exempt links inside prose: none
+  ✓   90 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc / dark 390px (398ms)
+cpc / dark 1280px: prose 0, other text 73, in 101 ms
+cpc / dark 1280px: exempt links inside prose: none
+  ✓   91 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc / dark 1280px (406ms)
+cpc / light 390px: prose 0, other text 73, in 93 ms
+cpc / light 390px: exempt links inside prose: none
+  ✓   92 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc / light 390px (405ms)
+cpc / light 1280px: prose 0, other text 73, in 93 ms
+cpc / light 1280px: exempt links inside prose: none
+  ✓   93 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc / light 1280px (396ms)
+cpc / tap header details > summary dark 390px: prose 0, other text 73, in 123 ms
+cpc / tap header details > summary dark 390px: exempt links inside prose: none
+  ✓   94 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc / tap header details > summary dark 390px (382ms)
+cpc / tap header details > summary dark 1280px: prose 0, other text 73, in 124 ms
+cpc / tap header details > summary dark 1280px: exempt links inside prose: none
+  ✓   95 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc / tap header details > summary dark 1280px (389ms)
+cpc / tap header details > summary light 390px: prose 0, other text 73, in 121 ms
+cpc / tap header details > summary light 390px: exempt links inside prose: none
+  ✓   96 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc / tap header details > summary light 390px (380ms)
+cpc / tap header details > summary light 1280px: prose 0, other text 73, in 133 ms
+cpc / tap header details > summary light 1280px: exempt links inside prose: none
+  ✓   97 [floor] › e2e/floor.spec.ts:168:11 › full floor: cpc / tap header details > summary light 1280px (405ms)
+  ✓   98 [floor] › e2e/floor.spec.ts:203:7 › no split word: cpc /2026/week-08/ 375px (153ms)
+  ✓   99 [floor] › e2e/floor.spec.ts:203:7 › no split word: cpc /2026/week-08/ 768px (155ms)
+  ✓  100 [floor] › e2e/floor.spec.ts:203:7 › no split word: cpc /2026/week-08/ 1280px (173ms)
+  ✓  101 [floor] › e2e/floor.spec.ts:215:5 › chapter rail: cpc /2026/week-08/ marks Position leaders in view at 1280px (176ms)
+  ✓  102 [floor] › e2e/floor.spec.ts:227:5 › chapter rail: cpc /2026/week-08/ marks each chapter after a jump at 1280px (591ms)
+  ✓   84 [floor] › e2e/floor.spec.ts:446:7 › sim bracket: cpc /midseason/2026/ shows full team names and no chip on a card, 375px (13.7s)
+  ✓  103 [floor] › e2e/floor.spec.ts:446:7 › sim bracket: cpc /midseason/2026/ shows full team names and no chip on a card, 768px (13.7s)
+  ✓  104 [floor] › e2e/floor.spec.ts:446:7 › sim bracket: cpc /midseason/2026/ shows full team names and no chip on a card, 1280px (13.7s)
+  ✓  105 [floor] › e2e/floor.spec.ts:474:7 › sim replay: cpc /midseason/2026/ plays a run and skips to the champion and the bracket at 375px (373ms)
+  ✓  106 [floor] › e2e/floor.spec.ts:474:7 › sim replay: cpc /midseason/2026/ plays a run and skips to the champion and the bracket at 1280px (361ms)
+
+  106 passed (1.0m)

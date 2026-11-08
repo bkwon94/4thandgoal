@@ -1,0 +1,23 @@
+
+> cpcfantasyfootball-site@0.1.0 evidence /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/card-polish/apps/site
+> node scripts/evidence.mjs card-polish
+
+
+Running 1 test using 1 worker
+
+build cpc: 10.1 s
+AT-1 /2026/week-08/ cpc: 12 shots in 38.2 s
+AT-6 /rankings/ cpc: 12 shots in 34.2 s
+AT-8 /2026/week-08/#:~:text=shrugged%20off%20Jeremiyah%20Love cpc: 2 shots in 8.8 s
+AT-11 /2026/managers/1/ cpc: 6 shots in 18.8 s
+AT-15 /2026/week-08/ cpc: 6 shots in 16.7 s
+AT-16 /2026/week-06/ cpc: 6 shots in 19.9 s
+AT-23 /2026/managers/ cpc: 12 shots in 26.8 s
+AT-24 /2026/managers/ cpc: 12 shots in 36.7 s
+build norcal: 4.1 s
+AT-15 /2026/week-08/ norcal: 6 shots in 15.9 s
+AT-26 /2026/managers/ norcal: 6 shots in 11.8 s
+Total: 9 tests of card-polish in 242.0 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of card-polish (4.0m)
+
+  1 passed (4.1m)

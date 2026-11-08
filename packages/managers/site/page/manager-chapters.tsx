@@ -30,7 +30,7 @@ export function ManagerChapters({
 }) {
   return (
     <>
-      <SeasonSoFar manager={manager} />
+      <SeasonSoFar manager={manager} teams={managers.length} />
       <Roster manager={manager} teams={managers.length} />
       <BestAdds manager={manager} />
       <TopPerformers manager={manager} />

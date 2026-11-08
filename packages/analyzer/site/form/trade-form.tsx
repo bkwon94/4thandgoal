@@ -31,6 +31,7 @@ import {
   EMPTY_SIDES,
   everySideTrades,
   type Get,
+  haloLevel,
   MAX_SIDES,
   SIDE_TITLES,
   type Sides,
@@ -409,7 +410,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
         />
       </div>
       {/* Under a folded result the bar has no trade to grade again, so it hides until Edit. */}
-      {!(folded && grade.status === "done") && <GradeBar ready={ready} grading={grading} onGrade={() => submit()} />}
+      {!(folded && grade.status === "done") && <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />}
     </>
   );
 

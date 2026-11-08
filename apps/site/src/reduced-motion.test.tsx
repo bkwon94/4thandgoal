@@ -14,6 +14,7 @@ import type { Manager } from "@cpc/managers/schema/manager-types";
 import AnalyzeResult from "@cpc/analyzer/form/analyze-result";
 import { managers as managersFixture } from "@cpc/managers/fixtures/managers";
 import { ManagerHero } from "@cpc/managers/page/manager-hero";
+import { ManagersIndex } from "@cpc/managers/page/managers-index";
 import { Roster } from "@cpc/managers/page/roster";
 import { SeasonSoFar } from "@cpc/managers/page/season-so-far";
 import { rankings } from "@cpc/rankings/fixtures/rankings";
@@ -22,7 +23,8 @@ import { TradeForm } from "@cpc/analyzer/form/trade-form";
 import { waiver } from "@/fixtures/waiver";
 import { WarChest } from "@cpc/waiver/war-chest";
 import { TeamPicker } from "@cpc/analyzer/form/team-picker";
-import { week6 } from "@cpc/week/fixtures/week-page";
+import { week6, week8 } from "@cpc/week/fixtures/week-page";
+import { AllMatchups } from "@cpc/week/chapters/all-matchups";
 
 vi.stubGlobal(
   "matchMedia",
@@ -105,6 +107,20 @@ describe("Reduced motion", () => {
     expectAtRest(card);
   });
 
+  it("shows the Ready halo at its level at once", async () => {
+    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    await pickTeam("Pick Your Team", "Pukancun on 3");
+    await pickTeam("Pick Team Two", "Blitz Bakers");
+    const halo = document.querySelector<HTMLElement>("[data-halo]")!;
+    // Two teams and no player: the brightness is 2 of 6 by the next render, and no box of the halo moves.
+    expect(Number(halo.style.opacity)).toBeCloseTo(2 / 6, 2);
+    expectAtRest(halo);
+    await pickPlayer("Your Team", "Blitz Bakers", "Ben One");
+    await pickPlayer("Team Two", "Pukancun on 3", "Ana One");
+    expect(halo.style.opacity).toBe("1");
+    expectAtRest(halo);
+  });
+
   it("shows no sweep while the grade runs", async () => {
     vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
     render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
@@ -138,22 +154,84 @@ describe("Reduced motion on the trade form", () => {
 });
 
 describe("Reduced motion on the power rankings", () => {
-  it("opens a card at once", async () => {
+  it("opens and closes a ladder card at once on the Open card", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={week6.avatars} />);
     const button = screen.getByRole("button", { name: /Lil Fridge/ });
+    const card = button.closest<HTMLElement>(".open-card")!;
+    const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
+    // Every duration of the height, the blur, the rise, and the chevron reads --oc-dur, so 0s ends each one at once.
+    expect(card.style.getPropertyValue("--oc-dur")).toBe("0s");
     fireEvent.click(button);
     expect(button.getAttribute("aria-expanded")).toBe("true");
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    // With motion off the close hides the panel in the same tap. The closed card waits on no timer.
+    fireEvent.click(button);
+    expect(card.dataset.open).toBe("false");
+    expect(panel.getAttribute("hidden")).toBe("until-found");
+  });
+});
+
+describe("Reduced motion on the Open card", () => {
+  it("opens and closes a game card at once, with no height change, no blur, and no spring", () => {
+    render(<AllMatchups matchups={week8.matchups} avatars={week8.avatars} managersHref="/2026/managers/" />);
+    const button = screen.getAllByRole("button").find((each) => !each.hasAttribute("aria-label") && each.textContent?.includes("All You Need Is Love"))!;
+    const card = button.closest<HTMLElement>(".open-card")!;
     const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
-    expect(panel.getAttribute("aria-hidden")).toBe("false");
-    // With motion off the panel takes the instant transition, so it is at rest and fully open by the next frame.
-    // The wait is far shorter than the collapse duration, so a real animation fails it.
-    await waitFor(
-      () => {
-        expect(panel.style.opacity).toBe("1");
-        expect(panel.style.height).toBe("auto");
-      },
-      { timeout: 50 },
-    );
+    // Every duration of the height, the blur, the rise, and the chevron reads --oc-dur, so 0s ends each one at once.
+    expect(card.style.getPropertyValue("--oc-dur")).toBe("0s");
+    fireEvent.click(button);
+    expect(card.dataset.open).toBe("true");
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    // With motion off the close hides the panel in the same tap. The closed card waits on no timer.
+    fireEvent.click(button);
+    expect(card.dataset.open).toBe("false");
+    expect(panel.getAttribute("hidden")).toBe("until-found");
+  });
+});
+
+describe("Reduced motion on the Index list", () => {
+  it("opens and closes a row at once, with no height change, no blur, and no spring", () => {
+    const managers = managersFixture.managers.map((entry, i) => ({
+      ...entry,
+      standing: i + 1,
+      rank: i + 1,
+      movement: 0,
+      odds: { playoff: 50, bye: 10, seed: null, status: "open" as const },
+      odds_change: 0,
+    }));
+    render(<ManagersIndex managers={{ season: 2026, through: 6, managers }} avatars={{}} managersHref="/2026/managers/" />);
+    const list = within(screen.getByRole("list", { name: "Index List" }));
+    const head = within(list.getAllByRole("listitem")[0]).getByRole("button");
+    const row = head.closest<HTMLElement>(".open-card")!;
+    const panel = document.getElementById(head.getAttribute("aria-controls") ?? "")!;
+    // The height, the blur, and the rise of the row read --oc-dur, so 0s ends each one at once.
+    expect(row.style.getPropertyValue("--oc-dur")).toBe("0s");
+    fireEvent.click(head);
+    expect(row.dataset.open).toBe("true");
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    // With motion off the close hides the panel in the same tap. The closed row waits on no timer.
+    fireEvent.click(head);
+    expect(row.dataset.open).toBe("false");
+    expect(panel.getAttribute("hidden")).toBe("until-found");
+  });
+
+  it("swaps the stage at once on a hover, with one layer and no wipe", () => {
+    const managers = managersFixture.managers.map((entry, i) => ({
+      ...entry,
+      standing: i + 1,
+      rank: i + 1,
+      movement: 0,
+      odds: { playoff: 50, bye: 10, seed: null, status: "open" as const },
+      odds_change: 0,
+    }));
+    render(<ManagersIndex managers={{ season: 2026, through: 6, managers }} avatars={{}} managersHref="/2026/managers/" />);
+    const rows = within(screen.getByRole("list", { name: "Index List" })).getAllByRole("listitem");
+    fireEvent.pointerEnter(rows[1]);
+    const box = document.querySelector("[data-ix-stage]")!;
+    // With motion off the old row drops in the same hover, so no layer waits under the new one and none wipes in.
+    expect(box.querySelectorAll(".ix-layer")).toHaveLength(1);
+    expect(box.querySelector("[data-in]")).toBeNull();
+    expect(box.querySelector('[data-hero-slot="title"]')?.textContent).toBe(managers[1].team.name);
   });
 });
 
@@ -218,7 +296,9 @@ describe("Reduced motion on the static pages", () => {
     expect(main.getAllByText(week6.awards[0].title).length).toBeGreaterThan(0);
     expect(main.getByText("Position leaders")).toBeTruthy();
     expect(main.getAllByText(week6.trades[0].sides[0].players[0].name).length).toBeGreaterThan(0);
-    expect(main.getAllByRole("button", { expanded: false, name: /\d/ })).toHaveLength(week6.matchups.length);
+    // The award and trade cards are Open cards too, so the count of game cards stays inside Every game.
+    const games = within(main.getByRole("region", { name: "Every game" }));
+    expect(games.getAllByRole("button", { expanded: false, name: /\d/ })).toHaveLength(week6.matchups.length);
     expect(main.getByText("The median game")).toBeTruthy();
     expect(main.getByText("Standings")).toBeTruthy();
     expect(main.getByText("Next week")).toBeTruthy();
@@ -239,7 +319,7 @@ function managerWithOdds(): Manager {
     standing: 1,
     rank: 2,
     movement: 0,
-    odds: { playoff: 63, bye: 20, seed: 3 },
+    odds: { playoff: 63, bye: 20, seed: 3, status: "open" },
     odds_change: 0,
   };
 }
@@ -272,7 +352,7 @@ describe("Reduced motion on the manager page", () => {
   });
 
   it("shows the points line whole, with no draw in progress", async () => {
-    render(<SeasonSoFar manager={managerWithOdds()} />);
+    render(<SeasonSoFar manager={managerWithOdds()} teams={12} />);
     const line = screen.getByRole("img", { name: "Points per week against the league median" });
     const team = line.querySelector("[data-draw]")!;
     // A drawn path shows its full length: the first dash of the dash array is the whole normalized length.
@@ -281,5 +361,19 @@ describe("Reduced motion on the manager page", () => {
       () => line.querySelectorAll("[data-result]").forEach((dot) => expect((dot as HTMLElement).style.opacity).not.toBe("0")),
       { timeout: 50 },
     );
+  });
+
+  it("shows each arc of the Grade dial lit at once, with no wait and no stagger", async () => {
+    render(<SeasonSoFar manager={managerWithOdds()} teams={12} />);
+    const dial = screen.getByRole("list", { name: "Grade Dial" });
+    const arcs = within(dial).getAllByRole("img");
+    const lit = () => arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length);
+    // The fixture entry ranks 1st, 4th, 7th, and 10th on the four parts.
+    expect(lit()).toEqual([12, 9, 6, 3]);
+    // The dial never darkens the lit blades to wait for the view, and no blade carries a stagger delay.
+    await new Promise((done) => setTimeout(done, 50));
+    expect(dial.hasAttribute("data-wait")).toBe(false);
+    expect(lit()).toEqual([12, 9, 6, 3]);
+    dial.querySelectorAll<HTMLElement>("[data-blade]").forEach((blade) => expect(blade.style.transitionDelay).toBe(""));
   });
 });

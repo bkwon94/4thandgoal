@@ -1,0 +1,52 @@
+# Step 1: the site constant of depth changed from 15 to 16 in packages/managers/site/page/grade-weights.ts
+diff --git a/packages/managers/site/page/grade-weights.ts b/packages/managers/site/page/grade-weights.ts
+index bf4779a5..ca20fb0c 100644
+--- a/packages/managers/site/page/grade-weights.ts
++++ b/packages/managers/site/page/grade-weights.ts
+@@ -9,5 +9,5 @@ export const GRADE_WEIGHTS: Record<GradePart["key"], number> = {
+   projection: 45,
+   production: 30,
+   trade_value: 10,
+-  depth: 15,
++  depth: 16,
+ };
+$ pnpm --dir apps/site exec vitest run --reporter=verbose src/grade-weights.test.ts
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/card-polish/apps/site
+
+ × src/grade-weights.test.ts > GRADE_WEIGHTS > equals GRADE_WEIGHTS of the pipeline 4ms
+   → expected { Object (projection, production, ...) } to deeply equal { Object (projection, production, ...) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/grade-weights.test.ts > GRADE_WEIGHTS > equals GRADE_WEIGHTS of the pipeline
+AssertionError: expected { Object (projection, production, ...) } to deeply equal { Object (projection, production, ...) }
+
+- Expected
++ Received
+
+  {
+-   "depth": 15,
++   "depth": 16,
+    "production": 30,
+    "projection": 45,
+    "trade_value": 10,
+  }
+
+ ❯ src/grade-weights.test.ts:24:27
+     22| describe("GRADE_WEIGHTS", () => {
+     23|   it("equals GRADE_WEIGHTS of the pipeline", () => {
+     24|     expect(GRADE_WEIGHTS).toEqual(pipelineWeights());
+       |                           ^
+     25|   });
+     26| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  08:37:44
+   Duration  367ms (environment 92%, transform 4%, tests 2%, import 2%, worker 1%)
+
+(exit 1)

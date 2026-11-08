@@ -188,7 +188,8 @@ describe("WeekPage order of week 8 (AT-16)", () => {
   it("links each open recap to one manager page of the season", async () => {
     await renderWeek8();
     const recap = document.getElementById("recap-3")!;
-    expect(recap.querySelectorAll("a")).toHaveLength(0);
+    // The closed recap stays in the DOM for find-in-page, and hidden="until-found" keeps its link out of the tab order.
+    expect(recap.getAttribute("hidden")).toBe("until-found");
     act(() => {
       screen
         .getAllByRole("button")
@@ -198,6 +199,39 @@ describe("WeekPage order of week 8 (AT-16)", () => {
     const links = within(recap).getAllByRole("link");
     expect(links).toHaveLength(1);
     expect(links[0].getAttribute("href")).toMatch(/^\/2026\/managers\/\d+\/$/);
+  });
+});
+
+/* The bars of the Top Score tile of the week numbers: the week of each bar and the week of the lit bar. */
+function topScoreBars() {
+  const region = screen.getByRole("region", { name: "The week in numbers" });
+  const tile = within(region)
+    .getAllByRole("listitem")
+    .find((item) => item.textContent?.startsWith("Top Score"))!;
+  const chart = within(tile).getByRole("img");
+  const weeks = [...chart.querySelectorAll("[data-week]")].map((bar) => Number(bar.getAttribute("data-week")));
+  return { weeks, lit: Number(chart.querySelector("[data-lit]")?.getAttribute("data-week")) };
+}
+
+describe("WeekPage Trend tiles", () => {
+  it("draws the top score of weeks 1 to 8 on week 8, with week 8 lit (AT-14)", async () => {
+    await renderWeek8();
+    expect(topScoreBars()).toEqual({ weeks: [1, 2, 3, 4, 5, 6, 7, 8], lit: 8 });
+  });
+
+  it("stops the trend at week 6 on the week 6 page (AT-16)", async () => {
+    render(await WeekPage({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
+    expect(topScoreBars()).toEqual({ weeks: [1, 2, 3, 4, 5, 6], lit: 6 });
+  });
+
+  it("reads the number and one sentence of the Median trend (AT-15, AT-18)", async () => {
+    await renderWeek8();
+    const region = screen.getByRole("region", { name: "The week in numbers" });
+    const median = within(region)
+      .getAllByRole("listitem")
+      .find((item) => item.textContent?.startsWith("Median"))!;
+    expect(within(median).getByText("99.6")).toBeTruthy();
+    expect(within(median).getByRole("img").getAttribute("aria-label")).toBe("Down from 103.87 in week 7.");
   });
 });
 

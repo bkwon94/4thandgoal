@@ -2,9 +2,10 @@
  * Tests for the manager page route. Each test builds a temp public/ folder with a week page, the managers file, and the rankings file.
  * They read the static params and what a reader sees: the back link, the hero with the grade, the tiles, and the chips, then the chapters.
  * The Roster chapter reads a tile for each slot rank of the grade, then the ranks of the grade parts.
+ * The Grade dial test reads the published managers file and rankings file of CPC, week 8.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -276,5 +277,62 @@ describe("ManagerPage", () => {
       ["Top Performers", "#top-performers"],
       ["Moves", "#moves"],
     ]);
+  });
+});
+
+describe("The Grade dial in Season So Far", () => {
+  /* A published file of CPC, as the build copies it into public/. */
+  const published = (name: string) =>
+    JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026", name), "utf8"));
+
+  it("shows A, the grade read, and arcs 4th, 6th, 7th, and 7th for The Blue Tent of CPC week 8", async () => {
+    await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
+    const season = within(document.getElementById("season")!);
+    const grade = within(season.getByRole("group", { name: "Roster Grade" }));
+    expect(grade.getByText("A")).toBeTruthy();
+    expect(grade.getByText("Strong at QB and TE. Soft at RB.")).toBeTruthy();
+    const arcs = within(grade.getByRole("list", { name: "Grade Dial" })).getAllByRole("img");
+    expect(arcs.map((arc) => arc.getAttribute("aria-label"))).toEqual([
+      "Projection Ahead: 4th of 12, 45% of the grade",
+      "Season Production: 6th of 12, 30% of the grade",
+      "Trade Value: 7th of 12, 10% of the grade",
+      "Depth And Holes: 7th of 12, 15% of the grade",
+    ]);
+    expect(arcs.map((arc) => arc.querySelectorAll("[data-blade]").length)).toEqual([12, 12, 12, 12]);
+    expect(arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length)).toEqual([9, 7, 6, 6]);
+  });
+});
+
+describe("The Trend tiles of Moves", () => {
+  /* A published file of CPC, as the build copies it into public/. */
+  const published = (name: string) =>
+    JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026", name), "utf8"));
+
+  /* The chart of one total tile, found by the tile label. */
+  function chartOf(label: string) {
+    const totals = screen.getByRole("group", { name: "Move Totals" });
+    const tile = within(totals).getByText(label).parentElement!;
+    return within(tile).getByRole("img");
+  }
+
+  /* The week and the count of each mark of a chart. */
+  const marks = (chart: HTMLElement) =>
+    [...chart.querySelectorAll("[data-week]")].map((mark) => [Number(mark.getAttribute("data-week")), Number(mark.getAttribute("data-value"))]);
+
+  it("shows the adds and drops of each week as bars and each week with a trade as a dot for The Blue Tent of CPC week 8", async () => {
+    await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
+    expect(marks(chartOf("Adds"))).toEqual([5, 1, 2, 4, 1, 1, 6, 3].map((value, index) => [index + 1, value]));
+    expect(marks(chartOf("Drops"))).toEqual([4, 1, 2, 4, 1, 1, 6, 3].map((value, index) => [index + 1, value]));
+    expect(marks(chartOf("Trades"))).toEqual([
+      [1, 1],
+      [4, 1],
+    ]);
+  });
+
+  it("gives each of the three tiles a text of its trend", async () => {
+    await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
+    expect(chartOf("Adds").getAttribute("aria-label")).toBe("The most adds in one week: 6, in week 7.");
+    expect(chartOf("Drops").getAttribute("aria-label")).toBe("The most drops in one week: 6, in week 7.");
+    expect(chartOf("Trades").getAttribute("aria-label")).toBe("Trades in week 1 and week 4.");
   });
 });

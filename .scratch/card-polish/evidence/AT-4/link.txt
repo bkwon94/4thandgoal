@@ -1,0 +1,3 @@
+# The Manager page link of the open panel of game 4, read with agent-browser eval on http://127.0.0.1:4173/2026/week-08/ (CLIENT=cpc pnpm build at a44daee5).
+/2026/managers/2/ | text: Manager page of All You Need Is Love | pill bg: rgb(255, 255, 255) | label color: rgb(20, 20, 20)
+# roster_id 2 is All You Need Is Love in clients/cpc/published/2026/managers.json. The read ran in the dark theme, where the pill fill is white.
