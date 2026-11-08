@@ -10,9 +10,9 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, AT-14, an
 
 **Status:** ready-for-agent
 
-- [ ] A test passes `children` to `Hero` under `@ts-expect-error`, and the typecheck passes (AT-14).
-- [ ] The title of each of the six first heroes measures 40px and weight 300 (AT-2).
-- [ ] Each eyebrow has the same computed font, size, case, tracking, and color (AT-3).
-- [ ] Each meta line is 16px and takes two lines or fewer at 375 px (AT-4).
-- [ ] No hero shows a scan line on entry, and the global stylesheet holds no scan-line rule (AT-39).
-- [ ] `make check-fast` passes.
+- [x] A test passes `children` to `Hero` under `@ts-expect-error`, and the typecheck passes (AT-14).
+- [x] The title of each of the six first heroes measures 40px and weight 300 (AT-2).
+- [x] Each eyebrow has the same computed font, size, case, tracking, and color (AT-3).
+- [x] Each meta line is 16px and takes two lines or fewer at 375 px (AT-4).
+- [x] No hero shows a scan line on entry, and the global stylesheet holds no scan-line rule (AT-39).
+- [x] `make check-fast` passes.
