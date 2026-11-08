@@ -271,7 +271,7 @@ describe("Reduced motion on the manager page", () => {
   });
 
   it("shows the points line whole, with no draw in progress", async () => {
-    render(<SeasonSoFar manager={managerWithOdds()} />);
+    render(<SeasonSoFar manager={managerWithOdds()} teams={12} />);
     const line = screen.getByRole("img", { name: "Points per week against the league median" });
     const team = line.querySelector("[data-draw]")!;
     // A drawn path shows its full length: the first dash of the dash array is the whole normalized length.
@@ -280,5 +280,19 @@ describe("Reduced motion on the manager page", () => {
       () => line.querySelectorAll("[data-result]").forEach((dot) => expect((dot as HTMLElement).style.opacity).not.toBe("0")),
       { timeout: 50 },
     );
+  });
+
+  it("shows each arc of the Grade dial lit at once, with no wait and no stagger", async () => {
+    render(<SeasonSoFar manager={managerWithOdds()} teams={12} />);
+    const dial = screen.getByRole("list", { name: "Grade Dial" });
+    const arcs = within(dial).getAllByRole("img");
+    const lit = () => arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length);
+    // The fixture entry ranks 1st, 4th, 7th, and 10th on the four parts.
+    expect(lit()).toEqual([12, 9, 6, 3]);
+    // The dial never darkens the lit blades to wait for the view, and no blade carries a stagger delay.
+    await new Promise((done) => setTimeout(done, 50));
+    expect(dial.hasAttribute("data-wait")).toBe(false);
+    expect(lit()).toEqual([12, 9, 6, 3]);
+    dial.querySelectorAll<SVGElement>("[data-blade]").forEach((blade) => expect(blade.style.transitionDelay).toBe(""));
   });
 });

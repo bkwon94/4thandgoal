@@ -2,9 +2,10 @@
  * Tests for the manager page route. Each test builds a temp public/ folder with a week page, the managers file, and the rankings file.
  * They read the static params and what a reader sees: the back link, the hero with the grade, the tiles, and the chips, then the chapters.
  * The Roster chapter reads a tile for each slot rank of the grade, then the ranks of the grade parts.
+ * The Grade dial test reads the published managers file and rankings file of CPC, week 8.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -253,5 +254,28 @@ describe("ManagerPage", () => {
       ["Top Performers", "#top-performers"],
       ["Moves", "#moves"],
     ]);
+  });
+});
+
+describe("The Grade dial in Season So Far", () => {
+  /* A published file of CPC, as the build copies it into public/. */
+  const published = (name: string) =>
+    JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026", name), "utf8"));
+
+  it("shows A, the grade read, and arcs 4th, 6th, 7th, and 7th for The Blue Tent of CPC week 8", async () => {
+    await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
+    const season = within(document.getElementById("season")!);
+    const grade = within(season.getByRole("group", { name: "Roster Grade" }));
+    expect(grade.getByText("A")).toBeTruthy();
+    expect(grade.getByText("Strong at QB and TE. Soft at RB.")).toBeTruthy();
+    const arcs = within(grade.getByRole("list", { name: "Grade Dial" })).getAllByRole("img");
+    expect(arcs.map((arc) => arc.getAttribute("aria-label"))).toEqual([
+      "Projection Ahead: 4th of 12, 45% of the grade",
+      "Season Production: 6th of 12, 30% of the grade",
+      "Trade Value: 7th of 12, 10% of the grade",
+      "Depth And Holes: 7th of 12, 15% of the grade",
+    ]);
+    expect(arcs.map((arc) => arc.querySelectorAll("[data-blade]").length)).toEqual([12, 12, 12, 12]);
+    expect(arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length)).toEqual([9, 7, 6, 6]);
   });
 });
