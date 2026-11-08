@@ -58,6 +58,8 @@ const LINE_ALPHA = 0.4;
 const SLIDE_PX = 4;
 /* The hero must be in the view by about 40 percent before the settle starts (PRD). */
 const ENTRY_RATIO = 0.4;
+/* The time in ms that the hint takes to fade after the first touch (PRD). */
+const HINT_FADE_MS = 300;
 
 /* The parts of the page that the runner draws on and reads from. */
 export type SceneParts = {
@@ -90,6 +92,8 @@ type Frame = {
   shown: number | null;
   selected: number | null;
   hint: boolean;
+  // The opacity of the hint, from 1 to 0 during its fade.
+  hintAlpha: number;
 };
 
 function paint(ctx: CanvasRenderingContext2D, scene: HeroScene, colors: SceneColors, font: string, frame: Frame) {
@@ -166,8 +170,10 @@ function paint(ctx: CanvasRenderingContext2D, scene: HeroScene, colors: SceneCol
     ctx.fillText(scene.margin.text, layout.mark.x, layout.mark.y + layout.mark.height / 2);
   }
   if (frame.hint && layout.hint) {
+    ctx.globalAlpha = frame.hintAlpha;
     ctx.fillStyle = colors.muted;
     ctx.fillText(HINT_TEXT, layout.hint.x, layout.hint.y + layout.hint.height / 2);
+    ctx.globalAlpha = 1;
   }
 }
 
@@ -193,6 +199,8 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
   let away = true;
   let selected: number | null = null;
   let hint = !hintSeen();
+  // The time that the fade of the hint started, or null when the hint does not fade. The hint stays until the fade ends.
+  let hintFadeAt: number | null = null;
   let finger: { id: number; x: number; y: number; slid: boolean } | null = null;
   let alive = true;
 
@@ -234,16 +242,25 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
       shown: shownIndex(),
       selected: rest ? selected : null,
       hint: hint && settles,
+      hintAlpha: hintFadeAt === null ? 1 : Math.max(0, 1 - (performance.now() - hintFadeAt) / HINT_FADE_MS),
     });
   }
 
   function tick() {
     loop = 0;
     if (state === "settle" && phaseAt(performance.now() - startedAt) === "rest") state = "rest";
+    // The last frame of the fade draws the hint at zero, and the next frame has no hint.
+    if (hintFadeAt !== null && performance.now() - hintFadeAt >= HINT_FADE_MS) endHintFade();
     draw();
     mark();
-    // At rest the loop stops, so the scene does no work until a tap or a slide (story 38).
-    if (state === "settle" || state === "drift") loop = requestAnimationFrame(tick);
+    // At rest the loop stops, so the scene does no work until a tap or a slide (story 38). A fade of the hint is the one
+    // exception, and its loop stops when the fade ends.
+    if (state === "settle" || state === "drift" || hintFadeAt !== null) loop = requestAnimationFrame(tick);
+  }
+
+  function endHintFade() {
+    hint = false;
+    hintFadeAt = null;
   }
 
   function stop() {
@@ -287,6 +304,8 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
     // A scene out of the view does no work. A settle that leaves plays again in full on the next entry.
     stop();
     if (settles && state === "settle") state = "idle";
+    // A fade that the loop cannot finish ends now, so the hint does not wait for a loop that is stopped.
+    if (hintFadeAt !== null) endHintFade();
   }
 
   /* The point of a pointer event in the pixels of the box. */
@@ -298,14 +317,17 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
   function select(at: { x: number; y: number }) {
     if (!layout) return;
     const index = nearestLight(layout.points, at);
-    if (hint) {
-      hint = false;
+    if (hint && hintFadeAt === null) {
       rememberHint();
+      // Under reduced motion the hint goes at once. Else it fades over a short loop.
+      if (motionOff) hint = false;
+      else hintFadeAt = performance.now();
     }
     if (index !== selected) selected = index;
-    // One frame per tap or slide, and no loop (PRD).
+    // One frame per tap or slide, and no loop (PRD). The loop of the fade of the hint is the exception.
     draw();
     mark();
+    if (hintFadeAt !== null && !loop) loop = requestAnimationFrame(tick);
   }
 
   // A tap or a slide during the settle does nothing. The selection waits for rest (PRD).
