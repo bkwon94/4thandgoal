@@ -88,8 +88,12 @@ The page that lists the twelve teams of a season and links to each manager page.
 _Avoid_: Roster list, team list, directory
 
 **Hero**:
-The loud top surface of each page, with the grid texture and the brand glow. It stays dark in both themes. On a manager page it holds the avatar, the team name, the grade, and the record.
+The loud top surface of each page, with the grid texture and the brand glow. It stays dark in both themes. It holds its content in the six hero slots. On a manager page it holds the avatar, the team name, the grade, and the record.
 _Avoid_: Header, banner, masthead, title block
+
+**Hero slot**:
+One of the six named places of a hero, in a fixed order: eyebrow, title, meta, feature, stats, and action. Only the title is required. The feature holds the one part that is unique to a page.
+_Avoid_: Region, section, area, child
 
 **Bench points**:
 The points a team left on its bench in a week: the best lineup's points minus the lineup it started.
