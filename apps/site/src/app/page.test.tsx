@@ -26,20 +26,22 @@ afterEach(() => {
 });
 
 describe("HomePage", () => {
-  it("opens the hero on the Matchup of the Week of the latest week, with the margin as the big number", async () => {
+  it("opens the hero on the Matchup of the Week of the latest week, with the winner by the margin as the title", async () => {
     const Home = await homeOfCpcWithoutReport();
     render(<Home />);
     const hero = screen.getByRole("region", { name: "Matchup of the Week" });
-    // CPC week 8: The Blue Tent over London Cooking, 100.31 to 98.88.
+    // CPC week 8: The Blue Tent over London Cooking, 100.31 to 98.88 (AT-10).
     expect(within(hero).getByText("Week 08 // Matchup of the Week")).toBeTruthy();
-    expect(within(hero).getByText("Closest Finish · Margin")).toBeTruthy();
-    expect(within(hero).getByText("1.43")).toBeTruthy();
+    expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("The Blue Tent by 1.43");
+    expect(within(hero).getByText("Closest Finish")).toBeTruthy();
     expect(within(hero).getByText("The Blue Tent")).toBeTruthy();
     expect(within(hero).getByText("100.31")).toBeTruthy();
     expect(within(hero).getByText("London Cooking")).toBeTruthy();
     expect(within(hero).getByText("98.88")).toBeTruthy();
-    // The hero shows the first sentence of the blurb only. The pipeline rewrites blurbs, so the test reads the fixture.
-    const sentence = hero.querySelector("p")!.textContent!;
+    // The first sentence of the blurb shows under the hero, outside its frame. The pipeline rewrites blurbs, so the test
+    // reads the fixture.
+    expect(hero.querySelector("p")).toBeNull();
+    const sentence = hero.nextElementSibling!.querySelector("p")!.textContent!;
     expect(week8.blurbs.motw.startsWith(sentence)).toBe(true);
     expect(sentence.length).toBeLessThan(week8.blurbs.motw.length);
     expect(sentence.endsWith(".")).toBe(true);
@@ -57,10 +59,14 @@ describe("HomePage", () => {
     const Home = await homeOfCpcWithoutReport();
     render(<Home />);
     const main = screen.getByRole("main");
+    const hero = within(main).getByRole("region", { name: "Matchup of the Week" });
+    // The title of the hero is an h2 too, so the order of the chapters skips it.
     const order = [
       screen.getByRole("heading", { level: 1 }),
-      within(main).getByRole("region", { name: "Matchup of the Week" }),
-      ...within(main).getAllByRole("heading", { level: 2 }),
+      hero,
+      ...within(main)
+        .getAllByRole("heading", { level: 2 })
+        .filter((heading) => !hero.contains(heading)),
     ];
     expect(order.slice(2).map((heading) => heading.textContent)).toEqual([
       "Week 8 in four numbers",
@@ -193,12 +199,12 @@ async function homeAt(root: string) {
 }
 
 describe("HomePage of the NorCal data", () => {
-  it("shows 10.62 as the big number, Mitseeker5000 first, and one row for week 8", async () => {
+  it("shows kaiedmonds by 10.62 as the title, Mitseeker5000 first, and one row for week 8", async () => {
     const Home = await homeWithoutReport("norcal");
     render(<Home />);
     const hero = screen.getByRole("region", { name: "Matchup of the Week" });
     // NorCal week 8: kaiedmonds over The Mean Machine, 132.38 to 121.76.
-    expect(within(hero).getByText("10.62")).toBeTruthy();
+    expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("kaiedmonds by 10.62");
     expect(within(hero).getByText("kaiedmonds")).toBeTruthy();
     expect(within(hero).getByText("The Mean Machine")).toBeTruthy();
     const rows = within(screen.getByRole("list", { name: "Top three" })).getAllByRole("listitem");
@@ -223,8 +229,11 @@ describe("HomePage parts from the registry", () => {
   it("hides the Power Rankings chapter when the file is missing and still lists the weeks", async () => {
     const Home = await homeOver();
     render(<Home />);
+    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
+    // The title of the hero is an h2 too, so the list of the chapters skips it.
     const headings = within(screen.getByRole("main"))
       .getAllByRole("heading", { level: 2 })
+      .filter((heading) => !hero.contains(heading))
       .map((heading) => heading.textContent);
     expect(headings).toEqual(["Week 6 in four numbers", "Tools", "Weekly Reports"]);
     expect(screen.queryByRole("list", { name: "Top three" })).toBeNull();

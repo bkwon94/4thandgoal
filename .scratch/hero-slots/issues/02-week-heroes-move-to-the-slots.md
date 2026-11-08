@@ -10,8 +10,8 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-5, AT-6, AT-10, AT-11, a
 
 **Status:** ready-for-agent
 
-- [ ] The title of the Matchup hero reads "The Blue Tent by 1.43" on the week page and on the home page (AT-10).
-- [ ] At 375 px the week hero stacks in one column in the slot order (AT-6).
-- [ ] The share bar is the last part inside the week hero (AT-5).
-- [ ] The blurb shows under the hero, outside its frame, in full, with no fold (AT-11, AT-41).
-- [ ] The tests of both Matchup heroes pass with the new slots.
+- [x] The title of the Matchup hero reads "The Blue Tent by 1.43" on the week page and on the home page (AT-10).
+- [x] At 375 px the week hero stacks in one column in the slot order (AT-6).
+- [x] The share bar is the last part inside the week hero (AT-5).
+- [x] The blurb shows under the hero, outside its frame, in full, with no fold (AT-11, AT-41).
+- [x] The tests of both Matchup heroes pass with the new slots.
