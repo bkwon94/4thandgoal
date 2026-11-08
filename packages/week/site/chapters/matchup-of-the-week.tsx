@@ -68,10 +68,6 @@ export function matchupTitle(pick: Pick): string {
 /* The small caps line of the reason in the hero, such as "Closest Finish". It sits on a plate, as every text line of a hero. */
 const REASON = "plate w-fit font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase";
 
-/* The share bar has no width of its own. From the tablet tier up the action slot sits in a row and takes the width of
-   its content, so the bar takes the inner width of the hero: the page column less the side space and the border. */
-const SHARE_WIDTH = "w-full tablet:w-[calc(var(--container-page)-2*var(--spacing-hero-x)-2px)]";
-
 export function MatchupOfTheWeek({
   week,
   dates,
@@ -113,8 +109,9 @@ export function MatchupOfTheWeek({
             <TeamRow side={second} avatars={avatars} lead={false} />
           </Rise>
         }
+        // The share bar has no width of its own, so it takes the full width of the action slot.
         action={
-          <Rise step={2} className={SHARE_WIDTH}>
+          <Rise step={2} className="w-full">
             <ShareBar share={shareOf(first.score, second.score)} tone="hero" />
           </Rise>
         }

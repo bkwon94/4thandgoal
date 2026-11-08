@@ -45,11 +45,14 @@ const META = "plate w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-b
 
 /* The slots on a phone stack in one column. From the tablet tier up the hero takes two rows: the eyebrow and the title
    top left with the meta top right, the feature in the open middle, then the stats bottom left and the action bottom
-   right. The grid keeps the markup in the slot order, so a screen reader reads the same order at each width. */
+   right. The grid keeps the markup in the slot order, so a screen reader reads the same order at each width.
+   The title has the priority in the top row: the meta column takes the width of the meta up to 40 percent of the hero,
+   so a long meta wraps and the title keeps its width. The action takes the free width of the bottom row, so content
+   with no width of its own, such as the share bar, fills it. */
 function Slots({ eyebrow, title, meta, feature, stats, action, level = 1 }: HeroSlots) {
   const Heading = level === 1 ? "h1" : "h2";
   return (
-    <div className="flex flex-col gap-sp-6 tablet:grid tablet:grid-cols-[minmax(0,1fr)_auto] tablet:gap-x-sp-6">
+    <div className="flex flex-col gap-sp-6 tablet:grid tablet:grid-cols-[minmax(0,1fr)_fit-content(40%)] tablet:gap-x-sp-6">
       <div className="flex flex-col gap-sp-2 tablet:col-start-1">
         {eyebrow !== undefined && (
           <div data-hero-slot="eyebrow" className={EYEBROW}>
@@ -87,7 +90,7 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1 }: Hero
             </div>
           )}
           {action !== undefined && (
-            <div data-hero-slot="action" className="flex flex-wrap items-center gap-sp-2 tablet:justify-end">
+            <div data-hero-slot="action" className="flex flex-wrap items-center gap-sp-2 tablet:grow tablet:justify-end">
               {action}
             </div>
           )}
