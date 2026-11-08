@@ -57,6 +57,10 @@ afterEach(() => {
   cleanup();
 });
 
+/* The filled hero slots of a hero, in the order of the markup. */
+const slotsOf = (hero: HTMLElement) => [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
+const slotText = (hero: HTMLElement, slot: string) => hero.querySelector(`[data-hero-slot=${slot}]`)?.textContent;
+
 describe("AnalyzeResult", () => {
   it.each([
     ["yes", "Yes"],
@@ -78,11 +82,30 @@ describe("AnalyzeResult", () => {
     expect(trade.compareDocumentPosition(side) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it("opens the decision chapter with a level-two heading", () => {
+  it("opens the decision chapter with the verdict word as a level-two heading", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const heading = screen.getByRole("heading", { level: 2, name: "Decision for Pukancun on 3" });
+    const heading = screen.getByRole("heading", { level: 2, name: "Not as is" });
     const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
     expect(heading.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  /* AT-9: the verdict fills the slots the spec maps, and the hero ends at the fairness block with no empty stats or action. */
+  it("puts the verdict in the slots: the side, the word, the reason, then the fairness block last", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const hero = screen.getByRole("region", { name: "The Verdict" });
+    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta", "feature"]);
+    expect(slotText(hero, "eyebrow")).toBe("Decision for Pukancun on 3");
+    expect(slotText(hero, "title")).toBe("Not as is");
+    expect(slotText(hero, "meta")).toBe(fixture.decision.reason);
+    const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
+    expect(within(feature).getByText("Fairness")).toBeTruthy();
+    expect(hero.querySelector("[data-hero-rule]")).toBeNull();
+  });
+
+  it("leaves out the feature slot when the document has no fairness block and no note", () => {
+    render(<AnalyzeResult doc={{ ...fixture, fairness: undefined }} />);
+    const hero = screen.getByRole("region", { name: "The Verdict" });
+    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta"]);
   });
 
   it("shows no letter grade anywhere in the result", () => {

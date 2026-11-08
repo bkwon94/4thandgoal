@@ -10,8 +10,8 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-9 and AT-12.
 
 **Status:** ready-for-agent
 
-- [ ] The analyzer form and the analyzer result use the slots, as the table of the spec maps them.
+- [x] The analyzer form and the analyzer result use the slots, as the table of the spec maps them.
 - [ ] The analyzer result of grade-clarity trade A shows no empty area for stats or an action, from a run on the real API (AT-9).
-- [ ] The 404 `h1` reads "Page not found", and a large "404" shows in the hero (AT-12).
+- [x] The 404 `h1` reads "Page not found", and a large "404" shows in the hero (AT-12).
 - [ ] The easter egg of the 404 still works, if it is on the Spec branch.
-- [ ] The tests of the analyzer and 404 heroes pass with the new slots.
+- [x] The tests of the analyzer and 404 heroes pass with the new slots.
