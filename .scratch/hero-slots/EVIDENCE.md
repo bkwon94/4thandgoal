@@ -46,9 +46,9 @@ Observation: Each shot shows the red and gray bar of the share of the points as 
 ## AT-6: One column on a phone
 
 App: site
-Then: The scene, the eyebrow, the title, the meta, the team rows, and the share bar stack in one column, in that order.
+Then: The eyebrow, the title, the meta, the scene, the team rows, and the share bar stack in one column, in that order.
 Files: `evidence/AT-5/375-light.png`, `evidence/AT-5/375-dark.png`, `evidence/AT-5/parts.json`
-Observation: At 375 px the shots show one column: "WEEK 08 // MATCHUP OF THE WEEK", "The Blue Tent by 1.43", the dates, the scene, the team rows under "CLOSEST FINISH", then the share bar. `parts.json` at 375 px gives the tops eyebrow 106, title 136, meta 268, scene 345, feature 499, and action 715. So the scene sits under the meta, not first.
+Observation: At 375 px the shots show one column: "WEEK 08 // MATCHUP OF THE WEEK", "The Blue Tent by 1.43", the dates, the scene, the team rows under "CLOSEST FINISH", then the share bar. `parts.json` at 375 px gives the tops eyebrow 106, title 136, meta 268, scene 345, feature 499, and action 715. So the scene sits under the meta and above the team rows.
 
 ## AT-7: Two rows on a tablet
 

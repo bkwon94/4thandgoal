@@ -55,7 +55,7 @@ App: site
 Stories: 9
 Given: The week page of week 8.
 When: The reader opens the page at 375 px.
-Then: The scene, the eyebrow, the title, the meta, the team rows, and the share bar stack in one column, in that order.
+Then: The eyebrow, the title, the meta, the scene, the team rows, and the share bar stack in one column, in that order.
 Evidence: screenshots of the week hero at 375 px in the light theme and the dark theme.
 
 AT-7: Two rows on a tablet
@@ -434,4 +434,4 @@ Out of scope "a tap or a slide during the settle": no test. Reason: the spec acc
 
 ## Revisions
 
-- 2026-11-08, Brian: the settle takes about 1.5 s, so AT-16 reads 0.4 s and 1.8 s. The scenes of rankings, midseason, and the analyzer leave the spec, so AT-19 to AT-22 retire and AT-35 changes. AT-43 adds the title before the scene on a phone, AT-44 adds the static heroes, and AT-45 adds the manager link of rank 1.
+- 2026-11-08, Brian: the settle takes about 1.5 s, so AT-16 reads 0.4 s and 1.8 s. The scenes of rankings, midseason, and the analyzer leave the spec, so AT-19 to AT-22 retire and AT-35 changes. AT-43 adds the title before the scene on a phone, and AT-6 takes the same order, AT-44 adds the static heroes, and AT-45 adds the manager link of rank 1.
