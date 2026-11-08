@@ -19,13 +19,14 @@ Rules that hold: ADR 0024 (the hero is the one loud surface), the ADR 0025 reada
 - The Open card keeps the height, the focus blur, and the spring of the Showcase Card item. ADR 0028 records it. `decisions/01-grill-open-card-motion.md`.
 - The large picture of the Index list is not the team avatar. Sleeper serves 400px at most, and only 8 of 24 teams have that size. `decisions/05-research-avatar-size.md`.
 - One Open card part: GameCard keeps its closed layout with the Showcase drawer, LadderCard takes the full Showcase shell with a large rank. GameCard has three chips. `decisions/02-prototype-open-card-content.md`.
+- The Grade dial is four equal arcs, one per part, lit by rank. Index cards keep the letter box with four small arcs in a row. Season So Far shows a 2x2 grid. `decisions/03-prototype-grade-dial-look.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the Grade dial look? `decisions/03-prototype-grade-dial-look.md`.
 - Which tiles become Trend tiles, and what does each trend plot? `decisions/04-grill-trend-tile-scope.md`.
 - What do the chips of the Index list filter on? `decisions/06-grill-index-list-chips.md`.
 - How does the Index list sit at 390px, and what fills its large picture? `decisions/07-prototype-index-list-phone.md`.
+- Where does the site get the grade weights? `decisions/09-spec-grade-weights-source.md`.
 - What steps fill the Ready halo? `decisions/08-spec-ready-halo-steps.md`.
 
 ## OUT OF SCOPE
