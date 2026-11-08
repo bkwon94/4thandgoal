@@ -3,7 +3,7 @@
  * its playoff odds, with the rank-1 team as the flare and its label at rest (decision 07).
  */
 import type { HeroScene, SceneLight } from "@cpc/design/parts/scene-math";
-import type { Odds, RankingsWeek } from "../schema/rankings-types";
+import type { Odds, RankingsRow, RankingsWeek } from "../schema/rankings-types";
 
 /* The height of a light: the playoff percent while the race is open, 100 for a clinched team, 0 for a team that is out. */
 function heightOf(odds: Odds): number {
@@ -19,16 +19,22 @@ export function oddsText(odds: Odds): string {
   return `${odds.playoff}%`;
 }
 
+/* A type guard, so the rows that pass the filter carry their odds in the type. */
+function hasOdds(row: RankingsRow): row is RankingsRow & { odds: Odds } {
+  return row.odds !== undefined;
+}
+
 /*
  * The scene of one week of the rankings file. The rows are in rank order, so rank 1 sits on the left. A week from
  * before the odds engine ran has no odds, so it gets no scene and the hero keeps its static grid.
  */
 export function rankingsScene(week: RankingsWeek): HeroScene | undefined {
-  if (week.rows.some((row) => !row.odds)) return undefined;
-  const lights: SceneLight[] = week.rows.map((row, index) => ({
+  const rows = week.rows.filter(hasOdds);
+  if (rows.length < week.rows.length) return undefined;
+  const lights: SceneLight[] = rows.map((row, index) => ({
     x: index,
-    y: heightOf(row.odds!),
-    label: `${row.name} · ${oddsText(row.odds!)}`,
+    y: heightOf(row.odds),
+    label: `${row.name} · ${oddsText(row.odds)}`,
     tone: index === 0 ? "flare" : "bright",
   }));
   return { lights, guides: [], margin: null, restIndex: 0, mode: "settle" };
