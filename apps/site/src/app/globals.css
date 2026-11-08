@@ -454,6 +454,71 @@
     }
 }
 
+/* The Open card, after the method of the Showcase Card item (ADR 0028). The part sets --oc-dur and --oc-spring, the
+   curve from its spring sampler, and sets --oc-dur to 0s with reduced motion. A child selector of the open state and a
+   long linear() curve cannot be Tailwind classes cleanly, so they live here. */
+@layer components {
+    /* The height grows from 0fr to 1fr, the one height method of the site. The inner box clips the panel while it grows. */
+    .oc-drawer {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows var(--oc-dur) var(--oc-spring);
+    }
+    .open-card[data-open="true"] .oc-drawer {
+        grid-template-rows: 1fr;
+    }
+    .oc-inner {
+        min-height: 0;
+        overflow: hidden;
+    }
+    /* The details come into focus from a 6px blur with a short rise, a beat behind the height, so no half-drawn text shows. */
+    .oc-panel {
+        opacity: 0;
+        filter: blur(6px);
+        translate: 0 calc(var(--spacing-sp-3) * -1);
+        transition:
+            opacity calc(var(--oc-dur) * 0.67) ease,
+            filter calc(var(--oc-dur) * 0.9) ease,
+            translate var(--oc-dur) var(--oc-spring);
+    }
+    .open-card[data-open="true"] .oc-panel {
+        opacity: 1;
+        filter: blur(0);
+        translate: 0 0;
+        transition-delay: calc(var(--oc-dur) * 0.22);
+    }
+    /* The chevron turns on the same spring as the height. */
+    .oc-chevron {
+        transition: rotate var(--oc-dur) var(--oc-spring);
+    }
+    .open-card[data-open="true"] .oc-chevron {
+        rotate: 180deg;
+    }
+    /* The label of the action pill rolls up to a copy of itself. A hover exists only on a fine pointer, so a tap never rolls it. */
+    .oc-roll {
+        position: relative;
+        display: block;
+        overflow: hidden;
+        line-height: 1.25;
+    }
+    .oc-roll > span,
+    .oc-roll::after {
+        display: block;
+        transition: translate var(--oc-dur) cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .oc-roll::after {
+        content: attr(data-label);
+        position: absolute;
+        inset: 100% 0 auto;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        a:hover > .oc-roll > span,
+        a:hover > .oc-roll::after {
+            translate: 0 -100%;
+        }
+    }
+}
+
 /* The static HTML holds the start state of every reveal: no opacity and a small rise.
    With reduced motion or with no script, the content shows at rest from the first paint. */
 @media (prefers-reduced-motion: reduce), (scripting: none) {

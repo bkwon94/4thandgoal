@@ -62,8 +62,9 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   longestNameRoute(),
   "/analyze/",
   LATEST_WEEK_ROUTE,
-  // The open recap of game 3 of the latest week. Each game card button controls the recap panel of its game.
-  { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]' },
+  // The open recap of game 3 of the latest week. The head button and the chevron of each game card control the recap
+  // panel of its game. The chevron has its own label, so the selector names the head.
+  { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]:not([aria-label])' },
   "/",
   // The open strip of weeks: a tap on the week chip of the top band opens the strip of the weeks of the season.
   { route: "/", tap: "header details > summary", scope: 'header nav[aria-label="Weeks of the season"]' },
