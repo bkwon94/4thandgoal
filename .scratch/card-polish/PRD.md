@@ -17,7 +17,7 @@ Five parts upgrade the cards, the tiles, the analyzer, and the Managers index. E
 
 1. The **Open card**, from the Showcase Card item. One part opens and closes every card that holds more detail. It opens with a height change on a spring, and its details come into focus from a blur. GameCard and LadderCard use it first, then ManagerCard, AwardTile, and TradeCard.
 2. The **Grade dial**, from the Health Tracker item. Four equal arcs, one for each part of the Roster grade, each lit by its rank among the teams.
-3. The **Trend tile**, from the Lime Metrics item. Seven tiles add a small chart of the same number from week 1 to the page week.
+3. The **Trend tile**, from the Lime Metrics item. Five tiles add a small chart of the same number from week 1 to the page week.
 4. The **Ready halo**, from the Send Halo item. The submit button of the Stack glows brighter as each side of the trade fills.
 5. The **Index list**, from the Team Roster item. The Managers index becomes a ledger of the teams, filtered by chips of the playoff race. On a phone a tap opens a row in place. On desktop the ledger sits beside a sticky stage.
 
@@ -58,8 +58,8 @@ The hero stays the one loud surface of each page (ADR 0024). The desktop stage i
 
 24. As a reader of a week page, I want the top score tile to show the top score of each week of the season, so that I see if this week was a big one.
 25. As a reader, I want the median tile to show the league median of each week as a stepped area, so that I see if scoring rises or falls.
-26. As a reader, I want the closest tile to show the margin of the closest game of each week, so that I see how tight this week was.
-27. As a reader, I want the Game Changer tile to show the points over projection of each Game Changer, so that I see how big this week's surprise was.
+26. As a reader, I want the closest tile to stay a plain number, so that no trend shows with weeks missing.
+27. As a reader, I want the Game Changer tile to stay a plain number, so that no trend shows with weeks missing.
 28. As a reader, I want the bar of the page week lit, so that I find this week in the trend.
 29. As a reader of an older week page, I want the trend to stop at that week, so that the page never shows a later week.
 30. As a manager, I want the Adds and Drops tiles on a manager page to show the adds and drops of each week as bars, so that I see when a team was active.
@@ -129,10 +129,11 @@ The hero stays the one loud surface of each page (ADR 0024). The desktop stage i
 ### Trend tile
 
 - `Tile` takes an optional trend: a list of week points, the page week, and a chart kind of `bars`, `step`, or `dots`. A tile with no trend renders as it does now.
-- The charts follow the Lime Metrics item: a bar series and a stepped area. The donut is not used, because none of the seven numbers has parts of a whole.
-- The trends are these. Top score: the top score of each week, bars. Median: the league median of each week, a stepped area. Closest: the margin of the closest game of each week, bars. Game Changer: the points over projection of each week's Game Changer, bars. Adds and Drops: the adds and drops of the manager each week, bars. Trades: the trades of the manager each week, dots.
+- The charts follow the Lime Metrics item: a bar series and a stepped area. The donut is not used, because none of the five numbers has parts of a whole.
+- The trends are these. Top score: the highest points of any team each week, bars. Median: the median of each week, a stepped area. Adds and Drops: the adds and drops of the manager each week, bars. Trades: the trades of the manager each week, dots.
+- Closest and Game Changer stay plain tiles. Only weeks 6 to 8 of CPC and week 8 of NorCal are published, and `managers.json` has no pairs and no projections, so these two have no full series (decision 04, comment).
 - The bar of the page week is lit. Each trend runs from week 1 to the page week, so an older week page shows no later week.
-- The week route loads the earlier weeks of the season at build time with the week data module it already uses. A pure function turns the weeks into the four series. The component gets the series as props (ADR 0012).
+- The week route reads the `weeks` of every manager in `managers.json` at build time. A pure function turns them into the two series. The top score of a week is the highest points of that week. The median of a week is the published median of that week, or else the median of the points of every team, with the rounding rule the week numbers already use. So the trend of the page week always equals the number on the tile. The component gets the series as props (ADR 0012).
 - The Moves tiles read the week list of moves that `managers.json` already holds.
 - Each Trend tile has a text alternative: the number, and one short sentence of the trend, for example "Highest since week 3".
 
@@ -166,7 +167,7 @@ A good test checks what a reader sees or what a function returns, not how the pa
 The seams, from the highest down:
 
 1. **The readability floor on the built export.** The existing floor check runs each route at 390px and 1280px in both themes, for both clients. The spec adds the open states: an open game card, an open ladder card, an open Index list row, the stage on desktop, and the Season So Far dial. Prior art: the floor spec and its rules spec in the site e2e folder.
-2. **The page render.** The existing page tests render a route with its real data and check the markup. They prove the Index list order, the chips and their counts, the trend series of an older week, and that a tile with no trend is unchanged. Prior art: the page test of the week route and of the home route.
+2. **The page render.** The existing page tests render a route with its real data and check the markup. They prove the Index list order, the chips and their counts, the trend series of an older week, the week 8 median from both sources, and that a tile with no trend is unchanged. Prior art: the page test of the week route and of the home route.
 3. **The part render.** A part test renders one part with real props and checks its behavior: the toggle states and `aria-expanded`, `inert` on a closed panel, the lit blade count of each arc, the text alternative of a Trend tile, the halo level for each count of filled checks. Prior art: the all-matchups, season-so-far, moves, and trade-form tests.
 4. **The pure functions.** Unit tests cover the race group of a team, the four week series, the halo level, and the spring curve sampler. Prior art: the trade helpers test of the analyzer.
 5. **Reduced motion.** The existing reduced-motion test proves each new part changes state at once under `prefers-reduced-motion`. Prior art: the site reduced-motion test.
@@ -177,6 +178,7 @@ The seams, from the highest down:
 
 - The Grade dial in the manager hero. The `hero-slots` spec owns every hero, and this spec does not touch the manager page hero.
 - A pipeline series for the trends, and the weights in `managers.json`. This spec changes the site only.
+- A trend on the Closest and Game Changer tiles. It needs a season series from the pipeline.
 - A fetch of the 168px full-size avatar in place of the 80px thumb. It is a pipeline change.
 - The tiles of Season So Far, Roster, the rankings, and every hero tile. Season So Far already has the points line. The others have no series.
 - The other Scrolltide items: Morph Navbar, Wordmark Bleed, and the easter-egg ideas.

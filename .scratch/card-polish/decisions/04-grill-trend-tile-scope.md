@@ -31,3 +31,7 @@ The chart types follow the Lime Metrics item: a bar series and a stepped area. I
 The tiles of Season So Far stay plain, because the points line above them already shows the trend. The tiles of Roster and of the rankings have no series. The hero tiles belong to `hero-slots`.
 
 The week numbers read the earlier `page.json` files of the season at build time (map decision, site only). Moves reads `moves.weeks` of `managers.json`.
+
+## Comments
+
+2026-11-07, during the acceptance tests: only weeks 6 to 8 of CPC and week 8 of NorCal are published, so the earlier `page.json` files cannot give a trend from week 1. Brian chose five Trend tiles on the site only. Top score and Median read every week from `managers.json`: the top score is the highest points of the week, and the median is the published median of the week, or else the median of the points of every team with the rounding rule of the week numbers. Adds, Drops, and Trades read `moves.weeks`. Closest and Game Changer stay plain tiles, because `managers.json` has no pairs and no projections. A later pipeline spec can add a season series for them, and the Trend tile takes it with no change.
