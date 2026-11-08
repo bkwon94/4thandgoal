@@ -21,11 +21,11 @@ Every hero on the site has the same structure and the same type on a phone. `Her
 - The scene replaces the scan line and the bend of Mesh Flow. `decisions/02-prototype-mesh-tune.md` closes as replaced.
 - ADR 0027 lets the canvas of the hero scene redraw on entry and on re-entry. It supersedes the scan line and the rule of transform and opacity only of ADR 0024 for that canvas alone. `docs/adr/0027-the-hero-scene-settles-on-a-canvas.md`.
 - The scene goes on the first hero of each page: the Matchup of the Week, the manager hero, power rankings, the analyzer form, the midseason opener and takeover, and the 404. The analyzer form drifts, then settles into the two sides when the verdict arrives. The analyzer result and the act titles keep the static grid. `decisions/07-spec-scene-per-hero.md`.
+- The canvas draws `accent`, `on-dark`, and `on-dark-muted` only, read once at mount from a hidden probe element as `rgb()` strings. The grid and the glow stay in CSS, so a switch of the theme needs no redraw. A brand test holds the three roles equal in both themes. `decisions/03-research-canvas-brand-color.md`.
 - The terms Hero slot and Hero scene go into `GLOSSARY.md`, and the term Hero names its slots. Brian, 2026-11-07.
 
 ## NOT YET SPECIFIED
 
-- How does the canvas get plain RGB numbers for the brand colors of each client? `decisions/03-research-canvas-brand-color.md`.
 - Does the blurb of the Matchup of the Week move under the hero, or fold behind "Read more"? `decisions/05-spec-matchup-blurb.md`.
 - The handoff to the spec. `decisions/04-spec-handoff.md`.
 
