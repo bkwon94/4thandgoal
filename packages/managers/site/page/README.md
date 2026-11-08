@@ -4,7 +4,7 @@
 
 - The managers index: one card per team in standings order, with the power rank, the playoff odds, the grade box, and the grade text.
 - The hero of a manager page, with the grade as the big number, the tiles Playoff, Bye, and Seed, and a W or L chip for each week.
-- The five chapters under the hero: Roster, Season So Far, Moves, Best Adds, and Top Performers.
+- The five chapters under the hero: Roster, Season So Far, Moves, Best Adds, and Top Performers. The Moves tiles are Trend tiles.
 - The slot ranks, the points line, the bench points, and the season numbers.
 - The Grade dial: four arcs, one for each part of the roster grade, each lit by its rank. Season So Far shows it under the letter and the read.
 - The weight of each part of the grade, a copy of `GRADE_WEIGHTS` of the pipeline that a test compares to the tunables file.

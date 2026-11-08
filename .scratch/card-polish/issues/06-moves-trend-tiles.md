@@ -10,7 +10,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-17 and AT-18.
 
 **Status:** ready-for-agent
 
-- [ ] The Blue Tent shows Adds bars 5, 1, 2, 4, 1, 1, 6, and 3 for weeks 1 to 8.
-- [ ] The Trades tile of The Blue Tent shows dots at week 1 and week 4 only.
-- [ ] Each of the three tiles has a text of its trend.
-- [ ] `make check-fast` passes.
+- [x] The Blue Tent shows Adds bars 5, 1, 2, 4, 1, 1, 6, and 3 for weeks 1 to 8.
+- [x] The Trades tile of The Blue Tent shows dots at week 1 and week 4 only.
+- [x] Each of the three tiles has a text of its trend.
+- [x] `make check-fast` passes.

@@ -279,3 +279,37 @@ describe("The Grade dial in Season So Far", () => {
     expect(arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length)).toEqual([9, 7, 6, 6]);
   });
 });
+
+describe("The Trend tiles of Moves", () => {
+  /* A published file of CPC, as the build copies it into public/. */
+  const published = (name: string) =>
+    JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026", name), "utf8"));
+
+  /* The chart of one total tile, found by the tile label. */
+  function chartOf(label: string) {
+    const totals = screen.getByRole("group", { name: "Move Totals" });
+    const tile = within(totals).getByText(label).parentElement!;
+    return within(tile).getByRole("img");
+  }
+
+  /* The week and the count of each mark of a chart. */
+  const marks = (chart: HTMLElement) =>
+    [...chart.querySelectorAll("[data-week]")].map((mark) => [Number(mark.getAttribute("data-week")), Number(mark.getAttribute("data-value"))]);
+
+  it("shows the adds and drops of each week as bars and each week with a trade as a dot for The Blue Tent of CPC week 8", async () => {
+    await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
+    expect(marks(chartOf("Adds"))).toEqual([5, 1, 2, 4, 1, 1, 6, 3].map((value, index) => [index + 1, value]));
+    expect(marks(chartOf("Drops"))).toEqual([4, 1, 2, 4, 1, 1, 6, 3].map((value, index) => [index + 1, value]));
+    expect(marks(chartOf("Trades"))).toEqual([
+      [1, 1],
+      [4, 1],
+    ]);
+  });
+
+  it("gives each of the three tiles a text of its trend", async () => {
+    await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
+    expect(chartOf("Adds").getAttribute("aria-label")).toBe("The most adds in one week: 6, in week 7.");
+    expect(chartOf("Drops").getAttribute("aria-label")).toBe("The most drops in one week: 6, in week 7.");
+    expect(chartOf("Trades").getAttribute("aria-label")).toBe("Trades in week 1 and week 4.");
+  });
+});
