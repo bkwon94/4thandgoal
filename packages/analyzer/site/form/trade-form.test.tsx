@@ -216,6 +216,30 @@ describe("TradeForm", () => {
     expect(submit().disabled).toBe(true);
   });
 
+  it("brightens the Ready halo with each check, reaches full only when the bar can grade, and dims on a remove", async () => {
+    // The halo is decoration, so it carries its level as data, and its opacity is the brightness the reader sees.
+    const halo = () => document.querySelector<HTMLElement>("[data-halo]")!;
+    const level = () => Number(halo().dataset.level);
+    expect(level()).toBe(0);
+    await pickTeam("Your Team", "Pukancun on 3");
+    await pickTeam("Team Two", "Blitz Bakers");
+    // Two teams and no player: 2 of 6, brighter than no team and below full.
+    expect(level()).toBeCloseTo(2 / 6, 2);
+    expect(Number(halo().style.opacity)).toBeGreaterThan(0);
+    await pickPlayers("Your Team", "Blitz Bakers", "Ben Two");
+    expect(level()).toBeCloseTo(4 / 6, 2);
+    expect(submit().disabled).toBe(true);
+    await pickPlayers("Team Two", "Pukancun on 3", "Ana One");
+    expect(level()).toBe(1);
+    expect(halo().style.opacity).toBe("1");
+    expect(submit().disabled).toBe(false);
+    fireEvent.click(removeButton("Ben Two"));
+    // The remove takes the get of Your Team and the give of Team Two: 4 of 6.
+    expect(level()).toBeCloseTo(4 / 6, 2);
+    expect(Number(halo().style.opacity)).toBeLessThan(1);
+    expect(submit().disabled).toBe(true);
+  });
+
   it("drops the players a side gives when its team changes, and keeps the players it gets", async () => {
     await pickTrade(TRADE);
     await pickTeam("Team Two", "Punt Punks");
