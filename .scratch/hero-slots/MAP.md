@@ -22,10 +22,11 @@ Every hero on the site has the same structure and the same type on a phone. `Her
 - The pull on entry replaces the scan line. On the analyzer form, the loading `Sweep` runs alone, with no tap pulse. Brian, 2026-11-07.
 - ADR 0027 lets the canvas of the hero redraw on entry and on a tap. It supersedes the scan line and the rule of transform and opacity only of ADR 0024 for that canvas alone. `docs/adr/0027-the-hero-grid-bends-on-a-canvas.md`.
 - The term Hero slot goes into `GLOSSARY.md`, and the term Hero names its slots. Brian, 2026-11-07.
+- A phone shows one column in the slot order. From the `tablet` tier up, the hero takes the two-row split of Tide. `meta` stays one or two lines at 16px, the week chips of the manager move to `feature`, the title of the Matchup is words, and an empty slot takes no space. `decisions/01-prototype-slot-layout.md`.
 
 ## NOT YET SPECIFIED
 
-- Do the six slots read well on a phone with real content, and what is the layout from the `tablet` tier up? `decisions/01-prototype-slot-layout.md`.
+- Does the blurb of the Matchup of the Week move under the hero, or fold behind "Read more"? `decisions/05-spec-matchup-blurb.md`.
 - What values of reach, depth, and peak alpha look right on a phone, and does the canvas grid line up with the CSS grid? `decisions/02-prototype-mesh-tune.md`.
 - How does the canvas get plain RGB numbers for the grid color and the glow center of each client? `decisions/03-research-canvas-brand-color.md`.
 - The handoff to the spec. `decisions/04-spec-handoff.md`.

@@ -4,7 +4,7 @@ Map: `.scratch/hero-slots/MAP.md`.
 
 **Kind:** spec
 
-**Blocked by:** 01, 02, 03
+**Blocked by:** 01, 02, 03, 05
 
 **Status:** open
 
