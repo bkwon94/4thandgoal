@@ -12,7 +12,7 @@
 
 ## Ports
 
-None.
+The browser storage: `scene-canvas.ts` reads and writes `window.localStorage` for the hint flag.
 
 ## Does not do
 
