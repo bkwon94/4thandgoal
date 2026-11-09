@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, AT-14, an
 
 **Blocked by:** 02, 03, and 04
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test passes `children` to `Hero` under `@ts-expect-error`, and the typecheck passes (AT-14).
 - [x] The title of each of the six first heroes measures 40px and weight 300 (AT-2).
