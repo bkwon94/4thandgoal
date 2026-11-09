@@ -67,7 +67,9 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
     <div role="dialog" aria-modal="true" aria-labelledby="egg-find-title" className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-gutter">
       <div aria-hidden="true" className="egg-scrim fixed inset-0 bg-band/75" />
       {motion && origin && phase === "egg" && (
-        <div aria-hidden="true">
+        // The box is fixed, so it is no item of the grid of the dialog. An item in the flow of the grid adds a row
+        // above the card and pushes the card down, and the card then jumps up when the ring goes at the tap.
+        <div aria-hidden="true" className="pointer-events-none fixed inset-0">
           <span className="egg-ripple" style={{ left: origin.x, top: origin.y }} />
           <span className="egg-ripple egg-ripple-late" style={{ left: origin.x, top: origin.y }} />
         </div>
