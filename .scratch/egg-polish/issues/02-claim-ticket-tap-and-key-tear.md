@@ -10,11 +10,11 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-9, AT-10, and AT-13 to A
 
 **Status:** ready-for-agent
 
-- [ ] A hunt test reads the ticket with the letter, the egg word, and the team after the three steps.
-- [ ] A hunt test taps a locked stub, reads the next missing step on it, and reads that the port got no claim.
-- [ ] A hunt test taps the stub and reads one claim through the port, then the CLAIMED stamp, then the end card.
-- [ ] A hunt test presses Enter, and another presses Space, and each reads one claim. The accessible name of the stub names the letter and the word.
-- [ ] A hunt test reads TAKEN and the stub back when the port answers that another manager was first.
-- [ ] A hunt test reads the error of a wrong passphrase and the stub back, then a second tear that claims.
-- [ ] A hunt test reads the block on the ticket when the letter fits no egg word of the manager.
-- [ ] The hunt test with motion off reads the stamp with no motion.
+- [x] A hunt test reads the ticket with the letter, the egg word, and the team after the three steps.
+- [x] A hunt test taps a locked stub, reads the next missing step on it, and reads that the port got no claim.
+- [x] A hunt test taps the stub and reads one claim through the port, then the CLAIMED stamp, then the end card.
+- [x] A hunt test presses Enter, and another presses Space, and each reads one claim. The accessible name of the stub names the letter and the word.
+- [x] A hunt test reads TAKEN and the stub back when the port answers that another manager was first.
+- [x] A hunt test reads the error of a wrong passphrase and the stub back, then a second tear that claims.
+- [x] A hunt test reads the block on the ticket when the letter fits no egg word of the manager.
+- [x] The hunt test with motion off reads the stamp with no motion.

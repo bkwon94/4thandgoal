@@ -8,6 +8,7 @@ import { TAP_GAP_MS } from "../listener/listener";
 import { EggsError, type Board } from "../lib/api";
 import { board, boardWith, fakeEggsApi, PASSPHRASE } from "../lib/fixtures/eggs-api";
 import { EggHunt } from "./egg-hunt";
+import { STAMP_MS, TEAR_MS } from "./claim-ticket";
 import { CRACK_MS } from "./find-card";
 
 const MATCH = { match: true as const, claimed: false as const, letter: "C", token: "t1" };
@@ -81,6 +82,24 @@ function crackLines() {
   return screen.getAllByTestId("egg-crack-line").map((line) =>
     (line.getAttribute("points") ?? "").split(" ").map((pair) => pair.split(",").map(Number)),
   );
+}
+
+const ticket = () => screen.getByRole("group", { name: "Claim ticket" });
+
+const stub = (name: string) => within(ticket()).getByRole("button", { name });
+
+/* A tap on the stub, then the time of the tear, so the claim sends. */
+async function tap(name: string) {
+  fireEvent.click(stub(name));
+  await wait(TEAR_MS + 50);
+}
+
+/* The three steps done: the team, CORNERSTONE, and the passphrase in the browser. */
+async function readyTicket(api: ReturnType<typeof fakeEggsApi>) {
+  localStorage.setItem("cpc.passphrase", PASSPHRASE);
+  await openSheet(api);
+  fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
+  fireEvent.click(wordCard("CORNERSTONE"));
 }
 
 describe("EggHunt", () => {
@@ -208,7 +227,7 @@ describe("EggHunt", () => {
     const pills = within(screen.getByRole("group", { name: "Your team" })).getAllByRole("button");
     expect(pills).toHaveLength(11);
     expect(pills.map((pill) => pill.textContent)).not.toContain("Bo Girds");
-    expect(screen.getByRole("button", { name: "Pick your team" })).toBeTruthy();
+    expect(stub("Pick your team")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     expect(screen.queryByRole("group", { name: "Your team" })).toBeNull();
     expect(screen.getByRole("button", { name: "Change" })).toBeTruthy();
@@ -225,7 +244,7 @@ describe("EggHunt", () => {
       expect(wordCard(word).textContent).toContain("No open C in this word.");
       expect(wordCard(word).querySelector(".egg-ghost")).toBeNull();
     }
-    expect(screen.getByRole("button", { name: "Pick an egg word" })).toBeTruthy();
+    expect(stub("Pick an egg word")).toBeTruthy();
     fireEvent.click(cornerstone);
     expect(cornerstone.getAttribute("aria-pressed")).toBe("true");
     expect(cornerstone.textContent).toContain("1/11");
@@ -277,9 +296,10 @@ describe("EggHunt", () => {
     await openSheet(api);
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     fireEvent.click(wordCard("CORNERSTONE"));
-    expect(screen.getByRole("button", { name: "Enter the passphrase" })).toBeTruthy();
-    fireEvent.change(screen.getByLabelText(/passphrase/i), { target: { value: PASSPHRASE } });
-    fireEvent.click(screen.getByRole("button", { name: "Claim C for CORNERSTONE" }));
+    expect(stub("Enter the passphrase")).toBeTruthy();
+    fireEvent.change(screen.getByLabelText(/league passphrase/i), { target: { value: PASSPHRASE } });
+    await tap("Tear to claim C for CORNERSTONE");
+    await wait(STAMP_MS);
     const card = await screen.findByRole("dialog", { name: "C goes to CORNERSTONE." });
     expect(api.claims).toEqual([{ token: "t1", roster_id: 2, word: "CORNERSTONE" }]);
     expect(card.textContent).toContain("1/11");
@@ -296,7 +316,8 @@ describe("EggHunt", () => {
     await openSheet(api, "S");
     fireEvent.click(screen.getByRole("button", { name: "Lil Fridge" }));
     fireEvent.click(wordCard("EAGLES"));
-    fireEvent.click(screen.getByRole("button", { name: "Claim S for EAGLES" }));
+    await tap("Tear to claim S for EAGLES");
+    await wait(STAMP_MS);
     const card = await screen.findByRole("dialog", { name: "EAGLES is complete." });
     expect(card.textContent).toContain("6/6");
     expect(card.textContent).toContain("The $20 gift card is yours.");
@@ -309,7 +330,8 @@ describe("EggHunt", () => {
     // Lil Fridge holds the one C of CORNERSTONE, and the other egg words hold no C.
     fireEvent.click(screen.getByRole("button", { name: "Lil Fridge" }));
     expect(screen.getByText("C fits none of your egg words.").closest(".border-dashed")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Claim C as a block" }));
+    await tap("Tear to claim C as a block");
+    await wait(STAMP_MS);
     const card = await screen.findByRole("dialog", { name: "You hold C as a block." });
     expect(api.claims).toEqual([{ token: "t1", roster_id: 3, word: null }]);
     expect(within(card).getByText("BLOCKED")).toBeTruthy();
@@ -326,8 +348,9 @@ describe("EggHunt", () => {
     await openSheet(fakeEggsApi(MATCH));
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     fireEvent.click(wordCard("CORNERSTONE"));
-    expect(screen.queryByLabelText(/passphrase/i)).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Claim C for CORNERSTONE" }));
+    expect(screen.queryByLabelText(/league passphrase/i)).toBeNull();
+    await tap("Tear to claim C for CORNERSTONE");
+    await wait(STAMP_MS);
     expect(await screen.findByRole("dialog", { name: "C goes to CORNERSTONE." })).toBeTruthy();
   });
 
@@ -336,9 +359,9 @@ describe("EggHunt", () => {
     await openSheet(fakeEggsApi(MATCH));
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     fireEvent.click(wordCard("CORNERSTONE"));
-    fireEvent.click(screen.getByRole("button", { name: "Claim C for CORNERSTONE" }));
+    await tap("Tear to claim C for CORNERSTONE");
     expect(await screen.findByText("The passphrase is wrong. Ask a league member for it.")).toBeTruthy();
-    expect(screen.getByLabelText(/passphrase/i)).toBeTruthy();
+    expect(screen.getByLabelText(/league passphrase/i)).toBeTruthy();
   });
 
   it("shows the hero card of another manager first on a 409 of the claim", async () => {
@@ -346,7 +369,8 @@ describe("EggHunt", () => {
     await openSheet(fakeEggsApi(MATCH, { claim: new EggsError(409, "Another manager claimed first.") }));
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     fireEvent.click(wordCard("CORNERSTONE"));
-    fireEvent.click(screen.getByRole("button", { name: "Claim C for CORNERSTONE" }));
+    await tap("Tear to claim C for CORNERSTONE");
+    await wait(STAMP_MS);
     expect(await screen.findByRole("dialog", { name: "Another manager claimed first." })).toBeTruthy();
   });
 
@@ -355,7 +379,90 @@ describe("EggHunt", () => {
     await openSheet(fakeEggsApi(MATCH, { claim: new EggsError(422, "CORNERSTONE has a winner.") }));
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     fireEvent.click(wordCard("CORNERSTONE"));
-    fireEvent.click(screen.getByRole("button", { name: "Claim C for CORNERSTONE" }));
+    await tap("Tear to claim C for CORNERSTONE");
     expect((await screen.findByRole("alert")).textContent).toBe("CORNERSTONE has a winner.");
+  });
+
+  it("shows the claim ticket with the letter, the egg word, and the team after the three steps", async () => {
+    await readyTicket(fakeEggsApi(MATCH));
+    const shown = ticket();
+    expect(within(shown).getByText("C")).toBeTruthy();
+    expect(within(shown).getByText("CORNERSTONE")).toBeTruthy();
+    expect(within(shown).getByText("All You Need Is Love")).toBeTruthy();
+    const stub = within(shown).getByRole("button", { name: "Tear to claim C for CORNERSTONE" });
+    expect(stub.textContent).toContain("Tear to claim");
+  });
+
+  it("keeps a locked stub that names the next missing step, and sends no claim on a tap", async () => {
+    const api = fakeEggsApi(MATCH);
+    localStorage.setItem("cpc.passphrase", PASSPHRASE);
+    await openSheet(api);
+    fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
+    await tap("Pick an egg word");
+    expect(stub("Pick an egg word").textContent).toContain("Pick an egg word");
+    expect(stub("Pick an egg word").getAttribute("aria-disabled")).toBe("true");
+    expect(api.claims).toEqual([]);
+    expect(screen.queryByText("CLAIMED")).toBeNull();
+  });
+
+  it("tears the stub on a tap, sends one claim, stamps CLAIMED, then shows the end card", async () => {
+    const api = fakeEggsApi(MATCH);
+    await readyTicket(api);
+    await tap("Tear to claim C for CORNERSTONE");
+    expect(api.claims).toEqual([{ token: "t1", roster_id: 2, word: "CORNERSTONE" }]);
+    expect(within(ticket()).getByText("CLAIMED")).toBeTruthy();
+    expect(screen.queryByRole("dialog", { name: "C goes to CORNERSTONE." })).toBeNull();
+    await wait(STAMP_MS + 50);
+    expect(screen.getByRole("dialog", { name: "C goes to CORNERSTONE." })).toBeTruthy();
+    expect(api.claims).toHaveLength(1);
+  });
+
+  for (const key of ["Enter", " "]) {
+    it(`tears the stub on the key ${JSON.stringify(key)} and sends one claim`, async () => {
+      const api = fakeEggsApi(MATCH);
+      await readyTicket(api);
+      const named = stub("Tear to claim C for CORNERSTONE");
+      named.focus();
+      fireEvent.keyDown(named, { key });
+      // A second press in the tear sends no second claim.
+      fireEvent.keyDown(named, { key });
+      await wait(TEAR_MS + 50);
+      expect(api.claims).toEqual([{ token: "t1", roster_id: 2, word: "CORNERSTONE" }]);
+      expect(within(ticket()).getByText("CLAIMED")).toBeTruthy();
+    });
+  }
+
+  it("stamps TAKEN and brings the stub back when another manager was first, then shows that end card", async () => {
+    const api = fakeEggsApi(MATCH, { claim: new EggsError(409, "Another manager claimed first.") });
+    await readyTicket(api);
+    await tap("Tear to claim C for CORNERSTONE");
+    expect(within(ticket()).getByText("TAKEN")).toBeTruthy();
+    expect(stub("Tear to claim C for CORNERSTONE").getAttribute("aria-hidden")).toBeNull();
+    await wait(STAMP_MS + 50);
+    expect(screen.getByRole("dialog", { name: "Another manager claimed first." })).toBeTruthy();
+  });
+
+  it("shows the error of a wrong passphrase and brings the stub back, then a second tear claims", async () => {
+    localStorage.setItem("cpc.passphrase", "wrong");
+    const api = fakeEggsApi(MATCH);
+    await openSheet(api);
+    fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
+    fireEvent.click(wordCard("CORNERSTONE"));
+    await tap("Tear to claim C for CORNERSTONE");
+    expect(screen.getByRole("alert").textContent).toBe("The passphrase is wrong. Ask a league member for it.");
+    expect(stub("Enter the passphrase").getAttribute("aria-hidden")).toBeNull();
+    fireEvent.change(screen.getByLabelText(/league passphrase/i), { target: { value: PASSPHRASE } });
+    await tap("Tear to claim C for CORNERSTONE");
+    expect(within(ticket()).getByText("CLAIMED")).toBeTruthy();
+    expect(api.claims).toHaveLength(1);
+  });
+
+  it("shows the block on the ticket when the letter fits no egg word of the manager", async () => {
+    localStorage.setItem("cpc.passphrase", PASSPHRASE);
+    await openSheet(fakeEggsApi(MATCH));
+    fireEvent.click(screen.getByRole("button", { name: "Lil Fridge" }));
+    expect(within(ticket()).getByText("BLOCK")).toBeTruthy();
+    expect(within(ticket()).getByText("Lil Fridge")).toBeTruthy();
+    expect(stub("Tear to claim C as a block").textContent).toContain("Tear to claim");
   });
 });

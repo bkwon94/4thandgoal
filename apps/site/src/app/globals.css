@@ -814,6 +814,90 @@
     .egg-fade-in-late {
         animation-delay: 0.9s;
     }
+    /* A hole of the perforation of the claim ticket. It pops as the tear passes it, from the top down. */
+    .egg-hole {
+        transition:
+            transform 0.12s ease-out,
+            background-color 0.12s ease-out;
+    }
+    .egg-hole[data-popped="true"] {
+        transform: scale(2.2);
+        background-color: var(--color-page);
+        box-shadow: 0 0 0 1px var(--color-accent-text);
+    }
+    /* The stub of a ready ticket. Its arrow nudges to the right, so the stub reads as a thing to pull. */
+    .egg-stub-ready .egg-stub-arrow {
+        animation: egg-nudge 1.6s ease-in-out infinite;
+    }
+    /* A tap pulls the stub to its full tilt before it leaves. */
+    .egg-stub-pull {
+        transition: transform 0.35s ease-in;
+    }
+    /* The torn stub flutters off to the top right and fades. */
+    .egg-stub-flutter {
+        pointer-events: none;
+        animation: egg-flutter 0.9s cubic-bezier(0.3, 0.1, 0.6, 1) both;
+    }
+    /* A stub that comes back after a TAKEN or an error springs onto the ticket. */
+    .egg-stub-heal {
+        animation: egg-heal 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+    }
+    /* The light sweep across the ticket while the API answers. */
+    .egg-ticket-sweep {
+        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-accent-text) 18%, transparent), transparent);
+        background-size: 200% 100%;
+        animation: egg-sweep 0.9s linear infinite;
+    }
+    /* The stamp of the claim ticket sits at a tilt, with motion or without. */
+    .egg-ticket-stamp {
+        transform: rotate(-12deg);
+    }
+    .egg-ticket-stamp-in {
+        animation: egg-stamp 0.4s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+    }
+}
+@keyframes egg-nudge {
+    0%,
+    60%,
+    100% {
+        transform: none;
+    }
+    30% {
+        transform: translateX(6px);
+    }
+}
+@keyframes egg-flutter {
+    0% {
+        transform: rotate(16deg) translate(20px, 6px);
+    }
+    30% {
+        transform: rotate(28deg) translate(70px, -30px);
+    }
+    100% {
+        transform: rotate(95deg) translate(380px, -80px);
+        opacity: 0;
+    }
+}
+@keyframes egg-heal {
+    0% {
+        transform: rotate(60deg) translate(160px, -40px);
+        opacity: 0;
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        transform: none;
+        opacity: 1;
+    }
+}
+@keyframes egg-sweep {
+    from {
+        background-position: 200% 0;
+    }
+    to {
+        background-position: -200% 0;
+    }
 }
 @keyframes egg-fade {
     from {
@@ -1114,16 +1198,29 @@
     .egg-land,
     .egg-tick,
     .egg-stamp,
-    .egg-fade-in {
+    .egg-fade-in,
+    .egg-stub-ready .egg-stub-arrow,
+    .egg-stub-heal,
+    .egg-ticket-stamp-in {
         animation: none !important;
+    }
+    .egg-hole,
+    .egg-stub-pull {
+        transition: none;
     }
     .egg-ripple,
     .egg-burst,
     .egg-crack,
     .egg-glow,
     .egg-shard,
-    .egg-flash {
+    .egg-flash,
+    .egg-ticket-sweep {
         display: none;
+    }
+    /* The torn stub leaves with no flutter. */
+    .egg-stub-flutter {
+        animation: none !important;
+        visibility: hidden;
     }
 }
 
