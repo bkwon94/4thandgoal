@@ -260,17 +260,17 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     edit();
     await pickTeam("Your Team", "Punt Punks");
-    expect(screen.queryByText("Lean yes")).toBeNull();
+    expect(screen.queryByRole("heading", { level: 2, name: "Lean yes" })).toBeNull();
   });
 
   it("posts the asker first, with the destination of each player, as main does", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
 
     const [url, init] = fetchStub.mock.calls[0];
     expect(url).toBe("https://api.example.test/clients/cpc/analyze");
@@ -293,7 +293,7 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     expect(count).toHaveBeenCalledWith({ path: "analyze-grade", event: true });
     delete window.goatcounter;
   });
@@ -400,7 +400,7 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
     expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
     expect(screen.getByRole("region", { name: "Who gets what" })).toBeTruthy();
@@ -428,7 +428,7 @@ describe("TradeForm", () => {
     expect(removeAnaOne.isConnected).toBe(true);
 
     await act(async () => finish(new Response(JSON.stringify(fixtureJson), { status: 200 })));
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     edit();
     expect(controls.some((c) => c.disabled)).toBe(false);
     expect(submit().hasAttribute("aria-busy")).toBe(false);
@@ -460,13 +460,13 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     edit();
 
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     fireEvent.click(submit());
     await screen.findByText("Grading the Trade");
-    expect(screen.queryByText("Lean yes")).toBeNull();
+    expect(screen.queryByRole("heading", { level: 2, name: "Lean yes" })).toBeNull();
   });
 
   it("shows the API message on a 422", async () => {
@@ -553,7 +553,7 @@ describe("TradeForm", () => {
 
     answer(200, fixtureJson);
     fireEvent.click(screen.getByRole("button", { name: "Try Again" }));
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     expect(fetchStub).toHaveBeenCalledTimes(2);
   });
 
@@ -716,7 +716,7 @@ describe("TradeForm with three or four sides", () => {
     await pickPlayers("Team Three", "Blitz Bakers", "Ben Two");
     await pickPlayers("Your Team", "Punt Punks", "Cy One");
     fireEvent.click(submit());
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual({
       season: 2026,
       asker: 4,
@@ -798,7 +798,7 @@ describe("TradeForm with the finder", () => {
     const cards = await screen.findAllByRole("article");
     answer(200, fixtureJson);
     fireEvent.click(within(cards[index]).getByRole("button", { name: "See the Full Result" }));
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
   }
 
   it("resets the partner and the cards when my team changes", async () => {
@@ -841,7 +841,7 @@ describe("TradeForm with the finder", () => {
 
     answer(200, fixtureJson);
     fireEvent.click(within(cards[1]).getByRole("button", { name: "See the Full Result" }));
-    await screen.findByText("Lean yes");
+    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
 
     const [url, init] = fetchStub.mock.calls[1];
     expect(url).toBe("https://api.example.test/clients/cpc/analyze");

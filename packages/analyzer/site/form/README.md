@@ -4,7 +4,7 @@
 
 - The analyzer page body: the passphrase dialog, the trade form, and the result.
 - The trade form, the Stack: the hero, the teams row, a card for each side, the sheets, the grade bar with its Ready halo, the fold line, the sweep, and the error box.
-- The result of one analyze document: the read hero with the Lean, the Case, and the fairness line, the swap card, and the Bullets of each side with their Marks.
+- The result of one analyze document: the read hero with the Lean on its 5-step scale, the Case, and the fairness line, the swap card, one tab per side, and the Bullet rows in `bullet-rows.tsx`, which the Finder card can reuse.
 - The trade finder, with up to three trades that are good for both, and the teams prefetch of the home page.
 - `useRequest`, the guard of a call from a part to the API: the run id, the abort controller, and the unmounted flag.
 

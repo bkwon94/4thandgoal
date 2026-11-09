@@ -2,7 +2,7 @@
  * Tests for the analyzer result. The API fixture document is the one input, and each test reads the screen.
  * They check what a reader sees, not the class names.
  */
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { analyzeResponse as fixtureJson, analyzeResponseThree as threeJson, analyzeResponseTradeA as tradeA } from "../lib/fixtures/api";
 import type { AnalyzeResponse, Fairness, Lean } from "../lib/analyze-types";
@@ -37,8 +37,25 @@ const LEANS = ["Send it", "Lean yes", "Gut call", "Lean no", "Pass"] as const;
 /* A single letter on its own is a grade. A letter in an initial such as "A.J." is a name, so the scan skips it. */
 const LETTER = /(?<![\w.])[A-F](?![\w.])/;
 const NOTE = "This week's player values are not out yet, so both sides start even.";
-/* The card of one side, found by its label. */
-const sideCard = (label: string) => screen.getByText(label).closest("section") as HTMLElement;
+/* The switcher of the sides, its tab names in order, and the open tab panel. A closed panel is hidden, so the role query finds the open one only. */
+const switcher = () => screen.getByRole("tablist", { name: "The sides" });
+const tabNames = () => within(switcher()).getAllByRole("tab").map((tab) => tab.textContent);
+const openPanel = () => screen.getByRole("tabpanel");
+/* The bands of a panel, each a group named by its heading, and the claims of the rows of a band or a panel. */
+const bandsOf = (panel: HTMLElement) => within(panel).getAllByRole("group").filter((g) => ["For", "Against", "Even"].includes(bandName(g)));
+const bandName = (group: HTMLElement) => document.getElementById(group.getAttribute("aria-labelledby") ?? "")?.textContent ?? "";
+const bandNames = (panel: HTMLElement) => bandsOf(panel).map(bandName);
+const rowsOf = (el: HTMLElement) => [...el.querySelectorAll("[data-bullet-text]")];
+/* The fixture with other Bullets on one side. */
+const withBullets = (rosterId: number, bullets: AnalyzeResponse["sides"][number]["bullets"]): AnalyzeResponse => ({
+  ...fixture,
+  sides: fixture.sides.map((side) => (side.roster_id === rosterId ? { ...side, bullets } : side)),
+});
+/* Taps the tab of a team, then returns its open panel. */
+const openTab = (team: string) => {
+  fireEvent.click(within(switcher()).getByRole("tab", { name: team }));
+  return openPanel();
+};
 /* The fixture reasons repeat breakdown text, so the fairness tests use reasons that show only once on the page. */
 const MY_REASON = "My side gets the better lineup.";
 const THEIR_REASON = "Their side moves up in the standings.";
@@ -66,15 +83,15 @@ describe("AnalyzeResult", () => {
   it.each(LEANS)("shows the Lean %s as the word, with the Case under it", (lean) => {
     render(<AnalyzeResult doc={withLean(lean)} />);
     expect(screen.getByText("The read for Pukancun on 3")).toBeTruthy();
-    expect(screen.getByText(lean)).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 2, name: lean })).toBeTruthy();
     expect(screen.getByText(fixture.case)).toBeTruthy();
   });
 
   it("puts the Lean above the swap card and the sides", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const decision = screen.getByText("Lean yes");
+    const decision = screen.getByRole("heading", { level: 2, name: "Lean yes" });
     const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
-    const side = screen.getByText("Pukancun on 3 · Your Side");
+    const side = switcher();
     expect(decision.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(trade.compareDocumentPosition(side) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
@@ -86,17 +103,42 @@ describe("AnalyzeResult", () => {
     expect(heading.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  /* The read fills the hero slots, and the hero ends at the fairness block with no empty stats or action. */
-  it("puts the read in the slots: the side, the Lean, the Case, then the fairness block last", () => {
+  /* The read fills the hero slots, and the hero ends at the feature with no empty stats or action. */
+  it("puts the read in the slots: the side, the Lean, then the scale, the Case, and the fairness block in the feature", () => {
     render(<AnalyzeResult doc={fixture} />);
     const hero = screen.getByRole("region", { name: "The Read" });
-    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta", "feature"]);
+    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "feature"]);
     expect(slotText(hero, "eyebrow")).toBe("The read for Pukancun on 3");
     expect(slotText(hero, "title")).toBe("Lean yes");
-    expect(slotText(hero, "meta")).toBe(fixture.case);
-    const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
-    expect(within(feature).getByText("Fairness")).toBeTruthy();
+    const feature = within(hero.querySelector("[data-hero-slot=feature]") as HTMLElement);
+    const scale = feature.getByRole("list", { name: "The Lean scale" });
+    const readCase = feature.getByText(fixture.case);
+    const fairness = feature.getByText("Fairness");
+    expect(scale.compareDocumentPosition(readCase) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(readCase.compareDocumentPosition(fairness) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(hero.querySelector("[data-hero-rule]")).toBeNull();
+  });
+
+  /* The scale reads from the no end to the yes end, so the lit step shows how strong the call is. */
+  it.each(LEANS)("shows the 5-step scale from Pass to Send it with the step %s lit", (lean) => {
+    render(<AnalyzeResult doc={withLean(lean)} />);
+    const steps = within(screen.getByRole("list", { name: "The Lean scale" })).getAllByRole("listitem");
+    expect(steps.map((step) => step.textContent)).toEqual(["Pass", "Lean no", "Gut call", "Lean yes", "Send it"]);
+    const lit = steps.filter((step) => step.getAttribute("aria-current") === "step");
+    expect(lit.map((step) => step.textContent)).toEqual([lean]);
+  });
+
+  /* A phone clamps the Case to 3 lines, and the button opens the rest. jsdom draws no lines, so the test reads the state the button sets. */
+  it("clamps the Case on the phone, and Read the full case opens the rest", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const button = screen.getByRole("button", { name: "Read the full case" });
+    const readCase = screen.getByText(fixture.case);
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+    expect(button.getAttribute("aria-controls")).toBe(readCase.id);
+    expect(readCase.className).toContain("line-clamp-3");
+    fireEvent.click(button);
+    expect(readCase.className).not.toContain("line-clamp-3");
+    expect(screen.queryByRole("button", { name: "Read the full case" })).toBeNull();
   });
 
   it("keeps the static grid, the glow, and the brackets in the read hero, and draws no scene (AT-35, AT-44)", () => {
@@ -108,10 +150,11 @@ describe("AnalyzeResult", () => {
     expect(hero.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
   });
 
-  it("leaves out the feature slot when the document has no fairness block and no note", () => {
+  it("keeps the scale and the Case in the feature, with no fairness card, when the document has no fairness block and no note", () => {
     render(<AnalyzeResult doc={{ ...fixture, fairness: undefined }} />);
     const hero = screen.getByRole("region", { name: "The Read" });
-    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta"]);
+    expect(slotsOf(hero)).toEqual(["eyebrow", "title", "feature"]);
+    expect(within(hero).queryByText("Fairness")).toBeNull();
   });
 
   it("shows no letter grade anywhere in the result", () => {
@@ -122,40 +165,99 @@ describe("AnalyzeResult", () => {
     }
   });
 
-  it("puts your side first, then the other side, each with its bullets", () => {
+  it("puts one tab per team under the swap card, with the tab of the asker first and open", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const mine = screen.getByText("Pukancun on 3 · Your Side");
-    // The swap card names the team first, so the side label is the last match.
-    const other = screen.getAllByText("Amon-Ra Dawg Your Team").at(-1) as HTMLElement;
-    expect(mine.compareDocumentPosition(other) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(within(sideCard("Pukancun on 3 · Your Side")).getByText(ANALYSIS)).toBeTruthy();
-    expect(screen.getByText(fixture.sides[1].bullets[1].text)).toBeTruthy();
+    const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
+    expect(trade.compareDocumentPosition(switcher()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(tabNames()).toEqual(["Pukancun on 3", "Amon-Ra Dawg Your Team"]);
+    const [mine, other] = within(switcher()).getAllByRole("tab");
+    expect(mine.getAttribute("aria-selected")).toBe("true");
+    expect(other.getAttribute("aria-selected")).toBe("false");
+    expect(within(openPanel()).getByText(ANALYSIS)).toBeTruthy();
+    expect(within(openPanel()).queryByText(fixture.sides[1].bullets[1].text)).toBeNull();
   });
 
-  it("shows the Bullets of each side as rows, each with its Mark, and no The Data part", () => {
+  it("shows the Bullets of the other team after a tap on its tab", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const mine = within(sideCard("Pukancun on 3 · Your Side"));
+    const panel = openTab("Amon-Ra Dawg Your Team");
+    expect(within(switcher()).getByRole("tab", { name: "Amon-Ra Dawg Your Team" }).getAttribute("aria-selected")).toBe("true");
+    expect(within(panel).getByText(fixture.sides[1].bullets[1].text)).toBeTruthy();
+    expect(within(panel).queryByText(ANALYSIS)).toBeNull();
+  });
+
+  it("moves the open tab with the arrow keys", () => {
+    render(<AnalyzeResult doc={three} />);
+    const [first, second] = within(switcher()).getAllByRole("tab");
+    fireEvent.keyDown(first, { key: "ArrowRight" });
+    expect(second.getAttribute("aria-selected")).toBe("true");
+    expect(document.activeElement).toBe(second);
+    fireEvent.keyDown(second, { key: "ArrowLeft" });
+    expect(first.getAttribute("aria-selected")).toBe("true");
+    fireEvent.keyDown(first, { key: "ArrowLeft" });
+    expect(tabNames().at(-1)).toBe(document.activeElement?.textContent);
+  });
+
+  it("shows three tabs for a 3-team trade, the asker first", () => {
+    render(<AnalyzeResult doc={three} />);
+    expect(tabNames()).toEqual(["Pukancun on 3", "Amon-Ra Dawg Your Team", "To Infinity and Bijan"]);
+  });
+
+  it("shows the Bullets of the open tab as rows, each with its claim, and no The Data part", () => {
+    render(<AnalyzeResult doc={fixture} />);
     const texts = fixture.sides[0].bullets.map((bullet) => bullet.text);
-    const rows = mine.getAllByRole("listitem").filter((li) => texts.some((text) => li.textContent?.endsWith(text)));
-    expect(rows.map((li) => li.lastElementChild?.textContent)).toEqual(texts);
+    const rows = rowsOf(openPanel());
+    expect(rows.map((row) => row.textContent)).toEqual(texts);
     expect(screen.queryByText("The Data")).toBeNull();
+  });
+
+  it("puts the Bullets in For, then Against, then Even bands, whatever the order of the document", () => {
+    const mixed = [...fixture.sides[0].bullets].reverse();
+    render(<AnalyzeResult doc={withBullets(4, mixed)} />);
+    const bands = bandsOf(openPanel());
+    expect(bands.map(bandName)).toEqual(["For", "Against", "Even"]);
+    for (const [band, mark] of bands.map((band, i) => [band, (["for", "against", "even"] as const)[i]] as const)) {
+      expect(rowsOf(band).map((row) => row.textContent)).toEqual(mixed.filter((b) => b.mark === mark).map((b) => b.text));
+    }
+  });
+
+  it("leaves out a band with no Bullet", () => {
+    render(<AnalyzeResult doc={withBullets(4, fixture.sides[0].bullets.filter((b) => b.mark !== "even"))} />);
+    expect(bandNames(openPanel())).toEqual(["For", "Against"]);
+    render(<AnalyzeResult doc={withBullets(4, fixture.sides[0].bullets.filter((b) => b.mark === "against"))} />);
+    expect(bandNames(screen.getAllByRole("tabpanel").at(-1)!)).toEqual(["Against"]);
   });
 
   it("marks each Bullet with a glyph that a screen reader hears as its word", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const card = sideCard("Pukancun on 3 · Your Side");
+    const card = openPanel();
     const glyphs = [...card.querySelectorAll("[aria-hidden='true']")].map((el) => el.textContent).filter((t) => t && /[▲▼–]/.test(t));
     const GLYPH = { for: "▲", against: "▼", even: "–" } as const;
     expect(glyphs).toEqual(fixture.sides[0].bullets.map((bullet) => GLYPH[bullet.mark]));
+    // The row is a button, and its name starts with the word of the Mark, so the glyph never reaches a screen reader.
     for (const bullet of fixture.sides[0].bullets) {
-      const row = within(card).getByText(bullet.text).closest("li") as HTMLElement;
-      expect(within(row).getByText(bullet.mark).className).toContain("sr-only");
+      expect(within(card).getByRole("button", { name: `${bullet.mark} ${bullet.text}` })).toBeTruthy();
     }
+  });
+
+  it("opens the fact of a row under it on a tap, and closes it on a second tap", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const bullet = fixture.sides[0].bullets[0];
+    const row = within(openPanel()).getByRole("button", { name: `${bullet.mark} ${bullet.text}` });
+    const fact = within(openPanel()).getByText(bullet.fact_text);
+    expect(row.getAttribute("aria-expanded")).toBe("false");
+    expect(fact.closest("[aria-hidden='true']")).not.toBeNull();
+    fireEvent.click(row);
+    expect(row.getAttribute("aria-expanded")).toBe("true");
+    expect(row.getAttribute("aria-controls")).toBe(fact.closest("[id]")?.id);
+    expect(fact.closest("[aria-hidden='true']")).toBeNull();
+    expect(row.compareDocumentPosition(fact) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fireEvent.click(row);
+    expect(row.getAttribute("aria-expanded")).toBe("false");
   });
 
   it("shows the players the side gets and gives with the headshot, the position, and the team", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const mine = within(sideCard("Pukancun on 3 · Your Side"));
+    const mine = within(openPanel());
     expect(mine.getByText("You Get")).toBeTruthy();
     expect(mine.getByText("You Give")).toBeTruthy();
     for (const name of ["Dalton Kincaid", "Garrett Wilson", "Nico Collins"]) {
@@ -163,17 +265,16 @@ describe("AnalyzeResult", () => {
     }
     expect(mine.getByText("TE · BUF")).toBeTruthy();
     expect(mine.getByText("WR · HOU")).toBeTruthy();
-    // The swap card names the team first, so the side label is the last match.
-    const other = within((screen.getAllByText("Amon-Ra Dawg Your Team").at(-1) as HTMLElement).closest("section") as HTMLElement);
+    // One headshot per player of the side, and the name names it.
+    expect(openPanel().querySelectorAll("img")).toHaveLength(3);
+    const other = within(openTab("Amon-Ra Dawg Your Team"));
     expect(other.getByText("Gets")).toBeTruthy();
     expect(other.getByText("Gives")).toBeTruthy();
-    // One headshot per player of the side, and the name names it.
-    expect(sideCard("Pukancun on 3 · Your Side").querySelectorAll("img")).toHaveLength(3);
   });
 
   it("shows the Season rank of each player in the side card, and the Recent rank only when it is present", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const mine = within(sideCard("Pukancun on 3 · Your Side"));
+    const mine = within(openPanel());
     expect(mine.getByText("Season rank WR20")).toBeTruthy();
     expect(mine.getByText("Season rank WR11")).toBeTruthy();
     // Kincaid is TE10 by total points and TE39 by points per game of the last 4 weeks, so his Recent rank shows.
@@ -196,12 +297,13 @@ describe("AnalyzeResult", () => {
       },
     };
     render(<AnalyzeResult doc={noRanks} />);
-    expect(screen.queryByText(/Season rank/)).toBeNull();
+    // A fact text can name a Season rank in prose, so the scan reads the rank lines only.
+    expect(screen.queryByText(/^Season rank/)).toBeNull();
   });
 
   it("puts the players, then the Bullets in each side card, with no fold of factor rows", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const card = sideCard("Pukancun on 3 · Your Side");
+    const card = openPanel();
     const player = within(card).getByText("Nico Collins");
     const bullet = within(card).getByText(ANALYSIS);
     expect(player.compareDocumentPosition(bullet) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -211,7 +313,7 @@ describe("AnalyzeResult", () => {
 
   it("shows the box This week and next with the two Week lines after the Bullets", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const card = sideCard("Pukancun on 3 · Your Side");
+    const card = openPanel();
     const bullet = within(card).getByText(ANALYSIS);
     const box = within(card).getByRole("region", { name: "This week and next" });
     expect(within(box).getAllByRole("listitem").map((li) => li.textContent)).toEqual(
@@ -222,7 +324,9 @@ describe("AnalyzeResult", () => {
 
   it("shows the box This week and next on every side of a three-side trade", () => {
     render(<AnalyzeResult doc={three} />);
-    expect(screen.getAllByRole("region", { name: "This week and next" })).toHaveLength(three.sides.length);
+    for (const side of three.trade.sides) {
+      expect(within(openTab(side.team)).getAllByRole("region", { name: "This week and next" })).toHaveLength(1);
+    }
   });
 
   it("passes the letter scan with a player named A.J. Brown in the swap card", () => {
@@ -236,9 +340,8 @@ describe("AnalyzeResult", () => {
   it("orders the sides by the asker, so the Lean and your side name the same team", () => {
     render(<AnalyzeResult doc={withAsker(12)} />);
     expect(screen.getByText("The read for Amon-Ra Dawg Your Team")).toBeTruthy();
-    const mine = screen.getByText("Amon-Ra Dawg Your Team · Your Side");
-    const other = screen.getAllByText("Pukancun on 3").at(-1) as HTMLElement;
-    expect(mine.compareDocumentPosition(other) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(tabNames()).toEqual(["Amon-Ra Dawg Your Team", "Pukancun on 3"]);
+    expect(within(openPanel()).getByText(fixture.sides[1].bullets[0].text)).toBeTruthy();
   });
 
   it("names your side when the asker is not in the trade", () => {
@@ -287,7 +390,7 @@ describe("AnalyzeResult", () => {
   it("shows the no-values note under the Lean when the document says the week has no chart", () => {
     render(<AnalyzeResult doc={{ ...fixture, as_of: { ...fixture.as_of, no_chart: true, no_chart_note: NOTE } }} />);
     const note = screen.getByText(NOTE);
-    const decision = screen.getByText("Lean yes");
+    const decision = screen.getByRole("heading", { level: 2, name: "Lean yes" });
     expect(decision.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(note.closest("section")).toBe(decision.closest("section"));
   });
@@ -358,7 +461,7 @@ describe("AnalyzeResult", () => {
 
   it("puts the fairness line under the Lean and above the swap card", () => {
     render(<AnalyzeResult doc={withFairness("fair")} />);
-    const decision = screen.getByText("Lean yes");
+    const decision = screen.getByRole("heading", { level: 2, name: "Lean yes" });
     const line = screen.getByText("Fair");
     const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
     expect(decision.compareDocumentPosition(line) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -373,9 +476,9 @@ describe("AnalyzeResult", () => {
     expect(reason.closest("section")).toBe(line.closest("section"));
   });
 
-  it("renders five chapters for a two-team trade", () => {
+  it("renders four chapters for a two-team trade: the read, the trade, the sides, and the counters", () => {
     const { container } = render(<AnalyzeResult doc={withFairness("fair")} />);
-    expect(container.querySelectorAll("section")).toHaveLength(5);
+    expect(container.querySelectorAll("section")).toHaveLength(4);
   });
 
   it("puts the as-of line last, in the counters chapter", () => {
@@ -478,12 +581,8 @@ describe("AnalyzeResult", () => {
   it("renders one side read per side of the three-side fixture, in order", () => {
     render(<AnalyzeResult doc={three} />);
     expect(screen.getByText(three.case)).toBeTruthy();
-    expect(screen.getAllByRole("region", { name: "This week and next" })).toHaveLength(3);
-    const mine = screen.getByText("Pukancun on 3 · Your Side");
-    // The swap card and the fairness reasons name each team first, so the side label is the last match.
-    const middle = screen.getAllByText("Amon-Ra Dawg Your Team").at(-1) as HTMLElement;
-    const last = screen.getAllByText("To Infinity and Bijan").at(-1) as HTMLElement;
-    expect(mine.compareDocumentPosition(middle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(middle.compareDocumentPosition(last) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    for (const side of three.sides) {
+      expect(within(openTab(three.trade.sides.find((t) => t.roster_id === side.roster_id)!.team)).getByText(side.bullets[0].text)).toBeTruthy();
+    }
   });
 });

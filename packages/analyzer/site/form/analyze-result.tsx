@@ -1,13 +1,15 @@
 /**
- * The analyzer result from one analyze document, in one column: the Lean and the Case for the asker, the fairness line, the swap card, and a card per side.
+ * The analyzer result from one analyze document, in one column: the Lean on its scale, the Case, the fairness line, the swap card, and one tab per side.
  * The trade finder reuses SwapCard, FairnessBlock, and AsOfLine. No letter grade shows anywhere.
  */
 "use client";
 
 import { motion } from "framer-motion";
-import type { ReactNode } from "react";
-import type { AnalyzeResponse, AsOf, Bullet, DecidedSide, Fairness, Lean, Mark as MarkKind, TradeSide, TradedPlayer } from "../lib/analyze-types";
+import { useId, useState, type ReactNode } from "react";
+import type { AnalyzeResponse, AsOf, DecidedSide, Fairness, Lean, TradeSide, TradedPlayer } from "../lib/analyze-types";
 import { knownGamesSegments } from "../lib/known-games-segments";
+import { BulletRows } from "./bullet-rows";
+import { SideTabs } from "./side-tabs";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, rise } from "@cpc/design/lib/motion";
 import { Blurb } from "@cpc/design/parts/blurb";
@@ -163,23 +165,6 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
   );
 }
 
-/* The Mark of a Bullet. The symbol is decorative, so a screen reader hears the word. */
-const MARKS = {
-  for: { symbol: "▲", color: "text-accent-ink" },
-  against: { symbol: "▼", color: "text-ink" },
-  even: { symbol: "–", color: "text-mute" },
-} as const;
-
-function Mark({ mark }: { mark: MarkKind }) {
-  const shown = MARKS[mark];
-  return (
-    <span className={cn("text-center font-black", shown.color)}>
-      <span aria-hidden="true">{shown.symbol}</span>
-      <span className="sr-only">{mark}</span>
-    </span>
-  );
-}
-
 /* The Lean word sits on the hero, so each color is one that the band holds in both themes. A yes leans in the accent, a no in the plain ink. */
 const LEAN_COLOR: Record<Lean, string> = {
   "Send it": "text-accent-text",
@@ -198,12 +183,71 @@ const LEAN_ANSWER: Record<Lean, "yes" | "no" | "not_as_is"> = {
   Pass: "no",
 };
 
-/* The read fills the hero slots: the side as the eyebrow, the Lean word as the title, and the Case as the meta.
-   Each chapter of the result opens with a level-two heading, so the title is level two. The Lean word rises in once,
-   so the call lands with a beat. With motion off, it shows at rest at once. The no-values note and the fairness block
-   sit on a card in the feature, so their text keeps the colors of the card. A result with no note and no fairness
-   block has no feature, and the hero ends at the Case. The read has no stats and no action, so the hero shows no
-   empty area. */
+/* The five Leans from the no end to the yes end, so the lit step shows how strong the call is. */
+const SCALE: readonly Lean[] = ["Pass", "Lean no", "Gut call", "Lean yes", "Send it"];
+
+/* The 5-step scale under the Lean word. The lit step carries aria-current, so a screen reader hears which step the Lean is.
+   The scale sits on the hero, so each color is a hero role. The plate keeps the glow and the grid off the labels. */
+function LeanScale({ lean }: { lean: Lean }) {
+  return (
+    <ol aria-label="The Lean scale" className="plate m-0 grid max-w-measure list-none grid-cols-5 gap-x-sp-1">
+      {SCALE.map((step) => {
+        const lit = step === lean;
+        return (
+          <li key={step} aria-current={lit ? "step" : undefined} className="flex flex-col gap-sp-1">
+            <span aria-hidden="true" className={cn("block h-sp-1 rounded-pill", lit ? "bg-accent" : "bg-rule-dark")} />
+            <span
+              className={cn(
+                "text-center text-label leading-tight font-bold tracking-caps uppercase",
+                lit ? "text-on-dark" : "text-on-dark-muted",
+              )}
+            >
+              {step}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/* The Case under the scale. A phone clamps it to 3 lines, so the page stays short, and the button opens the rest.
+   From the tablet tier the Case shows in full and the button hides. The button goes once the Case is open, because
+   nothing is left to read. The plate sits on the wrapper, so the clamp clips the text and not the plate. */
+function CaseText({ readCase }: { readCase: string }) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  return (
+    <div className="flex flex-col items-start gap-sp-1">
+      <div className="plate max-w-measure">
+        <p
+          id={id}
+          className={cn("m-0 text-lead leading-body text-on-dark-2", !open && "max-tablet:line-clamp-3")}
+          {...textId("blurb", readCase)}
+        >
+          {readCase}
+        </p>
+      </div>
+      {!open && (
+        <button
+          type="button"
+          aria-expanded={false}
+          aria-controls={id}
+          onClick={() => setOpen(true)}
+          className="press plate min-h-touch cursor-pointer text-meta font-bold text-accent-text underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text tablet:hidden"
+        >
+          Read the full case
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* The read fills the hero slots: the side as the eyebrow and the Lean word as the title. The feature holds the rest
+   in the order of decision 05: the scale, the Case, then the fairness line. Each chapter of the result opens with a
+   level-two heading, so the title is level two. The Lean word rises in once, so the call lands with a beat. With
+   motion off, it shows at rest at once. The no-values note and the fairness block sit on a card under the Case, so
+   their text keeps the colors of the card. The read has no stats and no action, so the hero shows no empty area. */
 function ReadHero({
   lean,
   readCase,
@@ -225,14 +269,14 @@ function ReadHero({
     note || fairness ? (
       <Card>
         <NoChartLine asOf={asOf} />
-        {/* The fairness line sits under the Case, so the Lean stays the lead. The ticket asks the page to render a document with no block, as a guard, so it shows no line then. */}
+        {/* The ticket asks the page to render a document with no block, as a guard, so it shows no line then. */}
         {fairness && (
           <div className={note ? "mt-sp-4" : undefined}>
             <FairnessBlock sides={sides} fairness={fairness} />
           </div>
         )}
       </Card>
-    ) : undefined;
+    ) : null;
   return (
     <Hero
       label="The Read"
@@ -243,8 +287,13 @@ function ReadHero({
           {lean}
         </motion.span>
       }
-      meta={<span {...textId("blurb", readCase)}>{readCase}</span>}
-      feature={card}
+      feature={
+        <div className="flex flex-col gap-sp-4">
+          <LeanScale lean={lean} />
+          <CaseText readCase={readCase} />
+          {card}
+        </div>
+      }
     />
   );
 }
@@ -332,34 +381,15 @@ function WeekLines({ side }: { side: Side }) {
   );
 }
 
-/* One Bullet as a row: its Mark, then its claim. The row carries a stable id, so the egg hunt can name it. */
-function BulletRow({ bullet, rosterId, index }: { bullet: Bullet; rosterId: number; index: number }) {
-  return (
-    <li
-      {...stableId("bullet", rosterId, index)}
-      className="grid grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)] gap-x-sp-1 border-b border-rule px-sp-1 py-sp-2 last:border-b-0"
-    >
-      <Mark mark={bullet.mark} />
-      <span>{bullet.text}</span>
-    </li>
-  );
-}
-
-/* One card per side: the players, then the Bullets with their Marks, then the Week lines. */
+/* The panel of one side: the players, then the Bullets with their Marks, then the Week lines. The tab names the team. */
 function SideRead({ side }: { side: Side }) {
   return (
     <div>
-      <Label>
-        {side.team}
-        {side.mine && " · Your Side"}
-      </Label>
       <SidePlayers side={side} />
 
-      <ul className="mt-sp-4 mb-0 flex max-w-measure list-none flex-col border-y-2 border-ink p-0 text-lead text-ink-2">
-        {side.bullets.map((bullet, index) => (
-          <BulletRow key={`${bullet.fact_id}-${index}`} bullet={bullet} rosterId={side.roster_id} index={index} />
-        ))}
-      </ul>
+      <div className="mt-sp-4">
+        <BulletRows bullets={side.bullets} idBase={side.roster_id} />
+      </div>
 
       <WeekLines side={side} />
     </div>
@@ -421,7 +451,7 @@ export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
   const sides = joinSides(doc);
   const askerTeam = sides.find((s) => s.roster_id === doc.trade.asker)?.team;
 
-  /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has five chapters.
+  /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has four chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
     // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition.
@@ -433,11 +463,11 @@ export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
         <SwapCard sides={sides} />
       </Chapter>
 
-      {sides.map((side) => (
-        <Chapter key={side.roster_id}>
-          <SideRead side={side} />
-        </Chapter>
-      ))}
+      {/* One tab per team under the swap card. joinSides puts the asker first, so the tab of the asker opens first. */}
+      <Chapter>
+        <Label heading>The Sides</Label>
+        <SideTabs label="The sides" tabs={sides.map((side) => ({ key: side.roster_id, label: side.team, panel: <SideRead side={side} /> }))} />
+      </Chapter>
 
       {/* The API returns no counters yet. The slot holds their place under the sides. */}
       <Chapter>
