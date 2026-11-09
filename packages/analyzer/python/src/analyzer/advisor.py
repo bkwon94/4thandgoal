@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from analyzer import RULE_PROMPTS
 from analyzer.read_jev_check import log_read_jev_checks
 from analyzer.rubric import Fairness, FairnessSide, ProposedTrade
+from analyzer.team_facts import team_facts
 from analyzer.trade_facts import trade_fact_sheet
 from analyzer.trade_jev import trade_jev_facts
 from analyzer.trade_news import NewsFeed, attribution_failures, news_facts
@@ -18,6 +19,7 @@ from analyzer.trade_splits import trade_split_facts
 from facts.tokens import NUMBER_TOKEN
 from facts.verifier import normalize_number, remove_names
 from facts.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
+from league.client import Client
 from league.jev_port import Jev
 from league.models import Fact
 from league.snapshot import Snapshot
@@ -25,6 +27,8 @@ from league.snapshot import Snapshot
 log = logging.getLogger(__name__)
 
 PROMPT_FILE = "advisor.md"
+# The Playbook of a client sits in its voice folder. Each client writes its own tips, so no default exists.
+PLAYBOOK_FILE = "playbook.md"
 Lean = Literal["Send it", "Lean yes", "Gut call", "Lean no", "Pass"]
 Mark = Literal["for", "against", "even"]
 MIN_BULLETS, MAX_BULLETS = 3, 5
@@ -103,9 +107,18 @@ class AdvisorFailed(Exception):
 
 
 def advisor_sheet(trade: ProposedTrade, snapshot: Snapshot, jev: Jev, news: NewsFeed) -> dict[str, Fact]:
-    """The facts the Advisor reads by id: the facts of the trade, the news of its players, then its Jev answers."""
-    return {**trade_fact_sheet(trade, snapshot), **trade_split_facts(trade, snapshot),
+    """The facts the Advisor reads by id: the facts of the trade, the team facts, the news of its players, then its
+    Jev answers. A team fact takes the place of a trade fact with the same id."""
+    return {**trade_fact_sheet(trade, snapshot), **team_facts(trade, snapshot), **trade_split_facts(trade, snapshot),
             **news_facts(trade.player_ids, snapshot, news), **trade_jev_facts(trade, snapshot, jev)}
+
+
+def load_playbook(client: Client) -> str:
+    """The Playbook of the client, from its voice folder. A client with no Playbook stops with a plain message."""
+    path = client.voice_dir / PLAYBOOK_FILE
+    if not path.is_file():
+        raise FileNotFoundError(f"The client {client.slug} has no Playbook. Write its tips in {path}.")
+    return path.read_text(encoding="utf-8").strip()
 
 
 def _league_line(snapshot: Snapshot) -> str:
@@ -121,7 +134,8 @@ def build_advisor_prompt(
 
     The system prompt is the same for every trade of a client, so the cache of its prefix holds across presses.
     """
-    system = "\n\n".join([load_prompt(snapshot.client.voice_dir, PROMPT_FILE, RULE_PROMPTS), _league_line(snapshot)])
+    system = "\n\n".join([load_prompt(snapshot.client.voice_dir, PROMPT_FILE, RULE_PROMPTS),
+                            load_playbook(snapshot.client), _league_line(snapshot)])
     team = {side.roster_id: snapshot.teams[side.roster_id].name for side in trade.sides}
     givers = trade.givers
     lines = []

@@ -278,6 +278,10 @@ def _eval_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch) -> 
     cli_root(repo)
     shutil.copytree(fixture_raw_dir, repo / "clients" / "cpc" / "data" / "2026" / "week-06" / "raw")
     shutil.copytree(fixture_history_root, repo / "clients" / "cpc" / "data" / "2026" / "history")
+    # The Advisor reads the Playbook of the client, so the repo folder needs one.
+    playbook = repo / "clients" / "cpc" / "prompts" / "playbook.md"
+    playbook.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(CLIENT.voice_dir / "playbook.md", playbook)
     monkeypatch.chdir(repo)
     return repo
 

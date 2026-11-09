@@ -10,8 +10,8 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-4, AT-9, and AT-35.
 
 **Status:** ready-for-agent
 
-- [ ] The sheet of trade 6 of the eval has a fact "RBs in the top 36 go from N to M" for each side, and N and M match the rosters.
-- [ ] The sheet states the race group and the odds of each side, and a bye fact for a side with a bye in the trade week.
-- [ ] The cpc Playbook holds its tips, and the NorCal Playbook holds general tips only.
-- [ ] The Advisor prompt carries the Playbook of the client.
-- [ ] `make check-fast` passes.
+- [x] The sheet of trade 6 of the eval has a fact "RBs in the top 36 go from N to M" for each side, and N and M match the rosters.
+- [x] The sheet states the race group and the odds of each side, and a bye fact for a side with a bye in the trade week.
+- [x] The cpc Playbook holds its tips, and the NorCal Playbook holds general tips only.
+- [x] The Advisor prompt carries the Playbook of the client.
+- [x] `make check-fast` passes.
