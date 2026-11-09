@@ -1,10 +1,11 @@
 """
 Command line entry point for Cornerstone Weekly.
 It defines the build, publish, rewrite, page-json, rankings, midseason, midseason-publish, history, chart, analyze,
-find, egg-draft, and egg-drop subcommands.
+find, advisor-eval, egg-draft, and egg-drop subcommands.
 """
 import argparse
 import logging
+import subprocess
 from collections.abc import Callable, Iterable
 from datetime import date, datetime
 from functools import partial
@@ -28,6 +29,7 @@ from analyzer.rubric import (
     reason_names,
     verdict,
 )
+from cornerstone.advisor_eval import Meter, load_test_set, run_eval, summary_lines
 from cornerstone.egg_draft import run_egg_draft
 from cornerstone.egg_drop import drop_after_publish, drop_from_env
 from cornerstone.pipeline import (
@@ -46,10 +48,11 @@ from cornerstone.publish import PublishError, run_midseason_publish, run_publish
 from cornerstone.value_models import VALUE_MODELS
 from eggs.draft import DraftError
 from eggs.eggfile import default_egg_file
-from facts.writer import analyzer_call, claude_call, parse_call
+from facts.writer import ClaudeWriter, analyzer_call, claude_call, parse_call
 from league.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
 from league.claude_port import Writer
 from league.client import CLIENT_FILE, Client, ClientError, check_schema_files, load_client, read_client_values
+from league.jev import JEV
 from league.jev_port import Jev
 from league.live import live_snapshot
 from league.models import ChartValues, PlayerLine, week_lines
@@ -144,6 +147,17 @@ def build_parser() -> argparse.ArgumentParser:
     find.add_argument("--partner", type=int, required=True, help="the roster id of the partner team")
     find.add_argument("--chart", type=Path,
                       help="a trade values JSON file; the default is the chart of the trade window week")
+
+    advisor_eval = sub.add_parser(
+        "advisor-eval", parents=[named], help="read each trade of a test set with the real Advisor and the real Jev",
+        description="Read each trade of a test set file as of its week, from the saved data of that week. Save the "
+                    "fact sheet and the read of each trade, and print the Leans, the cost, and the time. The test set "
+                    "and the output name league managers, so keep both outside the repo or in a folder that git "
+                    "ignores. Example: --season 2026 --test-set ~/results.json --out ~/eval-out")
+    advisor_eval.add_argument("--season", type=int, required=True)
+    advisor_eval.add_argument("--test-set", type=Path, required=True, help="the JSON file with the trades to read")
+    advisor_eval.add_argument("--out", type=Path, required=True, help="the folder for the saved sheets and reads")
+    advisor_eval.add_argument("--workers", type=int, default=4, help="how many trades to read at one time")
 
     settings = sub.add_parser("settings", parents=[named], help="print the League settings and the sizes of a season")
     settings.add_argument("--season", type=int)
@@ -432,6 +446,44 @@ def run_find(
     return 0
 
 
+def _out_is_safe(out: Path, root: Path) -> bool:
+    """True when `out` is outside the repo, or inside it and ignored by git, so no output file can reach a commit."""
+    resolved = out.resolve()
+    if not resolved.is_relative_to(root.resolve()):
+        return True
+    # A folder that does not exist yet has no ignore state of its own, so ask about a file in it.
+    probe = resolved / "summary.json"
+    return subprocess.run(["git", "check-ignore", "-q", str(probe)], cwd=root, check=False).returncode == 0
+
+
+def run_advisor_eval(
+        args: argparse.Namespace, client: Client, writer: Writer | None, jev: Jev | None, root: Path,
+) -> int:
+    """Read the trades of the test set as of their weeks, save each sheet and read, and print the summary.
+
+    The exit code is 1 when a trade has no read, and 2 when the output folder is in the repo and not ignored.
+    """
+    if not _out_is_safe(args.out, root):
+        print(f"{args.out} is in the repo and git does not ignore it. The output names league managers, "
+              "so use a folder outside the repo or a folder in .gitignore.")
+        return 2
+    meter = Meter()
+    # The writer of the run counts each response, so the summary has the real cost. A test passes its own writer.
+    writer = writer or ClaudeWriter(on_usage=meter.add_claude)
+
+    def snapshot_of(week: int):
+        snapshot = _saved_snapshot(argparse.Namespace(season=args.season, week=week, chart=None), client)
+        if snapshot is None:
+            raise ValueError(f"The test set has trades of week {week}, and that week has no saved raw data.")
+        return snapshot, load_raw(raw_dir(client.folder, args.season, week)).transactions
+
+    summary = run_eval(load_test_set(args.test_set), snapshot_of, jev=JEV if jev is None else jev,
+                       call=partial(analyzer_call, writer=writer), out_dir=args.out, meter=meter,
+                       workers=args.workers)
+    print("\n".join(summary_lines(summary)))
+    return 1 if summary["errors"] else 0
+
+
 def run_chart(
         client: Client, season: int, week: int, writer: Writer | None, fetch_state: Callable[[], RawState],
 ) -> int:
@@ -563,6 +615,9 @@ def main(
         if args.command == "find":
             # Find skips resolve_week for the same reason as analyze.
             return run_find(args, load(args.season), writer, provider)
+        if args.command == "advisor-eval":
+            # The eval reads the week of each trade of its test set, so it skips resolve_week too.
+            return run_advisor_eval(args, load(args.season), writer, jev, root)
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week, fetch_state)
         client = load(season)

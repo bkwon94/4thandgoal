@@ -116,6 +116,32 @@ def test_a_bullet_that_breaks_a_guard_retries_once_with_the_failure_as_feedback(
     assert read.sides[0].bullets[0].fact_id == f"{WILSON}.ppg"
 
 
+def test_a_number_joined_to_a_word_by_a_hyphen_is_not_a_negative_number(snap, trade):
+    """A model writes "top-36" for the top 36. The hyphen is a joiner, so the number is 36 and not -36."""
+    def hyphenated(facts):
+        number = re.search(r"(?<![\d.])\d+(?![\d.])", facts[f"{WILSON}.ppg"]).group()
+        out = good_out(facts)
+        out["sides"][0]["bullets"][0] = out["sides"][0]["bullets"][0] | {
+            "text": f"Garrett Wilson sits in the top-{number} at his spot."}
+        return out
+
+    advisor = StubAdvisor(hyphenated)
+    read_trade(trade, snap, jev=FakeJev(), call=advisor)
+    assert len(advisor.calls) == 1
+
+
+def test_a_negative_number_that_is_not_in_the_cited_fact_still_fails(snap, trade):
+    def negative(facts):
+        out = good_out(facts)
+        out["sides"][0]["bullets"][0] = out["sides"][0]["bullets"][0] | {
+            "text": "Garrett Wilson scored -97 points a game."}
+        return out
+
+    advisor = StubAdvisor(negative, good_out)
+    read_trade(trade, snap, jev=FakeJev(), call=advisor)
+    assert len(advisor.calls) == 2 and "number -97" in advisor.calls[1][1]
+
+
 @pytest.mark.parametrize("change, rule", [
     ({"case": "You give up the best player. If you believe in Wilson, send it."}, "condition"),
     ({"fairness": "lopsided", "gives_more": None}, "gives_more"),

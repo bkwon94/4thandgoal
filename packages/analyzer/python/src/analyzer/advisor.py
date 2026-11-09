@@ -38,6 +38,8 @@ CONDITION = re.compile(r"\b(?:if|as long as)\b", re.IGNORECASE)
 FIRST_SENTENCE = re.compile(r"^.*?[.!?](?=\s|$)", re.DOTALL)
 # The words of the scoring of a client, from the points key of its League settings.
 SCORING = {"pts_ppr": "full PPR", "pts_half_ppr": "half PPR", "pts_std": "standard scoring"}
+# A hyphen between a letter and a digit joins a word to a number, as in "top-36", so it is no minus sign.
+_JOINING_HYPHEN = re.compile(r"(?<=[A-Za-z])-(?=\d)")
 # A trade value never reaches the prose, even from a cited value fact, so the numbers of a value fact never count.
 VALUE_SUFFIX = ".value"
 
@@ -163,7 +165,7 @@ class _Guard:
         numbers = {normalize_number(n) for fid in cited if not fid.endswith(VALUE_SUFFIX)
                    for n in self.facts[fid].numbers}
         failures += [f"{label}: number {token} is not in the cited facts"
-                     for token in NUMBER_TOKEN.findall(remove_names(text, found))
+                     for token in NUMBER_TOKEN.findall(_JOINING_HYPHEN.sub(" ", remove_names(text, found)))
                      if normalize_number(token) not in numbers]
         return failures
 
@@ -209,15 +211,25 @@ def _read(out: AdvisorOut, facts: dict[str, Fact]) -> TradeRead:
     return TradeRead(lean=out.lean, case=out.case, fairness=fairness, sides=sides)
 
 
-def read_trade(trade: ProposedTrade, snapshot: Snapshot, *, jev: Jev, call: ClaudeCall = analyzer_call) -> TradeRead:
-    """The read of the Advisor on the trade. A failed guard retries once with the failures as feedback.
+def read_trade_on_sheet(
+    trade: ProposedTrade, snapshot: Snapshot, facts: dict[str, Fact], *, call: ClaudeCall = analyzer_call,
+) -> TradeRead:
+    """The read of the Advisor on the trade, from a sheet that the caller built. A failed guard retries once.
 
+    A caller that saves the sheet builds it with advisor_sheet, so the saved sheet is the one the Advisor read.
     Raises AdvisorFailed after two failed calls, a failed API call included.
     """
-    facts = advisor_sheet(trade, snapshot, jev)
     out = call_with_retry(
         call, lambda feedback: build_advisor_prompt(trade, snapshot, facts, feedback), AdvisorOut,
         lambda out: check_read(out, trade, snapshot, facts), subject="trade read", log_label="advisor", logger=log)
     if out is None:
         raise AdvisorFailed("The Advisor gave no read that passed the guards in two calls.")
     return _read(out, facts)
+
+
+def read_trade(trade: ProposedTrade, snapshot: Snapshot, *, jev: Jev, call: ClaudeCall = analyzer_call) -> TradeRead:
+    """The read of the Advisor on the trade. A failed guard retries once with the failures as feedback.
+
+    Raises AdvisorFailed after two failed calls, a failed API call included.
+    """
+    return read_trade_on_sheet(trade, snapshot, advisor_sheet(trade, snapshot, jev), call=call)
