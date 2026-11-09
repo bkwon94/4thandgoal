@@ -62,6 +62,16 @@ const pair = (x: number, y: number) => `${x.toFixed(1)},${y.toFixed(1)}`;
 /* The base angle of each of the six crack lines, in degrees: left and right, then two up and two down at a slant. */
 const LINE_ANGLES = [0, 180, 55, 125, 235, 305];
 
+/* The clip polygons of the two halves of the egg, split at the height y. They meet along a zigzag that runs across
+   the egg at that height, from the right edge to the left. */
+export function halvesAt(y: number): { top: string; bottom: string } {
+  const zigzag = Array.from({ length: 11 }, (_, index) => `${190 - index * 20},${y + (index % 2 ? -8 : 8)}`).join(" ");
+  return {
+    top: `-40,-40 220,-40 220,${y} ${zigzag} -40,${y}`,
+    bottom: `-40,260 220,260 220,${y} ${zigzag} -40,${y}`,
+  };
+}
+
 /* The crack of a tap at this point with this seed. */
 export function crackOf(point: Point, seed: number): Crack {
   const random = randomOf(seed);
@@ -101,13 +111,6 @@ export function crackOf(point: Point, seed: number): Crack {
     };
   });
 
-  // The zigzag runs across the egg at the height of the tap point, from the right edge to the left.
-  const zigzag = Array.from({ length: 11 }, (_, index) => `${190 - index * 20},${ty + (index % 2 ? -8 : 8)}`).join(" ");
-  return {
-    point,
-    lines,
-    shards,
-    top: `-40,-40 220,-40 220,${ty} ${zigzag} -40,${ty}`,
-    bottom: `-40,260 220,260 220,${ty} ${zigzag} -40,${ty}`,
-  };
+  // The zigzag runs across the egg at the height of the tap point.
+  return { point, lines, shards, ...halvesAt(ty) };
 }

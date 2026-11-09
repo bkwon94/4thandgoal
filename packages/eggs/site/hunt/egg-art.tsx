@@ -6,13 +6,13 @@
 
 import { type CSSProperties, useId } from "react";
 import { cn } from "@cpc/design/lib/utils";
-import { crackOf, EGG_MIDDLE, EGG_SIZE, type Crack } from "./crack";
+import { EGG_MIDDLE, EGG_SIZE, halvesAt, type Crack } from "./crack";
 import type { Slot } from "./slots";
 
 // The outline of the egg. Both halves clip the same art along a zigzag.
 const EGG_PATH = "M90 8 C136 8 168 92 168 138 C168 184 134 212 90 212 C46 212 12 184 12 138 C12 92 44 8 90 8 Z";
-// The halves of an egg at rest. The seed is fixed, and only the zigzag of the halves is used.
-const AT_REST = crackOf(EGG_MIDDLE, 1);
+// The halves of an egg at rest, split at the middle of the egg.
+const AT_REST = halvesAt(EGG_MIDDLE.y);
 // The times of the crack, in ms, as the class egg-shake of globals.css plays them. The squash runs first, so the lines
 // and the glow start after it. The last line ends its draw before the shell bursts at 560 ms.
 const SQUASH_MS = 150;
