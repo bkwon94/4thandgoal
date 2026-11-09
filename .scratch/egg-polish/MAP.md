@@ -15,10 +15,10 @@ The lead goal is an event. The support goals are consistency with the site, clar
 - The scope is four parts: the crack, the claim after Tear Ticket, the egg word cards after Stack Slider, and the egg board hero on the hero slots. Brian decided it in the Stage 1 grill.
 - The egg opening stays a crack, because it is an egg. Brian rejected Crumple Reveal in the Stage 1 grill.
 - The crack starts at the tap point, spreads, and bursts into shards, after a short squash. `decisions/01-prototype-egg-crack.md`.
+- The claim is a tear of the stub of a claim ticket; a tap or a key tears it too. `decisions/02-prototype-claim-tear.md`.
 
 ## NOT YET SPECIFIED
 
-- How does a tear of the ticket stub become the claim, and what is the fallback with no WebGL? `decisions/02-prototype-claim-tear.md`.
 - How do the egg word cards show the race of each manager after Stack Slider? `decisions/03-grill-word-cards.md`.
 - Which hero slots does the egg board fill, and does it get a hero scene? `decisions/04-spec-board-hero.md`.
 
