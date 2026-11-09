@@ -8,7 +8,7 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-31 to AT-37.
 
 **Blocked by:** 01, 03, 06
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The e2e test of the eggs passes at 375 and 1280 px with the crack and the tear.
 - [x] The floor check finds 0 violations and 0 incomplete items on the three parts, and prints the two counts apart.
