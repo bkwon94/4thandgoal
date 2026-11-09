@@ -30,8 +30,8 @@ One spec that changes the analyzer and the Finder to judge a trade as a manager 
 
 ## NOT YET SPECIFIED
 
-- Which judge does Brian agree with most, and what are the exact Jev questions and the shortlist table? `decisions/04-prototype-judge-arms.md`.
-- What layout do the bullets and the lean marks take on the page? `decisions/05-prototype-bullet-layout.md`.
+- Which Advisor arm does Brian agree with most, what are the exact Jev questions, and do the targets make sense? `decisions/04-prototype-judge-arms.md`.
+- What layout do the bullets and their marks take on the page? `decisions/05-prototype-bullet-layout.md`.
 
 ## OUT OF SCOPE
 
