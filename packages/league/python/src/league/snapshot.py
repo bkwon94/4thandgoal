@@ -17,6 +17,7 @@ from league.client import Client
 from league.history import load_saved_weeks, snap_share, target_share
 from league.models import ChartValues, ExpectedPoints, History, Standing, Team, UsageShare, week_lines
 from league.nflverse import TeamSchedule, gsis_id
+from league.nflverse_team_stats import TeamOffense
 from league.parse import parse_past_week, parse_week, player_name
 from league.paths import returns_path
 from league.points_allowed import PositionAllowed
@@ -125,6 +126,8 @@ class Snapshot(BaseModel):
     # the id map is missing, or the file has no row for the week before the trade week.
     # A whole number is fine: the rounding moves a week by half a point at most, far under WOPR_SWING.
     wopr: dict[str, dict[int, int]] | None = None
+    # The offense of each NFL team by team code, through the week before the trade week. None with no team stats file.
+    team_stats: dict[str, TeamOffense] | None = None
     # The week each player returns, by player id, from the returns file the commissioner keeps.
     # No data source holds a return week, so a suspended or injured player's week comes from that file.
     returns: dict[str, int] = {}
@@ -501,6 +504,7 @@ def build_snapshot(
         injuries=slow.injuries if slow else None,
         expected=slow.expected if slow else None,
         wopr=slow.wopr if slow else None,
+        team_stats=slow.team_stats if slow else None,
         returns=returns or {},
         out_for_season=out_for_season or set(),
         projections_ahead=_projections_by_player(raw, week.week, client.settings.points_key),

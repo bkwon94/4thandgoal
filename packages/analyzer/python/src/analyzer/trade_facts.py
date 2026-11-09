@@ -5,6 +5,8 @@ Each fact carries every number in its text.
 It reads the snapshot and a proposed trade, not the weekly bundle, so it is not a chapter.
 """
 from analyzer.adjusters import Side, hole_sentence, team_race, trade_handcuffs
+from analyzer.chart_facts import chart_facts
+from analyzer.nfl_team_facts import nfl_team_facts
 from analyzer.rubric import ProposedTrade, build_sides
 from analyzer.tunables import RECENT_RANK_GAP
 from analyzer.week_line import WeekLine, week_lines
@@ -119,17 +121,6 @@ def _injury_fact(snapshot: Snapshot, pid: str) -> Fact:
         text += (f" He was on the NFL injury report in {n(weeks)} {plural(weeks, 'week', 'weeks')} "
                  "this season before the trade.")
     return fact(f"{pid}.injury", text, n, [], [player.name])
-
-
-def _trade_value_fact(snapshot: Snapshot, pid: str) -> Fact:
-    """The trade value of a traded player. The model reads it, and the number check keeps it out of the prose."""
-    n = Nums()
-    name = snapshot.players[pid].name
-    if pid in snapshot.chart.values:
-        text = f"{name}'s trade value is {n(snapshot.chart.values[pid])} in the week of the trade."
-    else:
-        text = f"{name} has no trade value in the week of the trade."
-    return fact(f"{pid}.value", text, n, [], [name])
 
 
 def _team_fact(snapshot: Snapshot, rid: int) -> Fact:
@@ -266,8 +257,7 @@ def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact
             if position in ("QB", "RB", "WR", "TE"):
                 facts.append(_redzone_fact(snapshot, pid))
             facts.append(_injury_fact(snapshot, pid))
-            if snapshot.chart is not None:
-                facts.append(_trade_value_fact(snapshot, pid))
+    facts += [*nfl_team_facts(trade, snapshot), *chart_facts(trade, snapshot)]
     lines = week_lines(trade, snapshot)
     for side in trade.sides:
         facts.append(_team_fact(snapshot, side.roster_id))

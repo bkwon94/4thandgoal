@@ -178,6 +178,8 @@ def check_read(out: AdvisorOut, trade: ProposedTrade, snapshot: Snapshot, facts:
     first = FIRST_SENTENCE.match(out.case.strip())
     if first is None or not CONDITION.search(first.group()):
         failures.append("case: the first sentence must hold the condition, with 'if' or 'as long as'")
+    if "trade.chart" in facts and "chart" not in out.case.lower():
+        failures.append("case: the chart of the week is missing, so the case must say the chart is missing")
     if out.fairness == "lopsided" and out.gives_more not in rosters:
         failures.append(f"fairness: a lopsided read needs gives_more, one of the rosters {rosters}")
     guard = _Guard(trade, snapshot, facts)

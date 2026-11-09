@@ -25,6 +25,7 @@ from league.nflverse import (
     INJURIES_URL,
     SCHEDULES_URL,
     STATS_PLAYER_URL,
+    STATS_TEAM_URL,
     cache_path,
 )
 from league.provider.raw import RawAheadWeek
@@ -449,9 +450,10 @@ def test_a_forced_refresh_fetches_every_source(live_repo, sleeper, fixture_nflve
                              fetch_nflverse=fetch, fetch_history_week=_no_history_fetch, read_chart=None,
                              max_age_seconds=0, client=cpc_client(at=live_repo))
     assert set(asked) == {url.format(season=2026) for url in (
-        SCHEDULES_URL, DEPTH_CHARTS_URL, FFIDS_URL, INJURIES_URL, FFOPPORTUNITY_URL, STATS_PLAYER_URL)}
-    assert len(asked) == 6
-    assert len(result.refreshed) == 6
+        SCHEDULES_URL, DEPTH_CHARTS_URL, FFIDS_URL, INJURIES_URL, FFOPPORTUNITY_URL, STATS_PLAYER_URL,
+        STATS_TEAM_URL)}
+    assert len(asked) == 7
+    assert len(result.refreshed) == 7
 
 
 def test_no_chart_reader_skips_the_chart_and_notes_no_stale_chart(live_repo, sleeper):

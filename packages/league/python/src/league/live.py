@@ -26,6 +26,7 @@ from league.nflverse import (
     INJURIES_URL,
     SCHEDULES_URL,
     STATS_PLAYER_URL,
+    STATS_TEAM_URL,
     cache_path,
     download,
     http_get,
@@ -58,11 +59,12 @@ class ChartReader(Protocol):
 ProjectionsFetcher = Callable[[int, int, int, str], list[RawAheadWeek]]
 
 # The nflverse sources that the grade reads now, with the plain name the snapshot gives each one.
-# The injuries file, the expected points file, and the weekly player file are here because on Fly no weekly build
-# downloads them.
+# The injuries file, the expected points file, the weekly player file, and the team stats file are here because on Fly
+# no weekly build downloads them.
 REFRESHED_SOURCES = (
     ("schedules", SCHEDULES_URL), ("depth charts", DEPTH_CHARTS_URL), ("id map", FFIDS_URL),
     ("injuries", INJURIES_URL), ("expected points", FFOPPORTUNITY_URL), ("player weeks", STATS_PLAYER_URL),
+    ("team stats", STATS_TEAM_URL),
 )
 # The fast sources change on game days, so they refresh sooner than the others.
 FAST_SOURCES = ("injuries", "player weeks")

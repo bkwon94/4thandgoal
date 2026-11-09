@@ -19,6 +19,7 @@ from league.nflverse import (
     INJURIES_URL,
     SCHEDULES_URL,
     STATS_PLAYER_URL,
+    STATS_TEAM_URL,
     TeamSchedule,
     cache_path,
     read_depth_charts,
@@ -29,6 +30,7 @@ from league.nflverse import (
 )
 from league.nflverse_expected import read_expected
 from league.nflverse_players import read_player_weeks
+from league.nflverse_team_stats import TeamOffense, read_team_stats
 from league.points_allowed import PositionAllowed, points_allowed
 
 logger = logging.getLogger(__name__)
@@ -57,6 +59,9 @@ class SlowSources(BaseModel):
     # The kickoff of each NFL team's game of `week`, from the schedules file. Only the in-progress label reads it.
     # A team with no kickoff has a game that counts as final, so a None here is no source in `missing`.
     kickoffs: dict[str, datetime] | None = None
+    # The offense of each NFL team through the week before `week`. Only the NFL team fact reads it, so its absence
+    # is no name in `missing`: the sheet then has no such fact.
+    team_stats: dict[str, TeamOffense] | None = None
     missing: list[str] = []
 
 
@@ -109,10 +114,12 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     if sleeper_of_gsis and stats_player_path.exists():
         wopr = _read("wopr", _read_wopr, stats_player_path, week - 1, sleeper_of_gsis)
     kickoffs = _read("kickoffs", read_kickoffs, schedules_path, season, week) if schedules_path.exists() else None
+    team_stats_path = cache_path(cache_dir, STATS_TEAM_URL, season)
+    team_stats = _read("team_stats", read_team_stats, team_stats_path, week - 1) if team_stats_path.exists() else None
     # The two go by the names of their files in `missing`, because the sources line names the files the grade read.
     named = {**sources, "expected_points": expected, "player_weeks": wopr}
     return SlowSources(**sources, depth_chart_dt=depth.dt if depth else None, expected=expected, wopr=wopr,
-                       kickoffs=kickoffs,
+                       kickoffs=kickoffs, team_stats=team_stats,
                        missing=[name for name, source in named.items() if source is None])
 
 
