@@ -93,11 +93,12 @@
     /* The egg banner of the home page: one strip, edge to edge under the top band (ticket 07 of easter-eggs). */
     --spacing-banner: 52px;
     /* The letter tiles of the egg board. A long egg word, such as CORNERSTONE, takes the small tile, so its row fits a
-       phone. The feed tile leads a row of Latest claims, and the win tile spells a won egg word in its hero card. */
+       phone. The feed tile leads a row of Latest claims, and the giant tile spells the egg word of a slide. Each giant
+       tile shrinks on a narrow phone, so the 11 letters of CORNERSTONE fit at 390px. */
     --spacing-letter: 24px;
     --spacing-letter-sm: 20px;
     --spacing-feed-tile: 32px;
-    --spacing-win-tile: 36px;
+    --spacing-giant-tile: 48px;
     /* The glow of an egg still out on the grid of the egg board. */
     --drop-shadow-egg: 0 0 4px var(--color-accent-text);
     /* The inner space of the hero: 28px on top and bottom, and 24px on the sides (ADR 0024). */

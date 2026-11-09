@@ -68,7 +68,7 @@ for (const width of WIDTHS) {
     await expect(page.getByRole("dialog", { name: `${letter} goes to ${word}.` })).toBeVisible();
     await page.getByRole("link", { name: "See the egg board" }).click();
     await expect(page).toHaveURL(/\/eggs\/$/);
-    const cornerstone = page.getByRole("region", { name: new RegExp(word) });
+    const cornerstone = page.getByRole("tabpanel", { name: new RegExp(word) });
     await expect(cornerstone.getByRole("listitem").filter({ hasText: "Lil Fridge" })).toContainText(letter);
     await expect(page.getByRole("region", { name: "Latest claims" })).toContainText(new RegExp(`Lil Fridge claimed an? ${letter} for ${word}\\.`));
     await page.screenshot({ path: `test-results/eggs/board-${width}.png`, fullPage: true });

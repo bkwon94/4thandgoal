@@ -10,11 +10,11 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-21 to AT-23, AT-25 to AT
 
 **Status:** ready-for-agent
 
-- [ ] A board test reads the tab row in the fixed order with the count of each leader, and "Won" for a won word.
-- [ ] A board test reads the first slide as the open word with the largest share, and a won word as the last slide.
-- [ ] A board test reads the lit letters and the outlined letters of the giant word from the fixture.
-- [ ] A board test reads the leader line, the top 5, and the full list after "Show all".
-- [ ] A board test reads the leader line of a tie, with the teams in the order of the rosters.
-- [ ] A board test reads the board before any claim: it opens on CORNERSTONE with every letter outlined.
-- [ ] A board test presses the right arrow on a tab and reads the next tab selected, with the roles tablist, tab, and tabpanel.
-- [ ] Only a won slide takes the red accent. An open slide sits on the dark hero ground.
+- [x] A board test reads the tab row in the fixed order with the count of each leader, and "Won" for a won word.
+- [x] A board test reads the first slide as the open word with the largest share, and a won word as the last slide.
+- [x] A board test reads the lit letters and the outlined letters of the giant word from the fixture.
+- [x] A board test reads the leader line, the top 5, and the full list after "Show all".
+- [x] A board test reads the leader line of a tie, with the teams in the order of the rosters.
+- [x] A board test reads the board before any claim: it opens on CORNERSTONE with every letter outlined.
+- [x] A board test presses the right arrow on a tab and reads the next tab selected, with the roles tablist, tab, and tabpanel.
+- [x] Only a won slide takes the red accent. An open slide sits on the dark hero ground.

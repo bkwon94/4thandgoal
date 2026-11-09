@@ -1,10 +1,10 @@
 /**
- * The egg board: the hero with the counts and the grid of the 54 eggs, one card per egg word, the latest claims, and
- * how the hunt works. It renders the board answer of the API, which holds no page and no spot, so it gives no hint.
+ * The egg board: the hero with the counts and the grid of the 54 eggs, the slider of the egg words, the latest claims,
+ * and how the hunt works. It renders the board answer of the API, which holds no page and no spot, so it gives no hint.
  */
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Card } from "@cpc/design/parts/card";
 import { Hero, HeroFrame } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
@@ -16,7 +16,7 @@ import { ArtGround } from "../hunt/egg-art";
 type Word = Board["words"][number];
 type Slot = Board["weeks"][number]["slots"][number];
 
-/* The top of each egg word card. A tap on "Show all 11" shows every manager who hunts. */
+/* The top of each egg word slide. A tap on "Show all 11" shows every manager who hunts. */
 const TOP = 5;
 /* The feed shows the newest claims only, so a long hunt keeps a short page. */
 const FEED = 10;
@@ -156,7 +156,7 @@ function BoardHero({ board }: { board: Board }) {
 }
 
 /* A row of letter tiles: one grid column per letter, each at most the tile size, as the slot row of the hunt.
-   On a narrow phone each column shrinks by the same amount, so the row never wraps and never leaves its card. Each tile
+   On a narrow phone each column shrinks by the same amount, so the row never wraps and never leaves its slide. Each tile
    fills its column, so every tile has one width. The gap keeps two dashed borders apart, so each slot reads as its own box. */
 function TileRow({ length, small, className, children }: { length: number; small: boolean; className?: string; children: ReactNode }) {
   const size = small ? "var(--spacing-letter-sm)" : "var(--spacing-letter)";
@@ -167,106 +167,122 @@ function TileRow({ length, small, className, children }: { length: number; small
   );
 }
 
-/* The letter tile: a white square with its letter, or a dashed square for an open slot. A long word takes small tiles. */
-function LetterTile({ letter, small, hint }: { letter: string; small: boolean; hint?: string }) {
+/* The letter tile of a row on the dark ground: a white square with its letter, or a dashed square for an open slot.
+   A long word takes small tiles. */
+function LetterTile({ letter, small }: { letter: string; small: boolean }) {
   return (
     <span
       data-testid="tile"
       className={cn(
         "inline-flex w-full items-center justify-center rounded-letter font-mono text-meta font-bold",
         small ? "h-letter-sm" : "h-letter",
-        letter !== "" ? "bg-ink text-page" : "border border-dashed border-rule text-mute",
+        letter !== "" ? "bg-on-dark text-band" : "border border-dashed border-rule-dark",
       )}
     >
-      {letter || hint || ""}
+      {letter}
     </span>
   );
 }
 
-function GiftPill({ prize, won }: { prize: number; won: boolean }) {
+function GiftPill({ prize }: { prize: number }) {
   return (
-    <span
-      className={cn(
-        "ml-auto rounded-pill border px-sp-3 py-sp-1 font-mono text-meta font-bold tracking-caps uppercase",
-        won ? "border-rule-dark text-on-dark" : "border-rule text-ink-2",
-      )}
-    >
+    <span className="rounded-pill border border-on-dark px-sp-3 py-sp-1 font-mono text-meta font-bold tracking-caps text-on-dark uppercase">
       {`$${prize} gift card`}
     </span>
   );
 }
 
-function WonCard({ word }: { word: Word & { winner: NonNullable<Word["winner"]> } }) {
+/* The race of one egg word: the managers with the most letters first, and the managers who share the top count.
+   A tie keeps the order of the board, the order of the rosters. */
+type Race = { word: Word; ranked: Word["managers"]; leaders: Word["managers"]; top: number };
+
+function raceOf(word: Word): Race {
+  const ranked = [...word.managers].sort((a, b) => b.letters.length - a.letters.length);
+  const top = ranked[0]?.letters.length ?? 0;
+  const leaders = top === 0 ? [] : ranked.filter((manager) => manager.letters.length === top);
+  return { word, ranked, leaders, top };
+}
+
+/* The slides closest race first: the open word whose leader holds the largest share of its letters. A won word goes
+   last. The sort is stable, so a tie in the share keeps the fixed order of the board. */
+function slideOrder(races: Race[]): Race[] {
+  const rank = (race: Race) => (race.word.winner !== null ? -1 : race.top / race.word.word.length);
+  return [...races].sort((a, b) => rank(b) - rank(a));
+}
+
+/* "A", "A and B", or "A, B, and C". */
+function joinTeams(teams: string[]): string {
+  if (teams.length < 3) return teams.join(" and ");
+  return `${teams.slice(0, -1).join(", ")}, and ${teams[teams.length - 1]}`;
+}
+
+function leaderLine({ word, leaders, top }: Race): string {
+  const length = word.word.length;
+  if (leaders.length === 0) return "No letters yet. The race is open.";
+  if (leaders.length === 1) return `${leaders[0].team} leads with ${top} of ${length}.`;
+  return `${joinTeams(leaders.map((manager) => manager.team))} tie with ${top} of ${length}.`;
+}
+
+/* The text of a tab, such as "CORNERSTONE 4/11" or "EAGLES · Won". */
+function tabCount({ word, top }: Race): string {
+  return word.winner !== null ? "· Won" : `${top}/${word.word.length}`;
+}
+
+/* The giant egg word of a slide. A letter the leader holds is lit in white, a letter the leader still needs is a dim
+   outline, and a won word lights every letter in red. The heading reads the word, and the tiles stay out of the
+   accessibility tree. Each column shrinks on a narrow phone, so CORNERSTONE fits at 390px. */
+function GiantWord({ race }: { race: Race }) {
+  const { word, ranked } = race;
+  const held = placeLetters(word.word, race.top === 0 ? [] : ranked[0].letters);
+  const won = word.winner !== null;
   return (
-    // The class egg-hero and the ground behind the tiles keep the text on the flat band color, as on the hero of the board.
-    <HeroFrame label={word.word} className="egg-hero rounded-card">
-      <div className="flex flex-col items-start gap-sp-4">
-        <div className="flex w-full items-center gap-sp-2">
-          <h2 className={cn(LABEL, "text-accent-text")}>{word.word}</h2>
-          <GiftPill prize={word.prize} won />
-        </div>
-        <div className="relative self-stretch">
-          <ArtGround inset="inset-y-0 -inset-x-hero-x" />
-        <div className="relative flex flex-wrap gap-sp-1">
-          {[...word.word].map((letter, index) => (
-            <span
-              key={index}
-              className="inline-flex size-win-tile items-center justify-center rounded-letter bg-accent font-mono text-stat font-bold text-on-dark shadow-orb"
-            >
-              {letter}
-            </span>
-          ))}
-        </div>
-        </div>
-        <div className="flex items-center gap-sp-3">
-          <span className="text-score leading-tight font-bold">{`${word.winner.team} won it.`}</span>
-          <span className="-rotate-6 rounded-letter border-2 border-on-dark bg-accent px-sp-2 py-sp-0 font-mono text-meta font-bold tracking-wide text-on-dark">
-            WON
+    <h2
+      aria-label={word.word}
+      className="m-0 grid max-w-full gap-sp-1"
+      style={{ gridTemplateColumns: `repeat(${word.word.length}, minmax(0, var(--spacing-giant-tile)))` }}
+    >
+      {[...word.word].map((letter, index) => {
+        const state = won ? "won" : held[index] !== "" ? "lit" : "outline";
+        return (
+          <span
+            key={index}
+            aria-hidden="true"
+            data-letter={state}
+            className={cn(
+              "inline-flex aspect-square w-full items-center justify-center rounded-letter font-mono text-stat font-bold tablet:text-score",
+              state === "won" && "border-2 border-on-dark bg-accent text-on-dark shadow-orb",
+              state === "lit" && "bg-on-dark text-band",
+              state === "outline" && "border border-on-dark-muted text-on-dark-muted",
+            )}
+          >
+            {letter}
           </span>
-        </div>
-        <p className="m-0 text-lead text-on-dark-2">{`The $${word.prize} gift card is theirs. The race is over.`}</p>
-      </div>
-    </HeroFrame>
+        );
+      })}
+    </h2>
   );
 }
 
-function WordCard({ word }: { word: Word }) {
+function OpenSlide({ race }: { race: Race }) {
   const [all, setAll] = useState(false);
+  const { word, ranked, leaders } = race;
   const small = word.word.length > 8;
-  // The managers with the most letters first. A tie keeps the order of the board, the order of the rosters.
-  const ranked = [...word.managers].sort((a, b) => b.letters.length - a.letters.length);
-  const leader = ranked[0];
-  const open = leader === undefined || leader.letters.length === 0;
   const shown = all ? ranked : ranked.slice(0, TOP);
-  const id = `egg-word-${word.word}`;
   return (
-    <section aria-labelledby={id}>
-    <Card className="flex flex-col gap-sp-2">
-      <div className="flex items-center gap-sp-2">
-        <h2 id={id} className={cn(LABEL, "text-accent-ink")}>{word.word}</h2>
-        <GiftPill prize={word.prize} won={false} />
-      </div>
-      <span className="text-lead font-semibold">
-        {open ? "No letters yet. The race is open." : `${leader.team} leads with ${leader.letters.length} of ${word.word.length}.`}
-      </span>
-      {open ? (
-        <TileRow length={word.word.length} small={small} className="pt-sp-2 pb-sp-1">
-          {[...word.word].map((letter, index) => (
-            <LetterTile key={index} letter="" hint={letter} small={small} />
-          ))}
-        </TileRow>
-      ) : (
+    <>
+      <span className="text-lead font-semibold">{leaderLine(race)}</span>
+      {leaders.length > 0 && (
         <>
           <ol className="m-0 flex list-none flex-col p-0">
             {shown.map((manager, index) => {
-              const leads = index === 0;
+              const leads = leaders.includes(manager);
               return (
-                <li key={manager.roster_id} className="flex flex-col gap-sp-2 border-t border-rule py-sp-3">
+                <li key={manager.roster_id} className="flex flex-col gap-sp-2 border-t border-rule-dark py-sp-3">
                   <div className="flex items-center gap-sp-2">
-                    <span className={cn("w-sp-6 font-mono text-row font-bold", leads ? "text-accent-ink" : "text-mute")}>
+                    <span className={cn("w-sp-6 font-mono text-row font-bold", leads ? "text-accent-text" : "text-on-dark-muted")}>
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="min-w-0 truncate text-body font-semibold">{manager.team}</span>
+                    <span data-team className="min-w-0 truncate text-body font-semibold">{manager.team}</span>
                     {leads && (
                       <span className="rounded-pill bg-accent px-sp-2 py-sp-0 font-mono text-meta font-bold tracking-caps text-on-dark uppercase">
                         Leads
@@ -274,7 +290,7 @@ function WordCard({ word }: { word: Word }) {
                     )}
                     <span className="ml-auto font-mono text-row font-bold tabular-nums">
                       {manager.letters.length}
-                      <span className="text-mute">{`/${word.word.length}`}</span>
+                      <span className="text-on-dark-muted">{`/${word.word.length}`}</span>
                     </span>
                   </div>
                   <TileRow length={word.word.length} small={small} className="pl-divider">
@@ -290,14 +306,106 @@ function WordCard({ word }: { word: Word }) {
             type="button"
             aria-expanded={all}
             onClick={() => setAll(!all)}
-            className="press mt-sp-1 min-h-touch cursor-pointer rounded-pill border border-rule bg-transparent text-body font-semibold text-ink"
+            className="press mt-sp-1 min-h-touch cursor-pointer rounded-pill border border-rule-dark bg-transparent text-body font-semibold text-on-dark"
           >
             {all ? `Show the top ${TOP}` : `Show all ${word.managers.length}`}
           </button>
         </>
       )}
-    </Card>
-    </section>
+    </>
+  );
+}
+
+function WonSlide({ word, winner }: { word: Word; winner: NonNullable<Word["winner"]> }) {
+  return (
+    <>
+      <div className="flex items-center gap-sp-3">
+        <span className="text-score leading-tight font-bold">{`${winner.team} won it.`}</span>
+        <span className="-rotate-6 rounded-letter border-2 border-on-dark bg-on-dark px-sp-2 py-sp-0 font-mono text-meta font-bold tracking-wide text-accent">
+          WON
+        </span>
+      </div>
+      <p className="m-0 text-lead text-on-dark">{`The $${word.prize} gift card is theirs. The race is over.`}</p>
+    </>
+  );
+}
+
+/* The egg word slider: a tab row of the egg words in the fixed order of the board, over one slide per word. The slides
+   run closest race first, and the slider opens on the first. One selected index into the slide order is the whole
+   state, so a swipe or a motion between slides can move the same index. The tabs follow the WAI-ARIA tabs pattern:
+   the arrow keys, Home, and End move the focus and the selection, and only the selected tab sits in the tab order.
+   An open slide sits on the dark hero ground, and only a won slide washes the frame into the red accent. */
+function EggWordSlider({ words }: { words: Word[] }) {
+  const races = words.map(raceOf);
+  const slides = slideOrder(races);
+  const [selected, setSelected] = useState(0);
+  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const shown = slides[selected] ?? slides[0];
+  const wonShown = shown !== undefined && shown.word.winner !== null;
+
+  function select(tabIndex: number) {
+    const count = races.length;
+    const next = (tabIndex + count) % count;
+    setSelected(slides.indexOf(races[next]));
+    tabs.current[next]?.focus();
+  }
+
+  function onKeyDown(event: KeyboardEvent<HTMLButtonElement>, tabIndex: number) {
+    const moves: Record<string, number> = { ArrowRight: tabIndex + 1, ArrowLeft: tabIndex - 1, Home: 0, End: races.length - 1 };
+    if (!(event.key in moves)) return;
+    event.preventDefault();
+    select(moves[event.key]);
+  }
+
+  return (
+    <div className="flex flex-col gap-sp-3">
+      <div role="tablist" aria-label="Egg words" className="grid grid-cols-3 gap-sp-2">
+        {races.map((race, tabIndex) => {
+          const on = race === shown;
+          return (
+            <button
+              key={race.word.word}
+              ref={(element) => {
+                tabs.current[tabIndex] = element;
+              }}
+              type="button"
+              role="tab"
+              id={`egg-tab-${race.word.word}`}
+              aria-selected={on}
+              aria-controls={`egg-slide-${race.word.word}`}
+              tabIndex={on ? 0 : -1}
+              onClick={() => select(tabIndex)}
+              onKeyDown={(event) => onKeyDown(event, tabIndex)}
+              className={cn(
+                "press flex min-h-touch min-w-0 cursor-pointer flex-col items-center justify-center rounded-tile border px-sp-2 py-sp-1 font-mono text-meta font-bold tracking-wide",
+                on ? "border-rule-dark bg-band text-on-dark" : "border-rule bg-transparent text-ink",
+              )}
+            >
+              <span>{race.word.word}</span>{" "}
+              <span className={cn("tabular-nums", on ? "text-on-dark-2" : "text-mute")}>{tabCount(race)}</span>
+            </button>
+          );
+        })}
+      </div>
+      {/* The class egg-hero hides the texture of the frame, so each line of text sits on the flat band color or the
+          flat accent, and axe can read its contrast. */}
+      <HeroFrame label="Egg word" className={cn("egg-hero", wonShown && "border-accent bg-accent")}>
+        {slides.map((race) => (
+          <div
+            key={race.word.word}
+            role="tabpanel"
+            id={`egg-slide-${race.word.word}`}
+            aria-labelledby={`egg-tab-${race.word.word}`}
+            hidden={race !== shown}
+            className="flex flex-col items-start gap-sp-4"
+          >
+            <GiantWord race={race} />
+            <GiftPill prize={race.word.prize} />
+            {race.word.winner !== null ? <WonSlide word={race.word} winner={race.word.winner} /> : <OpenSlide race={race} />}
+          </div>
+        ))}
+      </HeroFrame>
+    </div>
   );
 }
 
@@ -396,11 +504,9 @@ export function EggBoard({ board, now = new Date() }: EggBoardProps) {
       <Rise step={0}>
         <BoardHero board={board} />
       </Rise>
-      {board.words.map((word, index) => (
-        <Rise key={word.word} step={index + 1}>
-          {word.winner !== null ? <WonCard word={{ ...word, winner: word.winner }} /> : <WordCard word={word} />}
-        </Rise>
-      ))}
+      <Rise step={1}>
+        <EggWordSlider words={board.words} />
+      </Rise>
       <LatestClaims board={board} now={now} />
       <HowItWorks board={board} />
     </div>
