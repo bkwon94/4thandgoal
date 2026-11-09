@@ -16,8 +16,8 @@ How the evidence ran:
 
 App: site
 Then: The egg squashes within 0.2 s of the tap, before any crack line shows.
-Files: `evidence/AT-1/steps.txt`, `evidence/AT-1/measures.txt`, `evidence/AT-1/frame-0.0s.png`, `evidence/AT-1/frame-0.1s.png`, `evidence/AT-1/frame-0.2s.png`, `evidence/AT-1/recording.webm`
-Observation: At 0.1 s the egg svg has the transform scale(1.07, 0.89), and each of the six crack lines has 0 units drawn. At 0.2 s the squash is over (scale about 1.0 with a small tilt), and line 1 has 1 unit of 119 drawn. At 0 s the egg is at rest. The frames show small shard slivers at the tap point from the tap on.
+Files: `evidence/AT-1/steps.txt`, `evidence/AT-1/measures.txt`, `evidence/AT-1/frame-0.0s.png`, `evidence/AT-1/frame-0.1s.png`, `evidence/AT-1/frame-0.2s.png`, `evidence/AT-1/crop-house-0.0s-3x.png`, `evidence/AT-1/crop-house-reduced-3x.png`, `evidence/AT-1/recording.webm`
+Observation: Recorded again from `e56bb80a`. The egg svg has the transform matrix(1.06, 0, 0, 0.91, 0, 0) at 0.05 s and scale(1.07, 0.89) at 0.1 s, while all six crack lines have 0 units drawn and all seven shards have opacity 0 through 0.15 s. The 3x crops of the house at 0 s and with reduced motion show no seam, and each is the same as a crop of the whole art alone, with a largest pixel difference of 0.
 
 ## AT-2: The crack starts at the tap point
 
