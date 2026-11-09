@@ -28,7 +28,7 @@ afterEach(cleanup);
 afterAll(() => vi.unstubAllGlobals());
 
 describe("EggHunt with reduced motion", () => {
-  it("shows the letter tile at once on a tap of the egg, with no ring, no crack, and no motion class", async () => {
+  it("shows the letter tile at once on a tap of the egg, with no ring, no crack line, no shard, and no motion class", async () => {
     render(
       <>
         <span data-stable-id="luck-3">+1.20</span>
@@ -48,8 +48,9 @@ describe("EggHunt with reduced motion", () => {
     const tile = screen.getByTestId("egg-letter");
     expect(tile.textContent).toBe("C");
     expect(tile.className).not.toContain("egg-tile-rise");
-    expect(document.querySelector(".egg-crack")).toBeNull();
-    expect(document.querySelector(".egg-burst")).toBeNull();
+    expect(screen.queryAllByTestId("egg-crack-line")).toEqual([]);
+    expect(document.querySelector(".egg-shard")).toBeNull();
+    expect(document.querySelector(".egg-flash")).toBeNull();
     expect(screen.getByRole("button", { name: "Claim C" })).toBeTruthy();
   });
 });

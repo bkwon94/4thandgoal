@@ -10,10 +10,10 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-1 to AT-8.
 
 **Status:** ready-for-agent
 
-- [ ] A hunt test fires a pointer tap at a point of the egg and reads that the crack lines start at that point.
-- [ ] A hunt test reads two cracks at one tap point with two seeds, and the lines differ.
-- [ ] A hunt test presses Enter on the egg and reads a crack from the middle of the egg and then the letter.
-- [ ] The hunt test with motion off reads the letter at once, with no crack line.
-- [ ] The constant of the time from the tap to the letter is 1.3 s, and the hunt tests pass with it.
+- [x] A hunt test fires a pointer tap at a point of the egg and reads that the crack lines start at that point.
+- [x] A hunt test reads two cracks at one tap point with two seeds, and the lines differ.
+- [x] A hunt test presses Enter on the egg and reads a crack from the middle of the egg and then the letter.
+- [x] The hunt test with motion off reads the letter at once, with no crack line.
+- [x] The constant of the time from the tap to the letter is 1.3 s, and the hunt tests pass with it.
 - [ ] A Chromium run with WebGL turned off plays the crack to the letter, and the page asks for no WebGL context.
-- [ ] No Scrolltide source is in the diff, and no dependency is added.
+- [x] No Scrolltide source is in the diff, and no dependency is added.

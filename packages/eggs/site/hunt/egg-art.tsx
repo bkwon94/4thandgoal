@@ -4,25 +4,27 @@
  */
 "use client";
 
-import { useId } from "react";
+import { type CSSProperties, useId } from "react";
 import { cn } from "@cpc/design/lib/utils";
+import { crackOf, EGG_MIDDLE, type Crack } from "./crack";
 import type { Slot } from "./slots";
 
-// The outline of the egg, and the zigzag where it cracks. Both halves clip the same art along the zigzag.
+// The outline of the egg. Both halves clip the same art along a zigzag.
 const EGG_PATH = "M90 8 C136 8 168 92 168 138 C168 184 134 212 90 212 C46 212 12 184 12 138 C12 92 44 8 90 8 Z";
-const ZIGZAG = "170,140 152,128 132,146 112,128 92,146 72,128 52,146 32,128 12,140";
-const TOP_HALF = `-40,-40 220,-40 220,140 ${ZIGZAG} -40,140`;
-const BOTTOM_HALF = `-40,260 220,260 220,140 ${ZIGZAG} -40,140`;
+// The halves of an egg at rest. The seed is fixed, and only the zigzag of the halves is used.
+const AT_REST = crackOf(EGG_MIDDLE, 1);
 
-/* The egg. It bobs while it waits, and on a crack the zigzag draws and the two halves fly apart.
+/* The egg. It bobs while it waits. On a crack it squashes, then the crack lines draw out from the tap point while it
+   shakes and glows inside, then the two halves fly apart and the shards fly out (the classes egg-* of globals.css).
    With motion off it takes no motion class, so it shows at rest. */
-export function Egg({ cracking, motion }: { cracking: boolean; motion: boolean }) {
+export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean }) {
   const id = useId().replaceAll(":", "");
   const ref = (name: string) => `url(#${name}-${id})`;
+  const halves = crack ?? AT_REST;
   return (
     <svg
       viewBox="0 0 180 220"
-      className={cn("relative h-55 w-45 overflow-visible", motion && !cracking && "egg-bob")}
+      className={cn("relative h-55 w-45 overflow-visible", motion && !crack && "egg-bob", crack && "egg-shake")}
       aria-hidden="true"
     >
       <defs>
@@ -37,15 +39,20 @@ export function Egg({ cracking, motion }: { cracking: boolean; motion: boolean }
           <stop offset="0" style={{ stopColor: "var(--color-accent)", stopOpacity: 0.8 }} />
           <stop offset="1" style={{ stopColor: "var(--color-accent)", stopOpacity: 0 }} />
         </radialGradient>
+        <radialGradient id={`light-${id}`}>
+          <stop offset="0" style={{ stopColor: "var(--color-on-dark)", stopOpacity: 0.95 }} />
+          <stop offset="0.4" style={{ stopColor: "var(--color-accent-text)", stopOpacity: 0.6 }} />
+          <stop offset="1" style={{ stopColor: "var(--color-accent)", stopOpacity: 0 }} />
+        </radialGradient>
         <linearGradient id={`shade-${id}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" style={{ stopColor: "var(--color-chip-dark)" }} />
           <stop offset="1" style={{ stopColor: "var(--color-band)" }} />
         </linearGradient>
         <clipPath id={`top-${id}`}>
-          <polygon points={TOP_HALF} />
+          <polygon points={halves.top} />
         </clipPath>
         <clipPath id={`bottom-${id}`}>
-          <polygon points={BOTTOM_HALF} />
+          <polygon points={halves.bottom} />
         </clipPath>
         <g id={`art-${id}`}>
           <use href={`#egg-${id}`} fill={ref("shade")} />
@@ -62,19 +69,42 @@ export function Egg({ cracking, motion }: { cracking: boolean; motion: boolean }
           <use href={`#egg-${id}`} className="fill-none stroke-accent-text" strokeOpacity=".75" strokeWidth="1.5" />
         </g>
       </defs>
-      <g className={cn("egg-half", cracking && "egg-split-top")}>
+      <g className={cn("egg-half", crack && "egg-split-top")}>
         <use href={`#art-${id}`} clipPath={ref("top")} />
       </g>
-      <g className={cn("egg-half", cracking && "egg-split-bottom")}>
+      <g className={cn("egg-half", crack && "egg-split-bottom")}>
         <use href={`#art-${id}`} clipPath={ref("bottom")} />
       </g>
-      {cracking && (
-        <polyline
-          points={[...ZIGZAG.split(" ")].reverse().join(" ")}
-          className="egg-crack fill-none stroke-accent-text"
-          strokeWidth="3"
-          strokeLinejoin="round"
-        />
+      {crack && (
+        <>
+          {/* The light and the lines stay inside the shell. */}
+          <g clipPath={ref("clip")}>
+            <circle cx={crack.point.x} cy={crack.point.y} r="70" fill={ref("light")} className="egg-glow" />
+            {crack.lines.map((line, index) => (
+              <polyline
+                key={index}
+                data-testid="egg-crack-line"
+                points={line.points}
+                className="egg-crack fill-none stroke-on-dark"
+                strokeWidth="2.4"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                // Each line draws over its own length, a little after the line before it.
+                style={{ "--egg-line": line.length, "--egg-delay": `${index * 45}ms` } as CSSProperties}
+              />
+            ))}
+          </g>
+          {crack.shards.map((shard, index) => (
+            <polygon
+              key={index}
+              points={shard.points}
+              className="egg-shard fill-chip-dark stroke-accent-text"
+              strokeOpacity=".8"
+              strokeWidth="1"
+              style={{ "--egg-dx": `${shard.dx}px`, "--egg-dy": `${shard.dy}px`, "--egg-turn": `${shard.turn}deg` } as CSSProperties}
+            />
+          ))}
+        </>
       )}
     </svg>
   );

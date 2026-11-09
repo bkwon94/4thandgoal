@@ -4,6 +4,7 @@
 
 - The egg hunt of a page in `egg-hunt.tsx`: it mounts the listener once the board names a drop, and opens the find card after a match, or the limit card on a 429 of the check.
 - The find in `find-card.tsx`, in the look of ADR 0024: the blur, the ring, the egg that bobs, the crack, and the red letter tile.
+- The shape of the crack in `crack.ts`: the tap point, the six lines that spread from it, the shards, and the zigzag of the halves. A fresh seed on each tap gives a new crack. A tap by the keyboard cracks from the middle of the egg.
 - The art in `egg-art.tsx`: the egg, and the row of letter tiles of an egg word. The slots of each tile in `slots.ts`.
 - The claim sheet in `claim-sheet.tsx`: the team pills, a card per egg word with its gift card, count, tiles, leader, and ghost tile, the block notice, and the passphrase field only when the browser has none.
 - The claim button names the next step that is missing.

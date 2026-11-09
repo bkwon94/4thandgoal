@@ -58,6 +58,31 @@ async function openSheet(api: ReturnType<typeof fakeEggsApi>, letter = "C") {
 
 const wordCard = (word: string) => screen.getByRole("button", { name: word }) as HTMLButtonElement;
 
+/* The egg on the screen: 180 by 220 px, the size of the art, with its top left at (100, 200).
+   jsdom lays out no page, so the test gives the egg the box that a browser gives it. */
+const EGG_BOX = { left: 100, top: 200, width: 180, height: 220 };
+
+async function findEgg() {
+  const egg = await screen.findByRole("button", { name: "Crack the egg" });
+  egg.getBoundingClientRect = () => DOMRect.fromRect({ x: EGG_BOX.left, y: EGG_BOX.top, width: EGG_BOX.width, height: EGG_BOX.height });
+  return egg;
+}
+
+/* A pointer tap at a point of the egg, in px from the top left of the egg. */
+function tapEgg(egg: HTMLElement, x: number, y: number) {
+  const at = { clientX: EGG_BOX.left + x, clientY: EGG_BOX.top + y, isPrimary: true };
+  fireEvent.pointerDown(egg, at);
+  fireEvent.pointerUp(egg, at);
+  fireEvent.click(egg, { ...at, detail: 1 });
+}
+
+/* Each crack line on the egg, as its list of points in the units of the egg art. */
+function crackLines() {
+  return screen.getAllByTestId("egg-crack-line").map((line) =>
+    (line.getAttribute("points") ?? "").split(" ").map((pair) => pair.split(",").map(Number)),
+  );
+}
+
 describe("EggHunt", () => {
   it("sends one check for a double-tap, shows the egg, and cracks it to the red letter tile", async () => {
     const api = fakeEggsApi(MATCH);
@@ -74,11 +99,63 @@ describe("EggHunt", () => {
     const tile = screen.getByTestId("egg-letter");
     expect(tile.textContent).toBe("C");
     expect(tile.className).toContain("egg-tile-rise");
-    expect(document.querySelector(".egg-crack")).toBeTruthy();
+    expect(screen.getAllByTestId("egg-crack-line")).toHaveLength(6);
     await wait(CRACK_MS + 50);
     expect(screen.getByRole("heading", { name: "The letter C is yours to claim." })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Claim C" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Crack the egg" })).toBeNull();
+  });
+
+  it("starts each crack line at the point of the tap", async () => {
+    page(fakeEggsApi(MATCH));
+    await doubleTap();
+    // A tap near the upper left of the egg: one quarter in from the left, one third down.
+    tapEgg(await findEgg(), 45, 75);
+    const lines = crackLines();
+    expect(lines).toHaveLength(6);
+    for (const [start, ...rest] of lines) {
+      expect(start[0]).toBeCloseTo(45, 0);
+      expect(start[1]).toBeCloseTo(75, 0);
+      // Each line runs out from the point, so it ends away from it.
+      const end = rest[rest.length - 1];
+      expect(Math.hypot(end[0] - 45, end[1] - 75)).toBeGreaterThan(20);
+    }
+  });
+
+  it("cracks two finds at one tap point along different lines, from a fresh seed on each tap", async () => {
+    const finds = [];
+    for (const _ of [1, 2]) {
+      page(fakeEggsApi(MATCH));
+      await doubleTap();
+      tapEgg(await findEgg(), 120, 160);
+      finds.push(crackLines());
+      cleanup();
+    }
+    const [first, second] = finds;
+    // Both start at the one tap point, and the paths of the lines differ.
+    expect(first.map((line) => line[0])).toEqual(second.map((line) => line[0]));
+    expect(first).not.toEqual(second);
+  });
+
+  it("cracks the egg from its middle on Enter, then shows the letter at 1.3 s", async () => {
+    page(fakeEggsApi(MATCH));
+    await doubleTap();
+    const egg = await findEgg();
+    egg.focus();
+    // Enter on a focused button makes the browser send a click with a detail of 0 and no pointer. jsdom sends no
+    // click for a key, so the test sends the events of the browser in their order.
+    fireEvent.keyDown(egg, { key: "Enter" });
+    fireEvent.click(egg, { detail: 0 });
+    fireEvent.keyUp(egg, { key: "Enter" });
+    for (const [start] of crackLines()) {
+      expect(start).toEqual([90, 130]);
+    }
+    expect(CRACK_MS).toBe(1300);
+    await wait(CRACK_MS - 150);
+    expect(screen.queryByRole("heading", { name: "The letter C is yours to claim." })).toBeNull();
+    await wait(200);
+    expect(screen.getByTestId("egg-letter").textContent).toBe("C");
+    expect(screen.getByRole("heading", { name: "The letter C is yours to claim." })).toBeTruthy();
   });
 
   it("sends no check and opens no card before the first drop", async () => {
