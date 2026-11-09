@@ -392,6 +392,14 @@ def _log_chapter(key: str, blurb: Blurb) -> None:
     log.info("chapter %s: attempt %d, fallback %s", key, blurb.attempt, blurb.fallback)
 
 
+def _log_jev(verify: dict[str, list[VerifyResult]]) -> None:
+    """The one Jev line of a build: the count of Jev checks, the count of failed calls, and the token use."""
+    checks = [r.jev for results in verify.values() for r in results if r.jev is not None]
+    errors = sum(c.error is not None for c in checks)
+    tokens = sum(c.input_tokens or 0 for c in checks)
+    log.info("Jev: %d checks, %d errors, %d input tokens", len(checks), errors, tokens)
+
+
 def run_build(
     repo: Path,
     season: int,
@@ -456,6 +464,7 @@ def run_build(
         used |= page_words(blurbs[chapter.key], chapter)
         _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, VerifyFile(build=record, chapters=verify))
+    _log_jev(verify)
 
     site_dir = build_dir(client.folder)
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
