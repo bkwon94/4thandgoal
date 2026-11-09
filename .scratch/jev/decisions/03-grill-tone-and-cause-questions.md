@@ -23,6 +23,8 @@ Choose where a flag shows: the build log, a file in `clients/<slug>/build/<seaso
 
 ## Decision
 
+Brian narrowed the spec to the bare minimum on 2026-11-09, so this decision moves out of scope. A later spec builds it as recorded below.
+
 Brian decided on 2026-11-09.
 
 The Jev check asks four Noul questions per sentence, beside the facts check:

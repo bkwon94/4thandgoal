@@ -6,7 +6,7 @@ Map: `.scratch/jev/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -18,4 +18,4 @@ Choose which key the build uses, and how the build gets it.
 
 ## Decision
 
-None yet.
+Brian decided on 2026-11-09. The weekly build uses the local key, `TYPESAFE_API_KEY` in `~/.secrets`, which `cornerstone-build` already sources. The check is log only, and the cost is under $0.003 a week, so a separate key adds nothing now. The app key goes to Fly when the API first calls Jev.

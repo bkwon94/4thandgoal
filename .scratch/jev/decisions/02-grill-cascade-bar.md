@@ -6,7 +6,7 @@ Map: `.scratch/jev/MAP.md`.
 
 **Blocked by:** 01
 
-**Status:** open
+**Status:** wontfix
 
 ## Question
 
@@ -20,4 +20,4 @@ The spec needs these values to write its acceptance tests.
 
 ## Decision
 
-None yet.
+Brian narrowed the spec to the bare minimum on 2026-11-09. The facts check is log only, so no bar is needed now. A later spec sets the bar on the real labels that this spec starts to save. Research 01 holds the first numbers.

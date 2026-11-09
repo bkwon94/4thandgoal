@@ -14,7 +14,7 @@ The ADR records three choices:
 
 1. TypeSafe Jev is the second model vendor, beside Anthropic.
 2. The pipeline sends blurbs and fact sheets to TypeSafe, and those hold the names of managers and players. TypeSafe does not train on the data. ZDR is for enterprise accounts only.
-3. A Jev answer passes a check alone only when the eval bar of ticket 02 allows it. A failed Jev call never counts as a pass.
+3. In this spec, a Jev answer passes no check alone. A later spec may change that only with an eval bar on real labels. A failed Jev call never counts as a pass.
 
 ## Decision
 

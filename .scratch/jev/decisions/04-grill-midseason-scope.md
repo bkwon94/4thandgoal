@@ -6,7 +6,7 @@ Map: `.scratch/jev/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** wontfix
 
 ## Question
 
@@ -17,4 +17,4 @@ Choose one: the weekly build only, the midseason build too, or the midseason bui
 
 ## Decision
 
-None yet.
+Brian narrowed the spec to the bare minimum on 2026-11-09. The Jev check runs in the weekly build only. The midseason build and its re-check are out of scope.
