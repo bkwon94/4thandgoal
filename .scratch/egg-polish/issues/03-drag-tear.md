@@ -8,7 +8,7 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-11 and AT-12.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A hunt test fires a pointer drag to the full length and reads one claim through the port.
 - [x] A hunt test fires a drag to half the length, releases, and reads no claim and the stub back on the ticket.
