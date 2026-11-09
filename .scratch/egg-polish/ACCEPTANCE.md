@@ -138,7 +138,7 @@ Evidence: screenshots of the stamp and of the end card at 375, 768, and 1280 px,
 AT-16: A claim too late stamps TAKEN
 App: site
 Stories: 19
-Given: T1 dropped. Two browsers show the claim ticket of T1 for Lil Fridge. The first browser tears the stub, and its claim wins.
+Given: T1 dropped. The first browser claims T1 for Lil Fridge into CORNERSTONE, and its claim wins. The second browser shows the claim ticket of T1 for Teehee into CORNERSTONE.
 When: The second browser tears its stub.
 Then: The second ticket stamps TAKEN, the stub comes back onto it, and then the end card for another manager first shows.
 Evidence: screenshots of the second browser at 375, 768, and 1280 px, each in the light theme and the dark theme.
@@ -211,8 +211,8 @@ AT-25: A slide keeps the detail of each manager
 App: site
 Stories: 31
 Given: Six managers hold letters of CORNERSTONE: Lil Fridge holds 4, and five other managers hold 1 each.
-When: The reader opens the slide of CORNERSTONE and taps "Show all 12".
-Then: The slide shows "Lil Fridge leads with 4 of 11.", the top 5 managers with their tiles, and after the tap, all 12 managers in place.
+When: The reader opens the slide of CORNERSTONE and taps "Show all 11".
+Then: The slide shows "Lil Fridge leads with 4 of 11.", the top 5 managers with their tiles, and after the tap, all 11 managers in place.
 Evidence: screenshots before and after the tap at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-26: A tie says that the managers tie
@@ -276,7 +276,7 @@ App: site
 Stories: 2, 13, 26
 Given: The CPC site and the local API, with T1 dropped.
 When: The e2e test of the eggs runs at 375 and 1280 px.
-Then: The test finds T1, cracks the egg, tears the stub, and sees the letter C of Lil Fridge on the egg board.
+Then: The test finds T1, cracks the egg, tears the stub, and sees the letter of T1 for Lil Fridge on the egg board.
 Evidence: the output of the e2e test of the eggs, with the pass count.
 
 AT-34: The egg button and the egg banner do not change
@@ -369,4 +369,4 @@ Out of scope "A hero scene on the egg board": AT-20
 
 ## Revisions
 
-None yet.
+- 2026-11-09: Brian approved three changes of values after the first evidence round. AT-16: the second browser claims for Teehee, because a second claim for Lil Fridge finds no open slot and gets a 422. AT-25: "Show all 11" and all 11 managers, because the commissioner hunts no eggs. AT-33: the letter of T1, because the e2e test drops T1 into an empty store, where the letter rule gives A.
