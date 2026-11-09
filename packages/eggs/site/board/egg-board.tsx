@@ -4,11 +4,13 @@
  */
 "use client";
 
-import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { Card } from "@cpc/design/parts/card";
 import { Hero, HeroFrame } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
 import { Tile } from "@cpc/design/parts/tile";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { springCurve } from "@cpc/design/lib/spring";
 import { cn } from "@cpc/design/lib/utils";
 import type { Board } from "../lib/api";
 import { ArtGround } from "../hunt/egg-art";
@@ -20,6 +22,12 @@ type Slot = Board["weeks"][number]["slots"][number];
 const TOP = 5;
 /* The feed shows the newest claims only, so a long hunt keeps a short page. */
 const FEED = 10;
+/* Seconds for one move of the slider: the roll of the slides, the wash of the frame, and the swap of the giant word. */
+const SLIDE_DURATION = 0.75;
+/* The curve of the roll, a damped spring with a small overshoot (ADR 0028). It is the same for every move, so it samples once. */
+const SLIDE_SPRING = springCurve({ bounce: 0.3 });
+/* The pixels a finger travels to the side before a swipe moves the slide. A shorter drag is a tap or a wobble. */
+const SWIPE_PX = 40;
 
 /* The red uppercase label of a card. It is 12px, so it holds the readability floor of 11px at every tier. */
 const LABEL = "m-0 text-meta leading-tight font-bold tracking-wide uppercase";
@@ -228,17 +236,22 @@ function tabCount({ word, top }: Race): string {
   return word.winner !== null ? "· Won" : `${top}/${word.word.length}`;
 }
 
+/* The roll of the giant word in a move. The shown word rests "in". The word that leaves rolls out up on a move to the
+   next slide and down on a move back, and every other word waits on the side that the next word comes from. */
+type Roll = "in" | "out-up" | "out-down" | "wait-up" | "wait-down";
+
 /* The giant egg word of a slide. A letter the leader holds is lit in white, a letter the leader still needs is a dim
    outline, and a won word lights every letter in red. The heading reads the word, and the tiles stay out of the
    accessibility tree. Each column shrinks on a narrow phone, so CORNERSTONE fits at 390px. */
-function GiantWord({ race }: { race: Race }) {
+function GiantWord({ race, roll }: { race: Race; roll: Roll }) {
   const { word, ranked } = race;
   const held = placeLetters(word.word, race.top === 0 ? [] : ranked[0].letters);
   const won = word.winner !== null;
   return (
     <h2
       aria-label={word.word}
-      className="m-0 grid max-w-full gap-sp-1"
+      data-roll={roll}
+      className="egg-word m-0 grid max-w-full gap-sp-1"
       style={{ gridTemplateColumns: `repeat(${word.word.length}, minmax(0, var(--spacing-giant-tile)))` }}
     >
       {[...word.word].map((letter, index) => {
@@ -248,8 +261,9 @@ function GiantWord({ race }: { race: Race }) {
             key={index}
             aria-hidden="true"
             data-letter={state}
+            style={{ "--k": index } as CSSProperties}
             className={cn(
-              "inline-flex aspect-square w-full items-center justify-center rounded-letter font-mono text-stat font-bold tablet:text-score",
+              "egg-letter inline-flex aspect-square w-full items-center justify-center rounded-letter font-mono text-stat font-bold tablet:text-score",
               state === "won" && "border-2 border-on-dark bg-accent text-on-dark shadow-orb",
               state === "lit" && "bg-on-dark text-band",
               state === "outline" && "border border-on-dark-muted text-on-dark-muted",
@@ -330,6 +344,13 @@ function WonSlide({ word, winner }: { word: Word; winner: NonNullable<Word["winn
   );
 }
 
+/* The offset of a slide from the slide at an index, wrapped to the nearest side, so a slide sits to the left (-1), in
+   place (0), or to the right (1) of it. A move always rolls the slides the short way round. */
+function offset(slide: number, at: number, count: number): number {
+  const half = Math.floor(count / 2);
+  return ((((slide - at + half) % count) + count) % count) - half;
+}
+
 /* The egg word slider: a tab row of the egg words in the fixed order of the board, over one slide per word. The slides
    run closest race first, and the slider opens on the first. One selected index into the slide order is the whole
    state, so a swipe or a motion between slides can move the same index. The tabs follow the WAI-ARIA tabs pattern:
@@ -338,7 +359,9 @@ function WonSlide({ word, winner }: { word: Word; winner: NonNullable<Word["winn
 function EggWordSlider({ words }: { words: Word[] }) {
   const races = words.map(raceOf);
   const slides = slideOrder(races);
-  const [selected, setSelected] = useState(0);
+  // The selected slide, and the slide shown before the last move. The two give the way each slide and each word rolls.
+  const [{ selected, from }, setMove] = useState({ selected: 0, from: 0 });
+  const off = useMotionOff();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const shown = slides[selected] ?? slides[0];
   const wonShown = shown !== undefined && shown.word.winner !== null;
@@ -346,8 +369,49 @@ function EggWordSlider({ words }: { words: Word[] }) {
   function select(tabIndex: number) {
     const count = races.length;
     const next = (tabIndex + count) % count;
-    setSelected(slides.indexOf(races[next]));
+    go(slides.indexOf(races[next]));
     tabs.current[next]?.focus();
+  }
+
+  /* A swipe moves to the next or the last slide in the slide order, and wraps at each end, as the arrow keys do. */
+  function step(by: number) {
+    go((selected + by + slides.length) % slides.length);
+  }
+
+  function go(next: number) {
+    setMove((move) => (move.selected === next ? move : { selected: next, from: move.selected }));
+  }
+
+  // The way of the last move: 1 to the next slide, -1 back. Before any move, the words wait as for a move to the next.
+  const way = selected === from ? 1 : Math.sign(offset(selected, from, slides.length));
+
+  function rollOf(index: number): Roll {
+    if (index === selected) return "in";
+    if (index === from) return way > 0 ? "out-up" : "out-down";
+    return way > 0 ? "wait-down" : "wait-up";
+  }
+
+  // With motion off, every duration and every delay is 0, so each move is an instant change (ADR 0028).
+  const motion = { "--es-dur": off ? "0s" : `${SLIDE_DURATION}s`, "--es-on": off ? "0" : "1", "--es-spring": SLIDE_SPRING } as CSSProperties;
+
+  // The start of a touch on the slider. A vertical swipe stays a page scroll: the slider allows only pan-y, so the
+  // browser scrolls the page and cancels the pointer, and a drag that moves more up than to the side moves no slide.
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
+
+  function onPointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (!event.isPrimary) return;
+    swipeStart.current = { x: event.clientX, y: event.clientY };
+  }
+
+  function onPointerUp(event: PointerEvent<HTMLDivElement>) {
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    if (start === null) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) < SWIPE_PX || Math.abs(dx) <= Math.abs(dy)) return;
+    // A swipe to the left brings the next slide in from the right.
+    step(dx < 0 ? 1 : -1);
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLButtonElement>, tabIndex: number) {
@@ -358,7 +422,7 @@ function EggWordSlider({ words }: { words: Word[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-sp-3">
+    <div data-slider style={motion} className="egg-slider flex flex-col gap-sp-3">
       <div role="tablist" aria-label="Egg words" className="grid grid-cols-3 gap-sp-2">
         {races.map((race, tabIndex) => {
           const on = race === shown;
@@ -387,24 +451,45 @@ function EggWordSlider({ words }: { words: Word[] }) {
           );
         })}
       </div>
-      {/* The class egg-hero hides the texture of the frame, so each line of text sits on the flat band color or the
-          flat accent, and axe can read its contrast. */}
-      <HeroFrame label="Egg word" className={cn("egg-hero", wonShown && "border-accent bg-accent")}>
-        {slides.map((race) => (
-          <div
-            key={race.word.word}
-            role="tabpanel"
-            id={`egg-slide-${race.word.word}`}
-            aria-labelledby={`egg-tab-${race.word.word}`}
-            hidden={race !== shown}
-            className="flex flex-col items-start gap-sp-4"
-          >
-            <GiantWord race={race} />
-            <GiftPill prize={race.word.prize} />
-            {race.word.winner !== null ? <WonSlide word={race.word} winner={race.word.winner} /> : <OpenSlide race={race} />}
-          </div>
-        ))}
-      </HeroFrame>
+      <div
+        data-swipe
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerCancel={() => {
+          swipeStart.current = null;
+        }}
+        className="touch-pan-y"
+      >
+        {/* The class egg-hero hides the texture of the frame, so each line of text sits on the flat band color or the
+            flat accent, and axe can read its contrast. */}
+        <HeroFrame label="Egg word" className={cn("egg-hero egg-wash", wonShown && "border-accent bg-accent")}>
+          {slides.map((race, index) => {
+            const rel = offset(index, selected, slides.length);
+            // A slide that wraps from one side to the other passes behind the frame, so it jumps with no roll.
+            const jump = Math.abs(rel - offset(index, from, slides.length)) > 1;
+            const on = race === shown;
+            // The shown slide holds the height of the frame. The neighbors sit on top of it, to the side, blurred and faded,
+            // and only the roll of a move shows them.
+            return (
+              <div
+                key={race.word.word}
+                role="tabpanel"
+                id={`egg-slide-${race.word.word}`}
+                aria-labelledby={`egg-tab-${race.word.word}`}
+                aria-hidden={on ? undefined : true}
+                inert={!on}
+                data-rel={Math.max(-1, Math.min(1, rel))}
+                data-jump={jump}
+                className={cn("egg-slide flex flex-col items-start gap-sp-4", on ? "relative" : "absolute inset-x-0 top-0")}
+              >
+                <GiantWord race={race} roll={rollOf(index)} />
+                <GiftPill prize={race.word.prize} />
+                {race.word.winner !== null ? <WonSlide word={race.word} winner={race.word.winner} /> : <OpenSlide race={race} />}
+              </div>
+            );
+          })}
+        </HeroFrame>
+      </div>
     </div>
   );
 }

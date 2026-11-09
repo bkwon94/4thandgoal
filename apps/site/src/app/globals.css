@@ -1225,6 +1225,97 @@
     }
 }
 
+/* The egg word slider, after the method of the Stack Slider item (ADR 0028), turned to the side for a phone. The slider
+   sets --es-dur, --es-spring, and --es-on, which is 1 with motion and 0 with motion off. With motion off --es-dur is 0s
+   and every delay is 0, so each move is an instant change. The rest states of the slides and the letters live here,
+   because a state per data attribute and a long linear() curve cannot be Tailwind classes cleanly. */
+@layer components {
+    /* A move washes the frame into the red accent of a won slide, and back to the dark ground of an open slide. */
+    .egg-wash {
+        transition:
+            background-color var(--es-dur) ease,
+            border-color var(--es-dur) ease;
+    }
+    /* A neighbor slide rests to its side, small, tilted, blurred, and faded out. Its visibility turns off only when its
+       roll ends, so the roll stays in view, and a hidden slide never reaches axe or a tap. */
+    .egg-slide {
+        transition:
+            transform var(--es-dur) var(--es-spring),
+            filter calc(var(--es-dur) * 0.8) ease,
+            opacity calc(var(--es-dur) * 0.8) ease,
+            visibility 0s linear var(--es-dur);
+    }
+    .egg-slide[data-rel="-1"] {
+        transform: translateX(-70%) rotate(-4deg) scale(0.9);
+        filter: blur(6px);
+        opacity: 0;
+        visibility: hidden;
+    }
+    .egg-slide[data-rel="1"] {
+        transform: translateX(70%) rotate(4deg) scale(0.9);
+        filter: blur(6px);
+        opacity: 0;
+        visibility: hidden;
+    }
+    /* The shown slide turns visible at the start of its roll. */
+    .egg-slide[data-rel="0"] {
+        transform: none;
+        filter: none;
+        opacity: 1;
+        visibility: visible;
+        transition:
+            transform var(--es-dur) var(--es-spring),
+            filter calc(var(--es-dur) * 0.8) ease,
+            opacity calc(var(--es-dur) * 0.8) ease,
+            visibility 0s;
+    }
+    /* A slide that wraps from one side to the other moves behind the frame with no roll. */
+    .egg-slide[data-jump="true"] {
+        transition: none;
+    }
+    /* The giant word clips its letters, so a letter rolls in from under the word and out over it. The clip leaves room for
+       the red glow of a won letter. */
+    .egg-word {
+        clip-path: inset(-1.5rem -2rem);
+    }
+    /* The letters of the shown word roll in one after another, a beat behind the roll of the slide. */
+    .egg-letter {
+        transition: transform var(--es-dur) var(--es-spring);
+    }
+    .egg-word[data-roll="in"] .egg-letter {
+        transform: none;
+        transition-delay: calc((var(--k) * 30ms + 80ms) * var(--es-on));
+    }
+    /* The letters of the word that leaves roll out fast on an ease-in, in the same order. */
+    .egg-word[data-roll="out-up"] .egg-letter,
+    .egg-word[data-roll="out-down"] .egg-letter {
+        transition-duration: calc(var(--es-dur) * 0.6);
+        transition-timing-function: cubic-bezier(0.55, 0, 0.75, 0.2);
+        transition-delay: calc(var(--k) * 20ms * var(--es-on));
+    }
+    .egg-word[data-roll="out-up"] .egg-letter,
+    .egg-word[data-roll="wait-up"] .egg-letter {
+        transform: translateY(-200%);
+    }
+    .egg-word[data-roll="out-down"] .egg-letter,
+    .egg-word[data-roll="wait-down"] .egg-letter {
+        transform: translateY(200%);
+    }
+    /* A waiting word moves to its side at once, out of sight. */
+    .egg-word[data-roll="wait-up"] .egg-letter,
+    .egg-word[data-roll="wait-down"] .egg-letter {
+        transition: none;
+    }
+}
+/* Reduced motion makes each move of the slider instant from the first paint, before the slider reads the media query. */
+@media (prefers-reduced-motion: reduce) {
+    .egg-slider,
+    .egg-slider * {
+        transition-duration: 0s !important;
+        transition-delay: 0s !important;
+    }
+}
+
 /* The static HTML holds the start state of every reveal: no opacity and a small rise.
    With reduced motion or with no script, the content shows at rest from the first paint. */
 @media (prefers-reduced-motion: reduce), (scripting: none) {
