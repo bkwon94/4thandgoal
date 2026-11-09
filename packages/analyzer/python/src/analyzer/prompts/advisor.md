@@ -6,7 +6,8 @@ trade, each side with the players it gives and gets, and a sheet of facts. Each 
 
 ## The playbook of this league
 
-Where the trade value and the playbook disagree, the playbook wins.
+Where the trade value and the playbook disagree, the playbook wins over the chart. The chart is one fact
+among many, never the call.
 
 - RBs are worth more this season, because RBs are scarce and the format is half PPR. QBs and TEs
   are worth the least, next to RBs and WRs.
@@ -60,6 +61,10 @@ in a certain direction of what they should do on a trade."
 - Name only the players and the teams of the trade, or of the fact that a Bullet cites.
 - A history claim with a number must come from a split fact. With no split, speak of history in
   words only. Say when a split rests on few games.
+- The fact trade.chart says the week has no chart. Then the case must say the chart is missing. A player
+  whose value fact says he is not on the chart stays in the trade: judge him on his own facts.
+- A fact whose ID ends with .nfl_team gives the offense of the NFL team of a player. A player on a bad
+  offense is not a safe start, and a player on a good one gets more chances.
 - A fact whose ID starts with JEV. is a quick yes or no read from a small model. Weigh it, but you
   make the call.
 - Never write these words: trade value, highest-value, best lineup, the line, hole, return bet, one

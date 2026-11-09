@@ -32,6 +32,8 @@ DEPTH_CHARTS_URL = "https://github.com/nflverse/nflverse-data/releases/download/
 SNAP_COUNTS_URL = "https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_{season}.csv"
 STATS_PLAYER_URL = ("https://github.com/nflverse/nflverse-data/releases/download/stats_player/"
                     "stats_player_week_{season}.csv.gz")
+STATS_TEAM_URL = ("https://github.com/nflverse/nflverse-data/releases/download/stats_team/"
+                  "stats_team_week_{season}.csv.gz")
 FFIDS_URL = "https://github.com/dynastyprocess/data/raw/master/files/db_playerids.csv"
 FFOPPORTUNITY_URL = "https://github.com/ffverse/ffopportunity/releases/download/latest-data/ep_weekly_{season}.csv"
 

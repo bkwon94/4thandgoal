@@ -155,3 +155,36 @@ def test_a_failed_jev_call_still_gives_a_read_with_no_jev_fact(snap, trade):
     read = read_trade(trade, snap, jev=FakeJev(error=JevError("timeout")), call=advisor)
     assert read.lean == "Gut call"
     assert not any(fid.startswith("JEV.") for fid in sheet_facts(advisor.calls[0][1]))
+
+
+@pytest.fixture
+def snap_no_chart(fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, tmp_path):
+    cache = tmp_path / "nflverse"
+    shutil.copytree(fixture_nflverse_dir, cache)
+    slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    return four_week(load_snapshot(fixture_raw_dir, fixture_history_root, None, slow, client=CLIENT))
+
+
+def test_a_week_with_no_chart_still_gives_a_read_when_the_case_says_the_chart_is_missing(snap_no_chart, trade):
+    case = ("If you believe Garrett Wilson keeps his role, this is worth it. The chart of this week is missing, "
+            "so the call rests on the facts of the players. Push for it only if your receivers need the help.")
+    advisor = StubAdvisor(lambda facts: good_out(facts, case=case))
+    read = read_trade(trade, snap_no_chart, jev=FakeJev(), call=advisor)
+    assert len(advisor.calls) == 1
+    assert "trade.chart" in sheet_facts(advisor.calls[0][1])
+    assert read.case == case
+
+
+def test_a_case_that_does_not_say_the_chart_is_missing_retries_with_the_failure_as_feedback(snap_no_chart, trade):
+    advisor = StubAdvisor(good_out, lambda facts: good_out(
+        facts, case=CASE.replace("this is worth it.", "this is worth it. The chart is missing this week.")))
+    read_trade(trade, snap_no_chart, jev=FakeJev(), call=advisor)
+    assert len(advisor.calls) == 2
+    assert "chart is missing" in advisor.calls[1][1]
+
+
+def test_the_prompt_says_the_playbook_wins_over_the_chart(snap, trade):
+    advisor = StubAdvisor(good_out)
+    read_trade(trade, snap, jev=FakeJev(), call=advisor)
+    assert "the playbook wins over the chart" in advisor.calls[0][0].lower()
+    assert "trade.chart" not in sheet_facts(advisor.calls[0][1])
