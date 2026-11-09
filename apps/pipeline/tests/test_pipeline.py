@@ -193,6 +193,14 @@ def test_build_without_history_degrades(tmp_path, fixture_raw_dir, caplog, offli
     assert "history incomplete" in caplog.text
 
 
+def test_build_of_a_week_with_no_chart_png_logs_one_plain_line(tmp_path, fixture_raw_dir, caplog, offline):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    caplog.set_level("INFO")
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
+    lines = [r.getMessage() for r in caplog.records if "has no chart" in r.getMessage()]
+    assert lines == ["Week 6 has no chart, so the roster grade has no trade value."]
+
+
 def test_build_saves_the_week_to_history(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))

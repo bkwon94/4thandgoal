@@ -456,6 +456,7 @@ def run_chart(
         print(f"Week {week} has no chart. The log says why.")
         return 1
     print(f"Chart week {check.week}, dated {check.chart.date}")
+    print(f"Read {len(check.chart.rows)} chart rows")
     for row in check.chart.rows:
         print(f"{row.value}  {row.name}  {row.position}")
     # A saved read passed the guards before the save. A second print of them lets a person see each one.

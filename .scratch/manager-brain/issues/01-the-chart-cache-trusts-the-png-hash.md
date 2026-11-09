@@ -10,8 +10,8 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-1, AT-2, and AT-3.
 
 **Status:** ready-for-agent
 
-- [ ] A PNG with a newer file time than its saved read and the same hash is not read again.
-- [ ] A PNG with a changed hash is read again.
-- [ ] `cornerstone chart --client cpc --week 8` reads a placed PNG and prints the count of chart rows.
-- [ ] The build of a week with no chart PNG logs one plain line that says so.
-- [ ] `make check-fast` passes.
+- [x] A PNG with a newer file time than its saved read and the same hash is not read again.
+- [x] A PNG with a changed hash is read again.
+- [x] `cornerstone chart --client cpc --week 8` reads a placed PNG and prints the count of chart rows.
+- [x] The build of a week with no chart PNG logs one plain line that says so.
+- [x] `make check-fast` passes.

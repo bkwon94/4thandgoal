@@ -305,7 +305,6 @@ def test_the_source_names_are_the_names_of_the_refreshed_sources():
 
 def _set_back_the_jacobs_trade(tmp_path):
     """Rewrite the saved rosters to before the Josh Jacobs trade. The saved rosters show the league after it."""
-    import json
 
     path = tmp_path / "clients" / "cpc" / "data" / "2026" / "week-06" / "raw" / "rosters.json"
     rosters = json.loads(path.read_text())
@@ -774,3 +773,31 @@ def test_the_drop_after_the_publish_warns_on_a_bad_egg_file_with_the_same_messag
     assert line.startswith("WARNING: the egg drop of week 8 failed:")
     assert str(egg_file) in line and "no page in egg 1" in line
     assert "make egg-drop CLIENT=cpc WEEK=8" in line
+
+
+def test_chart_reads_a_placed_png_once_and_prints_the_row_count(tmp_path, monkeypatch, capsys):
+    import hashlib
+    import io
+    import json
+
+    from PIL import Image
+
+    from cornerstone import cli
+    from league.models import ChartRead, ChartRow
+    from league.paths import charts_dir
+
+    cli_root(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    parsed = ChartRead(week=6, date="2026-10-13", rows=[ChartRow(value=60.0, name="Some One", position="RB"),
+                                                        *_pad_rows(50.0)])
+    _save_chart(tmp_path, parsed)
+    charts = charts_dir(tmp_path / "data" / "nfl", "1QB0.5PPR4pt")
+    out = io.BytesIO()
+    Image.new("RGB", (40, 40), "white").save(out, format="PNG")
+    (charts / "week-06.png").write_bytes(out.getvalue())
+    # The saved read names the hash of the placed PNG, so the command reads no image and calls no Claude.
+    saved = parsed.model_dump(mode="json") | {"png_sha256": hashlib.sha256(out.getvalue()).hexdigest()}
+    (charts / "week-06.json").write_text(json.dumps(saved))
+
+    assert cli.main(["chart", "--client", "cpc", "--season", "2026", "--week", "6"], fetch_state=_sleeper_state("2026")) == 0
+    assert "Read 101 chart rows" in capsys.readouterr().out
