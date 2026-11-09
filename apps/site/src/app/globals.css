@@ -725,10 +725,12 @@
             egg-glow calc(0.56s - var(--egg-delay)) ease-in var(--egg-delay) both,
             egg-fade-out 0.3s ease-out 0.56s forwards;
     }
-    /* Each shard flies out from the tap point and turns as the shell bursts. The part sets --egg-dx, --egg-dy, and --egg-turn. */
+    /* Each shard flies out from the tap point and turns as the shell bursts. The part sets --egg-dx, --egg-dy, and --egg-turn.
+       A shard stays hidden until the burst, so the squash and the lines show first. Its keyframes show it at the burst. */
     .egg-shard {
         transform-box: fill-box;
         transform-origin: 50% 50%;
+        opacity: 0;
         animation: egg-shard 0.7s cubic-bezier(0.15, 0.8, 0.3, 1) 0.56s forwards;
     }
     /* The flash that rings out from the tap point as the shell bursts. The part sets its left and top to the tap point. */
@@ -1062,6 +1064,9 @@
     }
 }
 @keyframes egg-shard {
+    from {
+        opacity: 1;
+    }
     to {
         transform: translate(var(--egg-dx), var(--egg-dy)) rotate(var(--egg-turn));
         opacity: 0;
