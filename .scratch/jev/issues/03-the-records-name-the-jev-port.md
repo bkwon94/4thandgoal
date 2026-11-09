@@ -8,7 +8,7 @@ Spec: `.scratch/jev/PRD.md`. Acceptance tests AT-12, AT-13, and AT-14.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The new ADR exists in `docs/adr/` and states the three choices and the third port.
 - [x] `GLOSSARY.md` and the README of the pipeline package hold the lines above.
