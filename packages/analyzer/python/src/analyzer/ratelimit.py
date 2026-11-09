@@ -124,6 +124,27 @@ class GradeLimiter:
                                self.path, error)
             return None
 
+    def release(self, address: str) -> None:
+        """Take back one grade of the address, in the minute window and in the day count. A failed read calls it.
+
+        A count already at zero stays at zero, so a release never gives an address more grades than the limit.
+        """
+        with self.lock:
+            now = self.clock().astimezone(self.tz)
+            today = now.date().isoformat()
+            counts = self._read(today)
+            if self.day == today:
+                counts = {a: max(counts.get(a, 0), self.counts.get(a, 0)) for a in counts.keys() | self.counts.keys()}
+            counts[address] = max(0, counts.get(address, 0) - 1)
+            start, count = self.minute.windows.get(address, (now.timestamp(), 0))
+            self.minute.windows[address] = (start, max(0, count - 1))
+            self.day, self.counts = today, counts
+            try:
+                self._write(today, counts)
+            except OSError as error:
+                logger.warning("The grade count file %s is not writable, so the count stays in memory: %s",
+                               self.path, error)
+
     def _read(self, today: str) -> dict[str, int]:
         """The counts of today from the file. A missing, malformed, or older file starts at zero."""
         try:

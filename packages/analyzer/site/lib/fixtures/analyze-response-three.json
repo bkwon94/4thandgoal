@@ -108,12 +108,8 @@
       }
     ]
   },
-  "decision": {
-    "for_roster": 4,
-    "answer": "not_as_is",
-    "reason": "Another side does better, so ask for more.",
-    "differs": false
-  },
+  "lean": "Gut call",
+  "case": "If you believe the role of the players you get holds, this is a fair swing. You give up a known starter. Each other manager gets a piece he can use. It is close, so trust your gut.",
   "fairness": {
     "state": "fair",
     "gives_more": null,
@@ -136,8 +132,18 @@
     {
       "roster_id": 4,
       "bullets": [
-        "Nico Collins leads the trade in points per game.",
-        "His role is large."
+        {
+          "text": "Nico Collins leads the trade in points per game.",
+          "mark": "for",
+          "fact_id": "trade.week",
+          "fact_text": "The trade is in the week of the fixture."
+        },
+        {
+          "text": "His role is large.",
+          "mark": "against",
+          "fact_id": "trade.week",
+          "fact_text": "The trade is in the week of the fixture."
+        }
       ],
       "week_lines": [
         {
@@ -148,45 +154,23 @@
           "week": 7,
           "text": "Week 7: WRs in the top 36 who play go from 3 to 2. TEs in the top 24 who play stay at 2. Harrison plays NYG at home, 13th most points to WRs. Kincaid has a bye."
         }
-      ],
-      "factors": [
-        {
-          "name": "deal",
-          "lean": "for",
-          "reason": "You get more than you give, after a discount on the side with more players."
-        },
-        {
-          "name": "roster fit",
-          "lean": "against",
-          "reason": "You go from 3 WRs in the top 36 to 2 and go from 2 TEs in the top 24 to 3, and your lineup scores less."
-        },
-        {
-          "name": "standing",
-          "lean": "even",
-          "reason": "Out of the playoff race, so you want the better player for the rest of the season, but you give him up."
-        },
-        {
-          "name": "trend and usage",
-          "lean": "even",
-          "reason": "Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Harrison plays 43% of the snaps (down), sees 13% of the targets, and averages 5.8 air yards per target; Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target."
-        },
-        {
-          "name": "injury",
-          "lean": "even",
-          "reason": "Dalton Kincaid and Marvin Harrison have no injury report count on file."
-        },
-        {
-          "name": "schedule",
-          "lean": "against",
-          "reason": "Kincaid faces CHI (27th most points to TEs), DEN (11th), and MIA (3rd) in weeks 15 to 17. Harrison has his bye in week 8 and faces JAX (8th most points to WRs), PHI (4th), and GB (18th) in weeks 15 to 17."
-        }
       ]
     },
     {
       "roster_id": 12,
       "bullets": [
-        "Nico Collins leads the trade in points per game.",
-        "His role is large."
+        {
+          "text": "Nico Collins leads the trade in points per game.",
+          "mark": "for",
+          "fact_id": "trade.week",
+          "fact_text": "The trade is in the week of the fixture."
+        },
+        {
+          "text": "His role is large.",
+          "mark": "against",
+          "fact_id": "trade.week",
+          "fact_text": "The trade is in the week of the fixture."
+        }
       ],
       "week_lines": [
         {
@@ -197,45 +181,23 @@
           "week": 7,
           "text": "Week 7: WRs in the top 36 who play stay at 4. TEs in the top 24 who play stay at 1. Collins plays NYG at home, 13th most points to WRs. Moore has a bye."
         }
-      ],
-      "factors": [
-        {
-          "name": "deal",
-          "lean": "even",
-          "reason": "What you get and what you give are about even, after a discount on the side with more players."
-        },
-        {
-          "name": "roster fit",
-          "lean": "for",
-          "reason": "You keep 5 WRs in the top 36 and go from 2 TEs in the top 24 to 1, and you get the better player."
-        },
-        {
-          "name": "standing",
-          "lean": "even",
-          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same."
-        },
-        {
-          "name": "trend and usage",
-          "lean": "even",
-          "reason": "Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target; Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target."
-        },
-        {
-          "name": "injury",
-          "lean": "even",
-          "reason": "Nico Collins has no injury report count on file."
-        },
-        {
-          "name": "schedule",
-          "lean": "for",
-          "reason": "Collins has his bye in week 8 and faces JAX (8th most points to WRs), PHI (4th), and GB (18th) in weeks 15 to 17."
-        }
       ]
     },
     {
       "roster_id": 7,
       "bullets": [
-        "Nico Collins leads the trade in points per game.",
-        "His role is large."
+        {
+          "text": "Nico Collins leads the trade in points per game.",
+          "mark": "for",
+          "fact_id": "trade.week",
+          "fact_text": "The trade is in the week of the fixture."
+        },
+        {
+          "text": "His role is large.",
+          "mark": "against",
+          "fact_id": "trade.week",
+          "fact_text": "The trade is in the week of the fixture."
+        }
       ],
       "week_lines": [
         {
@@ -245,38 +207,6 @@
         {
           "week": 7,
           "text": "Week 7: WRs in the top 36 who play go from 0 to 1. TEs in the top 24 who play stay at 1. Wilson plays MIA at home, 31st most points to WRs. McConkey and McLaurin have a bye."
-        }
-      ],
-      "factors": [
-        {
-          "name": "deal",
-          "lean": "against",
-          "reason": "You give more than you get."
-        },
-        {
-          "name": "roster fit",
-          "lean": "for",
-          "reason": "You go from 1 WR in the top 36 to 2, and your lineup scores more."
-        },
-        {
-          "name": "standing",
-          "lean": "even",
-          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade adds some."
-        },
-        {
-          "name": "trend and usage",
-          "lean": "even",
-          "reason": "Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target; Harrison plays 43% of the snaps (down), sees 13% of the targets, and averages 5.8 air yards per target."
-        },
-        {
-          "name": "injury",
-          "lean": "even",
-          "reason": "Garrett Wilson has no injury report count on file."
-        },
-        {
-          "name": "schedule",
-          "lean": "even",
-          "reason": "Wilson has his bye in week 13 and faces ARI (2nd most points to WRs), NE (17th), and MIN (16th) in weeks 15 to 17."
         }
       ]
     }
@@ -295,7 +225,6 @@
       }
     }
   },
-  "fallback": false,
   "missing": [
     "returns"
   ],

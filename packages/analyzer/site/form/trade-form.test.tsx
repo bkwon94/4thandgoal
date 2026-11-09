@@ -260,17 +260,17 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
     edit();
     await pickTeam("Your Team", "Punt Punks");
-    expect(screen.queryByText("Not as is")).toBeNull();
+    expect(screen.queryByText("Lean yes")).toBeNull();
   });
 
   it("posts the asker first, with the destination of each player, as main does", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
 
     const [url, init] = fetchStub.mock.calls[0];
     expect(url).toBe("https://api.example.test/clients/cpc/analyze");
@@ -293,7 +293,7 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
     expect(count).toHaveBeenCalledWith({ path: "analyze-grade", event: true });
     delete window.goatcounter;
   });
@@ -367,9 +367,9 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    const verdict = await screen.findByRole("region", { name: "The Verdict" });
-    expect(within(verdict).getByText("Decision for Pukancun on 3")).toBeTruthy();
-    expect(within(verdict).getByRole("heading", { level: 2, name: "Not as is" })).toBeTruthy();
+    const verdict = await screen.findByRole("region", { name: "The Read" });
+    expect(within(verdict).getByText("The read for Pukancun on 3")).toBeTruthy();
+    expect(within(verdict).getByRole("heading", { level: 2, name: "Lean yes" })).toBeTruthy();
     expect(within(verdict).getByText("Fairness")).toBeTruthy();
     // The verdict is the hero, so the title hero and the grading hero are gone.
     expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
@@ -386,7 +386,7 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    const verdict = await screen.findByRole("region", { name: "The Verdict" });
+    const verdict = await screen.findByRole("region", { name: "The Read" });
     expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
     // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
     expect(verdict.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
@@ -400,14 +400,14 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
     fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
     expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
     expect(screen.getByRole("region", { name: "Who gets what" })).toBeTruthy();
     expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
     expect(submit().disabled).toBe(false);
     expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
-    expect(screen.getByRole("region", { name: "The Verdict" })).toBeTruthy();
+    expect(screen.getByRole("region", { name: "The Read" })).toBeTruthy();
   });
 
   it("locks the slots, the add buttons, and the remove controls while the grade runs, and unlocks them on the result", async () => {
@@ -428,7 +428,7 @@ describe("TradeForm", () => {
     expect(removeAnaOne.isConnected).toBe(true);
 
     await act(async () => finish(new Response(JSON.stringify(fixtureJson), { status: 200 })));
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
     edit();
     expect(controls.some((c) => c.disabled)).toBe(false);
     expect(submit().hasAttribute("aria-busy")).toBe(false);
@@ -460,13 +460,13 @@ describe("TradeForm", () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
     edit();
 
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     fireEvent.click(submit());
     await screen.findByText("Grading the Trade");
-    expect(screen.queryByText("Not as is")).toBeNull();
+    expect(screen.queryByText("Lean yes")).toBeNull();
   });
 
   it("shows the API message on a 422", async () => {
@@ -525,6 +525,19 @@ describe("TradeForm", () => {
     expect(await screen.findByText("The trade value chart is not ready.")).toBeTruthy();
   });
 
+  it("shows the plain error of a failed read with Try Again, and no Lean (AT-49)", async () => {
+    const message = "The read of this trade did not come through. Try again in a minute. This try does not count toward your grades.";
+    answer(503, { detail: { message } });
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    expect(await screen.findByText(message)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Try Again" })).toBeTruthy();
+    for (const lean of ["Send it", "Lean yes", "Gut call", "Lean no", "Pass"]) {
+      expect(screen.queryByText(lean)).toBeNull();
+    }
+    expect(screen.queryByRole("region", { name: "The Read" })).toBeNull();
+  });
+
   it("asks for the passphrase again on a 401", async () => {
     answer(401, { detail: "bad passphrase" });
     await pickTrade(TRADE);
@@ -540,7 +553,7 @@ describe("TradeForm", () => {
 
     answer(200, fixtureJson);
     fireEvent.click(screen.getByRole("button", { name: "Try Again" }));
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
     expect(fetchStub).toHaveBeenCalledTimes(2);
   });
 
@@ -703,7 +716,7 @@ describe("TradeForm with three or four sides", () => {
     await pickPlayers("Team Three", "Blitz Bakers", "Ben Two");
     await pickPlayers("Your Team", "Punt Punks", "Cy One");
     fireEvent.click(submit());
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
     expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual({
       season: 2026,
       asker: 4,
@@ -785,7 +798,7 @@ describe("TradeForm with the finder", () => {
     const cards = await screen.findAllByRole("article");
     answer(200, fixtureJson);
     fireEvent.click(within(cards[index]).getByRole("button", { name: "See the Full Result" }));
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
   }
 
   it("resets the partner and the cards when my team changes", async () => {
@@ -828,7 +841,7 @@ describe("TradeForm with the finder", () => {
 
     answer(200, fixtureJson);
     fireEvent.click(within(cards[1]).getByRole("button", { name: "See the Full Result" }));
-    await screen.findByText("Not as is");
+    await screen.findByText("Lean yes");
 
     const [url, init] = fetchStub.mock.calls[1];
     expect(url).toBe("https://api.example.test/clients/cpc/analyze");

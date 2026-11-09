@@ -80,23 +80,19 @@
       }
     ]
   },
-  "decision": {
-    "for_roster": 4,
-    "answer": "not_as_is",
-    "reason": "The other side does better, so ask for more.",
-    "differs": false
-  },
+  "lean": "Lean yes",
+  "case": "If you believe Garrett Wilson keeps a target share near 35 percent, this is worth it. You give up the best receiver in the deal, and Nico Collins plays at JAX this week. Your team is out of the race, so a swing for two starters fits. The risk is that Dalton Kincaid stays a part-time option. Send it as long as you can live with less from your top receiver.",
   "fairness": {
     "state": "fair",
     "gives_more": null,
     "sides": [
       {
         "roster_id": 4,
-        "reason": "What you get and what you give are about even, after a discount on the side with more players."
+        "reason": "It gets two starters for one, at receiver and at tight end."
       },
       {
         "roster_id": 12,
-        "reason": "You keep 5 WRs in the top 36 and go from 2 TEs in the top 24 to 1, and you get the better player."
+        "reason": "It gets the best receiver in the deal."
       }
     ]
   },
@@ -104,8 +100,36 @@
     {
       "roster_id": 4,
       "bullets": [
-        "Nico Collins leads the trade in points per game.",
-        "His role is large."
+        {
+          "text": "Garrett Wilson had a 35 percent target share over the last 2 weeks.",
+          "mark": "for",
+          "fact_id": "8146.targets",
+          "fact_text": "Garrett Wilson's target share was 35 percent over the last 2 weeks before the trade, down from the 2 weeks before that."
+        },
+        {
+          "text": "Your TEs in the top 24 go from 2 to 3.",
+          "mark": "for",
+          "fact_id": "4.depth.te",
+          "fact_text": "For Pukancun on 3, the TEs in the top 24 go from 2 to 3."
+        },
+        {
+          "text": "Nico Collins scored 15.6 points per game, the most in the deal.",
+          "mark": "against",
+          "fact_id": "7569.ppg",
+          "fact_text": "Nico Collins (WR, HOU) scored 15.6 points per game over 4 games before the trade. His Season rank is WR20, by total points this season."
+        },
+        {
+          "text": "Dalton Kincaid is listed Questionable now.",
+          "mark": "against",
+          "fact_id": "10236.injury",
+          "fact_text": "Dalton Kincaid is listed Questionable now, with no return week on file."
+        },
+        {
+          "text": "Your team is out of the playoff race, so a swing costs little.",
+          "mark": "even",
+          "fact_id": "4.team",
+          "fact_text": "Pukancun on 3 was 1-9, 12th of 12, before the trade: a seller out of the playoff race."
+        }
       ],
       "week_lines": [
         {
@@ -116,45 +140,29 @@
           "week": 7,
           "text": "Week 7: WRs in the top 36 who play stay at 3. TEs in the top 24 who play stay at 2. Wilson plays MIA at home, 31st most points to WRs. Kincaid has a bye."
         }
-      ],
-      "factors": [
-        {
-          "name": "deal",
-          "lean": "even",
-          "reason": "What you get and what you give are about even, after a discount on the side with more players."
-        },
-        {
-          "name": "roster fit",
-          "lean": "even",
-          "reason": "You keep 3 WRs in the top 36 and go from 2 TEs in the top 24 to 3."
-        },
-        {
-          "name": "standing",
-          "lean": "even",
-          "reason": "Out of the playoff race, so you want the better player for the rest of the season, but you give him up."
-        },
-        {
-          "name": "trend and usage",
-          "lean": "even",
-          "reason": "Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target; Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target."
-        },
-        {
-          "name": "injury",
-          "lean": "even",
-          "reason": "Dalton Kincaid and Garrett Wilson have no injury report count on file."
-        },
-        {
-          "name": "schedule",
-          "lean": "against",
-          "reason": "Kincaid faces CHI (27th most points to TEs), DEN (11th), and MIA (3rd) in weeks 15 to 17. Wilson has his bye in week 13 and faces ARI (2nd most points to WRs), NE (17th), and MIN (16th) in weeks 15 to 17."
-        }
       ]
     },
     {
       "roster_id": 12,
       "bullets": [
-        "Nico Collins leads the trade in points per game.",
-        "His role is large."
+        {
+          "text": "Nico Collins scored 15.6 points per game before the trade.",
+          "mark": "for",
+          "fact_id": "7569.ppg",
+          "fact_text": "Nico Collins (WR, HOU) scored 15.6 points per game over 4 games before the trade. His Season rank is WR20, by total points this season."
+        },
+        {
+          "text": "Its TEs in the top 24 go from 2 to 1.",
+          "mark": "against",
+          "fact_id": "12.depth.te",
+          "fact_text": "For Amon-Ra Dawg Your Team, the TEs in the top 24 go from 2 to 1."
+        },
+        {
+          "text": "It sits in the middle of the race, neither in nor out.",
+          "mark": "even",
+          "fact_id": "12.team",
+          "fact_text": "Amon-Ra Dawg Your Team was 4-6, 8th of 12, before the trade: a middle team, neither in a playoff spot nor out of the race."
+        }
       ],
       "week_lines": [
         {
@@ -164,38 +172,6 @@
         {
           "week": 7,
           "text": "Week 7: WRs in the top 36 who play stay at 4. TEs in the top 24 who play stay at 1. Collins plays NYG at home, 13th most points to WRs. Moore has a bye."
-        }
-      ],
-      "factors": [
-        {
-          "name": "deal",
-          "lean": "even",
-          "reason": "What you get and what you give are about even, after a discount on the side with more players."
-        },
-        {
-          "name": "roster fit",
-          "lean": "for",
-          "reason": "You keep 5 WRs in the top 36 and go from 2 TEs in the top 24 to 1, and you get the better player."
-        },
-        {
-          "name": "standing",
-          "lean": "even",
-          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same."
-        },
-        {
-          "name": "trend and usage",
-          "lean": "even",
-          "reason": "Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target; Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target."
-        },
-        {
-          "name": "injury",
-          "lean": "even",
-          "reason": "Nico Collins has no injury report count on file."
-        },
-        {
-          "name": "schedule",
-          "lean": "for",
-          "reason": "Collins has his bye in week 8 and faces JAX (8th most points to WRs), PHI (4th), and GB (18th) in weeks 15 to 17."
         }
       ]
     }
@@ -212,9 +188,10 @@
       "pending": {
         "usage": 8
       }
-    }
+    },
+    "no_chart": false,
+    "no_chart_note": null
   },
-  "fallback": false,
   "missing": [
     "returns"
   ],

@@ -4,7 +4,7 @@
  */
 import analyzeJson from "./analyze-response.json";
 import analyzeThreeJson from "./analyze-response-three.json";
-// The real answer of the API to grade-clarity trade A, recorded in `.scratch/grade-clarity/evidence/AT-1/`.
+// Grade-clarity trade A, from `.scratch/grade-clarity/evidence/AT-1/`, in the shape of the read.
 import analyzeTradeAJson from "./analyze-response-trade-a.json";
 import findJson from "./find-response.json";
 import type { ApiTarget } from "../api";

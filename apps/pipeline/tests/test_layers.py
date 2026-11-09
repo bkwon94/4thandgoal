@@ -180,6 +180,7 @@ LAYER_OF: dict[str, str] = {
     "analyzer.trade_facts": "facts",
     "analyzer.week_line": "facts",
     "analyzer.finder": "facts",
+    "analyzer.trade_jev": "facts",
     "waiver.rank_score": "facts",
     "waiver.board": "facts",
     "waiver.buckets": "facts",
@@ -195,6 +196,7 @@ LAYER_OF: dict[str, str] = {
     "analyzer.analysis": "write",
     "analyzer.finder_reasons": "write",
     "analyzer.routes": "write",
+    "analyzer.advisor": "write",
     "waiver.research": "write",
     "midseason.prose": "write",
     # output

@@ -18,7 +18,7 @@ export const OPEN_ID = "data-open-id";
 export const SIM_CHAMPION = "data-sim-champion";
 export const SIM_SEEDS = "data-sim-seeds";
 
-/* The marks of the analyzer result, on its root: the trade key and the answer word of the decision. */
+/* The marks of the analyzer result, on its root: the trade key and the answer of the Lean, as yes, no, or not as is. */
 export const TRADE_KEY = "data-trade-key";
 export const TRADE_ANSWER = "data-trade-answer";
 

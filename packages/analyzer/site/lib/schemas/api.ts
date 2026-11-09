@@ -45,19 +45,18 @@ export const tradeSideSchema = z.object({
   gets: z.array(gotPlayerSchema),
 });
 
-/* The call for the asker's side. differs is true when the call goes against the chart. The reason then says why. */
-export const decisionSchema = z.object({
-  for_roster: z.number(),
-  answer: z.enum(["yes", "no", "not_as_is"]),
-  reason: z.string(),
-  differs: z.boolean(),
-});
+/* The Lean of the Advisor for the asker, on a 5-step scale from Pass to Send it. */
+export const leanSchema = z.enum(["Send it", "Lean yes", "Gut call", "Lean no", "Pass"]);
 
-/* One factor leans for the side, against it, or neither way. The first factor of a side is the deal row. */
-export const factorSchema = z.object({
-  name: z.string(),
-  lean: z.enum(["for", "against", "even"]),
-  reason: z.string(),
+/* The Mark of a Bullet: for the side, against it, or even. */
+export const markSchema = z.enum(["for", "against", "even"]);
+
+/* One claim of the Advisor about one side, with its Mark and the fact it rests on. fact_text is the text of that fact, so a tap shows it. */
+export const bulletSchema = z.object({
+  text: z.string(),
+  mark: markSchema,
+  fact_id: z.string(),
+  fact_text: z.string(),
 });
 
 /* The Week line of one side for one week, written by the code: the count of the players who play, the opponent, each bye, and each player who is out. It moves no letter. */
@@ -66,12 +65,11 @@ export const weekLineSchema = z.object({
   text: z.string(),
 });
 
-/* The read of one side: 2 or 3 bullets, each one sentence, the Week lines of the trade week and the next week, and the factors. bullets is empty when the writer call failed, so the rows stand alone. */
+/* The read of one side: 3 to 5 Bullets, then the Week lines of the trade week and the next week. */
 export const decidedSideSchema = z.object({
   roster_id: z.number(),
-  bullets: z.array(z.string()),
+  bullets: z.array(bulletSchema),
   week_lines: z.array(weekLineSchema),
-  factors: z.array(factorSchema),
 });
 
 /* One side of the fairness read: the roster id and the one reason for that side. */
@@ -122,13 +120,13 @@ export const analyzeResponseSchema = z.object({
     asker: z.number(),
     sides: z.array(tradeSideSchema),
   }),
-  decision: decisionSchema,
+  // The Lean of the Advisor for the asker, and the Case under it, which leads with its condition.
+  lean: leanSchema,
+  case: z.string(),
   // Optional, because the ticket asks the page to render a document with no block, as a guard. The page then shows no fairness line.
   fairness: fairnessSchema.optional(),
   sides: z.array(decidedSideSchema),
   as_of: asOfSchema,
-  // True when the writer call failed, so no side has bullets.
-  fallback: z.boolean(),
   missing: z.array(z.string()),
   stale: z.array(z.string()),
 });
