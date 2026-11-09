@@ -135,9 +135,12 @@ function BoardHero({ board }: { board: Board }) {
                   {week.slots.map((slot, index) => (
                     <Egg key={index} slot={slot} />
                   ))}
+                  {/* The number sits at the foot of its column, under the ground. A week with more eggs makes its column
+                      taller, and the number of a shorter column then sat up in the gradient of the ground, where axe cannot
+                      read its contrast. */}
                   <span
                     aria-hidden="true"
-                    className={cn("font-mono text-meta font-bold", week.week === current ? "text-accent-text" : "text-on-dark-muted")}
+                    className={cn("mt-auto font-mono text-meta font-bold", week.week === current ? "text-accent-text" : "text-on-dark-muted")}
                   >
                     {String(week.week).padStart(2, "0")}
                   </span>
