@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-19, AT-20, and AT-34.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The command runs on the 28 trades and prints the summary with the cost and the time.
 - [x] Each trade has a Lean, a Case, and 3 to 5 Bullets per side, with no check failure after the retry.
