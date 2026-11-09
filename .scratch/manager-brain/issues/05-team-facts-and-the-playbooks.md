@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-4, AT-9, and AT-35.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The sheet of trade 6 of the eval has a fact "RBs in the top 36 go from N to M" for each side, and N and M match the rosters.
 - [x] The sheet states the race group and the odds of each side, and a bye fact for a side with a bye in the trade week.
