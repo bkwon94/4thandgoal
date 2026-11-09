@@ -4,7 +4,7 @@ Map: `.scratch/manager-brain/MAP.md`.
 
 **Kind:** prototype
 
-**Blocked by:** 06. The `jev` spec is on `main`, with ADR 0029. Merge `main` into this branch first.
+**Blocked by:** none. The `jev` spec is on `main`, with ADR 0029. Merge `main` into this branch first.
 
 **Status:** open
 
