@@ -10,9 +10,9 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-12, AT-13, AT-14, AT-
 
 **Status:** ready-for-agent
 
-- [ ] A press with Jonathan Taylor gives at most 2 `NEWS.6813.` facts, each from the last 7 days, newest first.
-- [ ] Every Bullet of the eval that cites news names the report.
-- [ ] With the feed host blocked, `/analyze` returns a read with no news fact.
-- [ ] A second press within 1 hour fetches no news for the same player.
-- [ ] The log holds the result of both Jev checks, and no read is blocked by them.
-- [ ] `make check-fast` passes.
+- [x] A press with Jonathan Taylor gives at most 2 `NEWS.6813.` facts, each from the last 7 days, newest first.
+- [x] Every Bullet of the eval that cites news names the report.
+- [x] With the feed host blocked, `/analyze` returns a read with no news fact.
+- [x] A second press within 1 hour fetches no news for the same player.
+- [x] The log holds the result of both Jev checks, and no read is blocked by them.
+- [x] `make check-fast` passes.

@@ -186,6 +186,8 @@ LAYER_OF: dict[str, str] = {
     "analyzer.trade_splits": "facts",
     "analyzer.chart_facts": "facts",
     "analyzer.nfl_team_facts": "facts",
+    "analyzer.trade_news": "facts",
+    "analyzer.read_jev_check": "facts",
     "waiver.rank_score": "facts",
     "waiver.board": "facts",
     "waiver.buckets": "facts",

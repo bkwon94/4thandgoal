@@ -9,10 +9,11 @@ from pathlib import Path
 
 import pytest
 from cpc import cpc_client, four_week
-from fakes import FakeJev
+from fakes import FakeJev, no_news
 
 from analyzer.advisor import advisor_sheet
 from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade_news import NewsFeed
 from analyzer.trade_splits import Split, season_splits, trade_split_facts
 from league.past_seasons import fetch_past_seasons
 from league.paths import nflverse_cache_dir
@@ -82,7 +83,7 @@ def test_a_player_with_no_past_season_has_no_history_fact(snap, trade):
 
 
 def test_the_sheet_of_the_advisor_carries_the_history_fact(snap, trade):
-    sheet = advisor_sheet(trade, snap, FakeJev())
+    sheet = advisor_sheet(trade, snap, FakeJev(), NewsFeed(fetch=no_news))
     assert f"{COLLINS}.history" in sheet
 
 

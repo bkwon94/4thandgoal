@@ -22,7 +22,7 @@ from league.models import ResearchOut
 from league.nflverse import nflverse_week
 from league.provider.base import Provider
 from league.provider.raw import RawAheadWeek, RawDraft, RawPastWeek, RawRoster, RawWeek
-from league.provider.sleeper import DRAFT_FILE, PICKS_FILE, league_settings, load_draft, load_raw
+from league.provider.sleeper import DRAFT_FILE, PICKS_FILE, fetch_news, league_settings, load_draft, load_raw
 
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 RAW_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw"
@@ -36,10 +36,23 @@ CPC_TRANSACTIONS = Path(__file__).parent / "fixtures" / "2026" / "cpc-transactio
 NORCAL_TRANSACTIONS = Path(__file__).parent / "fixtures" / "2026" / "norcal-transactions"
 # The recorded week 6 has no fetch time, so the live fetch gives this one.
 FIXTURE_FETCHED = datetime(2026, 10, 21, 9, 30, tzinfo=ZoneInfo("America/New_York"))
+# The real Sleeper news feeds by player id, as Sleeper gave them at NEWS_RECORDED. 6813 is Jonathan Taylor, one day
+# before the trade deadline of 2026.
+NEWS_FIXTURES = Path(__file__).parent / "fixtures" / "news"
+NEWS_RECORDED = datetime(2026, 11, 9, 22, 45, tzinfo=ZoneInfo("UTC"))
 
 
 def no_news(player_id):
     return []
+
+
+def recorded_news(player_id: str) -> list[dict]:
+    """The news feed of a player through the real fetch_news, answered from NEWS_FIXTURES. A player with no file
+    has an empty feed."""
+    def body(url, params):
+        path = NEWS_FIXTURES / f"{url.rstrip('/').split('/')[-2]}.json"
+        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    return fetch_news(player_id, transport=json_transport(body))
 
 
 def no_network(url):
