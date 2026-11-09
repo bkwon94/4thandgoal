@@ -25,7 +25,7 @@ class NoulQuestion:
 
 
 @dataclass(frozen=True)
-class JevAnswers:
+class JevResponse:
     """The answers of one request: the model id, the probability of yes by question key, and the input tokens."""
     model: str
     nouls: dict[str, float]
@@ -34,7 +34,7 @@ class JevAnswers:
 
 # The port sits in the provider layer beside the Writer port, so a module of any layer above can take a Jev.
 class Jev(Protocol):
-    def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevAnswers:
+    def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevResponse:
         """One request with `state` and every question in `questions`. It gives one answer per key.
 
         Raises JevError for every failure.

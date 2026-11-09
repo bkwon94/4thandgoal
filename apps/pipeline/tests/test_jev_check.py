@@ -15,7 +15,7 @@ from fakes import FakeJev, fixture_nflverse, no_claims, no_news
 
 from cornerstone.pipeline import read_verify, run_build
 from cornerstone.sheet import read_bundle
-from facts.writer import load_prompt, with_terms
+from facts.writer import RefusalError, load_prompt, with_terms
 from league.jev import TypeSafeJev
 from league.jev_port import JevError, NoulQuestion
 from league.models import Sentence, Verdict, VerifyOut
@@ -79,6 +79,18 @@ def test_the_state_holds_every_chapter_fact_and_the_vocabulary_of_the_client(tmp
         assert request.state["blurb"] == result.sentences
 
 
+def test_the_state_holds_the_rule_lines_of_the_vocabulary(tmp_path, fixture_raw_dir, offline):
+    # Story 8: Jev reads the same rules that Claude reads, such as the preamble rule and the banned words.
+    jev = FakeJev()
+    _build(tmp_path, fixture_raw_dir, offline, jev)
+    assert jev.requests
+    for request in jev.requests:
+        rules = request.state["rules"]
+        assert any("Each term means exactly what its line says." in rule for rule in rules)
+        assert any(rule.startswith("Never write these words: best, star,") for rule in rules)
+        assert not any(rule.startswith(("- **", "#")) for rule in rules)
+
+
 def _code_failure_first(chapter_title):
     """A Claude stand-in whose first blurb of one chapter says "two", which no fact holds, so it fails the code check.
     Every other blurb is the plain one of `_call`."""
@@ -125,6 +137,27 @@ def test_passed_follows_the_claude_verdicts_only(tmp_path, fixture_raw_dir, offl
     for result in checked:
         assert result.passed is supported
         assert {a.yes for a in result.jev.answers} == {yes}
+
+
+def test_a_failed_claude_check_keeps_the_sentences_and_the_jev_answers_of_its_attempt(
+        tmp_path, fixture_raw_dir, offline):
+    # A Claude check that raises fails the attempt, and the attempt still keeps its sentences and its Jev answers.
+    def call(system, user, model):
+        if model.__name__ == "VerifyOut":
+            raise RefusalError("refused")
+        return _call(system, user, model)
+
+    jev = FakeJev(yes=0.75)
+    verify = _build(tmp_path, fixture_raw_dir, offline, jev, call)
+    failed = [r for results in verify.chapters.values() for r in results
+              if r.code_failures and r.code_failures[0].startswith("verifier error")]
+    assert failed
+    assert len(failed) == len(jev.requests)
+    for result in failed:
+        assert not result.passed
+        assert result.sentences == ["Fact sentence alpha.", "Fact sentence beta."]
+        assert result.jev is not None and result.jev.model == FakeJev.MODEL
+        assert [(a.index, a.yes) for a in result.jev.answers] == [(0, 0.75), (1, 0.75)]
 
 
 def _build_into(root, fixture_raw_dir, offline, jev):
