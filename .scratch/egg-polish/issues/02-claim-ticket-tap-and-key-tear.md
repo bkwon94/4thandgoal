@@ -8,7 +8,7 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-9, AT-10, and AT-13 to A
 
 **Blocked by:** None. It can start now.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A hunt test reads the ticket with the letter, the egg word, and the team after the three steps.
 - [x] A hunt test taps a locked stub, reads the next missing step on it, and reads that the port got no claim.
