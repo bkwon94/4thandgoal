@@ -1,0 +1,32 @@
+# Source: apps/pipeline/tests/test_jev_check.py
+
+# lines 94-106
+def _code_failure_first(chapter_title):
+    """A Claude stand-in whose first blurb of one chapter says "two", which no fact holds, so it fails the code check.
+    Every other blurb is the plain one of `_call`."""
+    first = [True]
+
+    def call(system, user, model):
+        if model.__name__ != "VerifyOut" and f"Chapter: {chapter_title}" in user and first[0]:
+            first[0] = False
+            fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.MULTILINE).group(1)
+            return model(sentences=[Sentence(text="Fact sentence alpha.", fact_ids=[fid]),
+                                    Sentence(text="Fact sentence two.", fact_ids=[fid])])
+        return _call(system, user, model)
+    return call
+
+# lines 109-122
+def test_an_attempt_with_a_code_failure_has_no_jev_check(tmp_path, fixture_raw_dir, offline):
+    # AT-4: a code failure skips the Jev check, as it skips the Claude check. The retry gets its own Jev check.
+    shutil.copytree(fixture_raw_dir, week_dir(tmp_path, 2026, 6) / "raw")
+    client = cpc_client(at=tmp_path)
+    run_build(tmp_path, 2026, 6, _call, fetch=False, **offline, client=client, jev=FakeJev())
+    awards = next(c for c in read_bundle(week_dir(tmp_path, 2026, 6) / "facts.json").sheet.chapters
+                  if c.key == "awards")
+    jev = FakeJev()
+    run_build(tmp_path, 2026, 6, _code_failure_first(awards.title), fetch=False, **offline, client=client, jev=jev)
+    first, second = read_verify(week_dir(tmp_path, 2026, 6) / "verify.json").chapters["awards"]
+    assert first.code_failures and first.jev is None
+    assert first.sentences == ["Fact sentence alpha.", "Fact sentence two."]
+    assert not second.code_failures and second.jev is not None
+    assert [r.state["blurb"] for r in jev.requests].count(first.sentences) == 0

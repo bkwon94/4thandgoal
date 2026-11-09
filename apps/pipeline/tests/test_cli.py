@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 from conftest import save_chart_read
 from cpc import cli_root, cpc_client
+from fakes import FakeJev
 
 
 def _no_nflverse(season, week, player_ids, players):
@@ -32,7 +33,8 @@ def test_build_stops_when_week_is_not_final(tmp_path, fixture_raw_dir, monkeypat
     shutil.copytree(fixture_raw_dir, tmp_path / "clients" / "cpc" / "data" / "2026" / "week-07" / "raw")
     monkeypatch.chdir(tmp_path)
 
-    code = cli.main(["build", "--client", "cpc", "--season", "2026", "--week", "7", "--no-fetch"], writer=fake_writer)
+    code = cli.main(["build", "--client", "cpc", "--season", "2026", "--week", "7", "--no-fetch"], writer=fake_writer,
+                    jev=FakeJev())
 
     assert code == 2
     assert "not final" in capsys.readouterr().out
@@ -58,7 +60,8 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
     monkeypatch.chdir(tmp_path)
 
     code = cli.main(["build", "--client", "cpc", "--week", "7", "--season", "2026"], writer=fake_writer,
-                    provider=SleeperProvider(tmp_path / "cache", transport=httpx.MockTransport(no_fetch)))
+                    provider=SleeperProvider(tmp_path / "cache", transport=httpx.MockTransport(no_fetch)),
+                    jev=FakeJev())
 
     assert code == 2
     assert "not final" in capsys.readouterr().out
@@ -657,7 +660,7 @@ def test_a_build_with_no_client_slug_exits_and_names_the_slug(tmp_path, monkeypa
 
     cli_root(tmp_path)
     monkeypatch.chdir(tmp_path)
-    code = cli.main(["build", "--season", "2026", "--week", "8", "--no-fetch"], writer=fake_writer)
+    code = cli.main(["build", "--season", "2026", "--week", "8", "--no-fetch"], writer=fake_writer, jev=FakeJev())
     out = capsys.readouterr().out
     assert code == 2
     assert "--client" in out and "client slug" in out

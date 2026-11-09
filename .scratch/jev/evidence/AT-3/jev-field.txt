@@ -1,0 +1,20 @@
+$ python3 .scratch/jev/evidence/scripts/attempts.py .scratch/jev/evidence/AT-3/verify.json at3
+file: .scratch/jev/evidence/AT-3/verify.json
+attempts: 17, with no code failure: 13, with a jev: 13
+motw attempt 1 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+game_changer attempt 1 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+awards attempt 1 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+position_leaders attempt 1 [code-fail]: jev=null
+position_leaders attempt 2 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+recap_1 attempt 1 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+recap_2 attempt 1 [code-fail]: jev=null
+recap_2 attempt 2 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+recap_3 attempt 1 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+recap_4 attempt 1 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+recap_5 attempt 1 [code-fail]: jev=null
+recap_5 attempt 2 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+recap_6 attempt 1 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+median attempt 1 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+next_week attempt 1 [code-fail]: jev=null
+next_week attempt 2 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}
+rankings attempt 1 [checked]: jev={"model": null, "answers": [], "input_tokens": null, "error": "TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable."}

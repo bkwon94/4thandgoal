@@ -1,0 +1,10 @@
+$ git grep -n "Does every claim in the sentence follow from"
+.scratch/jev/decisions/01-research-jev-on-past-labels.notes.md:76:| `single_all` | one Noul: "Does every claim in the sentence follow from `facts`?" | all chapter facts |
+packages/facts/python/src/facts/jev_check.py:16:    "Does every claim in the sentence follow from `facts`, with each stat term read as `vocabulary` defines it?"
+
+$ git grep -n "Each number, name, rank, comparison, and cause in the sentence is stated by a fact"
+packages/facts/python/src/facts/jev_check.py:19:    "Each number, name, rank, comparison, and cause in the sentence is stated by a fact. "
+
+$ git grep -n "states, or that a fact contradicts"
+packages/facts/python/src/facts/jev_check.py:24:    "states, or that a fact contradicts."
+

@@ -1,0 +1,23 @@
+# Source: apps/pipeline/tests/test_jev_check.py
+
+# lines 45-48
+def _build(tmp_path, fixture_raw_dir, offline, jev, call=_call):
+    shutil.copytree(fixture_raw_dir, week_dir(tmp_path, 2026, 6) / "raw")
+    run_build(tmp_path, 2026, 6, call, fetch=False, **offline, client=cpc_client(at=tmp_path), jev=jev)
+    return read_verify(week_dir(tmp_path, 2026, 6) / "verify.json")
+
+# lines 66-79
+def test_the_state_holds_every_chapter_fact_and_the_vocabulary_of_the_client(tmp_path, fixture_raw_dir, offline):
+    # AT-6: Jev reads the same facts and the same stat terms that the Claude verifier reads.
+    jev = FakeJev()
+    verify = _build(tmp_path, fixture_raw_dir, offline, jev)
+    client = cpc_client(at=tmp_path)
+    chapters = {c.key: c for c in read_bundle(week_dir(tmp_path, 2026, 6) / "facts.json").sheet.chapters}
+    checked = [r for results in verify.chapters.values() for r in results if not r.code_failures]
+    vocabulary = with_terms(load_prompt(client.voice_dir, "vocabulary.md"), median_terms(client))
+    terms = re.findall(r"^- \*\*(.+?)\*\*: (.+)$", vocabulary, re.MULTILINE)
+    assert ("median game" in dict(terms)) is client.settings.median_game
+    for result, request in zip(checked, jev.requests, strict=True):
+        assert set(chapters[result.chapter].fact_ids) <= set(request.state["facts"])
+        assert request.state["vocabulary"] == dict(terms)
+        assert request.state["blurb"] == result.sentences

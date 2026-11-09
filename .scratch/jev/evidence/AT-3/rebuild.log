@@ -1,0 +1,184 @@
+$ set -a; source ~/.secrets; set +a; env -u TYPESAFE_API_KEY uv run --exact --package cornerstone cornerstone build --client cpc --season 2026 --week 8 --no-fetch   # detached worktree at jev 3f0301ff, 13:33:30 to 13:48:26
+INFO httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/6770/news "HTTP/1.1 200 OK"
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=11339 cache_read_input_tokens=22166 input_tokens=223
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=5501 cache_read_input_tokens=39748 input_tokens=208
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1474 cache_read_input_tokens=20693 input_tokens=194
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2777 cache_read_input_tokens=38083 input_tokens=230
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3211 cache_read_input_tokens=30324 input_tokens=194
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1703 cache_read_input_tokens=20749 input_tokens=197
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3195 cache_read_input_tokens=30269 input_tokens=199
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2296 cache_read_input_tokens=28920 input_tokens=196
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1477 cache_read_input_tokens=20731 input_tokens=231
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2662 cache_read_input_tokens=37568 input_tokens=196
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4352 cache_read_input_tokens=38449 input_tokens=233
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2964 cache_read_input_tokens=28350 input_tokens=189
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1617 cache_read_input_tokens=28846 input_tokens=222
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3451 cache_read_input_tokens=37853 input_tokens=227
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1565 cache_read_input_tokens=20728 input_tokens=221
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4072 cache_read_input_tokens=38841 input_tokens=262
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1553 cache_read_input_tokens=20733 input_tokens=226
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4407 cache_read_input_tokens=37558 input_tokens=230
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1897 cache_read_input_tokens=28972 input_tokens=235
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4452 cache_read_input_tokens=57924 input_tokens=232
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1717 cache_read_input_tokens=28850 input_tokens=225
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=5781 cache_read_input_tokens=37891 input_tokens=225
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1510 cache_read_input_tokens=20710 input_tokens=196
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4321 cache_read_input_tokens=38607 input_tokens=163
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1497 cache_read_input_tokens=20704 input_tokens=197
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1928 cache_read_input_tokens=28855 input_tokens=195
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4234 cache_read_input_tokens=38447 input_tokens=198
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3221 cache_read_input_tokens=37676 input_tokens=163
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1499 cache_read_input_tokens=28708 input_tokens=158
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=7988 cache_read_input_tokens=0 input_tokens=5404
+WARNING facts.verifier: Jev check failed for motw: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=3336 cache_read_input_tokens=0 input_tokens=5788
+INFO cornerstone.pipeline: chapter motw: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=479
+WARNING facts.verifier: Jev check failed for game_changer: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=649
+INFO cornerstone.pipeline: chapter game_changer: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1628
+WARNING facts.verifier: Jev check failed for awards: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1861
+INFO cornerstone.pipeline: chapter awards: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1480
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1533
+WARNING facts.verifier: Jev check failed for position_leaders: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1743
+INFO cornerstone.pipeline: chapter position_leaders: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2531
+WARNING facts.verifier: Jev check failed for recap_1: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=2698
+INFO cornerstone.pipeline: chapter recap_1: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2719
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2754
+WARNING facts.verifier: Jev check failed for recap_2: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=2844
+INFO cornerstone.pipeline: chapter recap_2: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=4696
+WARNING facts.verifier: Jev check failed for recap_3: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=4853
+INFO cornerstone.pipeline: chapter recap_3: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2776
+WARNING facts.verifier: Jev check failed for recap_4: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=2970
+INFO cornerstone.pipeline: chapter recap_4: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2900
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2935
+WARNING facts.verifier: Jev check failed for recap_5: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=3047
+INFO cornerstone.pipeline: chapter recap_5: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2976
+WARNING facts.verifier: Jev check failed for recap_6: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=3167
+INFO cornerstone.pipeline: chapter recap_6: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1775
+WARNING facts.verifier: Jev check failed for median: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1892
+INFO cornerstone.pipeline: chapter median: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=3579
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=3614
+WARNING facts.verifier: Jev check failed for next_week: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=3893
+INFO cornerstone.pipeline: chapter next_week: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=4692
+WARNING facts.verifier: Jev check failed for rankings: TypeSafeError: No API key was provided. Pass api_key or set the TYPESAFE_API_KEY environment variable.
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=5733
+INFO cornerstone.pipeline: chapter rankings: attempt 1, fallback False
+INFO cornerstone.pipeline: Jev: 13 checks, 13 errors, 0 input tokens
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/6770.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/5967.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4881.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/6801.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/1166.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4984.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12490.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/6790.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/9221.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/7564.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/10232.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/11604.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12506.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/8130.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/team_logos/nfl/jax.png "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/team_logos/nfl/pit.png "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/team_logos/nfl/was.png "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/13276.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4866.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/6786.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/9493.jpg "HTTP/1.1 200 OK"
+INFO cornerstone.pipeline: no saved chart read for week 8: the roster grade has no trade value
+/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/jev-ev/clients/cpc/build/2026/week-08/page.json
+Site page after publish: https://cpc.4thandgoal.app/2026/week-08/
+exit 0

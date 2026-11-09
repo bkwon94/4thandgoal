@@ -705,11 +705,34 @@ class VerifyOut(BaseModel):
     verdicts: list[Verdict]
 
 
+class JevAnswer(BaseModel):
+    """The Jev answer of one sentence: the probability that every claim in it follows from the chapter facts."""
+
+    index: int
+    yes: float
+
+
+class JevCheck(BaseModel):
+    """The Jev check of one attempt. It logs only, so it never changes `passed`.
+
+    A failed call has the error text and no answers, so a reader can tell a failed call from a "no".
+    """
+
+    model: str | None = None
+    answers: list[JevAnswer] = []
+    input_tokens: int | None = None
+    error: str | None = None
+
+
 class VerifyResult(BaseModel):
     chapter: str
     code_failures: list[str]
     verdicts: list[Verdict]
     passed: bool
+    # The text of each sentence of the attempt, in order, so a failed sentence keeps its text. An old file has none.
+    sentences: list[str] | None = None
+    # None when the Jev check did not run, such as after a code failure, and in an old file.
+    jev: JevCheck | None = None
 
 
 class BuildRecord(BaseModel):

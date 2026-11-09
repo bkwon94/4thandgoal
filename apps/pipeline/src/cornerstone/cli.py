@@ -50,6 +50,7 @@ from facts.writer import analyzer_call, claude_call, parse_call
 from league.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
 from league.claude_port import Writer
 from league.client import CLIENT_FILE, Client, ClientError, check_schema_files, load_client, read_client_values
+from league.jev_port import Jev
 from league.live import live_snapshot
 from league.models import ChartValues, PlayerLine, week_lines
 from league.parse import parse_trades, parse_week
@@ -511,13 +512,14 @@ def run_settings(client: Client, season: int) -> int:
 
 def main(
         argv: list[str] | None = None, *, writer: Writer | None = None, provider: Provider | None = None,
-        fetch_state: Callable[[], RawState] = fetch_state,
+        fetch_state: Callable[[], RawState] = fetch_state, jev: Jev | None = None,
 ) -> int:
-    """Run one command. The writer, the provider, and the state fetch are seams, so a test passes the fakes.
+    """Run one command. The writer, the provider, the state fetch, and the Jev are seams, so a test passes the fakes.
 
     A provider of None is the Sleeper adapter with the shared NFL cache dir under the repo root.
 
     A writer of None is the one ClaudeWriter of the process, so a run makes one Claude client.
+    A Jev of None is the one TypeSafeJev of the process. Only the build runs a Jev check.
     """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = build_parser().parse_args(argv)
@@ -568,7 +570,8 @@ def main(
             fetch = not args.no_fetch and (
                 args.refetch or args.week is None or not has_raw(client.folder, season, week)
             )
-            page = run_build(repo, season, week, call, fetch=fetch, client=client, provider=provider, writer=writer)
+            page = run_build(repo, season, week, call, fetch=fetch, client=client, provider=provider, writer=writer,
+                             jev=jev)
             print(page)
             print(f"Site page after publish: {site_page_url(client.slug, season, week)}")
             preview(page)

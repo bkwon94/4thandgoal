@@ -8,7 +8,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
-from fakes import HISTORY_FIXTURES, FixtureProvider, fixture_nflverse, no_claims, no_news
+from fakes import HISTORY_FIXTURES, FakeJev, FixtureProvider, fixture_nflverse, no_claims, no_news
 
 from cornerstone.pipeline import run_build
 from facts.writer import WriterError
@@ -67,7 +67,7 @@ def test_a_build_with_a_fetch_reads_the_league_id_and_the_timezone_from_the_conf
     shutil.copytree(HISTORY_FIXTURES, history_root(tmp_path, 2026))
 
     run_build(tmp_path, 2026, 6, _no_claude, fetch=True, news=no_news, fetch_bytes=lambda url: None,
-              nflverse=fixture_nflverse(tmp_path / "nflverse"), research=no_claims,
+              nflverse=fixture_nflverse(tmp_path / "nflverse"), research=no_claims, jev=FakeJev(),
               started=datetime(2026, 10, 21, 10, 0, tzinfo=CLIENT.tz), client=cpc_client(at=tmp_path), provider=provider)
 
     assert provider.week_calls == [(CLIENT.league_id(2026), 2026, 6, CLIENT.tz)]

@@ -1,0 +1,13 @@
+$ git grep -n -A6 "\*\*Jev check\*\*" -- GLOSSARY.md
+GLOSSARY.md:230:**Jev check**:
+GLOSSARY.md-231-One request to the TypeSafe Jev model about one blurb, with all its questions. It returns one Jev answer per question.
+GLOSSARY.md-232-In the weekly build, it runs beside the Claude check and logs only.
+GLOSSARY.md-233-_Avoid_: Jev verdict (a verdict is the analyzer's choice, and a Test verdict is the Judge's)
+GLOSSARY.md-234-
+GLOSSARY.md-235-**Jev answer**:
+GLOSSARY.md-236-The typed result of one question of a Jev check, such as the probability that a sentence follows from its facts.
+
+$ git grep -nE "Jev|TYPESAFE_API_KEY|ANTHROPIC_API_KEY|Writer" -- apps/pipeline/src/cornerstone/README.md
+apps/pipeline/src/cornerstone/README.md:16:- `Writer` in `league/claude_port.py`: the one Claude call. `ClaudeWriter` in `facts/writer.py` implements it. Its key is `ANTHROPIC_API_KEY`.
+apps/pipeline/src/cornerstone/README.md:17:- `Jev` in `league/jev_port.py`: the one TypeSafe Jev request. `TypeSafeJev` in `league/jev.py` implements it. Its key is `TYPESAFE_API_KEY`.
+apps/pipeline/src/cornerstone/README.md:18:- The `Provider` port is in `league/provider/`. `tests/fakes.py` holds the one fake of each port: `FixtureProvider`, `FakeWriter`, and `FakeJev`.
