@@ -12,7 +12,8 @@
 ## Ports
 
 - `Provider` in `provider/base.py`: the fetches of a league service. `SleeperProvider` takes its cache dir in its constructor.
-- `Writer` in `claude_port.py`: the one Claude call. Every outside service enters here: Sleeper, nflverse, the chart, and Claude.
+- `Writer` in `claude_port.py`: the one Claude call. Every outside service except TypeSafe enters here: Sleeper, nflverse, the chart, and Claude.
+- `Jev` in `jev_port.py`: the one TypeSafe call. `TypeSafeJev` in `jev.py` is the adapter, and it reaches TypeSafe.
 - The port still carries these Sleeper shapes. A later adapter must map each one: the raw week files of `provider/raw.py`, the roster and matchup ids, the transaction legs, the stat lines keyed by `pts_*`, the players file, the trending adds, and the league file.
 
 ## Does not do
