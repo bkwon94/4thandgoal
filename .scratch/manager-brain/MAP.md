@@ -28,11 +28,11 @@ One spec that changes the analyzer and the Finder to judge a trade as a manager 
 - The finder narrows with no math filter: the partner filter, then Jev picks the targets on each side, code builds the offers from the targets only, Jev makes the shortlist, and the Advisor picks three. Code keeps only the hard rules. `decisions/03-research-search-cost.md`.
 - History comes from the nflverse weekly player file for the last 3 seasons, cached for good: weeks 1 to 8 against weeks 9 to 17, and cold games, each with its game count. `decisions/06-research-history-splits.md`.
 - The Claude arm wins: Brian agreed with it on 20 of 24 trades, against 17 and 16 for the Jev arms. Jev answers feed Claude, and Jev narrows the finder. The sheet adds the RB depth after the trade, the quality of the NFL team, and the depth of the other team for "would he accept". The partner filter stays. A press costs about 11 cents and takes about 20 s. `decisions/04-prototype-judge-arms.md`.
+- The page layout: the hero shows the Lean, a 5-step scale with the Lean lit, the Case clamped to 3 lines with its condition first, and the fairness line. The Bullets sit in a switcher with one tab per team at every width, in For, Against, and Even bands, with a ▲ ▼ – Mark. A tap on a row opens its fact, so the API sends the fact text. The Finder card uses the same rows. `decisions/05-prototype-bullet-layout.md`.
 
 ## NOT YET SPECIFIED
 
 - How does the Advisor get player news, such as trade rumors, and keep a rumor a rumor? `decisions/08-research-player-news.md`.
-- What layout do the bullets and their marks take on the page? `decisions/05-prototype-bullet-layout.md`.
 
 ## OUT OF SCOPE
 
