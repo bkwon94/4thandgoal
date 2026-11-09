@@ -1,0 +1,32 @@
+# Source: apps/pipeline/tests/test_jev_check.py
+
+# lines 29-36
+def _call(system, user, model):
+    """A Claude stand-in: two sentences that cite the first chapter fact, and one supported verdict per sentence."""
+    if model.__name__ == "VerifyOut":
+        count = len(VERIFY_LINE.findall(user))
+        return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(count)])
+    fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.MULTILINE).group(1)
+    return model(sentences=[Sentence(text="Fact sentence alpha.", fact_ids=[fid]),
+                            Sentence(text="Fact sentence beta.", fact_ids=[fid])])
+
+# lines 45-48
+def _build(tmp_path, fixture_raw_dir, offline, jev, call=_call):
+    shutil.copytree(fixture_raw_dir, week_dir(tmp_path, 2026, 6) / "raw")
+    run_build(tmp_path, 2026, 6, call, fetch=False, **offline, client=cpc_client(at=tmp_path), jev=jev)
+    return read_verify(week_dir(tmp_path, 2026, 6) / "verify.json")
+
+# lines 51-63
+def test_each_checked_attempt_saves_its_sentences_and_one_jev_answer_per_sentence(tmp_path, fixture_raw_dir, offline):
+    # AT-1 and AT-5: one request per attempt that passed the code check, with one question per sentence.
+    jev = FakeJev(yes=0.75)
+    verify = _build(tmp_path, fixture_raw_dir, offline, jev)
+    checked = [r for results in verify.chapters.values() for r in results if not r.code_failures]
+    assert checked
+    assert len(jev.requests) == len(checked)
+    for result, request in zip(checked, jev.requests, strict=True):
+        assert result.sentences == ["Fact sentence alpha.", "Fact sentence beta."]
+        assert len(request.questions) == len(result.sentences)
+        assert result.jev is not None and result.jev.model == FakeJev.MODEL
+        assert [(a.index, a.yes) for a in result.jev.answers] == [(0, 0.75), (1, 0.75)]
+        assert result.jev.error is None

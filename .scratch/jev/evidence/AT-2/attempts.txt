@@ -1,0 +1,22 @@
+$ python3 .scratch/jev/evidence/scripts/attempts.py .scratch/jev/evidence/AT-1/verify.json at2
+file: .scratch/jev/evidence/AT-1/verify.json
+attempts: 19, with no code failure: 14, with a jev: 14
+motw attempt 1 [code-fail]: sentences=6 claude_verdicts=0 passed=False rule_all_supported=False passed_equals_rule=True lowest_jev=-
+motw attempt 2 [checked]: sentences=6 claude_verdicts=6 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.7500
+game_changer attempt 1 [code-fail]: sentences=5 claude_verdicts=0 passed=False rule_all_supported=False passed_equals_rule=True lowest_jev=-
+game_changer attempt 2 [checked]: sentences=5 claude_verdicts=5 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.7700
+awards attempt 1 [checked]: sentences=4 claude_verdicts=4 passed=False rule_all_supported=False passed_equals_rule=True lowest_jev=0.6300
+awards attempt 2 [checked]: sentences=4 claude_verdicts=4 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.6400
+position_leaders attempt 1 [code-fail]: sentences=3 claude_verdicts=0 passed=False rule_all_supported=False passed_equals_rule=True lowest_jev=-
+position_leaders attempt 2 [checked]: sentences=3 claude_verdicts=3 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.8200
+recap_1 attempt 1 [checked]: sentences=3 claude_verdicts=3 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.6700
+recap_2 attempt 1 [checked]: sentences=3 claude_verdicts=3 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.6000
+recap_3 attempt 1 [code-fail]: sentences=3 claude_verdicts=0 passed=False rule_all_supported=False passed_equals_rule=True lowest_jev=-
+recap_3 attempt 2 [checked]: sentences=3 claude_verdicts=3 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.8600
+recap_4 attempt 1 [checked]: sentences=3 claude_verdicts=3 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.9000
+recap_5 attempt 1 [code-fail]: sentences=3 claude_verdicts=0 passed=False rule_all_supported=False passed_equals_rule=True lowest_jev=-
+recap_5 attempt 2 [checked]: sentences=3 claude_verdicts=3 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.6800
+recap_6 attempt 1 [checked]: sentences=3 claude_verdicts=3 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.9000
+median attempt 1 [checked]: sentences=4 claude_verdicts=4 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.7900
+next_week attempt 1 [checked]: sentences=6 claude_verdicts=6 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.8200
+rankings attempt 1 [checked]: sentences=33 claude_verdicts=33 passed=True rule_all_supported=True passed_equals_rule=True lowest_jev=0.2400

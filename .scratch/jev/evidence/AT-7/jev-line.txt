@@ -1,0 +1,6 @@
+$ grep -n "Jev:" .scratch/jev/evidence/AT-1/rebuild.log
+187:INFO cornerstone.pipeline: Jev: 14 checks, 0 errors, 74573 input tokens
+
+$ python3 -c (count attempts with a jev in .scratch/jev/evidence/AT-1/verify.json)
+attempts with a jev: 14
+sum of input_tokens: 74573

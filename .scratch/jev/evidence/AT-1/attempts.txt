@@ -1,0 +1,22 @@
+$ python3 .scratch/jev/evidence/scripts/attempts.py .scratch/jev/evidence/AT-1/verify.json at1
+file: .scratch/jev/evidence/AT-1/verify.json
+attempts: 19, with no code failure: 14, with a jev: 14
+motw attempt 1 [code-fail]: sentences=6 jev_answers=0 indexes=[] lowest=- highest=- all_in_0_1=True model=None
+motw attempt 2 [checked]: sentences=6 jev_answers=6 indexes=[0, 1, 2, 3, 4, 5] lowest=0.7500 highest=0.9700 all_in_0_1=True model=jev-1.14.0
+game_changer attempt 1 [code-fail]: sentences=5 jev_answers=0 indexes=[] lowest=- highest=- all_in_0_1=True model=None
+game_changer attempt 2 [checked]: sentences=5 jev_answers=5 indexes=[0, 1, 2, 3, 4] lowest=0.7700 highest=0.9600 all_in_0_1=True model=jev-1.14.0
+awards attempt 1 [checked]: sentences=4 jev_answers=4 indexes=[0, 1, 2, 3] lowest=0.6300 highest=0.9500 all_in_0_1=True model=jev-1.14.0
+awards attempt 2 [checked]: sentences=4 jev_answers=4 indexes=[0, 1, 2, 3] lowest=0.6400 highest=0.9900 all_in_0_1=True model=jev-1.14.0
+position_leaders attempt 1 [code-fail]: sentences=3 jev_answers=0 indexes=[] lowest=- highest=- all_in_0_1=True model=None
+position_leaders attempt 2 [checked]: sentences=3 jev_answers=3 indexes=[0, 1, 2] lowest=0.8200 highest=0.9700 all_in_0_1=True model=jev-1.14.0
+recap_1 attempt 1 [checked]: sentences=3 jev_answers=3 indexes=[0, 1, 2] lowest=0.6700 highest=0.9300 all_in_0_1=True model=jev-1.14.0
+recap_2 attempt 1 [checked]: sentences=3 jev_answers=3 indexes=[0, 1, 2] lowest=0.6000 highest=0.9300 all_in_0_1=True model=jev-1.14.0
+recap_3 attempt 1 [code-fail]: sentences=3 jev_answers=0 indexes=[] lowest=- highest=- all_in_0_1=True model=None
+recap_3 attempt 2 [checked]: sentences=3 jev_answers=3 indexes=[0, 1, 2] lowest=0.8600 highest=0.9700 all_in_0_1=True model=jev-1.14.0
+recap_4 attempt 1 [checked]: sentences=3 jev_answers=3 indexes=[0, 1, 2] lowest=0.9000 highest=0.9700 all_in_0_1=True model=jev-1.14.0
+recap_5 attempt 1 [code-fail]: sentences=3 jev_answers=0 indexes=[] lowest=- highest=- all_in_0_1=True model=None
+recap_5 attempt 2 [checked]: sentences=3 jev_answers=3 indexes=[0, 1, 2] lowest=0.6800 highest=0.9800 all_in_0_1=True model=jev-1.14.0
+recap_6 attempt 1 [checked]: sentences=3 jev_answers=3 indexes=[0, 1, 2] lowest=0.9000 highest=0.9600 all_in_0_1=True model=jev-1.14.0
+median attempt 1 [checked]: sentences=4 jev_answers=4 indexes=[0, 1, 2, 3] lowest=0.7900 highest=0.9700 all_in_0_1=True model=jev-1.14.0
+next_week attempt 1 [checked]: sentences=6 jev_answers=6 indexes=[0, 1, 2, 3, 4, 5] lowest=0.8200 highest=0.9400 all_in_0_1=True model=jev-1.14.0
+rankings attempt 1 [checked]: sentences=33 jev_answers=33 indexes=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32] lowest=0.2400 highest=0.9800 all_in_0_1=True model=jev-1.14.0
