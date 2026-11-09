@@ -29,6 +29,7 @@ The facts check becomes a live cascade behind an eval bar. The tone and cause qu
 - Where does the Jev log live, and in what format? `decisions/06-spec-jev-log.md`.
 - What shape does the port take: the SDK or plain HTTP, sync or async, and the fake? `decisions/07-spec-port-shape.md`.
 - Which ADR records the vendor, the data sent to TypeSafe, and the pass rule? `decisions/08-spec-adr.md`.
+- Can Jev rank the facts of a Finder trade well enough for a card? The result goes to your-league ticket 04, and this spec builds nothing for it. `decisions/09-research-finder-fact-rank.md`.
 
 ## OUT OF SCOPE
 
