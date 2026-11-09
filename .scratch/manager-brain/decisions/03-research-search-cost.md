@@ -26,6 +26,6 @@ Brian decided on 2026-11-09. The notes are in `03-research-search-cost.notes.md`
    5. The pick: the Advisor reads the shortlist, picks up to three trades, and writes why.
 4. **Code keeps the hard rules only:** no kicker, no defense, no player out with no return week, and no handcuff. They decide which trades are legal, not which are good.
 5. **The targets:** about 2 to 4 per side, and about 10 to 30 offers per partner. Claude estimates under 1 cent and about 10 to 20 s per press. Prototype 04 measures the real numbers and checks that the targets make sense to Brian.
-6. **The rate limits.** One press sends about 11 Jev requests at once. Brian reads the limits of the org at https://console.typesafe.ai/rate-limits before the first live call of prototype 04.
+6. **The rate limits.** Brian read them on 2026-11-09: 80 requests per second and 100,000 tokens per second. One press sends about 11 requests per step, which fits. The shortlist step can pass 100,000 tokens when every partner passes, so code sends its requests in waves under the token limit. Prototype 04 measures the real counts.
 
 The risk: a target that Jev misses drops every trade with that player.
