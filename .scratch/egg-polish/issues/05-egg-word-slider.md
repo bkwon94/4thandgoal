@@ -8,7 +8,7 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-21 to AT-23, AT-25 to AT
 
 **Blocked by:** 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A board test reads the tab row in the fixed order with the count of each leader, and "Won" for a won word.
 - [x] A board test reads the first slide as the open word with the largest share, and a won word as the last slide.
