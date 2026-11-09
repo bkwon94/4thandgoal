@@ -10,7 +10,7 @@ Load the skill `typesafe:typesafe-ai` before you write the adapter or the questi
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `Jev` port, its adapter, and `FakeJev` exist. `FakeJev` is annotated as the port, and no test patches the port.
 - [x] The league package is the only package that imports `typesafe_sdk`, and the layer rule maps the port to the provider layer.
