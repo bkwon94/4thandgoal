@@ -555,7 +555,7 @@ def verify_blurb(
     checked = None if jev is None else _logged_jev_check(blurb, chapter, sheet, jev, prompts_dir=prompts_dir,
                                                          terms=terms)
     verdicts = claude_verify(blurb, chapter, sheet, call, prompts_dir=prompts_dir, terms=terms)
-    # `passed` reads the Claude verdicts only. The Jev answers pass no check in this spec.
+    # `passed` reads the Claude verdicts only. A Jev answer passes no check alone (ADR 0029).
     return VerifyResult(
         chapter=chapter.key,
         code_failures=[],
