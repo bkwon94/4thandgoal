@@ -695,16 +695,26 @@
             egg-squash 0.15s cubic-bezier(0.3, 0, 0.2, 1) both,
             egg-tremble 0.41s linear 0.15s forwards;
     }
-    /* Each half of the egg turns on its own middle as it flies off. */
+    /* Each half of the egg turns on its own middle as it flies off. A half stays hidden until the burst, and the whole
+       art shows in its place, so no seam of the two clips shows before the crack lines. */
     .egg-half {
         transform-box: fill-box;
         transform-origin: 50% 50%;
+        visibility: hidden;
     }
     .egg-split-top {
-        animation: egg-split-top 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both;
+        animation:
+            egg-split-top 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both,
+            egg-half-in 0s linear 0.56s forwards;
     }
     .egg-split-bottom {
-        animation: egg-split-bottom 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both;
+        animation:
+            egg-split-bottom 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both,
+            egg-half-in 0s linear 0.56s forwards;
+    }
+    /* The whole art hides at the burst, as the halves show, so the halves fly apart alone. */
+    .egg-whole-out {
+        animation: egg-whole-out 0s linear 0.56s forwards;
     }
     /* Each glowing crack line draws out from the tap point over its own length, then fades as the shell bursts.
        The part sets the length in --egg-line, the start after the squash in --egg-delay, and the time of the draw in --egg-draw. */
@@ -1054,6 +1064,16 @@
     to {
         transform: translate(22px, 100px) rotate(18deg);
         opacity: 0;
+    }
+}
+@keyframes egg-whole-out {
+    to {
+        visibility: hidden;
+    }
+}
+@keyframes egg-half-in {
+    to {
+        visibility: visible;
     }
 }
 @keyframes egg-glow {

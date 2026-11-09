@@ -16,8 +16,8 @@ How the evidence ran:
 
 App: site
 Then: The egg squashes within 0.2 s of the tap, before any crack line shows.
-Files: `evidence/AT-1/steps.txt`, `evidence/AT-1/measures.txt`, `evidence/AT-1/frame-0.0s.png`, `evidence/AT-1/frame-0.1s.png`, `evidence/AT-1/frame-0.2s.png`, `evidence/AT-1/recording.webm`
-Observation: Recorded again from `34b5c424`. In the seeked run the egg svg has scale(1.06, 0.91) at 0.05 s and scale(1.07, 0.89) at 0.1 s, and its box goes from 180 by 220 px to 192.6 by 195.8 px; in the real-time run it holds scale(1.07, 0.89) from 44 ms to 108 ms after the tap. In both runs no crack line has a drawn unit and each shard has opacity 0 before 0.15 s; the first line draws 0.87 units at 175 ms, and frame-0.2s.png shows a small bright dot at the middle of the egg. A faint thin zigzag line crosses the egg in all three frames, the same at 0.0 s as at 0.1 s and 0.2 s.
+Files: `evidence/AT-1/steps.txt`, `evidence/AT-1/measures.txt`, `evidence/AT-1/frame-0.0s.png`, `evidence/AT-1/frame-0.1s.png`, `evidence/AT-1/frame-0.2s.png`, `evidence/AT-1/crop-house-0.0s-3x.png`, `evidence/AT-1/crop-house-reduced-3x.png`, `evidence/AT-1/recording.webm`
+Observation: Recorded again from `e56bb80a`. The egg svg has the transform matrix(1.06, 0, 0, 0.91, 0, 0) at 0.05 s and scale(1.07, 0.89) at 0.1 s, while all six crack lines have 0 units drawn and all seven shards have opacity 0 through 0.15 s. The 3x crops of the house at 0 s and with reduced motion show no seam, and each is the same as a crop of the whole art alone, with a largest pixel difference of 0.
 
 ## AT-2: The crack starts at the tap point
 

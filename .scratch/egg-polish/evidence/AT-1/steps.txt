@@ -1,8 +1,13 @@
-AT-1, the tap squashes the egg. Script: evidence2-scripts/find2.mjs AT-1, in the session scratchpad.
+AT-1, the tap squashes the egg. Script: fix-e/scripts/find3.mjs AT-1, in the session scratchpad, a copy of evidence2-scripts/find2.mjs with the house crops.
+Build: CLIENT=cpc LOCAL_API_URL=http://localhost:8081 NEXT_PUBLIC_API_URL=http://localhost:8081 pnpm build in apps/site at e56bb80a, served on http://127.0.0.1:4173. API: the cpc-api of this worktree on port 8081 with the env of make api-evidence, the passphrase localtest, the commissioner key localkey, and a fresh eggs store.
 State: the local API restarts with an empty eggs store. T1 drops in week 9 by the real drop route with the letter C (a probe drop of filler eggs in week 10 sets the order of the letter rule). No claim.
 Recording (recording.webm): Chromium at 375x812, motion on, light theme. Open /midseason/2026/, double-tap [data-stable-id=luck-3], wait for the find card and 1.6 s, tap the middle of the egg, record 2.6 s more.
 In that same real-time run, a page script samples the egg svg on each animation frame for 320 ms after the pointerdown: its transform, its box, the longest drawn crack line, and the highest shard opacity.
 Seeked run: a fresh page with the Playwright clock. Find T1 the same way and tap the middle of the egg. Pause the clock 10 ms after the tap.
-For each time t of 0, 50, 100, 150, and 200 ms: pause each animation that started at or after the pointerdown, and set its currentTime to t less its start delay. Read the state.
+For each time t of 0, 50, 100, 150, 200, 550, 570, and 700 ms: pause each animation that started at or after the pointerdown, and set its currentTime to t less its start delay. Read the state.
 Frames frame-0.0s.png, frame-0.1s.png, and frame-0.2s.png are viewport shots of the seeked run at 0, 100, and 200 ms.
-measures.txt holds both runs: the seeked states at 0, 50, 100, 150, and 200 ms, and each real-time sample.
+measures.txt holds both runs: the seeked states at 0, 50, 100, 150, 200, 550, 570, and 700 ms, with the visibility of the whole art and of each half, and each real-time sample.
+House crops: a fresh seeked run with the same tap, seeked to 0 ms. A viewport shot clips the house (art units 50..130 by 70..150) three times: as drawn, with the two halves hidden, and with the whole art hidden and the halves forced on by a page script.
+A blank page compares the crops pixel by pixel, and draws the crop as drawn at 3x with no smoothing: crop-house-0.0s-3x.png.
+The same three crops with prefers-reduced-motion: reduce, on the find card before any tap, give crop-house-reduced-3x.png.
+Each animation of the tap starts 16.6 ms after the pointerdown, so the burst of 0.56 s falls at about 577 ms after the pointerdown.
