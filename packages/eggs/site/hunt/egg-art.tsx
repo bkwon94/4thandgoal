@@ -74,6 +74,11 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
           <use href={`#egg-${id}`} className="fill-none stroke-accent-text" strokeOpacity=".75" strokeWidth="1.5" />
         </g>
       </defs>
+      {/* The whole art shows until the burst, and the two halves show only from the burst (the classes egg-half and
+          egg-whole-out of globals.css). The antialiased edges of the two clips leave a thin seam along the zigzag, and
+          the translucent grid and glow of a half draw again over the whole art, so a half on show before the burst
+          reads as a crack. */}
+      <use data-egg-part="whole" href={`#art-${id}`} className={cn(crack && "egg-whole-out")} />
       <g className={cn("egg-half", crack && "egg-split-top")}>
         <use href={`#art-${id}`} clipPath={ref("top")} />
       </g>
