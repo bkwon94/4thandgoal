@@ -7,10 +7,11 @@ import shutil
 
 import pytest
 from cpc import cpc_client, four_week
-from fakes import FakeJev
+from fakes import FakeJev, no_news
 
 from analyzer.advisor import AdvisorFailed, AdvisorOut, read_trade
 from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade_news import NewsFeed
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot
 
@@ -67,7 +68,7 @@ class StubAdvisor:
 
 
 def test_a_good_read_carries_the_lean_the_case_the_fairness_and_the_bullets_with_their_fact_text(snap, trade):
-    read = read_trade(trade, snap, jev=FakeJev(), call=StubAdvisor(good_out))
+    read = read_trade(trade, snap, news=NewsFeed(fetch=no_news), jev=FakeJev(), call=StubAdvisor(good_out))
     assert read.lean == "Gut call"
     assert read.case == CASE
     assert read.fairness.state == "fair" and read.fairness.gives_more is None
@@ -81,7 +82,7 @@ def test_a_good_read_carries_the_lean_the_case_the_fairness_and_the_bullets_with
 
 def test_the_advisor_reads_the_jev_answers_beside_the_facts_of_the_trade(snap, trade):
     advisor = StubAdvisor(good_out)
-    read_trade(trade, snap, jev=FakeJev(), call=advisor)
+    read_trade(trade, snap, news=NewsFeed(fetch=no_news), jev=FakeJev(), call=advisor)
     _, user = advisor.calls[0]
     facts = sheet_facts(user)
     assert {"JEV.fair", "JEV.need.4", "JEV.need.12", "JEV.accept.12"} <= set(facts)
@@ -89,7 +90,7 @@ def test_the_advisor_reads_the_jev_answers_beside_the_facts_of_the_trade(snap, t
 
 
 def test_a_lopsided_read_names_the_side_that_gives_more(snap, trade):
-    read = read_trade(trade, snap, jev=FakeJev(), call=StubAdvisor(
+    read = read_trade(trade, snap, news=NewsFeed(fetch=no_news), jev=FakeJev(), call=StubAdvisor(
         lambda facts: good_out(facts, lean="Pass", fairness="lopsided", gives_more=4)))
     assert read.lean == "Pass"
     assert read.fairness.state == "lopsided" and read.fairness.gives_more == 4
@@ -110,7 +111,7 @@ def test_a_bullet_that_breaks_a_guard_retries_once_with_the_failure_as_feedback(
         return out
 
     advisor = StubAdvisor(broken, good_out)
-    read = read_trade(trade, snap, jev=FakeJev(), call=advisor)
+    read = read_trade(trade, snap, news=NewsFeed(fetch=no_news), jev=FakeJev(), call=advisor)
     assert len(advisor.calls) == 2
     assert rule in advisor.calls[1][1]
     assert read.sides[0].bullets[0].fact_id == f"{WILSON}.ppg"
@@ -122,7 +123,7 @@ def test_a_bullet_that_breaks_a_guard_retries_once_with_the_failure_as_feedback(
 ])
 def test_a_case_with_no_condition_first_or_a_lopsided_read_with_no_side_retries(snap, trade, change, rule):
     advisor = StubAdvisor(lambda facts: good_out(facts, **change), good_out)
-    read_trade(trade, snap, jev=FakeJev(), call=advisor)
+    read_trade(trade, snap, news=NewsFeed(fetch=no_news), jev=FakeJev(), call=advisor)
     assert len(advisor.calls) == 2
     assert rule in advisor.calls[1][1]
 
@@ -134,7 +135,7 @@ def test_a_side_with_two_bullets_retries(snap, trade):
         return out
 
     advisor = StubAdvisor(short, good_out)
-    read_trade(trade, snap, jev=FakeJev(), call=advisor)
+    read_trade(trade, snap, news=NewsFeed(fetch=no_news), jev=FakeJev(), call=advisor)
     assert "3 to 5" in advisor.calls[1][1]
 
 
@@ -144,7 +145,7 @@ def test_two_failed_calls_raise_advisor_failed(snap, trade, caplog):
 
     advisor = StubAdvisor(broken, broken)
     with pytest.raises(AdvisorFailed):
-        read_trade(trade, snap, jev=FakeJev(), call=advisor)
+        read_trade(trade, snap, news=NewsFeed(fetch=no_news), jev=FakeJev(), call=advisor)
     assert len(advisor.calls) == 2
     assert "advisor attempt 2 failed" in caplog.text
 
@@ -152,6 +153,6 @@ def test_two_failed_calls_raise_advisor_failed(snap, trade, caplog):
 def test_a_failed_jev_call_still_gives_a_read_with_no_jev_fact(snap, trade):
     from league.jev_port import JevError
     advisor = StubAdvisor(good_out)
-    read = read_trade(trade, snap, jev=FakeJev(error=JevError("timeout")), call=advisor)
+    read = read_trade(trade, snap, news=NewsFeed(fetch=no_news), jev=FakeJev(error=JevError("timeout")), call=advisor)
     assert read.lean == "Gut call"
     assert not any(fid.startswith("JEV.") for fid in sheet_facts(advisor.calls[0][1]))

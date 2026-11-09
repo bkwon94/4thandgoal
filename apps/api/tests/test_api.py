@@ -21,7 +21,7 @@ import httpx
 import pytest
 from conftest import strip_trend_numbers
 from cpc import FIXTURE_LEAGUE, cli_root, cpc_client, four_week
-from fakes import FakeJev
+from fakes import NEWS_RECORDED, FakeJev, recorded_news
 from fastapi.testclient import TestClient
 
 from analyzer.adjusters import INJURY, ROSTER_FIT, SCHEDULE, TREND
@@ -31,6 +31,7 @@ from analyzer.finder import find_win_wins
 from analyzer.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.rubric import ProposedTrade
+from analyzer.trade_news import NewsFeed
 from analyzer.tunables import GRADES_PER_MINUTE
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
 from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE, Settings
@@ -41,7 +42,7 @@ from league.live import RefreshResult
 from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from league.paths import client_dir, league_file
 from league.provider.raw import RawLeague
-from league.provider.sleeper import league_settings, load_raw
+from league.provider.sleeper import fetch_news, league_settings, load_raw
 from league.ranks import recent_points_per_game
 from league.snapshot import SnapshotPlayer
 from league.tunables import TEAMS_CACHE_SECONDS
@@ -135,20 +136,22 @@ class StubAdvisor:
 
 
 class StubAnalyzer:
-    """The real read of the Advisor with the stub Advisor and FakeJev, so the sheet, the guards, and the retry run.
+    """The real read of the Advisor with the stub Advisor, FakeJev, and the recorded news, so the sheet, the guards,
+    and the retry run.
 
     `store` False drops the result cache of the app, so each repeat is a new grade.
     """
 
-    def __init__(self, advisor=None, jev=None, store=True):
+    def __init__(self, advisor=None, jev=None, store=True, news=None):
         self.calls = 0
         self.advisor = advisor or StubAdvisor()
         self.jev = jev or FakeJev()
         self.store = store
+        self.news = news or NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
 
     def __call__(self, trade, snapshot):
         self.calls += 1
-        return read_trade(trade, snapshot, jev=self.jev, call=self.advisor)
+        return read_trade(trade, snapshot, jev=self.jev, news=self.news, call=self.advisor)
 
 
 class NoStore(ResultCache):
@@ -449,10 +452,43 @@ def test_a_lopsided_read_names_the_side_that_gives_more(settings, sources):
 def test_the_advisor_reads_the_jev_answers_of_the_trade(settings, sources):
     advisor, jev = StubAdvisor(), FakeJev()
     _client(settings, sources, StubAnalyzer(advisor, jev)).post("/analyze", json=TRADE, headers=HEADERS)
-    assert len(jev.requests) == 1
+    # The first request asks the questions of the trade. The second holds the log-only checks of the read.
+    assert len(jev.requests) == 2
+    assert "fair" in jev.requests[0].questions
     _, user = advisor.calls[0]
     for fid in ("JEV.fair", "JEV.need.4", "JEV.need.12", "JEV.accept.12"):
         assert f"- {fid}: " in user
+
+
+def _blocked(request):
+    raise httpx.ConnectError("the host of the news feed is blocked", request=request)
+
+
+def test_a_blocked_news_feed_still_gives_a_read_with_no_news_fact(settings, sources, caplog):
+    advisor = StubAdvisor()
+    news = NewsFeed(fetch=lambda pid: fetch_news(pid, transport=httpx.MockTransport(_blocked)))
+    response = _client(settings, sources, StubAnalyzer(advisor, news=news)).post("/analyze", json=TRADE,
+                                                                                headers=HEADERS)
+    assert response.status_code == 200
+    assert response.json()["lean"] == "Lean yes"
+    assert "NEWS." not in advisor.calls[0][1]
+    assert "Sleeper endpoint failed: https://api.sleeper.app/players/nfl/7569/news" in caplog.text
+
+
+def test_a_second_press_within_1_hour_fetches_no_news_for_the_same_player(settings, sources, caplog):
+    fetched = []
+
+    def counted(pid):
+        fetched.append(pid)
+        return recorded_news(pid)
+
+    caplog.set_level("INFO", logger="analyzer.trade_news")
+    client = _client(settings, sources, StubAnalyzer(news=NewsFeed(fetch=counted, now=lambda: NEWS_RECORDED)))
+    client.post("/analyze", json=TRADE, headers=HEADERS)
+    other = {"season": 2026, "sides": _sides(["7569"], ["8146"]), "asker": 4}
+    assert client.post("/analyze", json=other, headers=HEADERS).status_code == 200
+    assert fetched.count("7569") == 1
+    assert "News of player 7569 from the cache" in caplog.text
 
 
 def _bad_bullet(change):

@@ -26,6 +26,7 @@ from analyzer.advisor import read_trade
 from analyzer.cache import ResultCache, TeamsCache
 from analyzer.finder_reasons import write_reasons
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
+from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.settings import Settings, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
@@ -203,9 +204,9 @@ def create_app(
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
-    # The default is the real Advisor with the real Claude call and the real Jev. A test injects a stub Advisor and
-    # FakeJev, so no test needs the network.
-    app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV)
+    # The default is the real Advisor with the real Claude call, the real Jev, and the real news feed. A test injects a
+    # stub Advisor, FakeJev, and a recorded feed, so no test needs the network.
+    app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV, news=NEWS)
     # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
     app.state.finder_reasons = finder_reasons or write_reasons
 

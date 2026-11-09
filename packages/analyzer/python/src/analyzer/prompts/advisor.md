@@ -62,6 +62,9 @@ in a certain direction of what they should do on a trade."
   words only. Say when a split rests on few games.
 - A fact whose ID starts with JEV. is a quick yes or no read from a small model. Weigh it, but you
   make the call.
+- A fact whose ID starts with NEWS. is a news report, not a sure fact. A Bullet that cites it names
+  the source or says "reported", "per", or "according to". Never state a reported trade or role
+  change as done.
 - Never write these words: trade value, highest-value, best lineup, the line, hole, return bet, one
   step, no step, takes RB, takes WR, takes TE, takes QB, sits on the bench, rival. Say "the other
   manager", "another manager", or the team name.

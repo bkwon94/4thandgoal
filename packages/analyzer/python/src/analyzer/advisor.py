@@ -9,9 +9,11 @@ from typing import Literal
 from pydantic import BaseModel
 
 from analyzer import RULE_PROMPTS
+from analyzer.read_jev_check import log_read_jev_checks
 from analyzer.rubric import Fairness, FairnessSide, ProposedTrade
 from analyzer.trade_facts import trade_fact_sheet
 from analyzer.trade_jev import trade_jev_facts
+from analyzer.trade_news import NewsFeed, attribution_failures, news_facts
 from facts.tokens import NUMBER_TOKEN
 from facts.verifier import normalize_number, remove_names
 from facts.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
@@ -97,9 +99,10 @@ class AdvisorFailed(Exception):
     """The Advisor gave no read that passed the guards in two calls. The API answers with an honest error."""
 
 
-def advisor_sheet(trade: ProposedTrade, snapshot: Snapshot, jev: Jev) -> dict[str, Fact]:
-    """The facts the Advisor reads by id: the facts of the trade, then the Jev answers of the trade."""
-    return {**trade_fact_sheet(trade, snapshot), **trade_jev_facts(trade, snapshot, jev)}
+def advisor_sheet(trade: ProposedTrade, snapshot: Snapshot, jev: Jev, news: NewsFeed) -> dict[str, Fact]:
+    """The facts the Advisor reads by id: the facts of the trade, the news of its players, then its Jev answers."""
+    return {**trade_fact_sheet(trade, snapshot), **news_facts(trade.player_ids, snapshot, news),
+            **trade_jev_facts(trade, snapshot, jev)}
 
 
 def _league_line(snapshot: Snapshot) -> str:
@@ -193,6 +196,7 @@ def check_read(out: AdvisorOut, trade: ProposedTrade, snapshot: Snapshot, facts:
                 continue
             every.append(bullet.fact_id)
             failures += guard.text_failures(where, bullet.text, [bullet.fact_id])
+            failures += attribution_failures(where, bullet.text, bullet.fact_id, facts)
     for side in out.sides:
         failures += guard.text_failures(f"roster {side.roster_id} gains", side.gains, every)
     failures += guard.text_failures("case", out.case, every)
@@ -209,15 +213,17 @@ def _read(out: AdvisorOut, facts: dict[str, Fact]) -> TradeRead:
     return TradeRead(lean=out.lean, case=out.case, fairness=fairness, sides=sides)
 
 
-def read_trade(trade: ProposedTrade, snapshot: Snapshot, *, jev: Jev, call: ClaudeCall = analyzer_call) -> TradeRead:
+def read_trade(trade: ProposedTrade, snapshot: Snapshot, *, jev: Jev, news: NewsFeed,
+               call: ClaudeCall = analyzer_call) -> TradeRead:
     """The read of the Advisor on the trade. A failed guard retries once with the failures as feedback.
 
     Raises AdvisorFailed after two failed calls, a failed API call included.
     """
-    facts = advisor_sheet(trade, snapshot, jev)
+    facts = advisor_sheet(trade, snapshot, jev, news)
     out = call_with_retry(
         call, lambda feedback: build_advisor_prompt(trade, snapshot, facts, feedback), AdvisorOut,
         lambda out: check_read(out, trade, snapshot, facts), subject="trade read", log_label="advisor", logger=log)
     if out is None:
         raise AdvisorFailed("The Advisor gave no read that passed the guards in two calls.")
+    log_read_jev_checks(out.sides, facts, jev)
     return _read(out, facts)
