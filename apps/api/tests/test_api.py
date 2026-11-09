@@ -71,8 +71,10 @@ def _no_history_fetch(league_id, season, week, out_dir):
 
 @pytest.fixture
 def repo(tmp_path, fixture_history_root, fixture_nflverse_dir):
-    """A repo with the week 6 history and a fresh nflverse cache."""
+    """A repo with the week 6 history, a fresh nflverse cache, and the cpc Playbook that the Advisor reads."""
     shutil.copytree(fixture_history_root, tmp_path / "data" / "2026" / "history")
+    (tmp_path / "prompts").mkdir()
+    shutil.copy(CLIENT.voice_dir / "playbook.md", tmp_path / "prompts" / "playbook.md")
     shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
     for cached in (tmp_path / "data" / "cache" / "nflverse").iterdir():
         os.utime(cached)

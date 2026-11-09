@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The rubric, the adjusters and `Side`, the trade facts, the analysis, the finder, and the finder reasons (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`.
+- The rubric, the adjusters and `Side`, the trade facts, the analysis, the finder, and the finder reasons (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`, the team facts of `team_facts.py`, and the Measures of `measures.py`.
 - The rule prompts `prompts/advisor.md`, `prompts/analysis.md`, `prompts/finder.md`, and `prompts/rubric.md`, and the numbers of `tunables.py`.
 - The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit.
 - The grade limit counts per client and per address. Each client has its own result cache, so the roster ids of two leagues never share a grade.
@@ -19,5 +19,6 @@
 ## Does not do
 
 - It imports no app and no other core package, only `league` and `facts`. `tests/test_layers.py` of the pipeline checks it.
-- It mounts no route and reads no client folder. The API app mounts the routes at `/clients/<slug>/` and loads each client.
+- It mounts no route. The API app mounts the routes at `/clients/<slug>/` and loads each client.
+- Of a client folder, it reads the voice folder `prompts/` with the Playbook `playbook.md`, and the playoff odds in `published/<season>/rankings.json`.
 - It writes no published file.

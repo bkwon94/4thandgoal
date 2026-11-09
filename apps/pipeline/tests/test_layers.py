@@ -178,6 +178,8 @@ LAYER_OF: dict[str, str] = {
     "midseason.opener": "facts",
     "midseason.look_ahead": "facts",
     "analyzer.trade_facts": "facts",
+    "analyzer.team_facts": "facts",
+    "analyzer.measures": "facts",
     "analyzer.week_line": "facts",
     "analyzer.finder": "facts",
     "analyzer.trade_jev": "facts",
