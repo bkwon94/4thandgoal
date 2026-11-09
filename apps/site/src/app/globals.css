@@ -1003,16 +1003,19 @@
         transform: scale(1.06);
     }
 }
+/* The squash holds from 0.03 s to 0.11 s, so a frame at 0.05 s or 0.1 s shows it. A squash that only peaks passes
+   back through scale 1 by 0.1 s, and the eye and a frame both miss it. It springs back in the last 0.04 s. */
 @keyframes egg-squash {
     0%,
     100% {
         transform: none;
     }
-    40% {
-        transform: scale(1.08, 0.88);
+    20%,
+    72% {
+        transform: scale(1.07, 0.89);
     }
-    75% {
-        transform: scale(0.97, 1.04);
+    88% {
+        transform: scale(0.98, 1.03);
     }
 }
 @keyframes egg-tremble {
