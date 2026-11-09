@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-5, AT-6, AT-10, AT-11, a
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] The title of the Matchup hero reads "The Blue Tent by 1.43" on the week page and on the home page (AT-10).
 - [x] At 375 px the week hero stacks in one column in the slot order (AT-6).
