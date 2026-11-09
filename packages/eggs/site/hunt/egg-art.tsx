@@ -6,7 +6,7 @@
 
 import { type CSSProperties, useId } from "react";
 import { cn } from "@cpc/design/lib/utils";
-import { crackOf, EGG_MIDDLE, type Crack } from "./crack";
+import { crackOf, EGG_MIDDLE, EGG_SIZE, type Crack } from "./crack";
 import type { Slot } from "./slots";
 
 // The outline of the egg. Both halves clip the same art along a zigzag.
@@ -28,7 +28,7 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
   const halves = crack ?? AT_REST;
   return (
     <svg
-      viewBox="0 0 180 220"
+      viewBox={`0 0 ${EGG_SIZE.width} ${EGG_SIZE.height}`}
       className={cn("relative h-55 w-45 overflow-visible", motion && !crack && "egg-bob", crack && "egg-shake")}
       aria-hidden="true"
     >
@@ -62,8 +62,8 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
         <g id={`art-${id}`}>
           <use href={`#egg-${id}`} fill={ref("shade")} />
           <g clipPath={ref("clip")}>
-            <rect width="180" height="220" fill={ref("grid")} />
-            <rect width="180" height="220" fill={ref("glow")} />
+            <rect width={EGG_SIZE.width} height={EGG_SIZE.height} fill={ref("grid")} />
+            <rect width={EGG_SIZE.width} height={EGG_SIZE.height} fill={ref("glow")} />
           </g>
           {/* The CPC house: the roof, then a white square and a red square, as in the logo. */}
           <path d="M64 100 L90 82 L116 100" className="fill-none stroke-on-dark" strokeWidth="4" strokeLinejoin="round" />

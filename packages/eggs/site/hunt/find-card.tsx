@@ -9,12 +9,17 @@ import { HeroFrame } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
-import { crackOf, EGG_MIDDLE, freshSeed, tapPointOf, type Crack } from "./crack";
+import { crackOf, EGG_MIDDLE, EGG_SIZE, freshSeed, tapPointOf, type Crack } from "./crack";
 import { ArtGround, Egg } from "./egg-art";
 
 /* The time from the tap to the letter, in ms: the egg squashes, the lines draw, the shell bursts at about 560 ms,
    and the tile grows. The keyframes of egg-* in globals.css hold the same times. */
 export const CRACK_MS = 1300;
+
+/* The size in px of the letter tile, the same as its class size-28. */
+const TILE_PX = 112;
+/* The top left of the tile in the middle of the egg art, so the tile can grow from a point of the art. */
+const TILE_AT = { x: (EGG_SIZE.width - TILE_PX) / 2, y: (EGG_SIZE.height - TILE_PX) / 2 };
 
 /* The spot of the find on the screen, in px from the top left of the viewport. */
 export type Origin = { x: number; y: number };
@@ -97,8 +102,8 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
                     "relative flex size-28 items-center justify-center rounded-letter bg-accent font-mono text-hero leading-hero font-bold text-on-dark shadow-orb",
                     motion && "egg-tile-rise",
                   )}
-                  // The tile is 112 px square in the middle of the 180 by 220 art, so its top left sits at (34, 54).
-                  style={motion ? { transformOrigin: `${tap.x - 34}px ${tap.y - 54}px` } : undefined}
+                  // The tile sits in the middle of the art, so the tap point less the top left of the tile is a point of the tile.
+                  style={motion ? { transformOrigin: `${tap.x - TILE_AT.x}px ${tap.y - TILE_AT.y}px` } : undefined}
                 >
                   {letter}
                 </span>
