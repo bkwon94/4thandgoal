@@ -5,7 +5,7 @@ Date: 2026-11-08
 Apps: site. The site changes four parts of the egg hunt after the methods of Scrolltide items. The pipeline and the API do not change.
 Spec branch: `egg-polish`.
 Source: the map `.scratch/egg-polish/MAP.md` and decision tickets 01 to 04, from the session of 2026-11-08. ADR 0024, ADR 0025, ADR 0027, ADR 0028.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 07, in `issues/`.
 
 ## Problem Statement
 
