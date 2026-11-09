@@ -183,17 +183,15 @@ class JevRequest:
 
 
 class FakeJev:
-    """A Jev that gives `yes` for each question, or the value in `answers` for its key, and keeps each request in
-    `requests`. It never calls TypeSafe.
+    """A Jev that gives `yes` for each question and keeps each request in `requests`. It never calls TypeSafe.
 
     With `error`, each call raises that JevError, as a failed TypeSafe call does.
     """
 
     MODEL = "jev-fake"
 
-    def __init__(self, yes: float = 0.9, answers: dict[str, float] | None = None, error: JevError | None = None):
+    def __init__(self, yes: float = 0.9, error: JevError | None = None):
         self.yes = yes
-        self.answers = dict(answers or {})
         self.error = error
         self.requests: list[JevRequest] = []
 
@@ -201,7 +199,7 @@ class FakeJev:
         self.requests.append(JevRequest(state, questions))
         if self.error is not None:
             raise self.error
-        nouls = {key: self.answers.get(key, self.yes) for key in questions}
+        nouls = {key: self.yes for key in questions}
         return JevResponse(model=self.MODEL, nouls=nouls, input_tokens=100 * len(questions))
 
 
