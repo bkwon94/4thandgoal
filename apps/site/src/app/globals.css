@@ -685,28 +685,65 @@
         background: radial-gradient(closest-side, var(--color-accent-glow), transparent);
         animation: egg-halo 3.2s ease-in-out infinite;
     }
+    /* The crack of the egg, from the tap to the letter at 1.3 s (CRACK_MS of find-card.tsx). The tap squashes the egg
+       for 0.15 s, then it shakes harder while the lines draw and the light grows. At 0.56 s the shell bursts. */
+    .egg-shake {
+        transform-origin: 50% 92%;
+        /* The shake fills only forwards, so it leaves the squash alone until its own start. */
+        animation:
+            egg-squash 0.15s cubic-bezier(0.3, 0, 0.2, 1) both,
+            egg-tremble 0.41s linear 0.15s forwards;
+    }
     /* Each half of the egg turns on its own middle as it flies off. */
     .egg-half {
         transform-box: fill-box;
         transform-origin: 50% 50%;
     }
     .egg-split-top {
-        animation: egg-split-top 0.55s cubic-bezier(0.3, 0, 0.2, 1) 0.32s both;
+        animation: egg-split-top 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both;
     }
     .egg-split-bottom {
-        animation: egg-split-bottom 0.55s cubic-bezier(0.3, 0, 0.2, 1) 0.32s both;
+        animation: egg-split-bottom 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both;
     }
-    /* The red zigzag crack draws across the egg, then fades as the halves part. */
+    /* Each glowing crack line draws out from the tap point over its own length, then fades as the shell bursts.
+       The part sets the length in --egg-line and the stagger in --egg-delay. */
     .egg-crack {
-        stroke-dasharray: 260;
-        stroke-dashoffset: 260;
+        stroke-dasharray: var(--egg-line);
+        stroke-dashoffset: var(--egg-line);
+        filter: drop-shadow(0 0 2px var(--color-accent-text)) drop-shadow(0 0 7px var(--color-accent));
         animation:
-            egg-draw 0.32s ease-in forwards,
-            egg-fade-out 0.2s ease-out 0.4s forwards;
+            egg-draw 0.3s cubic-bezier(0.4, 0, 0.6, 1) var(--egg-delay) both,
+            egg-fade-out 0.15s ease-out 0.56s forwards;
     }
-    /* The letter tile springs up out of the egg. The curve overshoots, so the tile lands with a bounce. */
+    /* The light inside the egg grows from the tap point while the lines draw, then fades as the shell bursts. */
+    .egg-glow {
+        transform-box: fill-box;
+        transform-origin: 50% 50%;
+        animation:
+            egg-glow 0.5s ease-in both,
+            egg-fade-out 0.3s ease-out 0.56s forwards;
+    }
+    /* Each shard flies out from the tap point and turns as the shell bursts. The part sets --egg-dx, --egg-dy, and --egg-turn. */
+    .egg-shard {
+        transform-box: fill-box;
+        transform-origin: 50% 50%;
+        animation: egg-shard 0.7s cubic-bezier(0.15, 0.8, 0.3, 1) 0.56s forwards;
+    }
+    /* The flash that rings out from the tap point as the shell bursts. The part sets its left and top to the tap point. */
+    .egg-flash {
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        margin: -160px 0 0 -160px;
+        border-radius: var(--radius-pill);
+        background: radial-gradient(closest-side, var(--color-on-dark), var(--color-accent-glow) 40%, transparent);
+        pointer-events: none;
+        animation: egg-flash 0.6s ease-out 0.56s both;
+    }
+    /* The letter tile grows out of the tap point from a blur. The part sets its transform-origin to the tap point.
+       The curve overshoots, so the tile lands with a bounce. */
     .egg-tile-rise {
-        animation: egg-tile-rise 0.8s cubic-bezier(0.2, 1.45, 0.4, 1) 0.5s both;
+        animation: egg-tile-rise 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) 0.64s both;
     }
     /* The red burst behind a tile as it lands. */
     .egg-burst {
@@ -874,16 +911,83 @@
         transform: scale(1.06);
     }
 }
+@keyframes egg-squash {
+    0%,
+    100% {
+        transform: none;
+    }
+    40% {
+        transform: scale(1.08, 0.88);
+    }
+    75% {
+        transform: scale(0.97, 1.04);
+    }
+}
+@keyframes egg-tremble {
+    0% {
+        transform: none;
+    }
+    15% {
+        transform: translate(-1px, 0) rotate(-1deg);
+    }
+    30% {
+        transform: translate(2px, 0) rotate(1.5deg);
+    }
+    45% {
+        transform: translate(-2px, 1px) rotate(-2deg);
+    }
+    60% {
+        transform: translate(3px, 0) rotate(2.5deg);
+    }
+    75% {
+        transform: translate(-3px, 0) rotate(-3deg);
+    }
+    90% {
+        transform: scale(1.04);
+    }
+    100% {
+        transform: scale(1.06);
+    }
+}
 @keyframes egg-split-top {
     to {
-        transform: translate(-22px, -70px) rotate(-22deg);
+        transform: translate(-30px, -120px) rotate(-32deg);
         opacity: 0;
     }
 }
 @keyframes egg-split-bottom {
     to {
-        transform: translate(16px, 60px) rotate(14deg);
+        transform: translate(22px, 100px) rotate(18deg);
         opacity: 0;
+    }
+}
+@keyframes egg-glow {
+    from {
+        opacity: 0;
+        transform: scale(0.2);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes egg-shard {
+    to {
+        transform: translate(var(--egg-dx), var(--egg-dy)) rotate(var(--egg-turn));
+        opacity: 0;
+    }
+}
+@keyframes egg-flash {
+    0% {
+        opacity: 0;
+        transform: scale(0.1);
+    }
+    25% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.4);
     }
 }
 @keyframes egg-draw {
@@ -892,13 +996,19 @@
     }
 }
 @keyframes egg-tile-rise {
-    from {
-        transform: translateY(46px) scale(0.3) rotate(-14deg);
+    0% {
+        transform: scale(0.15);
         opacity: 0;
+        filter: blur(12px);
     }
-    to {
+    50% {
+        opacity: 1;
+        filter: blur(0);
+    }
+    100% {
         transform: none;
         opacity: 1;
+        filter: none;
     }
 }
 @keyframes egg-burst {
@@ -993,6 +1103,7 @@
     .egg-hero-in,
     .egg-hero-in [data-hero-art="bracket"],
     .egg-bob,
+    .egg-shake,
     .egg-halo,
     .egg-tile-rise,
     .egg-sheet-rise,
@@ -1007,7 +1118,11 @@
         animation: none !important;
     }
     .egg-ripple,
-    .egg-burst {
+    .egg-burst,
+    .egg-crack,
+    .egg-glow,
+    .egg-shard,
+    .egg-flash {
         display: none;
     }
 }

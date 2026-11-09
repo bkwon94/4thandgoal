@@ -1,18 +1,20 @@
 /**
  * The find: the page blurs, a red ring ripples out from the spot, and a hero card rises in with the egg that bobs.
- * A tap cracks the egg, the halves fly apart, and the red letter tile springs up. Reduced motion shows the tile at rest.
+ * A tap cracks the egg from the tap point, the shell bursts, and the red letter tile grows out of that point. Reduced motion shows the tile at rest.
  */
 "use client";
 
-import { useEffect, useState } from "react";
+import { type MouseEvent, useEffect, useState } from "react";
 import { HeroFrame } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
+import { crackOf, EGG_MIDDLE, freshSeed, tapPointOf, type Crack } from "./crack";
 import { ArtGround, Egg } from "./egg-art";
 
-/* The time from the tap to the letter, in ms: the crack draws, the halves part, and the tile lands. */
-export const CRACK_MS = 1150;
+/* The time from the tap to the letter, in ms: the egg squashes, the lines draw, the shell bursts at about 560 ms,
+   and the tile grows. The keyframes of egg-* in globals.css hold the same times. */
+export const CRACK_MS = 1300;
 
 /* The spot of the find on the screen, in px from the top left of the viewport. */
 export type Origin = { x: number; y: number };
@@ -30,6 +32,8 @@ type Phase = "egg" | "cracking" | "letter";
 export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
   const motion = !useMotionOff();
   const [phase, setPhase] = useState<Phase>("egg");
+  // The crack of the tap. It stays set after the crack, so the tile keeps the tap point as the origin of its growth.
+  const [crack, setCrack] = useState<Crack | null>(null);
 
   useEffect(() => {
     if (phase !== "cracking") return;
@@ -37,8 +41,22 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
     return () => clearTimeout(timer);
   }, [phase]);
 
-  // With motion off, the tap shows the letter at once, with no crack.
-  const crack = () => setPhase(motion ? "cracking" : "letter");
+  const crackEgg = (event: MouseEvent<HTMLButtonElement>) => {
+    // With motion off, the tap shows the letter at once, with no crack.
+    if (!motion) {
+      setPhase("letter");
+      return;
+    }
+    // Enter or Space clicks the button with a detail of 0 and no pointer, so a tap by the keyboard cracks from the middle.
+    const point =
+      event.detail === 0
+        ? EGG_MIDDLE
+        : tapPointOf(event.clientX, event.clientY, event.currentTarget.getBoundingClientRect());
+    // A fresh seed on each tap, so each find cracks in a new way.
+    setCrack(crackOf(point, freshSeed()));
+    setPhase("cracking");
+  };
+  const tap = crack?.point ?? EGG_MIDDLE;
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="egg-find-title" className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-gutter">
@@ -62,22 +80,25 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
                 type="button"
                 aria-label="Crack the egg"
                 disabled={phase === "cracking"}
-                onClick={crack}
+                onClick={crackEgg}
                 className="relative cursor-pointer"
               >
                 <span aria-hidden="true" className="egg-halo" />
-                <Egg cracking={phase === "cracking"} motion={motion} />
+                <Egg crack={crack} motion={motion} />
               </button>
             )}
             {phase !== "egg" && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                {motion && <span aria-hidden="true" className="egg-burst" />}
+              // The box of the egg art, so a point of the art is a point in px of this box.
+              <div className="absolute top-1/2 left-1/2 flex h-55 w-45 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+                {motion && <span aria-hidden="true" className="egg-flash" style={{ left: tap.x, top: tap.y }} />}
                 <span
                   data-testid="egg-letter"
                   className={cn(
                     "relative flex size-28 items-center justify-center rounded-letter bg-accent font-mono text-hero leading-hero font-bold text-on-dark shadow-orb",
                     motion && "egg-tile-rise",
                   )}
+                  // The tile is 112 px square in the middle of the 180 by 220 art, so its top left sits at (34, 54).
+                  style={motion ? { transformOrigin: `${tap.x - 34}px ${tap.y - 54}px` } : undefined}
                 >
                   {letter}
                 </span>
