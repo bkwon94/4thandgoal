@@ -22,6 +22,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `jev` | pipeline | 01 the weekly build saves one Jev check per blurb | none | |
 | `known-games` | pipeline | 08 the-site-renders-the-known-games-line | | |
 | `matchup-impact` | pipeline | 01 the impact fact, without the odds | none | |
+| `manager-brain` | both | 01 The chart cache trusts the PNG hash | none | |
 | `manager-pages` | site | 01 the past week keeps every rostered player | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
 | `midseason-report` | both | 15 the roast voice: one prose block per chapter | none | |

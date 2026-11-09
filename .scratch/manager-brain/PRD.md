@@ -5,7 +5,7 @@ Date: 2026-11-09
 Apps: both. The pipeline package `analyzer` builds the fact sheet, asks Jev, calls the Advisor, and checks its words. The API serves the new analyze document and finder document. The site shows the Lean, the Case, and the Bullets on the analyzer page and the Finder cards.
 Spec branch: `manager-brain`.
 Source: the map `.scratch/manager-brain/MAP.md` and decision tickets 01 to 08. ADR 0030 (proposed), ADR 0029, ADR 0003 and ADR 0004 (superseded in part), ADR 0005 and ADR 0009 (stand as measures).
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 11, in `issues/`.
 
 ## Problem Statement
 
