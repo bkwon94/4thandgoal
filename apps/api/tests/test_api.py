@@ -112,7 +112,9 @@ def passing_read(user: str, **changes) -> dict:
     rosters = [int(r) for r in re.findall(r"^Side: roster (\d+),", user, re.MULTILINE)]
     bullets = [{"text": "The trade lands in the middle of the season.", "mark": mark, "fact_id": "trade.week"}
                for mark in ("for", "against", "even")]
-    out = {"lean": "Lean yes", "case": CASE, "fairness": "fair", "gives_more": None,
+    # A week with no chart has the trade.chart fact, and the guard then needs the Case to say the chart is missing.
+    case = CASE + " The chart of this week is missing." if "trade.chart" in user else CASE
+    out = {"lean": "Lean yes", "case": case, "fairness": "fair", "gives_more": None,
            "sides": [{"roster_id": rid, "gains": "It gets help where it needs it.", "bullets": bullets}
                      for rid in rosters]}
     return out | changes
@@ -1329,7 +1331,7 @@ def test_settings_from_the_environment_need_a_passphrase_for_each_client(monkeyp
 
 
 # Every source that the refresh fetches, in the order of the refresh.
-ALL_SOURCES = ["schedules", "depth charts", "id map", "injuries", "expected points", "player weeks"]
+ALL_SOURCES = ["schedules", "depth charts", "id map", "injuries", "expected points", "player weeks", "team stats"]
 
 
 def _fixture_fetch(fixture_nflverse_dir, asked):

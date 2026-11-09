@@ -300,7 +300,8 @@ def test_the_source_names_are_the_names_of_the_refreshed_sources():
     # The line names each slow source the snapshot can miss, by the key the snapshot gives it.
     assert set(cli._SOURCE_NAMES) == set(SLOW_SOURCES)
     # The line and the refresh name each nflverse file with the same words.
-    assert {name for name, _ in REFRESHED_SOURCES} <= set(cli._SOURCE_NAMES.values())
+    # The team stats file only adds the NFL team facts, and a missing one has no name in `missing`, so the line skips it.
+    assert {name for name, _ in REFRESHED_SOURCES} - {"team stats"} <= set(cli._SOURCE_NAMES.values())
 
 
 def _set_back_the_jacobs_trade(tmp_path):
