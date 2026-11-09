@@ -6,8 +6,9 @@
 
 import { useState, type ReactNode } from "react";
 import { Card } from "@cpc/design/parts/card";
-import { HeroFrame } from "@cpc/design/parts/hero";
+import { Hero, HeroFrame } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
+import { Tile } from "@cpc/design/parts/tile";
 import { cn } from "@cpc/design/lib/utils";
 import type { Board } from "../lib/api";
 import { ArtGround } from "../hunt/egg-art";
@@ -98,50 +99,43 @@ function BoardHero({ board }: { board: Board }) {
   ];
   return (
     // The class egg-hero hides the full texture of the hero, and the oval of the texture sits behind the grid of the
-    // eggs only, so each line of text sits on the flat band color with no plate (the ground of globals.css).
-    <HeroFrame label="Egg hunt" className="egg-hero">
-      <div className="flex flex-col gap-sp-5">
-        <div className="flex flex-col items-start gap-sp-1">
-          <span className={cn(LABEL, "text-accent-text")}>Egg hunt</span>
-          <h1 className="m-0 text-headline leading-stat font-bold tracking-tight">The Egg Board</h1>
-          <p className="m-0 text-lead text-on-dark-2">
-            {`$${total} in gift cards. ${countWord(board.words.length)} egg words. First to fill a word wins it.`}
-          </p>
-        </div>
-        <dl className="m-0 grid grid-cols-3 gap-sp-2">
-          {counts.map(([label, value, color]) => (
-            <div key={label} className="flex flex-col-reverse items-start gap-sp-1">
-              <dt className={cn(LABEL, "text-on-dark-muted")}>{label}</dt>
-              <dd className={cn("m-0 font-mono text-headline leading-none font-bold tracking-grade tabular-nums", color)}>{value}</dd>
-            </div>
-          ))}
-        </dl>
+    // eggs only, so each line of text sits on the flat band color (the ground of globals.css). The plate of each text
+    // slot then has the band color on the band color, so it shows no box. The board gets no hero scene (ADR 0027): the
+    // grid of the eggs is already a picture of the data.
+    <Hero
+      label="Egg hunt"
+      className="egg-hero"
+      eyebrow="Egg hunt"
+      title="The Egg Board"
+      meta={`$${total} in gift cards. ${countWord(board.words.length)} egg words. First to fill a word wins it.`}
+      feature={
         <div className="flex flex-col gap-sp-3">
           <div className="relative">
             {/* The ground stops above the week numbers, so its box never reaches a line of text. */}
             <ArtGround inset="top-0 bottom-8 -inset-x-hero-x" />
-          <ul aria-label="The eggs of each week" className="relative m-0 grid list-none grid-cols-9 gap-sp-1 p-0">
-            {board.weeks.map((week) => (
-              <li
-                key={week.week}
-                aria-label={weekName(week)}
-                className={cn(
-                  "flex flex-col items-center gap-sp-1 rounded-tile py-sp-2",
-                  week.week === current && "bg-accent/20",
-                )}
-              >
-                {week.slots.map((slot, index) => (
-                  <Egg key={index} slot={slot} />
-                ))}
-                <span
-                  aria-hidden="true"
-                  className={cn("font-mono text-meta font-bold", week.week === current ? "text-accent-text" : "text-on-dark-muted")}
+            <ul aria-label="The eggs of each week" className="relative m-0 grid list-none grid-cols-9 gap-sp-1 p-0">
+              {board.weeks.map((week) => (
+                <li
+                  key={week.week}
+                  aria-label={weekName(week)}
+                  aria-current={week.week === current ? "date" : undefined}
+                  className={cn(
+                    "flex flex-col items-center gap-sp-1 rounded-tile py-sp-2",
+                    week.week === current && "bg-accent/20",
+                  )}
                 >
-                  {String(week.week).padStart(2, "0")}
-                </span>
-              </li>
-            ))}
-          </ul>
+                  {week.slots.map((slot, index) => (
+                    <Egg key={index} slot={slot} />
+                  ))}
+                  <span
+                    aria-hidden="true"
+                    className={cn("font-mono text-meta font-bold", week.week === current ? "text-accent-text" : "text-on-dark-muted")}
+                  >
+                    {String(week.week).padStart(2, "0")}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
           <div aria-hidden="true" className="flex flex-wrap gap-x-sp-4 gap-y-sp-1 text-meta text-on-dark-2">
             <span className="inline-flex items-center gap-sp-1"><Egg slot="found" />Found</span>
@@ -149,8 +143,15 @@ function BoardHero({ board }: { board: Board }) {
             <span className="inline-flex items-center gap-sp-1"><Egg slot="future" />Drops on a later Tuesday</span>
           </div>
         </div>
-      </div>
-    </HeroFrame>
+      }
+      stats={
+        <div role="group" aria-label="Egg counts" className="grid w-full grid-cols-3 gap-sp-2 tablet:w-auto">
+          {counts.map(([label, value, color]) => (
+            <Tile key={label} tone="hero" label={label} value={<span className={color}>{value}</span>} />
+          ))}
+        </div>
+      }
+    />
   );
 }
 

@@ -45,18 +45,47 @@ const empty: Board = {
 const card = (word: string) => screen.getByRole("region", { name: word });
 const rows = (word: string) => within(card(word)).getAllByRole("listitem");
 
+/* The text of one hero slot of the egg board hero, or null for an absent slot. */
+const slot = (name: string) => screen.getByRole("region", { name: "Egg hunt" }).querySelector(`[data-hero-slot="${name}"]`);
+
+/* The label and the number of each tile in the stats of the egg board hero. */
+const tiles = () =>
+  within(slot("stats") as HTMLElement)
+    .getByRole("group", { name: "Egg counts" })
+    .querySelectorAll(":scope > div");
+
 describe("The hero of the egg board", () => {
-  it("shows the counts left to find, found, and to drop", () => {
+  it("fills the hero slots: the eyebrow, the title, the meta of the gift cards, the grid, and the counts", () => {
     render(<EggBoard board={board} now={NOW} />);
-    const hero = screen.getByRole("region", { name: "Egg hunt" });
-    const counts = within(hero)
-      .getAllByRole("term")
-      .map((term) => [term.textContent, term.nextElementSibling?.textContent]);
-    expect(counts).toEqual([
+    expect(slot("eyebrow")!.textContent).toBe("Egg hunt");
+    expect(slot("title")!.textContent).toBe("The Egg Board");
+    expect(slot("title")!.tagName).toBe("H1");
+    expect(slot("meta")!.textContent).toBe("$100 in gift cards. Three egg words. First to fill a word wins it.");
+    const feature = slot("feature") as HTMLElement;
+    expect(within(feature).getByRole("list", { name: "The eggs of each week" })).toBeTruthy();
+    expect(feature.textContent).toContain("Drops on a later Tuesday");
+    expect(slot("action")).toBeNull();
+  });
+
+  it("shows the counts left to find, found, and to drop as three tiles in the stats", () => {
+    render(<EggBoard board={board} now={NOW} />);
+    expect([...tiles()].map((tile) => [tile.children[0].textContent, tile.children[1].textContent])).toEqual([
       ["Left to find", "1"],
       ["Found", "1"],
       ["To drop", "52"],
     ]);
+  });
+
+  it("draws no hero scene", () => {
+    render(<EggBoard board={board} now={NOW} />);
+    expect(screen.getByRole("region", { name: "Egg hunt" }).querySelectorAll("canvas")).toHaveLength(0);
+  });
+
+  it("marks the week of the last drop in the grid", () => {
+    render(<EggBoard board={board} now={NOW} />);
+    const grid = screen.getByRole("list", { name: "The eggs of each week" });
+    const marked = [...within(grid).getAllByRole("listitem")].filter((week) => week.getAttribute("aria-current") === "date");
+    expect(marked.map((week) => week.getAttribute("aria-label"))).toEqual(["Week 9: 1 found, 1 out now, 4 to drop"]);
   });
 
   it("shows the 54 slots, one column per week from 9 to 17, each found, out, or still to drop", () => {
@@ -118,10 +147,15 @@ describe("The egg word cards", () => {
 });
 
 describe("The look of the egg board", () => {
-  it("puts no plate behind the text of a hero, and shows the grid and the glow only behind the art", () => {
+  it("puts a plate only in the text slots of the board hero, and shows the grid and the glow only behind the art", () => {
     for (const state of [board, won]) {
       const { container, unmount } = render(<EggBoard board={state} now={NOW} />);
-      expect(container.querySelectorAll(".plate")).toHaveLength(0);
+      // The board hero takes the text slots of the shared hero, each with its plate. The texture is hidden, so each
+      // plate has the band color on the band color. A word card has no plate.
+      const boardHero = screen.getByRole("region", { name: "Egg hunt" });
+      const plates = [...container.querySelectorAll(".plate")];
+      expect(plates.map((plate) => plate.getAttribute("data-hero-slot"))).toEqual(["eyebrow", "title", "meta"]);
+      for (const plate of plates) expect(boardHero.contains(plate)).toBe(true);
       // Each hero hides its full texture, and an oval of the texture sits behind its art.
       const heroes = [...container.querySelectorAll("section")].filter((section) => section.querySelector("[data-hero-art]"));
       expect(heroes.length).toBe(state === won ? 2 : 1);
