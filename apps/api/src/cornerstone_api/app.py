@@ -1,13 +1,15 @@
 """
 The app factory of the Cornerstone API: CORS, the passphrase check, the rate limits, and the routes of each client.
 The service needs CORNERSTONE_PASSPHRASE_<SLUG> for each client, such as CORNERSTONE_PASSPHRASE_CPC,
-CORNERSTONE_COMMISSIONER_KEY_<SLUG> for each client of the eggs package, and ANTHROPIC_API_KEY for the Claude call.
+CORNERSTONE_COMMISSIONER_KEY_<SLUG> for each client of the eggs package, ANTHROPIC_API_KEY for the Claude call,
+and TYPESAFE_API_KEY for the Jev call of the Advisor.
 It reads CORNERSTONE_REPO, CORNERSTONE_RESULT_CACHE_DIR, CORNERSTONE_EGGS_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
 Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.0.0.0 --port 8080`.
 At start it reads each client folder under clients/, and a bad client.toml stops the start.
 Each client answers at /clients/<slug>/. The old paths with no client answer as cpc, so an old page still works.
 On start, the real app refreshes the slow sources in a background thread, so the first request finds them on disk.
 """
+import functools
 import hmac
 import logging
 import threading
@@ -20,7 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from analyzer import routes as analyzer_routes
-from analyzer.analysis import analyze
+from analyzer.advisor import read_trade
 from analyzer.cache import ResultCache, TeamsCache
 from analyzer.finder_reasons import write_reasons
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
@@ -34,6 +36,7 @@ from eggs.store import EggStore
 from eggs.tunables import BOARD_READS_PER_MINUTE, BOARD_WINDOW_SECONDS, CHECK_WINDOW_SECONDS, CHECKS_PER_HOUR
 from eggs.values import EggsValues
 from league.client import Client, SettingsFetch, load_client
+from league.jev import JEV
 from league.paths import provider_cache_dir
 from league.provider.sleeper import SleeperProvider, fetch_settings
 from league.tunables import TEAMS_CACHE_SECONDS
@@ -200,8 +203,9 @@ def create_app(
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
-    # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
-    app.state.analyzer = analyzer or analyze
+    # The default is the real Advisor with the real Claude call and the real Jev. A test injects a stub Advisor and
+    # FakeJev, so no test needs the network.
+    app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV)
     # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
     app.state.finder_reasons = finder_reasons or write_reasons
 

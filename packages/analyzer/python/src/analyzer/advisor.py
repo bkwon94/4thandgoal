@@ -12,7 +12,8 @@ from analyzer import RULE_PROMPTS
 from analyzer.rubric import Fairness, FairnessSide, ProposedTrade
 from analyzer.trade_facts import trade_fact_sheet
 from analyzer.trade_jev import trade_jev_facts
-from facts.verifier import normalize_number, number_failures, remove_names
+from facts.tokens import NUMBER_TOKEN
+from facts.verifier import normalize_number, remove_names
 from facts.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
 from league.jev_port import Jev
 from league.models import Fact
@@ -157,11 +158,13 @@ class _Guard:
             allowed |= set(self.facts[fid].players) | set(self.facts[fid].teams)
         failures += [f"{label}: the name {name} is not in the trade or in a cited fact" for name in found
                      if name not in allowed and not any(name in other for other in found if other != name)]
+        # The check reads digits only, as prototype 04 did. A count in words, such as "two starters for one", reads
+        # the trade itself, and the playbook speaks of "two good ones".
         numbers = {normalize_number(n) for fid in cited if not fid.endswith(VALUE_SUFFIX)
                    for n in self.facts[fid].numbers}
-        cited_text = " ".join(self.facts[fid].text for fid in cited)
-        failures += [f"{label}: {message}" for message in
-                     number_failures(remove_names(text, found), numbers, cited_text)]
+        failures += [f"{label}: number {token} is not in the cited facts"
+                     for token in NUMBER_TOKEN.findall(remove_names(text, found))
+                     if normalize_number(token) not in numbers]
         return failures
 
 

@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from analyzer.adjusters import Adjuster, Lean
+from analyzer.advisor import AdvisorFailed, TradeRead
 from analyzer.analysis import Analysis
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key
 from analyzer.errors import season_in_progress
@@ -43,8 +44,12 @@ GRADE_LIMIT_DETAIL = {
 }
 
 
-# The grade plus the Claude call: a proposed trade and its snapshot in, the analysis out.
-Analyzer = Callable[[ProposedTrade, Snapshot], Analysis]
+# The read of the Advisor: a proposed trade and its snapshot in, the read out. It raises AdvisorFailed after two
+# failed calls.
+Analyzer = Callable[[ProposedTrade, Snapshot], TradeRead]
+# The plain error of a failed read. A failed read never counts as a grade, so the error says so.
+ADVISOR_ERROR = ("The read of this trade did not come through. Try again in a minute. "
+                 "This try does not count toward your grades.")
 # The Claude call of the finder sits on the app state, so a test swaps in a writer with a fake call.
 ReasonWriter = Callable[[list[FinderTrade], Snapshot], FinderReasons]
 
@@ -196,9 +201,36 @@ def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
     ]
 
 
+def read_document(trade: ProposedTrade, snapshot: Snapshot, read: TradeRead) -> dict:
+    """The result the site renders: the Lean, the Case, the fairness, then the Bullets and the Week lines per side.
+
+    Each Bullet carries the text of its fact, so a tap on the page opens the fact with no logic of the site.
+    It holds no letter, no factor, no decision, and no answer word.
+    """
+    lines = week_lines(trade, snapshot)
+    bullets = {side.roster_id: side.bullets for side in read.sides}
+    return {
+        "trade": {"asker": trade.asker, "sides": _echoed_sides(trade, snapshot)},
+        "lean": read.lean,
+        "case": read.case,
+        "fairness": read.fairness.model_dump(mode="json"),
+        "sides": [
+            {
+                "roster_id": side.roster_id,
+                "bullets": [bullet.model_dump() for bullet in bullets[side.roster_id]],
+                "week_lines": [line.model_dump() for line in lines[side.roster_id]],
+            }
+            for side in trade.sides
+        ],
+        "as_of": _as_of(snapshot),
+        "missing": list(snapshot.missing),
+        "stale": list(snapshot.stale),
+    }
+
+
 def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
-    """The result the site renders: a decision first, the fairness, then the bullets, the Week lines, and the factors
-    per side.
+    """The rubric form of the result: a decision first, the fairness, then the bullets, the Week lines, and the factors
+    per side. The analyze route serves read_document, so only the tests of the rubric read this form.
 
     The deal row is the first factor of each side. The Week lines are never a factor, because they move no letter.
 
@@ -244,7 +276,7 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
 
 @router.post("/analyze")
 def analyze(request: Request, trade: ProposedTrade, served: ServedClient) -> dict:
-    """Grade the proposed trade on the live snapshot and return the result document."""
+    """Read the proposed trade on the live snapshot and return the read document, or a 503 after a failed read."""
     snapshot = _snapshot(served, trade.season)
     try:
         check_trade(trade, snapshot)
@@ -260,11 +292,14 @@ def analyze(request: Request, trade: ProposedTrade, served: ServedClient) -> dic
         return cached
     # The count comes after the cache, because a cached repeat makes no Claude call and costs nothing.
     _count_grade(request, served)
-    analysis = request.app.state.analyzer(trade, snapshot)
-    document = result_document(trade, snapshot, analysis)
-    # A fallback is not stored, so the next request of the same trade tries the Claude call again.
-    if not analysis.fallback:
-        cache.put(key, document)
+    try:
+        read = request.app.state.analyzer(trade, snapshot)
+    except AdvisorFailed:
+        # A failed read costs the manager nothing, and nothing is stored, so the next press calls the Advisor again.
+        served.grade_limiter.release(request_address(request))
+        raise HTTPException(status_code=503, detail={"message": ADVISOR_ERROR}) from None
+    document = read_document(trade, snapshot, read)
+    cache.put(key, document)
     return document
 
 

@@ -84,7 +84,9 @@ def _paths(trade: ProposedTrade) -> dict[int, str]:
 
 
 def _joined(items: list[str]) -> str:
-    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + f", and {items[-1]}"
+    if len(items) <= 2:
+        return " and ".join(items)
+    return ", ".join(items[:-1]) + f", and {items[-1]}"
 
 
 def trade_jev_state(trade: ProposedTrade, snapshot: Snapshot) -> dict:

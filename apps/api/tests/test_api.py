@@ -16,29 +16,21 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import anthropic
 import httpx
 import pytest
 from conftest import strip_trend_numbers
 from cpc import FIXTURE_LEAGUE, cli_root, cpc_client, four_week
+from fakes import FakeJev
 from fastapi.testclient import TestClient
 
 from analyzer.adjusters import INJURY, ROSTER_FIT, SCHEDULE, TREND
-from analyzer.analysis import (
-    Analysis,
-    SideAnalysis,
-    _allowed,
-    _breakdown_text,
-    _letter_failures,
-    _prose_failures,
-    analyze,
-    code_only,
-)
-from analyzer.cache import cache_key, finder_cache_key
+from analyzer.advisor import AdvisorOut, read_trade
+from analyzer.cache import ResultCache, cache_key, finder_cache_key
 from analyzer.finder import find_win_wins
 from analyzer.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
-from analyzer.routes import result_document
-from analyzer.rubric import BAND_REASONS, LETTERS, ProposedTrade, grade, verdict
+from analyzer.rubric import ProposedTrade
 from analyzer.tunables import GRADES_PER_MINUTE
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
 from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE, Settings
@@ -48,7 +40,6 @@ from league.client import ClientError
 from league.live import RefreshResult
 from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from league.paths import client_dir, league_file
-from league.player_ids import is_def
 from league.provider.raw import RawLeague
 from league.provider.sleeper import league_settings, load_raw
 from league.ranks import recent_points_per_game
@@ -110,53 +101,67 @@ def settings(repo):
                     commissioner_keys={"cpc": "commissioner-test"})
 
 
-# The bullets of each side in a stub analysis.
-BULLETS = ["Nico Collins leads the trade in points per game.", "His role is large."]
+# The Case of the stub Advisor. It names no player and no number, so it passes the guards of any trade.
+CASE = ("If you believe the role of the player you get holds, this is worth it. You give up a known starter. "
+        "The other manager gets the steadier piece now. Push for it only if your lineup needs the help.")
+
+
+def passing_read(user: str, **changes) -> dict:
+    """A read that passes every guard for any trade: each Bullet cites the week fact and names no one."""
+    rosters = [int(r) for r in re.findall(r"^Side: roster (\d+),", user, re.MULTILINE)]
+    bullets = [{"text": "The trade lands in the middle of the season.", "mark": mark, "fact_id": "trade.week"}
+               for mark in ("for", "against", "even")]
+    out = {"lean": "Lean yes", "case": CASE, "fairness": "fair", "gives_more": None,
+           "sides": [{"roster_id": rid, "gains": "It gets help where it needs it.", "bullets": bullets}
+                     for rid in rosters]}
+    return out | changes
+
+
+class StubAdvisor:
+    """The Claude call of the Advisor with no network: it answers from a list of builders, one per call.
+
+    Each builder takes the user message and gives the output. The last builder answers every later call.
+    """
+
+    def __init__(self, *builders):
+        self.builders = list(builders) or [passing_read]
+        self.calls: list[tuple[str, str]] = []
+
+    def __call__(self, system, user, output_model):
+        assert output_model is AdvisorOut
+        self.calls.append((system, user))
+        build = self.builders[min(len(self.calls), len(self.builders)) - 1]
+        return AdvisorOut.model_validate(build(user))
 
 
 class StubAnalyzer:
-    """The Claude call as a plain function: the code's grade and verdict, plus fixed bullets.
+    """The real read of the Advisor with the stub Advisor and FakeJev, so the sheet, the guards, and the retry run.
 
-    `claude_letters` are the final letters Claude gives. One more than a step from the code's letter falls back,
-    so the code's letters and verdict stand and each side has no bullets.
+    `store` False drops the result cache of the app, so each repeat is a new grade.
     """
 
-    def __init__(self, claude_letters=None):
+    def __init__(self, advisor=None, jev=None, store=True):
         self.calls = 0
-        self.claude_letters = claude_letters
+        self.advisor = advisor or StubAdvisor()
+        self.jev = jev or FakeJev()
+        self.store = store
 
     def __call__(self, trade, snapshot):
         self.calls += 1
-        breakdowns = grade(trade, snapshot)
-        letters = self.claude_letters or [b.final_letter for b in breakdowns]
-        far = any(
-            abs(LETTERS.index(letter) - LETTERS.index(b.final_letter)) > 1 for letter, b in zip(letters, breakdowns)
-        )
-        if far:
-            return code_only(trade, snapshot)
-        code = verdict(trade, breakdowns)
-        sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=letter,
-                                   reason=None if letter == b.final_letter else "Claude reads it one step off.",
-                                   bullets=BULLETS, cited=[])
-                      for letter, b in zip(letters, breakdowns))
-        return Analysis(breakdowns=breakdowns, code_verdict=code, sides=sides, verdict=code,
-                        verdict_differs=False, fallback=False)
+        return read_trade(trade, snapshot, jev=self.jev, call=self.advisor)
 
 
-class FakeClaude:
-    """The Claude call as a callable with no network: the code's letters, one cited fact per side, fixed bullets."""
+class NoStore(ResultCache):
+    """A result cache that keeps nothing, so each repeat runs the analyzer again."""
 
-    BULLETS = ("Nico Collins is the best player in the trade.", "His role is large.", "The trade changes his roster.")
+    def put(self, key, document):
+        return None
 
-    def __call__(self, system, user, output_model):
-        fact = re.findall(r"^- (\d+\.\w+|\d+\.\w+\.\w+): ", user, re.MULTILINE)
-        cited = [fid for fid in fact if not fid.endswith(".value")][:1]
-        letters = re.findall(r"^Final letter: (\w)", user, re.MULTILINE)
-        sides = [{"roster_id": roster_id, "final_letter": letter, "reason": None, "bullets": list(self.BULLETS),
-                  "cited": cited}
-                 for roster_id, letter in zip((4, 12), letters)]
-        return output_model.model_validate(
-            {"sides": sides, "verdict": {"choice": "accept", "reason": "The trade is fair for both sides."}})
+
+def _drop_store(app):
+    """Give each client of the app a cache that keeps nothing."""
+    for slug, served in list(app.state.served.items()):
+        app.state.served[slug] = dataclasses.replace(served, cache=NoStore(served.cache.directory))
 
 
 # Nico Collins for Dalton Kincaid and Garrett Wilson, asked by roster 4.
@@ -175,7 +180,10 @@ def _cpc(sources):
 
 
 def _client(settings, sources, analyzer=None):
-    return TestClient(create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=analyzer))
+    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=analyzer)
+    if analyzer is not None and not getattr(analyzer, "store", True):
+        _drop_store(app)
+    return TestClient(app)
 
 
 def test_health_needs_no_passphrase(settings, sources):
@@ -377,7 +385,7 @@ def test_a_missing_passphrase_is_401_with_no_body(settings, sources):
     assert response.content == b""
 
 
-def test_a_good_request_returns_the_result_document(settings, sources):
+def test_a_good_request_returns_the_read_of_the_advisor(settings, sources):
     response = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS)
     assert response.status_code == 200
     doc = response.json()
@@ -390,31 +398,133 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     # Kincaid is TE10 by total points and TE39 by points per game over the last 4 weeks, so his Recent rank shows.
     assert [(p["season_rank"], p["recent_rank"]) for p in four["gives"] + four["gets"]] == [
         ("WR20", None), ("TE10", "TE39"), ("WR11", None)]
+    # The document leads with the Lean and the Case, then the fairness, then the Bullets of each side.
+    assert list(doc)[:5] == ["trade", "lean", "case", "fairness", "sides"]
+    assert doc["lean"] == "Lean yes"
+    assert doc["case"] == CASE
+    assert doc["fairness"] == {"state": "fair", "gives_more": None, "sides": [
+        {"roster_id": 4, "reason": "It gets help where it needs it."},
+        {"roster_id": 12, "reason": "It gets help where it needs it."}]}
     assert [side["roster_id"] for side in doc["sides"]] == [4, 12]
-    # The deal row comes first, in plain words that name no source. One player for two gets a discount.
-    assert [side["factors"][0] for side in doc["sides"]] == [{
-        "name": "deal", "lean": "even",
-        "reason": "What you get and what you give are about even, after a discount on the side with more players.",
-    }] * 2
-    # The upside and the handcuff say nothing for this trade, so their rows hide. Roster 4 gets Kincaid, a superstar,
-    # and the superstar row says that the one-for-many margin already counts him, so it shows.
-    names = [f["name"] for f in doc["sides"][0]["factors"]]
-    assert names == ["deal", "roster fit", "standing", "trend and usage", "injury", "superstar", "schedule"]
-    assert doc["sides"][0]["bullets"] == BULLETS
-    # Roster 12 gets the highest-value player in the trade and keeps its step up, so the other side does better.
-    assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
-                               "reason": "The other side does better, so ask for more.", "differs": False}
-    # The document leads with the decision, and no letter or step reaches it.
-    assert list(doc)[:4] == ["trade", "decision", "fairness", "sides"]
-    assert list(doc["sides"][0]) == ["roster_id", "bullets", "week_lines", "factors"]
-    assert list(doc["sides"][0]["factors"][0]) == ["name", "lean", "reason"]
+    assert list(doc["sides"][0]) == ["roster_id", "bullets", "week_lines"]
+    first = doc["sides"][0]["bullets"][0]
+    assert list(first) == ["text", "mark", "fact_id", "fact_text"]
+    assert first["fact_id"] == "trade.week"
+    assert first["fact_text"].startswith("The trade is in week 6 of the 2026 season.")
+    assert [b["mark"] for b in doc["sides"][0]["bullets"]] == ["for", "against", "even"]
     # The fetch on Monday holds the week 6 stat lines, so the player stats read the 14 known games of week 6.
     # The fixture player file has week 6 rows for 6 of those games, so the usage of 8 games is pending.
     assert doc["as_of"] == {"chart_week": 6, "stats_through": 6, "completed_through": 5,
                             "rosters_fetched": "2026-10-19T09:30:00-04:00",
                             "known_games": {"week": 6, "games": 14, "in_progress": 0, "pending": {"usage": 8}},
                             "no_chart": False, "no_chart_note": None}
-    assert doc["fallback"] is False
+
+
+# The words a key of the read must never hold: the rubric spoke in letters, factors, decisions, and answers.
+OLD_KEYS = ("letter", "factor", "decision", "answer")
+
+
+def _keys(value) -> list[str]:
+    """Every key of a document, at every depth."""
+    if isinstance(value, dict):
+        return [*value, *(key for item in value.values() for key in _keys(item))]
+    if isinstance(value, list):
+        return [key for item in value for key in _keys(item)]
+    return []
+
+
+def test_no_key_of_the_read_holds_a_letter_a_factor_a_decision_or_an_answer(settings, sources):
+    doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).json()
+    assert [key for key in _keys(doc) if any(word in key for word in OLD_KEYS)] == []
+
+
+def test_a_lopsided_read_names_the_side_that_gives_more(settings, sources):
+    advisor = StubAdvisor(lambda user: passing_read(user, lean="Pass", fairness="lopsided", gives_more=4))
+    doc = _client(settings, sources, StubAnalyzer(advisor)).post("/analyze", json=TRADE, headers=HEADERS).json()
+    assert doc["lean"] == "Pass"
+    assert doc["fairness"]["state"] == "lopsided"
+    assert doc["fairness"]["gives_more"] == 4
+
+
+def test_the_advisor_reads_the_jev_answers_of_the_trade(settings, sources):
+    advisor, jev = StubAdvisor(), FakeJev()
+    _client(settings, sources, StubAnalyzer(advisor, jev)).post("/analyze", json=TRADE, headers=HEADERS)
+    assert len(jev.requests) == 1
+    _, user = advisor.calls[0]
+    for fid in ("JEV.fair", "JEV.need.4", "JEV.need.12", "JEV.accept.12"):
+        assert f"- {fid}: " in user
+
+
+def _bad_bullet(change):
+    """A builder whose first Bullet of the asker breaks a guard with `change`."""
+    def build(user):
+        out = passing_read(user)
+        out["sides"][0]["bullets"] = [out["sides"][0]["bullets"][0] | change, *out["sides"][0]["bullets"][1:]]
+        return out
+    return build
+
+
+@pytest.mark.parametrize("change, failure", [
+    ({"fact_id": "NO.such"}, "fact ID NO.such is not on the sheet"),
+    ({"text": "The trade lands in week 9."}, "number 9 is not in the cited facts"),
+    ({"text": "The trade moves trade value to the other side."}, "the words 'trade value' are not allowed"),
+    ({"text": "Josh Jacobs would fit here."}, "the name Josh Jacobs is not in the trade"),
+])
+def test_a_read_that_fails_a_guard_retries_once_and_the_second_read_stands(settings, sources, change, failure):
+    advisor = StubAdvisor(_bad_bullet(change), passing_read)
+    doc = _client(settings, sources, StubAnalyzer(advisor)).post("/analyze", json=TRADE, headers=HEADERS).json()
+    assert len(advisor.calls) == 2
+    assert failure in advisor.calls[1][1]
+    assert doc["sides"][0]["bullets"][0]["text"] == "The trade lands in the middle of the season."
+
+
+# The plain error of a failed read. The page shows it with Try Again.
+ADVISOR_ERROR = ("The read of this trade did not come through. Try again in a minute. "
+                 "This try does not count toward your grades.")
+
+
+def test_two_failed_reads_give_an_honest_error_that_costs_no_grade(settings, sources, caplog):
+    advisor = StubAdvisor(_bad_bullet({"fact_id": "NO.such"}))
+    analyzer = StubAnalyzer(advisor)
+    client = _client(settings, sources, analyzer)
+    response = client.post("/analyze", json=TRADE, headers=HEADERS)
+    assert response.status_code == 503
+    assert response.json() == {"detail": {"message": ADVISOR_ERROR}}
+    assert len(advisor.calls) == 2
+    assert "advisor attempt 2 failed" in caplog.text
+    # The count file holds no grade of the address, so a failure costs the manager nothing.
+    path = settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE
+    assert json.loads(path.read_text())["counts"].get("testclient", 0) == 0
+    # A failed read is not stored, so the next press calls the Advisor again.
+    client.post("/analyze", json=TRADE, headers=HEADERS)
+    assert analyzer.calls == 2
+
+
+def test_an_anthropic_key_that_is_not_valid_gives_the_honest_error_after_two_calls(settings, sources):
+    calls = []
+
+    def refused(system, user, output_model):
+        calls.append(user)
+        request = httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+        raise anthropic.AuthenticationError("invalid x-api-key", response=httpx.Response(401, request=request),
+                                            body=None)
+
+    analyzer = StubAnalyzer(advisor=refused)
+    response = _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS)
+    assert response.status_code == 503
+    assert response.json() == {"detail": {"message": ADVISOR_ERROR}}
+    assert len(calls) == 2
+
+
+def test_failed_reads_never_use_up_the_grade_limit(settings, sources):
+    from analyzer.tunables import GRADES_PER_MINUTE
+
+    failing = StubAnalyzer(StubAdvisor(_bad_bullet({"fact_id": "NO.such"})))
+    client = _graded_client(settings, sources, MovingClock(NOW), failing)
+    for _ in range(GRADES_PER_MINUTE + 1):
+        assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 503
+    client.app.state.analyzer = StubAnalyzer()
+    assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
 
 
 def test_each_given_player_names_where_he_goes_and_each_got_player_where_he_comes_from(settings, sources):
@@ -478,11 +588,8 @@ def test_a_three_side_request_grades_with_every_side_in_the_order_of_the_request
     assert [(p["player_id"], p["from"]) for p in four["gets"]] == [("10236", 12), ("11628", 7)]
     assert [(p["player_id"], p["to"]) for p in twelve["gives"]] == [("10236", 4), ("8146", 7)]
     assert [(p["player_id"], p["from"]) for p in seven["gets"]] == [("8146", 12)]
-    assert doc["decision"]["for_roster"] == 4
-    # Roster 4 gets two superstars and roster 7 gets none, so only the superstar row differs between the sides.
-    names = [[f["name"] for f in side["factors"] if f["name"] != "superstar"] for side in doc["sides"]]
-    assert all(side == names[0] for side in names)
-    assert [any(f["name"] == "superstar" for f in side["factors"]) for side in doc["sides"]] == [True, True, False]
+    # Each side has its own Bullets, so a trade of three sides reads one list per side.
+    assert all(len(side["bullets"]) == 3 for side in doc["sides"])
 
 
 def test_the_same_gives_with_other_destinations_is_another_cache_key(settings, sources):
@@ -523,7 +630,7 @@ def _no_chart_sources(fixture_raw_dir):
         read_chart=lambda repo, season_start, week, lines, **_: None, clock=lambda: NOW, client=CLIENT)
 
 
-def test_a_week_with_no_chart_grades_from_the_adjusters_and_says_so(settings, fixture_raw_dir):
+def test_a_week_with_no_chart_still_reads_and_says_so(settings, fixture_raw_dir):
     # The chart posts hours after the trade week starts, so the grade runs in that window with no chart.
     analyzer = StubAnalyzer()
     response = _client(settings, _no_chart_sources(fixture_raw_dir), analyzer).post(
@@ -531,12 +638,10 @@ def test_a_week_with_no_chart_grades_from_the_adjusters_and_says_so(settings, fi
     assert response.status_code == 200
     doc = response.json()
     assert analyzer.calls == 1
-    note = "This week's player values are not out yet, so both sides start even."
-    for side in doc["sides"]:
-        assert side["factors"][0] == {"name": "deal", "lean": "even", "reason": note}
+    assert doc["lean"] == "Lean yes"
     assert doc["as_of"]["chart_week"] is None
     assert doc["as_of"]["no_chart"] is True
-    assert doc["as_of"]["no_chart_note"] == note
+    assert doc["as_of"]["no_chart_note"] == "This week's player values are not out yet, so both sides start even."
     assert "chart" in doc["missing"]
 
 
@@ -547,96 +652,6 @@ def test_a_grade_with_no_chart_and_a_grade_with_the_chart_have_different_keys(se
     no_chart = _here(_no_chart_sources(fixture_raw_dir), settings).snapshot(trade.season)
     assert cache_key(trade, no_chart) != cache_key(trade, with_chart)
     assert finder_cache_key(2026, 4, 12, no_chart) != finder_cache_key(2026, 4, 12, with_chart)
-
-
-def test_a_claude_letter_two_steps_off_falls_back_to_the_code_letters(settings, sources):
-    analyzer = StubAnalyzer(claude_letters=["A", "C"])
-    doc = _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS).json()
-    assert doc["fallback"] is True
-    # The code's letters and verdict stand, with no bullets. The rows still show, the deal row first.
-    assert [side["bullets"] for side in doc["sides"]] == [[], []]
-    assert all(side["factors"][0]["name"] == "deal" and len(side["factors"]) == 7 for side in doc["sides"])
-    assert doc["decision"]["differs"] is False
-
-
-def test_a_claude_letter_one_step_off_stands(settings, sources):
-    doc = _client(settings, sources, StubAnalyzer(claude_letters=["B", "C"])).post(
-        "/analyze", json=TRADE, headers=HEADERS).json()
-    assert doc["fallback"] is False
-    assert doc["sides"][0]["bullets"] == BULLETS
-
-
-def _document(settings, sources, breakdowns=None, choice=None):
-    """The result document of TRADE from a built analysis, with the breakdowns and the verdict choice changed."""
-    trade = ProposedTrade.model_validate(TRADE)
-    snapshot = _here(sources, settings).snapshot(trade.season)
-    breakdowns = breakdowns(grade(trade, snapshot)) if breakdowns else grade(trade, snapshot)
-    code = verdict(trade, breakdowns)
-    stands = code if choice is None else code.model_copy(update={"choice": choice})
-    sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=b.final_letter, reason=None,
-                               bullets=BULLETS, cited=[])
-                  for b in breakdowns)
-    analysis = Analysis(breakdowns=breakdowns, code_verdict=code, sides=sides, verdict=stands,
-                        verdict_differs=stands.choice != code.choice, fallback=False)
-    return result_document(trade, snapshot, analysis)
-
-
-@pytest.mark.parametrize("choice, answer", [("accept", "yes"), ("decline", "no"), ("counter", "not_as_is")])
-def test_the_answer_maps_from_the_verdict_choice(settings, sources, choice, answer):
-    doc = _document(settings, sources, choice=choice)
-    assert doc["decision"]["answer"] == answer
-    # The code's default for this trade is a counter, so any other choice differs from it.
-    assert doc["decision"]["differs"] is (choice != "counter")
-
-
-@pytest.mark.parametrize("letter, lean, reason", [
-    ("A", "for", "You get far more than you give."),
-    ("B", "for", "You get more than you give."),
-    ("C", "even", "What you get and what you give are about even."),
-    ("D", "against", "You give more than you get."),
-    ("F", "against", "You give far more than you get."),
-])
-def test_the_deal_row_maps_from_the_start_letter_in_plain_words(settings, sources, letter, lean, reason):
-    doc = _document(settings, sources, breakdowns=lambda bs: tuple(
-        b.model_copy(update={"start_letter": letter, "reason": BAND_REASONS[letter]}) for b in bs))
-    assert [side["factors"][0] for side in doc["sides"]] == [{"name": "deal", "lean": lean, "reason": reason}] * 2
-    assert "chart" not in doc["sides"][0]
-
-
-def _steps(steps, schedule_lean):
-    """Breakdowns with the steps of the first seven adjusters of each side and the lean of the schedule set."""
-    def rework(breakdowns):
-        reworked = []
-        for b in breakdowns:
-            adjusters = [a.model_copy(update={"step": step}) for a, step in zip(b.adjusters[:7], steps)]
-            adjusters.append(b.adjusters[7].model_copy(update={"lean": schedule_lean}))
-            reworked.append(b.model_copy(update={"adjusters": adjusters}))
-        return tuple(reworked)
-    return rework
-
-
-@pytest.mark.parametrize("schedule_lean", ["for", "against", "even"])
-def test_a_factor_lean_maps_from_the_step_and_the_schedule_keeps_its_lean(settings, sources, schedule_lean):
-    doc = _document(settings, sources, breakdowns=_steps([1, -1, 0, 1, 1, 1, -1], schedule_lean))
-    factors = doc["sides"][0]["factors"][1:]
-    assert [f["name"] for f in factors] == ["roster fit", "standing", "trend and usage", "injury", "upside",
-                                            "superstar", "handcuff", "schedule"]
-    assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "for", "for", "against", schedule_lean]
-
-
-def test_a_graded_trade_with_no_upside_hides_the_upside_factor_of_each_side(settings, sources):
-    doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).json()
-    # No player in TRADE is a star out now or has an opportunity, so the upside row says nothing and hides.
-    for side in doc["sides"]:
-        assert [f for f in side["factors"] if f["name"] == "upside"] == []
-
-
-def test_a_silent_row_that_moves_the_grade_still_shows(settings, sources):
-    # A row shows when it moves the grade, so a silent upside with a step up stays in the document.
-    doc = _document(settings, sources, breakdowns=lambda bs: tuple(
-        b.model_copy(update={"adjusters": [a.model_copy(update={"step": 1}) if a.name == "upside" else a
-                                           for a in b.adjusters]}) for b in bs))
-    assert all([f["lean"] for f in side["factors"] if f["name"] == "upside"] == ["for"] for side in doc["sides"])
 
 
 def test_a_result_cached_under_another_document_version_never_serves(settings, sources, monkeypatch):
@@ -650,41 +665,12 @@ def test_a_result_cached_under_another_document_version_never_serves(settings, s
     assert analyzer.calls == 2
 
 
-def test_the_document_has_the_fairness_block_after_the_decision(settings, sources):
-    doc = _document(settings, sources)
+def test_the_document_has_the_fairness_block_after_the_case(settings, sources):
+    doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).json()
     block = doc["fairness"]
     assert list(block) == ["state", "gives_more", "sides"]
     assert [list(side) for side in block["sides"]] == [["roster_id", "reason"]] * 2
     assert [side["roster_id"] for side in block["sides"]] == [4, 12]
-    assert block["state"] in ("win_win", "fair", "lopsided")
-
-
-@pytest.mark.parametrize("letters, state, gives_more", [(["B", "B"], "win_win", None), (["D", "B"], "lopsided", 4)])
-def test_the_fairness_block_reads_the_letters_that_stand_after_the_claude_call(settings, sources, letters, state,
-                                                                               gives_more):
-    # Claude can move a final letter one step. That letter stands, so the fairness block reads it.
-    doc = _client(settings, sources, StubAnalyzer(claude_letters=letters)).post(
-        "/analyze", json=TRADE, headers=HEADERS).json()
-    assert doc["fallback"] is False
-    assert doc["fairness"]["state"] == state
-    assert doc["fairness"]["gives_more"] == gives_more
-
-
-def test_the_fairness_text_passes_the_prose_checks_of_the_analysis(settings, sources):
-    trade = ProposedTrade.model_validate(TRADE)
-    snapshot = _here(sources, settings).snapshot(trade.season)
-    breakdowns = grade(trade, snapshot)
-    names = [*(t.name for t in snapshot.teams.values()), *(p.name for p in snapshot.players.values())]
-    breakdown_text = _breakdown_text(breakdowns)
-    # Each step up in turn, so the block takes the reason of every adjuster and of the start letter once.
-    for index in range(6):
-        doc = _document(settings, sources, breakdowns=_steps([int(i == index) for i in range(5)], "even"))
-        for side in doc["fairness"]["sides"]:
-            text = side["reason"]
-            # The checks of the analysis: no trade value, no ratio word, no chart name, and no letter grade.
-            assert _prose_failures("fairness", text, _allowed({}, [], breakdown_text), breakdown_text, names) == []
-            assert _letter_failures("fairness", text) == []
-            assert not re.search(r"\b[A-F]\b", text)
 
 
 def test_the_cache_key_changes_with_the_document_version(settings, sources, monkeypatch):
@@ -902,30 +888,12 @@ def _strings(value):
     return [value] if isinstance(value, str) else []
 
 
-def test_a_trade_with_an_unlisted_player_leans_even_with_no_letter(settings, sources):
-    snapshot = _here(sources, settings).snapshot(2026)
-    unlisted = next(pid for pid in snapshot.rosters[12] if pid not in snapshot.chart.values and not is_def(pid))
-    trade = {**TRADE, "sides": _sides(["7569"], [unlisted])}
-    doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=trade, headers=HEADERS).json()
-    for side in doc["sides"]:
-        assert side["factors"][0] == {
-            "name": "deal", "lean": "even",
-            "reason": "Not every player in the trade has a value this week, so both sides start even."}
-
-
 def test_the_fixture_document_names_no_letter():
     fixture = json.loads(RESPONSE_FIXTURE.read_text(encoding="utf-8"))
     # A letter grade on its own, as in "C", or the word "letter". Neither may reach the document.
     found = [text for text in _strings(fixture)
              if re.search(r"\b[A-F]\b", text) or re.search(r"\bletters?\b", text, re.IGNORECASE)]
     assert found == []
-
-
-def test_the_real_analyzer_with_a_fake_claude_gives_the_document_with_its_text(settings, sources):
-    analyzer = functools.partial(analyze, call=FakeClaude())
-    doc = _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS).json()
-    assert doc["fallback"] is False
-    assert [side["bullets"] for side in doc["sides"]] == [list(FakeClaude.BULLETS)] * 2
 
 
 def _at(fixture_raw_dir, chart, fetched):
@@ -989,12 +957,7 @@ def test_a_changed_roster_or_another_asker_misses_the_cache(settings, fixture_ra
     assert analyzer.calls == 3
 
 
-def test_a_fallback_is_not_cached_so_a_repeat_tries_claude_again(settings, sources):
-    analyzer = StubAnalyzer(claude_letters=["A", "C"])
-    client = _client(settings, sources, analyzer)
-    client.post("/analyze", json=TRADE, headers=HEADERS)
-    client.post("/analyze", json=TRADE, headers=HEADERS)
-    assert analyzer.calls == 2
+
 
 
 def test_past_the_rate_limit_the_route_is_429_with_a_retry_after(settings, sources):
@@ -1064,8 +1027,8 @@ def _graded_client(settings, sources, clock, analyzer):
 
 
 def _uncached():
-    """An analyzer whose result falls back. A fallback is not cached, so each repeat is a new grade."""
-    return StubAnalyzer(claude_letters=["A", "C"])
+    """An analyzer whose app keeps no result, so each repeat is a new grade."""
+    return StubAnalyzer(store=False)
 
 
 def test_the_sixth_grade_in_a_minute_is_429_with_the_minute_text(settings, sources):
@@ -1237,16 +1200,15 @@ def _same_shape(actual, expected):
 
 
 def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sources):
-    doc = _client(settings, sources, StubAnalyzer(claude_letters=["B", "C"])).post(
-        "/analyze", json=TRADE, headers=HEADERS).json()
+    doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).json()
     fixture = json.loads(RESPONSE_FIXTURE.read_text(encoding="utf-8"))
     # The fixture's empty lists, such as stale, match any list, because a live run may fill them.
     assert _same_shape(doc, _shape(fixture))
-    # Every item of a list has the shape of the fixture's first item, so no side or adjuster drops a key.
+    # Every item of a list has the shape of the fixture's first item, so no side or Bullet drops a key.
     for side in doc["sides"]:
         assert _shape(side) == _shape(fixture["sides"][0])
-        for factor in side["factors"]:
-            assert _shape(factor) == _shape(fixture["sides"][0]["factors"][0])
+        for bullet in side["bullets"]:
+            assert _shape(bullet) == _shape(fixture["sides"][0]["bullets"][0])
 
 
 # The keys whose numbers are ids, weeks, the season, or the stamp. No other number may appear in the document.
@@ -1281,6 +1243,10 @@ def _digits_outside_ids(value, key=None):
         if set(value) == {"week", "text"}:
             # The code writes the Week line with its weeks, its counts, its top N, and the rank of each opponent.
             value = {"week": value["week"]}
+        if set(value) == {"text", "mark", "fact_id", "fact_text"}:
+            # A Bullet holds only the numbers of its fact, and the guards of the Advisor check that. The fact text is
+            # code, with its own numbers, and the fact id names a player id.
+            return []
         if set(value) == {"roster_id", "reason"}:
             # A fairness side gives the reason of its first step up, which can be the roster row with its counts.
             value = {**value, "reason": TOP_N_COUNT.sub("", value["reason"])}
@@ -1550,6 +1516,7 @@ def test_a_find_and_an_analyze_count_against_the_same_grade_limit(settings, sour
 
     client = _find_client(settings, sources, FakeFinderClaude(), MovingClock(NOW))
     client.app.state.analyzer = _uncached()
+    _drop_store(client.app)
     for _ in range(GRADES_PER_MINUTE - 1):
         assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
     assert client.post("/find", json=FIND, headers=HEADERS).status_code == 200
@@ -1910,7 +1877,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_17():
+def test_the_document_version_is_19():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -1924,7 +1891,8 @@ def test_the_document_version_is_17():
     # Each side carries its Week lines, so the shape changes.
     # A Week line names each player who steps up, so a stored Week line must never serve.
     # The injury and handcuff rows name no id map, so a stored row must never serve.
-    assert cache_module.DOCUMENT_VERSION == 18
+    # The read of the Advisor takes the place of the decision and the factor rows, so no rubric result serves.
+    assert cache_module.DOCUMENT_VERSION == 19
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per
@@ -1945,6 +1913,8 @@ def _two_clients(settings, sources, analyzer=None):
     second = dataclasses.replace(cpc, client=cpc.client.model_copy(update={"slug": SECOND, "values": values}))
     settings = dataclasses.replace(settings, passphrases={"cpc": PASSPHRASE, SECOND: SECOND_HEADERS["X-League-Passphrase"]})
     app = create_app(settings, [cpc.client, second.client], sources={"cpc": cpc, SECOND: second}, analyzer=analyzer)
+    if analyzer is not None and not getattr(analyzer, "store", True):
+        _drop_store(app)
     for served in app.state.served.values():
         served.grade_limiter.clock = MovingClock(NOW)
     # The general limit counts every request of the address, so the test moves it past the minute with no wait.
@@ -2024,8 +1994,8 @@ def test_the_health_route_stays_at_the_root(settings, sources):
 
 
 def test_the_grade_limit_counts_per_client_and_per_address(settings, sources):
-    # A fallback is never cached, so each repeat is a new grade.
-    client = _two_clients(settings, sources, StubAnalyzer(claude_letters=["A", "C"]))
+    # The app keeps no result, so each repeat is a new grade.
+    client = _two_clients(settings, sources, _uncached())
     for _ in range(GRADES_PER_MINUTE):
         assert client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS).status_code == 200
     assert client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS).status_code == 429
