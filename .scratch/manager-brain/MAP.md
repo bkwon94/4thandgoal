@@ -24,6 +24,7 @@ One spec that changes the analyzer and the Finder to judge a trade as a manager 
 - Each client has a playbook in its voice folder. The cpc playbook: RBs first in half PPR, a gut call on trends and schedule, contenders firm up, bubble teams take risks, a top 3 to 5 player beats two good ones, managers here chase recent points, usage trends matter. `decisions/01-grill-answer-key.md`.
 - History claims carry a past-season split from the sheet. With no split, Claude may state history in words but with no number. `decisions/01-grill-answer-key.md`.
 - The terms: Advisor, Grade with no letter, Lean and Case, Bullets with a Mark, Measure, Playbook, Partner filter, Shortlist. The race group and the odds replace Contender, Seller, and Middle team. ADR 0030 records the change. `decisions/02-grill-glossary-terms.md`.
+- The trade value chart is one fact with no gates: unlisted players stay in the Finder, a week with no chart still works, and the playbook wins over the chart. The chart cache trusts a hash of the PNG, not file times, and one manual step gives a chart before a build. `decisions/07-grill-chart-role.md`.
 
 ## NOT YET SPECIFIED
 
