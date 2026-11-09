@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-38.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The data shape holds lights with an x value, a y value, a label, and a tone of `flare`, `bright`, or `dim`, plus guide lines, an optional margin mark, the index of the label at rest, and a mode of `settle` or `drift`.
 - [x] A test proves that the nearest light to a point in empty space is the closest light.

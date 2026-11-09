@@ -8,7 +8,7 @@ Spec: `.scratch/hero-slots/PRD.md`. Acceptance tests AT-9 and AT-12.
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] The analyzer form and the analyzer result use the slots, as the table of the spec maps them.
 - [ ] The analyzer result of grade-clarity trade A shows no empty area for stats or an action, from a run on the real API (AT-9).
