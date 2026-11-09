@@ -1,0 +1,11 @@
+AT-32, the board gives no hint. Script: evidence-scripts/board.mjs AT-32.
+How the state was made: the local API restarts with an empty eggs store. T1 drops in week 9 by the drop route. For each letter, a filler test egg (a target that no element holds, on /midseason/2026/) drops by the drop route in a drop of 11 eggs (week 10 and on), and the check and claim routes claim it for the manager into the word.
+State: Lil Fridge holds E, A, G, L, S in EAGLES and C, O in CORNERSTONE.
+Board answer of the API after the state:
+counts: {"left":5,"found":7,"to_drop":42}
+CORNERSTONE: winner none; Lil Fridge: CO
+LANSDALE: winner none; no letters
+EAGLES: winner none; Lil Fridge: EAGLS
+T1 is dropped too, for AT-32, and it holds no claim.
+A context at 375x900, light. Open /eggs/. For each tab, tap it, wait 0.6 s, read page.content(), and count each page and target of the test eggs: /midseason/2026/, /midseason/2026, midseason, luck-3, luck, tap2, and the filler target prefix evidence-filler.
+The script also lists each link in main and counts the same names in the board answer of the API. The e2e run of AT-33 prints its own count too (see AT-31/eggs-output.txt).

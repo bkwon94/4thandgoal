@@ -1,0 +1,67 @@
+$ git diff main -- '**/package.json'
+(exit 0, end of output)
+
+$ git diff main --stat -- package.json pnpm-lock.yaml
+(end of output)
+
+$ git diff --name-only main
+.scratch/egg-polish/ACCEPTANCE.md
+.scratch/egg-polish/MAP.md
+.scratch/egg-polish/PRD.md
+.scratch/egg-polish/decisions/01-prototype-egg-crack.md
+.scratch/egg-polish/decisions/02-prototype-claim-tear.md
+.scratch/egg-polish/decisions/03-grill-word-cards.md
+.scratch/egg-polish/decisions/04-spec-board-hero.md
+.scratch/egg-polish/issues/01-crack-from-the-tap-point.md
+.scratch/egg-polish/issues/02-claim-ticket-tap-and-key-tear.md
+.scratch/egg-polish/issues/03-drag-tear.md
+.scratch/egg-polish/issues/04-board-hero-on-the-slots.md
+.scratch/egg-polish/issues/05-egg-word-slider.md
+.scratch/egg-polish/issues/06-slider-motion.md
+.scratch/egg-polish/issues/07-full-path-and-floor.md
+GLOSSARY.md
+apps/site/e2e/eggs.spec.ts
+apps/site/e2e/evidence.ts
+apps/site/e2e/floor-rules.spec.ts
+apps/site/e2e/floor.ts
+apps/site/src/app/globals.css
+docs/agents/state.md
+packages/design/site/parts/hero.tsx
+packages/eggs/site/board/README.md
+packages/eggs/site/board/egg-board-motion-off.test.tsx
+packages/eggs/site/board/egg-board.test.tsx
+packages/eggs/site/board/egg-board.tsx
+packages/eggs/site/hunt/README.md
+packages/eggs/site/hunt/claim-sheet.tsx
+packages/eggs/site/hunt/claim-ticket.tsx
+packages/eggs/site/hunt/crack.ts
+packages/eggs/site/hunt/egg-art.tsx
+packages/eggs/site/hunt/egg-hunt-motion-off.test.tsx
+packages/eggs/site/hunt/egg-hunt.test.tsx
+packages/eggs/site/hunt/find-card.tsx
+
+$ git diff main | grep -ic scrolltide
+14
+
+$ git diff main | grep -i scrolltide
++AT-36: No new dependency and no Scrolltide source
++Then: No `package.json` adds a dependency, and the diff holds no Scrolltide source.
++It changes four parts after Scrolltide items: the egg opening, the claim, the egg word cards, and the egg board hero.
++Apps: site. The site changes four parts of the egg hunt after the methods of Scrolltide items. The pipeline and the API do not change.
++- The crack follows the method of the Contour Reveal item of Scrolltide, so ADR 0028 covers its motion, such as the draw of the lines and the blur of the tile. The hard rules of ADR 0028 still win.
++- The tear follows the method of the Tear Ticket item of Scrolltide, written in SVG and CSS with no WebGL. ADR 0028 covers its motion.
++- The slider follows the method of the Stack Slider item of Scrolltide. ADR 0028 covers its motion.
++- No Scrolltide source enters the repo, because it is paid source and the repo is public.
++- The Block Field, Unfurl, Step Path, Particle Text, and Crumple Reveal items of Scrolltide. Each is a candidate for a later spec.
++The find card cracks the egg now: the halves fly apart and the letter tile springs up. Scrolltide has no egg crack. Contour Reveal has a crack that spreads from the tap point, and Particle Text forms a word from dots. The spec needs one variant that Brian saw and chose. The design uses Claude Design.
++- [x] No Scrolltide source is in the diff, and no dependency is added.
++**What to build:** A side swipe on the slider moves to the next or the last slide, and a vertical swipe stays a page scroll. A move rolls the slides with a blur on the neighbors, the giant word swaps letter by letter, and a move to a won slide washes the frame red. Reduced motion makes each move instant. The method comes from the Stack Slider item of Scrolltide, and ADR 0028 covers its motion.
++- [x] No Scrolltide source is in the diff, and no dependency is added.
++- [x] The diff against `main` holds no change to the API, no new dependency, and no Scrolltide source.
+
+$ git diff --stat main -- ':(glob)**/package.json'
+(end of output)
+
+$ git rev-parse --short main; git rev-parse --short HEAD
+274ba9ec
+01cec88a

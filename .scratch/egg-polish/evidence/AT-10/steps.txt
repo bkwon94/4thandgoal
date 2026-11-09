@@ -1,0 +1,5 @@
+AT-10, a locked stub names the next step. Script: evidence-scripts/claim.mjs AT-10.
+State: empty eggs store (the local API restarts with no file), then T1 dropped in week 9 by the real drop route with the letter C. No claim.
+For each width and theme: a fresh context with no passphrase stored. Find T1 in light, crack it, tap 'Claim C', switch to dark with a page script for the dark runs.
+Tap only the team 'Lil Fridge'. Tap the stub (a Playwright click with force, because the stub has aria-disabled; it is a real mouse press and release at its middle). Wait 0.8 s. Scroll the ticket into view and take a viewport shot.
+requests.txt: each request that the page sends to the local API (page.on request and response), per run, with the count of POST /claim, and the board after the runs.

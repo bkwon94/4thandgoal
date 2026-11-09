@@ -1,0 +1,8 @@
+AT-31, every part keeps the readability floor.
+1. eggs-output.txt: the API restarts with an empty store. Then LOCAL_API_URL=http://localhost:8081 pnpm --dir apps/site test:eggs runs the Playwright project eggs.
+   The project builds the CPC site against the local API, serves it on 127.0.0.1:4173, drops T1 in week 9, and runs the floor test at 390px.
+   The floor test checks the find card (egg and letter), the claim sheet (empty and filled), and the egg board on each slide in both themes. Its board holds only the one claim of the test.
+2. floor-boards.txt: the eggs project makes no board of AT-22 or AT-27, so script evidence-scripts/floor-boards.mjs runs a check of its own on those boards, and on a control board with T1 alone.
+   It runs axe with the WCAG tags of e2e/floor.ts (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa), the tap targets with the selector and the 44px floor of e2e/floor.ts, and the page width.
+   Each board comes from an empty store and claims of filler test eggs; the fillers drop in weeks 10 and 11, and week 9 holds no egg on the boards of AT-22 and AT-27.
+   It runs at 390x844 with reduced motion, as the floor does, on /eggs/ after a tap on each tab, in light and dark. It is not the floor code itself: it has no small-text scan.

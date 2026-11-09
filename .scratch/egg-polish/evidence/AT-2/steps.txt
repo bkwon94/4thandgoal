@@ -1,0 +1,8 @@
+AT-2, the crack starts at the tap point. Script: evidence-scripts/find.mjs AT-2.
+State: empty store, T1 dropped with the letter C, no claim.
+Recording (recording.webm): 375x812, motion on, light. Find T1, tap the egg at 25% of its width from the left and 33% of its height from the top, record 2.6 s more.
+frame-before-tap.png: the same fresh find just before the tap, with a cyan ring on the screen point that the tap then hits.
+Frame (frame-0.4s.png): a fresh find with the Playwright clock, the same tap point, each animation of the tap paused and seeked to 400 ms. A cyan ring marks the screen point of the tap.
+lines.txt also gives the top of the card and of the egg svg on the screen, before the tap and at the frame.
+lines.txt gives the tap point in screen px and in the units of the egg art, and the first point of each crack line.
+recording-strip.png: frames of recording.webm every 0.2 s over its last 3.2 s (ffmpeg fps=5, tile 8x2), left to right, top row first. The tap falls between frame 3 and frame 4.

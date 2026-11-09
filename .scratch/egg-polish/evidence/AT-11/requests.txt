@@ -1,0 +1,15 @@
+2026-11-09T03:57:17.227Z GET /clients/cpc/eggs/board 
+2026-11-09T03:57:17.227Z   -> 200 GET /clients/cpc/eggs/board
+2026-11-09T03:57:18.219Z POST /clients/cpc/eggs/check {"page":"/midseason/2026/","target":"luck-3","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}
+2026-11-09T03:57:18.224Z   -> 200 POST /clients/cpc/eggs/check
+2026-11-09T03:57:22.547Z GET /clients/cpc/eggs/board 
+2026-11-09T03:57:22.558Z   -> 200 GET /clients/cpc/eggs/board
+2026-11-09T03:57:24.591Z POST /clients/cpc/eggs/claim {"token":"10oNr_HaT2tBWxxjKa3AQ0qumEtwTYiY","roster_id":3,"word":"CORNERSTONE"}
+2026-11-09T03:57:24.594Z   -> 200 POST /clients/cpc/eggs/claim
+POST /claim count: 1
+
+Board after the run:
+counts: {"left":12,"found":1,"to_drop":41}
+CORNERSTONE: winner none; Lil Fridge: C
+LANSDALE: winner none; no letters
+EAGLES: winner none; no letters

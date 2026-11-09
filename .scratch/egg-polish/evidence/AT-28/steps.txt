@@ -1,0 +1,10 @@
+AT-28, before any claim the board opens on CORNERSTONE. Script: evidence-scripts/board.mjs AT-28.
+How the state was made: the local API restarts with an empty eggs store. T1 drops in week 9 by the drop route. For each letter, a filler test egg (a target that no element holds, on /midseason/2026/) drops by the drop route in a drop of 11 eggs (week 10 and on), and the check and claim routes claim it for the manager into the word.
+State: T1 dropped alone in week 9 (the letter rule gives it A, as the first egg of an empty store). No claim.
+Board answer of the API after the state:
+counts: {"left":1,"found":0,"to_drop":53}
+CORNERSTONE: winner none; no letters
+LANSDALE: winner none; no letters
+EAGLES: winner none; no letters
+slider-<width>-<theme>.png: an element shot of the slider ([data-slider]) in a viewport 2400 px tall, so the fixed menu bar of the phone width covers no part of it. Shots: for each width (375, 768, 1280; height 900) and theme, a fresh context with motion on. Open /eggs/ with cpc.theme set, wait for the network to idle, then the scroll pass of the evidence runner (half a screen at a time to the end and back, then 1.2 s), then a full-page shot.
+slider.txt: a page script reads the tabs, the slide order, the shown slide, each letter of its giant word with its data-letter state, and the leader line.

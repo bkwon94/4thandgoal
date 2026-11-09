@@ -1,0 +1,7 @@
+AT-9, the claim ticket shows what the manager claims. Script: evidence-scripts/claim.mjs AT-9.
+State: empty eggs store (the local API restarts with no file), then T1 dropped in week 9 by the real drop route with the letter C. No claim.
+For each width (375, 768, 1280; height 900) and theme: a fresh context with cpc.passphrase = localtest in local storage, so the browser holds the passphrase.
+Open /midseason/2026/ in light, double-tap the Luck cell of Lil Fridge, tap the middle of the egg, wait for the letter C, tap 'Claim C'.
+For dark, a page script then sets the theme to dark (cpc.theme and the class dark on html). T1 holds only in light.
+Tap the team 'Lil Fridge' and the card CORNERSTONE. Scroll the ticket into view and take a viewport shot. The sheet is a fixed dialog.
+ticket.txt holds the text of the ticket and the name of the stub, from a page script.

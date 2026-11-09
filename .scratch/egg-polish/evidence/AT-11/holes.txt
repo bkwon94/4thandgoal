@@ -1,0 +1,15 @@
+dx 10 px: popped 1000000000 (holes top to bottom); stub transform matrix(0.999657, 0.0261769, -0.0261769, 0.999657, 1.97314, 1.05201)
+dx 20 px: popped 1100000000 (holes top to bottom); stub transform matrix(0.998719, 0.0505929, -0.0505929, 0.998719, 3.94428, 1.20109)
+dx 30 px: popped 1110000000 (holes top to bottom); stub transform matrix(0.997053, 0.076719, -0.076719, 0.997053, 4.83183, 2.3777)
+dx 40 px: popped 1111000000 (holes top to bottom); stub transform matrix(0.994881, 0.101056, -0.101056, 0.994881, 6.76205, 2.69716)
+dx 50 px: popped 1111100000 (holes top to bottom); stub transform matrix(0.991894, 0.127065, -0.127065, 0.991894, 8.54586, 4.11926)
+dx 60 px: popped 1111100000 (holes top to bottom); stub transform matrix(0.988494, 0.151261, -0.151261, 0.988494, 10.4197, 4.62935)
+dx 70 px: popped 1111110000 (holes top to bottom); stub transform matrix(0.984196, 0.177085, -0.177085, 0.984196, 12.0862, 6.23888)
+dx 80 px: popped 1111111000 (holes top to bottom); stub transform matrix(0.979575, 0.201078, -0.201078, 0.979575, 13.8893, 6.93447)
+dx 90 px: popped 1111111100 (holes top to bottom); stub transform matrix(0.973976, 0.226651, -0.226651, 0.973976, 14.4504, 8.4963)
+dx 100 px: popped 1111111110 (holes top to bottom); stub transform matrix(0.968148, 0.25038, -0.25038, 0.968148, 16.1748, 9.34758)
+dx 110 px: popped 0000000000 (holes top to bottom); stub transform matrix(0.952288, 0.3052, -0.3052, 0.952288, 25.8593, 9.01162)
+dx 120 px: popped 0000000000 (holes top to bottom); stub transform matrix(0.927735, 0.37324, -0.37324, 0.927735, 45.8062, 5.76665)
+
+100 ms after the tear: sweep 0, stub class egg-stub relative flex touch-pan-y h-full w-24 flex-none origin-bottom-left flex-col items-center justify-center gap-sp-2 rounded-r-card px-sp-2 bg-accent text-on-dark egg-stub-spring egg-stub-flutter
+300 ms after the tear: sweep 0, stub class egg-stub relative flex touch-pan-y h-full w-24 flex-none origin-bottom-left flex-col items-center justify-center gap-sp-2 rounded-r-card px-sp-2 bg-accent text-on-dark egg-stub-spring egg-stub-flutter

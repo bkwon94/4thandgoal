@@ -1,0 +1,5 @@
+AT-12, an early release sends nothing. Script: evidence-scripts/claim.mjs AT-12.
+State: empty eggs store (the local API restarts with no file), then T1 dropped in week 9 by the real drop route with the letter C. No claim.
+Recording (recording.webm): 375x812, motion on, light, passphrase stored. Find T1, crack it, tap 'Claim C', pick 'Lil Fridge' and CORNERSTONE.
+Press the mouse on the stub and move it 55 px right (half of the tear length of 110 px) in 6 steps. Read the ticket. Release. Wait 1.5 s and read the ticket again.
+requests.txt: each request of the page to the local API, and the board after the run.

@@ -1,0 +1,6 @@
+AT-1, the tap squashes the egg. Script: evidence-scripts/find.mjs AT-1, in the session scratchpad.
+State: empty eggs store, then T1 dropped in week 9 by the real drop route with the letter C (a probe drop of filler eggs in week 10 sets the order of the letter rule). No claim.
+Recording (recording.webm): Chromium at 375x812, motion on, light theme. Open /midseason/2026/, double-tap [data-stable-id=luck-3], wait for the find card and 1.6 s, so the card ends its rise, tap the middle of the egg, record 2.6 s more.
+Frames: a fresh page with the Playwright clock. Find T1 the same way and tap the middle of the egg. Pause the clock 10 ms after the tap, so the phase timer of the find card holds.
+For each time t: pause each animation that started at or after the pointerdown, and set its currentTime to t less its start delay after the pointerdown. Take a viewport shot.
+measures.txt holds the computed transform of the egg svg, and each crack line with its drawn length (its length less its stroke-dashoffset), at each frame.

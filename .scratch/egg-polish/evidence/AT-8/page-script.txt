@@ -1,0 +1,5 @@
+Chromium args: --disable-webgl --disable-webgl2 --disable-3d-apis
+WebGL in a blank page of that browser: webgl false, webgl2 false
+Calls of getContext with a WebGL type on /midseason/2026/, from the load to the letter: 0 []
+Tile text: C
+Title: The letter C is yours to claim.

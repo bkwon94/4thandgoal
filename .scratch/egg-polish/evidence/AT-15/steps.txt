@@ -1,0 +1,6 @@
+AT-15, a claim stamps CLAIMED. Script: evidence-scripts/claim.mjs AT-15.
+State: empty eggs store (the local API restarts with no file), then T1 dropped in week 9 by the real drop route with the letter C. No claim.
+For each width (height 900) and theme: a fresh context with the passphrase stored. Find T1 in light, crack it, tap 'Claim C', switch to dark by a page script for the dark runs.
+Pick 'Lil Fridge' and CORNERSTONE. Drag the stub 130 px right in 13 steps. Wait for the text CLAIMED and 0.42 s more, then take stamp-<width>-<theme>.png.
+Wait for the end card (#egg-end-title) and 1.6 s more for its tile to land, then take end-<width>-<theme>.png. Viewport shots.
+After each run the commissioner undo route undoes the claim of T1, so the next run finds it again.

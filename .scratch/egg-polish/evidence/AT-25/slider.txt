@@ -1,0 +1,113 @@
+# 375-light
+button text: Show all 11
+BEFORE
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O
+frame background: rgb(20, 20, 20)
+AFTER
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O || 06 Teehee 1/11 R || 07 To Infinity and Bijan 0/11 || 08 Return of T Mac 0/11 || 09 Maye d'force B with U 0/11 || 10 behold the lamb 0/11 || 11 Unsolicited Dak Picks 0/11
+frame background: rgb(20, 20, 20)
+
+# 375-dark
+button text: Show all 11
+BEFORE
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O
+frame background: rgb(20, 20, 20)
+AFTER
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O || 06 Teehee 1/11 R || 07 To Infinity and Bijan 0/11 || 08 Return of T Mac 0/11 || 09 Maye d'force B with U 0/11 || 10 behold the lamb 0/11 || 11 Unsolicited Dak Picks 0/11
+frame background: rgb(20, 20, 20)
+
+# 768-light
+button text: Show all 11
+BEFORE
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O
+frame background: rgb(20, 20, 20)
+AFTER
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O || 06 Teehee 1/11 R || 07 To Infinity and Bijan 0/11 || 08 Return of T Mac 0/11 || 09 Maye d'force B with U 0/11 || 10 behold the lamb 0/11 || 11 Unsolicited Dak Picks 0/11
+frame background: rgb(20, 20, 20)
+
+# 768-dark
+button text: Show all 11
+BEFORE
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O
+frame background: rgb(20, 20, 20)
+AFTER
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O || 06 Teehee 1/11 R || 07 To Infinity and Bijan 0/11 || 08 Return of T Mac 0/11 || 09 Maye d'force B with U 0/11 || 10 behold the lamb 0/11 || 11 Unsolicited Dak Picks 0/11
+frame background: rgb(20, 20, 20)
+
+# 1280-light
+button text: Show all 11
+BEFORE
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O
+frame background: rgb(20, 20, 20)
+AFTER
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O || 06 Teehee 1/11 R || 07 To Infinity and Bijan 0/11 || 08 Return of T Mac 0/11 || 09 Maye d'force B with U 0/11 || 10 behold the lamb 0/11 || 11 Unsolicited Dak Picks 0/11
+frame background: rgb(20, 20, 20)
+
+# 1280-dark
+button text: Show all 11
+BEFORE
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O
+frame background: rgb(20, 20, 20)
+AFTER
+tabs: CORNERSTONE 4/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:lit N:lit E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 4 of 11.
+rows: 01 Lil Fridge LEADS 4/11 C O R N || 02 The Blue Tent 1/11 E || 03 All You Need Is Love 1/11 S || 04 NFC Least 1/11 T || 05 London Cooking 1/11 O || 06 Teehee 1/11 R || 07 To Infinity and Bijan 0/11 || 08 Return of T Mac 0/11 || 09 Maye d'force B with U 0/11 || 10 behold the lamb 0/11 || 11 Unsolicited Dak Picks 0/11
+frame background: rgb(20, 20, 20)

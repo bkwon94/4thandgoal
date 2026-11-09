@@ -1,0 +1,6 @@
+375-light: end card title "C goes to CORNERSTONE."
+375-dark: end card title "C goes to CORNERSTONE."
+768-light: end card title "C goes to CORNERSTONE."
+768-dark: end card title "C goes to CORNERSTONE."
+1280-light: end card title "C goes to CORNERSTONE."
+1280-dark: end card title "C goes to CORNERSTONE."

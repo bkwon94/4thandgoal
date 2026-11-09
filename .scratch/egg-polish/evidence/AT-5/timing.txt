@@ -1,0 +1,5 @@
+Tap at the screen point 227.1,500.8 (72% of the width and 78% of the height of the egg button, box {"x":97.5,"y":329.203125,"width":180,"height":220}).
+Tile box at 0.5 s: {"x":212.6750030517578,"y":400.68359375,"width":16.800003051757812,"height":16.79998779296875,"top":400.68359375,"right":229.47500610351562,"bottom":417.48358154296875,"left":212.6750030517578}. Tile transform-origin: 95.5px 116.797px.
+Before the tap the tile box of the art sits at left 131.5, top 383.2 (the egg box plus 34,54 px), so the tap point less that corner is 95.6,117.6 px, beside the transform-origin. The box at 0.5 s (scale 0.15 about the origin) gives a tile left of 131.5 and a tile top of 301.4. So the card moved up about 82 px at the tap, and on the screen the growth origin sits at 227.0,418.2, while the tap was at 227.1,500.8.
+Letter copy showed 1302 ms after the pointerdown (performance.now of a MutationObserver on #egg-find-title).
+Tile text: C. Title text: The letter C is yours to claim.

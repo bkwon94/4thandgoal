@@ -1,0 +1,63 @@
+Tap at the screen point 187.5,439.2, the egg point 90.0,110.0 in the units of the art (180 by 220).
+Before the tap: card top 261.4, egg svg top 324.0. At the last frame: card top 179.6, egg svg top 246.6.
+Start of each animation of the tap after the pointerdown: egg-squash +16.6 ms, egg-tremble +16.6 ms, egg-split-top +16.6 ms, egg-split-bottom +16.6 ms, egg-glow +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-flash +16.6 ms, egg-tile-rise +16.6 ms
+
+t = 0 ms after the tap (frame-0.0s.png)
+  svg class: relative h-55 w-45 overflow-visible egg-shake
+  svg transform: matrix(1, 0, 0, 1, 0, 0)
+  glow at 89.5,109.796875, opacity 0
+  crack lines: 6
+    line 1: starts at 89.5,109.8, drawn 0 of 101 units, opacity 1
+    line 2: starts at 89.5,109.8, drawn 0 of 124 units, opacity 1
+    line 3: starts at 89.5,109.8, drawn 0 of 117 units, opacity 1
+    line 4: starts at 89.5,109.8, drawn 0 of 112 units, opacity 1
+    line 5: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
+    line 6: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
+  shards: 7
+    shard 1: transform none
+    shard 2: transform none
+    shard 3: transform none
+    shard 4: transform none
+    shard 5: transform none
+    shard 6: transform none
+    shard 7: transform none
+
+t = 100 ms after the tap (frame-0.1s.png)
+  svg class: relative h-55 w-45 overflow-visible egg-shake
+  svg transform: matrix(0.99934, 0, 0, 0.997324, 0, 0)
+  glow at 89.5,109.796875, opacity 0
+  crack lines: 6
+    line 1: starts at 89.5,109.8, drawn 0 of 101 units, opacity 1
+    line 2: starts at 89.5,109.8, drawn 0 of 124 units, opacity 1
+    line 3: starts at 89.5,109.8, drawn 0 of 117 units, opacity 1
+    line 4: starts at 89.5,109.8, drawn 0 of 112 units, opacity 1
+    line 5: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
+    line 6: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
+  shards: 7
+    shard 1: transform none
+    shard 2: transform none
+    shard 3: transform none
+    shard 4: transform none
+    shard 5: transform none
+    shard 6: transform none
+    shard 7: transform none
+
+t = 200 ms after the tap (frame-0.2s.png)
+  svg class: relative h-55 w-45 overflow-visible egg-shake
+  svg transform: matrix(0.999955, -0.0094848, 0.0094848, 0.999955, -0.543447, 0)
+  glow at 89.5,109.796875, opacity 0.0115198
+  crack lines: 6
+    line 1: starts at 89.5,109.8, drawn 4 of 101 units, opacity 1
+    line 2: starts at 89.5,109.8, drawn 0 of 124 units, opacity 1
+    line 3: starts at 89.5,109.8, drawn 0 of 117 units, opacity 1
+    line 4: starts at 89.5,109.8, drawn 0 of 112 units, opacity 1
+    line 5: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
+    line 6: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
+  shards: 7
+    shard 1: transform none
+    shard 2: transform none
+    shard 3: transform none
+    shard 4: transform none
+    shard 5: transform none
+    shard 6: transform none
+    shard 7: transform none

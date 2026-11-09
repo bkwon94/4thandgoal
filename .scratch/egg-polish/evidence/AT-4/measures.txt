@@ -1,0 +1,42 @@
+Tap at the screen point 205.5,450.2, the egg point 108.0,121.0.
+Start of each animation of the tap after the pointerdown: egg-squash +33.2 ms, egg-tremble +33.2 ms, egg-split-top +33.2 ms, egg-split-bottom +33.2 ms, egg-glow +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-flash +33.2 ms, egg-tile-rise +33.2 ms
+
+t = 300 ms after the tap (frame-0.3s.png)
+  svg class: relative h-55 w-45 overflow-visible egg-shake
+  svg transform: matrix(0.999763, 0.0217489, -0.0217489, 0.999763, 1.69546, 0)
+  glow at 107.5,120.796875, opacity 0.118086
+  crack lines: 6
+    line 1: starts at 107.5,120.8, drawn 50 of 113 units, opacity 1
+    line 2: starts at 107.5,120.8, drawn 26 of 99 units, opacity 1
+    line 3: starts at 107.5,120.8, drawn 12 of 106 units, opacity 1
+    line 4: starts at 107.5,120.8, drawn 3 of 112 units, opacity 1
+    line 5: starts at 107.5,120.8, drawn 0 of 106 units, opacity 1
+    line 6: starts at 107.5,120.8, drawn 0 of 101 units, opacity 1
+  shards: 7
+    shard 1: transform none
+    shard 2: transform none
+    shard 3: transform none
+    shard 4: transform none
+    shard 5: transform none
+    shard 6: transform none
+    shard 7: transform none
+
+t = 600 ms after the tap (frame-0.6s.png)
+  svg class: relative h-55 w-45 overflow-visible egg-shake
+  svg transform: matrix(1.06, 0, 0, 1.06, 0, 0)
+  glow at 107.5,120.796875, opacity 0.962318
+  crack lines: 6
+    line 1: starts at 107.5,120.8, drawn 113 of 113 units, opacity 0.925702
+    line 2: starts at 107.5,120.8, drawn 99 of 99 units, opacity 0.925702
+    line 3: starts at 107.5,120.8, drawn 106 of 106 units, opacity 0.925702
+    line 4: starts at 107.5,120.8, drawn 112 of 112 units, opacity 0.925702
+    line 5: starts at 107.5,120.8, drawn 106 of 106 units, opacity 0.925702
+    line 6: starts at 107.5,120.8, drawn 101 of 101 units, opacity 0.925702
+  shards: 7
+    shard 1: transform matrix(0.989131, -0.147035, 0.147035, 0.989131, 5.01233, 1.26574)
+    shard 2: transform matrix(0.999174, -0.0406369, 0.0406369, 0.999174, 3.54407, 6.3287)
+    shard 3: transform matrix(0.999944, 0.0106036, -0.0106036, 0.999944, -1.77204, 6.835)
+    shard 4: transform matrix(0.998862, -0.0476992, 0.0476992, 0.998862, -5.77178, 1.41763)
+    shard 5: transform matrix(0.997502, 0.0706334, -0.0706334, 0.997502, -5.36674, -3.29093)
+    shard 6: transform matrix(0.994195, -0.107597, 0.107597, 0.994195, -1.367, -6.63248)
+    shard 7: transform matrix(0.999549, 0.0300397, -0.0300397, 0.999549, 3.54407, -3.89848)

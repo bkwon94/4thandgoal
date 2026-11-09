@@ -1,0 +1,5 @@
+Count of each name in page.content() of /eggs/ (the full HTML of the board) on each slide:
+slide CORNERSTONE: /midseason/2026/ 0, /midseason/2026 0, midseason 0, luck-3 0, luck 0, tap2 0, evidence-filler 0; links in main: []
+slide LANSDALE: /midseason/2026/ 0, /midseason/2026 0, midseason 0, luck-3 0, luck 0, tap2 0, evidence-filler 0; links in main: []
+slide EAGLES: /midseason/2026/ 0, /midseason/2026 0, midseason 0, luck-3 0, luck 0, tap2 0, evidence-filler 0; links in main: []
+The board answer of the API (what the page renders): /midseason/2026/ 0, /midseason/2026 0, midseason 0, luck-3 0, luck 0, tap2 0, evidence-filler 0

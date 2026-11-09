@@ -1,0 +1,35 @@
+$ LOCAL_API_URL=http://localhost:8081 pnpm --dir apps/site test:eggs
+
+> cpcfantasyfootball-site@0.1.0 test:eggs /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/egg-polish-api/apps/site
+> playwright test --project=eggs
+
+
+Running 3 tests using 1 worker
+
+egg board 375 px: 0 matches of /midseason/2026/, /midseason/2026, luck-3
+  ✓  1 [eggs] › e2e/eggs.spec.ts:66:9 › with motion › a manager finds the test egg, cracks it, tears the stub, and sees the claim on the egg board at 375 px (7.4s)
+egg board 1280 px: 0 matches of /midseason/2026/, /midseason/2026, luck-3
+  ✓  2 [eggs] › e2e/eggs.spec.ts:66:9 › with motion › a manager finds the test egg, cracks it, tears the stub, and sees the claim on the egg board at 1280 px (7.4s)
+find card, egg: axe violations 0, axe incomplete 0
+find card, egg: tap targets under 44px 0, sideways scroll 0, small text 0
+find card, letter: axe violations 0, axe incomplete 0
+find card, letter: tap targets under 44px 0, sideways scroll 0, small text 0
+claim sheet, empty: axe violations 0, axe incomplete 0
+claim sheet, empty: tap targets under 44px 0, sideways scroll 0, small text 0
+claim sheet, filled: axe violations 0, axe incomplete 0
+claim sheet, filled: tap targets under 44px 0, sideways scroll 0, small text 0
+egg board, CORNERSTONE, light: axe violations 0, axe incomplete 0
+egg board, CORNERSTONE, light: tap targets under 44px 0, sideways scroll 0, small text 0
+egg board, LANSDALE, light: axe violations 0, axe incomplete 0
+egg board, LANSDALE, light: tap targets under 44px 0, sideways scroll 0, small text 0
+egg board, EAGLES, light: axe violations 0, axe incomplete 0
+egg board, EAGLES, light: tap targets under 44px 0, sideways scroll 0, small text 0
+egg board, CORNERSTONE, dark: axe violations 0, axe incomplete 0
+egg board, CORNERSTONE, dark: tap targets under 44px 0, sideways scroll 0, small text 0
+egg board, LANSDALE, dark: axe violations 0, axe incomplete 0
+egg board, LANSDALE, dark: tap targets under 44px 0, sideways scroll 0, small text 0
+egg board, EAGLES, dark: axe violations 0, axe incomplete 0
+egg board, EAGLES, dark: tap targets under 44px 0, sideways scroll 0, small text 0
+  ✓  3 [eggs] › e2e/eggs.spec.ts:100:5 › floor: the find card, the claim sheet, and the egg board at 390px (5.6s)
+
+  3 passed (25.6s)

@@ -1,0 +1,15 @@
+$ pnpm --dir apps/site exec vitest run --reporter=verbose ../../packages/eggs/site/hunt/egg-hunt-motion-off.test.tsx
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/egg-polish-api/apps/site
+
+stderr | ../../packages/eggs/site/hunt/egg-hunt-motion-off.test.tsx > EggHunt with reduced motion > shows the letter tile at once on a tap of the egg, with no ring, no crack line, no shard, and no motion class
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+ ✓ ../../packages/eggs/site/hunt/egg-hunt-motion-off.test.tsx > EggHunt with reduced motion > shows the letter tile at once on a tap of the egg, with no ring, no crack line, no shard, and no motion class 561ms
+ ✓ ../../packages/eggs/site/hunt/egg-hunt-motion-off.test.tsx > EggHunt with reduced motion > tears the stub on a tap and shows the CLAIMED stamp at once, with no flutter, no sweep, and no motion 1505ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  22:51:12
+   Duration  2.56s (tests 83%, environment 10%, import 6%, transform 1%)
+

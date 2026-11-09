@@ -1,0 +1,11 @@
+AT-27, a won word washes red and goes last. Script: evidence-scripts/board.mjs AT-27.
+How the state was made: the local API restarts with an empty eggs store. For each letter, a filler test egg (a target that no element holds, on /midseason/2026/) drops by the drop route in a drop of 11 eggs (week 10 and on), and the check and claim routes claim it for the manager into the word.
+State: Lil Fridge holds E, A, G, L, E, S in EAGLES (so EAGLES is won) and C in CORNERSTONE.
+Board answer of the API after the state:
+counts: {"left":15,"found":7,"to_drop":32}
+CORNERSTONE: winner none; Lil Fridge: C
+LANSDALE: winner none; no letters
+EAGLES: winner Lil Fridge; Lil Fridge: EAGLES
+For each width and theme: open /eggs/ and read the slide order. Tap the tab of the last slide in that order. Wait 1.5 s.
+Take a full-page shot after the scroll pass, and an element shot of the slider (slider-*), which holds the tab row and the slide.
+slider.txt: the tabs, the slide order, the shown slide, its giant word, its text, and the frame background, on open and after the tap.

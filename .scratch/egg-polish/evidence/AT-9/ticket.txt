@@ -1,0 +1,6 @@
+375-light: {"text":"C CLAIM TICKET CORNERSTONE Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C for CORNERSTONE","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+375-dark: {"text":"C CLAIM TICKET CORNERSTONE Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C for CORNERSTONE","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+768-light: {"text":"C CLAIM TICKET CORNERSTONE Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C for CORNERSTONE","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+768-dark: {"text":"C CLAIM TICKET CORNERSTONE Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C for CORNERSTONE","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+1280-light: {"text":"C CLAIM TICKET CORNERSTONE Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C for CORNERSTONE","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+1280-dark: {"text":"C CLAIM TICKET CORNERSTONE Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C for CORNERSTONE","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}

@@ -1,0 +1,5 @@
+AT-8, the crack needs no WebGL. Script: evidence-scripts/find.mjs AT-8.
+State: empty store, T1 dropped with the letter C, no claim.
+Browser: Chromium with --disable-webgl --disable-webgl2 --disable-3d-apis. A blank page checks that getContext('webgl') gives null.
+An init script wraps getContext of HTMLCanvasElement and OffscreenCanvas, and counts each call with a type that holds 'webgl'.
+Recording (recording.webm): 375x812, motion on, light. Find T1, tap the middle of the egg, wait for the letter copy.

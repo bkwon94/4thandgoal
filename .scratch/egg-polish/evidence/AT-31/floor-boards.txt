@@ -1,0 +1,123 @@
+# a control board: T1 dropped alone in week 9, no claim
+counts: {"left":1,"found":0,"to_drop":53}
+CORNERSTONE: winner none; no letters
+LANSDALE: winner none; no letters
+EAGLES: winner none; no letters
+a control board: T1 dropped alone in week 9, no claim, CORNERSTONE, light: axe violations 0, axe incomplete 0; tap targets under 44px 0; page width 390 at a viewport of 390
+a control board: T1 dropped alone in week 9, no claim, LANSDALE, light: axe violations 0, axe incomplete 0; tap targets under 44px 0; page width 390 at a viewport of 390
+a control board: T1 dropped alone in week 9, no claim, EAGLES, light: axe violations 0, axe incomplete 0; tap targets under 44px 0; page width 390 at a viewport of 390
+a control board: T1 dropped alone in week 9, no claim, CORNERSTONE, dark: axe violations 0, axe incomplete 0; tap targets under 44px 0; page width 390 at a viewport of 390
+a control board: T1 dropped alone in week 9, no claim, LANSDALE, dark: axe violations 0, axe incomplete 0; tap targets under 44px 0; page width 390 at a viewport of 390
+a control board: T1 dropped alone in week 9, no claim, EAGLES, dark: axe violations 0, axe incomplete 0; tap targets under 44px 0; page width 390 at a viewport of 390
+# the board of AT-22
+counts: {"left":4,"found":7,"to_drop":43}
+CORNERSTONE: winner none; Lil Fridge: CO
+LANSDALE: winner none; no letters
+EAGLES: winner none; Lil Fridge: EAGLS
+the board of AT-22, CORNERSTONE, light: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 11: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-22, LANSDALE, light: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 11: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-22, EAGLES, light: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 11: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-22, CORNERSTONE, dark: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 11: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-22, LANSDALE, dark: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 11: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-22, EAGLES, dark: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 11: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+# the board of AT-27
+counts: {"left":15,"found":7,"to_drop":32}
+CORNERSTONE: winner none; Lil Fridge: C
+LANSDALE: winner none; no letters
+EAGLES: winner Lil Fridge; Lil Fridge: EAGLES
+the board of AT-27, CORNERSTONE, light: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-27, LANSDALE, light: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-27, EAGLES, light: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-27, CORNERSTONE, dark: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-27, LANSDALE, dark: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+the board of AT-27, EAGLES, dark: axe violations 0, axe incomplete 1; tap targets under 44px 0; page width 390 at a viewport of 390
+  incomplete     color-contrast: li[aria-label="Week 9: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 12: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 13: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 14: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 15: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 16: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
+  incomplete     color-contrast: li[aria-label="Week 17: 6 to drop"] > .text-on-dark-muted.text-meta[aria-hidden="true"]
