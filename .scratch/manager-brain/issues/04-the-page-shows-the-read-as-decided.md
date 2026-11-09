@@ -12,10 +12,10 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-38, AT-39, AT-41, AT-
 
 - [ ] The hero shows the Lean word and the scale with that step lit, at 375, 768, and 1280 px in both themes.
 - [ ] At 375 px the Case shows 3 lines, and "Read the full case" opens the rest.
-- [ ] The tab of the asker opens first, and a 3-team trade shows three tabs.
-- [ ] The bands show in the order For, Against, Even, and an empty band does not show.
-- [ ] A tap on a row opens its fact text.
-- [ ] The accessibility tree reads "for", "against", or "even" for each row.
-- [ ] With reduced motion on, the Lean and the Bullets show at rest.
-- [ ] The render tests of the analyze result cover the scale, the clamp, the tabs, the bands, the Marks, and the tap.
-- [ ] `make check-fast` passes.
+- [x] The tab of the asker opens first, and a 3-team trade shows three tabs.
+- [x] The bands show in the order For, Against, Even, and an empty band does not show.
+- [x] A tap on a row opens its fact text.
+- [x] The accessibility tree reads "for", "against", or "even" for each row.
+- [x] With reduced motion on, the Lean and the Bullets show at rest.
+- [x] The render tests of the analyze result cover the scale, the clamp, the tabs, the bands, the Marks, and the tap.
+- [x] `make check-fast` passes.

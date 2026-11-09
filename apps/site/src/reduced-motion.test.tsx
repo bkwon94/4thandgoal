@@ -89,7 +89,15 @@ afterAll(() => {
 describe("Reduced motion", () => {
   it("shows the Lean word at once", () => {
     render(<AnalyzeResult doc={fixtureJson as AnalyzeResponse} />);
-    expect(screen.getByText("Lean yes")).toBeTruthy();
+    expectAtRest(screen.getByRole("heading", { level: 2, name: "Lean yes" }).querySelector("[data-stable-id='verdict-word']") as HTMLElement);
+  });
+
+  it("shows the Bullets of the open tab at once (AT-51)", () => {
+    const doc = fixtureJson as AnalyzeResponse;
+    render(<AnalyzeResult doc={doc} />);
+    for (const bullet of doc.sides[0].bullets) {
+      expectAtRest(within(screen.getByRole("tabpanel")).getByText(bullet.text));
+    }
   });
 
   it("shows the fairness line at once", () => {
