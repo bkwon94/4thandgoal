@@ -25,11 +25,11 @@ One spec that changes the analyzer and the Finder to judge a trade as a manager 
 - History claims carry a past-season split from the sheet. With no split, Claude may state history in words but with no number. `decisions/01-grill-answer-key.md`.
 - The terms: Advisor, Grade with no letter, Lean and Case, Bullets with a Mark, Measure, Playbook, Partner filter, Shortlist. The race group and the odds replace Contender, Seller, and Middle team. ADR 0030 records the change. `decisions/02-grill-glossary-terms.md`.
 - The trade value chart is one fact with no gates: unlisted players stay in the Finder, a week with no chart still works, and the playbook wins over the chart. The chart cache trusts a hash of the PNG, not file times, and one manual step gives a chart before a build. `decisions/07-grill-chart-role.md`.
+- The finder narrows with no math filter: the partner filter, then Jev picks the targets on each side, code builds the offers from the targets only, Jev makes the shortlist, and the Advisor picks three. Code keeps only the hard rules. `decisions/03-research-search-cost.md`.
 
 ## NOT YET SPECIFIED
 
 - Where do the past-season splits come from, and which splits does the sheet hold? `decisions/06-research-history-splits.md`.
-- What does the search across all partners cost, and how long does it take, on real rosters? `decisions/03-research-search-cost.md`.
 - Which judge does Brian agree with most, and what are the exact Jev questions and the shortlist table? `decisions/04-prototype-judge-arms.md`.
 - What layout do the bullets and the lean marks take on the page? `decisions/05-prototype-bullet-layout.md`.
 
