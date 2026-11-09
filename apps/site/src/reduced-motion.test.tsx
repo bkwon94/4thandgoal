@@ -87,9 +87,9 @@ afterAll(() => {
 });
 
 describe("Reduced motion", () => {
-  it("shows the decision word at once", () => {
+  it("shows the Lean word at once", () => {
     render(<AnalyzeResult doc={fixtureJson as AnalyzeResponse} />);
-    expect(screen.getByText("Not as is")).toBeTruthy();
+    expect(screen.getByText("Lean yes")).toBeTruthy();
   });
 
   it("shows the fairness line at once", () => {
