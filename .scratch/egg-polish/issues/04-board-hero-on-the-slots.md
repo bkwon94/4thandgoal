@@ -8,7 +8,7 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance test AT-20.
 
 **Blocked by:** None. It can start now.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A board test reads the eyebrow, the title, the meta, the grid of the eggs, and the three counts from the board fixture.
 - [x] A board test reads no canvas in the hero.
