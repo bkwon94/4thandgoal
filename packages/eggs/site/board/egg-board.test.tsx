@@ -2,7 +2,7 @@
  * Tests for the egg board, rendered from the board fixture that the API tests hold to the real answer.
  * A variant of the fixture gives each other state: a won egg word, an egg word with no letters, a close race, and a tie.
  */
-import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { EggsError, type Board } from "../lib/api";
 import { board, boardWith, fakeEggsApi } from "../lib/fixtures/eggs-api";
@@ -427,7 +427,8 @@ describe("EggBoardScreen", () => {
     document.title = "Page Not Found · CPC";
     render(<EggBoardScreen api={fakeEggsApi({ match: false })} closed={CLOSED} title={TITLE} />);
     expect(await screen.findByRole("region", { name: "Latest claims" })).toBeTruthy();
-    expect(document.title).toBe(TITLE);
+    // The title is set in an effect that can run after the region shows, so the test waits for it.
+    await waitFor(() => expect(document.title).toBe(TITLE));
   });
 
   it("shows nothing while the board loads", () => {

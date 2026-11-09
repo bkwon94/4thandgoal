@@ -75,7 +75,7 @@ describe("EggHunt with reduced motion", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Crack the egg" }));
     fireEvent.click(screen.getByRole("button", { name: "Claim C" }));
     fireEvent.click(await screen.findByRole("button", { name: "All You Need Is Love" }));
-    fireEvent.click(screen.getByRole("button", { name: "CORNERSTONE" }));
+    fireEvent.click(screen.getByRole("button", { name: /^CORNERSTONE / }));
     const ticket = screen.getByRole("group", { name: "Claim ticket" });
     const stub = within(ticket).getByRole("button", { name: "Tear to claim C for CORNERSTONE" });
     // No wait for a tear: the claim sends in the same tap.

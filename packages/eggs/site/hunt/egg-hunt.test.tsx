@@ -57,7 +57,8 @@ async function openSheet(api: ReturnType<typeof fakeEggsApi>, letter = "C") {
   await screen.findByRole("button", { name: "Lil Fridge" });
 }
 
-const wordCard = (word: string) => screen.getByRole("button", { name: word }) as HTMLButtonElement;
+// The card of an egg word: its name starts with the word, then the gift card, the count, and the note.
+const wordCard = (word: string) => screen.getByRole("button", { name: new RegExp(`^${word} `) }) as HTMLButtonElement;
 
 /* The egg on the screen: 180 by 220 px, the size of the art, with its top left at (100, 200).
    jsdom lays out no page, so the test gives the egg the box that a browser gives it. */
@@ -278,6 +279,13 @@ describe("EggHunt", () => {
     fireEvent.click(cornerstone);
     expect(cornerstone.getAttribute("aria-pressed")).toBe("true");
     expect(cornerstone.textContent).toContain("1/11");
+  });
+
+  it("names each egg word card by the text it shows, so the name a voice user reads out matches the card", async () => {
+    await openSheet(fakeEggsApi(MATCH));
+    fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
+    expect(screen.getByRole("button", { name: "CORNERSTONE $50 0/11 Lil Fridge leads with 1 of 11" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "EAGLES $20 0/6 No open C in this word." })).toBeTruthy();
   });
 
   it("sets the title of the sheet as one element per line, so axe reads each line over one part of the page", async () => {

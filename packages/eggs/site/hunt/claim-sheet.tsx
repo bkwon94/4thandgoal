@@ -273,13 +273,12 @@ function WordCard({
     : word.winner !== null
       ? `${word.winner.team} won ${word.word}.`
       : `No open ${letter} in this word.`;
-  const id = `egg-word-${word.word}`;
+  // The card takes its name from the text it shows, so the name holds each visible word (WCAG 2.5.3). The slot row is
+  // aria-hidden, as the count says the same.
   return (
     <button
       type="button"
       aria-pressed={picked}
-      aria-labelledby={id}
-      aria-describedby={`${id}-note`}
       disabled={!open}
       onClick={onPick}
       className={cn(
@@ -289,12 +288,13 @@ function WordCard({
       )}
     >
       <span className="flex w-full items-baseline gap-sp-2">
-        <span id={id} className="text-body font-bold tracking-wide">
+        <span className="text-body font-bold tracking-wide">
           {word.word}
-        </span>
+        </span>{" "}
+        {/* The spaces between the parts of the row keep the words of the name apart. A flex row shows no space. */}
         <span className={cn("rounded-pill border border-rule px-sp-2 font-mono text-meta font-bold", open ? "text-ink-2" : "text-mute")}>
           ${word.prize}
-        </span>
+        </span>{" "}
         <span className={cn("ml-auto font-mono text-row font-bold", picked ? "text-accent-ink" : open ? "text-ink" : "text-mute")}>
           {shown}
           <span className="text-mute">/{word.word.length}</span>
@@ -307,7 +307,7 @@ function WordCard({
           style={{ width: `${Math.round((shown / word.word.length) * 100)}%` }}
         />
       </span>
-      <span id={`${id}-note`} className="text-meta text-mute">
+      <span className="text-meta text-mute">
         {note}
       </span>
     </button>
