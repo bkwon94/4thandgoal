@@ -6,7 +6,7 @@ Map: `.scratch/jev/MAP.md`.
 
 **Blocked by:** 01
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -16,4 +16,4 @@ All question text, criteria, and thresholds live in one module, so a person can 
 
 ## Decision
 
-None yet.
+The spec records it under The port. A `Jev` Protocol in the league package's provider layer, one Noul method, the sync `typesafe-sdk` client with model `jev-latest`, one error type, and `FakeJev` as the one fake. Brian approved the spec on 2026-11-09.

@@ -6,7 +6,7 @@ Map: `.scratch/jev/MAP.md`.
 
 **Blocked by:** 03
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -18,4 +18,4 @@ Research 01 adds two items for the spec. The build must save the text of each fa
 
 ## Decision
 
-None yet.
+The spec records it under The saved data. `VerifyResult` gets the optional fields `sentences` and `jev`, saved in `verify.json` for each attempt. No new file. Brian approved the spec on 2026-11-09.

@@ -6,7 +6,7 @@ Map: `.scratch/jev/MAP.md`.
 
 **Blocked by:** 02
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -18,4 +18,4 @@ The ADR records three choices:
 
 ## Decision
 
-None yet.
+The spec records it under The ADR: the next number after 0028, with the vendor, the data sent, and the rule that a Jev answer passes no check alone. Brian approved the spec on 2026-11-09.

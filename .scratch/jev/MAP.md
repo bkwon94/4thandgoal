@@ -20,12 +20,11 @@ The build also saves the text of each failed attempt, so real labels build up fo
 - One Noul per sentence, one request per blurb, with all chapter facts and the vocabulary in the state, works best on past labels. The labels are weak. `decisions/01-research-jev-on-past-labels.md`.
 - The weekly build uses the local key from `~/.secrets`. `decisions/05-grill-build-key.md`.
 - A Jev fact card is a fourth option for your-league ticket 04. It does not replace the Claude sentence. `decisions/09-research-finder-fact-rank.md`.
+- The spec `PRD.md` records the log in `verify.json`, the port shape, and the ADR. Brian approved it on 2026-11-09. `decisions/06-spec-jev-log.md`, `decisions/07-spec-port-shape.md`, `decisions/08-spec-adr.md`.
 
 ## NOT YET SPECIFIED
 
-- Where does the Jev log live, and in what format? `decisions/06-spec-jev-log.md`.
-- What shape does the port take: the SDK or plain HTTP, sync or async, and the fake? `decisions/07-spec-port-shape.md`.
-- What does the ADR record? `decisions/08-spec-adr.md`.
+None.
 
 ## OUT OF SCOPE
 
