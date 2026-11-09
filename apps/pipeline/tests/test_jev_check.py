@@ -3,8 +3,10 @@ Tests for the Jev check of the weekly build: one request per checked attempt, on
 answers saved in verify.json. They drive run_build on the week 6 fixtures with FakeJev, so no test calls TypeSafe.
 """
 import ast
+import logging
 import re
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -123,6 +125,64 @@ def test_passed_follows_the_claude_verdicts_only(tmp_path, fixture_raw_dir, offl
     for result in checked:
         assert result.passed is supported
         assert {a.yes for a in result.jev.answers} == {yes}
+
+
+def _build_into(root, fixture_raw_dir, offline, jev):
+    """One build of week 6 into `root` at a set clock, so two builds differ only by their Jev."""
+    shutil.copytree(fixture_raw_dir, week_dir(root, 2026, 6) / "raw")
+    started = datetime.fromisoformat("2026-10-20T11:58:00-04:00")
+    page = run_build(root, 2026, 6, _call, fetch=False, **offline, started=started, client=cpc_client(at=root),
+                     jev=jev)
+    directory = week_dir(root, 2026, 6)
+    return (page.read_text(encoding="utf-8"), (directory / "blurbs.json").read_text(encoding="utf-8"),
+            read_verify(directory / "verify.json"))
+
+
+def test_a_failed_jev_call_records_its_error_and_leaves_the_build_as_it_is(
+        tmp_path, fixture_raw_dir, offline, caplog):
+    # AT-3 in a test: a failed call logs one warning per checked attempt, and the blurbs, `passed`, and the page
+    # are the same as in a build where every Jev call answers.
+    page, blurbs, verify = _build_into(tmp_path / "ok", fixture_raw_dir, offline, FakeJev())
+    error = JevError("TypeSafeError: No API key was provided.")
+    with caplog.at_level(logging.WARNING, logger="facts.verifier"):
+        failed_page, failed_blurbs, failed_verify = _build_into(tmp_path / "failed", fixture_raw_dir, offline,
+                                                                FakeJev(error=error))
+    checked = [r for results in failed_verify.chapters.values() for r in results if not r.code_failures]
+    assert checked
+    for result in checked:
+        assert result.jev is not None and result.jev.error == str(error)
+        assert result.jev.answers == [] and result.jev.model is None
+    warnings = [r.getMessage() for r in caplog.records if "Jev check failed" in r.getMessage()]
+    assert len(warnings) == len(checked)
+    assert all(str(error) in w for w in warnings)
+    assert failed_blurbs == blurbs
+    assert failed_page == page
+    passed = {k: [r.passed for r in v] for k, v in verify.chapters.items()}
+    assert {k: [r.passed for r in v] for k, v in failed_verify.chapters.items()} == passed
+
+
+def _jev_lines(caplog):
+    return [r.getMessage() for r in caplog.records
+            if r.name == "cornerstone.pipeline" and r.getMessage().startswith("Jev:")]
+
+
+def test_the_build_log_has_one_jev_line_with_the_checks_the_errors_and_the_tokens(
+        tmp_path, fixture_raw_dir, offline, caplog):
+    # AT-7 in a test: the count of checks equals the attempts with a `jev`, and FakeJev counts 100 tokens a question.
+    with caplog.at_level(logging.INFO, logger="cornerstone.pipeline"):
+        _, _, verify = _build_into(tmp_path / "ok", fixture_raw_dir, offline, FakeJev())
+    checks = [r.jev for results in verify.chapters.values() for r in results if r.jev is not None]
+    tokens = sum(c.input_tokens or 0 for c in checks)
+    assert checks and tokens == 100 * sum(len(c.answers) for c in checks)
+    assert _jev_lines(caplog) == [f"Jev: {len(checks)} checks, 0 errors, {tokens} input tokens"]
+
+
+def test_the_jev_line_counts_each_failed_call_as_an_error_with_no_tokens(tmp_path, fixture_raw_dir, offline, caplog):
+    with caplog.at_level(logging.INFO, logger="cornerstone.pipeline"):
+        _, _, verify = _build_into(tmp_path / "failed", fixture_raw_dir, offline, FakeJev(error=JevError("timeout")))
+    count = sum(r.jev is not None for results in verify.chapters.values() for r in results)
+    assert count
+    assert _jev_lines(caplog) == [f"Jev: {count} checks, {count} errors, 0 input tokens"]
 
 
 def test_an_old_verify_file_loads_with_no_sentences_and_no_jev(tmp_path):
