@@ -37,10 +37,11 @@ line-length = 120
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 [tool.pyright]
 typeCheckingMode = "basic"
-include = ["src/league/claude_port.py", "src/league/jev_port.py", "src/league/jev.py", "src/league/client.py", "src/league/files.py", "src/league/league_settings.py",
-           "src/league/history.py", "src/league/live.py", "src/league/models.py", "src/league/numbers.py",
-           "src/league/parse.py", "src/league/paths.py", "src/league/player_ids.py", "src/league/provider",
-           "src/league/season_inputs.py", "src/league/values.py", "tests"]
+include = ["src/league/claude_port.py", "src/league/client.py", "src/league/files.py", "src/league/history.py",
+           "src/league/jev.py", "src/league/jev_port.py", "src/league/league_settings.py", "src/league/live.py",
+           "src/league/models.py", "src/league/numbers.py", "src/league/parse.py", "src/league/paths.py",
+           "src/league/player_ids.py", "src/league/provider", "src/league/season_inputs.py", "src/league/values.py",
+           "tests"]
 # The tests import the rule modules of the pipeline tests, as tests/conftest.py puts them on the path.
 extraPaths = ["../../../apps/pipeline/tests"]
 
