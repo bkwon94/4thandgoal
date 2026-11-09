@@ -19,13 +19,17 @@ One spec that changes the analyzer and the Finder to judge a trade as a manager 
 - The guards: the check that each number and name comes from the sheet stays, and so does the check on inner words. The upside rule and the letter rule go. A Jev faithfulness check starts log-only. Brian, 2026-11-09.
 - The fallback: after two failed Claude calls, the analyzer shows an honest error and the call does not count toward the grade limit. The Finder shows the Jev shortlist with plain fact lines and a fallback flag. Brian, 2026-11-09.
 - The Finder searches all partners. Jev first asks four questions per partner: does he have your need, can he spare it, do you have his need, can you spare it. Code counts the depth, and only the partners with four yes answers get a full search. The partner picker stays as an option. With no match, the Finder says so in plain words. Brian, 2026-11-09.
+- The test set has 30 trades with stats as of their week. Brian gives a playbook and reacts to the prototype output, and his reactions are the key. `decisions/01-grill-answer-key.md`.
+- The hero shows one of five leans: Send it, Lean yes, Gut call, Lean no, Pass. The judge advises in Brian's voice, with a condition, and backs claims with data. `decisions/01-grill-answer-key.md`.
+- Each client has a playbook in its voice folder. The cpc playbook: RBs first in half PPR, a gut call on trends and schedule, contenders firm up, bubble teams take risks, a top 3 to 5 player beats two good ones, managers here chase recent points, usage trends matter. `decisions/01-grill-answer-key.md`.
+- History claims carry a past-season split from the sheet. With no split, Claude may state history in words but with no number. `decisions/01-grill-answer-key.md`.
 
 ## NOT YET SPECIFIED
 
-- Which trades make the answer key, and what is Brian's answer for each? `decisions/01-grill-answer-key.md`.
+- Where do the past-season splits come from, and which splits does the sheet hold? `decisions/06-research-history-splits.md`.
 - Which glossary terms go, which change, and which are new? `decisions/02-grill-glossary-terms.md`.
 - What does the search across all partners cost, and how long does it take, on real rosters? `decisions/03-research-search-cost.md`.
-- Which judge wins against the answer key, and what are the exact Jev questions and the shortlist table? `decisions/04-prototype-judge-arms.md`.
+- Which judge does Brian agree with most, and what are the exact Jev questions and the shortlist table? `decisions/04-prototype-judge-arms.md`.
 - What layout do the bullets and the lean marks take on the page? `decisions/05-prototype-bullet-layout.md`.
 
 ## OUT OF SCOPE
