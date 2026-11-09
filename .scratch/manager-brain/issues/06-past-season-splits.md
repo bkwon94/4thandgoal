@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-5, AT-6, and AT-7.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The sheet of Derrick Henry has the splits of 2023, 2024, and 2025, each with its game count.
 - [x] The sheet of the rookie Omar Cooper Jr. has no split, and no read gives him a past-season number.
