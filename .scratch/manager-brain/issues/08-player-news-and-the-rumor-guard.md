@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-12, AT-13, AT-14, AT-
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A press with Jonathan Taylor gives at most 2 `NEWS.6813.` facts, each from the last 7 days, newest first.
 - [x] Every Bullet of the eval that cites news names the report.
