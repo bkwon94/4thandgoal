@@ -28,12 +28,18 @@ type Word = Board["words"][number];
 
 const WRONG_PASSPHRASE = "The passphrase is wrong. Ask a league member for it.";
 
-/* The label of the stub of the claim ticket: the first missing step, or the claim itself. */
-function stubLabel(letter: string, team: number | null, word: string | null, block: boolean, passphrase: string): string {
-  if (team === null) return "Pick your team";
-  if (!block && word === null) return "Pick an egg word";
-  if (!passphrase) return "Enter the passphrase";
-  return block ? `Tear to claim ${letter} as a block` : `Tear to claim ${letter} for ${word}`;
+/* The label of the stub of the claim ticket: the first missing step, or the claim itself. The stub is locked until no step is missing. */
+function stubLabel(
+  letter: string,
+  team: number | null,
+  word: string | null,
+  block: boolean,
+  passphrase: string,
+): { label: string; locked: boolean } {
+  if (team === null) return { label: "Pick your team", locked: true };
+  if (!block && word === null) return { label: "Pick an egg word", locked: true };
+  if (!passphrase) return { label: "Enter the passphrase", locked: true };
+  return { label: block ? `Tear to claim ${letter} as a block` : `Tear to claim ${letter} for ${word}`, locked: false };
 }
 
 /* True when the manager can put the letter in the word: the word has no winner and a free slot for the letter. */
@@ -66,8 +72,8 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
   // A letter that fits no egg word of the manager can only be a block.
   const block = board !== null && team !== null && !board.words.some((each) => fits(each, team, letter));
   const passphrase = stored ?? typed.trim();
-  const label = stubLabel(letter, team, word, block, passphrase);
-  const ready = label.startsWith("Tear to claim") && send === "idle";
+  const { label, locked } = stubLabel(letter, team, word, block, passphrase);
+  const ready = !locked && send === "idle";
 
   function pickTeam(rosterId: number | null) {
     setTeam(rosterId);
@@ -229,7 +235,7 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
             block={block}
             team={manager?.team ?? null}
             label={label}
-            locked={!label.startsWith("Tear to claim")}
+            locked={locked}
             send={send}
             motion={motion}
             onTear={claim}
