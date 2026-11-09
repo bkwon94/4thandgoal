@@ -26,7 +26,7 @@ const FEED = 10;
 const SLIDE_DURATION = 0.75;
 /* The curve of the roll, a damped spring with a small overshoot (ADR 0028). It is the same for every move, so it samples once. */
 const SLIDE_SPRING = springCurve({ bounce: 0.3 });
-/* The pixels a finger travels to the side before a swipe moves the slide. A shorter drag is a tap or a wobble. */
+/* The pixels a finger travels to the side before a swipe moves the slide. A shorter drag is a tap or a small move. */
 const SWIPE_PX = 40;
 
 /* The red uppercase label of a card. It is 12px, so it holds the readability floor of 11px at every tier. */
