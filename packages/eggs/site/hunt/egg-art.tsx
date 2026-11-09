@@ -13,6 +13,11 @@ import type { Slot } from "./slots";
 const EGG_PATH = "M90 8 C136 8 168 92 168 138 C168 184 134 212 90 212 C46 212 12 184 12 138 C12 92 44 8 90 8 Z";
 // The halves of an egg at rest. The seed is fixed, and only the zigzag of the halves is used.
 const AT_REST = crackOf(EGG_MIDDLE, 1);
+// The times of the crack, in ms, as the class egg-shake of globals.css plays them. The squash runs first, so the lines
+// and the glow start after it. The last line ends its draw before the shell bursts at 560 ms.
+const SQUASH_MS = 150;
+const LINE_STAGGER_MS = 30;
+const LINE_DRAW_MS = 250;
 
 /* The egg. It bobs while it waits. On a crack it squashes, then the crack lines draw out from the tap point while it
    shakes and glows inside, then the two halves fly apart and the shards fly out (the classes egg-* of globals.css).
@@ -79,7 +84,15 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
         <>
           {/* The light and the lines stay inside the shell. */}
           <g clipPath={ref("clip")}>
-            <circle cx={crack.point.x} cy={crack.point.y} r="70" fill={ref("light")} className="egg-glow" />
+            <circle
+              data-testid="egg-glow"
+              cx={crack.point.x}
+              cy={crack.point.y}
+              r="70"
+              fill={ref("light")}
+              className="egg-glow"
+              style={{ "--egg-delay": `${SQUASH_MS}ms` } as CSSProperties}
+            />
             {crack.lines.map((line, index) => (
               <polyline
                 key={index}
@@ -89,8 +102,14 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
                 strokeWidth="2.4"
                 strokeLinejoin="round"
                 strokeLinecap="round"
-                // Each line draws over its own length, a little after the line before it.
-                style={{ "--egg-line": line.length, "--egg-delay": `${index * 45}ms` } as CSSProperties}
+                // Each line draws over its own length after the squash, a little after the line before it.
+                style={
+                  {
+                    "--egg-line": line.length,
+                    "--egg-delay": `${SQUASH_MS + index * LINE_STAGGER_MS}ms`,
+                    "--egg-draw": `${LINE_DRAW_MS}ms`,
+                  } as CSSProperties
+                }
               />
             ))}
           </g>

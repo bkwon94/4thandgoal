@@ -172,6 +172,22 @@ describe("EggHunt", () => {
     }
   });
 
+  it("starts the crack lines and the glow after the squash of 0.15 s, and draws each line before the burst at 0.56 s", async () => {
+    page(fakeEggsApi(MATCH));
+    await doubleTap();
+    tapEgg(await findEgg(), 90, 130);
+    // The part sets the start of each line and of the glow in --egg-delay, and each line draws over --egg-draw.
+    const ms = (element: HTMLElement, name: string) => parseFloat(element.style.getPropertyValue(name));
+    const glow = screen.getByTestId("egg-glow");
+    expect(ms(glow, "--egg-delay")).toBeGreaterThanOrEqual(150);
+    const lines = screen.getAllByTestId("egg-crack-line");
+    expect(lines).toHaveLength(6);
+    for (const line of lines) {
+      expect(ms(line, "--egg-delay")).toBeGreaterThanOrEqual(150);
+      expect(ms(line, "--egg-delay") + ms(line, "--egg-draw")).toBeLessThanOrEqual(560);
+    }
+  });
+
   it("cracks two finds at one tap point along different lines, from a fresh seed on each tap", async () => {
     const finds = [];
     for (const _ of [1, 2]) {
