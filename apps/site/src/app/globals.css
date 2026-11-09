@@ -829,6 +829,10 @@
     .egg-stub-ready .egg-stub-arrow {
         animation: egg-nudge 1.6s ease-in-out infinite;
     }
+    /* A stub that a drag lets go of before a full tear springs back onto the ticket. */
+    .egg-stub-spring {
+        transition: transform 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+    }
     /* A tap pulls the stub to its full tilt before it leaves. */
     .egg-stub-pull {
         transition: transform 0.35s ease-in;
@@ -1205,7 +1209,8 @@
         animation: none !important;
     }
     .egg-hole,
-    .egg-stub-pull {
+    .egg-stub-pull,
+    .egg-stub-spring {
         transition: none;
     }
     .egg-ripple,

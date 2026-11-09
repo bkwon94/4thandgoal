@@ -1,15 +1,21 @@
 /**
  * The claim ticket at the foot of the claim sheet: the letter tile, the egg word or the block, the team, and the stub.
- * A tap on the stub, or Enter or Space, tears it and sends the claim. A claim stamps CLAIMED, and a late claim stamps TAKEN.
+ * A drag of the stub to the right, a tap on it, or Enter or Space tears it and sends the claim. A claim stamps CLAIMED, and a late claim stamps TAKEN.
  */
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { cn } from "@cpc/design/lib/utils";
 import { ArtGround } from "./egg-art";
 
 /* The time from a tap on the stub to the full tear, in ms: the holes of the perforation pop from the top down. */
 export const TEAR_MS = 400;
+
+/* The drag distance to the right of a full tear, in px. A shorter drag sets the progress of the tear in step. */
+export const DRAG_PX = 110;
+
+/* A pointer that moves less than this, in px, is a tap and not a drag. */
+const TAP_PX = 6;
 
 /* The time the stamp holds on the ticket before the end card shows, in ms. */
 export const STAMP_MS = 900;
@@ -47,6 +53,11 @@ export function ClaimTicket({ letter, word, block, team, label, locked, send, mo
   // The count of tears. A stub that comes back after a tear springs onto the ticket.
   const [tears, setTears] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The drag in hand: where the pointer went down, and the furthest it moved in any direction. Null with no drag.
+  const drag = useRef<{ x: number; y: number; moved: number } | null>(null);
+  const [dragging, setDragging] = useState(false);
+  // True after a drag ends, so the click that the browser sends after the release does not tear the stub.
+  const dragged = useRef(false);
   const gone = send === "sending" || send === "claimed";
   const live = !locked && send === "idle" && !auto;
 
@@ -72,6 +83,53 @@ export function ClaimTicket({ letter, word, block, team, label, locked, send, mo
     setAuto(true);
     setProgress(1);
     timer.current = setTimeout(tear, TEAR_MS);
+  }
+
+  /* A pointer on a live stub starts a drag. The capture keeps the moves on the stub when the pointer leaves it. */
+  function onPointerDown(event: PointerEvent<HTMLButtonElement>) {
+    if (!live) return;
+    drag.current = { x: event.clientX, y: event.clientY, moved: 0 };
+    dragged.current = false;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setDragging(true);
+  }
+
+  /* Only the move to the right sets the progress, so a vertical move does not tear the stub. */
+  function onPointerMove(event: PointerEvent<HTMLButtonElement>) {
+    const start = drag.current;
+    if (start === null) return;
+    const dx = event.clientX - start.x;
+    start.moved = Math.max(start.moved, Math.abs(dx), Math.abs(event.clientY - start.y));
+    const next = Math.max(0, Math.min(1, dx / DRAG_PX));
+    if (next < 1) {
+      setProgress(next);
+      return;
+    }
+    endDrag();
+    tear();
+  }
+
+  /* A release before a full tear springs the stub back, and so does a cancel, when the browser takes the pointer to
+     scroll the sheet. Nothing sends. A tap with no drag leaves the tear to the click that follows the release. */
+  function springBack() {
+    if (drag.current === null) return;
+    endDrag();
+    setProgress(0);
+  }
+
+  function endDrag() {
+    dragged.current = (drag.current?.moved ?? 0) >= TAP_PX;
+    drag.current = null;
+    setDragging(false);
+  }
+
+  function onClick() {
+    // A drag ends in a click of the browser. Only a tap with no drag, or a click of a key, tears the stub by itself.
+    if (dragged.current) {
+      dragged.current = false;
+      return;
+    }
+    tearByItself();
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
@@ -132,13 +190,19 @@ export function ClaimTicket({ letter, word, block, team, label, locked, send, mo
         aria-disabled={!live}
         aria-hidden={gone || undefined}
         tabIndex={gone ? -1 : undefined}
-        onClick={tearByItself}
+        onClick={onClick}
         onKeyDown={onKeyDown}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={springBack}
+        onPointerCancel={springBack}
         style={{ transform: gone ? undefined : poseOf(progress) }}
         className={cn(
-          "egg-stub relative flex h-full w-24 flex-none origin-bottom-left flex-col items-center justify-center gap-sp-2 rounded-r-card px-sp-2",
+          "egg-stub relative flex touch-pan-y h-full w-24 flex-none origin-bottom-left flex-col items-center justify-center gap-sp-2 rounded-r-card px-sp-2",
           locked ? "border border-l-0 border-rule-dark bg-chip-dark text-on-dark-muted" : "bg-accent text-on-dark",
           auto && "egg-stub-pull",
+          // The stub follows the pointer in a drag, and springs back to the ticket on a release.
+          !auto && !dragging && "egg-stub-spring",
           gone ? (motion ? "egg-stub-flutter" : "invisible") : motion && tears > 0 && "egg-stub-heal",
           !locked && !gone && motion && "egg-stub-ready",
         )}

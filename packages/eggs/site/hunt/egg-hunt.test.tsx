@@ -8,7 +8,7 @@ import { TAP_GAP_MS } from "../listener/listener";
 import { EggsError, type Board } from "../lib/api";
 import { board, boardWith, fakeEggsApi, PASSPHRASE } from "../lib/fixtures/eggs-api";
 import { EggHunt } from "./egg-hunt";
-import { STAMP_MS, TEAR_MS } from "./claim-ticket";
+import { DRAG_PX, STAMP_MS, TEAR_MS } from "./claim-ticket";
 import { CRACK_MS } from "./find-card";
 
 const MATCH = { match: true as const, claimed: false as const, letter: "C", token: "t1" };
@@ -92,6 +92,36 @@ const stub = (name: string) => within(ticket()).getByRole("button", { name });
 async function tap(name: string) {
   fireEvent.click(stub(name));
   await wait(TEAR_MS + 50);
+}
+
+/* The stub on the screen: 96 by 144 px, the size of the stub, with its top left at (250, 600).
+   jsdom lays out no page, so the test gives the stub the box that a browser gives it. */
+const STUB_BOX = { left: 250, top: 600, width: 96, height: 144 };
+
+/* A pointer drag on the stub from its middle, by dx and dy px in ten steps. The drag holds at its end with no release. */
+function dragStub(name: string, dx: number, dy = 0) {
+  const shown = stub(name);
+  shown.getBoundingClientRect = () => DOMRect.fromRect({ x: STUB_BOX.left, y: STUB_BOX.top, width: STUB_BOX.width, height: STUB_BOX.height });
+  const x = STUB_BOX.left + STUB_BOX.width / 2;
+  const y = STUB_BOX.top + STUB_BOX.height / 2;
+  fireEvent.pointerDown(shown, { clientX: x, clientY: y, pointerId: 1, isPrimary: true });
+  for (let step = 1; step <= 10; step += 1) {
+    fireEvent.pointerMove(shown, { clientX: x + (dx * step) / 10, clientY: y + (dy * step) / 10, pointerId: 1, isPrimary: true });
+  }
+  return { shown, at: { clientX: x + dx, clientY: y + dy, pointerId: 1, isPrimary: true } };
+}
+
+/* The release of a drag: the pointer goes up, and the browser sends the click that follows it. */
+function release({ shown, at }: ReturnType<typeof dragStub>) {
+  fireEvent.pointerUp(shown, at);
+  fireEvent.click(shown, { ...at, detail: 1 });
+}
+
+/* The count of popped holes, and whether they run from the top hole down with no gap. */
+function poppedHoles() {
+  const holes = [...ticket().querySelectorAll("[data-popped]")].map((hole) => hole.getAttribute("data-popped") === "true");
+  const count = holes.filter(Boolean).length;
+  return { count, fromTop: holes.slice(0, count).every(Boolean) };
 }
 
 /* The three steps done: the team, CORNERSTONE, and the passphrase in the browser. */
@@ -464,5 +494,90 @@ describe("EggHunt", () => {
     expect(within(ticket()).getByText("BLOCK")).toBeTruthy();
     expect(within(ticket()).getByText("Lil Fridge")).toBeTruthy();
     expect(stub("Tear to claim C as a block").textContent).toContain("Tear to claim");
+  });
+
+  it("tears the stub on a drag to the right to its full length and sends one claim", async () => {
+    const api = fakeEggsApi(MATCH);
+    await readyTicket(api);
+    release(dragStub("Tear to claim C for CORNERSTONE", DRAG_PX + 10));
+    await wait(50);
+    expect(api.claims).toEqual([{ token: "t1", roster_id: 2, word: "CORNERSTONE" }]);
+    expect(within(ticket()).getByText("CLAIMED")).toBeTruthy();
+  });
+
+  it("springs the stub back and sends nothing on a release at half the length of the drag", async () => {
+    const api = fakeEggsApi(MATCH);
+    await readyTicket(api);
+    const held = dragStub("Tear to claim C for CORNERSTONE", DRAG_PX / 2);
+    // In the drag, the stub tilts and pulls to the right with the pointer, with no spring.
+    expect(held.shown.style.transform).toContain("rotate(8.0deg)");
+    expect(held.shown.className).not.toContain("egg-stub-spring");
+    release(held);
+    await wait(TEAR_MS + 50);
+    expect(api.claims).toEqual([]);
+    const back = stub("Tear to claim C for CORNERSTONE");
+    expect(back.style.transform).toBe("");
+    expect(back.className).toContain("egg-stub-spring");
+    expect(back.getAttribute("aria-hidden")).toBeNull();
+    expect(poppedHoles().count).toBe(0);
+    expect(within(ticket()).queryByText("CLAIMED")).toBeNull();
+  });
+
+  it("pops more holes of the perforation at a longer drag, from the top hole down", async () => {
+    const api = fakeEggsApi(MATCH);
+    await readyTicket(api);
+    const short = dragStub("Tear to claim C for CORNERSTONE", DRAG_PX * 0.3);
+    const atShort = poppedHoles();
+    release(short);
+    const long = dragStub("Tear to claim C for CORNERSTONE", DRAG_PX * 0.8);
+    const atLong = poppedHoles();
+    release(long);
+    expect(atShort).toEqual({ count: 3, fromTop: true });
+    expect(atLong).toEqual({ count: 8, fromTop: true });
+    expect(api.claims).toEqual([]);
+  });
+
+  it("springs the stub back and sends nothing on a pointer cancel in the drag", async () => {
+    const api = fakeEggsApi(MATCH);
+    await readyTicket(api);
+    const held = dragStub("Tear to claim C for CORNERSTONE", DRAG_PX * 0.7);
+    // The browser takes the pointer, for example to scroll the sheet, and sends no click.
+    fireEvent.pointerCancel(held.shown, held.at);
+    // A move after the cancel belongs to no drag.
+    fireEvent.pointerMove(held.shown, { ...held.at, clientX: held.at.clientX + DRAG_PX });
+    await wait(TEAR_MS + 50);
+    expect(api.claims).toEqual([]);
+    expect(stub("Tear to claim C for CORNERSTONE").style.transform).toBe("");
+    expect(poppedHoles().count).toBe(0);
+  });
+
+  it("does not tear the stub on a vertical move, so the sheet can scroll", async () => {
+    const api = fakeEggsApi(MATCH);
+    await readyTicket(api);
+    const held = dragStub("Tear to claim C for CORNERSTONE", 0, -200);
+    expect(poppedHoles().count).toBe(0);
+    release(held);
+    await wait(TEAR_MS + 50);
+    expect(api.claims).toEqual([]);
+    expect(within(ticket()).queryByText("CLAIMED")).toBeNull();
+  });
+
+  it("tears the stub by itself on a pointer tap with a move under 6 px", async () => {
+    const api = fakeEggsApi(MATCH);
+    await readyTicket(api);
+    release(dragStub("Tear to claim C for CORNERSTONE", 4));
+    await wait(TEAR_MS + 50);
+    expect(api.claims).toEqual([{ token: "t1", roster_id: 2, word: "CORNERSTONE" }]);
+  });
+
+  it("starts no drag on a locked stub", async () => {
+    const api = fakeEggsApi(MATCH);
+    localStorage.setItem("cpc.passphrase", PASSPHRASE);
+    await openSheet(api);
+    fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
+    release(dragStub("Pick an egg word", DRAG_PX + 10));
+    await wait(TEAR_MS + 50);
+    expect(api.claims).toEqual([]);
+    expect(poppedHoles().count).toBe(0);
   });
 });
