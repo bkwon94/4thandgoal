@@ -1,10 +1,10 @@
-# 04: Which judge Brian agrees with most
+# 04: Which Advisor arm Brian agrees with most
 
 Map: `.scratch/manager-brain/MAP.md`.
 
 **Kind:** prototype
 
-**Blocked by:** 01, 03, 06, and the merge of the `jev` spec into `main`
+**Blocked by:** 03, 06. The `jev` spec is on `main`, with ADR 0029. Merge `main` into this branch first.
 
 **Status:** open
 
