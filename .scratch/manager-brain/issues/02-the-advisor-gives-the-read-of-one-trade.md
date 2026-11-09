@@ -11,10 +11,10 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-16, AT-17, AT-18, AT-
 **Status:** ready-for-agent
 
 - [ ] `/analyze` for Maye d'force B with U giving Jahmyr Gibbs for Bijan Robinson returns a Lean of the five, a Case, a fairness block, and 3 to 5 Bullets per side with their fact text.
-- [ ] No key of the analyze document holds a letter, a factor, a decision, or an answer.
+- [x] No key of the analyze document holds a letter, a factor, a decision, or an answer.
 - [ ] All You Need Is Love giving Ja'Marr Chase for Xavier Worthy reads Pass or Lean no, lopsided with All You Need Is Love as the side that gives more.
-- [ ] With an Anthropic key that is not valid, `/analyze` returns a plain error after two calls, and the grade count does not change.
-- [ ] A repeat press returns the same document from the cache.
-- [ ] The page shows the Lean, the Case, the fairness line, and the error with Try Again.
-- [ ] The route tests of the API cover the guards, the retry, the honest error, and the document version with a stub Advisor and the fake Jev.
-- [ ] `make check-fast` passes.
+- [x] With an Anthropic key that is not valid, `/analyze` returns a plain error after two calls, and the grade count does not change.
+- [x] A repeat press returns the same document from the cache.
+- [x] The page shows the Lean, the Case, the fairness line, and the error with Try Again.
+- [x] The route tests of the API cover the guards, the retry, the honest error, and the document version with a stub Advisor and the fake Jev.
+- [x] `make check-fast` passes.

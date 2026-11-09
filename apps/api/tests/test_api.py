@@ -514,6 +514,8 @@ def test_an_anthropic_key_that_is_not_valid_gives_the_honest_error_after_two_cal
     assert response.status_code == 503
     assert response.json() == {"detail": {"message": ADVISOR_ERROR}}
     assert len(calls) == 2
+    path = settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE
+    assert json.loads(path.read_text())["counts"].get("testclient", 0) == 0
 
 
 def test_failed_reads_never_use_up_the_grade_limit(settings, sources):
