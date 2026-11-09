@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-25, AT-27, AT-28, AT-
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A Find for Maye d'force B with U with no partner logs the partner filter on all 11 other teams and no 429 response.
 - [x] With The Blue Tent as the partner, every offer is with The Blue Tent.
