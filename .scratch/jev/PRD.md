@@ -5,7 +5,7 @@ Date: 2026-11-09
 Apps: pipeline. The weekly build runs one Jev check per blurb and saves the Jev answers and the text of each attempt in `verify.json`. The site does not change.
 Spec branch: `jev`.
 Source: the map `.scratch/jev/MAP.md` and decision tickets 01 to 09, and the session of 2026-11-09. ADRs 0010, 0015, 0016, and 0021.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 03, in `issues/`.
 
 ## Problem Statement
 

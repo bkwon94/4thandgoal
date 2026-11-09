@@ -18,6 +18,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `easter-eggs` | both | 01 one egg from the drop to the board | none | |
 | `fast-cycle` | both | 07 the midseason tests share one build | PR #13 | `fast-cycle` merges after PR #13 |
 | `faster-evidence` | both | 01 the rate limit setting and make api-evidence | none | |
+| `jev` | pipeline | 01 the weekly build saves one Jev check per blurb | none | |
 | `known-games` | pipeline | 08 the-site-renders-the-known-games-line | | |
 | `matchup-impact` | pipeline | 01 the impact fact, without the odds | none | |
 | `manager-pages` | site | 01 the past week keeps every rostered player | none | |
