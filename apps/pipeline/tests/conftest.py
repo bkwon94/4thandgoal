@@ -88,8 +88,9 @@ def with_free_agents(raw: RawWeek, players: dict[str, dict] | None = None) -> Ra
 
 @pytest.fixture(autouse=True)
 def no_typesafe_key(request, monkeypatch):
-    """A test that builds with no FakeJev gets the one TypeSafeJev of the process. With no key, its first call fails
-    before any request, so no test calls TypeSafe. A test marked live keeps the key."""
+    """A backstop, not the normal path: it makes sure no test can reach TypeSafe. A test passes a FakeJev to the
+    build. If a test forgets, the one TypeSafeJev of the process has no key, so its first call fails before any
+    request. A test marked live keeps the key."""
     if request.node.get_closest_marker("live") is None:
         monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
 
