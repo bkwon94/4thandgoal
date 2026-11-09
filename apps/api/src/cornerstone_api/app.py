@@ -37,6 +37,7 @@ from eggs.tunables import BOARD_READS_PER_MINUTE, BOARD_WINDOW_SECONDS, CHECK_WI
 from eggs.values import EggsValues
 from league.client import Client, SettingsFetch, load_client
 from league.jev import JEV
+from league.nflverse import http_get
 from league.paths import provider_cache_dir
 from league.provider.sleeper import SleeperProvider, fetch_settings
 from league.tunables import TEAMS_CACHE_SECONDS
@@ -146,7 +147,7 @@ def refresh_sources_on_start(settings: Settings, sources: Mapping[str, Sources])
 def _real_sources(client: Client) -> Sources:
     """The real fetches of `client`. The Sleeper adapter takes the shared NFL cache dir, which holds the players file."""
     return Sources(client, clock=lambda: datetime.now(client.tz),
-                   fetch_sleeper=SleeperProvider(provider_cache_dir(client.nfl_dir)).fetch_live)
+                   fetch_sleeper=SleeperProvider(provider_cache_dir(client.nfl_dir)).fetch_live, fetch_past=http_get)
 
 
 def _served(settings: Settings, client: Client, sources: Sources) -> analyzer_routes.Served:

@@ -12,6 +12,7 @@ from analyzer import RULE_PROMPTS
 from analyzer.rubric import Fairness, FairnessSide, ProposedTrade
 from analyzer.trade_facts import trade_fact_sheet
 from analyzer.trade_jev import trade_jev_facts
+from analyzer.trade_splits import trade_split_facts
 from facts.tokens import NUMBER_TOKEN
 from facts.verifier import normalize_number, remove_names
 from facts.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
@@ -99,7 +100,8 @@ class AdvisorFailed(Exception):
 
 def advisor_sheet(trade: ProposedTrade, snapshot: Snapshot, jev: Jev) -> dict[str, Fact]:
     """The facts the Advisor reads by id: the facts of the trade, then the Jev answers of the trade."""
-    return {**trade_fact_sheet(trade, snapshot), **trade_jev_facts(trade, snapshot, jev)}
+    return {**trade_fact_sheet(trade, snapshot), **trade_split_facts(trade, snapshot),
+            **trade_jev_facts(trade, snapshot, jev)}
 
 
 def _league_line(snapshot: Snapshot) -> str:

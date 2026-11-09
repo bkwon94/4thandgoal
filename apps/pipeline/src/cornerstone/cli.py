@@ -53,6 +53,7 @@ from league.client import CLIENT_FILE, Client, ClientError, check_schema_files, 
 from league.jev_port import Jev
 from league.live import live_snapshot
 from league.models import ChartValues, PlayerLine, week_lines
+from league.nflverse import http_get
 from league.parse import parse_trades, parse_week
 from league.paths import history_root, nfl_dir, nflverse_cache_dir, provider_cache_dir, raw_dir
 from league.provider.base import Provider
@@ -286,7 +287,7 @@ def _live_snapshot(
     try:
         return live_snapshot(args.season, client=client, now=datetime.now(client.tz), read_chart=read_chart,
                              fetch_sleeper=provider.fetch_live, fetch_history_week=provider.fetch_past_leg,
-                             fetch_projections=provider.fetch_projections)
+                             fetch_projections=provider.fetch_projections, fetch_past=http_get)
     except ValueError as err:
         print(err)
         return None

@@ -44,7 +44,7 @@ known-first-party = ["analyzer", "facts", "league"]
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 [tool.pyright]
 typeCheckingMode = "basic"
-include = ["src/analyzer/advisor.py", "src/analyzer/cache.py", "src/analyzer/trade_jev.py", "src/analyzer/tunables.py", "tests"]
+include = ["src/analyzer/advisor.py", "src/analyzer/cache.py", "src/analyzer/trade_jev.py", "src/analyzer/trade_splits.py", "src/analyzer/tunables.py", "tests"]
 # The tests import the rule modules of the pipeline tests, as tests/conftest.py puts them on the path.
 extraPaths = ["../../../apps/pipeline/tests"]
 
