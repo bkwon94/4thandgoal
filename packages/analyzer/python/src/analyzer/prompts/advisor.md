@@ -58,6 +58,10 @@ in a certain direction of what they should do on a trade."
 
 - Every number you write must be in a fact that you cite. A Bullet may hold only the numbers of its
   own fact. The case and the gains may hold only the numbers of the facts that the Bullets cite.
+- Write a digit only when the fact you cite holds that digit, such as a rank or a count of players.
+  Write any other count in words, such as "two RBs".
+- A fact whose ID ends in .value holds a trade value. Weigh it, but write none of its numbers, and
+  say only that a player is worth more or less than another.
 - Name only the players and the teams of the trade, or of the fact that a Bullet cites.
 - A history claim with a number must come from a split fact. With no split, speak of history in
   words only. Say when a split rests on few games.

@@ -65,10 +65,15 @@ class ClaudeWriter:
     """The Claude implementation of the Writer port. Every Claude call in the tool goes through `parse`.
 
     A test passes a stub client to check the request shape. With no client, the writer makes one on its first call.
+    `on_usage` gets the usage of each response, so a run can add up its tokens and its cost.
     """
 
-    def __init__(self, client: anthropic.Anthropic | None = None):
+    def __init__(
+        self, client: anthropic.Anthropic | None = None,
+        on_usage: Callable[[anthropic.types.Usage], None] | None = None,
+    ):
         self._client = client
+        self._on_usage = on_usage
 
     def parse(
         self, content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
@@ -110,6 +115,8 @@ class ClaudeWriter:
                 usage.cache_read_input_tokens,
                 usage.input_tokens,
             )
+            if self._on_usage is not None:
+                self._on_usage(usage)
         if response.stop_reason == "refusal":
             raise RefusalError(f"Claude refused the request for {output_model.__name__}.")
         if response.parsed_output is None:

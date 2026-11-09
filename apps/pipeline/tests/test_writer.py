@@ -273,7 +273,7 @@ def test_writer_has_no_trade_recap_rule(fixture_raw_dir):
     assert "Put at most two numbers in a sentence." in system and "Write every number as digits" in system
 
 
-def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True):
+def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True, on_usage=None):
     """A ClaudeWriter over a stub client, and the dict of the keyword arguments of its last request."""
     from facts.writer import ClaudeWriter
 
@@ -293,7 +293,7 @@ def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True)
                 "usage": usage if has_usage else None,
             })()
 
-    return ClaudeWriter(client=type("Client", (), {"messages": Messages()})()), sent
+    return ClaudeWriter(client=type("Client", (), {"messages": Messages()})(), on_usage=on_usage), sent
 
 
 def test_claude_call_sends_the_system_and_the_user_text_through_parse_call():
@@ -380,6 +380,24 @@ def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(caplog):
     with caplog.at_level(logging.INFO, logger="facts.writer"):
         assert parse_call("user text", WriterOut, "system text", writer=writer) == "parsed"
     assert not any("call: cache_creation_input_tokens" in m for m in caplog.messages)
+
+
+def test_a_writer_hands_the_usage_of_each_call_to_its_usage_hook():
+    from facts.writer import parse_call
+
+    seen = []
+    writer, _ = _stub_writer(on_usage=seen.append)
+    parse_call("user text", WriterOut, "system text", writer=writer)
+    assert [usage.input_tokens for usage in seen] == [1]
+
+
+def test_a_writer_with_a_usage_hook_skips_it_when_the_response_has_no_usage():
+    from facts.writer import parse_call
+
+    seen = []
+    writer, _ = _stub_writer(has_usage=False, on_usage=seen.append)
+    parse_call("user text", WriterOut, "system text", writer=writer)
+    assert seen == []
 
 
 def test_tone_varies_the_opener_and_moves_upset_off_the_front(fixture_raw_dir):
