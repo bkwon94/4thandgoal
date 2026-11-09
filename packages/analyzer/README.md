@@ -2,8 +2,8 @@
 
 ## Knows
 
-- The rubric, the adjusters and `Side`, the trade facts, the analysis, the finder, and the finder reasons (`cpc-analyzer`, imported as `analyzer`).
-- The rule prompts `prompts/analysis.md`, `prompts/finder.md`, and `prompts/rubric.md`, and the numbers of `tunables.py`.
+- The rubric, the adjusters and `Side`, the trade facts, the analysis, the finder, and the finder reasons (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`.
+- The rule prompts `prompts/advisor.md`, `prompts/analysis.md`, `prompts/finder.md`, and `prompts/rubric.md`, and the numbers of `tunables.py`.
 - The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit.
 - The grade limit counts per client and per address. Each client has its own result cache, so the roster ids of two leagues never share a grade.
 - The cache key reads the points key of the League settings of the client, such as `pts_ppr` for a full PPR league.
@@ -14,7 +14,7 @@
 ## Ports
 
 - `SnapshotSource` in `routes.py`: the live snapshots of one client. The API app gives its `Sources`, and a test gives fixture-backed ones.
-- `Analyzer` and `ReasonWriter` in `routes.py`: the Claude calls of the grade and the finder. A test gives a fake call.
+- `Analyzer` and `ReasonWriter` in `routes.py`: the Claude calls of the grade and the finder. A test gives a fake call. The Advisor takes the Jev port of `league`, and a test gives `FakeJev`.
 
 ## Does not do
 

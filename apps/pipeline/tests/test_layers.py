@@ -196,6 +196,7 @@ LAYER_OF: dict[str, str] = {
     "analyzer.analysis": "write",
     "analyzer.finder_reasons": "write",
     "analyzer.routes": "write",
+    "analyzer.advisor": "write",
     "waiver.research": "write",
     "midseason.prose": "write",
     # output
