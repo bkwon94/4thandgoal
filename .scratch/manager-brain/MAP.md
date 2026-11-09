@@ -29,10 +29,11 @@ One spec that changes the analyzer and the Finder to judge a trade as a manager 
 - History comes from the nflverse weekly player file for the last 3 seasons, cached for good: weeks 1 to 8 against weeks 9 to 17, and cold games, each with its game count. `decisions/06-research-history-splits.md`.
 - The Claude arm wins: Brian agreed with it on 20 of 24 trades, against 17 and 16 for the Jev arms. Jev answers feed Claude, and Jev narrows the finder. The sheet adds the RB depth after the trade, the quality of the NFL team, and the depth of the other team for "would he accept". The partner filter stays. A press costs about 11 cents and takes about 20 s. `decisions/04-prototype-judge-arms.md`.
 - The page layout: the hero shows the Lean, a 5-step scale with the Lean lit, the Case clamped to 3 lines with its condition first, and the fairness line. The Bullets sit in a switcher with one tab per team at every width, in For, Against, and Even bands, with a ▲ ▼ – Mark. A tap on a row opens its fact, so the API sends the fact text. The Finder card uses the same rows. `decisions/05-prototype-bullet-layout.md`.
+- Player news comes from the free Sleeper news feed of each trade player on each call, as `NEWS.{player_id}.{n}` facts that read "Reported on <date> by <Source>". A code check makes a bullet that cites news say "reported", "per", or the source, and a Jev check of the same rule starts log-only. The waiver web search is not reused. `decisions/08-research-player-news.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the Advisor get player news, such as trade rumors, and keep a rumor a rumor? `decisions/08-research-player-news.md`.
+None. The map has no fog.
 
 ## OUT OF SCOPE
 
