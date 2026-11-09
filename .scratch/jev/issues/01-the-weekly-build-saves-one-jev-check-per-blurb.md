@@ -12,10 +12,10 @@ Load the skill `typesafe:typesafe-ai` before you write the adapter or the questi
 
 **Status:** ready-for-agent
 
-- [ ] The `Jev` port, its adapter, and `FakeJev` exist. `FakeJev` is annotated as the port, and no test patches the port.
-- [ ] The league package is the only package that imports `typesafe_sdk`, and the layer rule maps the port to the provider layer.
-- [ ] A `run_build` test on the week 6 fixtures shows one request per checked attempt, one question per sentence, and a state with every fact id of the chapter and the vocabulary.
-- [ ] A `run_build` test shows that an attempt with a code failure has no `jev`, and that `passed` follows the Claude verdicts only.
-- [ ] A saved `verify.json` of the old shape still loads, and `page-json` on week 8 gives the same `page.json` as `main`.
+- [x] The `Jev` port, its adapter, and `FakeJev` exist. `FakeJev` is annotated as the port, and no test patches the port.
+- [x] The league package is the only package that imports `typesafe_sdk`, and the layer rule maps the port to the provider layer.
+- [x] A `run_build` test on the week 6 fixtures shows one request per checked attempt, one question per sentence, and a state with every fact id of the chapter and the vocabulary.
+- [x] A `run_build` test shows that an attempt with a code failure has no `jev`, and that `passed` follows the Claude verdicts only.
+- [x] A saved `verify.json` of the old shape still loads, and `page-json` on week 8 gives the same `page.json` as `main`.
 - [ ] The real rebuild of 2026 week 8 for cpc writes `sentences` and `jev` for every checked attempt in `verify.json`.
 - [ ] `make check` passes in the pipeline with `TYPESAFE_API_KEY` unset.

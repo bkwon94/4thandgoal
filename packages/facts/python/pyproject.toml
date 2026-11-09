@@ -44,7 +44,7 @@ known-first-party = ["facts", "league"]
 # The writer errors are the plain dicts that the Claude call passes and the BaseModel return of a ClaudeCall.
 [tool.pyright]
 typeCheckingMode = "basic"
-include = ["src/facts/chapters.py", "src/facts/names.py", "src/facts/tokens.py", "tests"]
+include = ["src/facts/chapters.py", "src/facts/jev_check.py", "src/facts/names.py", "src/facts/tokens.py", "tests"]
 # The tests import the rule modules of the pipeline tests, as tests/conftest.py puts them on the path.
 extraPaths = ["../../../apps/pipeline/tests"]
 

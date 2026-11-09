@@ -1,5 +1,5 @@
 """
-Checks that no test patches a port: the Claude call or the provider. A test passes the fake from tests/fakes.py.
+Checks that no test patches a port: the Claude call, the Jev call, or the provider. A test passes the fake from tests/fakes.py.
 It reads each monkeypatch.setattr call in tests/ with ast and imports no pipeline code. See ADR 0015.
 """
 import ast
@@ -9,15 +9,16 @@ from rule_report import Offense, report
 
 ROOT = Path(__file__).resolve().parent.parent
 ADR = "docs/adr/0015-a-port-has-one-fake.md"
-RULE = "no test patches a port, such as the Claude call or the provider"
-FIX = "pass a FakeWriter or a FixtureProvider from tests/fakes.py, or an httpx.MockTransport, in place of the patch."
+RULE = "no test patches a port, such as the Claude call, the Jev call, or the provider"
+FIX = ("pass a FakeWriter, a FakeJev, or a FixtureProvider from tests/fakes.py, or an httpx.MockTransport, in place of"
+       " the patch.")
 
-# The modules of the two ports. A patch of a name in one of them, or of a name imported from one, patches a port.
+# The modules of the three ports. A patch of a name in one of them, or of a name imported from one, patches a port.
 # league.provider covers league.provider.sleeper.
-PORT_MODULES = ("facts.writer", "league.claude_port", "league.provider")
-# The Claude calls, the state fetch, and the two port instances, under any module, such as cli.WRITER.
+PORT_MODULES = ("facts.writer", "league.claude_port", "league.provider", "league.jev_port", "league.jev")
+# The Claude calls, the state fetch, and the three port instances, under any module, such as cli.WRITER.
 # The Provider methods join them from the protocol.
-CALL_NAMES = {"claude_call", "analyzer_call", "parse_call", "_get_client", "fetch_state", "WRITER", "SLEEPER"}
+CALL_NAMES = {"claude_call", "analyzer_call", "parse_call", "_get_client", "fetch_state", "WRITER", "SLEEPER", "JEV"}
 # The provider port lives in the league package, the shared kernel.
 PROVIDER_BASE = ROOT.parent.parent / "packages" / "league" / "python" / "src" / "league" / "provider" / "base.py"
 

@@ -116,6 +116,8 @@ LAYER_OF: dict[str, str] = {
     "league.chart": "provider",
     "league.claude_errors": "provider",
     "league.claude_port": "provider",
+    "league.jev_port": "provider",
+    "league.jev": "provider",
     "analyzer.ratelimit": "provider",
     # load
     "league.parse": "load",
@@ -187,6 +189,8 @@ LAYER_OF: dict[str, str] = {
     # write
     "facts.writer": "write",
     "facts.verifier": "write",
+    # The Jev check reads the vocabulary through the writer, so it sits in the write layer beside the verifier.
+    "facts.jev_check": "write",
     "week.median": "write",
     "analyzer.analysis": "write",
     "analyzer.finder_reasons": "write",

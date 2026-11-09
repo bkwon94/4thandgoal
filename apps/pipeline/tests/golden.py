@@ -11,7 +11,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
-from fakes import fixture_nflverse, no_claims, no_news
+from fakes import FakeJev, fixture_nflverse, no_claims, no_news
 
 from cornerstone.pipeline import run_build
 from facts.writer import WriterError
@@ -42,7 +42,8 @@ def build_golden(repo: Path, cache: Path) -> dict[str, Path]:
     (raw / "fetched.json").write_text(json.dumps({"transactions": FETCHED}), encoding="utf-8")
     shutil.copytree(FIXTURES / "2026" / "history", history_root(repo, 2026))
     page = run_build(repo, 2026, 6, _no_claude, fetch=False, news=no_news, fetch_bytes=lambda url: None,
-                     nflverse=fixture_nflverse(cache), research=no_claims, started=STARTED, client=cpc_client(at=repo))
+                     nflverse=fixture_nflverse(cache), research=no_claims, started=STARTED, client=cpc_client(at=repo),
+                     jev=FakeJev())
     season = repo / "build" / "2026"
     return {"facts.json": week_dir(repo, 2026, 6) / "facts.json", "page.json": page,
             "rankings.json": season / "rankings.json", "managers.json": season / "managers.json"}

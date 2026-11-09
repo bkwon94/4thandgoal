@@ -1201,7 +1201,7 @@ def test_a_build_with_no_search_sends_the_research_through_the_writer(
 
 def _spy_write_and_verify(seen, lucky_key=None):
     """A stand-in for write_and_verify: it records the page words each chapter gets, and one chapter says "lucky"."""
-    def spy(chapter, sheet, call, used_words=frozenset(), *, prompts_dir, terms=()):
+    def spy(chapter, sheet, call, used_words=frozenset(), *, prompts_dir, terms=(), jev=None):
         seen[chapter.key] = set(used_words)
         text = "That was lucky." if chapter.key == lucky_key else "Fact sentence."
         sentences = [Sentence(text=text, fact_ids=[chapter.fact_ids[0]])] if chapter.fact_ids else []

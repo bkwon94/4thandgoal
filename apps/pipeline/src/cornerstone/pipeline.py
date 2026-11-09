@@ -40,6 +40,8 @@ from league.history import (
     save_week_to_history,
     saved_through,
 )
+from league.jev import JEV
+from league.jev_port import Jev
 from league.models import (
     Blurb,
     BuildRecord,
@@ -411,6 +413,8 @@ def run_build(
     provider: Provider | None = None,
     # The writer of the research call when `research` is None. A writer of None is the one ClaudeWriter of the process.
     writer: Writer | None = None,
+    # The Jev of the log-only Jev check of each blurb. None is the one TypeSafeJev of the process.
+    jev: Jev | None = None,
 ) -> Path:
     directory = week_dir(client.folder, season, week)
     raw_path = raw_dir(client.folder, season, week)
@@ -447,7 +451,8 @@ def run_build(
     for chapter in bundle.sheet.chapters:
         reserved = reserved_words(chapter.key, bundle.sheet)
         blurbs[chapter.key], verify[chapter.key] = write_and_verify(
-            chapter, bundle.sheet, call, used | reserved, prompts_dir=client.voice_dir, terms=median_terms(client))
+            chapter, bundle.sheet, call, used | reserved, prompts_dir=client.voice_dir, terms=median_terms(client),
+            jev=JEV if jev is None else jev)
         used |= page_words(blurbs[chapter.key], chapter)
         _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, VerifyFile(build=record, chapters=verify))

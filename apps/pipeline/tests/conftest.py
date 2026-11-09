@@ -86,6 +86,14 @@ def with_free_agents(raw: RawWeek, players: dict[str, dict] | None = None) -> Ra
     return raw.model_copy(update={"players": {**raw.players, **(FREE_AGENTS if players is None else players)}})
 
 
+@pytest.fixture(autouse=True)
+def no_typesafe_key(request, monkeypatch):
+    """A test that builds with no FakeJev gets the one TypeSafeJev of the process. With no key, its first call fails
+    before any request, so no test calls TypeSafe. A test marked live keeps the key."""
+    if request.node.get_closest_marker("live") is None:
+        monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
+
+
 @pytest.fixture
 def free_agent_raw_dir(tmp_path, fixture_raw_dir) -> Path:
     """A copy of the week 6 raw folder with FREE_AGENTS in its players file."""

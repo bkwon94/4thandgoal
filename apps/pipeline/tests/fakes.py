@@ -1,5 +1,5 @@
 """
-No-network stand-ins for the build inputs: Sleeper, Claude, news, nflverse, the expert search, and any URL fetch.
+No-network stand-ins for the build inputs: Sleeper, Claude, Jev, news, nflverse, the expert search, and any URL fetch.
 The pipeline tests and the golden build share them, so both run the same offline build. Each port has its one fake here.
 """
 import json
@@ -16,6 +16,7 @@ from pydantic import BaseModel, TypeAdapter
 
 from league.claude_errors import WriterError
 from league.claude_port import Writer
+from league.jev_port import Jev, JevAnswers, JevError, NoulQuestion
 from league.league_settings import LeagueSettings
 from league.models import ResearchOut
 from league.nflverse import nflverse_week
@@ -172,3 +173,37 @@ class FakeWriter:
 
 # The annotation makes pyright prove that the fake has the method of the Writer protocol, with the same types.
 FAKE_WRITER: Writer = FakeWriter()
+
+
+@dataclass(frozen=True)
+class JevRequest:
+    """The arguments of one call to `Jev.ask`."""
+    state: dict
+    questions: dict[str, NoulQuestion]
+
+
+class FakeJev:
+    """A Jev that gives `yes` for each question, or the value in `answers` for its key, and keeps each request in
+    `requests`. It never calls TypeSafe.
+
+    With `error`, each call raises that JevError, as a failed TypeSafe call does.
+    """
+
+    MODEL = "jev-fake"
+
+    def __init__(self, yes: float = 0.9, answers: dict[str, float] | None = None, error: JevError | None = None):
+        self.yes = yes
+        self.answers = dict(answers or {})
+        self.error = error
+        self.requests: list[JevRequest] = []
+
+    def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevAnswers:
+        self.requests.append(JevRequest(state, questions))
+        if self.error is not None:
+            raise self.error
+        nouls = {key: self.answers.get(key, self.yes) for key in questions}
+        return JevAnswers(model=self.MODEL, nouls=nouls, input_tokens=100 * len(questions))
+
+
+# The annotation makes pyright prove that the fake has the method of the Jev protocol, with the same types.
+FAKE_JEV: Jev = FakeJev()
