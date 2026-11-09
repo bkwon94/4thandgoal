@@ -1,0 +1,6 @@
+AT-3, each find cracks anew. Script: evidence-scripts/find.mjs AT-3.
+State: empty store, T1 dropped with the letter C, no claim.
+Two fresh contexts, so two fresh page loads. In each: 375x812, light, find T1, tap the egg at 35% of its width and 40% of its height.
+Pause the Playwright clock, seek each animation of the tap to 400 ms, and shoot the egg region (x 60, y 120, 255 by 360 px).
+side-by-side.png puts find-1-0.4s.png on the left and find-2-0.4s.png on the right (ffmpeg hstack).
+lines.txt holds the points attribute of each crack line of both finds.

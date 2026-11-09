@@ -1149,6 +1149,10 @@ _Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board
 The slim strip under the top band of the home page that shows the count of eggs of the last egg drop, its day, and the count of eggs left to find. It links to the egg board and names no spot.
 _Avoid_: Drop banner, alert, announcement, toast
 
+**Claim ticket**:
+The ticket at the foot of the claim sheet that shows the letter, the egg word or the block, and the team. A manager tears its stub to send the claim.
+_Avoid_: Claim button, receipt, coupon
+
 **Commissioner**:
 The person who places the eggs, cannot hunt, and can undo a claim. Site copy says "the commissioner" and never names the person.
 _Avoid_: Admin, owner, a real name

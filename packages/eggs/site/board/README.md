@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The egg board in `egg-board.tsx`, from the top: the hero with the counts left to find, found, and to drop over the grid of the 54 eggs, one card per egg word with its gift card, its leader, the top 5, and "Show all 11", the latest claims, and how the hunt works. A won egg word is a hero card with a WON stamp and its winner.
+- The egg board in `egg-board.tsx`, from the top: the hero on the six slots of the shared hero, with the grid of the 54 eggs as its feature and the counts left to find, found, and to drop as its stats, the slider of the egg words, the latest claims, and how the hunt works. The slider has a tab row of the egg words in the fixed order, each with the count of its leader, over one slide per word. A slide shows the giant word with the letters of the leader lit, the leader line, the top 5, and "Show all 11". The slides run closest race first, and a won word goes last. A won slide is red, with a WON stamp, its winner, and its gift card.
 - The screen in `egg-board-screen.tsx`, which reads the board from the API at each visit. Before the first drop, or on a failed call, it shows the closed content of the app.
 - The egg button in `egg-button.tsx`: a link to the egg board for the top band, with a red badge of the count left to find.
 - The egg banner in `egg-banner.tsx`: the strip under the top band of the home page. It names the day of the last drop, such as "6 eggs dropped today · 6 left", then "6 eggs dropped Tue · 5 left". A hide stays in this browser until the next drop.

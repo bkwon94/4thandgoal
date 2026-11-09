@@ -1,0 +1,22 @@
+# the board of AT-22, with T1 dropped
+counts: {"left":5,"found":7,"to_drop":42}
+CORNERSTONE: winner none; Lil Fridge: CO
+LANSDALE: winner none; no letters
+EAGLES: winner none; Lil Fridge: EAGLS
+the board of AT-22, with T1 dropped, CORNERSTONE, light: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-22, with T1 dropped, LANSDALE, light: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-22, with T1 dropped, EAGLES, light: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-22, with T1 dropped, CORNERSTONE, dark: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-22, with T1 dropped, LANSDALE, dark: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-22, with T1 dropped, EAGLES, dark: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+# the board of AT-27, with T1 dropped
+counts: {"left":16,"found":7,"to_drop":31}
+CORNERSTONE: winner none; Lil Fridge: C
+LANSDALE: winner none; no letters
+EAGLES: winner Lil Fridge; Lil Fridge: EAGLES
+the board of AT-27, with T1 dropped, CORNERSTONE, light: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-27, with T1 dropped, LANSDALE, light: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-27, with T1 dropped, EAGLES, light: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-27, with T1 dropped, CORNERSTONE, dark: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-27, with T1 dropped, LANSDALE, dark: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no
+the board of AT-27, with T1 dropped, EAGLES, dark: axe violations 0, axe incomplete 0; tap targets under 44px 0; page scrollWidth 390, clientWidth 390, viewport 390; sideways scroll no

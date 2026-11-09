@@ -1,0 +1,2 @@
+At 55 px of drag, button down: {"text":"C CLAIM TICKET CORNERSTONE Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C for CORNERSTONE","stubDisabled":"false","stubHidden":null,"stubTransform":"matrix(0.990268, 0.139173, -0.139173, 0.990268, 9.48516, 4.36254)","stubVisibility":"visible"}
+1.5 s after the release: {"text":"C CLAIM TICKET CORNERSTONE Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C for CORNERSTONE","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}

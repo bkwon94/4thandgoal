@@ -1,0 +1,59 @@
+# 375-light
+tabs: CORNERSTONE 0/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:outline O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: No letters yet. The race is open.
+rows: 
+frame background: rgb(20, 20, 20)
+line "No letters yet. The race is open." on the page: 3
+
+# 375-dark
+tabs: CORNERSTONE 0/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:outline O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: No letters yet. The race is open.
+rows: 
+frame background: rgb(20, 20, 20)
+line "No letters yet. The race is open." on the page: 3
+
+# 768-light
+tabs: CORNERSTONE 0/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:outline O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: No letters yet. The race is open.
+rows: 
+frame background: rgb(20, 20, 20)
+line "No letters yet. The race is open." on the page: 3
+
+# 768-dark
+tabs: CORNERSTONE 0/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:outline O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: No letters yet. The race is open.
+rows: 
+frame background: rgb(20, 20, 20)
+line "No letters yet. The race is open." on the page: 3
+
+# 1280-light
+tabs: CORNERSTONE 0/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:outline O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: No letters yet. The race is open.
+rows: 
+frame background: rgb(20, 20, 20)
+line "No letters yet. The race is open." on the page: 3
+
+# 1280-dark
+tabs: CORNERSTONE 0/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:outline O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: No letters yet. The race is open.
+rows: 
+frame background: rgb(20, 20, 20)
+line "No letters yet. The race is open." on the page: 3

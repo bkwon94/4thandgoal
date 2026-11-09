@@ -1,0 +1,5 @@
+AT-13, a tap tears the stub. Script: evidence-scripts/claim.mjs AT-13.
+State: empty eggs store (the local API restarts with no file), then T1 dropped in week 9 by the real drop route with the letter C. No claim.
+Recording (recording.webm): 375x812, motion on, light, passphrase stored. Find T1, crack it, tap 'Claim C', pick 'Lil Fridge' and CORNERSTONE.
+Tap the stub with a Playwright click: a press and a release at one point, no move. Record 3.5 s more.
+requests.txt: each request of the page to the local API, the end card title, and the board after the run.

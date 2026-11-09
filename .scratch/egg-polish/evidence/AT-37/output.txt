@@ -1,0 +1,12 @@
+$ git diff --stat main -- apps/api packages/eggs/python
+(end of output)
+
+$ git diff main -- apps/api packages/eggs/python | wc -l
+       0
+
+$ git diff main -- packages/eggs/site/lib
+(end of output)
+
+$ git rev-parse --short main; git rev-parse --short HEAD
+274ba9ec
+01cec88a

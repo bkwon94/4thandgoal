@@ -1,0 +1,9 @@
+AT-16, a claim too late stamps TAKEN. Script: evidence2-scripts/claim2.mjs AT-16, in the session scratchpad.
+State: empty eggs store (the local API restarts with no file), then T1 dropped in week 9 by the real drop route with the letter C. No claim.
+For each width (375, 768, 1280; height 900) and theme: two fresh contexts, each with the passphrase stored. Both find T1 in light, crack it, and tap 'Claim C'. The second switches to the theme of the shot.
+The first browser picks 'Lil Fridge' and CORNERSTONE. The second browser picks 'Teehee' and CORNERSTONE, as the revised Given says.
+The first browser drags its stub 130 px and its claim wins. The first context closes.
+The second browser drags its stub 130 px. stamp-<width>-<theme>.png comes 0.42 s after the TAKEN stamp, an alert, or 3 s, whichever is first.
+Then wait up to 4 s for an end card and 1.2 s more, and take end-<width>-<theme>.png. Both are viewport shots.
+notes.txt holds each ticket, what showed, the alert text, the claim requests of each browser, and the CORNERSTONE row of the board.
+The undo route undoes the claim of T1 after each race, so the next race finds it again.

@@ -1,14 +1,16 @@
 /**
  * The claim sheet: the team pills, a card for each egg word, the block notice, the passphrase field when the browser has
- * none, and the claim. The button names the next step that is missing, so a manager knows what to do.
+ * none, and the claim ticket. The locked stub of the ticket names the next step that is missing, so a manager knows what to do.
  */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Label } from "@cpc/design/parts/label";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
 import { EggsError, type Board, type ClaimAnswer, type EggsApi } from "../lib/api";
 import { clearPassphrase, getPassphrase, setPassphrase } from "../lib/passphrase";
+import { ClaimTicket, STAMP_MS, type Send } from "./claim-ticket";
 import { ArtGround, SlotRow } from "./egg-art";
 import { hasOpenSlot, heldLetters, leaderLine, slotsOf } from "./slots";
 
@@ -26,12 +28,18 @@ type Word = Board["words"][number];
 
 const WRONG_PASSPHRASE = "The passphrase is wrong. Ask a league member for it.";
 
-/* The label of the claim button: the first missing step, or the claim itself. */
-function buttonLabel(letter: string, team: number | null, word: string | null, block: boolean, passphrase: string): string {
-  if (team === null) return "Pick your team";
-  if (!block && word === null) return "Pick an egg word";
-  if (!passphrase) return "Enter the passphrase";
-  return block ? `Claim ${letter} as a block` : `Claim ${letter} for ${word}`;
+/* The label of the stub of the claim ticket: the first missing step, or the claim itself. The stub is locked until no step is missing. */
+function stubLabel(
+  letter: string,
+  team: number | null,
+  word: string | null,
+  block: boolean,
+  passphrase: string,
+): { label: string; locked: boolean } {
+  if (team === null) return { label: "Pick your team", locked: true };
+  if (!block && word === null) return { label: "Pick an egg word", locked: true };
+  if (!passphrase) return { label: "Enter the passphrase", locked: true };
+  return { label: block ? `Tear to claim ${letter} as a block` : `Tear to claim ${letter} for ${word}`, locked: false };
 }
 
 /* True when the manager can put the letter in the word: the word has no winner and a free slot for the letter. */
@@ -47,7 +55,14 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
   const [stored, setStored] = useState(() => getPassphrase());
   const [typed, setTyped] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [send, setSend] = useState<Send>("idle");
+  const motion = !useMotionOff();
+  // The stamp holds on the ticket, then the end card shows. A close of the sheet in the hold stops the timer.
+  const hold = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (hold.current !== null) clearTimeout(hold.current);
+  }, []);
 
   useEffect(() => {
     api.board().then(setBoard, () => setError("The egg board did not load. Try again."));
@@ -57,8 +72,8 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
   // A letter that fits no egg word of the manager can only be a block.
   const block = board !== null && team !== null && !board.words.some((each) => fits(each, team, letter));
   const passphrase = stored ?? typed.trim();
-  const label = buttonLabel(letter, team, word, block, passphrase);
-  const ready = label.startsWith(`Claim ${letter}`) && !busy;
+  const { label, locked } = stubLabel(letter, team, word, block, passphrase);
+  const ready = !locked && send === "idle";
 
   function pickTeam(rosterId: number | null) {
     setTeam(rosterId);
@@ -68,27 +83,30 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
   async function claim() {
     if (team === null || !ready) return;
     const target = block ? null : word;
-    setBusy(true);
+    setSend("sending");
     setError(null);
     try {
       const answer = await api.claim(passphrase, { token, roster_id: team, word: target });
       setPassphrase(passphrase);
       const prize = board?.words.find((each) => each.word === target)?.prize ?? null;
-      onClaimed(answer, prize, manager?.team ?? "");
+      setSend("claimed");
+      hold.current = setTimeout(() => onClaimed(answer, prize, manager?.team ?? ""), STAMP_MS);
     } catch (failure) {
       if (failure instanceof EggsError && failure.status === 401) {
         clearPassphrase();
         setStored(null);
         setTyped("");
         setError(WRONG_PASSPHRASE);
+        setSend("idle");
       } else if (failure instanceof EggsError && failure.status === 409) {
-        onClaimedFirst();
+        // The stub comes back under the TAKEN stamp, then the end card for another manager first shows.
+        setSend("taken");
+        hold.current = setTimeout(onClaimedFirst, STAMP_MS);
       } else {
         // A refusal of the API is a 422 that names its reason, so the sheet shows the reason.
         setError(failure instanceof EggsError ? failure.message : "The claim did not go through. Try again.");
+        setSend("idle");
       }
-    } finally {
-      setBusy(false);
     }
   }
 
@@ -211,17 +229,17 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
         {error && <p role="alert" className="text-lead text-accent-ink">{error}</p>}
 
         <div className="flex flex-col gap-sp-2">
-          <button
-            type="button"
-            disabled={!ready}
-            onClick={claim}
-            className={cn(
-              "press min-h-touch w-full rounded-pill text-lead font-bold",
-              ready ? "bg-accent text-on-dark shadow-orb" : "bg-raised text-mute",
-            )}
-          >
-            {label}
-          </button>
+          <ClaimTicket
+            letter={letter}
+            word={block ? null : word}
+            block={block}
+            team={manager?.team ?? null}
+            label={label}
+            locked={locked}
+            send={send}
+            motion={motion}
+            onTear={claim}
+          />
           {/* Each sentence is its own line. A line that wraps sits over two parts of the page under the sheet, and axe then
               cannot read its contrast. */}
           <span className="text-center text-meta text-mute">
@@ -261,13 +279,12 @@ function WordCard({
     : word.winner !== null
       ? `${word.winner.team} won ${word.word}.`
       : `No open ${letter} in this word.`;
-  const id = `egg-word-${word.word}`;
+  // The card takes its name from the text it shows, so the name holds each visible word (WCAG 2.5.3). The slot row is
+  // aria-hidden, as the count says the same.
   return (
     <button
       type="button"
       aria-pressed={picked}
-      aria-labelledby={id}
-      aria-describedby={`${id}-note`}
       disabled={!open}
       onClick={onPick}
       className={cn(
@@ -277,12 +294,13 @@ function WordCard({
       )}
     >
       <span className="flex w-full items-baseline gap-sp-2">
-        <span id={id} className="text-body font-bold tracking-wide">
+        <span className="text-body font-bold tracking-wide">
           {word.word}
-        </span>
+        </span>{" "}
+        {/* The spaces between the parts of the row keep the words of the name apart. A flex row shows no space. */}
         <span className={cn("rounded-pill border border-rule px-sp-2 font-mono text-meta font-bold", open ? "text-ink-2" : "text-mute")}>
           ${word.prize}
-        </span>
+        </span>{" "}
         <span className={cn("ml-auto font-mono text-row font-bold", picked ? "text-accent-ink" : open ? "text-ink" : "text-mute")}>
           {shown}
           <span className="text-mute">/{word.word.length}</span>
@@ -295,7 +313,7 @@ function WordCard({
           style={{ width: `${Math.round((shown / word.word.length) * 100)}%` }}
         />
       </span>
-      <span id={`${id}-note`} className="text-meta text-mute">
+      <span className="text-meta text-mute">
         {note}
       </span>
     </button>

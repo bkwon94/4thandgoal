@@ -1,0 +1,6 @@
+375-light: {"text":"C CLAIM TICKET Egg word Lil Fridge PICK AN EGG WORD","stubName":"Pick an egg word","stubDisabled":"true","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+375-dark: {"text":"C CLAIM TICKET Egg word Lil Fridge PICK AN EGG WORD","stubName":"Pick an egg word","stubDisabled":"true","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+768-light: {"text":"C CLAIM TICKET Egg word Lil Fridge PICK AN EGG WORD","stubName":"Pick an egg word","stubDisabled":"true","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+768-dark: {"text":"C CLAIM TICKET Egg word Lil Fridge PICK AN EGG WORD","stubName":"Pick an egg word","stubDisabled":"true","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+1280-light: {"text":"C CLAIM TICKET Egg word Lil Fridge PICK AN EGG WORD","stubName":"Pick an egg word","stubDisabled":"true","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+1280-dark: {"text":"C CLAIM TICKET Egg word Lil Fridge PICK AN EGG WORD","stubName":"Pick an egg word","stubDisabled":"true","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}

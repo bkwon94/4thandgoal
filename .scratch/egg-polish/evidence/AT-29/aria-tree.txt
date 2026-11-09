@@ -1,0 +1,27 @@
+ARIA snapshot of the slider ([data-slider]) after the two keys:
+- tablist "Egg words":
+  - tab "CORNERSTONE 2/11"
+  - tab "LANSDALE 0/8"
+  - tab "EAGLES 5/6" [selected]
+- region "Egg word":
+  - tabpanel "EAGLES 5/6":
+    - heading "EAGLES" [level=2]
+    - text: $20 gift card Lil Fridge leads with 5 of 6.
+    - list:
+      - listitem: 01 Lil Fridge Leads 5/6 E A G L S
+      - listitem: 02 The Blue Tent 0/6
+      - listitem: 03 All You Need Is Love 0/6
+      - listitem: 04 NFC Least 0/6
+      - listitem: 05 London Cooking 0/6
+    - button "Show all 11"
+
+Roles in the DOM: {
+  "tablist": 1,
+  "tabs": 3,
+  "tabpanels": 3,
+  "panels": [
+    "egg-slide-EAGLES labelledby=egg-tab-EAGLES hidden=null",
+    "egg-slide-CORNERSTONE labelledby=egg-tab-CORNERSTONE hidden=true",
+    "egg-slide-LANSDALE labelledby=egg-tab-LANSDALE hidden=true"
+  ]
+}

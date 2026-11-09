@@ -162,6 +162,26 @@ export async function scanContrast(page: Page, scope?: string): Promise<string[]
   return [...lines("violation", result.violations), ...lines("incomplete", result.incomplete)];
 }
 
+/* The axe tags of the full scan: each rule of WCAG 2.2 at the levels A and AA. */
+const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
+
+export type AxeScan = { violations: string[]; incomplete: string[] };
+
+/*
+ * Runs each WCAG A and AA rule of axe, and keeps the violations and the incomplete items apart, so a log can print
+ * the two counts. An incomplete item fails as a violation does, for the reason of scanContrast. Each line names the rule.
+ * A scope, a CSS selector, limits the scan to one part, such as the open claim sheet.
+ */
+export async function scanAxe(page: Page, scope?: string): Promise<AxeScan> {
+  const builder = new AxeBuilder({ page }).withTags(WCAG_TAGS);
+  const result = await (scope === undefined ? builder : builder.include(scope)).analyze();
+  const lines = (kind: string, items: typeof result.violations) =>
+    items.flatMap((rule) =>
+      rule.nodes.map((node) => `${kind}: ${node.target.join(" ")} ${rule.id}: ${node.failureSummary ?? rule.help}`.replace(/\s+/g, " ")),
+    );
+  return { violations: lines("violation", result.violations), incomplete: lines("incomplete", result.incomplete) };
+}
+
 /*
  * Opens a page in one theme. The init script stores the choice before any script of the page runs, so the boot script
  * reads it on the first paint, as for a reader. The assert on <html> then fails loud if the key or the boot script

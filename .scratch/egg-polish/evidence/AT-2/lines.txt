@@ -1,0 +1,12 @@
+Seeked run: tap at the screen point 142.5,320.0. In the units of the egg art (180 by 220) it is 45.0,72.6.
+Seeked run, before the tap: card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4.
+t = 400 ms after the tap (frame-0.4s.png)
+  svg transform: matrix(0.99962, 0.0275744, -0.0275744, 0.99962, 1.97789, 0.204423)
+  svg box: x 99.0, y 245.2, w 186.0, h 224.9
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 105/106, 108/117, 85/107, 69/111, 44/105, 22/94; first points: 44.5,72.6 44.5,72.6 44.5,72.6 44.5,72.6 44.5,72.6 44.5,72.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+
+Real-time run (the recording): tap at 142.5,320.0.
+  before the tap: card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  400 ms after the tap: card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4

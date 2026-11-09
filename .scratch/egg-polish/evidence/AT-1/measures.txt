@@ -1,0 +1,108 @@
+The house crops (light theme, 375x812). Each compares three viewport crops of the house: as drawn, the halves hidden, and the whole art hidden with the halves forced on.
+crop-house-0.0s-3x.png, motion on, 0 ms after the tap: screen clip x 148, y 317, w 80, h 80 (art units 50..130 by 70..150), drawn at 3x with no smoothing.
+  children of the egg svg: defs, use[data-egg-part=whole].egg-whole-out, g.egg-half.egg-split-top, g.egg-half.egg-split-bottom, g, polygon.egg-shard.fill-chip-dark.stroke-accent-text, polygon.egg-shard.fill-chip-dark.stroke-accent-text, polygon.egg-shard.fill-chip-dark.stroke-accent-text, polygon.egg-shard.fill-chip-dark.stroke-accent-text, polygon.egg-shard.fill-chip-dark.stroke-accent-text, polygon.egg-shard.fill-chip-dark.stroke-accent-text, polygon.egg-shard.fill-chip-dark.stroke-accent-text
+  as drawn vs the whole art alone: 0 of 6400 pixels differ by more than 8 in a channel; the largest difference is 0.
+  the halves alone (forced on) vs the whole art alone: 50 of 6400 pixels differ by more than 8; the largest difference is 57.
+crop-house-reduced-3x.png, prefers-reduced-motion: reduce, the find card before any tap: screen clip x 148, y 317, w 80, h 80 (art units 50..130 by 70..150), drawn at 3x with no smoothing.
+  children of the egg svg: defs, use[data-egg-part=whole], g.egg-half, g.egg-half
+  as drawn vs the whole art alone: 0 of 6400 pixels differ by more than 8 in a channel; the largest difference is 0.
+  the halves alone (forced on) vs the whole art alone: 35 of 6400 pixels differ by more than 8; the largest difference is 77.
+
+Seeked run: tap at the screen point 187.5,357.4, the egg point 90.0,110.0 in the units of the art (180 by 220).
+Before the tap: card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4.
+Start of each animation of the tap after the pointerdown: egg-squash +33.2 ms, egg-tremble +33.2 ms, egg-whole-out +33.2 ms, egg-split-top +33.2 ms, egg-half-in +33.2 ms, egg-split-bottom +33.2 ms, egg-half-in +33.2 ms, egg-glow +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-flash +33.2 ms, egg-tile-rise +33.2 ms
+
+t = 0 ms after the tap (frame-0.0s.png)
+  svg transform: matrix(1, 0, 0, 1, 0, 0)
+  whole art and halves: whole visible, half hidden, half hidden
+  svg box: x 97.5, y 247.4, w 180.0, h 220.0
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 0/103, 0/108, 0/91, 0/107, 0/97, 0/95; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+  tile: drawn box x 178.7, y 348.7, w 16.8, h 16.8, transform matrix(0.15, 0, 0, 0.15, 0, 0), transform-origin 55.5px 55.5938px, growth origin on the screen 187.0,357.0
+
+t = 50 ms after the tap (no frame, measure only)
+  svg transform: matrix(1.05966, 0, 0, 0.906242, 0, 0)
+  whole art and halves: whole visible, half hidden, half hidden
+  svg box: x 92.1, y 266.4, w 190.7, h 199.4
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 0/103, 0/108, 0/91, 0/107, 0/97, 0/95; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+  tile: drawn box x 178.7, y 348.7, w 16.8, h 16.8, transform matrix(0.15, 0, 0, 0.15, 0, 0), transform-origin 55.5px 55.5938px, growth origin on the screen 187.0,357.0
+
+t = 100 ms after the tap (frame-0.1s.png)
+  svg transform: matrix(1.07, 0, 0, 0.89, 0, 0)
+  whole art and halves: whole visible, half hidden, half hidden
+  svg box: x 91.2, y 269.7, w 192.6, h 195.8
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 0/103, 0/108, 0/91, 0/107, 0/97, 0/95; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+  tile: drawn box x 178.7, y 348.7, w 16.8, h 16.8, transform matrix(0.15, 0, 0, 0.15, 0, 0), transform-origin 55.5px 55.5938px, growth origin on the screen 187.0,357.0
+
+t = 150 ms after the tap (no frame, measure only)
+  svg transform: matrix(1.01545, 0, 0, 0.974851, 0, 0)
+  whole art and halves: whole visible, half hidden, half hidden
+  svg box: x 96.1, y 252.5, w 182.8, h 214.5
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 0/103, 0/108, 0/91, 0/107, 0/97, 0/95; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+  tile: drawn box x 178.7, y 348.7, w 16.8, h 16.8, transform matrix(0.15, 0, 0, 0.15, 0, 0), transform-origin 55.5px 55.5938px, growth origin on the screen 187.0,357.0
+
+t = 200 ms after the tap (frame-0.2s.png)
+  svg transform: matrix(0.999989, -0.00475522, 0.00475522, 0.999989, -0.272455, 0)
+  whole art and halves: whole visible, half hidden, half hidden
+  svg box: x 96.3, y 247.0, w 181.0, h 220.9
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 1/103, 0/108, 0/91, 0/107, 0/97, 0/95; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+  tile: drawn box x 178.7, y 348.7, w 16.8, h 16.8, transform matrix(0.15, 0, 0, 0.15, 0, 0), transform-origin 55.5px 55.5938px, growth origin on the screen 187.0,357.0
+
+t = 550 ms after the tap (no frame, measure only)
+  svg transform: matrix(1.03854, -0.00198413, 0.00198413, 1.03854, -0.109463, 0)
+  whole art and halves: whole visible, half hidden, half hidden
+  svg box: x 93.5, y 239.4, w 187.4, h 228.8
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 103/103, 108/108, 91/91, 107/107, 97/97, 91/95; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+  tile: drawn box x 178.7, y 348.7, w 16.8, h 16.8, transform matrix(0.15, 0, 0, 0.15, 0, 0), transform-origin 55.5px 55.5938px, growth origin on the screen 187.0,357.0
+
+t = 570 ms after the tap (no frame, measure only)
+  svg transform: matrix(1.04866, 0, 0, 1.04866, 0, 0)
+  whole art and halves: whole visible, half hidden, half hidden
+  svg box: x 93.1, y 237.6, w 188.8, h 230.7
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 103/103, 108/108, 91/91, 107/107, 97/97, 94/95; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+  tile: drawn box x 178.7, y 348.7, w 16.8, h 16.8, transform matrix(0.15, 0, 0, 0.15, 0, 0), transform-origin 55.5px 55.5938px, growth origin on the screen 187.0,357.0
+
+t = 700 ms after the tap (no frame, measure only)
+  svg transform: matrix(1.06, 0, 0, 1.06, 0, 0)
+  whole art and halves: whole hidden, half visible, half visible
+  svg box: x 92.1, y 235.3, w 190.8, h 233.2
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 103/103, 108/108, 91/91, 107/107, 97/97, 95/95; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0.424908, 0.424908, 0.424908, 0.424908, 0.424908, 0.424908, 0.424908
+  tile: drawn box x 167.1, y 337.1, w 40.2, h 40.2, transform matrix(0.358768, 0, 0, 0.358768, 0, 0), transform-origin 55.5px 55.5938px, growth origin on the screen 187.0,357.0
+
+Real-time run (the recording, no fake clock): tap at 187.5,357.4. One sample on each animation frame, t in ms after the pointerdown.
+Columns: t | svg transform | svg box | longest drawn crack line in units | highest shard opacity
+9.4 | matrix(1, 0, 0, 1, 0, 0) | 180.0x220.0 at 97.5,247.4 | 0.00 | 0.00
+21.6 | matrix(1.05952, 0, 0, 0.906463, 0, 0) | 190.7x199.4 at 92.1,266.3 | 0.00 | 0.00
+39.2 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+59.1 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+73.5 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+89.2 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+109.2 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+122.6 | matrix(1.01595, 0, 0, 0.974077, 0, 0) | 182.9x214.3 at 96.1,252.7 | 0.00 | 0.00
+139.2 | matrix(0.980445, 0, 0, 1.02933, 0, 0) | 176.5x226.5 at 99.3,241.5 | 0.00 | 0.00
+159.2 | matrix(1, 0, 0, 1, 0, 0) | 180.0x220.0 at 97.5,247.4 | 0.00 | 0.00
+171.2 | matrix(0.999989, -0.00473479, 0.00473479, 0.999989, -0.271285, 0) | 181.0x220.8 at 96.3,247.0 | 0.91 | 0.00
+189.5 | matrix(0.999955, -0.00947402, 0.00947402, 0.999955, -0.542829, 0) | 182.1x221.7 at 95.0,246.6 | 3.67 | 0.00
+209.3 | matrix(0.999899, -0.0141847, 0.0141847, 0.999899, -0.812748, 0) | 183.1x222.5 at 93.8,246.1 | 8.30 | 0.00
+221.1 | matrix(0.999904, -0.0138458, 0.0138458, 0.999904, -0.752, 0) | 183.0x222.5 at 94.0,246.2 | 14.73 | 0.00
+239.3 | matrix(0.999998, -0.0019979, 0.0019979, 0.999998, 0.0626341, 0) | 180.4x220.4 at 97.2,247.2 | 22.86 | 0.00
+259.3 | matrix(0.999951, 0.00985031, -0.00985031, 0.999951, 0.877268, 0) | 182.2x221.8 at 98.2,246.5 | 32.34 | 0.00
+273.7 | matrix(0.999765, 0.0216971, -0.0216971, 0.999765, 1.6919, 0) | 184.7x223.9 at 98.8,245.5 | 42.69 | 0.00
+294.1 | matrix(0.999874, 0.0158651, -0.0158651, 0.999874, 1.32462, 0.168846) | 183.5x222.8 at 98.6,246.2 | 53.35 | 0.00
+305.7 | matrix(1, -0.000622642, 0.000622642, 1, 0.244943, 0.438764) | 180.1x220.1 at 97.6,247.8 | 63.64 | 0.00
+326.3 | matrix(0.999852, -0.0172095, 0.0172095, 0.999852, -0.841236, 0.710309) | 183.8x223.1 at 93.2,246.6 | 73.12 | 0.00

@@ -1,0 +1,12 @@
+AT-30, reduced motion changes the word at once. Script: evidence-scripts/board.mjs AT-30.
+How the state was made: the local API restarts with an empty eggs store. T1 drops in week 9 by the drop route. For each letter, a filler test egg (a target that no element holds, on /midseason/2026/) drops by the drop route in a drop of 11 eggs (week 10 and on), and the check and claim routes claim it for the manager into the word.
+State: Lil Fridge holds E, A, G, L, S in EAGLES and C, O in CORNERSTONE.
+Board answer of the API after the state:
+counts: {"left":5,"found":7,"to_drop":42}
+CORNERSTONE: winner none; Lil Fridge: CO
+LANSDALE: winner none; no letters
+EAGLES: winner none; Lil Fridge: EAGLS
+T1 is dropped too, for AT-32, and it holds no claim.
+Recording (recording.webm): a context with reducedMotion 'reduce', 375x812, light. Open /eggs/, scroll the slider into view, tap the tab LANSDALE.
+page-script.txt: one animation frame after the tap, the running animations, the transition and animation durations of the slides and letters, the shown tabpanel, and --es-dur of the slider.
+after-tap-375-light.png: a viewport shot right after that frame.

@@ -1,0 +1,5 @@
+prefers-reduced-motion: reduce (context option).
+One frame after the tap, running animations: 0 []
+At the stamp: ticket {"text":"C CLAIM TICKET CORNERSTONE Lil Fridge CLAIMED","stubName":"Tear to claim C for CORNERSTONE","stubDisabled":"true","stubHidden":"true","stubTransform":"none","stubVisibility":"hidden"}
+Running animations at the stamp: 0 []
+Elements with .egg-ticket-sweep: 0; with .egg-stub-flutter: 0

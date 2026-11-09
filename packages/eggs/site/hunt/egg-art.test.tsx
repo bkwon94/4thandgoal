@@ -1,10 +1,11 @@
 /**
- * Tests for the slot row of the egg art: one grid column per letter of the egg word, each of the same width.
- * The browser lays out the grid, so these tests read the columns and the classes that set the widths.
+ * Tests for the egg art: the whole egg under its two halves, and the slot row of one grid column per letter.
+ * The browser lays out and paints the art, so these tests read the elements and the classes that set the look.
  */
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { SlotRow } from "./egg-art";
+import { crackOf, EGG_MIDDLE } from "./crack";
+import { Egg, SlotRow } from "./egg-art";
 import { slotsOf } from "./slots";
 
 afterEach(cleanup);
@@ -28,4 +29,27 @@ describe("SlotRow", () => {
       for (const tile of tiles) expect(tile.classList.contains("w-full")).toBe(true);
     });
   }
+});
+
+describe("Egg", () => {
+  // The two halves clip the art along one zigzag, and the antialiased edges of two clips leave a thin seam.
+  // The whole art shows until the burst, and the halves show only from it, so no crack shows before the lines draw.
+  // The visibility of each part lives in globals.css, and jsdom applies no CSS, so these tests read the parts and classes.
+  it("draws the whole art, unclipped, under the two halves of an egg at rest", () => {
+    const { container } = render(<Egg crack={null} motion={true} />);
+    const whole = container.querySelector('[data-egg-part="whole"]') as SVGElement;
+    expect(whole).not.toBeNull();
+    expect(whole.hasAttribute("clip-path")).toBe(false);
+    const half = container.querySelector(".egg-half") as SVGElement;
+    expect(whole.compareDocumentPosition(half) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(whole.classList.contains("egg-whole-out")).toBe(false);
+  });
+
+  it("hides the whole art at the burst of a crack, so the halves fly apart alone", () => {
+    const { container } = render(<Egg crack={crackOf(EGG_MIDDLE, 7)} motion={true} />);
+    const whole = container.querySelector('[data-egg-part="whole"]') as SVGElement;
+    expect(whole.classList.contains("egg-whole-out")).toBe(true);
+    const halves = [...container.querySelectorAll(".egg-half")];
+    expect(halves.map((half) => half.classList.contains("egg-split-top") || half.classList.contains("egg-split-bottom"))).toEqual([true, true]);
+  });
 });

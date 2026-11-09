@@ -1,0 +1,5 @@
+AT-14, a key tears the stub. Script: evidence-scripts/claim.mjs AT-14.
+Run 1 (recording.webm), Enter: an empty store, T1 dropped with the letter C, no claim. 375x812, motion on, light, passphrase stored.
+Find T1, crack it, tap 'Claim C', pick 'Lil Fridge' and CORNERSTONE. Put the focus on the stub with focus(). Read the ARIA snapshot of the ticket. Press Enter. Record 3.5 s more.
+Run 2 (recording-space.webm), Space: the API restarts with an empty store and T1 drops again with the letter C. The same steps, with Space in place of Enter.
+requests.txt holds, for each run, the focus, the ARIA snapshot (the accessibility tree of the ticket and its stub), the requests of the page to the local API, and the board.

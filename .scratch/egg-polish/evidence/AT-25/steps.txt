@@ -1,0 +1,12 @@
+AT-25, a slide keeps the detail of each manager. Script: evidence-scripts/board.mjs AT-25.
+How the state was made: the local API restarts with an empty eggs store. For each letter, a filler test egg (a target that no element holds, on /midseason/2026/) drops by the drop route in a drop of 11 eggs (week 10 and on), and the check and claim routes claim it for the manager into the word.
+State: Lil Fridge holds C, O, R, N in CORNERSTONE; The Blue Tent E, All You Need Is Love S, NFC Least T, London Cooking O, Teehee R hold one each.
+Board answer of the API after the state:
+counts: {"left":13,"found":9,"to_drop":32}
+CORNERSTONE: winner none; The Blue Tent: E; All You Need Is Love: S; Lil Fridge: CORN; NFC Least: T; London Cooking: O; Teehee: R
+LANSDALE: winner none; no letters
+EAGLES: winner none; no letters
+For each width (375, 768, 1280; height 900) and theme: open /eggs/ with cpc.theme set, tap the tab CORNERSTONE, wait 1.2 s, then the scroll pass and a full-page shot (before-*).
+Tap the button 'Show all ...' in the slide of CORNERSTONE, wait 0.8 s, then the scroll pass and a full-page shot (after-*).
+slider.txt: the button text, and the leader line and each row of the slide, before and after.
+slider-before-* and slider-after-*: element shots of the slider ([data-slider]) in a viewport 2400 px tall, so the fixed menu bar of the phone width covers no part of it.

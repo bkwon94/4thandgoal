@@ -1,0 +1,5 @@
+AT-4, the crack builds, then bursts. Script: evidence-scripts/find.mjs AT-4.
+State: empty store, T1 dropped with the letter C, no claim.
+Recording (recording.webm): 375x812, motion on, light. Find T1, tap the egg at 60% of its width and 55% of its height, record 2.6 s more.
+Frames (frame-0.3s.png, frame-0.6s.png): a fresh find with the same tap, the Playwright clock paused, and each animation of the tap seeked to the time.
+measures.txt holds the svg class and transform (the shake), the glow point and opacity, each crack line, and the transform of each shard at each frame.

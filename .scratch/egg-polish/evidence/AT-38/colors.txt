@@ -1,0 +1,6 @@
+CORNERSTONE light: shown CORNERSTONE; frame background rgb(20, 20, 20); frame class relative overflow-hidden rounded-hero border border-rule-dark bg-band px-hero-x py-hero-y text-on-dark egg-hero egg-wash
+LANSDALE light: shown LANSDALE; frame background rgb(20, 20, 20); frame class relative overflow-hidden rounded-hero border border-rule-dark bg-band px-hero-x py-hero-y text-on-dark egg-hero egg-wash
+EAGLES light: shown EAGLES; frame background rgb(184, 52, 42); frame class relative overflow-hidden rounded-hero border px-hero-x py-hero-y text-on-dark egg-hero egg-wash border-accent bg-accent
+CORNERSTONE dark: shown CORNERSTONE; frame background rgb(20, 20, 20); frame class relative overflow-hidden rounded-hero border border-rule-dark bg-band px-hero-x py-hero-y text-on-dark egg-hero egg-wash
+LANSDALE dark: shown LANSDALE; frame background rgb(20, 20, 20); frame class relative overflow-hidden rounded-hero border border-rule-dark bg-band px-hero-x py-hero-y text-on-dark egg-hero egg-wash
+EAGLES dark: shown EAGLES; frame background rgb(184, 52, 42); frame class relative overflow-hidden rounded-hero border px-hero-x py-hero-y text-on-dark egg-hero egg-wash border-accent bg-accent

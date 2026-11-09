@@ -1,0 +1,4 @@
+AT-33, a manager finds, cracks, tears, and sees the claim.
+The API restarts with an empty store. Then LOCAL_API_URL=http://localhost:8081 pnpm --dir apps/site test:eggs runs the Playwright project eggs, and eggs-output.txt holds its full output.
+The test drops T1 in week 9 itself. In an empty store the letter rule gives T1 the letter A, not C, and the test reads the letter from the drop answer.
+At 375 and 1280 px it finds T1, cracks the egg off its middle, tears the stub by a drag, opens the egg board, and checks the letter of Lil Fridge in the slide and in the latest claims.
