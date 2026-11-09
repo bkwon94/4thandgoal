@@ -19,17 +19,17 @@ The facts check becomes a live cascade behind an eval bar. The tone and cause qu
 - A failed Jev call never counts as a pass. The blurb goes to the Claude check.
 - The terms are Jev check, Jev answer, and Cascade. "Verdict" stays with the analyzer and the Judge. Brian, 2026-11-09.
 - The Jev check asks four tone and cause questions: an injury joke, life outside fantasy, an explained joke, and a stated cause. The flags show in the Jev log and in the `publish` prompt, with an optional right-or-wrong mark. `decisions/03-grill-tone-and-cause-questions.md`.
+- On past labels, one Noul per sentence with all chapter facts and the vocabulary works best. With a "drop" code check, 2 of 22 failed cases escape at 0.9, and 17% of blurbs skip Claude. The labels are weak. `decisions/01-research-jev-on-past-labels.md`.
+- A Jev fact card is a fourth option for your-league ticket 04, with a filter on the fact kind and one request per trade. It does not replace the Claude sentence. `decisions/09-research-finder-fact-rank.md`.
 
 ## NOT YET SPECIFIED
 
-- How well do Jev answers agree with the past Claude verdicts, and which question text and state work best? `decisions/01-research-jev-on-past-labels.md`.
 - Which eval bar and which probability threshold make the cascade live? `decisions/02-grill-cascade-bar.md`.
 - Does the cascade also cover the midseason blurbs and the `midseason-publish` re-check? `decisions/04-grill-midseason-scope.md`.
 - Which key does the weekly build use: the local key or the app key? `decisions/05-grill-build-key.md`.
 - Where does the Jev log live, and in what format? `decisions/06-spec-jev-log.md`.
 - What shape does the port take: the SDK or plain HTTP, sync or async, and the fake? `decisions/07-spec-port-shape.md`.
 - Which ADR records the vendor, the data sent to TypeSafe, and the pass rule? `decisions/08-spec-adr.md`.
-- Can Jev rank the facts of a Finder trade well enough for a card? The result goes to your-league ticket 04, and this spec builds nothing for it. `decisions/09-research-finder-fact-rank.md`.
 
 ## OUT OF SCOPE
 
