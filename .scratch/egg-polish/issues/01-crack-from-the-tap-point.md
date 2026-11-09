@@ -8,7 +8,7 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-1 to AT-8.
 
 **Blocked by:** None. It can start now.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A hunt test fires a pointer tap at a point of the egg and reads that the crack lines start at that point.
 - [x] A hunt test reads two cracks at one tap point with two seeds, and the lines differ.
