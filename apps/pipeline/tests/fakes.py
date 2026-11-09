@@ -16,7 +16,7 @@ from pydantic import BaseModel, TypeAdapter
 
 from league.claude_errors import WriterError
 from league.claude_port import Writer
-from league.jev_port import Jev, JevAnswers, JevError, NoulQuestion
+from league.jev_port import Jev, JevError, JevResponse, NoulQuestion
 from league.league_settings import LeagueSettings
 from league.models import ResearchOut
 from league.nflverse import nflverse_week
@@ -197,12 +197,12 @@ class FakeJev:
         self.error = error
         self.requests: list[JevRequest] = []
 
-    def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevAnswers:
+    def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevResponse:
         self.requests.append(JevRequest(state, questions))
         if self.error is not None:
             raise self.error
         nouls = {key: self.answers.get(key, self.yes) for key in questions}
-        return JevAnswers(model=self.MODEL, nouls=nouls, input_tokens=100 * len(questions))
+        return JevResponse(model=self.MODEL, nouls=nouls, input_tokens=100 * len(questions))
 
 
 # The annotation makes pyright prove that the fake has the method of the Jev protocol, with the same types.

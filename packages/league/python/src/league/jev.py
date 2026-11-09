@@ -4,7 +4,7 @@ It is the one module that imports the SDK, and it turns every SDK failure into J
 """
 from typesafe_sdk import Noul, NoulCriteria, TypeSafeClient, TypeSafeError
 
-from league.jev_port import JevAnswers, JevError, NoulQuestion
+from league.jev_port import JevError, JevResponse, NoulQuestion
 
 # The alias follows each new Jev release, and each answer saves the exact model id that answered.
 MODEL = "jev-latest"
@@ -19,7 +19,7 @@ class TypeSafeJev:
     def __init__(self, client: TypeSafeClient | None = None):
         self._client = client
 
-    def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevAnswers:
+    def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevResponse:
         """The TypeSafe call of `Jev.ask`. The docstring of the protocol in jev_port.py gives the arguments."""
         nouls = {key: Noul(instructions=q.instructions, criteria=NoulCriteria(true=q.yes, false=q.no))
                  for key, q in questions.items()}
@@ -32,7 +32,7 @@ class TypeSafeJev:
         except (TypeSafeError, KeyError) as err:
             # A missing answer is a bad response, so it is the same error as a failed call.
             raise JevError(f"{type(err).__name__}: {err}") from err
-        return JevAnswers(model=response.model, nouls=answers, input_tokens=response.usage.input_tokens)
+        return JevResponse(model=response.model, nouls=answers, input_tokens=response.usage.input_tokens)
 
 
 # The one Jev of the process, so the process has one client. The weekly build calls it by default.
