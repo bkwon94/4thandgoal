@@ -1,0 +1,8 @@
+$ git grep -nE "(monkeypatch\.setattr|mock\.patch|patch\().*([Jj]ev|jev_port|TypeSafe)" -- apps/pipeline/tests/ packages/
+exit 1 (1 means no match)
+
+$ git grep -n "patch" -- apps/pipeline/tests/test_jev_check.py apps/pipeline/tests/fakes.py
+apps/pipeline/tests/fakes.py:56:    A body that raises an httpx error fails the request, as a network failure does. It is not a patch of a port.
+apps/pipeline/tests/test_jev_check.py:234:def test_the_adapter_with_no_key_raises_the_one_jev_error_and_calls_no_network(monkeypatch):
+apps/pipeline/tests/test_jev_check.py:236:    monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
+exit 0

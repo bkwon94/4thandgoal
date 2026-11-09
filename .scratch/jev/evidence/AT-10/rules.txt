@@ -1,0 +1,5 @@
+$ make -C apps/pipeline rules
+uv run --exact --package cornerstone pytest -q tests/test_layers.py tests/test_rule_client.py tests/test_rule_ports.py tests/test_rule_publish.py tests/test_rule_readmes.py tests/test_rule_suppressions.py tests/test_rule_tracker.py
+.................................................                        [100%]
+49 passed in 1.34s
+exit 0

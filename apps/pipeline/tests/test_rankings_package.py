@@ -9,7 +9,7 @@ import shutil
 
 import pytest
 from cpc import cpc_client
-from fakes import fixture_nflverse, no_claims, no_news
+from fakes import FakeJev, fixture_nflverse, no_claims, no_news
 
 from cornerstone.pipeline import run_build
 from league.models import History, PastWeek, Sentence, Verdict, VerifyOut
@@ -33,7 +33,8 @@ def build(tmp_path, tmp_path_factory, fixture_raw_dir, fixture_history_root):
     shutil.copytree(fixture_raw_dir, week_dir(tmp_path, 2026, WEEKS) / "raw")
     shutil.copytree(fixture_history_root, history_root(tmp_path, 2026))
     offline = {"news": no_news, "fetch_bytes": lambda url: None, "research": no_claims,
-               "nflverse": fixture_nflverse(tmp_path_factory.mktemp("nflverse"))}
+               "nflverse": fixture_nflverse(tmp_path_factory.mktemp("nflverse")),
+               "jev": FakeJev()}
 
     def run(packages=None, **settings):
         client = cpc_client(at=tmp_path, **settings)

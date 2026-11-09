@@ -1,0 +1,31 @@
+# docs/adr/0029-typesafe-jev-is-the-second-model-vendor.md
+# TypeSafe Jev is the second model vendor, and its answer passes no check alone
+
+The weekly build checks each blurb with code and with one Claude call. The `jev` spec adds a second check that a classifier answers. TypeSafe sells that classifier as the model Jev. The Jev check asks one yes or no question about each sentence of a blurb. We decided three things.
+
+## The three choices
+
+1. **TypeSafe Jev is the second model vendor, beside Anthropic.** It answers the checks that a classifier answers. Claude keeps the writing and the Claude check.
+2. **The pipeline sends blurbs and fact sheets to TypeSafe.** They hold the names of managers and players. TypeSafe does not train on the data. Zero data retention is for enterprise accounts only, so this account does not have it.
+3. **A Jev answer passes no check alone.** In the `jev` spec, the Jev check runs beside the Claude check and logs only. A later spec may change that, but only with an eval bar on real labels. A failed Jev call never counts as a pass.
+
+## The third port
+
+The Jev port is the third port, after `Provider` and `Writer`. It is the `Jev` protocol in `packages/league/python/src/league/jev_port.py`. It takes a state and a set of Noul questions, and it returns one Jev answer per question key.
+
+- `TypeSafeJev` in `league/jev.py` implements it. The model is the alias `jev-latest`. The key is `TYPESAFE_API_KEY`.
+- `FakeJev` in `apps/pipeline/tests/fakes.py` is its one fake, as ADR 0015 requires.
+- `JevError` is the one error type of every failure. A caller catches it and never reads it as a "no".
+- `facts/jev_check.py` writes the questions. It never imports the SDK.
+
+## Consequences
+
+- The data that leaves the repo grows. A reader finds what leaves, and why, in this record.
+- A Jev error leaves the blurb, the verdict `passed`, and the page the same as a build with no error.
+- The build saves each Jev answer in `verify.json`. A later spec sets the bar of a live cascade on those labels.
+- No test calls TypeSafe. The adapter runs against the live API by hand, for the evidence.
+
+We rejected two alternatives:
+
+- **Let a Jev answer reject a blurb now.** We have no labels to set a bar, so a wrong answer would block a good blurb.
+- **Use Claude for every check.** A classifier gives a calibrated probability per sentence at a lower cost.

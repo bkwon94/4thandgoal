@@ -1,0 +1,223 @@
+$ set -a; source ~/.secrets; set +a; uv run --exact --package cornerstone cornerstone build --client cpc --season 2026 --week 8 --no-fetch   # in a detached worktree at jev 3f0301ff, 13:18:01 to 13:32:43, exit 0
+Uninstalled 3 packages in 11ms
+INFO httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2026.csv.gz "HTTP/1.1 302 Found"
+INFO httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/61bc3b0c-31b4-43a4-847c-e8427a667083?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-09T19%3A04%3A27Z&rscd=attachment%3B+filename%3Dplay_by_play_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-09T18%3A03%3A46Z&ske=2026-11-09T19%3A04%3A27Z&sks=b&skv=2018-11-09&sig=6jkz2fbnpsl%2F6%2FJ%2BJ%2BNFh%2F1ytOm2sICad9Uux5ti9uw%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NDI0ODU4NiwibmJmIjoxNzk0MjQ4Mjg2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.782dt-oE1POF0Y_zf0Uesxa_RDeCLnobZ1J5U8DOJsc&response-content-disposition=attachment%3B%20filename%3Dplay_by_play_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/ftn_charting/ftn_charting_2026.csv "HTTP/1.1 302 Found"
+INFO httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/bb19a060-120c-4821-bfcf-888dd82ea6dd?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-09T19%3A15%3A44Z&rscd=attachment%3B+filename%3Dftn_charting_2026.csv&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-09T18%3A14%3A56Z&ske=2026-11-09T19%3A15%3A44Z&sks=b&skv=2018-11-09&sig=R%2BqIAzlLUA%2BoB4krsmDcjLQnVrAGwq%2BdhtDyGsmoRtY%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NDI0ODU4NywibmJmIjoxNzk0MjQ4Mjg3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.oy9rBdxWm1KPg6thbAPmJ0HyKYef9tAGZZncbKCXJQM&response-content-disposition=attachment%3B%20filename%3Dftn_charting_2026.csv&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv "HTTP/1.1 302 Found"
+INFO httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/5550adb7-cf62-44dc-bd40-1b44e7500c56?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-09T19%3A00%3A49Z&rscd=attachment%3B+filename%3Dgames.csv&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-09T18%3A00%3A16Z&ske=2026-11-09T19%3A00%3A49Z&sks=b&skv=2018-11-09&sig=6zu8kSPnNvz1LBc05Pvke6dKhLXR1OLyWWYPIwmp4lY%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NDI0ODU4NywibmJmIjoxNzk0MjQ4Mjg3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.oy9rBdxWm1KPg6thbAPmJ0HyKYef9tAGZZncbKCXJQM&response-content-disposition=attachment%3B%20filename%3Dgames.csv&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_2026.csv.gz "HTTP/1.1 302 Found"
+INFO httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/7e96ce36-2457-405f-962f-92d78a33385c?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-09T18%3A59%3A58Z&rscd=attachment%3B+filename%3Ddepth_charts_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-09T17%3A59%3A05Z&ske=2026-11-09T18%3A59%3A58Z&sks=b&skv=2018-11-09&sig=nZzfcEe6TzW3%2FFs3czU82RjzahlpTEL2CfygfNoRDXA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NDI1MDA4OCwibmJmIjoxNzk0MjQ4Mjg4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.D773F_jTgDQwyh1MkdpNTWJkUAZelwUPd-wVONT11wc&response-content-disposition=attachment%3B%20filename%3Ddepth_charts_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_2026.csv.gz "HTTP/1.1 302 Found"
+INFO httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/eb767c25-a107-4fab-8f37-0ecc9e082983?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-09T19%3A12%3A40Z&rscd=attachment%3B+filename%3Dinjuries_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-09T18%3A11%3A57Z&ske=2026-11-09T19%3A12%3A40Z&sks=b&skv=2018-11-09&sig=eB78AyoljJkz6zy%2FqlbBtn4fjQf2F0UltPOpLf1246k%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NDI0ODQ3NCwibmJmIjoxNzk0MjQ4MTc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.SW-0dHNcVAhfOKK0QAA5UWF-cp3jYduXkColrTA9kIU&response-content-disposition=attachment%3B%20filename%3Dinjuries_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://github.com/dynastyprocess/data/raw/master/files/db_playerids.csv "HTTP/1.1 302 Found"
+INFO httpx: HTTP Request: GET https://raw.githubusercontent.com/dynastyprocess/data/master/files/db_playerids.csv "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_2026.csv "HTTP/1.1 302 Found"
+INFO httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/df0f3cd2-38a3-4952-88ec-ebb7dcbf27b9?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-09T19%3A00%3A22Z&rscd=attachment%3B+filename%3Dsnap_counts_2026.csv&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-09T18%3A00%3A09Z&ske=2026-11-09T19%3A00%3A22Z&sks=b&skv=2018-11-09&sig=zWD1TSAe98A%2FmAIfsvfmPxmoDJALvrTYWOCDa7moa6w%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NDI0ODUxNCwibmJmIjoxNzk0MjQ4MjE0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.lPuGBSVxLL2im2obFzxXOuvf-0DNmjP9RttORmw6zYQ&response-content-disposition=attachment%3B%20filename%3Dsnap_counts_2026.csv&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2026.csv.gz "HTTP/1.1 302 Found"
+INFO httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/6a61ca58-de3b-4dc3-9c72-cf8b83446da2?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-09T19%3A01%3A04Z&rscd=attachment%3B+filename%3Dstats_player_week_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-09T18%3A00%3A12Z&ske=2026-11-09T19%3A01%3A04Z&sks=b&skv=2018-11-09&sig=gmqTqydOGA3tq%2FcoPCg%2Fw6PU8zdNczqKaD1mWXHfSw8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NDI0ODU5MiwibmJmIjoxNzk0MjQ4MjkyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.AehQ6a5rH2RUC72OwT3yfIOMJ7uCC_Dw0i2fkCtYQgQ&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://github.com/ffverse/ffopportunity/releases/download/latest-data/ep_weekly_2026.csv "HTTP/1.1 302 Found"
+INFO httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/372253066/f083e7af-57c4-474a-8826-dba11c18848d?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-09T19%3A00%3A40Z&rscd=attachment%3B+filename%3Dep_weekly_2026.csv&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-09T18%3A00%3A06Z&ske=2026-11-09T19%3A00%3A40Z&sks=b&skv=2018-11-09&sig=aTAMPMWathVmzw6HRzL1Lw2PEuiULc%2Bumv692XQICY8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NDI0ODU5NCwibmJmIjoxNzk0MjQ4Mjk0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Zcz8DBTwoQgU8t3MRY6MHfkkPrq4YTEjSZ0Fb2FpS3s&response-content-disposition=attachment%3B%20filename%3Dep_weekly_2026.csv&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/6770/news "HTTP/1.1 200 OK"
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=8456 cache_read_input_tokens=22204 input_tokens=223
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=8887 cache_read_input_tokens=51670 input_tokens=210
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4960 cache_read_input_tokens=49636 input_tokens=200
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2542 cache_read_input_tokens=37690 input_tokens=230
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2026 cache_read_input_tokens=28830 input_tokens=194
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1641 cache_read_input_tokens=20699 input_tokens=197
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4940 cache_read_input_tokens=28867 input_tokens=199
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2483 cache_read_input_tokens=37376 input_tokens=198
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1995 cache_read_input_tokens=28964 input_tokens=233
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2016 cache_read_input_tokens=28810 input_tokens=194
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3817 cache_read_input_tokens=28889 input_tokens=231
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1500 cache_read_input_tokens=20685 input_tokens=187
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2158 cache_read_input_tokens=28850 input_tokens=222
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1577 cache_read_input_tokens=28714 input_tokens=225
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3666 cache_read_input_tokens=38703 input_tokens=225
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1630 cache_read_input_tokens=20764 input_tokens=258
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1862 cache_read_input_tokens=29087 input_tokens=228
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1512 cache_read_input_tokens=20718 input_tokens=226
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3685 cache_read_input_tokens=39051 input_tokens=237
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1501 cache_read_input_tokens=20687 input_tokens=224
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2130 cache_read_input_tokens=28848 input_tokens=225
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3004 cache_read_input_tokens=38191 input_tokens=225
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3352 cache_read_input_tokens=28895 input_tokens=198
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1708 cache_read_input_tokens=28780 input_tokens=161
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2199 cache_read_input_tokens=28867 input_tokens=199
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2387 cache_read_input_tokens=28831 input_tokens=195
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3921 cache_read_input_tokens=38441 input_tokens=198
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4277 cache_read_input_tokens=28803 input_tokens=161
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4467 cache_read_input_tokens=37894 input_tokens=160
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=7988 cache_read_input_tokens=0 input_tokens=5404
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=5439
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 193ms (request req_01a1c18fd7937a1db78f98bfac0cf595)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=3336 cache_read_input_tokens=0 input_tokens=5721
+INFO cornerstone.pipeline: chapter motw: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=479
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=516
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 56ms (request req_01a1c1903b857c1c9778bab4ae0489b3)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=643
+INFO cornerstone.pipeline: chapter game_changer: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1628
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 68ms (request req_01a1c19076757b05a17c2848108e2522)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1854
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1704
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 85ms (request req_01a1c190b55871d4a2dd03e61e5af1c8)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1822
+INFO cornerstone.pipeline: chapter awards: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1480
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1515
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 71ms (request req_01a1c19115b37be7adeda926fed32239)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1676
+INFO cornerstone.pipeline: chapter position_leaders: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2531
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 94ms (request req_01a1c191812a71bb9ca38e9c145831d8)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=2718
+INFO cornerstone.pipeline: chapter recap_1: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2719
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 85ms (request req_01a1c191c2d774bfa88c335874eef6b7)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=2853
+INFO cornerstone.pipeline: chapter recap_2: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=4696
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=4727
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 224ms (request req_01a1c1926fb474469e719f85d85269f4)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=4740
+INFO cornerstone.pipeline: chapter recap_3: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2776
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 117ms (request req_01a1c192b6a87167ba86d498d2d0e1c4)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=2954
+INFO cornerstone.pipeline: chapter recap_4: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2900
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2935
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 147ms (request req_01a1c193560971099d2ba7e27224ebdf)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=3111
+INFO cornerstone.pipeline: chapter recap_5: attempt 2, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2976
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 81ms (request req_01a1c193bfa27061b3a739243ffdd377)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=3215
+INFO cornerstone.pipeline: chapter recap_6: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1775
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 101ms (request req_01a1c193f7c57dc79b1827528576709f)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1894
+INFO cornerstone.pipeline: chapter median: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=3579
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 89ms (request req_01a1c19464bc7907864abb5f55bf2ee0)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=3954
+INFO cornerstone.pipeline: chapter next_week: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=4692
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 215ms (request req_01a1c195370e7657be6ce210390ce6f3)
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=5818
+INFO cornerstone.pipeline: chapter rankings: attempt 1, fallback False
+INFO cornerstone.pipeline: Jev: 14 checks, 0 errors, 74573 input tokens
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/6770.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/5967.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4881.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/6801.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/1166.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4984.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12490.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/6790.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/9221.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/7564.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/10232.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/11604.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12506.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/8130.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/team_logos/nfl/jax.png "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/team_logos/nfl/pit.png "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/team_logos/nfl/was.png "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/13276.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4866.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/6786.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/9493.jpg "HTTP/1.1 200 OK"
+INFO cornerstone.pipeline: no saved chart read for week 8: the roster grade has no trade value
+/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/jev-ev/clients/cpc/build/2026/week-08/page.json
+Site page after publish: https://cpc.4thandgoal.app/2026/week-08/

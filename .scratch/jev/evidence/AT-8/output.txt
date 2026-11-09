@@ -1,0 +1,10 @@
+$ git diff --stat main -- clients/cpc/data/2026/week-08/verify.json   # empty: the file is the one of main
+$ python3 -c (the union of the keys of every attempt: no sentences, no jev)
+['chapter', 'code_failures', 'passed', 'verdicts']
+
+$ uv run --exact --package cornerstone cornerstone page-json --client cpc --season 2026 --week 8
+/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/jev/clients/cpc/build/2026/week-08/page.json
+exit 0
+
+$ git diff --stat main -- clients/cpc/build/2026/week-08/page.json
+(end of diff output)

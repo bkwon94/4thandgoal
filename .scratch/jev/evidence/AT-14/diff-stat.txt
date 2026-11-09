@@ -1,0 +1,49 @@
+# HEAD 3f0301ff. The evidence commit adds files under .scratch/jev/ only.
+$ git diff --stat=200 main...jev
+ .scratch/jev/ACCEPTANCE.md                                               | 154 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ .scratch/jev/MAP.md                                                      |  38 ++++++++++++++++++
+ .scratch/jev/PRD.md                                                      | 137 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ .scratch/jev/decisions/01-research-jev-on-past-labels.md                 |  37 +++++++++++++++++
+ .scratch/jev/decisions/01-research-jev-on-past-labels.notes.md           | 234 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ .scratch/jev/decisions/02-grill-cascade-bar.md                           |  23 +++++++++++
+ .scratch/jev/decisions/03-grill-tone-and-cause-questions.md              |  46 +++++++++++++++++++++
+ .scratch/jev/decisions/04-grill-midseason-scope.md                       |  20 ++++++++++
+ .scratch/jev/decisions/05-grill-build-key.md                             |  21 ++++++++++
+ .scratch/jev/decisions/06-spec-jev-log.md                                |  21 ++++++++++
+ .scratch/jev/decisions/07-spec-port-shape.md                             |  19 +++++++++
+ .scratch/jev/decisions/08-spec-adr.md                                    |  21 ++++++++++
+ .scratch/jev/decisions/09-research-finder-fact-rank.md                   |  34 ++++++++++++++++
+ .scratch/jev/decisions/09-research-finder-fact-rank.notes.md             | 153 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ .scratch/jev/issues/01-the-weekly-build-saves-one-jev-check-per-blurb.md |  21 ++++++++++
+ .scratch/jev/issues/02-a-failed-jev-check-never-breaks-the-build.md      |  15 +++++++
+ .scratch/jev/issues/03-the-records-name-the-jev-port.md                  |  16 ++++++++
+ GLOSSARY.md                                                              |  12 ++++++
+ apps/pipeline/src/cornerstone/README.md                                  |   8 ++--
+ apps/pipeline/src/cornerstone/cli.py                                     |   9 +++--
+ apps/pipeline/src/cornerstone/pipeline.py                                |  16 +++++++-
+ apps/pipeline/tests/conftest.py                                          |   9 +++++
+ apps/pipeline/tests/fakes.py                                             |  35 +++++++++++++++-
+ apps/pipeline/tests/golden.py                                            |   5 ++-
+ apps/pipeline/tests/test_cli.py                                          |   9 +++--
+ apps/pipeline/tests/test_jev_check.py                                    | 262 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ apps/pipeline/tests/test_layers.py                                       |   4 ++
+ apps/pipeline/tests/test_pipeline.py                                     |  36 ++++++++++-------
+ apps/pipeline/tests/test_provider.py                                     |   4 +-
+ apps/pipeline/tests/test_rankings_package.py                             |   5 ++-
+ apps/pipeline/tests/test_rule_ports.py                                   |  15 +++----
+ docs/adr/0029-typesafe-jev-is-the-second-model-vendor.md                 |  30 ++++++++++++++
+ docs/agents/state.md                                                     |   1 +
+ packages/facts/README.md                                                 |   1 +
+ packages/facts/python/pyproject.toml                                     |   2 +-
+ packages/facts/python/src/facts/jev_check.py                             |  69 ++++++++++++++++++++++++++++++++
+ packages/facts/python/src/facts/verifier.py                              |  89 ++++++++++++++++++++++++++++++-----------
+ packages/league/README.md                                                |   3 +-
+ packages/league/python/pyproject.toml                                    |  10 +++--
+ packages/league/python/src/league/jev.py                                 |  39 ++++++++++++++++++
+ packages/league/python/src/league/jev_port.py                            |  42 +++++++++++++++++++
+ packages/league/python/src/league/models.py                              |  23 +++++++++++
+ uv.lock                                                                  |  30 ++++++++++++++
+ 43 files changed, 1709 insertions(+), 69 deletions(-)
+
+$ git diff --stat main...jev -- apps/site/ apps/api/ packages/analyzer/ packages/midseason/
+(end: no file)

@@ -1,5 +1,5 @@
 """
-Checks every blurb sentence against its cited facts, in code and with a second Claude call.
+Checks every blurb sentence against its cited facts, in code, with a second Claude call, and with a Jev check that logs.
 A failed blurb is rewritten once with feedback, then replaced by a template sentence.
 """
 import logging
@@ -12,6 +12,7 @@ import anthropic
 from pydantic import ValidationError
 
 from facts.chapters import RANKINGS_CHAPTER, two_team_chapter
+from facts.jev_check import jev_check
 from facts.names import last_name
 from facts.tokens import NUMBER_TOKEN
 from facts.writer import (
@@ -24,10 +25,12 @@ from facts.writer import (
     with_terms,
     write_blurb,
 )
+from league.jev_port import Jev, JevError
 from league.models import (
     Blurb,
     Chapter,
     FactSheet,
+    JevCheck,
     Verdict,
     VerifyOut,
     VerifyResult,
@@ -527,21 +530,57 @@ def claude_verify(
     return verdicts
 
 
+def _logged_jev_check(
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, jev: Jev, *, prompts_dir: Path, terms: Sequence[str],
+) -> JevCheck:
+    """The Jev check of the blurb. A failed call records its error, so it never counts as a pass or stops the build."""
+    try:
+        return jev_check(blurb, chapter, sheet, jev, prompts_dir=prompts_dir, terms=terms)
+    except JevError as err:
+        log.warning("Jev check failed for %s: %s", chapter.key, err)
+        return JevCheck(error=str(err))
+
+
 def verify_blurb(
     blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset(),
-    *, prompts_dir: Path, terms: Sequence[str] = (),
+    *, prompts_dir: Path, terms: Sequence[str] = (), jev: Jev | None = None,
 ) -> VerifyResult:
+    """The code check, then the Claude check. With `jev`, the Jev check runs beside the Claude check and logs only.
+
+    A `jev` of None runs no Jev check. The weekly build passes the real adapter. Raises one of CHECK_ERRORS when the
+    Claude check fails.
+    """
+    result = _code_and_jev_check(blurb, chapter, sheet, used_words, prompts_dir=prompts_dir, terms=terms, jev=jev)
+    if result.code_failures:
+        return result
+    return _with_claude_verdicts(result, blurb, chapter, sheet, call, prompts_dir=prompts_dir, terms=terms)
+
+
+def _code_and_jev_check(
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, used_words: Collection[str], *, prompts_dir: Path,
+    terms: Sequence[str], jev: Jev | None,
+) -> VerifyResult:
+    """The attempt before the Claude check: its sentences, its code failures, and its Jev check. It has not passed."""
+    sentences = [s.text for s in blurb.sentences]
     failures = code_check(blurb, chapter, sheet, used_words, prompts_dir=prompts_dir)
-    # A code failure is final, so skip the paid Claude call.
+    # A code failure is final, so skip the paid Claude call and the Jev check.
     if failures:
-        return VerifyResult(chapter=chapter.key, code_failures=failures, verdicts=[], passed=False)
+        return VerifyResult(chapter=chapter.key, code_failures=failures, verdicts=[], passed=False,
+                            sentences=sentences)
+    jev_result = None if jev is None else _logged_jev_check(blurb, chapter, sheet, jev, prompts_dir=prompts_dir,
+                                                            terms=terms)
+    return VerifyResult(chapter=chapter.key, code_failures=[], verdicts=[], passed=False, sentences=sentences,
+                        jev=jev_result)
+
+
+def _with_claude_verdicts(
+    result: VerifyResult, blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, *, prompts_dir: Path,
+    terms: Sequence[str],
+) -> VerifyResult:
+    """The attempt with its Claude verdicts. Raises one of CHECK_ERRORS when the Claude check fails."""
     verdicts = claude_verify(blurb, chapter, sheet, call, prompts_dir=prompts_dir, terms=terms)
-    return VerifyResult(
-        chapter=chapter.key,
-        code_failures=[],
-        verdicts=verdicts,
-        passed=all(v.supported for v in verdicts),
-    )
+    # `passed` reads the Claude verdicts only. A Jev answer passes no check alone (ADR 0029).
+    return result.model_copy(update={"verdicts": verdicts, "passed": all(v.supported for v in verdicts)})
 
 
 def _feedback(result: VerifyResult) -> str:
@@ -555,9 +594,13 @@ def _feedback(result: VerifyResult) -> str:
 
 def write_and_verify(
     chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset(), *,
-    prompts_dir: Path, terms: Sequence[str] = (),
+    prompts_dir: Path, terms: Sequence[str] = (), jev: Jev | None = None,
 ) -> tuple[Blurb, list[VerifyResult]]:
-    """Write one blurb and check it, with one retry. `terms` are the extra vocabulary of a core package."""
+    """Write one blurb and check it, with one retry. `terms` are the extra vocabulary of a core package.
+
+    With `jev`, each attempt that passes the code check gets a Jev check too. It logs only. A `jev` of None runs no
+    Jev check. The weekly build passes the real adapter.
+    """
     results: list[VerifyResult] = []
     # The used words go to every attempt, so a retry for another failure still hears them.
     page_words = page_word_feedback(used_words)
@@ -576,17 +619,17 @@ def write_and_verify(
                 passed=False,
             )
         else:
-            try:
-                result = verify_blurb(blurb, chapter, sheet, call, used_words, prompts_dir=prompts_dir, terms=terms)
-            except CHECK_ERRORS as err:
-                # One bad verifier response must degrade to the template, not crash the build.
-                log.warning("verifier failed for %s: %s", chapter.key, err)
-                result = VerifyResult(
-                    chapter=chapter.key,
-                    code_failures=[f"verifier error: {err}"],
-                    verdicts=[],
-                    passed=False,
-                )
+            # The two steps of verify_blurb, so a failed Claude check keeps the sentences and the Jev check.
+            result = _code_and_jev_check(blurb, chapter, sheet, used_words, prompts_dir=prompts_dir, terms=terms,
+                                         jev=jev)
+            if not result.code_failures:
+                try:
+                    result = _with_claude_verdicts(result, blurb, chapter, sheet, call, prompts_dir=prompts_dir,
+                                                   terms=terms)
+                except CHECK_ERRORS as err:
+                    # One bad verifier response must degrade to the template, not crash the build.
+                    log.warning("verifier failed for %s: %s", chapter.key, err)
+                    result = result.model_copy(update={"code_failures": [f"verifier error: {err}"]})
             if result.passed:
                 results.append(result)
                 return blurb, results

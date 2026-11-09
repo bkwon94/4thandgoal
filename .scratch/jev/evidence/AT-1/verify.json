@@ -1,0 +1,1173 @@
+{
+  "build": {
+    "started": "2026-11-09T13:18:06.101442-05:00",
+    "sources": {
+      "history": true,
+      "nflverse_pbp": true,
+      "nflverse_ftn": true,
+      "nflverse_injuries": true,
+      "ffverse": true,
+      "nflverse_snaps": true,
+      "ffopportunity": true,
+      "nflverse_stats_player": true
+    },
+    "fetched": "2026-11-03T08:05:54.670568-05:00"
+  },
+  "chapters": {
+    "motw": [
+      {
+        "chapter": "motw",
+        "code_failures": [
+          "[2] the sentence holds 3 numbers; the limit is 2"
+        ],
+        "verdicts": [],
+        "passed": false,
+        "sentences": [
+          "The Blue Tent stole this one in an upset, and it took until Monday.",
+          "They trailed by 3.67 after Sunday night and won by 1.43.",
+          "Jacoby Brissett, a recent add, gave them 4.46 at quarterback, 11th of 12 started QBs.",
+          "Christian Watson was hurt in the 2nd quarter, is now listed Questionable, and still put up 13.3.",
+          "The losing side's starters dropped 3 passes worth about 6.8, enough to cost them the game.",
+          "London Cooking slid to 4th with next to nothing from Drake London, now listed Questionable (Head), while the winners' playoff odds climbed to about 75% this week."
+        ],
+        "jev": null
+      },
+      {
+        "chapter": "motw",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "The score is in M3.result, and M3.upset states this was an upset."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M3.turn gives the 3.67 deficit after Sunday night, the Monday lead change and Price's 4.7; M3.move.13286 makes him a recent add."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M3.move.3257 makes Brissett a recent add with 4.46 on an 18.33 projection, and M3.result shows The Blue Tent won."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "M3.dropswing gives London Cooking's drops at about 6.8, at least the 1.43 margin, which is a drop swing, so saying the drops cost the game is allowed."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "The four injury facts list each player as Questionable on Sleeper as of the Tuesday after the games."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "M3.impact gives the odds moving from 42% to 75%, London Cooking falling from 3rd to 4th, and its missed median."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "The Blue Tent edged London Cooking 100.31 to 98.88 in an upset.",
+          "Down 3.67 after Sunday night, the winners flipped it Monday as Jadarian Price, the new pickup, scored 4.7.",
+          "Jacoby Brissett, another recent add, posted 4.46 on an 18.33 projection and somehow ended up on the winning side.",
+          "The losers' drops were worth about 6.8, enough to cost them the game.",
+          "Christian Watson, Michael Wilson, Drake London and James Cook III are all now listed Questionable.",
+          "This week the winners' playoff odds jumped from about 42% to 75%, while the losers slipped a place and missed the median too."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.96
+            },
+            {
+              "index": 1,
+              "yes": 0.84
+            },
+            {
+              "index": 2,
+              "yes": 0.94
+            },
+            {
+              "index": 3,
+              "yes": 0.75
+            },
+            {
+              "index": 4,
+              "yes": 0.97
+            },
+            {
+              "index": 5,
+              "yes": 0.96
+            }
+          ],
+          "input_tokens": 7598,
+          "error": null
+        }
+      }
+    ],
+    "game_changer": [
+      {
+        "chapter": "game_changer",
+        "code_failures": [
+          "[2] number 3 is not in the cited facts AW.game_changer.news"
+        ],
+        "verdicts": [],
+        "passed": false,
+        "sentences": [
+          "Joe Burrow took the Game Changer award with 42.48 points on a 22.04 projection.",
+          "No started quarterback scored more this week.",
+          "He threw 3 touchdowns against the Falcons and ran in another for good measure.",
+          "All You Need Is Love beat Unsolicited Dak Picks 116.83 to 92.55, and without Burrow, that is a loss.",
+          "Turns out all they needed was a quarterback who doubled his projection."
+        ],
+        "jev": null
+      },
+      {
+        "chapter": "game_changer",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "AW.game_changer gives 42.48 on a 22.04 projection, 20.44 over."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "The news fact gives 271 passing yards against the Falcons and a rushing touchdown."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "RANK.6770 ranks him 1 of 12 among started QBs this week."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "M4.result gives the 24.28 margin, and M4.swing.6770 says his 42.48 exceeded it."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "He is a swing player per M4.swing.6770, so the vocabulary allows this phrase."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Joe Burrow dropped 42.48, a full 20.44 over his projection.",
+          "He threw for 271 yards against the Falcons and ran in a touchdown himself.",
+          "Nobody at quarterback outscored him this week.",
+          "All You Need Is Love beat Unsolicited Dak Picks by 24.28, and Burrow outscored that margin on his own.",
+          "Without him, that is a loss."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.94
+            },
+            {
+              "index": 1,
+              "yes": 0.96
+            },
+            {
+              "index": 2,
+              "yes": 0.77
+            },
+            {
+              "index": 3,
+              "yes": 0.89
+            },
+            {
+              "index": 4,
+              "yes": 0.9
+            }
+          ],
+          "input_tokens": 3111,
+          "error": null
+        }
+      }
+    ],
+    "awards": [
+      {
+        "chapter": "awards",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "AW.top_scorer and AW.game_changer both name Joe Burrow for All You Need Is Love, and the 42.48 points and 24.28-point win match the facts."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "AW.underperformer states Lamar Jackson of Bo Girds scored 0 on a 20.52 projection."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "A reaction with no new factual claim, consistent with Jackson scoring 0."
+          },
+          {
+            "index": 3,
+            "supported": false,
+            "reason": "W.adds supports the Jaguars as a Bo Girds recent add scoring 20.3, but 'outdid the quarterback' compares two facts and no single fact states it."
+          }
+        ],
+        "passed": false,
+        "sentences": [
+          "Joe Burrow swept Top Scorer and Game Changer for All You Need Is Love, posting 42.48 in a 24.28-point win.",
+          "Bo Girds got a flat 0 from Lamar Jackson, the Underperformer, on a 20.52 projection.",
+          "Nothing from the franchise QB.",
+          "The recent add at defense, the Jacksonville Jaguars, scored 20.3 for that same lineup and outdid the quarterback."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.95
+            },
+            {
+              "index": 1,
+              "yes": 0.93
+            },
+            {
+              "index": 2,
+              "yes": 0.63
+            },
+            {
+              "index": 3,
+              "yes": 0.79
+            }
+          ],
+          "input_tokens": 3933,
+          "error": null
+        }
+      },
+      {
+        "chapter": "awards",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "AW.top_scorer states Burrow scored 42.48 for All You Need Is Love, the most of any starter this week."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "AW.underperformer states Lamar Jackson scored 0 on a 20.52 projection for Bo Girds."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "W.adds lists the Jaguars DEF as a week 7 waiver add for Bo Girds that scored 20.3, so 'new pickup' fits."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "AW.mvb states Pollard scored 26.2 on Teehee's bench, the most of any bench player this week."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Joe Burrow put up 42.48 for All You Need Is Love, the most of any starter this week.",
+          "Lamar Jackson handed Bo Girds a flat 0 against a 20.52 projection.",
+          "At least the new pickup, the Jacksonville Jaguars defense, chipped in 20.3.",
+          "Teehee left Tony Pollard on the bench, where he scored more than any other bench player this week."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.99
+            },
+            {
+              "index": 1,
+              "yes": 0.91
+            },
+            {
+              "index": 2,
+              "yes": 0.93
+            },
+            {
+              "index": 3,
+              "yes": 0.64
+            }
+          ],
+          "input_tokens": 3919,
+          "error": null
+        }
+      }
+    ],
+    "position_leaders": [
+      {
+        "chapter": "position_leaders",
+        "code_failures": [
+          "[0] the sentence holds 3 numbers; the limit is 2"
+        ],
+        "verdicts": [],
+        "passed": false,
+        "sentences": [
+          "Joe Burrow led every started QB with 42.48 for All You Need Is Love, and Ja'Marr Chase added 25.6 as the 2nd-ranked WR on that same roster.",
+          "Teehee had the top WR and the top RB this week: Tee Higgins at 32.5 and Bhayshul Tuten at 28.9.",
+          "Brock Bowers led started tight ends in both points and passing volume for The Blue Tent."
+        ],
+        "jev": null
+      },
+      {
+        "chapter": "position_leaders",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "LEAD.QB.1 gives Burrow 42.48, 1st of 12 started QBs, for All You Need Is Love. LEAD.WR.2 gives Chase 25.6 for the same team."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "LEAD.WR.1 has Higgins 1st of 40 started WRs at 32.5, and LEAD.RB.1 has Tuten 1st of 29 started RBs at 28.9, both for Teehee. The name pun is humor, not a factual claim."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "LEAD.TE.1 has Bowers 1st among started TEs for The Blue Tent. LEAD.TE.1.volume ranks his targets-and-air-yards rating 1st among started TEs, and the sentence describes it in the approved plain phrase."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Joe Burrow posted 42.48 for All You Need Is Love, tops among started QBs, and Ja'Marr Chase added 25.6 on the same roster.",
+          "Teehee got the Tee it was named for, with Tee Higgins leading all started WRs at 32.5 and Bhayshul Tuten leading started RBs at 28.9.",
+          "Brock Bowers led started tight ends for The Blue Tent, and he also drew the biggest share of his team's targets and air yards at the position."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.97
+            },
+            {
+              "index": 1,
+              "yes": 0.83
+            },
+            {
+              "index": 2,
+              "yes": 0.82
+            }
+          ],
+          "input_tokens": 3678,
+          "error": null
+        }
+      }
+    ],
+    "recap_1": [
+      {
+        "chapter": "recap_1",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M1.result gives the score, M1.upset confirms the upset and that Lil Fridge was 1st, and H.3.high confirms 80.11 is a season low."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "The move facts give 3.4 and 5.9 for the recent adds; M1.lead shows the winners led from the early Sunday games on, with one lead change."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M1.impact says Lil Fridge fell from 1st to 2nd while Maye stayed 5th; M1.inj.5947 lists Meyers Questionable (Hamstring)."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Maye d'force B with U flattened Lil Fridge 121.16 to 80.11 in an upset, and the league leaders picked this week to post their season low.",
+          "Even with the recent adds Mason Taylor and the Bengals managing just 3.4 and 5.9, the winners took the lead after the early Sunday games and never gave it back.",
+          "The old leaders slid off the top of the standings this week while the winners held their spot, and Jakobi Meyers is now listed Questionable with a hamstring."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.67
+            },
+            {
+              "index": 1,
+              "yes": 0.84
+            },
+            {
+              "index": 2,
+              "yes": 0.93
+            }
+          ],
+          "input_tokens": 4772,
+          "error": null
+        }
+      }
+    ],
+    "recap_2": [
+      {
+        "chapter": "recap_2",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M2.result gives the score, and M2.lead shows Return of T Mac led at every checkpoint with the lead never changing."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M2.move.4037 and M2.move.13276 show Godwin (Return of T Mac, free agent add) and Cooper (behold the lamb, trade) each scored 0."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M2.impact says Return of T Mac stayed 7th and won 5 straight, and behold the lamb fell from 10th to 11th; S.11 places them below the cut."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Return of T Mac led wire to wire and beat behold the lamb 111.97 to 85.76.",
+          "The new pickups laid eggs on both sides, with recent add Chris Godwin Jr. and the traded-for Omar Cooper Jr. each scoring 0.",
+          "The winners kept their streak alive and held their place in the standings, while the losers slid a spot deeper below the cut."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.93
+            },
+            {
+              "index": 1,
+              "yes": 0.6
+            },
+            {
+              "index": 2,
+              "yes": 0.87
+            }
+          ],
+          "input_tokens": 4831,
+          "error": null
+        }
+      }
+    ],
+    "recap_3": [
+      {
+        "chapter": "recap_3",
+        "code_failures": [
+          "[0] 'won it' needs a cited .driver fact"
+        ],
+        "verdicts": [],
+        "passed": false,
+        "sentences": [
+          "London Cooking led by 3.67 after Sunday night, then the Seattle Seahawks defense posted -0.4 on Monday and The Blue Tent won it in an upset.",
+          "Jacoby Brissett, the new pickup, managed 4.46 for the winners, but the losing side's drops cost them the game.",
+          "The winners also beat the median, the losers missed it, and Drake London and Michael Wilson are now listed Questionable."
+        ],
+        "jev": null
+      },
+      {
+        "chapter": "recap_3",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M3.turn gives the 3.67 lead after Sunday night and Seattle's -0.4 on Monday; M3.driver.SEA makes Seattle a margin driver on the losing side, so 'blew it' is allowed."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M3.move.13286 makes Price a recent add, M3.turn has him scoring 4.7 on Monday, and M3.upset confirms the upset."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M3.impact states London Cooking's playoff odds went from about 99% to 83%, and London Cooking lost per M3.result."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "London Cooking held a 3.67 lead after Sunday night, and then their Seattle Seahawks defense blew it on Monday with -0.4.",
+          "Jadarian Price, the new pickup, chipped in that night, and The Blue Tent finished off the upset.",
+          "The losing side's playoff odds slid from about 99% to 83% this week."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.9
+            },
+            {
+              "index": 1,
+              "yes": 0.86
+            },
+            {
+              "index": 2,
+              "yes": 0.97
+            }
+          ],
+          "input_tokens": 6387,
+          "error": null
+        }
+      }
+    ],
+    "recap_4": [
+      {
+        "chapter": "recap_4",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "Burrow is a swing player at 42.48 against a 24.28 margin, and All You Need Is Love rose from 4th to 1st per M4.impact."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M4.lead shows Unsolicited Dak Picks led only after Thursday, with one lead change. M4.hurt and M4.inj support the 1st-quarter injury and the current Out status."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Waller is a recent add who scored 1.6, and the losers' playoff odds fell from about 15% to 8% per M4.impact."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Joe Burrow outscored the margin on his own with 42.48, and All You Need Is Love beat Unsolicited Dak Picks to jump to 1st in the standings.",
+          "The losers led after Thursday and never again, while the winners' Jeremiyah Love got hurt in the opening quarter of his game and is now listed Out.",
+          "Recent add Darren Waller managed 1.6 for the losers, whose playoff odds slid to about 8% this week."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.97
+            },
+            {
+              "index": 1,
+              "yes": 0.9
+            },
+            {
+              "index": 2,
+              "yes": 0.95
+            }
+          ],
+          "input_tokens": 4876,
+          "error": null
+        }
+      }
+    ],
+    "recap_5": [
+      {
+        "chapter": "recap_5",
+        "code_failures": [
+          "[1] the sentence holds 3 numbers; the limit is 2"
+        ],
+        "verdicts": [],
+        "passed": false,
+        "sentences": [
+          "The lead never changed in a 134.1 to 85.08 rout that was over after the early Sunday games.",
+          "CeeDee Lamb, a recent add from the week 7 trade, managed 9.3 on an 18.79 projection, and Hunter Henry is now listed Out.",
+          "NFC Least stays in last place with its playoff odds flat this week, while Teehee also beat the median for a clean sweep."
+        ],
+        "jev": null
+      },
+      {
+        "chapter": "recap_5",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M5.lead says Teehee led at every checkpoint and the lead never changed; the margin of 49.02 and the playoff odds of 61% match. M5.impact has NFC Least staying 12th, and team IDs run to 12, so 12th reads as last."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "The move facts call Lamb, Mason and Barkley recent adds by trade, give 9.3 and 2, and put Barkley 0.36 under projection. 'Went nowhere' is tone."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "The cited inj facts list Henry Out and Tuten, Moore and St. Brown Questionable as of the Tuesday after the games."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Teehee led wire to wire to win by 49.02 and lift its playoff odds to 61% this week, while NFC Least stayed dead last.",
+          "The trade haul went nowhere: recent adds CeeDee Lamb and Jordan Mason scored 9.3 and 2, and Saquon Barkley landed just under projection.",
+          "Hunter Henry is now listed Out, and Bhayshul Tuten, DJ Moore and Amon-Ra St. Brown are now listed Questionable."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.68
+            },
+            {
+              "index": 1,
+              "yes": 0.8
+            },
+            {
+              "index": 2,
+              "yes": 0.98
+            }
+          ],
+          "input_tokens": 5045,
+          "error": null
+        }
+      }
+    ],
+    "recap_6": [
+      {
+        "chapter": "recap_6",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "The score is in M6.result and the upset in M6.upset. M6.lead shows Bo Girds led after Thursday, To Infinity and Bijan led after the early Sunday games, and the lead changed only once."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M6.hurt.4881 puts the injury in the 1st quarter of BAL at BUF, and M6.inj.4881 gives the Out (Thumb) status. M6.move.JAX and M6.move.TB confirm both teams as recent adds with 20.3 and 13.25."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M6.impact states the winners ended a 3-game losing streak and beat the median. It also states the losers missed the median, fell from 2nd to 3rd, and saw playoff odds drop from 99% to 76%."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "To Infinity and Bijan beat Bo Girds 118.89 to 88.2 in an upset, trailing after Thursday and grabbing the lead for good in the early Sunday games.",
+          "Lamar Jackson was hurt in the opening quarter at Buffalo and is now listed Out (Thumb); his side's new pickup, the Jacksonville Jaguars, put up 20.3, and the winners' new pickup, the Tampa Bay Buccaneers, added 13.25.",
+          "The winners snapped a losing streak and beat the median, while the losers missed it, slid a spot in the standings and watched their playoff odds sag this week."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.9
+            },
+            {
+              "index": 1,
+              "yes": 0.9
+            },
+            {
+              "index": 2,
+              "yes": 0.96
+            }
+          ],
+          "input_tokens": 5085,
+          "error": null
+        }
+      }
+    ],
+    "median": [
+      {
+        "chapter": "median",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "MED.value gives 99.6; MED.closest gives Blue Tent +0.72 and London Cooking -0.72."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "MED.above.12 gives Teehee 134.1, 34.51 above the median."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "S.2 has Lil Fridge 2nd; H.3.high says 80.11 is a season low."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "Opinion with no factual claim."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "The median sat at 99.6, and The Blue Tent cleared it by 0.72 while London Cooking missed it by exactly that much.",
+          "Teehee cruised past it with 134.1, a full 34.51 clear.",
+          "Lil Fridge, 2nd in the standings, came in at 80.11 for a season low.",
+          "Not the look of a contender."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.96
+            },
+            {
+              "index": 1,
+              "yes": 0.93
+            },
+            {
+              "index": 2,
+              "yes": 0.97
+            },
+            {
+              "index": 3,
+              "yes": 0.79
+            }
+          ],
+          "input_tokens": 4223,
+          "error": null
+        }
+      }
+    ],
+    "next_week": [
+      {
+        "chapter": "next_week",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "NX.2v8 marks it a Must Watch with the win streak on the line, and SW.2v8 gives 90% with a win and 68% with a loss."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "NX.2v8.cut puts Return of T Mac at the cut, NX.2v8.streak gives its 5-game win streak, and SW.2v8 gives 58% and 30%."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "NX.6v12 is the other Must Watch with Bo Girds' 4-game loss streak on the line, and SW.6v12 gives 87% and 61%."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "NX.6v12.cut puts Teehee 1 game below the cut, and SW.6v12 gives 76% with a win and 49% with a loss."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "NX.5v9.cut puts both teams at the cut, and NX.5v9.shootout says both lineups rank in the top four and calls the game a shootout."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "S.9 and S.10 give the 7-9 and 6-10 records, both below the cut, and NX.7v11 confirms the matchup; 'the awful' is opinion."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "All You Need Is Love puts its win streak on the line in a Must Watch: 90% playoff odds with a win, 68% with a loss.",
+          "Return of T Mac, sitting at the cut and riding its own win streak, goes to 58% playoff odds with a win and 30% with a loss.",
+          "Bo Girds drags a loss streak into the other Must Watch, worth 87% playoff odds with a win and 61% with a loss.",
+          "Teehee, just under the cut, swings from 76% playoff odds with a win to 49% with a loss.",
+          "London Cooking and Maye d'force B with U both sit at the cut and meet in a shootout of loaded lineups.",
+          "Down below the cut, To Infinity and Bijan at 7-9 and Unsolicited Dak Picks at 6-10 stage a showdown of the awful."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.92
+            },
+            {
+              "index": 1,
+              "yes": 0.86
+            },
+            {
+              "index": 2,
+              "yes": 0.82
+            },
+            {
+              "index": 3,
+              "yes": 0.94
+            },
+            {
+              "index": 4,
+              "yes": 0.93
+            },
+            {
+              "index": 5,
+              "yes": 0.88
+            }
+          ],
+          "input_tokens": 6015,
+          "error": null
+        }
+      }
+    ],
+    "rankings": [
+      {
+        "chapter": "rankings",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "PR.2 and PR.2.why give 1st place, up 4, after a 24-point win."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "PR.2 and S.1 put them 1st in the standings."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "H.2.streak gives 3 straight wins and S.1 gives 2 games above the cut."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "PR.12.why gives up 5 places after a 49-point win over the 12th-place team, which is last."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "H.12.trend shows 128.76 per week, up from a 110.75 average; the rest is tone."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "S.8 gives 8-8 and ODDS.12 gives 61%."
+          },
+          {
+            "index": 6,
+            "supported": true,
+            "reason": "PR.9.why gives up 3 after a 41-point win over Lil Fridge, the 1st-place team."
+          },
+          {
+            "index": 7,
+            "supported": true,
+            "reason": "PR.9 gives 1st in scoring and S.5 gives level with the last playoff spot."
+          },
+          {
+            "index": 8,
+            "supported": true,
+            "reason": "PR.8.why gives down 2 places after a 26-point win."
+          },
+          {
+            "index": 9,
+            "supported": true,
+            "reason": "H.8.streak gives 5 straight wins and S.7 gives 1 spot outside the playoff spots."
+          },
+          {
+            "index": 10,
+            "supported": true,
+            "reason": "ODDS.8 gives 42% and ODDS.8.why gives the 11th easiest remaining schedule."
+          },
+          {
+            "index": 11,
+            "supported": true,
+            "reason": "PR.1.why gives up 3 after a 1-point win."
+          },
+          {
+            "index": 12,
+            "supported": true,
+            "reason": "H.1.trend gives 91.5 per week over the last 3 weeks, down from 108.9."
+          },
+          {
+            "index": 13,
+            "supported": true,
+            "reason": "PR.3.why gives down 5 after a 41-point loss."
+          },
+          {
+            "index": 14,
+            "supported": true,
+            "reason": "PR.3 gives 12th in results, which is last, and 2nd in standing."
+          },
+          {
+            "index": 15,
+            "supported": true,
+            "reason": "A joke backed by the decline in H.3.trend."
+          },
+          {
+            "index": 16,
+            "supported": true,
+            "reason": "PR.6.why gives down 4 after a 31-point loss."
+          },
+          {
+            "index": 17,
+            "supported": true,
+            "reason": "H.6.streak gives 4 straight losses."
+          },
+          {
+            "index": 18,
+            "supported": true,
+            "reason": "S.3 gives level with the last playoff spot."
+          },
+          {
+            "index": 19,
+            "supported": true,
+            "reason": "PR.5.why gives down 4 after a 1-point loss."
+          },
+          {
+            "index": 20,
+            "supported": true,
+            "reason": "PR.5 gives 2nd in scoring and H.5.streak gives 2 straight losses."
+          },
+          {
+            "index": 21,
+            "supported": true,
+            "reason": "H.5.trend gives 103.17 per week, down from the season average."
+          },
+          {
+            "index": 22,
+            "supported": true,
+            "reason": "PR.7.why gives up 3 after a 31-point win."
+          },
+          {
+            "index": 23,
+            "supported": true,
+            "reason": "S.9 gives 7-9 and 2 games below the cut."
+          },
+          {
+            "index": 24,
+            "supported": true,
+            "reason": "ODDS.7 gives 7%."
+          },
+          {
+            "index": 25,
+            "supported": true,
+            "reason": "PR.11.why gives down 1 after a 24-point loss."
+          },
+          {
+            "index": 26,
+            "supported": true,
+            "reason": "S.10 gives 6-10 and 3 games below the cut; the rest is a joke."
+          },
+          {
+            "index": 27,
+            "supported": true,
+            "reason": "PR.10 and PR.10.why give 11th with no move."
+          },
+          {
+            "index": 28,
+            "supported": true,
+            "reason": "H.10.streak gives 2 straight losses and S.11 gives 3 games below the cut."
+          },
+          {
+            "index": 29,
+            "supported": true,
+            "reason": "A reaction with no factual claim."
+          },
+          {
+            "index": 30,
+            "supported": true,
+            "reason": "PR.4 gives 12th of 12, down 2, after a 49-point loss."
+          },
+          {
+            "index": 31,
+            "supported": true,
+            "reason": "S.12 gives 3-13 and 6 games below the cut."
+          },
+          {
+            "index": 32,
+            "supported": true,
+            "reason": "ODDS.4 gives 1%."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "All You Need Is Love jumped 4 spots to the top of the rankings on a 24-point win.",
+          "They own the top spot in the standings too.",
+          "They have won 3 straight and sit 2 games above the cut.",
+          "Teehee rocketed up 5 places after a 49-point beatdown of the last-place team.",
+          "The scoring surge is real.",
+          "The record is still 8-8, though, with playoff odds of 61%.",
+          "Maye d'force B with U moved up 3 spots after hanging a 41-point loss on the league leaders.",
+          "They rank 1st in scoring and still only sit level with the last playoff spot.",
+          "Return of T Mac won by 26 and still slid 2 places.",
+          "They have won 5 straight and sit 1 spot outside the playoff spots.",
+          "Their playoff odds sit at 42%, with the 11th easiest schedule left.",
+          "The Blue Tent rose 3 spots on a 1-point escape.",
+          "They have averaged just 91.5 a week lately, down from 108.9 on the season.",
+          "Lil Fridge fell 5 places after a 41-point loss.",
+          "They rank last in results over the last 3 weeks while holding 2nd in the standings.",
+          "The fridge is running on empty.",
+          "Bo Girds dropped 4 places after a 31-point loss.",
+          "They have lost 4 straight.",
+          "Somehow they still sit level with the last playoff spot.",
+          "London Cooking slid 4 places after losing by 1 point.",
+          "They rank 2nd in scoring and have lost 2 straight.",
+          "The kitchen has cooled off, down to 103.17 a week over the last 3 weeks.",
+          "To Infinity and Bijan climbed 3 spots after a 31-point win.",
+          "The win still leaves them 7-9 and 2 games below the cut.",
+          "Playoff odds of 7% put infinity a long way off.",
+          "Unsolicited Dak Picks slipped 1 place after a 24-point loss.",
+          "At 6-10 and 3 games below the cut, nobody asked for this either.",
+          "behold the lamb held 11th, with no move from last week.",
+          "They have lost 2 straight and sit 3 games below the cut.",
+          "Not much to behold.",
+          "NFC Least fell 2 places to the bottom after a 49-point loss.",
+          "A 3-13 record, 6 games below the cut, lives up to the name.",
+          "Playoff odds sit at 1%."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.97
+            },
+            {
+              "index": 1,
+              "yes": 0.87
+            },
+            {
+              "index": 2,
+              "yes": 0.93
+            },
+            {
+              "index": 3,
+              "yes": 0.91
+            },
+            {
+              "index": 4,
+              "yes": 0.74
+            },
+            {
+              "index": 5,
+              "yes": 0.9
+            },
+            {
+              "index": 6,
+              "yes": 0.24
+            },
+            {
+              "index": 7,
+              "yes": 0.93
+            },
+            {
+              "index": 8,
+              "yes": 0.88
+            },
+            {
+              "index": 9,
+              "yes": 0.88
+            },
+            {
+              "index": 10,
+              "yes": 0.85
+            },
+            {
+              "index": 11,
+              "yes": 0.83
+            },
+            {
+              "index": 12,
+              "yes": 0.91
+            },
+            {
+              "index": 13,
+              "yes": 0.96
+            },
+            {
+              "index": 14,
+              "yes": 0.95
+            },
+            {
+              "index": 15,
+              "yes": 0.82
+            },
+            {
+              "index": 16,
+              "yes": 0.95
+            },
+            {
+              "index": 17,
+              "yes": 0.77
+            },
+            {
+              "index": 18,
+              "yes": 0.88
+            },
+            {
+              "index": 19,
+              "yes": 0.96
+            },
+            {
+              "index": 20,
+              "yes": 0.86
+            },
+            {
+              "index": 21,
+              "yes": 0.86
+            },
+            {
+              "index": 22,
+              "yes": 0.98
+            },
+            {
+              "index": 23,
+              "yes": 0.91
+            },
+            {
+              "index": 24,
+              "yes": 0.75
+            },
+            {
+              "index": 25,
+              "yes": 0.95
+            },
+            {
+              "index": 26,
+              "yes": 0.89
+            },
+            {
+              "index": 27,
+              "yes": 0.98
+            },
+            {
+              "index": 28,
+              "yes": 0.86
+            },
+            {
+              "index": 29,
+              "yes": 0.93
+            },
+            {
+              "index": 30,
+              "yes": 0.86
+            },
+            {
+              "index": 31,
+              "yes": 0.91
+            },
+            {
+              "index": 32,
+              "yes": 0.78
+            }
+          ],
+          "input_tokens": 11100,
+          "error": null
+        }
+      }
+    ]
+  }
+}

@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 import httpx
 import pytest
 from cpc import cli_root, cpc_client
-from fakes import fixture_nflverse, no_claims, no_network, no_news
+from fakes import FakeJev, fixture_nflverse, no_claims, no_network, no_news
 
 from cornerstone.pipeline import (
     BuildStopped,
@@ -90,7 +90,13 @@ def _forbidden_nflverse(season, week, player_ids, players, teams, scoring):
 def offline(tmp_path_factory):
     """The build inputs with no network call. The nflverse cache sits outside the test repo, so no build reads it."""
     return {"news": no_news, "fetch_bytes": _no_bytes,
-            "nflverse": fixture_nflverse(tmp_path_factory.mktemp("nflverse")), "research": no_claims}
+            "nflverse": fixture_nflverse(tmp_path_factory.mktemp("nflverse")), "research": no_claims,
+            "jev": FakeJev()}
+
+
+def _without_jev(inputs):
+    """The inputs of a rewrite. A rewrite runs no Jev check, so run_rewrite takes no jev."""
+    return {key: value for key, value in inputs.items() if key != "jev"}
 
 
 def _ordinal(n):
@@ -531,7 +537,7 @@ def test_a_rankings_rewrite_reaches_the_season_file(tmp_path, fixture_raw_dir, f
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
     # The plain fake falls back, so the build leaves the blurbs empty.
     assert all(b == [] for b in _week6_blurbs(repo).values())
-    run_rewrite(repo, 2026, 6, "rankings", _RankingsWriter(), **offline, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "rankings", _RankingsWriter(), **_without_jev(offline), client=cpc_client(at=repo))
     blurbs = _week6_blurbs(repo)
     assert len(blurbs) == 12
     chapter = next(c for c in read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.chapters if c.key == "rankings")
@@ -553,7 +559,7 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
         raise AssertionError("a rewrite ran the odds engine")
 
     monkeypatch.setattr("rankings.chapter.playoff_odds", no_engine)
-    run_rewrite(repo, 2026, 6, "next_week", _fake, **offline, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **_without_jev(offline), client=cpc_client(at=repo))
     after = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     assert {fid: after[fid] for fid in odds} == odds
 
@@ -587,7 +593,7 @@ def test_a_rewrite_reads_the_saved_board_and_never_runs_the_waiver_engine(tmp_pa
         raise AssertionError("a rewrite ran the waiver engine")
 
     monkeypatch.setattr("cornerstone.pipeline.waiver_board", no_engine)
-    run_rewrite(repo, 2026, 6, "next_week", _fake, **offline, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **_without_jev(offline), client=cpc_client(at=repo))
     assert _waiver(repo) == built
 
 
@@ -628,7 +634,7 @@ def test_the_build_researches_once_and_a_rewrite_reads_the_saved_claims(tmp_path
     def no_search(system, user):
         raise AssertionError("a rewrite ran the search")
 
-    run_rewrite(repo, 2026, 6, "next_week", _fake, **{**offline, "research": no_search}, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **{**_without_jev(offline), "research": no_search}, client=cpc_client(at=repo))
     assert _waiver(repo) == built
 
 
@@ -702,7 +708,7 @@ def test_rewrite_reads_the_version_1_verify_shape(tmp_path, fixture_raw_dir, off
     path.write_text(json.dumps(chapters))
     assert read_verify(path).build is None
 
-    run_rewrite(repo, 2026, 6, "median", _fake, **offline, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "median", _fake, **_without_jev(offline), client=cpc_client(at=repo))
 
     assert read_verify(path).build is None
     assert set(read_verify(path).chapters) == set(chapters)
@@ -713,7 +719,7 @@ def test_rewrite_keeps_the_build_record(tmp_path, fixture_raw_dir, offline):
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
     path = week_dir(repo, 2026, 6) / "verify.json"
     before = read_verify(path).build
-    run_rewrite(repo, 2026, 6, "median", _fake, **offline, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "median", _fake, **_without_jev(offline), client=cpc_client(at=repo))
     assert read_verify(path).build == before
 
 
@@ -743,7 +749,7 @@ def test_rewrite_one_chapter(tmp_path, fixture_raw_dir, offline):
         fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.MULTILINE).group(1)
         return model(sentences=[Sentence(text="Rewritten median sentence.", fact_ids=[fid])] * 2)
 
-    page = run_rewrite(repo, 2026, 6, "median", rewrite_fake, **offline, client=cpc_client(at=repo))
+    page = run_rewrite(repo, 2026, 6, "median", rewrite_fake, **_without_jev(offline), client=cpc_client(at=repo))
     after = json.loads(path.read_text())
     assert set(before) == set(after)
     text = [s["text"] for s in after["median"]["sentences"]]
@@ -757,7 +763,7 @@ def test_rewrite_unknown_chapter_lists_valid_keys(tmp_path, fixture_raw_dir, off
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
     with pytest.raises(ValueError, match="median"):
-        run_rewrite(repo, 2026, 6, "nope", _fake, **offline, client=cpc_client(at=repo))
+        run_rewrite(repo, 2026, 6, "nope", _fake, **_without_jev(offline), client=cpc_client(at=repo))
 
 
 def _git(cwd, *args):
@@ -969,7 +975,7 @@ def test_no_fetcher_and_no_file_builds_without_nflverse(tmp_path, fixture_raw_di
 def test_rewrite_takes_the_nflverse_argument(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
-    run_rewrite(repo, 2026, 6, "median", _fake, **{**offline, "nflverse": _forbidden_nflverse}, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "median", _fake, **{**_without_jev(offline), "nflverse": _forbidden_nflverse}, client=cpc_client(at=repo))
 
 
 def _late_week_5_trade(repo):
@@ -1201,7 +1207,7 @@ def test_a_build_with_no_search_sends_the_research_through_the_writer(
 
 def _spy_write_and_verify(seen, lucky_key=None):
     """A stand-in for write_and_verify: it records the page words each chapter gets, and one chapter says "lucky"."""
-    def spy(chapter, sheet, call, used_words=frozenset(), *, prompts_dir, terms=()):
+    def spy(chapter, sheet, call, used_words=frozenset(), *, prompts_dir, terms=(), jev=None):
         seen[chapter.key] = set(used_words)
         text = "That was lucky." if chapter.key == lucky_key else "Fact sentence."
         sentences = [Sentence(text=text, fact_ids=[chapter.fact_ids[0]])] if chapter.fact_ids else []
@@ -1241,7 +1247,7 @@ def test_a_rewrite_sees_lucky_from_an_earlier_saved_blurb(tmp_path, fixture_raw_
     _saved_lucky(repo, "motw")
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "awards", _fake, **offline, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "awards", _fake, **_without_jev(offline), client=cpc_client(at=repo))
     assert seen["awards"] == {"lucky"}
 
 
@@ -1251,7 +1257,7 @@ def test_a_rewrite_of_an_earlier_chapter_sees_a_later_lucky(tmp_path, fixture_ra
     _saved_lucky(repo, "median")
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "awards", _fake, **offline, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "awards", _fake, **_without_jev(offline), client=cpc_client(at=repo))
     assert seen["awards"] == {"lucky"}
 
 
@@ -1261,7 +1267,7 @@ def test_a_rewrite_does_not_count_the_chapter_against_itself(tmp_path, fixture_r
     _saved_lucky(repo, "awards")
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "awards", _fake, **offline, client=cpc_client(at=repo))
+    run_rewrite(repo, 2026, 6, "awards", _fake, **_without_jev(offline), client=cpc_client(at=repo))
     assert seen["awards"] == set()
 
 

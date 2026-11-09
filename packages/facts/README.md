@@ -13,6 +13,7 @@
 ## Ports
 
 - `ClaudeWriter` in `writer.py` implements the `Writer` port of `league/claude_port.py`. Every Claude call goes through `parse_call`.
+- `jev_check.py` and `verifier.py` take the `Jev` port of `league/jev_port.py`. Each Jev call goes through that port.
 - `load_prompt` takes `rules_dir`, so a package that owns a rule prompt, such as the analyzer rubric, reads it from its own folder.
 
 ## Does not do
