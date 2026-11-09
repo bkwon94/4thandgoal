@@ -188,6 +188,9 @@ LAYER_OF: dict[str, str] = {
     "analyzer.nfl_team_facts": "facts",
     "analyzer.trade_news": "facts",
     "analyzer.read_jev_check": "facts",
+    # The Finder search asks Jev in waves, as the Jev answers of one trade do.
+    "analyzer.finder_search": "facts",
+    "analyzer.jev_waves": "facts",
     "waiver.rank_score": "facts",
     "waiver.board": "facts",
     "waiver.buckets": "facts",

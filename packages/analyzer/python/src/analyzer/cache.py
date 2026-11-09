@@ -169,8 +169,10 @@ def _rows_read(rows: dict[int, float], return_week: int, last_regular_week: int)
     return {week: points for week, points in rows.items() if return_week <= week <= last_regular_week}
 
 
-def finder_cache_key(season: int, asker: int, partner: int, snapshot: Snapshot) -> str:
+def finder_cache_key(season: int, asker: int, partner: int | None, snapshot: Snapshot) -> str:
     """The hash of the ordered pair of rosters and the content of the snapshot that the finder reads.
+
+    With no partner, the search reads every roster, so the content of every roster goes in.
 
     The pair keeps its order, so the asker is part of the key. The finder puts the asker's side first in each
     trade, and its rank breaks a tie by the asker's letter. So the document for A and B can differ from the one
@@ -185,7 +187,7 @@ def finder_cache_key(season: int, asker: int, partner: int, snapshot: Snapshot) 
         "rosters": [asker, partner],
         "chart_week": as_of.chart_week,
         "stats_through": as_of.stats_through,
-        "content": _content_hash(snapshot, [asker, partner]),
+        "content": _content_hash(snapshot, [asker, partner] if partner is not None else sorted(snapshot.rosters)),
     }
     return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()
 

@@ -29,6 +29,7 @@ from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import ResultCache, cache_key, finder_cache_key
 from analyzer.finder import find_win_wins
 from analyzer.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
+from analyzer.finder_search import Shortlist, ShortlistOffer, offer_id, search
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.rubric import ProposedTrade
 from analyzer.trade_news import NewsFeed
@@ -1454,10 +1455,20 @@ class FakeFinderClaude:
         return output_model.model_validate({"reasons": reasons})
 
 
-def _find_client(settings, sources, fake, clock=None):
+def rubric_search(asker, partner, snapshot):
+    """A Finder search at the port with no Jev: the win-wins of the rubric as the shortlist, best first.
+
+    The tests of the document, the cache, the limit, and the reasons read the same trades as before the Jev search.
+    """
+    trades = [item.trade for item in find_win_wins(asker, partner, snapshot)]
+    return Shortlist(asker=asker, partners=[], targets={}, offers=trades, shortlist=[
+        ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=1.0, needs={}, score=1.0) for trade in trades])
+
+
+def _find_client(settings, sources, fake, clock=None, search=rubric_search):
     """A client whose finder reasons make the fake call. With a clock, the grade and general limits read it."""
     client = TestClient(create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=StubAnalyzer(),
-                                   finder_reasons=functools.partial(write_reasons, call=fake)))
+                                   finder_reasons=functools.partial(write_reasons, call=fake), finder_search=search))
     if clock is not None:
         client.app.state.served["cpc"].grade_limiter.clock = clock
         client.app.state.limiter.clock = lambda: clock().timestamp()
@@ -1482,6 +1493,39 @@ def test_find_returns_three_win_win_trades_with_one_reason_each(settings, find_s
     assert doc["as_of"]["chart_week"] == 6
     assert doc["as_of"]["stats_through"] == 5
     assert doc["as_of"]["completed_through"] == 5
+
+
+def test_find_with_no_partner_runs_the_partner_filter_on_every_other_team(settings, find_sources, caplog):
+    jev = FakeJev()
+    client = _find_client(settings, find_sources, FakeFinderClaude(), search=functools.partial(search, jev=jev))
+    with caplog.at_level("INFO", logger="analyzer"):
+        response = client.post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS)
+    assert response.status_code == 200
+    doc = response.json()
+    # Each trade names its own partner in its sides, so the pair has no partner.
+    assert doc["trade_pair"]["asker"]["roster_id"] == 2
+    assert doc["trade_pair"]["partner"] is None
+    filtered = sorted(r.state["teams"]["partner"]["roster_id"] for r in jev.requests if "partner_has" in r.questions)
+    assert filtered == [rid for rid in range(1, 13) if rid != 2]
+    assert sum("Partner filter of" in record.getMessage() for record in caplog.records) == 11
+    assert 1 <= len(doc["trades"]) <= 3
+    for item in doc["trades"]:
+        assert item["sides"][0]["roster_id"] == 2
+
+
+def test_find_with_a_partner_keeps_every_trade_to_that_partner(settings, find_sources):
+    jev = FakeJev()
+    client = _find_client(settings, find_sources, FakeFinderClaude(), search=functools.partial(search, jev=jev))
+    doc = client.post("/find", json=FIND, headers=HEADERS).json()
+    assert [r.state["teams"]["partner"]["roster_id"] for r in jev.requests if "partner_has" in r.questions] == [3]
+    assert doc["trade_pair"]["partner"]["roster_id"] == 3
+    assert doc["trades"]
+    assert all([side["roster_id"] for side in item["sides"]] == [2, 3] for item in doc["trades"])
+
+
+def test_a_find_with_no_partner_and_one_with_a_partner_have_two_cache_keys(settings, sources):
+    snapshot = _here(sources, settings).snapshot(2026)
+    assert finder_cache_key(2026, 2, None, snapshot) != finder_cache_key(2026, 2, 3, snapshot)
 
 
 def test_find_with_no_win_win_gives_the_empty_line_and_makes_no_claude_call(settings, sources):

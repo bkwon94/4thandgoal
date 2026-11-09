@@ -25,6 +25,7 @@ from analyzer import routes as analyzer_routes
 from analyzer.advisor import read_trade
 from analyzer.cache import ResultCache, TeamsCache
 from analyzer.finder_reasons import write_reasons
+from analyzer.finder_search import search as search_trades
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
 from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
@@ -179,9 +180,10 @@ def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) ->
 def create_app(
         settings: Settings, clients: Sequence[Client], sources: Mapping[str, Sources] | None = None,
         analyzer: analyzer_routes.Analyzer | None = None, finder_reasons: analyzer_routes.ReasonWriter | None = None,
+        finder_search: analyzer_routes.FinderSearch | None = None,
         *, refresh_on_start: bool = False) -> FastAPI:
-    """The app that serves each of `clients`. Tests give fixture-backed sources by slug, an analyzer, and a finder
-    reason writer. The defaults are the real ones.
+    """The app that serves each of `clients`. Tests give fixture-backed sources by slug, an analyzer, a finder
+    reason writer, and a finder search. The defaults are the real ones.
 
     With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
     """
@@ -210,6 +212,8 @@ def create_app(
     app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV, news=NEWS)
     # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
     app.state.finder_reasons = finder_reasons or write_reasons
+    # The Finder search asks the real Jev by default, so a test injects a search with FakeJev.
+    app.state.finder_search = finder_search or functools.partial(search_trades, jev=JEV)
 
     # The site calls the API from the browser, so only its origins and the local dev servers may read the answers.
     app.add_middleware(
