@@ -15,7 +15,7 @@ from fakes import FakeJev, fixture_nflverse, no_claims, no_news
 
 from cornerstone.pipeline import read_verify, run_build
 from cornerstone.sheet import read_bundle
-from facts.writer import load_prompt, with_terms
+from facts.writer import RefusalError, load_prompt, with_terms
 from league.jev import TypeSafeJev
 from league.jev_port import JevError, NoulQuestion
 from league.models import Sentence, Verdict, VerifyOut
@@ -125,6 +125,27 @@ def test_passed_follows_the_claude_verdicts_only(tmp_path, fixture_raw_dir, offl
     for result in checked:
         assert result.passed is supported
         assert {a.yes for a in result.jev.answers} == {yes}
+
+
+def test_a_failed_claude_check_keeps_the_sentences_and_the_jev_answers_of_its_attempt(
+        tmp_path, fixture_raw_dir, offline):
+    # A Claude check that raises fails the attempt, and the attempt still keeps its sentences and its Jev answers.
+    def call(system, user, model):
+        if model.__name__ == "VerifyOut":
+            raise RefusalError("refused")
+        return _call(system, user, model)
+
+    jev = FakeJev(yes=0.75)
+    verify = _build(tmp_path, fixture_raw_dir, offline, jev, call)
+    failed = [r for results in verify.chapters.values() for r in results
+              if r.code_failures and r.code_failures[0].startswith("verifier error")]
+    assert failed
+    assert len(failed) == len(jev.requests)
+    for result in failed:
+        assert not result.passed
+        assert result.sentences == ["Fact sentence alpha.", "Fact sentence beta."]
+        assert result.jev is not None and result.jev.model == FakeJev.MODEL
+        assert [(a.index, a.yes) for a in result.jev.answers] == [(0, 0.75), (1, 0.75)]
 
 
 def _build_into(root, fixture_raw_dir, offline, jev):
