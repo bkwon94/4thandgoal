@@ -62,9 +62,9 @@ for (const width of WIDTHS) {
     await page.screenshot({ path: `test-results/eggs/find-${width}.png` });
     await page.getByRole("group", { name: "Your team" }).getByRole("button", { name: "Lil Fridge" }).click();
     await page.getByRole("button", { name: word, exact: true }).click();
-    await page.getByLabel("Passphrase").fill(PASSPHRASE);
+    await page.getByLabel("League passphrase").fill(PASSPHRASE);
     await page.screenshot({ path: `test-results/eggs/sheet-${width}.png` });
-    await page.getByRole("button", { name: `Claim ${letter} for ${word}` }).click();
+    await page.getByRole("group", { name: "Claim ticket" }).getByRole("button", { name: `Tear to claim ${letter} for ${word}` }).click();
     await expect(page.getByRole("dialog", { name: `${letter} goes to ${word}.` })).toBeVisible();
     await page.getByRole("link", { name: "See the egg board" }).click();
     await expect(page).toHaveURL(/\/eggs\/$/);
