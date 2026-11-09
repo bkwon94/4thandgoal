@@ -1,7 +1,6 @@
 """
-Checks every blurb sentence against its cited facts, in code and with a second Claude call.
-A failed blurb is rewritten once with feedback, then replaced by a template sentence. A Jev check runs beside the Claude
-check and logs only.
+Checks every blurb sentence against its cited facts, in code, with a second Claude call, and with a Jev check that logs.
+A failed blurb is rewritten once with feedback, then replaced by a template sentence.
 """
 import logging
 import re
