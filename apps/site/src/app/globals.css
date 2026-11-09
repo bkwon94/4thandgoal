@@ -707,21 +707,22 @@
         animation: egg-split-bottom 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both;
     }
     /* Each glowing crack line draws out from the tap point over its own length, then fades as the shell bursts.
-       The part sets the length in --egg-line and the stagger in --egg-delay. */
+       The part sets the length in --egg-line, the start after the squash in --egg-delay, and the time of the draw in --egg-draw. */
     .egg-crack {
         stroke-dasharray: var(--egg-line);
         stroke-dashoffset: var(--egg-line);
         filter: drop-shadow(0 0 2px var(--color-accent-text)) drop-shadow(0 0 7px var(--color-accent));
         animation:
-            egg-draw 0.3s cubic-bezier(0.4, 0, 0.6, 1) var(--egg-delay) both,
+            egg-draw var(--egg-draw) cubic-bezier(0.4, 0, 0.6, 1) var(--egg-delay) both,
             egg-fade-out 0.15s ease-out 0.56s forwards;
     }
-    /* The light inside the egg grows from the tap point while the lines draw, then fades as the shell bursts. */
+    /* The light inside the egg grows from the tap point while the lines draw, then fades as the shell bursts.
+       The part sets the start after the squash in --egg-delay, and the light is full at the burst. */
     .egg-glow {
         transform-box: fill-box;
         transform-origin: 50% 50%;
         animation:
-            egg-glow 0.5s ease-in both,
+            egg-glow calc(0.56s - var(--egg-delay)) ease-in var(--egg-delay) both,
             egg-fade-out 0.3s ease-out 0.56s forwards;
     }
     /* Each shard flies out from the tap point and turns as the shell bursts. The part sets --egg-dx, --egg-dy, and --egg-turn. */

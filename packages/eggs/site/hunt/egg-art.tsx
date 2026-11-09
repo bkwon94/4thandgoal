@@ -6,13 +6,18 @@
 
 import { type CSSProperties, useId } from "react";
 import { cn } from "@cpc/design/lib/utils";
-import { crackOf, EGG_MIDDLE, type Crack } from "./crack";
+import { EGG_MIDDLE, EGG_SIZE, halvesAt, type Crack } from "./crack";
 import type { Slot } from "./slots";
 
 // The outline of the egg. Both halves clip the same art along a zigzag.
 const EGG_PATH = "M90 8 C136 8 168 92 168 138 C168 184 134 212 90 212 C46 212 12 184 12 138 C12 92 44 8 90 8 Z";
-// The halves of an egg at rest. The seed is fixed, and only the zigzag of the halves is used.
-const AT_REST = crackOf(EGG_MIDDLE, 1);
+// The halves of an egg at rest, split at the middle of the egg.
+const AT_REST = halvesAt(EGG_MIDDLE.y);
+// The times of the crack, in ms, as the class egg-shake of globals.css plays them. The squash runs first, so the lines
+// and the glow start after it. The last line ends its draw before the shell bursts at 560 ms.
+const SQUASH_MS = 150;
+const LINE_STAGGER_MS = 30;
+const LINE_DRAW_MS = 250;
 
 /* The egg. It bobs while it waits. On a crack it squashes, then the crack lines draw out from the tap point while it
    shakes and glows inside, then the two halves fly apart and the shards fly out (the classes egg-* of globals.css).
@@ -23,7 +28,7 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
   const halves = crack ?? AT_REST;
   return (
     <svg
-      viewBox="0 0 180 220"
+      viewBox={`0 0 ${EGG_SIZE.width} ${EGG_SIZE.height}`}
       className={cn("relative h-55 w-45 overflow-visible", motion && !crack && "egg-bob", crack && "egg-shake")}
       aria-hidden="true"
     >
@@ -57,8 +62,8 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
         <g id={`art-${id}`}>
           <use href={`#egg-${id}`} fill={ref("shade")} />
           <g clipPath={ref("clip")}>
-            <rect width="180" height="220" fill={ref("grid")} />
-            <rect width="180" height="220" fill={ref("glow")} />
+            <rect width={EGG_SIZE.width} height={EGG_SIZE.height} fill={ref("grid")} />
+            <rect width={EGG_SIZE.width} height={EGG_SIZE.height} fill={ref("glow")} />
           </g>
           {/* The CPC house: the roof, then a white square and a red square, as in the logo. */}
           <path d="M64 100 L90 82 L116 100" className="fill-none stroke-on-dark" strokeWidth="4" strokeLinejoin="round" />
@@ -79,7 +84,15 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
         <>
           {/* The light and the lines stay inside the shell. */}
           <g clipPath={ref("clip")}>
-            <circle cx={crack.point.x} cy={crack.point.y} r="70" fill={ref("light")} className="egg-glow" />
+            <circle
+              data-testid="egg-glow"
+              cx={crack.point.x}
+              cy={crack.point.y}
+              r="70"
+              fill={ref("light")}
+              className="egg-glow"
+              style={{ "--egg-delay": `${SQUASH_MS}ms` } as CSSProperties}
+            />
             {crack.lines.map((line, index) => (
               <polyline
                 key={index}
@@ -89,8 +102,14 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
                 strokeWidth="2.4"
                 strokeLinejoin="round"
                 strokeLinecap="round"
-                // Each line draws over its own length, a little after the line before it.
-                style={{ "--egg-line": line.length, "--egg-delay": `${index * 45}ms` } as CSSProperties}
+                // Each line draws over its own length after the squash, a little after the line before it.
+                style={
+                  {
+                    "--egg-line": line.length,
+                    "--egg-delay": `${SQUASH_MS + index * LINE_STAGGER_MS}ms`,
+                    "--egg-draw": `${LINE_DRAW_MS}ms`,
+                  } as CSSProperties
+                }
               />
             ))}
           </g>
