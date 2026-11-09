@@ -16,8 +16,9 @@ from analyzer.advisor import AdvisorFailed, TradeRead
 from analyzer.analysis import Analysis
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key
 from analyzer.errors import season_in_progress
-from analyzer.finder import NO_WIN_WIN, FinderTrade, find_win_wins
+from analyzer.finder import NO_WIN_WIN, FinderTrade, graded_offers
 from analyzer.finder_reasons import FinderReasons
+from analyzer.finder_search import Shortlist
 from analyzer.ratelimit import GradeLimiter, request_address
 from analyzer.rubric import (
     NO_CHART_NOTE,
@@ -52,6 +53,9 @@ ADVISOR_ERROR = ("The read of this trade did not come through. Try again in a mi
                  "This try does not count toward your grades.")
 # The Claude call of the finder sits on the app state, so a test swaps in a writer with a fake call.
 ReasonWriter = Callable[[list[FinderTrade], Snapshot], FinderReasons]
+# The Finder search: the asker, the picked partner or None for every other team, and the snapshot in, the shortlist
+# out. It sits on the app state with the real Jev, so a test swaps in FakeJev or a search of its own.
+FinderSearch = Callable[[int, int | None, Snapshot], Shortlist]
 
 
 class SnapshotSource(Protocol):
@@ -314,15 +318,23 @@ def _count_grade(request: Request, served: Served) -> None:
 
 
 class FindRequest(BaseModel):
-    """The body of the find route: the season, the roster that asks, and the partner roster."""
+    """The body of the find route: the season, the roster that asks, and the partner roster.
+
+    The partner is optional. With no partner, the search runs over every other team of the league.
+    """
 
     season: int
     asker: int
-    partner: int
+    partner: int | None = None
 
 
-def _team(snapshot: Snapshot, roster_id: int) -> dict:
-    """One roster of the pair as the finder document shows it: the roster id and the team name."""
+def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
+    """One roster of the pair as the finder document shows it: the roster id and the team name.
+
+    None for a find with no partner, because each trade then names its own partner in its sides.
+    """
+    if roster_id is None:
+        return None
     return {"roster_id": roster_id, "team": snapshot.teams[roster_id].name}
 
 
@@ -357,12 +369,16 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, found: list[FinderTra
 
 @router.post("/find")
 def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
-    """List the top win-win trades between the asker and the partner on the live snapshot, each with one reason."""
+    """Search for trades of the asker on the live snapshot, with the picked partner or every other team.
+
+    The Jev search makes the shortlist, and the top trades of it come back, each with one reason.
+    """
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
     snapshot = _snapshot(served, pair.season)
-    gone = [roster_id for roster_id in (pair.asker, pair.partner) if roster_id not in snapshot.rosters]
+    asked = [pair.asker] if pair.partner is None else [pair.asker, pair.partner]
+    gone = [roster_id for roster_id in asked if roster_id not in snapshot.rosters]
     if gone:
         # The form showed a roster that Sleeper no longer has, so the next teams request builds from Sleeper again.
         served.teams_cache.clear(pair.season)
@@ -375,7 +391,8 @@ def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
         return cached
     # The count comes after the cache, because a cached repeat runs no finder and makes no Claude call.
     _count_grade(request, served)
-    found = find_win_wins(pair.asker, pair.partner, snapshot)
+    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot)
+    found = graded_offers([offer.trade for offer in shortlist.shortlist], snapshot)
     reasons = request.app.state.finder_reasons(found, snapshot)
     document = finder_document(pair, snapshot, found, reasons)
     # A fallback is not stored, so the next request of the same pair tries the Claude call again.

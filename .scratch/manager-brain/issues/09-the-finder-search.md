@@ -10,8 +10,8 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-25, AT-27, AT-28, AT-
 
 **Status:** ready-for-agent
 
-- [ ] A Find for Maye d'force B with U with no partner logs the partner filter on all 11 other teams and no 429 response.
-- [ ] With The Blue Tent as the partner, every offer is with The Blue Tent.
-- [ ] No offer holds a kicker, a defense, a player out with no return week, or a handcuff.
-- [ ] Every offer is 1-for-1, 2-for-1, or 1-for-2, and none is 2-for-2 or larger.
-- [ ] `make check-fast` passes.
+- [x] A Find for Maye d'force B with U with no partner logs the partner filter on all 11 other teams and no 429 response.
+- [x] With The Blue Tent as the partner, every offer is with The Blue Tent.
+- [x] No offer holds a kicker, a defense, a player out with no return week, or a handcuff.
+- [x] Every offer is 1-for-1, 2-for-1, or 1-for-2, and none is 2-for-2 or larger.
+- [x] `make check-fast` passes.

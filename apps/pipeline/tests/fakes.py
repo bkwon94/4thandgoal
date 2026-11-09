@@ -5,6 +5,7 @@ The pipeline tests and the golden build share them, so both run the same offline
 import json
 import shutil
 import tempfile
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
@@ -186,20 +187,27 @@ class FakeJev:
     """A Jev that gives `yes` for each question and keeps each request in `requests`. It never calls TypeSafe.
 
     With `error`, each call raises that JevError, as a failed TypeSafe call does.
+    With `answer`, each question gets `answer(key, question, state)` in place of `yes`, so a test can say no to some.
+    The call is safe from many threads, because the Finder sends its requests in waves.
     """
 
     MODEL = "jev-fake"
 
-    def __init__(self, yes: float = 0.9, error: JevError | None = None):
+    def __init__(self, yes: float = 0.9, error: JevError | None = None,
+                 answer: Callable[[str, NoulQuestion, dict], float] | None = None):
         self.yes = yes
         self.error = error
+        self.answer = answer
         self.requests: list[JevRequest] = []
+        self._lock = threading.Lock()
 
     def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevResponse:
-        self.requests.append(JevRequest(state, questions))
+        with self._lock:
+            self.requests.append(JevRequest(state, questions))
         if self.error is not None:
             raise self.error
-        nouls = {key: self.yes for key in questions}
+        answer = self.answer
+        nouls = {key: (answer(key, q, state) if answer is not None else self.yes) for key, q in questions.items()}
         return JevResponse(model=self.MODEL, nouls=nouls, input_tokens=100 * len(questions))
 
 
