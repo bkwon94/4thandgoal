@@ -545,7 +545,10 @@ def verify_blurb(
     blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset(),
     *, prompts_dir: Path, terms: Sequence[str] = (), jev: Jev | None = None,
 ) -> VerifyResult:
-    """The code check, then the Claude check. With `jev`, the Jev check runs beside the Claude check and logs only."""
+    """The code check, then the Claude check. With `jev`, the Jev check runs beside the Claude check and logs only.
+
+    A `jev` of None runs no Jev check. The weekly build passes the real adapter.
+    """
     sentences = [s.text for s in blurb.sentences]
     failures = code_check(blurb, chapter, sheet, used_words, prompts_dir=prompts_dir)
     # A code failure is final, so skip the paid Claude call and the Jev check.
@@ -581,7 +584,8 @@ def write_and_verify(
 ) -> tuple[Blurb, list[VerifyResult]]:
     """Write one blurb and check it, with one retry. `terms` are the extra vocabulary of a core package.
 
-    With `jev`, each attempt that passes the code check gets a Jev check too. It logs only.
+    With `jev`, each attempt that passes the code check gets a Jev check too. It logs only. A `jev` of None runs no
+    Jev check. The weekly build passes the real adapter.
     """
     results: list[VerifyResult] = []
     # The used words go to every attempt, so a retry for another failure still hears them.
