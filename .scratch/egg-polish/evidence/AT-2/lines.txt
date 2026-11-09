@@ -1,23 +1,12 @@
-Tap at the screen point 142.5,401.8. In the units of the egg art (180 by 220) it is 45.0,72.6. The app clamps a tap point to x 40 to 140 and y 60 to 185.
-Before the tap: card top 261.4, egg svg top 324.0. At the last frame: card top 179.6, egg svg top 245.2.
-Start of each animation of the tap after the pointerdown: egg-squash +16.6 ms, egg-tremble +16.6 ms, egg-split-top +16.6 ms, egg-split-bottom +16.6 ms, egg-glow +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-flash +16.6 ms, egg-tile-rise +16.6 ms
-
+Seeked run: tap at the screen point 142.5,320.0. In the units of the egg art (180 by 220) it is 45.0,72.6.
+Seeked run, before the tap: card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4.
 t = 400 ms after the tap (frame-0.4s.png)
-  svg class: relative h-55 w-45 overflow-visible egg-shake
-  svg transform: matrix(0.99962, 0.0275808, -0.0275808, 0.99962, 1.97829, 0.204341)
-  glow at 44.5,71.796875, opacity 0.392931
-  crack lines: 6
-    line 1: starts at 44.5,71.8, drawn 107 of 108 units, opacity 1
-    line 2: starts at 44.5,71.8, drawn 91 of 98 units, opacity 1
-    line 3: starts at 44.5,71.8, drawn 81 of 102 units, opacity 1
-    line 4: starts at 44.5,71.8, drawn 65 of 105 units, opacity 1
-    line 5: starts at 44.5,71.8, drawn 54 of 128 units, opacity 1
-    line 6: starts at 44.5,71.8, drawn 24 of 100 units, opacity 1
-  shards: 7
-    shard 1: transform none
-    shard 2: transform none
-    shard 3: transform none
-    shard 4: transform none
-    shard 5: transform none
-    shard 6: transform none
-    shard 7: transform none
+  svg transform: matrix(0.99962, 0.0275744, -0.0275744, 0.99962, 1.97789, 0.204423)
+  svg box: x 99.0, y 245.2, w 186.0, h 224.9
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 105/106, 108/117, 85/107, 69/111, 44/105, 22/94; first points: 44.5,72.6 44.5,72.6 44.5,72.6 44.5,72.6 44.5,72.6 44.5,72.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+
+Real-time run (the recording): tap at 142.5,320.0.
+  before the tap: card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  400 ms after the tap: card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4

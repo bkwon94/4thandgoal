@@ -17,14 +17,14 @@ How the evidence ran:
 App: site
 Then: The egg squashes within 0.2 s of the tap, before any crack line shows.
 Files: `evidence/AT-1/steps.txt`, `evidence/AT-1/measures.txt`, `evidence/AT-1/frame-0.0s.png`, `evidence/AT-1/frame-0.1s.png`, `evidence/AT-1/frame-0.2s.png`, `evidence/AT-1/recording.webm`
-Observation: At 0.1 s the egg svg has the transform scale(1.07, 0.89), and each of the six crack lines has 0 units drawn. At 0.2 s the squash is over (scale about 1.0 with a small tilt), and line 1 has 1 unit of 119 drawn. At 0 s the egg is at rest. The frames show small shard slivers at the tap point from the tap on.
+Observation: Recorded again from `34b5c424`. In the seeked run the egg svg has scale(1.06, 0.91) at 0.05 s and scale(1.07, 0.89) at 0.1 s, and its box goes from 180 by 220 px to 192.6 by 195.8 px; in the real-time run it holds scale(1.07, 0.89) from 44 ms to 108 ms after the tap. In both runs no crack line has a drawn unit and each shard has opacity 0 before 0.15 s; the first line draws 0.87 units at 175 ms, and frame-0.2s.png shows a small bright dot at the middle of the egg. A faint thin zigzag line crosses the egg in all three frames, the same at 0.0 s as at 0.1 s and 0.2 s.
 
 ## AT-2: The crack starts at the tap point
 
 App: site
 Then: Every crack line starts at the spot of the tap.
-Files: `evidence/AT-2/steps.txt`, `evidence/AT-2/lines.txt`, `evidence/AT-2/frame-0.4s.png`, `evidence/AT-2/frame-before-tap.png`, `evidence/AT-2/recording-strip.png`, `evidence/AT-2/recording.webm`
-Observation: In the units of the egg art, the tap point is 45.0,72.6, and all six lines start at 44.5,71.8. On the screen, the card moves up at the tap: its top goes from 261.4 px to 179.6 px and the egg svg top from 324.0 px to 246.6 px. So in `frame-0.4s.png` the lines start near the upper left of the egg, about 80 px above the cyan ring of the tap, which sits on the lower left of the egg. `frame-before-tap.png` shows the ring on the upper left of the egg before the tap, and `recording-strip.png` shows the jump of the card in the real recording.
+Files: `evidence/AT-2/steps.txt`, `evidence/AT-2/lines.txt`, `evidence/AT-2/frame-0.4s.png`, `evidence/AT-2/frame-before-tap.png`, `evidence/AT-2/recording.webm`
+Observation: Recorded again from `34b5c424`. The tap at 142.5,320.0 px is the art point 45.0,72.6, and all six crack lines start at 44.5,72.6; in `frame-0.4s.png` the six lines run out from the cyan ring at the upper left of the egg. The card stays at y 179.6 px before the tap and 0.4 s after it, in the seeked run and in the real-time run.
 
 ## AT-3: Each find cracks anew
 
@@ -44,8 +44,8 @@ Observation: At 0.3 s the egg has the class egg-shake, the glow sits at the tap 
 
 App: site
 Then: The letter tile grows out of the spot of the tap, and the tile C with the copy "The letter C is yours to claim." shows at 1.3 s, plus or minus 0.2 s, after the tap.
-Files: `evidence/AT-5/steps.txt`, `evidence/AT-5/timing.txt`, `evidence/AT-5/375-dark.png`, `evidence/AT-5/768-dark.png`, `evidence/AT-5/1280-dark.png`, `evidence/AT-5/375-light.png`, `evidence/AT-5/768-light.png`, `evidence/AT-5/1280-light.png`, `evidence/AT-5/recording.webm`
-Observation: The copy "The letter C is yours to claim." showed 1302 ms after the pointerdown, and each shot shows the red tile C, that copy, "Claim C", and "Close". The transform-origin of the tile is the tap point in the units of the egg art. On the screen the card moves up about 82 px at the tap, so the growth origin sits at 227.0,418.2 px while the tap was at 227.1,500.8 px.
+Files: `evidence/AT-5/steps.txt`, `evidence/AT-5/timing.txt`, `evidence/AT-5/375-dark.png`, `evidence/AT-5/768-dark.png`, `evidence/AT-5/1280-dark.png`, `evidence/AT-5/375-light.png`, `evidence/AT-5/768-light.png`, `evidence/AT-5/1280-light.png`, `evidence/AT-5/frame-0.7s.png`, `evidence/AT-5/frame-0.8s.png`, `evidence/AT-5/frame-before-tap.png`, `evidence/AT-5/recording.webm`
+Observation: Recorded again from `34b5c424`. As the tile grows at 0.7 s and 0.8 s, its growth origin sits at 227.0,419.0 px and the tap was at 227.1,419.0 px; `frame-0.7s.png` and `frame-0.8s.png` show the small tile C with its lower right corner on the cyan ring. The copy "The letter C is yours to claim." showed 1305 ms after the pointerdown, and each of the six shots shows the red tile C, that copy, "Claim C", and "Close".
 
 ## AT-6: Enter cracks the egg from its middle
 
@@ -86,8 +86,8 @@ Observation: After the tap, each shot shows the grey stub "PICK AN EGG WORD" in 
 
 App: site
 Then: The holes of the perforation pop from the top down during the drag, the stub flutters away, the ticket shows the sweep, and the API gets one claim of T1 for Lil Fridge into CORNERSTONE.
-Files: `evidence/AT-11/steps.txt`, `evidence/AT-11/holes.txt`, `evidence/AT-11/requests.txt`, `evidence/AT-11/recording-strip.png`, `evidence/AT-11/recording.webm`
-Observation: The holes pop one by one from the top as the drag grows from 10 to 100 px, and the stub tilts further at each step. The strip shows the stub fly off and the CLAIMED stamp. The log has one POST /claim with roster_id 3 and CORNERSTONE, which answers 200. The page script finds no sweep element 100 ms and 300 ms after the release, because the local API answered first.
+Files: `evidence/AT-11/steps.txt`, `evidence/AT-11/holes.txt`, `evidence/AT-11/requests.txt`, `evidence/AT-11/sweep-0.3s.png`, `evidence/AT-11/sweep-0.9s.png`, `evidence/AT-11/recording.webm`
+Observation: Recorded again from `34b5c424`. The holes pop one by one from the top as the drag grows from 10 to 100 px, and the claim request leaves at the tear, 126 ms before the release. With the claim held 1500 ms, the page has one `.egg-ticket-sweep` and one `.egg-stub-flutter` at 300 ms and at 900 ms after the tear; `sweep-0.3s.png` shows the corner of the stub as it flies off, and the sweep is faint in both stills. The log has one POST /claim with roster_id 3 and CORNERSTONE, which answers 200 after the hold, and the recording then shows the CLAIMED stamp and the end card.
 
 ## AT-12: An early release sends nothing
 
@@ -121,8 +121,8 @@ Observation: Each stamp shot shows the ticket with the stub gone and a red CLAIM
 
 App: site
 Then: The second ticket stamps TAKEN, the stub comes back onto it, and then the end card for another manager first shows.
-Files: `evidence/AT-16/steps.txt`, `evidence/AT-16/notes.txt`, `evidence/AT-16/end-375-dark.png`, `evidence/AT-16/end-768-dark.png`, `evidence/AT-16/end-1280-dark.png`, `evidence/AT-16/end-375-light.png`, `evidence/AT-16/end-768-light.png`, `evidence/AT-16/end-1280-light.png`, `evidence/AT-16/stamp-375-dark.png`, `evidence/AT-16/stamp-768-dark.png`, `evidence/AT-16/stamp-1280-dark.png`, `evidence/AT-16/stamp-375-light.png`, `evidence/AT-16/stamp-768-light.png`, `evidence/AT-16/stamp-1280-light.png`, `evidence/AT-16/teehee-end-375-light.png`, `evidence/AT-16/teehee-stamp-375-light.png`
-Observation: With both browsers on Lil Fridge, as the Given says, the second claim answers 422, and the second sheet shows "CORNERSTONE has no open slot for the letter C." with the stub back on the ticket, no TAKEN stamp, and no end card. The real API refuses a second C of CORNERSTONE for the same manager before it checks the egg. In the extra race where the second browser picks Teehee, the claim answers 409, the ticket stamps TAKEN with the stub on it, and the end card reads "Another manager claimed first.".
+Files: `evidence/AT-16/steps.txt`, `evidence/AT-16/notes.txt`, `evidence/AT-16/end-375-dark.png`, `evidence/AT-16/end-768-dark.png`, `evidence/AT-16/end-1280-dark.png`, `evidence/AT-16/end-375-light.png`, `evidence/AT-16/end-768-light.png`, `evidence/AT-16/end-1280-light.png`, `evidence/AT-16/stamp-375-dark.png`, `evidence/AT-16/stamp-768-dark.png`, `evidence/AT-16/stamp-1280-dark.png`, `evidence/AT-16/stamp-375-light.png`, `evidence/AT-16/stamp-768-light.png`, `evidence/AT-16/stamp-1280-light.png`
+Observation: Recorded again from `34b5c424`. At each width and theme, the claim of the first browser for Lil Fridge answers 200, and the claim of the second browser for Teehee answers 409. Each stamp shot shows TAKEN on the Teehee ticket with the stub "TEAR TO CLAIM" back on it, and each end shot shows "TOO LATE" and "Another manager claimed first.".
 
 ## AT-17: A wrong passphrase brings the stub back
 
@@ -183,7 +183,7 @@ Observation: The touch swipe to the left moves the slide from EAGLES to CORNERST
 ## AT-25: A slide keeps the detail of each manager
 
 App: site
-Then: The slide shows "Lil Fridge leads with 4 of 11.", the top 5 managers with their tiles, and after the tap, all 12 managers in place.
+Then: The slide shows "Lil Fridge leads with 4 of 11.", the top 5 managers with their tiles, and after the tap, all 11 managers in place.
 Files: `evidence/AT-25/steps.txt`, `evidence/AT-25/slider.txt`, `evidence/AT-25/after-375-dark.png`, `evidence/AT-25/after-768-dark.png`, `evidence/AT-25/after-1280-dark.png`, `evidence/AT-25/after-375-light.png`, `evidence/AT-25/after-768-light.png`, `evidence/AT-25/after-1280-light.png`, `evidence/AT-25/before-375-dark.png`, `evidence/AT-25/before-768-dark.png`, `evidence/AT-25/before-1280-dark.png`, `evidence/AT-25/before-375-light.png`, `evidence/AT-25/before-768-light.png`, `evidence/AT-25/before-1280-light.png`, `evidence/AT-25/slider-after-375-dark.png`, `evidence/AT-25/slider-after-768-dark.png`, `evidence/AT-25/slider-after-1280-dark.png`, `evidence/AT-25/slider-after-375-light.png`, `evidence/AT-25/slider-after-768-light.png`, `evidence/AT-25/slider-after-1280-light.png`, `evidence/AT-25/slider-before-375-dark.png`, `evidence/AT-25/slider-before-768-dark.png`, `evidence/AT-25/slider-before-1280-dark.png`, `evidence/AT-25/slider-before-375-light.png`, `evidence/AT-25/slider-before-768-light.png`, `evidence/AT-25/slider-before-1280-light.png`
 Observation: Before the tap, the slide reads "Lil Fridge leads with 4 of 11." and lists 5 managers with their tiles. The button reads "Show all 11", not "Show all 12", because the board lists the 11 managers who hunt (the commissioner, roster 6, is not listed). After the tap, the slide lists all 11 managers in place, and the button reads "Show the top 5".
 
@@ -227,7 +227,7 @@ Observation: One frame after the tap on LANSDALE, the shown tabpanel is LANSDALE
 App: site
 Then: Axe finds 0 violations and 0 incomplete items, each tap target is 44px or more, and no page scrolls to the side at 390px.
 Files: `evidence/AT-31/steps.txt`, `evidence/AT-31/eggs-output.txt`, `evidence/AT-31/floor-boards.txt`
-Observation: The eggs project prints axe violations 0 and axe incomplete 0, 0 tap targets under 44px, and 0 sideways scroll, for the find card, the claim sheet, and each slide of the egg board in both themes, and its 3 tests pass. That run holds only one claim on its board. The extra check on the boards of AT-22 and AT-27 finds 0 violations, 0 small targets, and a page width of 390, but 1 incomplete item (color-contrast) on each slide: the muted labels of the weeks with no egg in the hero grid. The control board with T1 alone gives 0 incomplete items.
+Observation: Recorded again from `34b5c424`. The eggs project prints axe violations 0 and axe incomplete 0, 0 tap targets under 44px, and 0 sideways scroll for the find card, the claim sheet, and each slide of its board in both themes, and its 3 tests pass. On the boards of AT-22 and AT-27, each with T1 dropped, every slide in light and dark gives 0 violations, 0 incomplete items, 0 tap targets under 44px, and a page 390px wide in a 390px viewport.
 
 ## AT-32: The board gives no hint
 

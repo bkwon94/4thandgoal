@@ -8,8 +8,10 @@ dx 70 px: popped 1111110000 (holes top to bottom); stub transform matrix(0.98419
 dx 80 px: popped 1111111000 (holes top to bottom); stub transform matrix(0.979575, 0.201078, -0.201078, 0.979575, 13.8893, 6.93447)
 dx 90 px: popped 1111111100 (holes top to bottom); stub transform matrix(0.973976, 0.226651, -0.226651, 0.973976, 14.4504, 8.4963)
 dx 100 px: popped 1111111110 (holes top to bottom); stub transform matrix(0.968148, 0.25038, -0.25038, 0.968148, 16.1748, 9.34758)
-dx 110 px: popped 0000000000 (holes top to bottom); stub transform matrix(0.952288, 0.3052, -0.3052, 0.952288, 25.8593, 9.01162)
-dx 120 px: popped 0000000000 (holes top to bottom); stub transform matrix(0.927735, 0.37324, -0.37324, 0.927735, 45.8062, 5.76665)
+dx 110 px: popped 0000000000 (holes top to bottom); stub transform matrix(0.956387, 0.292102, -0.292102, 0.956387, 22.1577, 9.95502)
+dx 120 px: popped 0000000000 (holes top to bottom); stub transform matrix(0.934711, 0.355409, -0.355409, 0.934711, 40.4658, 6.34028)
 
-100 ms after the tear: sweep 0, stub class egg-stub relative flex touch-pan-y h-full w-24 flex-none origin-bottom-left flex-col items-center justify-center gap-sp-2 rounded-r-card px-sp-2 bg-accent text-on-dark egg-stub-spring egg-stub-flutter
-300 ms after the tear: sweep 0, stub class egg-stub relative flex touch-pan-y h-full w-24 flex-none origin-bottom-left flex-col items-center justify-center gap-sp-2 rounded-r-card px-sp-2 bg-accent text-on-dark egg-stub-spring egg-stub-flutter
+The claim request left the page 126 ms before the release, during the drag past the tear length. The times below count from that request, the tear.
+300 ms after the tear (read at 301 ms, sweep-0.3s.png at 352 ms): .egg-ticket-sweep 1, .egg-stub-flutter 1, CLAIMED stamp 0, claim answered no
+900 ms after the tear (read at 900 ms, sweep-0.9s.png at 937 ms): .egg-ticket-sweep 1, .egg-stub-flutter 1, CLAIMED stamp 0, claim answered no
+About 3.9 s after the tear: .egg-ticket-sweep 0, CLAIMED stamp 0

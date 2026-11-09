@@ -1,63 +1,61 @@
-Tap at the screen point 187.5,439.2, the egg point 90.0,110.0 in the units of the art (180 by 220).
-Before the tap: card top 261.4, egg svg top 324.0. At the last frame: card top 179.6, egg svg top 246.6.
-Start of each animation of the tap after the pointerdown: egg-squash +16.6 ms, egg-tremble +16.6 ms, egg-split-top +16.6 ms, egg-split-bottom +16.6 ms, egg-glow +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-draw +16.6 ms, egg-fade-out +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-shard +16.6 ms, egg-flash +16.6 ms, egg-tile-rise +16.6 ms
+Seeked run: tap at the screen point 187.5,357.4, the egg point 90.0,110.0 in the units of the art (180 by 220).
+Before the tap: card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4.
+Start of each animation of the tap after the pointerdown: egg-squash +33.2 ms, egg-tremble +33.2 ms, egg-split-top +33.2 ms, egg-split-bottom +33.2 ms, egg-glow +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-draw +33.2 ms, egg-fade-out +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-shard +33.2 ms, egg-flash +33.2 ms, egg-tile-rise +33.2 ms
 
 t = 0 ms after the tap (frame-0.0s.png)
-  svg class: relative h-55 w-45 overflow-visible egg-shake
   svg transform: matrix(1, 0, 0, 1, 0, 0)
-  glow at 89.5,109.796875, opacity 0
-  crack lines: 6
-    line 1: starts at 89.5,109.8, drawn 0 of 101 units, opacity 1
-    line 2: starts at 89.5,109.8, drawn 0 of 124 units, opacity 1
-    line 3: starts at 89.5,109.8, drawn 0 of 117 units, opacity 1
-    line 4: starts at 89.5,109.8, drawn 0 of 112 units, opacity 1
-    line 5: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
-    line 6: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
-  shards: 7
-    shard 1: transform none
-    shard 2: transform none
-    shard 3: transform none
-    shard 4: transform none
-    shard 5: transform none
-    shard 6: transform none
-    shard 7: transform none
+  svg box: x 97.5, y 247.4, w 180.0, h 220.0
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 0/106, 0/95, 0/116, 0/120, 0/104, 0/102; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+
+t = 50 ms after the tap (no frame, measure only)
+  svg transform: matrix(1.05967, 0, 0, 0.906236, 0, 0)
+  svg box: x 92.1, y 266.4, w 190.7, h 199.4
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 0/106, 0/95, 0/116, 0/120, 0/104, 0/102; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
 
 t = 100 ms after the tap (frame-0.1s.png)
-  svg class: relative h-55 w-45 overflow-visible egg-shake
-  svg transform: matrix(0.99934, 0, 0, 0.997324, 0, 0)
-  glow at 89.5,109.796875, opacity 0
-  crack lines: 6
-    line 1: starts at 89.5,109.8, drawn 0 of 101 units, opacity 1
-    line 2: starts at 89.5,109.8, drawn 0 of 124 units, opacity 1
-    line 3: starts at 89.5,109.8, drawn 0 of 117 units, opacity 1
-    line 4: starts at 89.5,109.8, drawn 0 of 112 units, opacity 1
-    line 5: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
-    line 6: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
-  shards: 7
-    shard 1: transform none
-    shard 2: transform none
-    shard 3: transform none
-    shard 4: transform none
-    shard 5: transform none
-    shard 6: transform none
-    shard 7: transform none
+  svg transform: matrix(1.07, 0, 0, 0.89, 0, 0)
+  svg box: x 91.2, y 269.7, w 192.6, h 195.8
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 0/106, 0/95, 0/116, 0/120, 0/104, 0/102; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+
+t = 150 ms after the tap (no frame, measure only)
+  svg transform: matrix(1.01544, 0, 0, 0.974873, 0, 0)
+  svg box: x 96.1, y 252.5, w 182.8, h 214.5
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 0/106, 0/95, 0/116, 0/120, 0/104, 0/102; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
 
 t = 200 ms after the tap (frame-0.2s.png)
-  svg class: relative h-55 w-45 overflow-visible egg-shake
-  svg transform: matrix(0.999955, -0.0094848, 0.0094848, 0.999955, -0.543447, 0)
-  glow at 89.5,109.796875, opacity 0.0115198
-  crack lines: 6
-    line 1: starts at 89.5,109.8, drawn 4 of 101 units, opacity 1
-    line 2: starts at 89.5,109.8, drawn 0 of 124 units, opacity 1
-    line 3: starts at 89.5,109.8, drawn 0 of 117 units, opacity 1
-    line 4: starts at 89.5,109.8, drawn 0 of 112 units, opacity 1
-    line 5: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
-    line 6: starts at 89.5,109.8, drawn 0 of 120 units, opacity 1
-  shards: 7
-    shard 1: transform none
-    shard 2: transform none
-    shard 3: transform none
-    shard 4: transform none
-    shard 5: transform none
-    shard 6: transform none
-    shard 7: transform none
+  svg transform: matrix(0.999989, -0.00475579, 0.00475579, 0.999989, -0.272488, 0)
+  svg box: x 96.3, y 247.0, w 181.0, h 220.9
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 1/106, 0/95, 0/116, 0/120, 0/104, 0/102; first points: 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6 89.5,109.6
+  shards: 7; opacity: 0, 0, 0, 0, 0, 0, 0
+
+Real-time run (the recording, no fake clock): tap at 187.5,357.4. One sample on each animation frame, t in ms after the pointerdown.
+Columns: t | svg transform | svg box | longest drawn crack line in units | highest shard opacity
+7.6 | matrix(1, 0, 0, 1, 0, 0) | 180.0x220.0 at 97.5,247.4 | 0.00 | 0.00
+24.8 | matrix(1.05943, 0, 0, 0.906615, 0, 0) | 190.7x199.5 at 92.2,266.3 | 0.00 | 0.00
+44.1 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+57.0 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+74.2 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+94.1 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+107.7 | matrix(1.07, 0, 0, 0.89, 0, 0) | 192.6x195.8 at 91.2,269.7 | 0.00 | 0.00
+124.7 | matrix(1.01629, 0, 0, 0.973545, 0, 0) | 182.9x214.2 at 96.0,252.8 | 0.00 | 0.00
+141.8 | matrix(0.980484, 0, 0, 1.02927, 0, 0) | 176.5x226.4 at 99.3,241.5 | 0.00 | 0.00
+158.5 | matrix(1, -9.93275e-06, 9.93275e-06, 1, -0.000569105, 0) | 180.0x220.0 at 97.5,247.4 | 0.00 | 0.00
+175.1 | matrix(0.999989, -0.00472089, 0.00472089, 0.999989, -0.270488, 0) | 181.0x220.8 at 96.3,247.0 | 0.87 | 0.00
+191.7 | matrix(0.999955, -0.00946011, 0.00946011, 0.999955, -0.542033, 0) | 182.1x221.7 at 95.0,246.6 | 3.55 | 0.00
+208.4 | matrix(0.9999, -0.0141707, 0.0141707, 0.9999, -0.811951, 0) | 183.1x222.5 at 93.8,246.2 | 8.02 | 0.00
+225.1 | matrix(0.999905, -0.0138097, 0.0138097, 0.999905, -0.749512, 0) | 183.0x222.5 at 94.0,246.2 | 14.30 | 0.00
+241.8 | matrix(0.999998, -0.00196172, 0.00196172, 0.999998, 0.0651219, 0) | 180.4x220.4 at 97.2,247.2 | 22.17 | 0.00
+258.4 | matrix(0.999952, 0.00981555, -0.00981555, 0.999952, 0.874878, 0) | 182.2x221.8 at 98.2,246.5 | 31.30 | 0.00
+275.0 | matrix(0.999765, 0.0216624, -0.0216624, 0.999765, 1.68951, 0) | 184.7x223.8 at 98.8,245.5 | 41.33 | 0.00
+291.8 | matrix(0.999872, 0.0160131, -0.0160131, 0.999872, 1.33431, 0.166423) | 183.5x222.9 at 98.6,246.2 | 51.59 | 0.00
+308.4 | matrix(1, -0.0006733, 0.0006733, 1, 0.241626, 0.439593) | 180.1x220.1 at 97.6,247.8 | 61.69 | 0.00
+325.1 | matrix(0.999853, -0.0171609, 0.0171609, 0.999853, -0.838049, 0.709512) | 183.7x223.1 at 93.2,246.6 | 70.81 | 0.00

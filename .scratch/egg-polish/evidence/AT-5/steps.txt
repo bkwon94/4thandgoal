@@ -1,6 +1,7 @@
-AT-5, the tile grows from the tap point. Script: evidence-scripts/find.mjs AT-5.
-State: empty store, T1 dropped with the letter C, no claim.
+AT-5, the tile grows from the tap point. Script: evidence2-scripts/find2.mjs AT-5.
+State: the local API restarts with an empty eggs store. T1 drops in week 9 by the real drop route with the letter C (a probe drop of filler eggs in week 10 sets the order of the letter rule). No claim.
 Recording (recording.webm): 375x812, motion on, light. Find T1, tap the egg near its lower right (72% of its width, 78% of its height), record 2.7 s more.
-timing.txt: a page script marks performance.now at the pointerdown and at the first time #egg-find-title reads 'is yours to claim'. It also reads the transform-origin of the tile.
-Shots (<width>-<theme>.png): viewport shots, because the find card is a fixed dialog. A fresh page at each width, height 900. T1 holds only in the light theme, so each find runs in light.
+timing.txt: a page script marks performance.now at the pointerdown and at the first time #egg-find-title reads 'is yours to claim'. At rest it reads the box and the transform-origin of the tile, and adds them to get the screen point of the growth origin.
+frame-before-tap.png, frame-0.7s.png, frame-0.8s.png: a fresh find with the Playwright clock, the same tap, each animation of the tap seeked to 700 and 800 ms. A cyan ring marks the tap point.
+Shots (<width>-<theme>.png): viewport shots of the letter state, because the find card is a fixed dialog. A fresh page at each width, height 900. T1 holds only in light, so each find runs in light.
 For the dark shots, a page script switches the theme after the letter shows: it sets cpc.theme to dark and adds the class dark to html, as the theme button does.

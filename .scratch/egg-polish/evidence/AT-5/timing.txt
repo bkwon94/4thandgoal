@@ -1,5 +1,25 @@
-Tap at the screen point 227.1,500.8 (72% of the width and 78% of the height of the egg button, box {"x":97.5,"y":329.203125,"width":180,"height":220}).
-Tile box at 0.5 s: {"x":212.6750030517578,"y":400.68359375,"width":16.800003051757812,"height":16.79998779296875,"top":400.68359375,"right":229.47500610351562,"bottom":417.48358154296875,"left":212.6750030517578}. Tile transform-origin: 95.5px 116.797px.
-Before the tap the tile box of the art sits at left 131.5, top 383.2 (the egg box plus 34,54 px), so the tap point less that corner is 95.6,117.6 px, beside the transform-origin. The box at 0.5 s (scale 0.15 about the origin) gives a tile left of 131.5 and a tile top of 301.4. So the card moved up about 82 px at the tap, and on the screen the growth origin sits at 227.0,418.2, while the tap was at 227.1,500.8.
-Letter copy showed 1302 ms after the pointerdown (performance.now of a MutationObserver on #egg-find-title).
+Real-time run (the recording): tap at the screen point 227.1,419.0, 72% of the width and 78% of the height of the egg button.
+Card before the tap: card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4. Card 2.7 s after the tap, in the letter state: card x 16.0, y 124.6, w 343.0, h 562.8.
+Tile about 0.8 s after the tap, as it grows: drawn box x 142.7, y 315.1, w 98.9, h 98.9, transform matrix(0.883226, 0, 0, 0.883226, 0, 0), transform-origin 95.5px 117.594px.
+Screen point of the growth origin as the tile grows (layout box of the tile in the art box, plus its transform-origin): 227.0,419.0. Tap point: 227.1,419.0. Gap: -0.1 px in x, -0.0 px in y.
+Tile at rest: box {"x":131.5,"y":246.40625,"width":112,"height":112,"top":246.40625,"right":243.5,"bottom":358.40625,"left":131.5}, transform matrix(1, 0, 0, 1, 0, 0), transform-origin 95.5px 117.594px.
+Screen point of the transform-origin at rest, after the card grows for the letter copy: 227.0,364.0.
+Letter copy showed 1305 ms after the pointerdown (performance.now of a MutationObserver on #egg-find-title).
 Tile text: C. Title text: The letter C is yours to claim.
+
+Seeked run: tap at 227.1,419.0. frame-0.7s.png and frame-0.8s.png show the tile as it grows, with a cyan ring on the tap point.
+t = 700 ms after the tap (frame-0.7s.png)
+  svg transform: matrix(1.06, 0, 0, 1.06, 0, 0)
+  svg box: x 92.1, y 235.3, w 190.8, h 233.2
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 115/115, 109/109, 113/113, 91/91, 101/101, 96/96; first points: 129.5,171.6 129.5,171.6 129.5,171.6 129.5,171.6 129.5,171.6 129.5,171.6
+  shards: 7; opacity: 0.372856, 0.372856, 0.372856, 0.372856, 0.372856, 0.372856, 0.372856
+  tile: drawn box x 182.1, y 363.7, w 52.7, h 52.7, transform matrix(0.470226, 0, 0, 0.470226, 0, 0), transform-origin 95.5px 117.594px, growth origin on the screen 227.0,419.0
+
+t = 800 ms after the tap (frame-0.8s.png)
+  svg transform: matrix(1.06, 0, 0, 1.06, 0, 0)
+  svg box: x 92.1, y 235.3, w 190.8, h 233.2
+  card x 16.0, y 179.6, w 343.0, h 452.8; egg button x 97.5, y 247.4
+  crack lines: 6; drawn units: 115/115, 109/109, 113/113, 91/91, 101/101, 96/96; first points: 129.5,171.6 129.5,171.6 129.5,171.6 129.5,171.6 129.5,171.6 129.5,171.6
+  shards: 7; opacity: 0.175155, 0.175155, 0.175155, 0.175155, 0.175155, 0.175155, 0.175155
+  tile: drawn box x 142.6, y 315.1, w 98.9, h 98.9, transform matrix(0.883321, 0, 0, 0.883321, 0, 0), transform-origin 95.5px 117.594px, growth origin on the screen 227.0,419.0

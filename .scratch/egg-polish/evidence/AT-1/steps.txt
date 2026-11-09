@@ -1,6 +1,8 @@
-AT-1, the tap squashes the egg. Script: evidence-scripts/find.mjs AT-1, in the session scratchpad.
-State: empty eggs store, then T1 dropped in week 9 by the real drop route with the letter C (a probe drop of filler eggs in week 10 sets the order of the letter rule). No claim.
-Recording (recording.webm): Chromium at 375x812, motion on, light theme. Open /midseason/2026/, double-tap [data-stable-id=luck-3], wait for the find card and 1.6 s, so the card ends its rise, tap the middle of the egg, record 2.6 s more.
-Frames: a fresh page with the Playwright clock. Find T1 the same way and tap the middle of the egg. Pause the clock 10 ms after the tap, so the phase timer of the find card holds.
-For each time t: pause each animation that started at or after the pointerdown, and set its currentTime to t less its start delay after the pointerdown. Take a viewport shot.
-measures.txt holds the computed transform of the egg svg, and each crack line with its drawn length (its length less its stroke-dashoffset), at each frame.
+AT-1, the tap squashes the egg. Script: evidence2-scripts/find2.mjs AT-1, in the session scratchpad.
+State: the local API restarts with an empty eggs store. T1 drops in week 9 by the real drop route with the letter C (a probe drop of filler eggs in week 10 sets the order of the letter rule). No claim.
+Recording (recording.webm): Chromium at 375x812, motion on, light theme. Open /midseason/2026/, double-tap [data-stable-id=luck-3], wait for the find card and 1.6 s, tap the middle of the egg, record 2.6 s more.
+In that same real-time run, a page script samples the egg svg on each animation frame for 320 ms after the pointerdown: its transform, its box, the longest drawn crack line, and the highest shard opacity.
+Seeked run: a fresh page with the Playwright clock. Find T1 the same way and tap the middle of the egg. Pause the clock 10 ms after the tap.
+For each time t of 0, 50, 100, 150, and 200 ms: pause each animation that started at or after the pointerdown, and set its currentTime to t less its start delay. Read the state.
+Frames frame-0.0s.png, frame-0.1s.png, and frame-0.2s.png are viewport shots of the seeked run at 0, 100, and 200 ms.
+measures.txt holds both runs: the seeked states at 0, 50, 100, 150, and 200 ms, and each real-time sample.
