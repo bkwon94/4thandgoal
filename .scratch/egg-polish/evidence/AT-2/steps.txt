@@ -1,0 +1,7 @@
+AT-2, the crack starts at the tap point. Script: evidence2-scripts/find2.mjs AT-2.
+State: the local API restarts with an empty eggs store. T1 drops in week 9 by the real drop route with the letter C (a probe drop of filler eggs in week 10 sets the order of the letter rule). No claim.
+Recording (recording.webm): 375x812, motion on, light. Find T1, tap the egg at 25% of its width from the left and 33% of its height from the top, record 2.6 s more.
+In the real-time run, a page script reads the box of the card and of the egg button before the tap and 400 ms after it.
+frame-before-tap.png: a fresh find just before the tap, with a cyan ring on the screen point that the tap then hits.
+frame-0.4s.png: the same fresh find with the Playwright clock, the same tap, each animation of the tap paused and seeked to 400 ms. A cyan ring marks the screen point of the tap.
+lines.txt gives the tap point in screen px and in the units of the egg art, the first point of each crack line, and the card box before and after the tap.

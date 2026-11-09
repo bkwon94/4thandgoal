@@ -1,0 +1,10 @@
+AT-21, the tab row shows each race. Script: evidence-scripts/board.mjs AT-21.
+How the state was made: the local API restarts with an empty eggs store. For each letter, a filler test egg (a target that no element holds, on /midseason/2026/) drops by the drop route in a drop of 11 eggs (week 10 and on), and the check and claim routes claim it for the manager into the word.
+State: Lil Fridge holds C and O in CORNERSTONE; Teehee holds L in LANSDALE.
+Board answer of the API after the state:
+counts: {"left":8,"found":3,"to_drop":43}
+CORNERSTONE: winner none; Lil Fridge: CO
+LANSDALE: winner none; Teehee: L
+EAGLES: winner none; no letters
+slider-<width>-<theme>.png: an element shot of the slider ([data-slider]) in a viewport 2400 px tall, so the fixed menu bar of the phone width covers no part of it. Shots: for each width (375, 768, 1280; height 900) and theme, a fresh context with motion on. Open /eggs/ with cpc.theme set, wait for the network to idle, then the scroll pass of the evidence runner (half a screen at a time to the end and back, then 1.2 s), then a full-page shot.
+slider.txt: a page script reads the text of each tab in DOM order, and the slider state.

@@ -1,0 +1,12 @@
+spec 375-light: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+spec 375-dark: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+spec 768-light: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+spec 768-dark: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+spec 1280-light: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+spec 1280-dark: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+main 375-light: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+main 375-dark: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+main 768-light: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+main 768-dark: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+main 1280-light: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}
+main 1280-dark: {"eggButton":"A \"Egg board, 1 egg left to find\" 1","banner":"1 egg dropped today · 1 left Egg board"}

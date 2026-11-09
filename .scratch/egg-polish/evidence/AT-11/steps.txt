@@ -1,0 +1,8 @@
+AT-11, a drag tears the stub and sends the claim. Script: evidence2-scripts/claim2.mjs AT-11, in the session scratchpad.
+State: empty eggs store (the local API restarts with no file), then T1 dropped in week 9 by the real drop route with the letter C. No claim.
+Recording (recording.webm): 375x812, motion on, light, cpc.passphrase = localtest stored. Find T1, crack it, tap 'Claim C', tap 'Lil Fridge' and CORNERSTONE.
+A Playwright page.route on the claim path holds the claim request 1500 ms, then continues it to the local API, so the ticket waits as on a slow network.
+Press the mouse 4 px inside the left edge of the stub, then move it right in 12 steps of 10 px with 60 ms between steps, then release.
+holes.txt: before each step a page script reads data-popped of the ten holes, top to bottom, and the stub transform.
+At 300 ms and 900 ms after the claim request leaves the page, a script counts .egg-ticket-sweep, .egg-stub-flutter, and the CLAIMED stamp, and takes sweep-0.3s.png and sweep-0.9s.png (viewport shots).
+requests.txt: each request of the page to the local API, the count of POST /claim, and the board after the run.

@@ -1,0 +1,9 @@
+Before the tap: shown EAGLES
+One frame after the tap on LANSDALE: {
+  "running": [],
+  "durations": [
+    "0s/0s"
+  ],
+  "shown": "egg-slide-LANSDALE",
+  "sliderVars": "0s"
+}

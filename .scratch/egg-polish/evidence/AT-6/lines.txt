@@ -1,0 +1,23 @@
+Focus before the key: the button "Crack the egg". Key: Enter. The middle of the egg in the units of the art is 90,130.
+
+t = 400 ms after the tap (frame-0.4s.png)
+  svg class: relative h-55 w-45 overflow-visible egg-shake
+  svg transform: matrix(0.99998, 0.0062891, -0.0062891, 0.99998, 0.622602, 0.47548)
+  glow at 90,130, opacity 0.346694
+  crack lines: 6
+    line 1: starts at 90.0,130.0, drawn 90 of 94 units, opacity 1
+    line 2: starts at 90.0,130.0, drawn 87 of 101 units, opacity 1
+    line 3: starts at 90.0,130.0, drawn 78 of 111 units, opacity 1
+    line 4: starts at 90.0,130.0, drawn 56 of 110 units, opacity 1
+    line 5: starts at 90.0,130.0, drawn 35 of 111 units, opacity 1
+    line 6: starts at 90.0,130.0, drawn 16 of 103 units, opacity 1
+  shards: 7
+    shard 1: transform none
+    shard 2: transform none
+    shard 3: transform none
+    shard 4: transform none
+    shard 5: transform none
+    shard 6: transform none
+    shard 7: transform none
+
+Recording run: tile text C; title "The letter C is yours to claim.".

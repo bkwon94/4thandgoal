@@ -1,0 +1,11 @@
+AT-26, a tie says that the managers tie. Script: evidence-scripts/board.mjs AT-26.
+How the state was made: the local API restarts with an empty eggs store. For each letter, a filler test egg (a target that no element holds, on /midseason/2026/) drops by the drop route in a drop of 11 eggs (week 10 and on), and the check and claim routes claim it for the manager into the word.
+State: Lil Fridge holds C and O, and Teehee holds R and N, in CORNERSTONE.
+Board answer of the API after the state:
+counts: {"left":7,"found":4,"to_drop":43}
+CORNERSTONE: winner none; Lil Fridge: CO; Teehee: RN
+LANSDALE: winner none; no letters
+EAGLES: winner none; no letters
+For each width and theme: open /eggs/, tap the tab CORNERSTONE, wait 1.2 s, then the scroll pass and a full-page shot.
+Lil Fridge is roster 3 and Teehee is roster 12. slider.txt: the leader line and the rows.
+slider-<width>-<theme>.png: an element shot of the slider ([data-slider]) in a viewport 2400 px tall, so the fixed menu bar of the phone width covers no part of it.

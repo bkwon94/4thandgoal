@@ -27,8 +27,9 @@ const CLIENT = "cpc";
 /*
  * The local API of make -C apps/api api-evidence. The build bakes the API URL into the export, and with no value the
  * site calls the production API. An evidence run must never call production, so the build always sets this URL.
+ * LOCAL_API_URL moves the run to a local API on another port, when a second API already holds port 8080.
  */
-export const LOCAL_API = "http://localhost:8080";
+export const LOCAL_API = process.env.LOCAL_API_URL ?? "http://localhost:8080";
 
 /*
  * The fixed port of the evidence server. The API answers only the origins it allows, and a free port changes each run.

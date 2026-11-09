@@ -1,0 +1,107 @@
+# 375-light
+ON OPEN
+tabs: CORNERSTONE 1/11 [selected] | LANSDALE 0/8 | EAGLES · Won
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 1 of 11.
+rows: 01 Lil Fridge LEADS 1/11 C || 02 The Blue Tent 0/11 || 03 All You Need Is Love 0/11 || 04 NFC Least 0/11 || 05 London Cooking 0/11
+frame background: rgb(20, 20, 20)
+AFTER A TAP ON THE TAB OF THE LAST SLIDE (EAGLES)
+tabs: CORNERSTONE 1/11 | LANSDALE 0/8 | EAGLES · Won [selected]
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: EAGLES
+giant word (letter:state): E:won A:won G:won L:won E:won S:won
+leader line: E / A / G / L / E / S
+rows: 
+frame background: rgb(184, 52, 42)
+
+# 375-dark
+ON OPEN
+tabs: CORNERSTONE 1/11 [selected] | LANSDALE 0/8 | EAGLES · Won
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 1 of 11.
+rows: 01 Lil Fridge LEADS 1/11 C || 02 The Blue Tent 0/11 || 03 All You Need Is Love 0/11 || 04 NFC Least 0/11 || 05 London Cooking 0/11
+frame background: rgb(20, 20, 20)
+AFTER A TAP ON THE TAB OF THE LAST SLIDE (EAGLES)
+tabs: CORNERSTONE 1/11 | LANSDALE 0/8 | EAGLES · Won [selected]
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: EAGLES
+giant word (letter:state): E:won A:won G:won L:won E:won S:won
+leader line: E / A / G / L / E / S
+rows: 
+frame background: rgb(184, 52, 42)
+
+# 768-light
+ON OPEN
+tabs: CORNERSTONE 1/11 [selected] | LANSDALE 0/8 | EAGLES · Won
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 1 of 11.
+rows: 01 Lil Fridge LEADS 1/11 C || 02 The Blue Tent 0/11 || 03 All You Need Is Love 0/11 || 04 NFC Least 0/11 || 05 London Cooking 0/11
+frame background: rgb(20, 20, 20)
+AFTER A TAP ON THE TAB OF THE LAST SLIDE (EAGLES)
+tabs: CORNERSTONE 1/11 | LANSDALE 0/8 | EAGLES · Won [selected]
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: EAGLES
+giant word (letter:state): E:won A:won G:won L:won E:won S:won
+leader line: E / A / G / L / E / S
+rows: 
+frame background: rgb(184, 52, 42)
+
+# 768-dark
+ON OPEN
+tabs: CORNERSTONE 1/11 [selected] | LANSDALE 0/8 | EAGLES · Won
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 1 of 11.
+rows: 01 Lil Fridge LEADS 1/11 C || 02 The Blue Tent 0/11 || 03 All You Need Is Love 0/11 || 04 NFC Least 0/11 || 05 London Cooking 0/11
+frame background: rgb(20, 20, 20)
+AFTER A TAP ON THE TAB OF THE LAST SLIDE (EAGLES)
+tabs: CORNERSTONE 1/11 | LANSDALE 0/8 | EAGLES · Won [selected]
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: EAGLES
+giant word (letter:state): E:won A:won G:won L:won E:won S:won
+leader line: E / A / G / L / E / S
+rows: 
+frame background: rgb(184, 52, 42)
+
+# 1280-light
+ON OPEN
+tabs: CORNERSTONE 1/11 [selected] | LANSDALE 0/8 | EAGLES · Won
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 1 of 11.
+rows: 01 Lil Fridge LEADS 1/11 C || 02 The Blue Tent 0/11 || 03 All You Need Is Love 0/11 || 04 NFC Least 0/11 || 05 London Cooking 0/11
+frame background: rgb(20, 20, 20)
+AFTER A TAP ON THE TAB OF THE LAST SLIDE (EAGLES)
+tabs: CORNERSTONE 1/11 | LANSDALE 0/8 | EAGLES · Won [selected]
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: EAGLES
+giant word (letter:state): E:won A:won G:won L:won E:won S:won
+leader line: E / A / G / L / E / S
+rows: 
+frame background: rgb(184, 52, 42)
+
+# 1280-dark
+ON OPEN
+tabs: CORNERSTONE 1/11 [selected] | LANSDALE 0/8 | EAGLES · Won
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:outline R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge leads with 1 of 11.
+rows: 01 Lil Fridge LEADS 1/11 C || 02 The Blue Tent 0/11 || 03 All You Need Is Love 0/11 || 04 NFC Least 0/11 || 05 London Cooking 0/11
+frame background: rgb(20, 20, 20)
+AFTER A TAP ON THE TAB OF THE LAST SLIDE (EAGLES)
+tabs: CORNERSTONE 1/11 | LANSDALE 0/8 | EAGLES · Won [selected]
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: EAGLES
+giant word (letter:state): E:won A:won G:won L:won E:won S:won
+leader line: E / A / G / L / E / S
+rows: 
+frame background: rgb(184, 52, 42)

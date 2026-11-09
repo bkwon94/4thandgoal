@@ -1,0 +1,14 @@
+AT-24, a swipe or a tab moves the slide. Script: evidence-scripts/board.mjs AT-24.
+How the state was made: the local API restarts with an empty eggs store. T1 drops in week 9 by the drop route. For each letter, a filler test egg (a target that no element holds, on /midseason/2026/) drops by the drop route in a drop of 11 eggs (week 10 and on), and the check and claim routes claim it for the manager into the word.
+State: Lil Fridge holds E, A, G, L, S in EAGLES and C, O in CORNERSTONE.
+Board answer of the API after the state:
+counts: {"left":5,"found":7,"to_drop":42}
+CORNERSTONE: winner none; Lil Fridge: CO
+LANSDALE: winner none; no letters
+EAGLES: winner none; Lil Fridge: EAGLS
+T1 is dropped too, for AT-32, and it holds no claim.
+Recording (recording.webm): a context with hasTouch, 375x812, light, motion on. Open /eggs/ and scroll the slider into view.
+Swipe 160 px to the left on the slide with CDP Input.synthesizeScrollGesture (gestureSourceType touch). Wait 1.5 s.
+Tap the tab LANSDALE with a touch tap. Read data-roll of each giant word at 0, 120, 240, 360 ms. Wait 1.2 s.
+Swipe 300 px up on the slider with the same CDP touch gesture. Read scrollY before and after.
+page-script.txt: the tabs and the shown slide after each step, the rolls, and the scroll.

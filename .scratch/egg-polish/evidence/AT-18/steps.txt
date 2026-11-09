@@ -1,0 +1,5 @@
+AT-18, a block ticket shows the block. Script: evidence-scripts/claim.mjs AT-18.
+State: empty store. T1 drops with the letter C. The check and the claim routes claim T1 for Lil Fridge (roster 3) into CORNERSTONE. Then T4 drops in week 17 as egg 35 with the letter C.
+T4 is a test egg: a double-tap on the Luck cell of roster 5 ([data-stable-id=luck-5]) on /midseason/2026/, in the light theme. A probe drop of filler eggs sets the order of the letter rule first.
+For each width (height 900) and theme: a fresh context with the passphrase stored. Find T4 in light, crack it, tap 'Claim C', switch to dark by a page script for the dark runs.
+Tap only the team 'Lil Fridge'. Scroll the ticket into view and take a viewport shot. ticket.txt holds the board and the ticket text of each run.

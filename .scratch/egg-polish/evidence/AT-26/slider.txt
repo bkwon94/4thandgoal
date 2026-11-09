@@ -1,0 +1,53 @@
+# 375-light
+tabs: CORNERSTONE 2/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge and Teehee tie with 2 of 11.
+rows: 01 Lil Fridge LEADS 2/11 C O || 02 Teehee LEADS 2/11 R N || 03 The Blue Tent 0/11 || 04 All You Need Is Love 0/11 || 05 NFC Least 0/11
+frame background: rgb(20, 20, 20)
+
+# 375-dark
+tabs: CORNERSTONE 2/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge and Teehee tie with 2 of 11.
+rows: 01 Lil Fridge LEADS 2/11 C O || 02 Teehee LEADS 2/11 R N || 03 The Blue Tent 0/11 || 04 All You Need Is Love 0/11 || 05 NFC Least 0/11
+frame background: rgb(20, 20, 20)
+
+# 768-light
+tabs: CORNERSTONE 2/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge and Teehee tie with 2 of 11.
+rows: 01 Lil Fridge LEADS 2/11 C O || 02 Teehee LEADS 2/11 R N || 03 The Blue Tent 0/11 || 04 All You Need Is Love 0/11 || 05 NFC Least 0/11
+frame background: rgb(20, 20, 20)
+
+# 768-dark
+tabs: CORNERSTONE 2/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge and Teehee tie with 2 of 11.
+rows: 01 Lil Fridge LEADS 2/11 C O || 02 Teehee LEADS 2/11 R N || 03 The Blue Tent 0/11 || 04 All You Need Is Love 0/11 || 05 NFC Least 0/11
+frame background: rgb(20, 20, 20)
+
+# 1280-light
+tabs: CORNERSTONE 2/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge and Teehee tie with 2 of 11.
+rows: 01 Lil Fridge LEADS 2/11 C O || 02 Teehee LEADS 2/11 R N || 03 The Blue Tent 0/11 || 04 All You Need Is Love 0/11 || 05 NFC Least 0/11
+frame background: rgb(20, 20, 20)
+
+# 1280-dark
+tabs: CORNERSTONE 2/11 [selected] | LANSDALE 0/8 | EAGLES 0/6
+slide order: CORNERSTONE, LANSDALE, EAGLES
+shown slide: CORNERSTONE
+giant word (letter:state): C:lit O:lit R:outline N:outline E:outline R:outline S:outline T:outline O:outline N:outline E:outline
+leader line: Lil Fridge and Teehee tie with 2 of 11.
+rows: 01 Lil Fridge LEADS 2/11 C O || 02 Teehee LEADS 2/11 R N || 03 The Blue Tent 0/11 || 04 All You Need Is Love 0/11 || 05 NFC Least 0/11
+frame background: rgb(20, 20, 20)

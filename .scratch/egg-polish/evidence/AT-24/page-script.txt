@@ -1,0 +1,5 @@
+open: {"tabs":"CORNERSTONE 2/11 | LANSDALE 0/8 | EAGLES 5/6 [selected]","shown":"EAGLES"}
+after a touch swipe of 160 px to the left: {"tabs":"CORNERSTONE 2/11 [selected] | LANSDALE 0/8 | EAGLES 5/6","shown":"CORNERSTONE"}
+after a tap on the tab LANSDALE: {"tabs":"CORNERSTONE 2/11 | LANSDALE 0/8 [selected] | EAGLES 5/6","shown":"LANSDALE"}
+data-roll of each giant word at 0, 120, 240, 360 ms after the tap: EAGLES:wait-down CORNERSTONE:out-up LANSDALE:in || EAGLES:wait-down CORNERSTONE:out-up LANSDALE:in || EAGLES:wait-down CORNERSTONE:out-up LANSDALE:in || EAGLES:wait-down CORNERSTONE:out-up LANSDALE:in
+touch swipe up of 300 px on the slider: scrollY 703 -> 999; {"shown":"LANSDALE"}

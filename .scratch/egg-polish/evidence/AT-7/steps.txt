@@ -1,0 +1,6 @@
+AT-7, reduced motion shows the letter at once. Script: evidence-scripts/find.mjs AT-7.
+State: empty store, T1 dropped with the letter C, no claim.
+Recording (recording.webm): a context with reducedMotion 'reduce', 375x812, light. Find T1, tap the middle of the egg, record 2 s more.
+page-script.txt: one animation frame after the tap, a page script reads the tile, the title, the count of crack lines and shards, and the running animations.
+after-tap-375-light.png: a viewport shot right after that frame.
+hunt-test-motion-off.txt: the output of the vitest file packages/eggs/site/hunt/egg-hunt-motion-off.test.tsx.

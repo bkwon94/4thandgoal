@@ -1,0 +1,5 @@
+AT-6, Enter cracks the egg from its middle. Script: evidence-scripts/find.mjs AT-6.
+State: empty store, T1 dropped with the letter C, no claim.
+Recording (recording.webm): 375x812, motion on, light. Find T1 by the double-tap, put the focus on the button 'Crack the egg' with focus(), wait 0.4 s, press Enter, record 2.6 s more.
+Frame (frame-0.4s.png): a fresh find, the focus on the egg, Enter, the Playwright clock paused, each animation of the key seeked to 400 ms.
+lines.txt holds the first point of each crack line in the units of the egg art.

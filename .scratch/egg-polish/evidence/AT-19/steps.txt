@@ -1,0 +1,4 @@
+AT-19, reduced motion keeps the claim still. Script: evidence-scripts/claim.mjs AT-19.
+State: empty eggs store (the local API restarts with no file), then T1 dropped in week 9 by the real drop route with the letter C. No claim.
+Recording (recording.webm): a context with reducedMotion 'reduce', 375x812, light, passphrase stored. Find T1, tap the egg, tap 'Claim C', pick 'Lil Fridge' and CORNERSTONE.
+Tap the stub. A page script reads the running animations one frame later and at the stamp, and counts the sweep and the flutter classes. stamp-375-light.png is a viewport shot at the stamp.

@@ -1,0 +1,6 @@
+AT-17, a wrong passphrase brings the stub back. Script: evidence-scripts/claim.mjs AT-17.
+State: empty eggs store (the local API restarts with no file), then T1 dropped in week 9 by the real drop route with the letter C. No claim.
+Shots: for each width (height 900) and theme, a fresh context with no passphrase stored. Find T1 in light, crack it, tap 'Claim C', switch to dark by a page script for the dark runs.
+Pick 'Lil Fridge' and CORNERSTONE, type 'wrongpass' in 'League passphrase', drag the stub 130 px. Wait for the alert and 0.9 s, then take a viewport shot.
+Recording (recording.webm): 375x812, light. The same steps to the error, then type 'localtest' in the passphrase field and drag the stub 130 px again. Record 2.5 s after the stamp.
+notes.txt holds the alert text and the ticket after each error. requests.txt holds the requests of the recording run.

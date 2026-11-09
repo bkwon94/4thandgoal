@@ -1,0 +1,12 @@
+Board before the runs:
+counts: {"left":34,"found":1,"to_drop":19}
+CORNERSTONE: winner none; Lil Fridge: C
+LANSDALE: winner none; no letters
+EAGLES: winner none; no letters
+
+375-light: sheet title "Put C in an egg word."; ticket {"text":"C CLAIM TICKET BLOCK Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C as a block","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+375-dark: sheet title "Put C in an egg word."; ticket {"text":"C CLAIM TICKET BLOCK Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C as a block","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+768-light: sheet title "Put C in an egg word."; ticket {"text":"C CLAIM TICKET BLOCK Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C as a block","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+768-dark: sheet title "Put C in an egg word."; ticket {"text":"C CLAIM TICKET BLOCK Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C as a block","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+1280-light: sheet title "Put C in an egg word."; ticket {"text":"C CLAIM TICKET BLOCK Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C as a block","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}
+1280-dark: sheet title "Put C in an egg word."; ticket {"text":"C CLAIM TICKET BLOCK Lil Fridge TEAR TO CLAIM","stubName":"Tear to claim C as a block","stubDisabled":"false","stubHidden":null,"stubTransform":"none","stubVisibility":"visible"}

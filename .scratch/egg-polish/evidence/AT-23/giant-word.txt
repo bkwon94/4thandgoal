@@ -1,0 +1,53 @@
+# 375-light
+shown slide: EAGLES
+E:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+A:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+G:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+L:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+E:outline bg rgba(0, 0, 0, 0) color rgb(153, 153, 153) border rgb(153, 153, 153)
+S:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+
+# 375-dark
+shown slide: EAGLES
+E:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+A:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+G:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+L:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+E:outline bg rgba(0, 0, 0, 0) color rgb(153, 153, 153) border rgb(153, 153, 153)
+S:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+
+# 768-light
+shown slide: EAGLES
+E:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+A:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+G:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+L:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+E:outline bg rgba(0, 0, 0, 0) color rgb(153, 153, 153) border rgb(153, 153, 153)
+S:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+
+# 768-dark
+shown slide: EAGLES
+E:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+A:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+G:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+L:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+E:outline bg rgba(0, 0, 0, 0) color rgb(153, 153, 153) border rgb(153, 153, 153)
+S:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+
+# 1280-light
+shown slide: EAGLES
+E:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+A:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+G:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+L:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+E:outline bg rgba(0, 0, 0, 0) color rgb(153, 153, 153) border rgb(153, 153, 153)
+S:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(224, 224, 224)
+
+# 1280-dark
+shown slide: EAGLES
+E:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+A:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+G:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+L:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)
+E:outline bg rgba(0, 0, 0, 0) color rgb(153, 153, 153) border rgb(153, 153, 153)
+S:lit bg rgb(255, 255, 255) color rgb(20, 20, 20) border rgb(51, 51, 51)

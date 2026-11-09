@@ -1,0 +1,7 @@
+prefers-reduced-motion: reduce matches: true
+One frame after the tap:
+  tile text: C
+  title: The letter C is yours to claim.
+  crack lines: 0
+  shards: 0
+  running animations: 0 []

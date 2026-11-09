@@ -1,0 +1,13 @@
+2026-11-09T03:57:33.089Z GET /clients/cpc/eggs/board 
+2026-11-09T03:57:33.093Z   -> 200 GET /clients/cpc/eggs/board
+2026-11-09T03:57:34.078Z POST /clients/cpc/eggs/check {"page":"/midseason/2026/","target":"luck-3","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}
+2026-11-09T03:57:34.083Z   -> 200 POST /clients/cpc/eggs/check
+2026-11-09T03:57:38.416Z GET /clients/cpc/eggs/board 
+2026-11-09T03:57:38.424Z   -> 200 GET /clients/cpc/eggs/board
+POST /claim count: 0
+
+Board after the run:
+counts: {"left":13,"found":0,"to_drop":41}
+CORNERSTONE: winner none; no letters
+LANSDALE: winner none; no letters
+EAGLES: winner none; no letters

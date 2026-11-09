@@ -7,7 +7,7 @@ import { expect, test } from "@playwright/test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { openPage, scanContrast, scanScroll, scanTargets, scanText, scanWords } from "./floor";
+import { openPage, scanAxe, scanContrast, scanScroll, scanTargets, scanText, scanWords } from "./floor";
 import { serveDir } from "./serve";
 
 const PHONE = { width: 390, height: 844 };
@@ -91,6 +91,19 @@ test("axe color-contrast with a scope checks only the open part, so text that th
   </main>`);
   const failures = await scanContrast(page, "nav.strip");
   expect(failures).toEqual([expect.stringMatching(/^violation: a .*contrast.*#bbbbbb/)]);
+});
+
+test("the full axe scan counts the violations and the incomplete items apart, and passes a clean part", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<html lang="en"><head><title>Axe</title></head><body><main style="background:#fff">
+    <section class="part"><button class="bare" style="width:48px;height:48px"></button></section>
+    <div style="background:linear-gradient(#000,#fff)"><p class="glow" style="color:#777">Text on a glow.</p></div>
+    <section class="clean"><h2 style="color:#111">A clean part</h2><button style="color:#111">Claim</button></section>
+  </main></body></html>`);
+  const scan = await scanAxe(page);
+  expect(scan.violations).toEqual([expect.stringMatching(/^violation: \.bare .*button-name/)]);
+  expect(scan.incomplete).toEqual([expect.stringMatching(/^incomplete: p color-contrast: .*gradient/)]);
+  expect(await scanAxe(page, "section.clean")).toEqual({ violations: [], incomplete: [] });
 });
 
 test("openPage sets each theme through the shipped boot script and the server gives 404.html for a missing path", async ({

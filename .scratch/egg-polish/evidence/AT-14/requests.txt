@@ -1,0 +1,45 @@
+# Enter (recording.webm), on a fresh drop
+Focus before the key: Tear to claim C for CORNERSTONE
+ARIA snapshot of the claim ticket before the key:
+- group "Claim ticket":
+  - text: C Claim ticket CORNERSTONE Lil Fridge
+  - button "Tear to claim C for CORNERSTONE": Tear to claim
+Requests:
+2026-11-09T03:58:02.347Z GET /clients/cpc/eggs/board 
+2026-11-09T03:58:02.347Z   -> 200 GET /clients/cpc/eggs/board
+2026-11-09T03:58:03.332Z POST /clients/cpc/eggs/check {"page":"/midseason/2026/","target":"luck-3","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}
+2026-11-09T03:58:03.336Z   -> 200 POST /clients/cpc/eggs/check
+2026-11-09T03:58:07.670Z GET /clients/cpc/eggs/board 
+2026-11-09T03:58:07.678Z   -> 200 GET /clients/cpc/eggs/board
+2026-11-09T03:58:09.757Z POST /clients/cpc/eggs/claim {"token":"O3wOKq92red33oVWnu940UETD6O0R5BJ","roster_id":3,"word":"CORNERSTONE"}
+2026-11-09T03:58:09.762Z   -> 200 POST /clients/cpc/eggs/claim
+POST /claim count: 1
+End card title 3.5 s after the key: C goes to CORNERSTONE.
+Board after the run:
+counts: {"left":12,"found":1,"to_drop":41}
+CORNERSTONE: winner none; Lil Fridge: C
+LANSDALE: winner none; no letters
+EAGLES: winner none; no letters
+
+# Space (recording-space.webm), on a fresh drop
+Focus before the key: Tear to claim C for CORNERSTONE
+ARIA snapshot of the claim ticket before the key:
+- group "Claim ticket":
+  - text: C Claim ticket CORNERSTONE Lil Fridge
+  - button "Tear to claim C for CORNERSTONE": Tear to claim
+Requests:
+2026-11-09T03:58:17.702Z GET /clients/cpc/eggs/board 
+2026-11-09T03:58:17.702Z   -> 200 GET /clients/cpc/eggs/board
+2026-11-09T03:58:18.696Z POST /clients/cpc/eggs/check {"page":"/midseason/2026/","target":"luck-3","action":"tap2","conditions":{"theme":"light","open":["chip-rb"]}}
+2026-11-09T03:58:18.699Z   -> 200 POST /clients/cpc/eggs/check
+2026-11-09T03:58:23.039Z GET /clients/cpc/eggs/board 
+2026-11-09T03:58:23.041Z   -> 200 GET /clients/cpc/eggs/board
+2026-11-09T03:58:25.122Z POST /clients/cpc/eggs/claim {"token":"rH4BlVvjmXBepu-djdynblKAbqKDqIC4","roster_id":3,"word":"CORNERSTONE"}
+2026-11-09T03:58:25.127Z   -> 200 POST /clients/cpc/eggs/claim
+POST /claim count: 1
+End card title 3.5 s after the key: C goes to CORNERSTONE.
+Board after the run:
+counts: {"left":12,"found":1,"to_drop":41}
+CORNERSTONE: winner none; Lil Fridge: C
+LANSDALE: winner none; no letters
+EAGLES: winner none; no letters
