@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-16, AT-17, AT-18, AT-
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] `/analyze` for Maye d'force B with U giving Jahmyr Gibbs for Bijan Robinson returns a Lean of the five, a Case, a fairness block, and 3 to 5 Bullets per side with their fact text.
 - [x] No key of the analyze document holds a letter, a factor, a decision, or an answer.
