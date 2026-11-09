@@ -8,7 +8,7 @@ Spec: `.scratch/jev/PRD.md`. Acceptance tests AT-3 and AT-7.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A `run_build` test with `FakeJev` raising the adapter's error shows the error in `verify.json`, one warning per checked attempt, and the same blurbs and `passed` as a run with no error.
 - [ ] The real rebuild of 2026 week 8 for cpc with `TYPESAFE_API_KEY` unset exits 0 and writes `page.json`, with an error in every checked `jev`.
