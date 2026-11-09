@@ -8,7 +8,7 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-24 and AT-30.
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A board test fires a side swipe and reads the next slide selected.
 - [x] A board test fires a vertical swipe and reads that the slide does not change.
