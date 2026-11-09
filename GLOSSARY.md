@@ -227,6 +227,17 @@ The code check does not match the last name of an out-of-scope player when that 
 a scope team name. So a bare "London" passes when London Cooking is in scope.
 The full name "Drake London" still fails.
 
+**Jev check**:
+One request to the TypeSafe Jev model about one blurb, with all its questions. It returns one Jev answer per question.
+_Avoid_: Jev verdict (a verdict is the analyzer's choice, and a Test verdict is the Judge's)
+
+**Jev answer**:
+The typed result of one question of a Jev check, such as the probability that a sentence follows from its facts.
+
+**Cascade**:
+The facts check in two steps: the Jev check runs first, and the Claude check runs only when a Jev answer is not sure.
+A failed Jev call never counts as a pass.
+
 **Game time**:
 The NFL games of the week that kick off together, by the Eastern kickoff: Thursday, the early Sunday
 games, the late Sunday games, Sunday night, and Monday. Every day but Sunday is one game time.
