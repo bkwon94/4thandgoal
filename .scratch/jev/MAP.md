@@ -18,12 +18,12 @@ The facts check becomes a live cascade behind an eval bar. The tone and cause qu
 - The tone and cause questions log only. A later spec makes them gate the build. They have no past labels. Brian, 2026-11-09.
 - A failed Jev call never counts as a pass. The blurb goes to the Claude check.
 - The terms are Jev check, Jev answer, and Cascade. "Verdict" stays with the analyzer and the Judge. Brian, 2026-11-09.
+- The Jev check asks four tone and cause questions: an injury joke, life outside fantasy, an explained joke, and a stated cause. The flags show in the Jev log and in the `publish` prompt, with an optional right-or-wrong mark. `decisions/03-grill-tone-and-cause-questions.md`.
 
 ## NOT YET SPECIFIED
 
 - How well do Jev answers agree with the past Claude verdicts, and which question text and state work best? `decisions/01-research-jev-on-past-labels.md`.
 - Which eval bar and which probability threshold make the cascade live? `decisions/02-grill-cascade-bar.md`.
-- Which tone and cause questions does the Jev check ask, and where do the flags show? `decisions/03-grill-tone-and-cause-questions.md`.
 - Does the cascade also cover the midseason blurbs and the `midseason-publish` re-check? `decisions/04-grill-midseason-scope.md`.
 - Which key does the weekly build use: the local key or the app key? `decisions/05-grill-build-key.md`.
 - Where does the Jev log live, and in what format? `decisions/06-spec-jev-log.md`.
