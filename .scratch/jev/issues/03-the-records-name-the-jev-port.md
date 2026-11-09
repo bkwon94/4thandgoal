@@ -10,7 +10,7 @@ Spec: `.scratch/jev/PRD.md`. Acceptance tests AT-12, AT-13, and AT-14.
 
 **Status:** ready-for-agent
 
-- [ ] The new ADR exists in `docs/adr/` and states the three choices and the third port.
-- [ ] `GLOSSARY.md` and the README of the pipeline package hold the lines above.
-- [ ] `docs/adr/README.md` lists the new ADR, if it lists each ADR.
+- [x] The new ADR exists in `docs/adr/` and states the three choices and the third port.
+- [x] `GLOSSARY.md` and the README of the pipeline package hold the lines above.
+- [x] `docs/adr/README.md` lists the new ADR, if it lists each ADR.
 - [ ] `git diff --stat main...jev` shows no change under `apps/site/`, `apps/api/`, `packages/analyzer/`, or `packages/midseason/`, and no change to the `publish` command.

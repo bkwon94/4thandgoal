@@ -229,6 +229,7 @@ The full name "Drake London" still fails.
 
 **Jev check**:
 One request to the TypeSafe Jev model about one blurb, with all its questions. It returns one Jev answer per question.
+In the weekly build, it runs beside the Claude check and logs only.
 _Avoid_: Jev verdict (a verdict is the analyzer's choice, and a Test verdict is the Judge's)
 
 **Jev answer**:
