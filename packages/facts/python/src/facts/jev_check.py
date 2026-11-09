@@ -25,6 +25,8 @@ NO = (
 )
 # A term line of the vocabulary, such as "- **streak**: head-to-head results only".
 TERM_LINE = re.compile(r"^- \*\*(.+?)\*\*: (.+)$", re.MULTILINE)
+# A rule line of the vocabulary: each line that is not a term line, a heading, or blank, such as the banned words.
+RULE_LINE = re.compile(r"^(?!- \*\*|#)(\S.*)$", re.MULTILINE)
 
 
 def _key(index: int) -> str:
@@ -34,7 +36,8 @@ def _key(index: int) -> str:
 def jev_state(blurb: Blurb, chapter: Chapter, sheet: FactSheet, *, prompts_dir: Path,
               terms: Sequence[str] = ()) -> dict:
     """The state of one request. It holds what the Claude verifier reads: the chapter title, the whole blurb so a
-    pronoun has its subject, every chapter fact and callback fact by ID, and each vocabulary term by name."""
+    pronoun has its subject, every chapter fact and callback fact by ID, each vocabulary term by name, and each rule
+    line of the vocabulary."""
     vocabulary = with_terms(load_prompt(prompts_dir, "vocabulary.md"), terms)
     fact_ids = [*chapter.fact_ids, *chapter.callback_ids]
     return {
@@ -42,6 +45,7 @@ def jev_state(blurb: Blurb, chapter: Chapter, sheet: FactSheet, *, prompts_dir: 
         "blurb": [s.text for s in blurb.sentences],
         "facts": {fid: sheet.facts[fid].text for fid in fact_ids if fid in sheet.facts},
         "vocabulary": dict(TERM_LINE.findall(vocabulary)),
+        "rules": RULE_LINE.findall(vocabulary),
     }
 
 

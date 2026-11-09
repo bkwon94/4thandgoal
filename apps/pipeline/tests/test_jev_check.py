@@ -79,6 +79,18 @@ def test_the_state_holds_every_chapter_fact_and_the_vocabulary_of_the_client(tmp
         assert request.state["blurb"] == result.sentences
 
 
+def test_the_state_holds_the_rule_lines_of_the_vocabulary(tmp_path, fixture_raw_dir, offline):
+    # Story 8: Jev reads the same rules that Claude reads, such as the preamble rule and the banned words.
+    jev = FakeJev()
+    _build(tmp_path, fixture_raw_dir, offline, jev)
+    assert jev.requests
+    for request in jev.requests:
+        rules = request.state["rules"]
+        assert any("Each term means exactly what its line says." in rule for rule in rules)
+        assert any(rule.startswith("Never write these words: best, star,") for rule in rules)
+        assert not any(rule.startswith(("- **", "#")) for rule in rules)
+
+
 def _code_failure_first(chapter_title):
     """A Claude stand-in whose first blurb of one chapter says "two", which no fact holds, so it fails the code check.
     Every other blurb is the plain one of `_call`."""
