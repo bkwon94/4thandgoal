@@ -243,6 +243,88 @@ describe("The egg word slider", () => {
   });
 });
 
+describe("The motion of the egg word slider", () => {
+  /* The box that takes the swipe: it holds the frame of the slides. */
+  const swipeBox = () => panel().closest("[data-swipe]") as HTMLElement;
+  /* A swipe on the slider from one point to another, as a finger on a phone. */
+  const swipe = (dx: number, dy: number) => {
+    const start = { clientX: 200, clientY: 300, isPrimary: true, pointerType: "touch" };
+    fireEvent.pointerDown(swipeBox(), start);
+    fireEvent.pointerUp(swipeBox(), { ...start, clientX: start.clientX + dx, clientY: start.clientY + dy });
+  };
+
+  it("moves to the next slide on a swipe to the left, and back on a swipe to the right", () => {
+    // The board of AT-22 opens on EAGLES, then CORNERSTONE, then LANSDALE.
+    render(<EggBoard board={close} now={NOW} />);
+    expect(selectedTab()!.textContent).toBe("EAGLES 5/6");
+    swipe(-120, 10);
+    expect(selectedTab()!.textContent).toBe("CORNERSTONE 2/11");
+    expect(within(panel()).getByRole("heading", { level: 2, name: "CORNERSTONE" })).toBeTruthy();
+    swipe(120, -10);
+    expect(selectedTab()!.textContent).toBe("EAGLES 5/6");
+  });
+
+  it("keeps the slide on a vertical swipe and lets the page scroll, and keeps it on a short drag", () => {
+    render(<EggBoard board={close} now={NOW} />);
+    swipe(-60, -160);
+    expect(selectedTab()!.textContent).toBe("EAGLES 5/6");
+    swipe(-20, 0);
+    expect(selectedTab()!.textContent).toBe("EAGLES 5/6");
+    // The browser cancels the pointer when it scrolls the page, so the end of that touch moves no slide.
+    fireEvent.pointerDown(swipeBox(), { clientX: 200, clientY: 300, isPrimary: true });
+    fireEvent.pointerCancel(swipeBox(), { clientX: 200, clientY: 300, isPrimary: true });
+    fireEvent.pointerUp(swipeBox(), { clientX: 60, clientY: 300, isPrimary: true });
+    expect(selectedTab()!.textContent).toBe("EAGLES 5/6");
+    // The slider allows only a vertical pan, so the browser keeps the page scroll and leaves the side swipe to the slider.
+    expect(swipeBox().classList.contains("touch-pan-y")).toBe(true);
+  });
+
+  /* The slide of an egg word, shown or not. */
+  const slide = (word: string) => document.getElementById(`egg-slide-${word}`)!;
+  /* The roll of the giant word of a slide: in, out-up, out-down, wait-up, or wait-down. */
+  const roll = (word: string) => slide(word).querySelector("h2")!.getAttribute("data-roll");
+
+  it("rolls the slides on a move: the shown slide leaves to the side and its word rolls out letter by letter", () => {
+    render(<EggBoard board={close} now={NOW} />);
+    // Before a move, the shown word rests in place and the others wait below.
+    expect(roll("EAGLES")).toBe("in");
+    expect(roll("CORNERSTONE")).toBe("wait-down");
+    fireEvent.click(screen.getByRole("tab", { name: "CORNERSTONE 2/11" }));
+    expect([slide("EAGLES"), slide("CORNERSTONE"), slide("LANSDALE")].map((each) => each.getAttribute("data-rel"))).toEqual(["-1", "0", "1"]);
+    // Only the shown slide is in the accessibility tree. The neighbors roll away blurred, out of reach of a tap.
+    expect(slide("EAGLES").getAttribute("aria-hidden")).toBe("true");
+    expect(slide("EAGLES").hasAttribute("inert")).toBe(true);
+    expect(slide("CORNERSTONE").hasAttribute("inert")).toBe(false);
+    // LANSDALE wraps from one side to the other behind the frame, so it jumps with no roll.
+    expect(slide("LANSDALE").getAttribute("data-jump")).toBe("true");
+    expect(slide("CORNERSTONE").getAttribute("data-jump")).toBe("false");
+    expect(roll("EAGLES")).toBe("out-up");
+    expect(roll("CORNERSTONE")).toBe("in");
+    expect(roll("LANSDALE")).toBe("wait-down");
+    // Each letter knows its place in the word, so the letters roll in one after another.
+    const letters = [...slide("CORNERSTONE").querySelectorAll<HTMLElement>("[data-letter]")];
+    expect(letters.map((letter) => letter.style.getPropertyValue("--k"))).toEqual([..."CORNERSTONE"].map((_, index) => String(index)));
+    // A swipe back rolls the other way.
+    swipe(120, 0);
+    expect(roll("EAGLES")).toBe("in");
+    expect(roll("CORNERSTONE")).toBe("out-down");
+    expect(roll("LANSDALE")).toBe("wait-up");
+    // The motion runs for its full time.
+    const slider = panel().closest<HTMLElement>("[data-slider]")!;
+    expect(slider.style.getPropertyValue("--es-dur")).toBe("0.75s");
+    expect(slider.style.getPropertyValue("--es-on")).toBe("1");
+  });
+
+  it("washes the frame red on a move to a won slide", () => {
+    render(<EggBoard board={won} now={NOW} />);
+    const frame = () => panel().closest("section")!;
+    expect(frame().classList.contains("egg-wash")).toBe(true);
+    fireEvent.click(screen.getByRole("tab", { name: "EAGLES · Won" }));
+    expect(frame().classList.contains("egg-wash")).toBe(true);
+    expect(frame().classList.contains("bg-accent")).toBe(true);
+  });
+});
+
 describe("The look of the egg board", () => {
   it("puts a plate only in the text slots of the board hero, and shows the grid and the glow only behind the art", () => {
     for (const state of [board, won]) {
