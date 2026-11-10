@@ -419,6 +419,31 @@ def test_a_writer_with_a_usage_hook_skips_it_when_the_response_has_no_usage():
     assert seen == []
 
 
+def test_a_metered_press_adds_up_the_calls_and_the_dollars_of_each_claude_call_inside_it():
+    from facts.writer import FINDER_PICK_MODEL, metered_press, parse_call
+
+    writer, _ = _stub_writer()
+    with metered_press() as meter:
+        parse_call("user text", WriterOut, "system text", writer=writer)
+        parse_call("user text", WriterOut, "system text", writer=writer, model=FINDER_PICK_MODEL)
+    # The stub usage reads 1 input token: $4 per million on Opus, $2 per million on Sonnet.
+    assert meter.calls == 2
+    assert meter.usd == pytest.approx(6 / 1_000_000)
+    # A call after the press counts on no meter.
+    parse_call("user text", WriterOut, "system text", writer=writer)
+    assert meter.calls == 2
+
+
+def test_a_call_outside_a_metered_press_counts_on_no_meter():
+    from facts.writer import metered_press, parse_call
+
+    writer, _ = _stub_writer()
+    parse_call("user text", WriterOut, "system text", writer=writer)
+    with metered_press() as meter:
+        pass
+    assert meter.calls == 0 and meter.usd == 0
+
+
 def test_tone_varies_the_opener_and_moves_upset_off_the_front(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=PROMPTS)

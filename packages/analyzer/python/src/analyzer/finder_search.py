@@ -219,6 +219,18 @@ def _log_offer(snapshot: Snapshot, trade: ProposedTrade) -> None:
     log.info("Finder offer %s: %s", offer_id(trade), sides)
 
 
+def _log_target_questions(snapshot: Snapshot, partner: int, keys: list[str], nouls: dict[str, float] | None) -> None:
+    """One log line of the target step with one partner: every player that Jev is asked about, with his answer.
+
+    The line lists each player, picked or not, so the log shows that a player with no chart row still reaches the
+    target step. After a failed request, the line names the players with no answer.
+    """
+    asked = ", ".join(snapshot.players[key.partition(".")[2]].name
+                      + ("" if nouls is None else f"={nouls[key]:.2f}") for key in keys)
+    log.info("Finder target questions with %s%s: %s", snapshot.teams[partner].name,
+             ", failed request" if nouls is None else "", asked)
+
+
 def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves: JevWaves | None = None) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
@@ -247,12 +259,14 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
                  ", ".join(f"{key}={p:.2f}" for key, p in answers.items()))
     passing = [read.roster_id for read in reads if read.passed]
 
-    rated = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid), _target_questions(snapshot, asker, rid))
+    target_questions = {rid: _target_questions(snapshot, asker, rid) for rid in passing}
+    rated = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid), target_questions[rid])
                        for rid in passing}, "targets")
     targets: dict[int, dict[str, list[str]]] = {}
     offers_by_partner: dict[int, list[ProposedTrade]] = {}
     for rid in passing:
         response = rated[str(rid)]
+        _log_target_questions(snapshot, rid, list(target_questions[rid]), response.nouls if response else None)
         if response is None:
             continue
         sides = {"asker": _pick_targets(response.nouls, asker), "partner": _pick_targets(response.nouls, rid)}

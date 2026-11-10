@@ -2,6 +2,7 @@
 Tests for the Finder search: the partner filter, the targets, the offers, and the shortlist that Jev narrows.
 They read the week 6 snapshot and use FakeJev, so no test calls TypeSafe.
 """
+import logging
 import shutil
 
 import pytest
@@ -94,6 +95,38 @@ def test_the_targets_need_p_06_and_keep_at_most_four_per_side_the_highest_first(
         assert all(ps[pid] <= min(ps[p] for p in picked) for pid in ps if pid not in picked)
     targets = set(found.targets[PARTNER]["asker"]) | set(found.targets[PARTNER]["partner"])
     assert all(set(trade.player_ids) <= targets for trade in found.offers)
+
+
+def test_the_target_step_logs_every_player_that_jev_is_asked_about_with_his_answer(snap, caplog):
+    # A low answer for each target question, so no player is picked and the log still lists each one (AT-11).
+    def answer(key, question, state):
+        return 0.3 if "." in key and "|" not in key else 0.9
+
+    jev = FakeJev(answer=answer)
+    with caplog.at_level(logging.INFO, logger="analyzer.finder_search"):
+        search(ASKER, PARTNER, snap, jev)
+    asked = [key for r in _target_requests(jev) for key in r.questions]
+    lines = [r.getMessage() for r in caplog.records if r.getMessage().startswith("Finder target questions")]
+    assert asked and len(lines) == 1
+    for key in asked:
+        assert f"{snap.players[key.partition('.')[2]].name}=0.30" in lines[0]
+
+
+def test_the_target_step_logs_the_players_of_a_failed_request_too(snap, caplog):
+    def answer(key, question, state):
+        # The target request fails, as a failed TypeSafe call does. The other requests answer yes.
+        if "." in key and "|" not in key:
+            raise JevError("429 Too Many Requests")
+        return 0.9
+
+    jev = FakeJev(answer=answer)
+    with caplog.at_level(logging.INFO, logger="analyzer.finder_search"):
+        search(ASKER, PARTNER, snap, jev)
+    asked = [key for r in _target_requests(jev) for key in r.questions]
+    lines = [r.getMessage() for r in caplog.records if r.getMessage().startswith("Finder target questions")]
+    assert asked and len(lines) == 1 and "failed request" in lines[0]
+    for key in asked:
+        assert snap.players[key.partition(".")[2]].name in lines[0]
 
 
 def test_no_offer_breaks_a_hard_rule_and_every_offer_is_small(snap):

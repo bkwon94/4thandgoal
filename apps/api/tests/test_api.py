@@ -35,6 +35,7 @@ from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
 from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE, Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
+from facts.writer import ClaudeWriter
 from league.client import ClientError
 from league.live import RefreshResult
 from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
@@ -387,6 +388,42 @@ def test_a_missing_passphrase_is_401_with_no_body(settings, sources):
     response = _client(settings, sources).get("/teams", params={"season": 2026})
     assert response.status_code == 401
     assert response.content == b""
+
+
+class MeteredAnalyzer(StubAnalyzer):
+    """The stub read, after one Claude call of a ClaudeWriter over a stub client, so the press meter counts it."""
+
+    def __call__(self, trade, snapshot):
+        usage = type("Usage", (), {"input_tokens": 1000, "output_tokens": 100, "cache_read_input_tokens": 0,
+                                   "cache_creation_input_tokens": 0})
+        response = type("Response", (), {"stop_reason": "end_turn", "parsed_output": "parsed", "usage": usage})()
+        messages = type("Messages", (), {"parse": lambda self, **kwargs: response})()
+        ClaudeWriter(client=type("Client", (), {"messages": messages})()).parse("user", AdvisorOut, "system")
+        return super().__call__(trade, snapshot)
+
+
+def _press_lines(caplog, route):
+    return [m for m in caplog.messages if m.startswith(f"Press of {route} for cpc: ")]
+
+
+def test_each_analyze_press_logs_one_line_with_its_time_and_its_cost(settings, sources, caplog):
+    caplog.set_level("INFO", logger="analyzer.routes")
+    client = _client(settings, sources, MeteredAnalyzer())
+    assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    # 1,000 input tokens at $4 per million and 100 output tokens at $20 per million on Opus.
+    [line] = _press_lines(caplog, "analyze")
+    assert re.search(r"time=\d+\.\ds cost=\$0\.0060 claude_calls=1$", line)
+    # A cached repeat logs its own line, at no cost.
+    assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    assert _press_lines(caplog, "analyze")[1].endswith("cost=$0.0000 claude_calls=0")
+
+
+def test_each_find_press_logs_one_line_with_its_time_and_its_cost(settings, sources, caplog):
+    caplog.set_level("INFO", logger="analyzer.routes")
+    response = _find_client(settings, sources).post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS)
+    assert response.status_code == 200
+    [line] = _press_lines(caplog, "find")
+    assert re.search(r"time=\d+\.\ds cost=\$\d+\.\d{4} claude_calls=\d+$", line)
 
 
 def test_a_good_request_returns_the_read_of_the_advisor(settings, sources):

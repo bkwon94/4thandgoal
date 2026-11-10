@@ -4,7 +4,10 @@ The app mounts it at /clients/<slug>/ for each client it serves. Each route read
 The routes build the live snapshot through the sources of the client, so a test swaps every fetch.
 The teams route keeps its answer per season in memory for a short window, so the form fills at once.
 """
-from collections.abc import Callable
+import logging
+import time
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Annotated, Protocol
 
@@ -20,11 +23,13 @@ from analyzer.ratelimit import GradeLimiter, request_address
 from analyzer.trade import ProposedTrade, TradeInputError, check_trade
 from analyzer.trade_facts import shown_ranks
 from analyzer.week_line import week_lines
+from facts.writer import metered_press
 from league.client import Client
 from league.player_ids import headshot_url, is_def
 from league.snapshot import Snapshot
 
 router = APIRouter()
+log = logging.getLogger(__name__)
 
 # The line the site shows when the trade week has no chart. It names no source, so a manager reads plain words.
 NO_CHART_NOTE = "This week's player values are not out yet."
@@ -202,9 +207,31 @@ def read_document(trade: ProposedTrade, snapshot: Snapshot, read: TradeRead) -> 
     }
 
 
+@contextmanager
+def _press_log(route: str, served: Served) -> Iterator[None]:
+    """One log line per press of a route, with its time and the cost of its Claude calls, whatever the answer.
+
+    A press must stay in time and in cost, so the log shows both for each one. A cached repeat logs too, at no cost.
+    The Jev requests are not on the meter: Jev costs $0.042 per million input tokens, about a hundredth of the price
+    of Claude, so its part of a press is small.
+    """
+    start = time.monotonic()
+    with metered_press() as meter:
+        try:
+            yield
+        finally:
+            log.info("Press of %s for %s: time=%.1fs cost=$%.4f claude_calls=%d", route, served.client.slug,
+                     time.monotonic() - start, meter.usd, meter.calls)
+
+
 @router.post("/analyze")
 def analyze(request: Request, trade: ProposedTrade, served: ServedClient) -> dict:
     """Read the proposed trade on the live snapshot and return the read document, or a 503 after a failed read."""
+    with _press_log("analyze", served):
+        return _analyze(request, trade, served)
+
+
+def _analyze(request: Request, trade: ProposedTrade, served: Served) -> dict:
     snapshot = _snapshot(served, trade.season)
     try:
         check_trade(trade, snapshot)
@@ -300,6 +327,11 @@ def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
 
     The Jev search makes the shortlist, and the Advisor picks up to 3 trades of it, each with a headline and Bullets.
     """
+    with _press_log("find", served):
+        return _find(request, pair, served)
+
+
+def _find(request: Request, pair: FindRequest, served: Served) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
