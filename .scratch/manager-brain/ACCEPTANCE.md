@@ -404,8 +404,8 @@ AT-50: The copy says no "rival" and no name of the commissioner
 App: both
 Stories: 59
 Given: the Spec branch and the 28 live eval reads.
-When: search the page copy and the reads for "rival" and "Brian".
-Then: neither word appears.
+When: search the page copy and the reads for "rival" and for "Brian" as the name of the commissioner.
+Then: neither appears. A player whose name holds "Brian", such as Brian Robinson, does not count.
 Evidence: the search commands and their output.
 
 AT-51: Reduced motion shows the page at rest
@@ -511,4 +511,4 @@ Out of scope "Suggested counters": no test. Reason: no ticket of this spec touch
 
 ## Revisions
 
-None yet.
+- 2026-11-10, AT-50, by Brian: the search for "Brian" is for the name of the commissioner. An NFL player whose name holds "Brian", such as Brian Robinson, does not count. Reason: the live reads name Brian Robinson as a trade player, and the rule of story 59 is about the commissioner.
