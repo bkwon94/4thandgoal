@@ -14,7 +14,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json rankings midseason midseason-publish analyze egg-undo push
+.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json rankings midseason midseason-publish egg-undo push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -83,12 +83,6 @@ midseason: need-client need-week ## Write the midseason report of a saved week (
 # published season folder, then pushes the repo, as the weekly publish does.
 midseason-publish: need-client need-week ## Check the midseason draft, then commit it to published and push it (CLIENT and WEEK required)
 	$(RUN) cornerstone midseason-publish --client $(CLIENT) --season $(SEASON) --week $(WEEK)
-
-# Example: make analyze CLIENT=cpc SIDES="4:7569@12 12:10236@7 7:11628@4" ASKER=4
-# SIDES holds two to four sides, each ROSTER:PLAYER@TO,PLAYER@TO. A two-side trade may still use A=4:7569 B=12:10236.
-analyze: need-client ## Grade a trade without the Claude call (SIDES="ROSTER:PLAYER@TO,PLAYER@TO ..." and ASKER required)
-	@test -n "$(SIDES)$(A)$(B)" -a -n "$(ASKER)" || { echo "Set SIDES and ASKER. Example: make analyze SIDES=\"4:7569@12 12:10236@4\" ASKER=4"; exit 1; }
-	$(RUN) cornerstone analyze --client $(CLIENT) --season $(SEASON) $(foreach side,$(or $(SIDES),$(A) $(B)),--side $(side)) --asker $(ASKER) --no-claude
 
 settings: need-client ## Print the League settings and the derived sizes of a season (CLIENT required)
 	$(RUN) cornerstone settings --client $(CLIENT) --season $(SEASON)
