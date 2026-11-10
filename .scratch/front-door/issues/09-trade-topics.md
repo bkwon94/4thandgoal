@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-24, AT-25, AT-26, AT-28,
 
 **Blocked by:** 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A typed trade of a Lil Fridge player for a Bo Girds player shows the Lean, the Case, the top Bullets, and a Trade page link (AT-24).
 - [x] The first sentence of the Case gives the reason for the Lean, and the fairness line agrees (AT-25).
