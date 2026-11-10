@@ -228,6 +228,23 @@ def test_a_state_over_the_token_limit_sends_the_shots_that_fit_in_the_order_of_f
     assert capsys.readouterr().out.strip().splitlines()[-1].endswith(", 1 cut")
 
 
+def test_a_text_state_over_the_limit_sends_the_text_files_that_fit_in_the_order_of_files_and_logs_the_cut(
+        tmp_path, capsys):
+    # The token budget is 28,000 tokens at 3 bytes each, so the first log fits and the second passes the budget.
+    folder = _one_test(tmp_path, ["first.txt", "second.txt", "third.txt"])
+    (folder / "evidence" / "AT-1" / "first.txt").write_text("1. Open the page.\n" * 1000, encoding="utf-8")
+    (folder / "evidence" / "AT-1" / "second.txt").write_text("x" * 100_000, encoding="utf-8")
+    (folder / "evidence" / "AT-1" / "third.txt").write_text("1. Close the page.\n", encoding="utf-8")
+    jev = FakeJev(yes=0.95)
+
+    code = cli.main(["evidence-flags", "demo", "--root", str(tmp_path)], jev=jev)
+
+    assert code == 0
+    evidence = jev.requests[0].state["evidence"]
+    assert list(evidence["text_files"]) == ["evidence/AT-1/first.txt"]
+    assert capsys.readouterr().out.strip().splitlines()[-1].endswith(", 1 cut")
+
+
 def test_a_test_in_two_halves_gets_one_request_with_the_files_and_observation_of_both(tmp_path, capsys):
     folder = _scratch(tmp_path, evidence=EVIDENCE.replace("## AT-1: A clock window holds\n", (
         "## AT-1 (pipeline half): A clock window holds\n")).replace("## AT-2:", (

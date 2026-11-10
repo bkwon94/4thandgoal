@@ -161,13 +161,13 @@ def _kind(path: str) -> str:
 
 
 def build_state(test_id: str, accepted: dict[str, str], entry: Evidence, folder: Path) -> tuple[dict, bool]:
-    """The state of one test, and True when its shots did not all fit in one request.
+    """The state of one test, and True when a file did not fit in one request.
 
-    The state holds the test, the Observation, the list of files, each text file in full, and every shot as tiles.
-    The text always goes. The shots go in the order of `Files:` until the next shot would pass the request limit
-    in bytes or the token budget.
+    The state holds the test, the Observation, the list of files, the text files, and the shots as tiles.
+    The text files go first, then the shots, each in the order of `Files:`. A file goes in while the state stays
+    under the request limit in bytes and the token budget. The first file of its kind that does not fit stops that kind.
     """
-    text_files: dict[str, str] = {}
+    texts: list[str] = []
     videos, missing, shots = [], [], []
     for path in entry.files:
         file = folder / path
@@ -178,7 +178,8 @@ def build_state(test_id: str, accepted: dict[str, str], entry: Evidence, folder:
         elif _kind(path) == "shot":
             shots.append(path)
         else:
-            text_files[path] = file.read_text(encoding="utf-8", errors="replace")
+            texts.append(path)
+    text_files: dict[str, str] = {}
     evidence: dict = {"file_names": entry.files, "text_files": text_files, "video_files": videos}
     # An empty list can read as a signal, so the state names missing files only when there are some.
     if missing:
@@ -194,8 +195,17 @@ def build_state(test_id: str, accepted: dict[str, str], entry: Evidence, folder:
     text_size = len(json.dumps(state).encode("utf-8"))
     size = text_size + REQUEST_MARGIN
     tokens = text_size / BYTES_PER_TOKEN
-    screenshots: dict[str, list[JevImage]] = {}
     cut = False
+    for path in texts:
+        content = (folder / path).read_text(encoding="utf-8", errors="replace")
+        more = len(json.dumps({path: content}).encode("utf-8"))
+        if size + more > REQUEST_LIMIT or tokens + more / BYTES_PER_TOKEN > TOKEN_BUDGET:
+            cut = True
+            break
+        text_files[path] = content
+        size += more
+        tokens += more / BYTES_PER_TOKEN
+    screenshots: dict[str, list[JevImage]] = {}
     for path in shots:
         parts = tiles((folder / path).read_bytes())
         more = sum(len(part.png) + PART_FRAMING for part in parts) + len(path)
