@@ -28,20 +28,14 @@ from analyzer.finder_search import search
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_news import FACT_PREFIX as NEWS_PREFIX
 from analyzer.trade_news import NewsFeed
-from facts.writer import ClaudeCall, ClaudeWriter, finder_pick_call
+from facts.writer import FINDER_PICK_MODEL, MODEL, ClaudeCall, ClaudeWriter, call_cost, finder_pick_call
 from league.jev_port import Jev, JevResponse, NoulQuestion
 from league.numbers import plural
 from league.provider.raw import RawTransaction
 from league.snapshot import Snapshot
 
-# Dollars per million tokens. Claude Opus 5.5 is $4 for input, $20 for output, and $0.20 for a cache read, from the
-# pricing page of Anthropic. The Advisor call keeps the one-hour cache, which writes at twice the input price.
-# Jev is $0.042 per million input tokens and gives its output free, from docs.typesafe.ai/models.md.
-CLAUDE_INPUT, CLAUDE_OUTPUT, CLAUDE_CACHE_READ, CLAUDE_CACHE_WRITE = 4.0, 20.0, 0.20, 8.0
-OPUS_PRICES = (CLAUDE_INPUT, CLAUDE_OUTPUT, CLAUDE_CACHE_READ, CLAUDE_CACHE_WRITE)
-# The Finder pick runs on Claude Sonnet 5.5: $2 for input, $10 for output, and $0.10 for a cache read, from the same
-# page. Its one-hour cache write is twice the input price too.
-SONNET_PRICES = (2.0, 10.0, 0.10, 4.0)
+# The Claude prices are the price table of facts/writer.py, so the eval and the press log of the API cost a call
+# the same way. Jev is $0.042 per million input tokens and gives its output free, from docs.typesafe.ai/models.md.
 JEV_INPUT = 0.042
 # The words that AT-20 forbids in a read. The guards of the Advisor hold more inner words, and this count is the
 # second look at the final text.
@@ -190,17 +184,6 @@ def rosters_before(
     raise TradeNotFound(f"{missing} is not on the roster of his giver, and no trade on file puts him there.")
 
 
-def claude_cost(usage, prices: tuple[float, float, float, float] = OPUS_PRICES) -> float:
-    """The dollars of one Claude response, from its usage and the prices of its model."""
-    def tokens(name: str) -> int:
-        return getattr(usage, name, 0) or 0
-
-    input_price, output_price, cache_read_price, cache_write_price = prices
-    return (tokens("input_tokens") * input_price + tokens("output_tokens") * output_price
-            + tokens("cache_read_input_tokens") * cache_read_price
-            + tokens("cache_creation_input_tokens") * cache_write_price) / 1_000_000
-
-
 class Meter:
     """The dollars and the calls of one run. Claude calls reach it through the usage hook of the writer, Jev through
     MeteredJev. The reads run in threads, so a lock guards the sums."""
@@ -212,9 +195,10 @@ class Meter:
         self.jev_requests = 0
         self._lock = threading.Lock()
 
-    def add_claude(self, usage, prices: tuple[float, float, float, float] = OPUS_PRICES) -> None:
+    def add_claude(self, usage, model: str = MODEL) -> None:
+        """Count one Claude response at the price of its model. The read of a trade runs on MODEL."""
         with self._lock:
-            self.claude_usd += claude_cost(usage, prices)
+            self.claude_usd += call_cost(model, usage)
             self.claude_calls += 1
 
     def add_jev(self, input_tokens: int | None) -> None:
@@ -382,7 +366,7 @@ def run_eval(
     finds = []
     if askers and week_now is not None:
         pick_call = finder_call or partial(
-            finder_pick_call, writer=ClaudeWriter(on_usage=partial(meter.add_claude, prices=SONNET_PRICES)))
+            finder_pick_call, writer=ClaudeWriter(on_usage=partial(meter.add_claude, model=FINDER_PICK_MODEL)))
         finds = [_find_one(number, asker, week_now, weeks, known, metered, pick_call, live, meter)
                  for number, asker in enumerate(askers, start=1)]
     for find in finds:

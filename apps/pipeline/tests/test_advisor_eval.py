@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
+from typing import Any
 
 import pytest
 from cpc import cli_root, cpc_client, four_week
@@ -20,13 +21,11 @@ from analyzer.finder_pick import FinderPickOut
 from analyzer.trade_news import NewsFeed
 from cornerstone import advisor_eval, cli
 from cornerstone.advisor_eval import (
-    SONNET_PRICES,
     EvalSet,
     EvalTrade,
     FinderAsker,
     Meter,
     TradeNotFound,
-    claude_cost,
     load_test_set,
     named_in_week,
     proposed_trade,
@@ -35,6 +34,7 @@ from cornerstone.advisor_eval import (
     run_eval,
     summary_lines,
 )
+from facts.writer import FINDER_PICK_MODEL, MODEL, call_cost
 from league.jev_port import JevError
 from league.provider.sleeper import load_raw
 from league.slow_sources import load_slow_sources
@@ -222,15 +222,18 @@ def test_the_eval_saves_the_sheet_and_the_read_of_each_trade_and_a_summary(snap,
     assert summary["seconds"] >= 0
 
 
+def _usage(**tokens: int) -> Any:
+    """A stand-in for the usage of a Claude response, with only the token counts that the cost reads."""
+    return type("Usage", (), tokens)
+
+
 def test_the_cost_adds_the_claude_usage_and_the_jev_tokens(snap, weeks, tmp_path):
     meter = Meter()
     # The usage of a real call of the prototype: it cost $0.0673.
-    meter.add_claude(type("Usage", (), {"input_tokens": 8189, "cache_read_input_tokens": 1999,
-                                        "cache_creation_input_tokens": 0, "output_tokens": 1707}))
+    usage = _usage(input_tokens=8189, cache_read_input_tokens=1999, cache_creation_input_tokens=0, output_tokens=1707)
+    meter.add_claude(usage)
     summary = run_eval(trades_of(snap, {}), weeks, jev=FakeJev(), call=StubAdvisor(), out_dir=tmp_path, meter=meter)
-    assert claude_cost(type("Usage", (), {"input_tokens": 8189, "cache_read_input_tokens": 1999,
-                                          "cache_creation_input_tokens": 0, "output_tokens": 1707})) == pytest.approx(
-        0.0673, abs=0.00005)
+    assert call_cost(MODEL, usage) == pytest.approx(0.0673, abs=0.00005)
     assert summary["cost"]["claude"] == pytest.approx(0.0673, abs=0.00005)
     # The fake Jev reads 100 tokens per question at $0.042 per million: the 4 questions of the trade, then the
     # log-only faithfulness check of each of the 6 Bullets. No Bullet cites news, so no rumor check runs.
@@ -338,13 +341,13 @@ def test_a_finder_asker_with_an_unknown_team_is_an_error_and_the_trades_still_re
 
 
 def test_the_finder_pick_costs_the_sonnet_prices():
-    usage = type("Usage", (), {"input_tokens": 1_000_000, "cache_read_input_tokens": 1_000_000,
-                               "cache_creation_input_tokens": 1_000_000, "output_tokens": 1_000_000})
+    usage = _usage(input_tokens=1_000_000, cache_read_input_tokens=1_000_000, cache_creation_input_tokens=1_000_000,
+                   output_tokens=1_000_000)
     meter = Meter()
-    meter.add_claude(usage, prices=SONNET_PRICES)
-    assert claude_cost(usage, SONNET_PRICES) == pytest.approx(2.0 + 0.10 + 4.0 + 10.0)
+    meter.add_claude(usage, model=FINDER_PICK_MODEL)
+    assert call_cost(FINDER_PICK_MODEL, usage) == pytest.approx(2.0 + 0.10 + 4.0 + 10.0)
     assert meter.claude_usd == pytest.approx(16.10) and meter.claude_calls == 1
-    assert claude_cost(usage) == pytest.approx(4.0 + 0.20 + 8.0 + 20.0)
+    assert call_cost(MODEL, usage) == pytest.approx(4.0 + 0.20 + 8.0 + 20.0)
 
 
 def taylor_trade(snap) -> dict:
