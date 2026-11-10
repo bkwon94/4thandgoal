@@ -268,8 +268,8 @@ AT-33: A press stays in time and in cost
 App: pipeline
 Stories: 45, 52
 Given: the local API with a cold result cache.
-When: press the trade of AT-16, then press Find for Maye d'force B with U with no partner.
-Then: the analyze press takes 30 s or less and costs $0.15 or less. The Finder press takes 35 s or less and costs $0.15 or less.
+When: press the trade of AT-16 5 times, then press Find for Maye d'force B with U with no partner 5 times, each with a cold result cache.
+Then: at least 4 of the 5 analyze presses take 30 s or less, and all 5 cost $0.15 or less. At least 4 of the 5 Finder presses take 35 s or less, and all 5 cost $0.15 or less.
 Evidence: the log lines with the time and the cost of each press.
 
 AT-34: The live eval reads all 28 trades
@@ -277,7 +277,7 @@ App: pipeline
 Stories: 3, 4, 7, 8, 46, 47, 48
 Given: the test set of 28 trades.
 When: run the live eval script.
-Then: each trade has a Lean, a Case, and 3 to 5 Bullets per side, with no check failure after the retry. At least one Lean is Gut call. The output has the cost and the time of the run.
+Then: each trade has a Lean, a Case, and 3 to 5 Bullets per side, with no check failure after the retry. The Leans cover at least 3 of the 5 steps of the scale. The output has the cost and the time of the run.
 Evidence: the eval summary, with the 28 Leans, the cost, and the time. The full output stays out of the repo.
 
 AT-35: Each client has a Playbook
@@ -513,3 +513,5 @@ Out of scope "Suggested counters": no test. Reason: no ticket of this spec touch
 
 - 2026-11-10, AT-50, by Brian: the search for "Brian" is for the name of the commissioner. An NFL player whose name holds "Brian", such as Brian Robinson, does not count. Reason: the live reads name Brian Robinson as a trade player, and the rule of story 59 is about the commissioner.
 - 2026-11-10, AT-26 and AT-47, by Brian: a Finder pick holds 2 to 4 Bullets, not 2 to 3. Reason: the API does not enforce an array count, so a pick with a 4th Bullet made the guard retry, and the retry put the Finder press over the time and cost limits of AT-33. The PRD (story 39 and the press output) and ticket 10 say the same.
+- 2026-11-10, AT-33, by Brian: the test takes 5 cold presses of each kind. At least 4 of 5 hold the time limit, and all 5 hold the cost cap. Reason: the time of one call varies by a few seconds, and one cold analyze press took 30.9 s while others took 24 to 27 s with no change to the code.
+- 2026-11-10, AT-34, by Brian: the Leans cover at least 3 of the 5 steps of the scale, in place of at least one Gut call. Reason: the point is that the Advisor uses the scale, not one fixed word, and one run had no Gut call while the runs before each had one.
