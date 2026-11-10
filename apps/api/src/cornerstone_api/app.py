@@ -277,8 +277,8 @@ def create_app(
     for prefix in (CLIENT_PREFIX, ""):
         app.include_router(analyzer_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
         app.include_router(refresh_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
-    # The ask route is new, so only the clients paths serve it. It needs the passphrase, so only managers of the league
-    # spend the budget.
+    # No page from before the clients paths calls the ask route, so only the clients paths serve it. It needs the
+    # passphrase, so only managers of the league spend the budget.
     app.include_router(ask_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(free_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
