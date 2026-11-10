@@ -56,7 +56,7 @@ const openTab = (team: string) => {
   fireEvent.click(within(switcher()).getByRole("tab", { name: team }));
   return openPanel();
 };
-/* The fixture reasons repeat breakdown text, so the fairness tests use reasons that show only once on the page. */
+/* The fixture reasons repeat Bullet text, so the fairness tests use reasons that show only once on the page. */
 const MY_REASON = "My side gets the better lineup.";
 const THEIR_REASON = "Their side moves up in the standings.";
 const withFairness = (state: Fairness["state"], gives_more: number | null = null): AnalyzeResponse => ({
@@ -301,7 +301,7 @@ describe("AnalyzeResult", () => {
     expect(screen.queryByText(/^Season rank/)).toBeNull();
   });
 
-  it("puts the players, then the Bullets in each side card, with no fold of factor rows", () => {
+  it("puts the players, then the Bullets in each side card, with no fold of extra rows", () => {
     render(<AnalyzeResult doc={fixture} />);
     const card = openPanel();
     const player = within(card).getByText("Nico Collins");

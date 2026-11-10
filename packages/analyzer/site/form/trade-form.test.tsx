@@ -363,34 +363,34 @@ describe("TradeForm", () => {
     expect(within(fold).queryByRole("button", { name: "Edit the trade" })).toBeNull();
   });
 
-  it("fills the hero with the verdict and the fairness block, and keeps the form folded with an Edit button", async () => {
+  it("fills the hero with the read and the fairness block, and keeps the form folded with an Edit button", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    const verdict = await screen.findByRole("region", { name: "The Read" });
-    expect(within(verdict).getByText("The read for Pukancun on 3")).toBeTruthy();
-    expect(within(verdict).getByRole("heading", { level: 2, name: "Lean yes" })).toBeTruthy();
-    expect(within(verdict).getByText("Fairness")).toBeTruthy();
-    // The verdict is the hero, so the title hero and the grading hero are gone.
+    const heroRead = await screen.findByRole("region", { name: "The Read" });
+    expect(within(heroRead).getByText("The read for Pukancun on 3")).toBeTruthy();
+    expect(within(heroRead).getByRole("heading", { level: 2, name: "Lean yes" })).toBeTruthy();
+    expect(within(heroRead).getByText("Fairness")).toBeTruthy();
+    // The read is the hero, so the title hero and the grading hero are gone.
     expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
     expect(screen.queryByRole("region", { name: "Grading the Trade" })).toBeNull();
     expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Grade the Trade" })).toBeNull();
     const fold = screen.getByRole("group", { name: "The trade" });
-    expect(fold.compareDocumentPosition(verdict) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(fold.compareDocumentPosition(heroRead) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
-    expect(verdict.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(heroRead.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("draws no scene under a folded result or after Edit, as each hero of the analyzer is static (AT-35, AT-44)", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    const verdict = await screen.findByRole("region", { name: "The Read" });
+    const heroRead = await screen.findByRole("region", { name: "The Read" });
     expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
     // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
-    expect(verdict.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
-    expect(verdict.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
+    expect(heroRead.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
+    expect(heroRead.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
     edit();
     expect(screen.getByRole("region", { name: "Trade Analyzer" })).toBeTruthy();
     expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);

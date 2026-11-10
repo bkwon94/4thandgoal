@@ -128,7 +128,7 @@
           "text": "Your team is out of the playoff race, so a swing costs little.",
           "mark": "even",
           "fact_id": "4.team",
-          "fact_text": "Pukancun on 3 was 1-9, 12th of 12, before the trade: a seller out of the playoff race."
+          "fact_text": "Pukancun on 3 was 1-9, 12th of 12, before the trade. Its race group is Out, with 0% playoff odds after week 10. It is eliminated from the playoffs."
         }
       ],
       "week_lines": [
@@ -161,7 +161,7 @@
           "text": "It sits in the middle of the race, neither in nor out.",
           "mark": "even",
           "fact_id": "12.team",
-          "fact_text": "Amon-Ra Dawg Your Team was 4-6, 8th of 12, before the trade: a middle team, neither in a playoff spot nor out of the race."
+          "fact_text": "Amon-Ra Dawg Your Team was 4-6, 8th of 12, before the trade. Its race group is Bubble, with 38% playoff odds after week 10."
         }
       ],
       "week_lines": [

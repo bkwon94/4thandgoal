@@ -323,7 +323,7 @@ export function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness
       : word;
   return (
     <div>
-      {/* The line is a pill next to its label, so the finder cards and the verdict read the fairness at a glance. */}
+      {/* The line is a pill next to its label, so the finder cards and the read show the fairness at a glance. */}
       <div className="mb-sp-2 flex flex-wrap items-center gap-sp-2">
         <span className="font-mono text-meta leading-tight font-bold tracking-wide text-mute uppercase">Fairness</span>
         {/* The pill is a short label, not prose, so it is a span at the row size. */}
@@ -366,7 +366,7 @@ function SidePlayers({ side }: { side: Side }) {
   );
 }
 
-/* The box of the Week lines: one line for the trade week and one for the next week. It shows before a tap, because a contender reads it first. */
+/* The box of the Week lines: one line for the trade week and one for the next week. It shows before a tap, because a team in a playoff spot reads it first. */
 function WeekLines({ side }: { side: Side }) {
   return (
     // A region, not a section, because each section of the view is one chapter.
