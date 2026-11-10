@@ -42,10 +42,12 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - The browser keeps one Thread per team for the fantasy week, and the Tuesday build empties it. A stale Answer shows dimmed with a Refresh. A Clear action empties the Thread. `decisions/05-grill-the-thread-across-visits.md`.
 - The Jev route picks the right Topic, the honest miss, the team, and abuse on 43 questions. When a Topic only half fits and the data can answer, the route gives a free answer with the top Topic as a Suggestion. About 35 of 40 hit. `decisions/09-prototype-the-jev-route.md`.
 - On a phone, the Thread is a chat scroll with the ask box at the bottom, and each older Answer folds to one line. Site copy never names Jev, the Advisor, or the Finder. `decisions/08-prototype-the-front-door.md`.
+- The menu keeps Home, Week N, Power Rankings, and Managers. Each Topic Answer links to its page. `decisions/10-spec-the-menu-and-pages.md`.
 
 ## NOT YET SPECIFIED
 
-- Which links stay in the menu, and what does each Answer link to? `decisions/10-spec-the-menu-and-pages.md`.
+None. The spec is `PRD.md`.
+
 
 ## OUT OF SCOPE
 
