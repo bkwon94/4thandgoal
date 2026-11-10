@@ -105,8 +105,8 @@ A test of both apps gets the pipeline files and the shots of its `steps.json`.
 An Evidence flag is advice from Jev about a test. It is never a Test verdict, and the Judge never sees it (ADR 0031). The command is `uv run --exact --package cornerstone cornerstone evidence-flags <slug> [AT-<n> ...]`.
 
 1. Run it on every site test after the runner round, once each test has its entry in `EVIDENCE.md`. Run it on each pipeline test after its `output.txt` is saved.
-2. Run it in a detached worktree of the head commit: `git worktree add --detach <scratchpad>/<slug>-flags HEAD`. Copy `.scratch/<slug>/` into it first, because that folder is untracked. Never run it in the Spec worktree while the background check is live. Remove the detached worktree when you are done.
-3. The command writes `.scratch/<slug>/FLAGS.md`. Each entry has the heading `## AT-<n>, question (<key>)`, then `Question:`, `Probability:`, `Reason:`, and `Action: open`. Copy the file back to the Spec worktree.
+2. Never run it in the Spec worktree while the background check is live. Run it in a detached worktree of the head commit: `git worktree add --detach <scratchpad>/<slug>-flags HEAD`. Run `uv sync --all-packages` there first. Add `--root <absolute path of the Spec worktree>`, so the command reads the evidence in place. Remove the detached worktree when you are done.
+3. The command writes `.scratch/<slug>/FLAGS.md`. Each entry has the heading `## AT-<n>, question (<key>)`, then `Question:`, `Probability:`, `Reason:`, and `Action: open`. With `--root`, it writes the file in the Spec worktree.
 4. The command logs `Evidence flags: <tests> tests, <flags> flags, <errors> errors, <tokens> input tokens`. A missing key or a Jev error gives no flag and exit 0. Go on.
 
 Set the `Action` of each entry to one of three values. Warning: an entry at `open` blocks the evidence commit, so no entry stays `open`.
