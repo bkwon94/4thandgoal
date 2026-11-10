@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-1, AT-2, AT-47, AT-48, A
 
 **Blocked by:** none. Before this ticket, `cpc:implement` merges `main` into `front-door`, so the branch holds the merge of `manager-brain`.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The sheet lists the 12 teams of CPC, with no skip, no close, and no login (AT-1).
 - [x] A reload keeps Your team, and no sheet shows (AT-2).
