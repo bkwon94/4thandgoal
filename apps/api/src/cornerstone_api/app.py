@@ -3,7 +3,8 @@ The app factory of the Cornerstone API: CORS, the passphrase check, the rate lim
 The service needs CORNERSTONE_PASSPHRASE_<SLUG> for each client, such as CORNERSTONE_PASSPHRASE_CPC,
 CORNERSTONE_COMMISSIONER_KEY_<SLUG> for each client of the eggs package, ANTHROPIC_API_KEY for the Claude call,
 and TYPESAFE_API_KEY for the Jev call of the Advisor.
-It reads CORNERSTONE_REPO, CORNERSTONE_RESULT_CACHE_DIR, CORNERSTONE_EGGS_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
+It reads CORNERSTONE_REPO, CORNERSTONE_RESULT_CACHE_DIR, CORNERSTONE_EGGS_DIR, CORNERSTONE_ASK_DIR, and
+CORNERSTONE_ALLOWED_ORIGINS when set. TYPESAFE_API_KEY serves the Jev route of the ask box too.
 Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.0.0.0 --port 8080`.
 At start it reads each client folder under clients/, and a bad client.toml stops the start.
 Each client answers at /clients/<slug>/. The old paths with no client answer as cpc, so an old page still works.
@@ -14,7 +15,7 @@ import hmac
 import logging
 import sys
 import threading
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import datetime
 from pathlib import Path
 
@@ -30,8 +31,10 @@ from analyzer.finder_search import search as search_trades
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
 from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
+from cornerstone_api import ask as ask_routes
 from cornerstone_api import refresh as refresh_routes
-from cornerstone_api.settings import Settings, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
+from cornerstone_api.miss_log import MissLog
+from cornerstone_api.settings import Settings, ask_dir, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
 from eggs import routes as eggs_routes
@@ -40,6 +43,7 @@ from eggs.tunables import BOARD_READS_PER_MINUTE, BOARD_WINDOW_SECONDS, CHECK_WI
 from eggs.values import EggsValues
 from league.client import Client, SettingsFetch, load_client
 from league.jev import JEV
+from league.jev_port import Jev
 from league.nflverse import http_get
 from league.paths import provider_cache_dir
 from league.provider.sleeper import SleeperProvider, fetch_settings
@@ -166,18 +170,30 @@ def _served(settings: Settings, client: Client, sources: Sources) -> analyzer_ro
                                   teams_cache=TeamsCache(TEAMS_CACHE_SECONDS), grade_limiter=limiter)
 
 
-def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) -> eggs_routes.Hunt:
-    """The egg hunt of one client. Its SQLite file is <slug>.sqlite in the eggs folder, on the volume on Fly.
-
-    The rosters come from the teams route of the analyzer, so the board shares its cache of the live Sleeper rosters.
-    """
+def _rosters(client: Client, served: analyzer_routes.Served) -> Callable[[], dict[int, str]]:
+    """The team name of each roster of `client`, from the teams route of the analyzer, so it shares the cache of the
+    live Sleeper rosters."""
     season = client.values.latest_season
 
     def rosters() -> dict[int, str]:
         return {team["roster_id"]: team["team"] for team in analyzer_routes.teams(season, served)["teams"]}
 
+    return rosters
+
+
+def _asker(settings: Settings, client: Client, served: analyzer_routes.Served, jev: Jev) -> ask_routes.Asker:
+    """The ask route of one client. Its miss log is <slug>.sqlite in the ask folder, on the volume on Fly."""
+    return ask_routes.Asker(season=client.values.latest_season, jev=jev, misses=MissLog(ask_dir(settings) / f"{client.slug}.sqlite"),
+                            rosters=_rosters(client, served), clock=lambda: datetime.now(client.tz))
+
+
+def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) -> eggs_routes.Hunt:
+    """The egg hunt of one client. Its SQLite file is <slug>.sqlite in the eggs folder, on the volume on Fly.
+
+    The rosters come from the teams route of the analyzer, so the board shares its cache of the live Sleeper rosters.
+    """
     return eggs_routes.Hunt(store=EggStore(eggs_dir(settings) / f"{client.slug}.sqlite"),
-                            values=client.values.package(EggsValues), rosters=rosters,
+                            values=client.values.package(EggsValues), rosters=_rosters(client, served),
                             clock=lambda: datetime.now(client.tz), tz=client.tz)
 
 
@@ -185,9 +201,9 @@ def create_app(
         settings: Settings, clients: Sequence[Client], sources: Mapping[str, Sources] | None = None,
         analyzer: analyzer_routes.Analyzer | None = None, finder_search: analyzer_routes.FinderSearch | None = None,
         finder_pick: analyzer_routes.FinderPicker | None = None,
-        *, refresh_on_start: bool = False) -> FastAPI:
+        *, refresh_on_start: bool = False, jev: Jev | None = None) -> FastAPI:
     """The app that serves each of `clients`. Tests give fixture-backed sources by slug, an analyzer, a finder
-    search, and a finder pick. The defaults are the real ones.
+    search, a finder pick, and the Jev of the ask route. The defaults are the real ones.
 
     With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
     """
@@ -208,6 +224,9 @@ def create_app(
     # Only a client of the eggs package has a hunt, so the eggs routes of any other client answer 404.
     app.state.hunts = {client.slug: _hunt(settings, client, app.state.served[client.slug])
                        for client in clients if "eggs" in client.values.packages}
+    # The ask route asks the real Jev by default, so a test injects FakeJev.
+    app.state.askers = {client.slug: _asker(settings, client, app.state.served[client.slug], jev or JEV)
+                        for client in clients}
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
@@ -240,6 +259,9 @@ def create_app(
     for prefix in (CLIENT_PREFIX, ""):
         app.include_router(analyzer_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
         app.include_router(refresh_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
+    # The ask route is new, so only the clients paths serve it. It needs the passphrase, so only managers of the league
+    # spend the budget.
+    app.include_router(ask_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
 
     # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
     # commissioner key. The check and the board each have their own limit of each address, and each other group keeps

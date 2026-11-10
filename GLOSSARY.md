@@ -176,6 +176,14 @@ _Avoid_: Recommendation, prompt, nudge, tip
 The list of the questions of a manager and their Answers on the front door, for one team in one fantasy week.
 _Avoid_: Chat, conversation, feed, history
 
+**Route**:
+Where the ask box sends one typed question: a Topic, a free answer, an honest miss, or a calm refusal. Jev answers 7 typed questions in one request, and a table in code picks the route from the answers with the cutoffs 0.7 and 0.3.
+_Avoid_: Intent, classification, dispatch
+
+**Honest miss**:
+The Answer to a question that this season's data cannot answer, such as injury news or a past season. It says what the site does not have and offers the 3 closest Topics. The API logs each one for 90 days (ADR 0031).
+_Avoid_: Error, fallback, no result, "I don't know"
+
 ### The code
 
 **Part**:

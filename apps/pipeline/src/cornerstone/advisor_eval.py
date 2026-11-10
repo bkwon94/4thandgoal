@@ -6,7 +6,7 @@ import json
 import re
 import threading
 import time
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
@@ -38,7 +38,7 @@ from facts.writer import (
     finder_repair_call,
 )
 from league.client import Client
-from league.jev_port import Jev, JevResponse, NoulQuestion
+from league.jev_port import ChoiceQuestion, Jev, JevResponse, NoulQuestion
 from league.nflverse import STATS_TEAM_URL, cache_path, download
 from league.numbers import plural
 from league.past_seasons import fetch_past_seasons, past_seasons, past_stats_path
@@ -245,7 +245,7 @@ class MeteredJev:
     def __init__(self, inner: Jev, meter: Meter) -> None:
         self._inner, self._meter = inner, meter
 
-    def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevResponse:
+    def ask(self, state: dict, questions: Mapping[str, NoulQuestion | ChoiceQuestion]) -> JevResponse:
         response = self._inner.ask(state, questions)
         self._meter.add_jev(response.input_tokens)
         return response

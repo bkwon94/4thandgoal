@@ -7,6 +7,7 @@ import { TopBand } from "@cpc/design/shell/top-band";
 import { clientValues } from "@/generated/client-values";
 import { homeBanners } from "@/generated/registry";
 import { loadFrontDoor } from "@/lib/data/front-door-data";
+import { askTarget } from "@/lib/config";
 import { homeHref } from "@/lib/routes";
 import { shellProps, pageTitle } from "@/app/shell-props";
 import { FrontDoor } from "@/app/front-door/front-door";
@@ -28,7 +29,7 @@ export default function HomePage() {
           pick from, so it shows the name of the league alone. */}
       <main className="bg-page">
         {door ? (
-          <FrontDoor siteName={clientValues.copy.siteName} week={door.week} teams={door.teams} answers={door.answers} />
+          <FrontDoor siteName={clientValues.copy.siteName} week={door.week} teams={door.teams} answers={door.answers} askTarget={askTarget} />
         ) : (
           <h1 className="m-0 px-gutter py-sp-6 text-score leading-tight font-bold">{clientValues.copy.siteName}</h1>
         )}

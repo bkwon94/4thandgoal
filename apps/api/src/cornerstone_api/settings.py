@@ -1,6 +1,6 @@
 """
 The settings of the API app: the passphrase and the commissioner key of each client, the repo, the result cache
-directory, the eggs directory, and the origins. Settings.from_env reads them from the environment, so the deploy sets
+directory, the eggs directory, the ask directory, and the origins. Settings.from_env reads them from the environment, so the deploy sets
 them as secrets and variables.
 """
 import os
@@ -43,6 +43,8 @@ class Settings:
     commissioner_keys: Mapping[str, str] = field(default_factory=dict, repr=False)
     # The folder of the SQLite file of the egg hunt of each client. On Fly it sits on the volume at /data.
     eggs_dir: Path | None = None
+    # The folder of the SQLite file of the miss log of each client. On Fly it sits on the volume at /data.
+    ask_dir: Path | None = None
 
     @classmethod
     def from_env(cls, slugs: Iterable[str], egg_slugs: Iterable[str] = ()) -> "Settings":
@@ -68,6 +70,7 @@ class Settings:
             keys[slug] = key
         repo = repo_from_env()
         eggs = os.environ.get("CORNERSTONE_EGGS_DIR")
+        ask = os.environ.get("CORNERSTONE_ASK_DIR")
         cache = os.environ.get("CORNERSTONE_RESULT_CACHE_DIR")
         origins = os.environ.get("CORNERSTONE_ALLOWED_ORIGINS")
         return cls(
@@ -78,6 +81,7 @@ class Settings:
             rate_limit_per_minute=rate_limit_from_env(),
             commissioner_keys=keys,
             eggs_dir=Path(eggs) if eggs else None,
+            ask_dir=Path(ask) if ask else None,
         )
 
 
@@ -89,6 +93,12 @@ def passphrase_env(slug: str) -> str:
 def eggs_dir(settings: Settings) -> Path:
     """The folder of the SQLite files of the egg hunts. With no CORNERSTONE_EGGS_DIR, it is data/eggs of the repo."""
     return settings.eggs_dir or settings.repo / "data" / "eggs"
+
+
+def ask_dir(settings: Settings) -> Path:
+    """The folder of the SQLite files of the miss logs. With no CORNERSTONE_ASK_DIR, it is data/ask of the repo, which
+    the repo ignores, because a typed question must never reach the public repo (ADR 0031)."""
+    return settings.ask_dir or settings.repo / "data" / "ask"
 
 
 def repo_from_env() -> Path:
