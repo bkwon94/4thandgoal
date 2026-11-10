@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-9, AT-10, AT-13, AT-14, 
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] "who am i playing sunday" opens the next matchup of Lil Fridge (AT-9).
 - [ ] "how's Bo Girds doing" answers with the 9-7 record of Bo Girds (AT-10).
