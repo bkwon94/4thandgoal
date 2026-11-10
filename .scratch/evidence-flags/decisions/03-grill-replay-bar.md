@@ -4,7 +4,7 @@ Map: `.scratch/evidence-flags/MAP.md`.
 
 **Kind:** grill
 
-**Blocked by:** 02
+**Blocked by:** 02, 06
 
 **Status:** open
 
