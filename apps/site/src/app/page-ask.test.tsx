@@ -70,7 +70,7 @@ describe("the ask box of Lil Fridge", () => {
     render(<HomePage />);
     await ask("who am i playing sunday");
     const answer = await articleWith("who am i playing sunday", "behold the lamb");
-    expect(within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/2026/week-08/#next-week");
+    expect(within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/2026/week-08/#next-game-3-10");
   });
 
   it("answers about the team that the question names, with the 9-7 record of Bo Girds (AT-10)", async () => {

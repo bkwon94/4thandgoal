@@ -13,6 +13,7 @@ import { avatarSrc } from "@cpc/league/images";
 import { managerHrefOrNull } from "@cpc/league/hrefs";
 import { ShareBar, shareOf } from "../parts/share-bar";
 import { WeekChapter } from "../parts/week-chapter";
+import { gameId } from "./next-week";
 import { openId, stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* One team of a card. The card is one button, so the name is plain text. A long name cuts at the end of its row. */
@@ -60,25 +61,29 @@ function GameCard({ matchup, avatars, managersHref }: { matchup: Matchup; avatar
   const [first, second] = matchup.sides;
   const href = managerHrefOrNull(managersHref, first.team.roster_id);
   return (
-    <OpenCard
-      // The id names the game, so a check of the readability floor can open the recap of one game by its control.
-      panelId={`recap-${matchup.id}`}
-      // The egg hunt names the toggle, the panel, and the recap text by ids from the data.
-      headMarks={openId("game", matchup.id)}
-      panelMarks={stableId("recap", matchup.id)}
-      textMarks={matchup.recap === null ? undefined : textId("blurb", matchup.recap)}
-      head={
-        <>
-          <TeamRow side={first} avatars={avatars} lead />
-          <ShareBar share={shareOf(first.score, second.score)} tone="page" />
-          <TeamRow side={second} avatars={avatars} lead={false} />
-        </>
-      }
-      chips={chipsOf(matchup, avatars)}
-      text={matchup.recap}
-      // One link per recap: the manager page of the team that leads the card.
-      action={href === null ? null : { href, label: "Manager page", hiddenLabel: ` of ${first.team.name}` }}
-    />
+    // The li holds the id of the game, so the front door can link to the game of one team. OpenCard takes no id.
+    <li id={gameId("last", first.team.roster_id, second.team.roster_id)} className="list-none">
+      <OpenCard
+        as="div"
+        // The id names the game, so a check of the readability floor can open the recap of one game by its control.
+        panelId={`recap-${matchup.id}`}
+        // The egg hunt names the toggle, the panel, and the recap text by ids from the data.
+        headMarks={openId("game", matchup.id)}
+        panelMarks={stableId("recap", matchup.id)}
+        textMarks={matchup.recap === null ? undefined : textId("blurb", matchup.recap)}
+        head={
+          <>
+            <TeamRow side={first} avatars={avatars} lead />
+            <ShareBar share={shareOf(first.score, second.score)} tone="page" />
+            <TeamRow side={second} avatars={avatars} lead={false} />
+          </>
+        }
+        chips={chipsOf(matchup, avatars)}
+        text={matchup.recap}
+        // One link per recap: the manager page of the team that leads the card.
+        action={href === null ? null : { href, label: "Manager page", hiddenLabel: ` of ${first.team.name}` }}
+      />
+    </li>
   );
 }
 

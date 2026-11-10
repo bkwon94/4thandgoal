@@ -202,8 +202,8 @@ describe("the Suggestions of Lil Fridge", () => {
 
   it.each([
     ["Week recap", "/2026/week-08/"],
-    ["Your last matchup", "/2026/week-08/#matchups"],
-    ["Your next matchup", "/2026/week-08/#next-week"],
+    ["Your last matchup", "/2026/week-08/#game-3-9"],
+    ["Your next matchup", "/2026/week-08/#next-game-3-10"],
     ["Playoff race", "/2026/managers/#race"],
     ["Your season", "/2026/managers/3/"],
     ["Position leaders and recent trades", "/2026/week-08/#leaders"],
