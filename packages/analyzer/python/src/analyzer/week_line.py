@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from analyzer.measures import _join, _short_names
 from analyzer.trade import ProposedTrade
 from analyzer.tunables import STEP_UP_CHART_HOURS
-from league.lineup import _above_the_line
+from league.lineup import above_the_line
 from league.nflverse import SKILL_POSITIONS, ScheduledGame
 from league.points_allowed import most_points_text, opponent_rank
 from league.ranks import RANKED_POSITIONS, _back_in_a_known_game
@@ -79,7 +79,7 @@ def _count_sentence(snapshot: Snapshot, position: str, before: list[str], after:
     """
     def count(roster: list[str]) -> int:
         return sum(1 for pid in roster if snapshot.players[pid].position == position
-                   and _above_the_line(snapshot, pid) and _plays(snapshot, pid, week)
+                   and above_the_line(snapshot, pid) and _plays(snapshot, pid, week)
                    and _out_reason(snapshot, snapshot.players[pid], week) is None)
 
     old, new = count(before), count(after)

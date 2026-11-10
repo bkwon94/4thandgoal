@@ -182,7 +182,7 @@ def _last_window_week(snapshot: Snapshot) -> int:
     return snapshot.week + RETURN_WINDOW_WEEKS
 
 
-def _above_the_line(snapshot: Snapshot, player_id: str) -> bool:
+def above_the_line(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player holds a position rank at or above the line of his position. K and DEF have no line."""
     line = snapshot.client.settings.lines.get(snapshot.players[player_id].position)
     rank = snapshot.position_rank(player_id)
@@ -212,7 +212,7 @@ def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Sna
     marked = []
     for slot in starting:
         # A slot with no player or a player below the line is a hole already. K and DEF have no line, so never a hole.
-        if slot.player is None or not _above_the_line(snapshot, slot.player):
+        if slot.player is None or not above_the_line(snapshot, slot.player):
             marked.append(slot)
             continue
         # The hole read and the lineup value read the same return week, so a player out with no return week counts
@@ -225,7 +225,7 @@ def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Sna
         cover = None if week > _last_window_week(snapshot) else next(
             (pid for pid in free
              if snapshot.players[pid].position in allowed
-             and _above_the_line(snapshot, pid)
+             and above_the_line(snapshot, pid)
              and not _out_now(snapshot, pid)), None)
         if cover is not None:
             free.remove(cover)

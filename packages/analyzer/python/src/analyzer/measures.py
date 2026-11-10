@@ -34,7 +34,7 @@ from league.history import (
     scored_weeks,
     stats_complete,
 )
-from league.lineup import STRENGTH_SLOTS, StartingSlot, _above_the_line, _last_window_week, _lineup_total, lineup_slots
+from league.lineup import STRENGTH_SLOTS, StartingSlot, _last_window_week, _lineup_total, above_the_line, lineup_slots
 from league.models import Fact, UsageShare
 from league.nfl_teams import team_name
 from league.nflverse import SKILL_POSITIONS, TeamSchedule
@@ -139,7 +139,7 @@ class Side(BaseModel):
         """
         def count(roster: list[str]) -> int:
             return sum(1 for pid in roster
-                       if snapshot.players[pid].position == position and _above_the_line(snapshot, pid))
+                       if snapshot.players[pid].position == position and above_the_line(snapshot, pid))
         return (count(snapshot.rosters[self.roster_id]),
                 count(_roster_after(snapshot, self.roster_id, self.gives, self.gets)))
 
