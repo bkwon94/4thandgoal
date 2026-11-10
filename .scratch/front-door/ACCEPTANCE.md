@@ -319,7 +319,7 @@ When: A CPC reader sends "highest scoring team this season", and a NorCal reader
 Then: CPC shows the line "The league's question budget is used up for this month. It resets on Dec 1." NorCal gets a free answer.
 Evidence: screenshots at 375 px in both themes for each client, and the API log.
 
-AT-39: The 80% mark sends a notice
+AT-39: The 80% mark logs one alert
 App: api
 Stories: 47
 Given: The store holds $19.90 of Claude cost for CPC this month.
