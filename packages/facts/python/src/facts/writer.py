@@ -57,6 +57,9 @@ ANALYZER_CACHE_TTL = "1h"
 # The analyzer answers a waiting browser, so it trades some depth for a faster call.
 # The writer and the verifier keep the default, because the Tuesday build has no reader who waits.
 ANALYZER_EFFORT = "medium"
+# The Finder pick reads 10 offers in one call, and a Finder press must end in 35 s, so it thinks less than a read.
+# A live press at medium effort took about 22 s in the call alone and came near the cost limit of $0.15.
+FINDER_PICK_EFFORT = "low"
 
 log = logging.getLogger(__name__)
 
@@ -150,6 +153,15 @@ def analyzer_call(
     """The analyzer's Claude call. It is `claude_call` with the one-hour lifetime."""
     return parse_call(
         user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=ANALYZER_EFFORT, writer=writer
+    )
+
+
+def finder_pick_call(
+    system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None
+) -> BaseModel:
+    """The Claude call of the Finder pick. It is `analyzer_call` at a lower effort."""
+    return parse_call(
+        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=FINDER_PICK_EFFORT, writer=writer
     )
 
 

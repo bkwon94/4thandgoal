@@ -19,7 +19,7 @@ from analyzer.advisor import (
 from analyzer.finder_search import Shortlist, ShortlistOffer
 from analyzer.trade_jev import jev_answer_facts, trade_jev_questions
 from analyzer.trade_news import NewsFeed, attribution_failures
-from facts.writer import ClaudeCall, analyzer_call, call_with_retry
+from facts.writer import ClaudeCall, call_with_retry, finder_pick_call
 from league.models import Fact
 from league.snapshot import Snapshot
 
@@ -146,7 +146,7 @@ def _fact_lines(offer: ShortlistOffer, sheet: dict[str, Fact]) -> list[str]:
 
 
 def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed,
-                call: ClaudeCall = analyzer_call) -> FinderPicks:
+                call: ClaudeCall = finder_pick_call) -> FinderPicks:
     """The picks of the Advisor from the shortlist. An empty shortlist makes no call and gives the NO_OFFER line.
 
     A failed guard retries once with the failures as feedback. After two failed calls, a failed API call included,

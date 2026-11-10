@@ -347,16 +347,27 @@ def test_the_analyzer_call_alone_runs_at_medium_effort():
     assert sent["output_config"] == {"effort": "high"}
 
 
-# The API calls `read_trade` and `pick_trades` with no `call` argument, so this default is the API's lifetime.
-def test_the_advisor_read_and_the_finder_pick_use_the_analyzer_call_by_default():
+def test_the_finder_pick_call_runs_at_low_effort_with_the_one_hour_lifetime():
+    # The pick reads 10 offers in one call, and a Finder press must end in 35 s (AT-33), so it thinks less.
+    from analyzer.finder_pick import FinderPickOut
+    from facts.writer import finder_pick_call
+
+    writer, sent = _stub_writer()
+    finder_pick_call("finder system", "user text", FinderPickOut, writer=writer)
+    assert sent["output_config"] == {"effort": "low"}
+    assert sent["system"][0]["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
+
+
+# The API calls `read_trade` and `pick_trades` with no `call` argument, so these defaults are the API's calls.
+def test_the_advisor_read_uses_the_analyzer_call_and_the_finder_pick_its_own_call_by_default():
     import inspect
 
     from analyzer.advisor import read_trade
     from analyzer.finder_pick import pick_trades
-    from facts.writer import analyzer_call
+    from facts.writer import analyzer_call, finder_pick_call
 
     assert inspect.signature(read_trade).parameters["call"].default is analyzer_call
-    assert inspect.signature(pick_trades).parameters["call"].default is analyzer_call
+    assert inspect.signature(pick_trades).parameters["call"].default is finder_pick_call
 
 
 def test_parse_call_logs_the_kind_and_the_three_usage_counts(caplog):
