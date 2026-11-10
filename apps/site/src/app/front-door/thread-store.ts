@@ -9,15 +9,15 @@ import { tradeAnswerSchema } from "./trade-api";
 export const THREAD_KEY = "cpc.thread";
 
 /* One entry of the Thread that the browser keeps. A Topic entry names its Topic and its team, and its Answer reads
-   from the published week. A miss and a note keep their lines. A question in flight and the passphrase card stay out,
+   from the published week. A miss, a cap line, and a note keep their lines. A question in flight and the passphrase card stay out,
    because they mean nothing after a reload. A trade Answer stays once it is whole, because a reread must cost nothing,
    and its steps in flight stay out. A free answer stays once it ends with its checked result, so a reload shows it
    with no new stream and no cost. */
 export type ThreadEntry =
-  | Extract<ThreadItem, { kind: "topic" | "miss" | "note" | "trade" }>
+  | Extract<ThreadItem, { kind: "topic" | "miss" | "cap" | "note" | "trade" }>
   | (Extract<ThreadItem, { kind: "free" }> & { result: NonNullable<Extract<ThreadItem, { kind: "free" }>["result"]> });
 
-const KEPT = new Set(["topic", "miss", "note"]);
+const KEPT = new Set(["topic", "miss", "cap", "note"]);
 
 /* An entry that means something after a reload. A kept trade Answer must still read as one, so an old shape drops.
    A free answer stays only with its checked result. */

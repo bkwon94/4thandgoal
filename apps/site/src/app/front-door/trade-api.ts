@@ -28,10 +28,11 @@ const partSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("data-step"), data: z.object({ line: z.string() }) }),
   z.object({ type: z.literal("data-answer"), data: tradeAnswerSchema }),
   z.object({ type: z.literal("data-error"), data: z.object({ status: z.number(), line: z.string() }) }),
+  z.object({ type: z.literal("data-cap"), data: z.object({ cap: z.enum(["team", "league"]), line: z.string() }) }),
 ]);
 
-/* What the stream gives the Thread, part by part. */
-export type TradeEvents = { onStep: (line: string) => void; onAnswer: (answer: TradeAnswer) => void };
+/* What the stream gives the Thread, part by part. A cap gives its calm line in place of the Answer. */
+export type TradeEvents = { onStep: (line: string) => void; onAnswer: (answer: TradeAnswer) => void; onCap: (line: string) => void };
 
 /* The body of each route: the typed question of a trade check, or the partner that a question of trade ideas names. */
 export type TradeRequest =
@@ -61,12 +62,17 @@ async function readParts(body: ReadableStream<Uint8Array>, events: TradeEvents):
         answered = true;
         events.onAnswer(part.data.data);
       }
+      if (part.data.type === "data-cap") {
+        answered = true;
+        events.onCap(part.data.data.line);
+      }
     }
     if (done) return answered;
   }
 }
 
-/* Send one trade Topic and read its stream. A failed call or a stream with no Answer throws an AskError. */
+/* Send one trade Topic and read its stream. A failed call or a stream with no Answer and no cap line throws an
+   AskError. */
 export async function streamTrade(target: AskTarget, passphrase: string, request: TradeRequest, events: TradeEvents): Promise<void> {
   const { mode, ...body } = request;
   let response: Response;
