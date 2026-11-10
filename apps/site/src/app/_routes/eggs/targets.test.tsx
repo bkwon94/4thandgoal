@@ -269,7 +269,7 @@ describe("the targets of the analyzer result", () => {
   it("gives the Lean word, the swap card, and each Bullet row a stable id, and puts the trade key on its root", () => {
     const doc = analyzeResponse as AnalyzeResponse;
     const { container } = render(<AnalyzeResult doc={doc} />);
-    expect(ids()).toEqual(expect.arrayContaining(["verdict-word", "swap-card"]));
+    expect(ids()).toEqual(expect.arrayContaining(["lean-word", "swap-card"]));
     const bullets = doc.sides.reduce((count, side) => count + side.bullets.length, 0);
     expect(idsOf("bullet")).toHaveLength(bullets);
     const root = container.firstElementChild!;
@@ -289,12 +289,12 @@ describe("the targets of the analyzer result", () => {
     render(<AnalyzeResult doc={doc} />);
     vi.useFakeTimers();
     listen("/analyzer/");
-    tap(target("verdict-word"));
-    tap(target("verdict-word"), TAP_GAP_MS + 1);
+    tap(target("lean-word"));
+    tap(target("lean-word"), TAP_GAP_MS + 1);
     const teams = doc.trade.sides.map((side) => side.roster_id).sort((a, b) => a - b);
     expect(sent).toEqual([
       expect.objectContaining({
-        target: "verdict-word",
+        target: "lean-word",
         action: "tap2",
         conditions: expect.objectContaining({ trade_teams: teams, trade_answer: "yes" }),
       }),
