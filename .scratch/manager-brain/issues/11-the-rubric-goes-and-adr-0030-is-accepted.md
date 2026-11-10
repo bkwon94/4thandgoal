@@ -10,9 +10,9 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-33, AT-36, AT-37, AT-
 
 **Status:** ready-for-agent
 
-- [ ] A search of the code and the copy finds no rubric, start letter, breakdown, adjuster step, verdict, factor row, or letter of a side.
+- [x] A search of the code and the copy finds no rubric, start letter, breakdown, adjuster step, verdict, factor row, or letter of a side.
 - [ ] The log of a cold analyze press and a cold Finder press shows the time and the cost inside the limits.
-- [ ] The logs of both presses show no web search call.
-- [ ] A search of the copy and the eval reads finds no "rival" and no "Brian".
-- [ ] ADR 0030 reads accepted, and the glossary holds no term that it drops.
-- [ ] `make check-fast` passes.
+- [x] The logs of both presses show no web search call.
+- [x] A search of the copy and the eval reads finds no "rival" and no "Brian".
+- [x] ADR 0030 reads accepted, and the glossary holds no term that it drops.
+- [x] `make check-fast` passes.

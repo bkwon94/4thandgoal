@@ -52,3 +52,24 @@ def _offenses() -> list[Offense]:
 def test_no_code_and_no_copy_of_the_analyzer_holds_a_word_of_the_old_way():
     offenses = _offenses()
     assert not offenses, report(offenses)
+
+
+# The copy of the analyzer page and the Finder cards. The house rules: never "rival", and never the name of the
+# commissioner (decision 59 of the spec).
+COPY_ROOTS = ("packages/analyzer/site/form", "packages/analyzer/site/lib")
+NOT_IN_COPY = re.compile(r"\brivals?\b|\bbrian\b", re.IGNORECASE)
+
+
+def test_the_copy_of_the_analyzer_and_the_finder_says_no_rival_and_names_no_commissioner():
+    offenses = []
+    for path in _sources():
+        if not any(path.is_relative_to(REPO / root) for root in COPY_ROOTS):
+            continue
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+            for match in NOT_IN_COPY.finditer(line):
+                offenses.append(Offense(
+                    path=str(path.relative_to(REPO)), line=number, rule_id="one-way/copy-word",
+                    what=f"The copy holds the word '{match.group()}'.",
+                    rule="The copy says manager or another manager, and the commissioner, never a name",
+                    adr="ADR 0030", fix="Write 'manager', 'another manager', or 'the commissioner'."))
+    assert not offenses, report(offenses)
