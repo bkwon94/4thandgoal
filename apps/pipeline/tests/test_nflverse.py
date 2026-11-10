@@ -5,6 +5,7 @@ They read the fixtures cut from the real nflverse and ffverse files.
 import csv
 import gzip
 import os
+import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -331,6 +332,31 @@ def test_read_depth_charts_skips_a_row_with_a_bad_rank(tmp_path):
         "2026-10-21T12:00:00Z,SF,Bad Row,00-9,RB,11,NA\n"
         "2026-10-21T12:00:00Z,SF,Backup,00-2,RB,11,2\n")
     assert read_depth_charts(path).charts == {"SF": {"RB": ["00-1", "00-2"]}}
+
+
+@pytest.mark.serial
+def test_a_second_read_of_the_same_depth_chart_file_takes_no_time(tmp_path):
+    # Each press builds a live snapshot, and the season file holds a snapshot of every day, about 800,000 rows. A
+    # full parse per press cost about 2.4 s of the 30 s of an analyze press (AT-33).
+    path = tmp_path / "depth_charts_2026.csv"
+    lines = ["dt,team,player_name,gsis_id,pos_abb,pos_slot,pos_rank"]
+    lines += [f"2026-10-{day:02d}T12:00:00Z,SF,Back {n},00-{n},RB,11,{n % 5 + 1}"
+              for day in range(1, 21) for n in range(5000)]
+    path.write_text("\n".join(lines) + "\n")
+    first = read_depth_charts(path)
+    started = time.monotonic()
+    assert read_depth_charts(path) == first
+    assert time.monotonic() - started < 0.05
+
+
+def test_a_depth_chart_file_that_changes_on_disk_is_read_again(tmp_path):
+    path = tmp_path / "depth_charts_2026.csv"
+    header = "dt,team,player_name,gsis_id,pos_abb,pos_slot,pos_rank\n"
+    path.write_text(header + "2026-10-21T12:00:00Z,SF,Starter,00-1,RB,11,1\n")
+    assert read_depth_charts(path).charts == {"SF": {"RB": ["00-1"]}}
+    path.write_text(header + "2026-10-22T12:00:00Z,SF,New Starter,00-22,RB,11,1\n")
+    os.utime(path, ns=(time.time_ns(), time.time_ns() + 10**9))
+    assert read_depth_charts(path).charts == {"SF": {"RB": ["00-22"]}}
 
 
 def test_read_depth_charts_without_a_row_is_none(tmp_path):

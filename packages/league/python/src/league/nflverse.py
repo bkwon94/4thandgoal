@@ -8,6 +8,7 @@ import re
 import time
 from collections.abc import Callable, Collection
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import NamedTuple
 from zoneinfo import ZoneInfo
@@ -271,7 +272,16 @@ def read_depth_charts(path: Path) -> DepthCharts | None:
     The file holds a snapshot of every day of the season, so only the latest is the live depth chart.
     The ids are gsis_ids, as the id map gives, so a caller joins them to Sleeper players with that map.
     A player is on a chart once, even when he is in more than one formation.
+    Each API press builds a snapshot, so the read of one file is kept by its path, file time, and size. A file that
+    changes is read again.
     """
+    stat = path.stat()
+    return _read_depth_charts(str(path), stat.st_mtime_ns, stat.st_size)
+
+
+@lru_cache(maxsize=4)
+def _read_depth_charts(name: str, mtime_ns: int, size: int) -> DepthCharts | None:
+    path = Path(name)
     latest = ""
     rows: list[dict[str, str]] = []
     for row in _rows(path):
