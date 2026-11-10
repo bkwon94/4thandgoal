@@ -10,10 +10,10 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-26, AT-30, AT-31, AT-
 
 **Status:** ready-for-agent
 
-- [ ] A Find for Maye d'force B with U with no partner returns 1 to 3 picks, each with a headline and 2 to 3 Bullets.
-- [ ] With Return of T Mac as the partner, no pick sends Jahmyr Gibbs for Bijan Robinson.
-- [ ] Each pick of the press, sent to `/analyze`, reads Send it, Lean yes, or Gut call.
-- [ ] With an Anthropic key that is not valid, the document holds the shortlist with fact lines and the fallback flag true.
-- [ ] The card shows the rows, the Marks, and the tap of the analyzer, and no letter shows.
-- [ ] Find works with no partner picked.
-- [ ] `make check-fast` passes.
+- [x] A Find for Maye d'force B with U with no partner returns 1 to 3 picks, each with a headline and 2 to 3 Bullets.
+- [x] With Return of T Mac as the partner, no pick sends Jahmyr Gibbs for Bijan Robinson.
+- [x] Each pick of the press, sent to `/analyze`, reads Send it, Lean yes, or Gut call.
+- [x] With an Anthropic key that is not valid, the document holds the shortlist with fact lines and the fallback flag true.
+- [x] The card shows the rows, the Marks, and the tap of the analyzer, and no letter shows.
+- [x] Find works with no partner picked.
+- [x] `make check-fast` passes.
