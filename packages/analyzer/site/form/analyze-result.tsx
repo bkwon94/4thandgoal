@@ -1,6 +1,6 @@
 /**
  * The analyzer result from one analyze document, in one column: the Lean on its scale, the Case, the fairness line, the swap card, and one tab per side.
- * The trade finder reuses SwapCard, FairnessBlock, and AsOfLine. No letter grade shows anywhere.
+ * The trade finder reuses SwapCard and AsOfLine. No letter grade shows anywhere.
  */
 "use client";
 
@@ -311,7 +311,7 @@ const FAIRNESS_WORD = {
 } as const;
 
 /* The fairness line rises in like the Lean word, so both read as one call. With motion off, it shows at rest at once. */
-export function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairness }) {
+function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairness }) {
   const off = useMotionOff();
   const state = FAIRNESS_WORD[fairness.state];
   // A lopsided line names the side that gives more, so the reader knows who loses. The type says a lopsided block always has gives_more, and the pipeline sets it to a side of the trade.
