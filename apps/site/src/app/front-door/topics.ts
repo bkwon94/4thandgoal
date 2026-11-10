@@ -25,6 +25,11 @@ export const TOPICS: readonly Topic[] = [
   { key: "trade_check", name: "Trade check", kind: "judgment" },
 ];
 
+/* The name of a Topic by its key. A key of no known Topic shows as itself, so a new Topic of the API still reads. */
+export function topicName(key: string): string {
+  return TOPICS.find((topic) => topic.key === key)?.name ?? key;
+}
+
 export const SUGGESTION_COUNT = 3;
 
 /* The Topics that lead each day, from Sunday (0) to Saturday (6). The rest follow in the order of TOPICS.

@@ -3,10 +3,12 @@
  * and the Answers of the league Topics of each team from topics.json, each with the page that "Read the full report" opens.
  */
 import { existsSync } from "node:fs";
+import { gameId } from "@cpc/week/chapters/next-week";
 import { join } from "node:path";
 import { managerHref, managersHref, rankingsHref, waiverHref, weekHref } from "../routes";
 import { readPublished } from "./published-file";
 import { type LeagueTopic, type TopicAnswer, topicsFileSchema } from "./topics-schema";
+import type { WeekPage } from "@cpc/week/schema/week-types";
 import { listWeeks, loadWeek, type WeekRef } from "./week-data";
 
 /* One team of the sheet. The rank and the record come from the table of the latest week. */
@@ -32,18 +34,29 @@ const TOPICS_VERSION = 1;
 
 const publicFile = (...parts: string[]) => join(process.cwd(), "public", ...parts);
 
-/* The page of each league Topic, as the table of the spec names it. A season file that the client does not publish,
-   such as no rankings, gives no link. */
-function hrefOf(topic: LeagueTopic, ref: WeekRef, rosterId: number): string | null {
+/* The id of the game of one team in the weekly report: its game of this week, or of next week. A team with no game in
+   the report, such as on a bye, gets the id of the chapter. */
+function gameOf(page: WeekPage, rosterId: number, when: "last" | "next"): string {
+  if (when === "last") {
+    const game = page.matchups.find((matchup) => matchup.sides.some((side) => side.team.roster_id === rosterId));
+    return game ? gameId("last", game.sides[0].team.roster_id, game.sides[1].team.roster_id) : "matchups";
+  }
+  const game = page.next.find((next) => next.a.roster_id === rosterId || next.b.roster_id === rosterId);
+  return game ? gameId("next", game.a.roster_id, game.b.roster_id) : "next-week";
+}
+
+/* The page of each league Topic, as the table of the spec names it. A matchup Topic links to the game of the team in the
+   weekly report. A season file that the client does not publish, such as no rankings, gives no link. */
+function hrefOf(topic: LeagueTopic, ref: WeekRef, page: WeekPage, rosterId: number): string | null {
   const week = weekHref(ref.season, ref.week);
   const managers = existsSync(publicFile(ref.season, "managers.json"));
   switch (topic) {
     case "week_recap":
       return week;
     case "last_matchup":
-      return `${week}#matchups`;
+      return `${week}#${gameOf(page, rosterId, "last")}`;
     case "next_matchup":
-      return `${week}#next-week`;
+      return `${week}#${gameOf(page, rosterId, "next")}`;
     case "leaders_trades":
       return `${week}#leaders`;
     case "power_rankings":
@@ -88,7 +101,7 @@ export function loadFrontDoor(): FrontDoorData | null {
   const answers: Record<number, DoorAnswer[]> = {};
   for (const [key, list] of Object.entries(topics?.teams ?? {})) {
     const rosterId = Number(key);
-    answers[rosterId] = list.map((answer) => ({ ...answer, href: hrefOf(answer.topic, ref, rosterId) }));
+    answers[rosterId] = list.map((answer) => ({ ...answer, href: hrefOf(answer.topic, ref, page, rosterId) }));
   }
   const personalHrefs = Object.fromEntries(teams.map((team) => [team.id, personalHrefsOf(ref, team.id)]));
   return { week: page.week, teams, answers, personalHrefs };

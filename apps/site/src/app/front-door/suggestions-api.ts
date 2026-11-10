@@ -3,7 +3,7 @@
  * Topic and the Topics that are urgent for Your team. The key check says which kept personal Answers are stale.
  */
 import { z } from "zod";
-import { AskError, type AskTarget } from "./ask-api";
+import { type AskTarget, postClient, readBody } from "./ask-api";
 import { PERSONAL_TOPICS } from "./personal-stream";
 
 /* The Suggestions of Your team: the fact of each Topic, and the urgent Topics, most urgent first. The API sends more,
@@ -24,20 +24,7 @@ export const currentSchema = z.object({
 export type KeyState = z.infer<typeof currentSchema>["answers"][number];
 
 async function post<T>(target: AskTarget, passphrase: string, path: string, body: unknown, schema: z.ZodType<T>): Promise<T> {
-  let response: Response;
-  try {
-    response = await fetch(`${target.url}/clients/${encodeURIComponent(target.client)}/${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-League-Passphrase": passphrase },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    throw new AskError(0, "The call did not reach the site.");
-  }
-  if (!response.ok) throw new AskError(response.status, response.statusText);
-  const parsed = schema.safeParse(await response.json());
-  if (!parsed.success) throw new AskError(502, "The API sent an answer the site cannot read.");
-  return parsed.data;
+  return readBody(await postClient(target, passphrase, path, body), schema);
 }
 
 /* The Suggestions of Your team for the order of the day and the opened Topics. On open, the API also builds the

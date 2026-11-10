@@ -4,7 +4,7 @@
  */
 import { z } from "zod";
 import { analyzeResponseSchema, asOfSchema, bulletSchema, findResponseSchema, tradedPlayerSchema } from "@cpc/analyzer/lib/schemas/api";
-import { AskError, type AskTarget } from "./ask-api";
+import { AskError, type AskTarget, postClient, statusError } from "./ask-api";
 
 /* The form of the Trade page for an unsure pick: Your team, the partner of a sure player, and each sure player. */
 export const tradeFormSchema = z.object({
@@ -92,20 +92,8 @@ async function readParts(body: ReadableStream<Uint8Array>, events: TradeEvents):
    AskError. */
 export async function streamTrade(target: AskTarget, passphrase: string, request: TradeRequest, events: TradeEvents): Promise<void> {
   const { mode, ...body } = request;
-  let response: Response;
-  try {
-    response = await fetch(`${target.url}/clients/${encodeURIComponent(target.client)}/${ROUTE_PATH[mode]}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-League-Passphrase": passphrase },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    throw new AskError(0, "The question did not reach the site.");
-  }
-  if (!response.ok || !response.body) {
-    const seconds = Number(response.headers.get("Retry-After"));
-    throw new AskError(response.status, response.statusText, Number.isFinite(seconds) && seconds > 0 ? seconds : undefined);
-  }
+  const response = await postClient(target, passphrase, ROUTE_PATH[mode], body);
+  if (!response.body) throw statusError(response);
   let answered: boolean;
   try {
     answered = await readParts(response.body, events);

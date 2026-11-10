@@ -37,6 +37,14 @@ describe("NextWeek", () => {
     expect(within(first).getByText("behold the lamb")).toBeTruthy();
   });
 
+  it("gives each game an id with the roster ids of its two teams, lower first, apart from the ids of this week", () => {
+    const chapter = renderNext();
+    expect(cards(chapter).map((card) => card.id)).toEqual(
+      week8.next.map((game) => `next-game-${Math.min(game.a.roster_id, game.b.roster_id)}-${Math.max(game.a.roster_id, game.b.roster_id)}`),
+    );
+    expect(document.getElementById("next-game-3-10")?.textContent).toContain("Lil Fridge");
+  });
+
   it("shows Must Watch and its reason first on a Must Watch card, with the brand edge", () => {
     const chapter = renderNext();
     const watch = cards(chapter).filter((card) => within(card).queryByText("Must Watch"));
