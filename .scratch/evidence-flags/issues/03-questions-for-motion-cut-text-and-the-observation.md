@@ -10,8 +10,8 @@ Spec: `.scratch/evidence-flags/PRD.md`. Acceptance tests AT-1 and AT-2, and Impl
 
 **Status:** ready-for-agent
 
-- [ ] On easter-eggs AT-32 at `566d11e7`, the live run writes a (b) entry at 0.7 or more (AT-1).
-- [ ] On easter-eggs AT-54 at `9582a573`, the live run writes a (d) entry at 0.7 or more (AT-2).
-- [ ] Each question has its text, its criteria, and its cut in the one questions module.
-- [ ] A CLI test with `FakeJev` shows that a test with a video gets no (b) flag, with no Jev question about the video.
-- [ ] A CLI test shows one (d) question per sentence of an Observation of three sentences.
+- [x] On easter-eggs AT-32 at `566d11e7`, the live run writes a (b) entry at 0.7 or more (AT-1).
+- [x] On easter-eggs AT-54 at `9582a573`, the live run writes a (d) entry at 0.7 or more (AT-2).
+- [x] Each question has its text, its criteria, and its cut in the one questions module.
+- [x] A CLI test with `FakeJev` shows that a test with a video gets no (b) flag, with no Jev question about the video.
+- [x] A CLI test shows one (d) question per sentence of an Observation of three sentences.
