@@ -11,9 +11,10 @@ import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorAnswer, DoorTeam } from "@/lib/data/front-door-data";
+import { analyzeHref } from "@/lib/routes";
 import { type AskTarget, AskError, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
-import { type ThreadItem, itemOfError, itemOfRoute } from "./ask-thread";
+import { TRADE_LINES, TRADE_TOPICS, type ThreadItem, itemOfError, itemOfRoute } from "./ask-thread";
 import { MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
 import { riseIn } from "./motion";
 import { getOpened, markOpened } from "./opened-store";
@@ -22,6 +23,8 @@ import { TeamSheet } from "./team-sheet";
 import { type Entry, Thread } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
 import { TOPICS, pickSuggestions } from "./topics";
+import { TradeCard } from "./trade-answer";
+import { type TradeRequest, streamTrade } from "./trade-api";
 import { getYourTeam, setYourTeam } from "./your-team-store";
 
 /* The ask box and the chips glide from the center of the empty Thread to the bottom on the first Answer, on one
@@ -105,10 +108,45 @@ export function FrontDoor({
       if (at < 0) return append ? [...entries, { ...item, id }] : entries;
       return entries.map((entry, index) => (index === at ? { ...item, id } : entry));
     });
+  /* Run a trade Topic in the place of `id`: each step lands as it comes, then the whole Answer. A failure is an error
+     line, never an Answer. */
+  const runTrade = async (id: number, question: string, request: TradeRequest, passphrase: string, append = false) => {
+    let steps: string[] = [];
+    const show = (answer: Extract<ThreadItem, { kind: "trade" }>["answer"], first = false) =>
+      put(id, { kind: "trade", mode: request.mode, question, steps, answer }, first && append);
+    show(null, true);
+    try {
+      await streamTrade(askTarget, passphrase, request, {
+        onStep: (line) => {
+          steps = [...steps, line];
+          show(null);
+        },
+        onAnswer: (answer) => show(answer),
+      });
+    } catch (error) {
+      if (error instanceof AskError && error.status === 401) clearPassphrase();
+      put(id, itemOfError(error, question));
+    }
+  };
   /* Open the Answer of a Topic for `of`, Your team by default, or for the team that a typed question named. */
   const open = (key: string, of: number | null = null) => {
     if (!team) return;
     const owner = of ?? team.id;
+    const mode = TRADE_TOPICS[key];
+    if (mode) {
+      setMoreOpen(false);
+      const name = TOPICS.find((topic) => topic.key === key)?.name ?? key;
+      const partner = owner === team.id ? null : owner;
+      // A tapped trade check names no trade, so it opens the Trade page with Your team and the team it is about.
+      if (mode === "check") {
+        put(nextId.current++, { kind: "trade", mode, question: name, steps: [], answer: { kind: "form", form: { asker: team.id, partner, gives: [], gets: [] } } }, true);
+        return;
+      }
+      const passphrase = getPassphrase();
+      if (!passphrase) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
+      else void runTrade(nextId.current++, name, { mode, roster_id: team.id, partner }, passphrase, true);
+      return;
+    }
     const answer = (answers[owner] ?? []).find((candidate) => candidate.topic === key);
     setMoreOpen(false);
     if (!answer) {
@@ -131,6 +169,13 @@ export function FrontDoor({
     put(id, { kind: "pending", question }, append);
     try {
       const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week });
+      const mode = route.route === "topic" && route.topic ? TRADE_TOPICS[route.topic] : undefined;
+      // A trade Topic needs the trade judge, so the typed question goes on to its route with the team it names.
+      if (mode === "check") return void (await runTrade(id, question, { mode, question, roster_id: team.id }, passphrase));
+      if (mode === "ideas") {
+        const partner = route.team !== null && route.team !== team.id ? route.team : null;
+        return void (await runTrade(id, question, { mode, roster_id: team.id, partner }, passphrase));
+      }
       put(id, itemOfRoute(route, question, team.id, answers));
     } catch (error) {
       if (error instanceof AskError && error.status === 401) clearPassphrase();
@@ -234,6 +279,8 @@ export function FrontDoor({
                             }}
                           />
                         );
+                      case "trade":
+                        return <TradeCard ref={ref} question={entry.question} mode={entry.mode} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} />;
                       case "miss":
                         return <MissCard ref={ref} question={entry.question} closest={entry.closest} onPick={(key) => open(key)} />;
                       case "note":
@@ -260,7 +307,7 @@ export function FrontDoor({
             >
               {!missed && (picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
-                  <Suggestions picks={picks} facts={facts} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
+                  <Suggestions picks={picks} facts={{ ...TRADE_LINES, ...facts }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
                 </motion.div>
               ) : null}
               <motion.div {...riseIn(off, { delay: 0.08 })}>

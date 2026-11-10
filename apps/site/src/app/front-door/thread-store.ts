@@ -3,16 +3,24 @@
  * The week of the latest build keys each Thread, so the Tuesday build starts an empty one (decision 05).
  */
 import type { ThreadItem } from "./ask-thread";
+import { tradeAnswerSchema } from "./trade-api";
 
 // Its own key, so the Thread never mixes with Your team or the opened Topics.
 export const THREAD_KEY = "cpc.thread";
 
 /* One entry of the Thread that the browser keeps. A Topic entry names its Topic and its team, and its Answer reads
    from the published week. A miss and a note keep their lines. A question in flight and the passphrase card stay out,
-   because they mean nothing after a reload. */
-export type ThreadEntry = Extract<ThreadItem, { kind: "topic" | "miss" | "note" }>;
+   because they mean nothing after a reload. A trade Answer stays once it is whole, because a reread must cost nothing,
+   and its steps in flight stay out. */
+export type ThreadEntry = Extract<ThreadItem, { kind: "topic" | "miss" | "note" | "trade" }>;
 
 const KEPT = new Set(["topic", "miss", "note"]);
+
+/* An entry that means something after a reload. A kept trade Answer must still read as one, so an old shape drops. */
+function kept(item: ThreadItem): item is ThreadEntry {
+  if (item.kind === "trade") return tradeAnswerSchema.safeParse(item.answer).success;
+  return KEPT.has(item.kind);
+}
 
 type Threads = Record<string, { week: number; entries: ThreadEntry[] }>;
 
@@ -38,12 +46,12 @@ function writeAll(all: Threads): void {
 export function getThread(teamId: number, week: number): ThreadEntry[] {
   const entry = readAll()[String(teamId)];
   if (!entry || entry.week !== week || !Array.isArray(entry.entries)) return [];
-  return entry.entries.filter((item) => item && typeof item === "object" && KEPT.has(item.kind));
+  return entry.entries.filter((item) => item && typeof item === "object" && kept(item));
 }
 
 /* Keep the Thread of one team for this week. Only the kinds that mean something after a reload stay. */
 export function saveThread(teamId: number, week: number, items: ThreadItem[]): void {
-  const entries = items.filter((item): item is ThreadEntry => KEPT.has(item.kind));
+  const entries = items.filter(kept);
   writeAll({ ...readAll(), [String(teamId)]: { week, entries } });
 }
 
