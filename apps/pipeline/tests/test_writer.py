@@ -364,16 +364,30 @@ def test_the_finder_pick_call_runs_on_sonnet_and_the_read_call_on_opus():
     assert sent["output_config"] == {"effort": "medium"}
 
 
+def test_the_finder_repair_call_runs_on_sonnet_at_low_effort():
+    # A repair fixes the text of one pick on one sheet, so it is a small call. Low effort keeps it short, so the
+    # repairs of a press stay within the time and the cost of AT-33.
+    from analyzer.finder_pick import PickOut
+    from facts.writer import finder_repair_call
+
+    writer, sent = _stub_writer()
+    finder_repair_call("repair system", "user text", PickOut, writer=writer)
+    assert sent["model"] == "claude-sonnet-5-5"
+    assert sent["output_config"] == {"effort": "low"}
+    assert sent["system"][0]["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
+
+
 # The API calls `read_trade` and `pick_trades` with no `call` argument, so these defaults are the API's calls.
 def test_the_advisor_read_uses_the_analyzer_call_and_the_finder_pick_its_own_call_by_default():
     import inspect
 
     from analyzer.advisor import read_trade
     from analyzer.finder_pick import pick_trades
-    from facts.writer import analyzer_call, finder_pick_call
+    from facts.writer import analyzer_call, finder_pick_call, finder_repair_call
 
     assert inspect.signature(read_trade).parameters["call"].default is analyzer_call
     assert inspect.signature(pick_trades).parameters["call"].default is finder_pick_call
+    assert inspect.signature(pick_trades).parameters["repair_call"].default is finder_repair_call
 
 
 def test_parse_call_logs_the_kind_and_the_three_usage_counts(caplog):

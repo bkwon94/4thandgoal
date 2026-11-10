@@ -65,6 +65,10 @@ ANALYZER_EFFORT = "medium"
 # of Opus per token. The read of one trade stays on MODEL.
 FINDER_PICK_MODEL = "claude-sonnet-5-5"
 FINDER_PICK_EFFORT = "medium"
+# A repair call fixes the text of one failed pick on its one sheet, so it reads a small message and writes one pick.
+# A retry of the whole pick call doubled the time and the cost of a press, so a failed pick gets this small call
+# instead. Low effort keeps it short. It runs on FINDER_PICK_MODEL.
+FINDER_REPAIR_EFFORT = "low"
 
 log = logging.getLogger(__name__)
 
@@ -231,6 +235,16 @@ def finder_pick_call(
     """The Claude call of the Finder pick. It is `analyzer_call` on FINDER_PICK_MODEL at FINDER_PICK_EFFORT."""
     return parse_call(
         user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=FINDER_PICK_EFFORT, writer=writer,
+        model=FINDER_PICK_MODEL,
+    )
+
+
+def finder_repair_call(
+    system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None
+) -> BaseModel:
+    """The Claude call that repairs one failed Finder pick. It is `finder_pick_call` at FINDER_REPAIR_EFFORT."""
+    return parse_call(
+        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=FINDER_REPAIR_EFFORT, writer=writer,
         model=FINDER_PICK_MODEL,
     )
 

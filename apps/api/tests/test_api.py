@@ -25,7 +25,7 @@ from fastapi.testclient import TestClient
 
 from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import ResultCache, cache_key, finder_cache_key
-from analyzer.finder_pick import NO_OFFER, SAME_FACT, FinderPickOut, pick_trades
+from analyzer.finder_pick import NO_OFFER, SAME_FACT, FinderPickOut, PickOut, pick_trades
 from analyzer.finder_search import search
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.trade import ProposedTrade
@@ -35,7 +35,7 @@ from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
 from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE, Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
-from facts.writer import ClaudeWriter
+from facts.writer import FINDER_PICK_MODEL, ClaudeWriter
 from league.client import ClientError
 from league.jev_port import JevError
 from league.live import RefreshResult
@@ -1460,13 +1460,35 @@ class StubPicker:
         return FinderPickOut.model_validate(build(user))
 
 
+def passing_repair(user: str) -> dict:
+    """A repaired pick that passes every guard: the one offer of the repair message, each Bullet on the week fact."""
+    [pick] = passing_pick(user)["picks"]
+    return pick
+
+
+class StubRepair:
+    """The Claude call that repairs one failed pick, with no network. It answers from a list of builders, one per
+    call, as StubPicker does. Each builder takes the user message and gives one pick."""
+
+    def __init__(self, *builders):
+        self.builders = list(builders) or [passing_repair]
+        self.calls: list[tuple[str, str]] = []
+
+    def __call__(self, system, user, output_model):
+        assert output_model is PickOut
+        self.calls.append((system, user))
+        build = self.builders[min(len(self.calls), len(self.builders)) - 1]
+        return PickOut.model_validate(build(user))
+
+
 def _no_partner(key, question, state):
     """A Jev that stops every partner at the partner filter, so the shortlist is empty."""
     return 0.1 if key.startswith(("partner_", "asker_")) else 0.9
 
 
-def _find_client(settings, sources, picker=None, clock=None, jev=None, news=None):
-    """A client whose Finder search asks `jev` (FakeJev by default) and whose pick makes the call of `picker`.
+def _find_client(settings, sources, picker=None, clock=None, jev=None, news=None, repair=None):
+    """A client whose Finder search asks `jev` (FakeJev by default), whose pick makes the call of `picker`, and whose
+    repair of a failed pick makes the call of `repair`.
 
     With a clock, the grade and general limits read it.
     """
@@ -1475,7 +1497,8 @@ def _find_client(settings, sources, picker=None, clock=None, jev=None, news=None
     client = TestClient(create_app(
         settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=StubAnalyzer(),
         finder_search=functools.partial(search, jev=jev),
-        finder_pick=functools.partial(pick_trades, news=news, jev=jev, call=picker or StubPicker())))
+        finder_pick=functools.partial(pick_trades, news=news, jev=jev, call=picker or StubPicker(),
+                                      repair_call=repair or StubRepair())))
     if clock is not None:
         client.app.state.served["cpc"].grade_limiter.clock = clock
         client.app.state.limiter.clock = lambda: clock().timestamp()
@@ -1733,27 +1756,127 @@ def _news_pick(user):
     (_bad_pick({"text": "The trade lands in week 9."}), "number 9 is not in the cited facts"),
     (_bad_pick({"text": "A rival gets help here."}), "the words 'rival' are not allowed"),
     (_bad_pick({"text": "Josh Jacobs would fit here."}), "the name Josh Jacobs is not in the trade"),
-    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"offer_id": "1:2-3:4"}]},
-     "offer 1:2-3:4 is not on the shortlist"),
-    (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 2}, "is picked twice"),
     (lambda user: {"picks": [passing_pick(user)["picks"][0] | {"bullets": passing_pick(user)["picks"][0]["bullets"][:1]}],
                    "none_line": None}, "it has 1 bullets; the range is 2 to 4"),
     (_pick_of_bullets(5), "it has 5 bullets; the range is 2 to 4"),
     (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"headline": "Send it for 12 points."}]},
      "pick 1 headline: number 12 is not in the cited facts"),
-    (lambda user: {"picks": [], "none_line": None}, "a response with no pick needs a none_line"),
     # A pick that the Advisor would read as Lean no alone is no pick, so the analyzer and the Finder agree.
     (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"lean": "Lean no"}]},
      "pick 1: its Lean is Lean no; pick only an offer you would read as Send it, Lean yes, or Gut call"),
 ])
-def test_a_pick_that_fails_a_guard_retries_once_and_the_second_pick_stands(settings, sources, builder, failure):
-    picker = StubPicker(builder, passing_pick)
-    doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
-                                                       headers=HEADERS).json()
-    assert len(picker.calls) == 2
-    assert failure in picker.calls[1][1]
+def test_a_pick_that_fails_a_guard_gets_one_repair_call_and_the_repaired_pick_stands(settings, sources, builder,
+                                                                                     failure):
+    picker, repair = StubPicker(builder), StubRepair()
+    doc = _find_client(settings, sources, picker, repair=repair).post("/find", json={"season": 2026, "asker": 2},
+                                                                      headers=HEADERS).json()
+    assert len(picker.calls) == 1
+    assert len(repair.calls) == 1
+    assert failure in repair.calls[0][1]
     assert doc["fallback"] is False
     assert [item["headline"] for item in doc["trades"]] == [HEADLINE] * len(doc["trades"])
+
+
+@pytest.mark.parametrize("builder, failure", [
+    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"offer_id": "1:2-3:4"}]},
+     "offer 1:2-3:4 is not on the shortlist"),
+    (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 2}, "is picked twice"),
+    (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 4}, "the response has 4 picks"),
+    (lambda user: {"picks": [], "none_line": None}, "a response with no pick needs a none_line"),
+])
+def test_a_failure_of_the_whole_response_retries_the_whole_call_once(settings, sources, builder, failure):
+    picker, repair = StubPicker(builder, passing_pick), StubRepair()
+    doc = _find_client(settings, sources, picker, repair=repair).post("/find", json={"season": 2026, "asker": 2},
+                                                                      headers=HEADERS).json()
+    assert len(picker.calls) == 2
+    assert failure in picker.calls[1][1]
+    assert repair.calls == []
+    assert doc["fallback"] is False
+    assert [item["headline"] for item in doc["trades"]] == [HEADLINE] * len(doc["trades"])
+
+
+def test_one_bad_pick_of_three_gets_one_repair_call_and_the_document_holds_all_three(settings, sources):
+    picker, repair = StubPicker(_bad_pick({"text": "The trade lands in week 9."})), StubRepair()
+    doc = _find_client(settings, sources, picker, repair=repair).post("/find", json={"season": 2026, "asker": 2},
+                                                                      headers=HEADERS).json()
+    picked = re.findall(r"^Offer (\S+)$", picker.calls[0][1], re.MULTILINE)[:3]
+    assert len(picked) == 3
+    assert len(picker.calls) == 1
+    # The repair asks for the bad pick only, so the two good picks cost no second call.
+    assert [list(_offers_in(user)) for _, user in repair.calls] == [picked[:1]]
+    assert [item["offer_id"] for item in doc["trades"]] == picked
+    assert doc["fallback"] is False
+
+
+def test_the_repair_call_sends_the_one_sheet_of_its_offer_only(settings, sources):
+    picker, repair = StubPicker(_bad_pick({"fact_id": "NO.such"})), StubRepair()
+    _find_client(settings, sources, picker, repair=repair).post("/find", json={"season": 2026, "asker": 2},
+                                                                headers=HEADERS)
+    pick_offers = _offers_in(picker.calls[0][1])
+    [(system, user)] = repair.calls
+    [(offer, fids)] = _offers_in(user).items()
+    assert offer == next(iter(pick_offers))
+    assert fids == pick_offers[offer]
+    # The repair sheet gives each fact in full, as it reads alone.
+    assert SAME_FACT not in user
+    # The failed text and its failures go with it, so the Advisor fixes only what failed.
+    assert "fact ID NO.such is not on the sheet of offer" in user
+    assert "The trade lands in the middle of the season." in user
+    assert "Aim for 3 Bullets, and never write more than 4." in " ".join(system.split())
+
+
+def test_a_repaired_pick_that_fails_again_is_dropped_when_another_pick_stands(settings, sources, caplog):
+    picker = StubPicker(_bad_pick({"text": "The trade lands in week 9."}))
+    repair = StubRepair(lambda user: passing_repair(user) | {"headline": "Send it for 12 points."})
+    doc = _find_client(settings, sources, picker, repair=repair).post("/find", json={"season": 2026, "asker": 2},
+                                                                      headers=HEADERS).json()
+    picked = re.findall(r"^Offer (\S+)$", picker.calls[0][1], re.MULTILINE)[:3]
+    assert len(picker.calls) == 1 and len(repair.calls) == 1
+    assert [item["offer_id"] for item in doc["trades"]] == picked[1:]
+    assert doc["fallback"] is False
+    assert "finder repair of pick 1 failed" in caplog.text
+
+
+def _every_pick_bad(user):
+    """A builder whose every pick holds a Bullet with a number that no fact holds."""
+    out = passing_pick(user)
+    for pick in out["picks"]:
+        pick["bullets"] = [pick["bullets"][0] | {"text": "The trade lands in week 9."}, *pick["bullets"][1:]]
+    return out
+
+
+def test_when_every_pick_fails_twice_the_shortlist_fallback_holds(settings, sources):
+    picker, repair = StubPicker(_every_pick_bad), StubRepair(_every_pick_bad)
+    doc = _find_client(settings, sources, picker, repair=repair).post("/find", json={"season": 2026, "asker": 2},
+                                                                      headers=HEADERS).json()
+    assert len(picker.calls) == 1
+    assert len(repair.calls) == len(re.findall(r"^Offer (\S+)$", picker.calls[0][1], re.MULTILINE)[:3])
+    _assert_the_shortlist_fallback(doc, picker.calls[0][1])
+
+
+class MeteredRepair(StubRepair):
+    """The stub repair, after one Claude call of a ClaudeWriter over a stub client, so the press meter counts it."""
+
+    def __call__(self, system, user, output_model):
+        usage = type("Usage", (), {"input_tokens": 1000, "output_tokens": 100, "cache_read_input_tokens": 0,
+                                   "cache_creation_input_tokens": 0})
+        response = type("Response", (), {"stop_reason": "end_turn", "parsed_output": "parsed", "usage": usage})()
+        messages = type("Messages", (), {"parse": lambda self, **kwargs: response})()
+        ClaudeWriter(client=type("Client", (), {"messages": messages})()).parse("user", PickOut, "system",
+                                                                                 model=FINDER_PICK_MODEL)
+        return super().__call__(system, user, output_model)
+
+
+def test_the_find_press_line_counts_the_repair_calls_in_its_cost(settings, sources, caplog):
+    caplog.set_level("INFO", logger="analyzer.routes")
+    picker = StubPicker(_every_pick_bad)
+    client = _find_client(settings, sources, picker, repair=MeteredRepair())
+    assert client.post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS).status_code == 200
+    [line] = _press_lines(caplog, "find")
+    # The repairs run in threads of the press. Each one is 1,000 input tokens at $2 per million and 100 output
+    # tokens at $10 per million on Sonnet. The stub pick makes no metered call.
+    count = len(re.findall(r"^Offer (\S+)$", picker.calls[0][1], re.MULTILINE)[:3])
+    assert line.endswith(f"cost=${0.003 * count:.4f} claude_calls={count}")
 
 
 def test_a_pick_with_4_bullets_passes_the_guard_with_one_call(settings, sources):
@@ -1770,13 +1893,14 @@ def _taylor_first(key, question, state):
     return 0.99 if key == "11.6813" else 0.9
 
 
-def test_a_pick_bullet_that_cites_news_and_names_no_report_retries_once(settings, sources):
-    picker = StubPicker(_news_pick, passing_pick)
-    doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_taylor_first)).post(
+def test_a_pick_bullet_that_cites_news_and_names_no_report_gets_one_repair_call(settings, sources):
+    picker, repair = StubPicker(_news_pick), StubRepair()
+    doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_taylor_first), repair=repair).post(
         "/find", json={"season": 2026, "asker": 4, "partner": 11}, headers=HEADERS).json()
-    assert len(picker.calls) == 2
-    assert "it cites the news fact NEWS.6813." in picker.calls[1][1]
-    assert "so it must say 'reported', 'per', or the source" in picker.calls[1][1]
+    assert len(picker.calls) == 1
+    [(_, user)] = repair.calls
+    assert "it cites the news fact NEWS.6813." in user
+    assert "so it must say 'reported', 'per', or the source" in user
     assert doc["fallback"] is False
 
 
@@ -1803,8 +1927,8 @@ def _assert_the_shortlist_fallback(doc, user):
         assert all(line.startswith(name) for line, name in zip(item["fact_lines"], players))
 
 
-def test_two_failed_picks_give_the_shortlist_with_fact_lines_and_the_fallback_flag(settings, sources, caplog):
-    picker = StubPicker(_bad_pick({"fact_id": "NO.such"}))
+def test_two_failed_responses_give_the_shortlist_with_fact_lines_and_the_fallback_flag(settings, sources, caplog):
+    picker = StubPicker(lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 2})
     client = _find_client(settings, sources, picker)
     doc = client.post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS).json()
     assert len(picker.calls) == 2
