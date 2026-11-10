@@ -324,8 +324,8 @@ App: api
 Stories: 47
 Given: The store holds $19.90 of Claude cost for CPC this month.
 When: A Claude answer of CPC takes the cost past $20.00.
-Then: The API logs one alert and sends one email to the commissioner, and a later answer sends no second email.
-Evidence: the API log and the email as sent.
+Then: The API logs one alert, and a later answer logs no second alert.
+Evidence: the API log.
 
 AT-40: Past a cap, what costs nothing still works
 App: site

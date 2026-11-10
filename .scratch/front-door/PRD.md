@@ -89,7 +89,7 @@ A manager with a question has no place to ask it. The commissioner asked "week 1
 
 45. As the commissioner, I want each team capped at 25 Claude Answers a day, so that one manager cannot run up the bill.
 46. As the commissioner, I want each league capped at $25 a month, so that one league never uses the budget of the other.
-47. As the commissioner, I want an email at 80% of the monthly cap, so that I can act before the stop.
+47. As the commissioner, I want one alert in the API log at 80% of the monthly cap, so that I can act before the stop.
 48. As a manager, I want the league Topics, the kept Answers, the routes, and the honest misses to work past a cap, so that the front door never goes dark.
 49. As a manager, I want a calm line at a cap, such as "That's 25 questions today. Ask again tomorrow.", so that I know why and when it comes back.
 50. As a manager, I want the cap line to name no manager, so that nobody gets blamed.
@@ -229,7 +229,7 @@ The prototype hit rate was about 35 of 40 under these rules. The questions are i
 
 - Each team gets 25 Claude Answers a day. A kept Answer, a route, an honest miss, and the head start of the top Suggestion do not count toward it (decision 04).
 - Each league gets $25 a month, as a separate cap. The head start counts toward it.
-- At 80% of the monthly cap, the API logs an alert and sends one email to the commissioner. Brian, 2026-11-10.
+- At 80% of the monthly cap, the API logs one alert. It sends no email, because the API has no mail sender. Brian, 2026-11-10.
 - Past a cap, everything that costs nothing still works. A new Claude Answer shows a calm line with the 3 closest Topics. The team line reads "That's 25 questions today. Ask again tomorrow." The league line reads "The league's question budget is used up for this month. It resets on <date>." Neither line names a manager.
 - The ask box needs the league passphrase, through the `X-League-Passphrase` header that the API uses now.
 - The API keeps the counts and the miss log in a store on its Fly volume, like the egg store.

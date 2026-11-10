@@ -4,7 +4,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-37, AT-38, AT-39, AT-40.
 
 **App:** both
 
-**What to build:** Each team gets 25 Claude Answers a day, and each league gets $25 a month, as a separate cap. A kept Answer, a route, an honest miss, and the head start do not count toward the team cap. At 80% of the monthly cap, the API logs an alert and sends one email to the commissioner. Past a cap, a new Claude Answer shows its calm line with the 3 closest Topics, and everything that costs nothing still works.
+**What to build:** Each team gets 25 Claude Answers a day, and each league gets $25 a month, as a separate cap. A kept Answer, a route, an honest miss, and the head start do not count toward the team cap. At 80% of the monthly cap, the API logs one alert. It sends no email. Past a cap, a new Claude Answer shows its calm line with the 3 closest Topics, and everything that costs nothing still works.
 
 **Blocked by:** 05
 
@@ -12,6 +12,6 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-37, AT-38, AT-39, AT-40.
 
 - [ ] At 25 Answers today, Lil Fridge sees "That's 25 questions today. Ask again tomorrow." with no Claude call (AT-37).
 - [ ] CPC at $25.00 sees the league line, and NorCal at $0 still gets a free answer (AT-38).
-- [ ] The pass of $20.00 sends one email and logs one alert, and a later answer sends no second email (AT-39).
+- [ ] The pass of $20.00 logs one alert, and a later answer logs no second alert (AT-39).
 - [ ] Past the team cap, the power rankings Answer still shows in full (AT-40).
 - [ ] No cap line names a manager.
