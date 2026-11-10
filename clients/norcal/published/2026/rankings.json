@@ -943,7 +943,27 @@
             "schedule_played": 9,
             "scoring": 2
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Bo Girds hangs on at 3rd despite losing 2 straight.",
+              "fact_ids": [
+                "PR.6",
+                "H.6.streak"
+              ]
+            },
+            {
+              "text": "The bye shows up in 46% of runs, a coin flip with feathers.",
+              "fact_ids": [
+                "ODDS.6"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 46,
+            "seed": 3,
+            "status": "open"
+          }
         },
         {
           "roster_id": 10,
@@ -958,7 +978,27 @@
             "schedule_played": 6,
             "scoring": 8
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "behold the lamb leaps 4 spots after a 5-point win last week.",
+              "fact_ids": [
+                "PR.10",
+                "PR.10.why"
+              ]
+            },
+            {
+              "text": "They still sit 2 spots outside the playoffs at 6-6.",
+              "fact_ids": [
+                "S.8"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 24,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 11,
@@ -973,7 +1013,25 @@
             "schedule_played": 4,
             "scoring": 1
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Unsolicited Dak Picks drops to 10th on 3 straight losses.",
+              "fact_ids": [
+                "PR.11",
+                "H.11.streak"
+              ]
+            },
+            {
+              "text": "Nobody asked for this either.",
+              "fact_ids": []
+            }
+          ],
+          "odds": {
+            "playoff": 8,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 9,
@@ -988,7 +1046,27 @@
             "schedule_played": 1,
             "scoring": 3
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Maye d'force B with U climbs to 4th and has won 2 straight.",
+              "fact_ids": [
+                "PR.9",
+                "H.9.streak"
+              ]
+            },
+            {
+              "text": "The force is real: 79% of runs end in the playoffs.",
+              "fact_ids": [
+                "ODDS.9"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 79,
+            "bye": 4,
+            "seed": 4,
+            "status": "open"
+          }
         },
         {
           "roster_id": 5,
@@ -1003,7 +1081,27 @@
             "schedule_played": 5,
             "scoring": 7
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "London Cooking stays 2nd and has won 4 straight.",
+              "fact_ids": [
+                "PR.5",
+                "H.5.streak"
+              ]
+            },
+            {
+              "text": "The kitchen is getting hotter, too, with recent scoring up from the season average.",
+              "fact_ids": [
+                "H.5.trend"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 67,
+            "seed": 2,
+            "status": "open"
+          }
         },
         {
           "roster_id": 8,
@@ -1018,7 +1116,34 @@
             "schedule_played": 10,
             "scoring": 4
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Return of T Mac jumps 2 spots after a 39-point win last week.",
+              "fact_ids": [
+                "PR.8",
+                "PR.8.why"
+              ]
+            },
+            {
+              "text": "This side has won 3 straight and leads everyone in results over the last 3 weeks.",
+              "fact_ids": [
+                "H.8.streak",
+                "PR.8"
+              ]
+            },
+            {
+              "text": "At 6-6, the comeback tour still sits outside the playoff spots.",
+              "fact_ids": [
+                "S.7"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 72,
+            "bye": 2,
+            "seed": 4,
+            "status": "open"
+          }
         },
         {
           "roster_id": 3,
@@ -1033,7 +1158,28 @@
             "schedule_played": 2,
             "scoring": 10
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Lil Fridge holds the top spot with a 10-2 record, 4 games above the cut.",
+              "fact_ids": [
+                "PR.3",
+                "S.1"
+              ]
+            },
+            {
+              "text": "Scoring is down to 113.91 a week lately, and the bye still shows up in 80% of runs.",
+              "fact_ids": [
+                "H.3.trend",
+                "ODDS.3"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 80,
+            "seed": 1,
+            "status": "open"
+          }
         },
         {
           "roster_id": 7,
@@ -1048,7 +1194,33 @@
             "schedule_played": 11,
             "scoring": 5
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "To Infinity and Bijan falls to 11th on 77.06 a week lately.",
+              "fact_ids": [
+                "PR.7",
+                "H.7.trend"
+              ]
+            },
+            {
+              "text": "Infinity is not where this offense is headed.",
+              "fact_ids": [
+                "H.7.trend"
+              ]
+            },
+            {
+              "text": "The playoffs show up in 3% of runs.",
+              "fact_ids": [
+                "ODDS.7"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 3,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 1,
@@ -1063,7 +1235,28 @@
             "schedule_played": 12,
             "scoring": 6
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Brock ‘N’ Roll tumbles 4 spots after a 38-point beating from the top team.",
+              "fact_ids": [
+                "PR.1",
+                "PR.1.why"
+              ]
+            },
+            {
+              "text": "They still hold the last playoff spot, and 57% of runs keep it that way.",
+              "fact_ids": [
+                "S.6",
+                "ODDS.1"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 57,
+            "bye": 1,
+            "seed": 5,
+            "status": "open"
+          }
         },
         {
           "roster_id": 12,
@@ -1078,7 +1271,28 @@
             "schedule_played": 3,
             "scoring": 12
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Amon-Ra Dawg Your Team slips to 9th at 4-8.",
+              "fact_ids": [
+                "PR.12",
+                "S.9"
+              ]
+            },
+            {
+              "text": "Somehow the playoffs still show up in 37% of runs, with the easiest remaining schedule ahead.",
+              "fact_ids": [
+                "ODDS.12",
+                "ODDS.12.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 37,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 2,
@@ -1093,7 +1307,34 @@
             "schedule_played": 7,
             "scoring": 9
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "All You Need Is Love sits 6th despite a 7-5 record that holds a playoff spot today.",
+              "fact_ids": [
+                "PR.2",
+                "S.5"
+              ]
+            },
+            {
+              "text": "The playoffs show up in only 20% of runs, on a projection of 98 a week from here.",
+              "fact_ids": [
+                "ODDS.2",
+                "ODDS.2.why"
+              ]
+            },
+            {
+              "text": "Love, it turns out, is not all you need.",
+              "fact_ids": [
+                "ODDS.2"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 20,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 4,
@@ -1108,7 +1349,27 @@
             "schedule_played": 8,
             "scoring": 11
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Pukancun on 3 stays last with a 1-11 record.",
+              "fact_ids": [
+                "PR.4",
+                "S.12"
+              ]
+            },
+            {
+              "text": "They get the hardest remaining schedule as a reward.",
+              "fact_ids": [
+                "ODDS.4.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 1,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         }
       ]
     },
@@ -1128,7 +1389,32 @@
             "schedule_played": 3,
             "scoring": 1
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Bo Girds has lost 3 straight and somehow rose 2 places.",
+              "fact_ids": [
+                "PR.6",
+                "H.6.streak",
+                "PR.6.why"
+              ]
+            },
+            {
+              "text": "The latest was an 11-point loss to the 5th-place team.",
+              "fact_ids": [
+                "PR.6.why"
+              ]
+            },
+            {
+              "text": "Losing pays, apparently.",
+              "fact_ids": []
+            }
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 73,
+            "seed": 1,
+            "status": "open"
+          }
         },
         {
           "roster_id": 10,
@@ -1143,7 +1429,28 @@
             "schedule_played": 6,
             "scoring": 5
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "behold the lamb fell 5 places after a 14-point loss.",
+              "fact_ids": [
+                "PR.10",
+                "PR.10.why"
+              ]
+            },
+            {
+              "text": "The lamb has wandered well away from the playoff flock.",
+              "fact_ids": [
+                "ODDS.10",
+                "S.10"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 6,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 8,
@@ -1158,7 +1465,29 @@
             "schedule_played": 1,
             "scoring": 3
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Return of T Mac has won 4 straight, and the latest took down the top team by 12.",
+              "fact_ids": [
+                "PR.8",
+                "H.8.streak",
+                "PR.8.why"
+              ]
+            },
+            {
+              "text": "Still 7-7 and sitting just outside the playoff spots, with playoff odds of about 54%.",
+              "fact_ids": [
+                "S.7",
+                "ODDS.8"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 54,
+            "bye": 2,
+            "seed": 6,
+            "status": "open"
+          }
         },
         {
           "roster_id": 3,
@@ -1173,7 +1502,33 @@
             "schedule_played": 12,
             "scoring": 7
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Lil Fridge climbs to the top of the rankings at 10-4.",
+              "fact_ids": [
+                "PR.3",
+                "S.1"
+              ]
+            },
+            {
+              "text": "The climb came the same week it lost by 12.",
+              "fact_ids": [
+                "PR.3.why"
+              ]
+            },
+            {
+              "text": "Only this league promotes a team for losing.",
+              "fact_ids": [
+                "PR.3.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 59,
+            "seed": 1,
+            "status": "open"
+          }
         },
         {
           "roster_id": 7,
@@ -1188,7 +1543,34 @@
             "schedule_played": 7,
             "scoring": 4
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "To Infinity and Bijan fell 2 places to last, losing by 16 to the worst team in the standings.",
+              "fact_ids": [
+                "PR.7",
+                "PR.7.why"
+              ]
+            },
+            {
+              "text": "They've lost 3 straight and averaged 73.07 a week over the last 3 weeks.",
+              "fact_ids": [
+                "H.7.streak",
+                "H.7.trend"
+              ]
+            },
+            {
+              "text": "Infinity looks a lot shorter from here.",
+              "fact_ids": [
+                "ODDS.7"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 1,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 11,
@@ -1203,7 +1585,27 @@
             "schedule_played": 5,
             "scoring": 2
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Unsolicited Dak Picks rose 3 places off a 14-point win.",
+              "fact_ids": [
+                "PR.11",
+                "PR.11.why"
+              ]
+            },
+            {
+              "text": "Their results over the last 3 weeks still rank 10th.",
+              "fact_ids": [
+                "PR.11.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 15,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 5,
@@ -1218,7 +1620,27 @@
             "schedule_played": 10,
             "scoring": 8
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "London Cooking dropped 3 spots after getting buried by 50.",
+              "fact_ids": [
+                "PR.5",
+                "PR.5.why"
+              ]
+            },
+            {
+              "text": "The kitchen has cooled to 107.08 a week over the last 3 weeks, well off the season average.",
+              "fact_ids": [
+                "H.5.trend"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 55,
+            "seed": 2,
+            "status": "open"
+          }
         },
         {
           "roster_id": 9,
@@ -1233,7 +1655,28 @@
             "schedule_played": 2,
             "scoring": 6
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Maye d'force B with U slid 2 places after losing a 5-point game.",
+              "fact_ids": [
+                "PR.9",
+                "PR.9.why"
+              ]
+            },
+            {
+              "text": "At 7-7 and level with the last playoff spot, the playoff odds are about 49%.",
+              "fact_ids": [
+                "S.5",
+                "ODDS.9"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 49,
+            "bye": 2,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 4,
@@ -1248,7 +1691,28 @@
             "schedule_played": 9,
             "scoring": 11
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Pukancun on 3 climbed a spot with a 16-point win.",
+              "fact_ids": [
+                "PR.4",
+                "PR.4.why"
+              ]
+            },
+            {
+              "text": "Hot lately, still dead last at 3-11.",
+              "fact_ids": [
+                "S.12",
+                "H.4.trend"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 1,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 1,
@@ -1263,7 +1727,28 @@
             "schedule_played": 11,
             "scoring": 9
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Brock ‘N’ Roll held 8th, clinging to the last playoff spot at 7-7.",
+              "fact_ids": [
+                "PR.1",
+                "PR.1.why",
+                "S.6"
+              ]
+            },
+            {
+              "text": "Playoff odds of about 42% say that spot is rented, not owned.",
+              "fact_ids": [
+                "ODDS.1"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 42,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 12,
@@ -1278,7 +1763,34 @@
             "schedule_played": 4,
             "scoring": 12
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Amon-Ra Dawg Your Team jumped 2 places after a 50-point demolition.",
+              "fact_ids": [
+                "PR.12",
+                "PR.12.why"
+              ]
+            },
+            {
+              "text": "At 6-8, they still hold playoff odds of about 58%.",
+              "fact_ids": [
+                "S.8",
+                "ODDS.12"
+              ]
+            },
+            {
+              "text": "The easiest remaining schedule in the league does the rest.",
+              "fact_ids": [
+                "ODDS.12.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 58,
+            "bye": 1,
+            "seed": 5,
+            "status": "open"
+          }
         },
         {
           "roster_id": 2,
@@ -1293,7 +1805,27 @@
             "schedule_played": 8,
             "scoring": 10
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "All You Need Is Love climbed 2 spots off an 11-point win.",
+              "fact_ids": [
+                "PR.2",
+                "PR.2.why"
+              ]
+            },
+            {
+              "text": "Turns out all you need is the 2nd easiest remaining schedule.",
+              "fact_ids": [
+                "ODDS.2.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 76,
+            "bye": 6,
+            "seed": 4,
+            "status": "open"
+          }
         }
       ]
     },
@@ -1313,7 +1845,32 @@
             "schedule_played": 3,
             "scoring": 1
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Mitseeker5000 stays on top, 1st in standing and 1st in scoring.",
+              "fact_ids": [
+                "PR.6"
+              ]
+            },
+            {
+              "text": "They have won 5 straight.",
+              "fact_ids": [
+                "H.6.streak"
+              ]
+            },
+            {
+              "text": "They hold playoff odds of about 97% and bye odds of 73%.",
+              "fact_ids": [
+                "ODDS.6"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 97,
+            "bye": 73,
+            "seed": 1,
+            "status": "open"
+          }
         },
         {
           "roster_id": 3,
@@ -1328,7 +1885,34 @@
             "schedule_played": 2,
             "scoring": 3
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "BobBuckstein climbs to 2nd behind a 78-point demolition job.",
+              "fact_ids": [
+                "PR.3",
+                "PR.3.why"
+              ]
+            },
+            {
+              "text": "Still a 4-4 team sitting 1 spot outside the playoff spots.",
+              "fact_ids": [
+                "S.7"
+              ]
+            },
+            {
+              "text": "Playoff odds of about 57% come with the hardest remaining schedule.",
+              "fact_ids": [
+                "ODDS.3",
+                "ODDS.3.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 57,
+            "bye": 11,
+            "seed": 6,
+            "status": "open"
+          }
         },
         {
           "roster_id": 5,
@@ -1343,7 +1927,34 @@
             "schedule_played": 8,
             "scoring": 2
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Skol Daddy rockets to 3rd off an 87-point beatdown.",
+              "fact_ids": [
+                "PR.5",
+                "PR.5.why"
+              ]
+            },
+            {
+              "text": "The record still says 3-5, 1 game below the cut.",
+              "fact_ids": [
+                "S.8"
+              ]
+            },
+            {
+              "text": "Playoff odds of about 30% ride on the 10th easiest remaining schedule.",
+              "fact_ids": [
+                "ODDS.5",
+                "ODDS.5.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 30,
+            "bye": 3,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 9,
@@ -1358,7 +1969,27 @@
             "schedule_played": 1,
             "scoring": 5
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "kaiedmonds jumps to 4th after an 11-point escape.",
+              "fact_ids": [
+                "PR.9",
+                "PR.9.why"
+              ]
+            },
+            {
+              "text": "The scoring keeps sagging, though.",
+              "fact_ids": [
+                "H.9.trend"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 82,
+            "bye": 32,
+            "seed": 2,
+            "status": "open"
+          }
         },
         {
           "roster_id": 1,
@@ -1373,7 +2004,27 @@
             "schedule_played": 12,
             "scoring": 6
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "puurdygood rises 5 places after a 45-point win.",
+              "fact_ids": [
+                "PR.1",
+                "PR.1.why"
+              ]
+            },
+            {
+              "text": "At 5-3, they sit 2nd in the standings.",
+              "fact_ids": [
+                "S.2"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 81,
+            "bye": 28,
+            "seed": 2,
+            "status": "open"
+          }
         },
         {
           "roster_id": 10,
@@ -1388,7 +2039,31 @@
             "schedule_played": 7,
             "scoring": 9
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Davlionman drops 4 places after an 87-point loss.",
+              "fact_ids": [
+                "PR.10",
+                "PR.10.why"
+              ]
+            },
+            {
+              "text": "Rough afternoon.",
+              "fact_ids": []
+            },
+            {
+              "text": "The good news is the easiest remaining schedule in the league.",
+              "fact_ids": [
+                "ODDS.10.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 69,
+            "bye": 17,
+            "seed": 4,
+            "status": "open"
+          }
         },
         {
           "roster_id": 8,
@@ -1403,7 +2078,27 @@
             "schedule_played": 4,
             "scoring": 7
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Hock Tua 💦 falls 4 places after getting buried by 78.",
+              "fact_ids": [
+                "PR.8",
+                "PR.8.why"
+              ]
+            },
+            {
+              "text": "The scoring has gone soft lately.",
+              "fact_ids": [
+                "H.8.trend"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 77,
+            "bye": 24,
+            "seed": 4,
+            "status": "open"
+          }
         },
         {
           "roster_id": 11,
@@ -1418,7 +2113,34 @@
             "schedule_played": 6,
             "scoring": 4
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Breece Mode slips 2 places after a 45-point loss.",
+              "fact_ids": [
+                "PR.11",
+                "PR.11.why"
+              ]
+            },
+            {
+              "text": "They have lost 2 straight and cling to the last playoff spot.",
+              "fact_ids": [
+                "H.11.streak",
+                "S.6"
+              ]
+            },
+            {
+              "text": "Playoff odds sit at a coin-flip 50%.",
+              "fact_ids": [
+                "ODDS.11"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 50,
+            "bye": 7,
+            "seed": 6,
+            "status": "open"
+          }
         },
         {
           "roster_id": 2,
@@ -1433,7 +2155,27 @@
             "schedule_played": 10,
             "scoring": 10
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "VarsityBlue2 climbs 3 spots on a 23-point win.",
+              "fact_ids": [
+                "PR.2",
+                "PR.2.why"
+              ]
+            },
+            {
+              "text": "Still 3-5 and 1 game below the cut.",
+              "fact_ids": [
+                "S.10"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 11,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 7,
@@ -1448,7 +2190,34 @@
             "schedule_played": 11,
             "scoring": 8
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "Bo Girds tumbles 5 places after a 23-point loss.",
+              "fact_ids": [
+                "PR.7",
+                "PR.7.why"
+              ]
+            },
+            {
+              "text": "Playoff odds of about 36% survive on the 2nd easiest remaining schedule.",
+              "fact_ids": [
+                "ODDS.7",
+                "ODDS.7.why"
+              ]
+            },
+            {
+              "text": "They project to outscore their season pace from here.",
+              "fact_ids": [
+                "ODDS.7.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 36,
+            "bye": 3,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 4,
@@ -1463,7 +2232,27 @@
             "schedule_played": 9,
             "scoring": 11
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "The Mean Machine sinks 2 places after an 11-point loss.",
+              "fact_ids": [
+                "PR.4",
+                "PR.4.why"
+              ]
+            },
+            {
+              "text": "They have 883.14 points for and a 3-5 record.",
+              "fact_ids": [
+                "S.11"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 8,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 12,
@@ -1478,7 +2267,33 @@
             "schedule_played": 5,
             "scoring": 12
           },
-          "blurb": []
+          "blurb": [
+            {
+              "text": "The Dart Side brings up the rear after a 2-point loss to the league leader.",
+              "fact_ids": [
+                "PR.12",
+                "PR.12.why"
+              ]
+            },
+            {
+              "text": "A 2-6 record leaves them 2 games below the cut.",
+              "fact_ids": [
+                "S.12"
+              ]
+            },
+            {
+              "text": "Playoff odds sit at about 1%.",
+              "fact_ids": [
+                "ODDS.12"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 1,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         }
       ]
     },
