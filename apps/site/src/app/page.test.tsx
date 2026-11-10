@@ -92,6 +92,115 @@ describe("the front door of cpc", () => {
   });
 });
 
+/* The clock of a test: a fixed day of the fantasy week. 2026-11-10 is a Tuesday and 2026-11-11 is a Wednesday. */
+function onDay(iso: string) {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date(iso));
+}
+
+/* The Suggestion chips of the front door, in their order, by their names. "More" leads the row. */
+async function suggestionChips() {
+  const row = await screen.findByRole("group", { name: "Suggestions" });
+  return within(row).getAllByRole("button");
+}
+
+describe("the Suggestions of Lil Fridge", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("show 3 Suggestions, each with a Topic name and one number, and More lists all 13 Topics (AT-4)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    const [more, ...chips] = await suggestionChips();
+    expect(more.textContent).toBe("More");
+    expect(chips).toHaveLength(3);
+    for (const chip of chips) expect(chip.getAttribute("aria-label")).toMatch(/^[A-Z][a-z ]+: .*\d/);
+    fireEvent.click(more);
+    expect(more.getAttribute("aria-expanded")).toBe("true");
+    const topics = within(await screen.findByRole("list", { name: "All Topics" })).getAllByRole("listitem");
+    expect(topics.map((topic) => topic.querySelector("[data-topic-name]")?.textContent)).toEqual([
+      "Week recap",
+      "Your last matchup",
+      "Your next matchup",
+      "Power rankings",
+      "Playoff race",
+      "Your season",
+      "Position leaders and recent trades",
+      "Waiver targets",
+      "How you stack up",
+      "Weak spots",
+      "Sell high or buy low",
+      "Trade ideas",
+      "Trade check",
+    ]);
+  });
+
+  it("put the week recap first on a Tuesday (AT-5)", async () => {
+    onDay("2026-11-10T09:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    const [, first] = await suggestionChips();
+    expect(first.getAttribute("aria-label")).toBe("Week recap: You scored 80.11, 12th of 12");
+  });
+
+  it("drop an opened Topic from the 3 Suggestions after a reload, and keep it in More (AT-7)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"));
+    expect(rankings).toBeTruthy();
+    fireEvent.click(rankings!);
+    expect(await screen.findByRole("article", { name: "Power rankings" })).toBeTruthy();
+
+    cleanup();
+    render(<HomePage />);
+    const [more, ...chips] = await suggestionChips();
+    expect(chips).toHaveLength(3);
+    expect(chips.map((chip) => chip.getAttribute("aria-label"))).not.toContainEqual(expect.stringMatching(/^Power rankings/));
+    fireEvent.click(more);
+    const all = await screen.findByRole("list", { name: "All Topics" });
+    expect(within(all).getByRole("button", { name: /^Power rankings/ })).toBeTruthy();
+  });
+
+  it("bring an opened Topic back when the week turns", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    // An open of week 7 no longer counts in week 8.
+    localStorage.setItem("cpc.opened-topics", JSON.stringify({ "3": { week: 7, topics: { power_rankings: "6th, down 5" } } }));
+    render(<HomePage />);
+    const labels = (await suggestionChips()).map((chip) => chip.getAttribute("aria-label"));
+    expect(labels).toContainEqual(expect.stringMatching(/^Power rankings/));
+  });
+
+  it("show the power rankings Answer in the Thread with Read the full report to /rankings/ (AT-23)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    fireEvent.click((await suggestionChips())[0]);
+    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Power rankings/ }));
+    const answer = await screen.findByRole("article", { name: "Power rankings" });
+    // The text is the blurb of the rankings row of Lil Fridge, as the rankings page shows it.
+    expect(answer.textContent).toContain("Lil Fridge tumbles 5 places after getting run by 41.");
+    expect(within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/rankings/");
+  });
+
+  it.each([
+    ["Week recap", "/2026/week-08/"],
+    ["Your last matchup", "/2026/week-08/#matchups"],
+    ["Your next matchup", "/2026/week-08/#next-week"],
+    ["Playoff race", "/2026/managers/#race"],
+    ["Your season", "/2026/managers/3/"],
+    ["Position leaders and recent trades", "/2026/week-08/#leaders"],
+  ])("link the %s Answer to its page", async (name, href) => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    fireEvent.click((await suggestionChips())[0]);
+    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: new RegExp(`^${name}`) }));
+    const answer = await screen.findByRole("article", { name });
+    expect(within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe(href);
+  });
+});
+
 describe("the front door of NorCal", () => {
   it("lists the 12 teams of NorCal in the sheet", async () => {
     const Home = await homeOfClient("norcal");

@@ -28,7 +28,7 @@ export default function HomePage() {
           pick from, so it shows the name of the league alone. */}
       <main className="bg-page">
         {door ? (
-          <FrontDoor siteName={clientValues.copy.siteName} week={door.week} teams={door.teams} />
+          <FrontDoor siteName={clientValues.copy.siteName} week={door.week} teams={door.teams} answers={door.answers} />
         ) : (
           <h1 className="m-0 px-gutter py-sp-6 text-score leading-tight font-bold">{clientValues.copy.siteName}</h1>
         )}

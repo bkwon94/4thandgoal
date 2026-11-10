@@ -212,6 +212,7 @@ LAYER_OF: dict[str, str] = {
     # output
     "waiver.render": "output",
     "render": "output",
+    "topics": "output",
     "rankings.published": "output",
     "midseason.published": "output",
     "sim.published": "output",

@@ -111,7 +111,8 @@ export function IndexList({ rows, teams }: { rows: IndexRow[]; teams: number }) 
   return (
     <div className="ix desktop:grid desktop:grid-cols-[minmax(0,53fr)_minmax(0,42fr)] desktop:items-start desktop:gap-x-[5%]">
       <div>
-        <div role="group" aria-label="Playoff Race" className="flex flex-wrap gap-sp-1">
+        {/* The id is the target of the playoff race Answer of the front door. */}
+        <div id="race" role="group" aria-label="Playoff Race" className="flex scroll-mt-band-height flex-wrap gap-sp-1">
           {CHIPS.map(({ filter: chip, label }) => {
             const count = countOf(chip);
             const on = chip === filter;
