@@ -698,12 +698,12 @@ _Avoid_: citation, reference
 
 ### Player data from nflverse
 
-**Target**:
+**Pass target**:
 A pass play with a receiver, two-point tries left out. The nflverse rule, which our count follows.
-_Avoid_: look, pass attempt to
+_Avoid_: look, pass attempt to, target (alone; "Target" is a player of the finder)
 
 **Target share**:
-A player's share of his team's targets in one game, from the nflverse weekly player file. Our own count is the fallback for a week the file lacks. The trade measures read the Sleeper share, which holds the same counts.
+A player's share of his team's pass targets in one game, from the nflverse weekly player file. Our own count is the fallback for a week the file lacks. The trade measures read the Sleeper share, which holds the same counts.
 _Avoid_: target rate, target percent
 
 **Air yards share**:
@@ -815,7 +815,7 @@ projection, weeks N+1 to 17, ranked inside the position. A score with no input c
 _Avoid_: rank (that is the place in a bucket), value, power score
 
 **Usage trend**:
-The rise in a player's snap share plus his targets or carries share over the last `USAGE_WEEKS` weeks, ranked inside the position.
+The rise in a player's snap share plus his pass targets or carries share over the last `USAGE_WEEKS` weeks, ranked inside the position.
 _Avoid_: momentum, buzz
 
 **Environment**:
