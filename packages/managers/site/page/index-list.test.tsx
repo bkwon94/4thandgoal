@@ -4,8 +4,8 @@
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import managersJson from "../../../../clients/cpc/published/2026/managers.json";
-import rankingsJson from "../../../../clients/cpc/published/2026/rankings.json";
+import managersJson from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/managers.json";
+import rankingsJson from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/rankings.json";
 import { managersFileSchema } from "../schema/managers";
 import { IndexList, type IndexRow } from "./index-list";
 

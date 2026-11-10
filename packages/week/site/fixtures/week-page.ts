@@ -1,10 +1,10 @@
 /**
  * The week 6 and week 8 page JSON of CPC as typed fixtures for the section tests.
- * The tests read the real published file, so a change to the JSON shape breaks them.
+ * The tests read the fixed copy of the real published file in apps/site/src/fixtures/sites/, so a change to the JSON shape breaks them.
  * Blurb tests read their text from the fixture, never as a literal, since the pipeline rewrites blurbs.
  */
-import json from "../../../../clients/cpc/published/2026/week-06/page.json";
-import week8Json from "../../../../clients/cpc/published/2026/week-08/page.json";
+import json from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/week-06/page.json";
+import week8Json from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/week-08/page.json";
 import { weekPageSchema } from "../schema/week";
 
 /* The parse runs at import, so a stale fixture fails at once. */

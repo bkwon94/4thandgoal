@@ -9,6 +9,7 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { managers as fixture } from "@cpc/managers/fixtures/managers";
 import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
@@ -281,9 +282,9 @@ describe("ManagerPage", () => {
 });
 
 describe("The Grade dial in Season So Far", () => {
-  /* A published file of CPC, as the build copies it into public/. */
+  /* The fixed copy of a published file of CPC, as the build copies it into public/. */
   const published = (name: string) =>
-    JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026", name), "utf8"));
+    JSON.parse(readFileSync(fixturePublished("cpc", "2026", name), "utf8"));
 
   it("shows A, the grade read, and arcs 4th, 6th, 7th, and 7th for The Blue Tent of CPC week 8", async () => {
     await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
@@ -304,9 +305,9 @@ describe("The Grade dial in Season So Far", () => {
 });
 
 describe("The Trend tiles of Moves", () => {
-  /* A published file of CPC, as the build copies it into public/. */
+  /* The fixed copy of a published file of CPC, as the build copies it into public/. */
   const published = (name: string) =>
-    JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026", name), "utf8"));
+    JSON.parse(readFileSync(fixturePublished("cpc", "2026", name), "utf8"));
 
   /* The chart of one total tile, found by the tile label. */
   function chartOf(label: string) {

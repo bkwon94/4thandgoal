@@ -526,6 +526,15 @@ for (const width of REPORT_WIDTHS) {
   });
 }
 
+/* The label of the first week of the replay: the first regular week of the sim file of the export. A later sim file
+   starts at a later week, so the test reads the week from the file. */
+function firstReplayWeek(): string {
+  const path = join(OUT, SEASON, "sim.json");
+  if (!existsSync(path)) return "no sim file";
+  const { weeks, bracket_weeks } = JSON.parse(readFileSync(path, "utf8")) as { weeks: number[]; bracket_weeks: number[] };
+  return `Week ${weeks.find((week) => !bracket_weeks.includes(week))} final`;
+}
+
 /* AT-32 and AT-34: a press plays a run, and a skip shows the final state at once: the champion card with the title odds
    of all runs, and the complete bracket below it, with no part of the bracket under the card. */
 for (const width of [375, 1280]) {
@@ -536,7 +545,7 @@ for (const width of [375, 1280]) {
     const stage = page.getByRole("region", { name: "The replay" });
     test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
     await page.getByRole("button", { name: "Sim the season" }).click();
-    await expect(stage.getByRole("group", { name: "Week 9 final" })).toBeVisible();
+    await expect(stage.getByRole("group", { name: firstReplayWeek() })).toBeVisible();
     await page.getByRole("button", { name: "Skip to the end" }).click();
     const card = stage.getByRole("group", { name: "Champion of This Run" });
     await expect(card).toContainText(/Wins the title in [\d.]+% of all [\d,]+ runs/);

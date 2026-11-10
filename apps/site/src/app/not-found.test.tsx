@@ -1,10 +1,17 @@
 /**
- * Tests for the 404 page, on the real generated client values of cpc and the real published weeks.
+ * Tests for the 404 page, on the real generated client values of cpc and the fixed copy of the published weeks.
  * They read what a reader sees: the hero, the big 404, the line, the two buttons, and the shell with no item marked.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { readFixtureSite } from "@/fixtures/sites";
 import NotFound from "./not-found";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 /* jsdom has no matchMedia, and Framer Motion reads it. The stub matches no query. */
 vi.stubGlobal(
