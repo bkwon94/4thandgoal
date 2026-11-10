@@ -25,6 +25,8 @@ from league.snapshot import load_snapshot
 PAST = Path(__file__).parent / "fixtures" / "nflverse_past"
 HENRY_GSIS, COLLINS_GSIS = "00-0032764", "00-0036554"
 COLLINS, KINCAID, WILSON = "7569", "10236", "8146"
+# The points for one reception in a half PPR league, as CPC plays.
+HALF_PPR = 0.5
 
 
 @pytest.fixture
@@ -35,7 +37,7 @@ def cache(tmp_path):
 
 
 def test_a_veteran_has_a_split_for_each_of_the_last_three_seasons(cache):
-    splits = season_splits(cache, 2026, HENRY_GSIS)
+    splits = season_splits(cache, 2026, HENRY_GSIS, HALF_PPR)
     assert [s.season for s in splits] == [2023, 2024, 2025]
     assert splits[2].early == Split(points_per_game=12.84, games=7)
     assert splits[2].late == Split(points_per_game=18.83, games=9)
@@ -70,15 +72,15 @@ def test_the_splits_of_many_players_read_each_past_season_file_once(cache):
     # costs seconds. The splits of 20 players must take well under a second after the first read.
     for season in (2023, 2024, 2025):
         _big_past_file(cache, season, copies=200)
-    first = season_splits(cache, 2026, HENRY_GSIS)
+    first = season_splits(cache, 2026, HENRY_GSIS, HALF_PPR)
     started = time.monotonic()
     for _ in range(20):
-        assert season_splits(cache, 2026, HENRY_GSIS) == first
+        assert season_splits(cache, 2026, HENRY_GSIS, HALF_PPR) == first
     assert time.monotonic() - started < 0.5
 
 
 def test_a_past_season_file_that_changes_on_disk_is_read_again(cache):
-    before = season_splits(cache, 2026, HENRY_GSIS)
+    before = season_splits(cache, 2026, HENRY_GSIS, HALF_PPR)
     path = cache / "stats_player_week_2023.csv.gz"
     with gzip.open(path, "rt", encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
@@ -89,7 +91,8 @@ def test_a_past_season_file_that_changes_on_disk_is_read_again(cache):
         writer.writeheader()
         writer.writerows(rows)
     os.utime(path, ns=(time.time_ns(), time.time_ns() + 10**9))
-    assert [s.season for s in season_splits(cache, 2026, HENRY_GSIS)] == [2024, 2025] != [s.season for s in before]
+    after = season_splits(cache, 2026, HENRY_GSIS, HALF_PPR)
+    assert [s.season for s in after] == [2024, 2025] != [s.season for s in before]
 
 
 @pytest.fixture
@@ -120,6 +123,21 @@ def test_the_sheet_holds_one_history_fact_with_each_season_and_its_game_count(sn
     assert "cold" in fact.text
     assert "played for HOU" in fact.text
     assert "no cold game" in fact.text, "Collins played no cold game in 2023"
+
+
+def test_the_splits_read_the_reception_points_of_the_league(cache):
+    half, standard, full = (season_splits(cache, 2026, HENRY_GSIS, points) for points in (HALF_PPR, 0.0, 1.0))
+    # Henry catches passes, so each point for a reception adds to his early split of 2025.
+    assert standard[2].early.points_per_game < half[2].early.points_per_game < full[2].early.points_per_game
+    assert half[2].early.points_per_game == pytest.approx(
+        (standard[2].early.points_per_game + full[2].early.points_per_game) / 2, abs=0.01)
+
+
+def test_the_history_fact_names_the_scoring_of_the_client(snap, trade):
+    assert "scored half PPR points per game" in trade_split_facts(trade, snap)[f"{COLLINS}.history"].text
+    settings = snap.client.settings.model_copy(update={"reception_points": 1.0})
+    full = snap.model_copy(update={"client": snap.client.model_copy(update={"settings": settings})})
+    assert "scored full PPR points per game" in trade_split_facts(trade, full)[f"{COLLINS}.history"].text
 
 
 def test_a_player_with_no_past_season_has_no_history_fact(snap, trade):
