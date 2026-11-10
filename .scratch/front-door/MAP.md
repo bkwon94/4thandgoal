@@ -32,11 +32,11 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - The terms are Topic, Answer, Suggestion, and Thread. `GLOSSARY.md`.
 - The first build has 13 Topics. The personal Topics use the Roster grade, the slot ranks, and facts side by side, with no new formula. The Advisor judges sell high. Only the personal Topics get new Claude text. `decisions/01-grill-the-first-topics.md`.
 - Jev costs close to nothing, and Claude is over 95% of the cost. TypeSafe allows 80 requests and 100,000 tokens per second. Jev picks the slice of facts by the Topic, and an open question gets the full sheet. A new ADR covers the text that managers type. `decisions/03-research-jev-live-cost.md`.
+- The day of the week sets the order of the Suggestions, and Jev lifts an urgent Topic. Each one shows its name and one fact from code. Three show, plus a "More" row. An opened Topic drops off until its fact changes. `decisions/02-grill-how-suggestions-rank.md`.
 - `/` becomes the front door. The hero and the tool tiles go away. The menu stays with fewer links. Brian, 2026-11-09.
 
 ## NOT YET SPECIFIED
 
-- How is a Suggestion picked and put in order? `decisions/02-grill-how-suggestions-rank.md`.
 - What are the numbers of the caps? `decisions/04-grill-the-cap-numbers.md`.
 - Does the Thread stay across visits, and does it reset each week? `decisions/05-grill-the-thread-across-visits.md`.
 - Where is the border with `manager-brain`? `decisions/06-grill-the-manager-brain-border.md`.
