@@ -4,7 +4,7 @@ A read that fails a guard retries once. After two failed calls, AdvisorFailed st
 """
 import logging
 import re
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import Literal
 
 from pydantic import BaseModel
@@ -179,12 +179,20 @@ def inner_word_failures(label: str, text: str) -> list[str]:
 
 
 class TextGuard:
-    """The guards of one read: the names and numbers each text may hold, from the facts it cites."""
+    """The guards of one read: the names and numbers each text may hold, from the facts it cites.
 
-    def __init__(self, trade: ProposedTrade, snapshot: Snapshot, facts: dict[str, Fact]) -> None:
+    The names of the trade are always allowed. A read with no trade, such as the sell high pick, gives `trade` None and
+    its own names in `allowed`.
+    """
+
+    def __init__(self, trade: ProposedTrade | None, snapshot: Snapshot, facts: dict[str, Fact], *,
+                 allowed: Iterable[str] = ()) -> None:
         self.facts = facts
-        self.trade_names = {snapshot.players[pid].name for pid in trade.player_ids} | {
-            snapshot.teams[side.roster_id].name for side in trade.sides}
+        if trade is None:
+            self.trade_names = set(allowed)
+        else:
+            self.trade_names = {snapshot.players[pid].name for pid in trade.player_ids} | {
+                snapshot.teams[side.roster_id].name for side in trade.sides}
         # Longest first, so a long name goes before a short name inside it.
         self.names = sorted({p.name for p in snapshot.players.values()} | {t.name for t in snapshot.teams.values()},
                             key=len, reverse=True)

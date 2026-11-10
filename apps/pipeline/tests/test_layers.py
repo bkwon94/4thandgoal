@@ -193,6 +193,8 @@ LAYER_OF: dict[str, str] = {
     # The stage callback is one type with no import of the league, so the search of the facts layer can take it.
     "analyzer.stage": "model",
     "analyzer.jev_waves": "facts",
+    # The sell high sheet measures one roster side by side, as the trade sheet measures one trade.
+    "analyzer.sell_facts": "facts",
     "waiver.rank_score": "facts",
     "waiver.board": "facts",
     "waiver.buckets": "facts",
@@ -209,6 +211,8 @@ LAYER_OF: dict[str, str] = {
     "analyzer.finder_pick": "write",
     "analyzer.routes": "write",
     "analyzer.advisor": "write",
+    # The sell high pick makes the Claude call of the Advisor, as the Finder pick does.
+    "analyzer.sell_high": "write",
     "waiver.research": "write",
     "midseason.prose": "write",
     # output

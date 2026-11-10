@@ -29,6 +29,7 @@ from analyzer.cache import ResultCache, TeamsCache
 from analyzer.finder_pick import pick_trades
 from analyzer.finder_search import search as search_trades
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
+from analyzer.sell_high import pick_sells
 from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import ask as ask_routes
@@ -207,9 +208,10 @@ def create_app(
         settings: Settings, clients: Sequence[Client], sources: Mapping[str, Sources] | None = None,
         analyzer: analyzer_routes.Analyzer | None = None, finder_search: analyzer_routes.FinderSearch | None = None,
         finder_pick: analyzer_routes.FinderPicker | None = None,
-        *, refresh_on_start: bool = False, jev: Jev | None = None) -> FastAPI:
+        *, refresh_on_start: bool = False, jev: Jev | None = None,
+        sell_high: analyzer_routes.SellHighPicker | None = None) -> FastAPI:
     """The app that serves each of `clients`. Tests give fixture-backed sources by slug, an analyzer, a finder
-    search, a finder pick, and the Jev of the ask route. The defaults are the real ones.
+    search, a finder pick, the Jev of the ask route, and a sell high pick. The defaults are the real ones.
 
     With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
     """
@@ -246,6 +248,9 @@ def create_app(
     # The Finder pick makes the real Claude call with the real news feed and the real Jev by default, so a test injects
     # a stub call and FakeJev.
     app.state.finder_pick = finder_pick or functools.partial(pick_trades, news=NEWS, jev=JEV)
+    # The sell high pick makes the real Claude call with the real news feed and the real Jev by default, as the Finder
+    # pick does.
+    app.state.sell_high = sell_high or functools.partial(pick_sells, news=NEWS, jev=JEV)
 
     # The site calls the API from the browser, so only its origins and the local dev servers may read the answers.
     app.add_middleware(

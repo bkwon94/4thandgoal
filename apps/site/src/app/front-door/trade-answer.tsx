@@ -1,6 +1,7 @@
 /**
  * The Answers of the trade Topics in the Thread: the plain steps while the trade judge works, then the trade check with
- * its Lean, Case, and top Bullets, the trade ideas with each offer, or the Trade page for a trade with an unsure player.
+ * its Lean, Case, and top Bullets, the trade ideas with each offer, the players to sell with why, or the Trade page for
+ * a trade with an unsure player.
  */
 "use client";
 
@@ -10,17 +11,20 @@ import { ArrowRightIcon, CheckIcon } from "lucide-react";
 import { BulletRows } from "@cpc/analyzer/form/bullet-rows";
 import type { AnalyzeResponse, FindResponse, FinderTrade, Lean } from "@cpc/analyzer/lib/analyze-types";
 import { prefillQuery, type Prefill } from "@cpc/analyzer/lib/prefill";
+import { Headshot } from "@cpc/league/headshot";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { managerHref } from "@/lib/routes";
+import type { TradeMode } from "./ask-thread";
 import { FAST, QUICK, SLOW, STAGGER, VERY_SLOW, fadeIn, riseIn } from "./motion";
 import { QuestionBubble } from "./miss-card";
-import type { TradeAnswer, TradeForm } from "./trade-api";
+import type { SellHigh, TradeAnswer, TradeForm } from "./trade-api";
 
 /* The Bullets that the check shows of Your side, and of each offer. The Trade page holds each one. */
 export const TOP_BULLETS = 3;
 export const TOP_OFFER_BULLETS = 2;
 
 /* The line before the first step, by Topic, so the card never sits empty while the first stage runs. */
-const FIRST_LINE = { check: "Reading your trade…", ideas: "Looking for trades…" } as const;
+const FIRST_LINE: Record<TradeMode, string> = { check: "Reading your trade…", ideas: "Looking for trades…", sell: "Reading your roster…" };
 
 /* The five Leans from the no end to the yes end, as on the Trade page, so the lit step shows how strong the call is. */
 const SCALE: readonly Lean[] = ["Pass", "Lean no", "Gut call", "Lean yes", "Send it"];
@@ -55,7 +59,7 @@ function Shimmer({ children }: { children: string }) {
 
 /* The steps while the trade judge works. Each step rises in from a blur as it lands. A done step takes a check in the
    mute ink, and the newest step shimmers, so the list reads as work that moves (decision 06). */
-function Steps({ mode, steps }: { mode: "check" | "ideas"; steps: string[] }) {
+function Steps({ mode, steps }: { mode: TradeMode; steps: string[] }) {
   const off = useMotionOff();
   const lines = steps.length > 0 ? steps : [FIRST_LINE[mode]];
   return (
@@ -274,6 +278,60 @@ function IdeasBody({ doc, analyze }: { doc: FindResponse; analyze: string }) {
   );
 }
 
+/* The ranks of a player to sell, in the words of the side card of the Trade page: the Season rank, then the Recent
+   rank only when the document sends one. */
+function rankLine(player: SellHigh["picks"][number]["player"]): string | null {
+  if (!player.season_rank) return null;
+  return player.recent_rank ? `Season rank ${player.season_rank} · Recent rank ${player.recent_rank}` : `Season rank ${player.season_rank}`;
+}
+
+/* One player to sell: his headshot, his name, his position and NFL team, his ranks, the headline of why, and its top
+   Bullets. The player leads, because the manager reads first who to move, then why. */
+function SellPick({ pick, index }: { pick: SellHigh["picks"][number]; index: number }) {
+  const off = useMotionOff();
+  const { player } = pick;
+  const ranks = rankLine(player);
+  return (
+    <motion.li
+      aria-label={`Sell ${player.name}`}
+      className="flex flex-col gap-sp-3 border-t border-rule pt-sp-3 first:border-t-0 first:pt-0"
+      {...riseIn(off, { delay: 0.12 + index * 0.08 })}
+    >
+      <div className="flex items-center gap-sp-3">
+        <Headshot src={player.headshot} size="avatar" lazy className="flex-none rounded-full bg-page object-cover object-top" />
+        <div className="flex min-w-0 flex-col gap-sp-0">
+          <p className="m-0 text-body leading-tight font-bold text-ink">{player.name}</p>
+          <p className="m-0 text-meta leading-tight text-mute">
+            {player.position} · {player.nfl_team}
+          </p>
+          {ranks && <p className="m-0 text-meta leading-tight text-ink-2">{ranks}</p>}
+        </div>
+      </div>
+      <p className="m-0 text-body leading-body font-semibold text-ink">{pick.headline}</p>
+      {pick.bullets.length > 0 && <BulletRows bullets={pick.bullets.slice(0, TOP_OFFER_BULLETS)} idBase={`door-sell-${index}`} />}
+    </motion.li>
+  );
+}
+
+/* Sell high or buy low: each player of Your team to sell, or the plain line of a roster with no clear sell. The full
+   report is the manager page of Your team. */
+function SellBody({ doc }: { doc: SellHigh }) {
+  return (
+    <Settle label="Sell high or buy low">
+      {doc.picks.length > 0 ? (
+        <ul className="m-0 flex list-none flex-col gap-sp-4 p-0">
+          {doc.picks.map((pick, index) => (
+            <SellPick key={pick.player.player_id} pick={pick} index={index} />
+          ))}
+        </ul>
+      ) : (
+        <p className="m-0 text-body leading-body text-ink-2">{doc.empty}</p>
+      )}
+      <PageLink href={managerHref(String(doc.season), doc.team.roster_id)} label="Open your manager page" />
+    </Settle>
+  );
+}
+
 /* The Trade page for a trade that names an unsure player. The link fills only the players that the pick is sure of. */
 function FormBody({ form, analyze }: { form: TradeForm; analyze: string }) {
   const filled = form.gives.length + form.gets.length;
@@ -299,7 +357,7 @@ function FormBody({ form, analyze }: { form: TradeForm; analyze: string }) {
    Answer lands, on a quick fade, so the card takes their place. `analyze` is the path of the Trade page. */
 export const TradeCard = forwardRef<
   HTMLElement,
-  { question: string; mode: "check" | "ideas"; steps: string[]; answer: TradeAnswer | null; analyze: string }
+  { question: string; mode: TradeMode; steps: string[]; answer: TradeAnswer | null; analyze: string }
 >(function TradeCard({ question, mode, steps, answer, analyze }, ref) {
   return (
     <article ref={ref} aria-label={question} aria-busy={answer === null} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
@@ -314,6 +372,7 @@ export const TradeCard = forwardRef<
             {answer.kind === "check" && <CheckBody doc={answer.document} analyze={analyze} />}
             {answer.kind === "ideas" && <IdeasBody doc={answer.document} analyze={analyze} />}
             {answer.kind === "form" && <FormBody form={answer.form} analyze={analyze} />}
+            {answer.kind === "sell" && <SellBody doc={answer.document} />}
           </motion.div>
         )}
       </AnimatePresence>

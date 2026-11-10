@@ -23,10 +23,14 @@ export type ThreadItem =
   | { kind: "free"; question: string; result: FreeResult | null };
 
 /* The trade Topics, by the key of the Topic, and the route of the API that answers each one. */
-export type TradeMode = "check" | "ideas";
-export const TRADE_TOPICS: Record<string, TradeMode> = { trade_check: "check", trade_ideas: "ideas" };
+export type TradeMode = "check" | "ideas" | "sell";
+export const TRADE_TOPICS: Record<string, TradeMode> = { trade_check: "check", trade_ideas: "ideas", sell_high: "sell" };
 /* The line of each trade Topic in "More". A trade Topic has no weekly fact, so its line says what it does. */
-export const TRADE_LINES: Record<string, string> = { trade_check: "Name a trade, get the read", trade_ideas: "Offers for your weak spots" };
+export const TRADE_LINES: Record<string, string> = {
+  trade_check: "Name a trade, get the read",
+  trade_ideas: "Offers for your weak spots",
+  sell_high: "Who to move while his price is up",
+};
 
 export const REFUSE_LINE = "That is not a question the front door answers. Ask about your team, another team, or the league.";
 export const RETRY_LINE = "The question did not go through. Ask again.";

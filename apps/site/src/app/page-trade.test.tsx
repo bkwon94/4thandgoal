@@ -1,12 +1,13 @@
 /**
- * Tests for the trade Topics of the front door at /: the trade check and trade ideas. Each test renders the page with
- * the real published data of cpc. fetch is a test stub that sends the streams of real live runs of /analyze and /find.
+ * Tests for the trade Topics of the front door at /: the trade check, trade ideas, and sell high. Each test renders the
+ * page with the real published data of cpc. fetch is a test stub that sends the streams of real live runs of the API.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import checkStream from "./front-door/fixtures/trade-check-stream.json";
 import formStream from "./front-door/fixtures/trade-form-stream.json";
 import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
+import sellStream from "./front-door/fixtures/sell-high-stream.json";
 import HomePage from "./page";
 
 const PASSPHRASE = "cornerstone-test";
@@ -14,7 +15,7 @@ const SURE = "is Courtland Sutton for Kenneth Walker fair";
 const VAGUE = "is my RB for their WR fair";
 const fetchStub = vi.fn();
 /* The answer of each route of the API by the end of its path, in the order of the calls. */
-const replies: Record<string, Response[]> = { "/ask": [], "/trade-check": [], "/trade-ideas": [] };
+const replies: Record<string, Response[]> = { "/ask": [], "/trade-check": [], "/trade-ideas": [], "/sell-high": [] };
 
 const callsTo = (path: string) => fetchStub.mock.calls.filter(([url]) => String(url).endsWith(path));
 
@@ -207,5 +208,70 @@ describe("the trade ideas of Lil Fridge", () => {
     render(<HomePage />);
     expect(await screen.findByRole("region", { name: "Trade ideas" })).toBeTruthy();
     expect(callsTo("/trade-ideas")).toHaveLength(1);
+  });
+});
+
+describe("sell high or buy low for Lil Fridge", () => {
+  it("names a player of the roster of Lil Fridge to sell, with the reason (AT-27)", async () => {
+    streamOf("/sell-high", sellStream);
+    render(<HomePage />);
+    await openTopic("Sell high or buy low");
+    const sell = await screen.findByRole("region", { name: "Sell high or buy low" });
+    const [url, init] = callsTo("/sell-high")[0];
+    expect(url).toMatch(/\/clients\/cpc\/sell-high$/);
+    expect(init.headers["X-League-Passphrase"]).toBe(PASSPHRASE);
+    expect(JSON.parse(init.body)).toEqual({ roster_id: 3 });
+    const picks = within(sell).getAllByRole("listitem", { name: /^Sell / });
+    expect(picks.map((pick) => pick.getAttribute("aria-label"))).toEqual(["Sell Romeo Doubs", "Sell Tyler Allgeier"]);
+    expect(picks[0].textContent).toContain("WR · NE");
+    expect(picks[0].textContent).toContain("his hot last four weeks still make him look good to another manager");
+    // Each pick shows its top 2 Bullets. The manager page of Your team is the full report.
+    expect(sell.querySelectorAll("[data-bullet-text]")).toHaveLength(4);
+    expect(within(sell).getByRole("link", { name: "Open your manager page" }).getAttribute("href")).toBe("/2026/managers/3/");
+  });
+
+  it("sends a typed sell high question for Your team", async () => {
+    routeTo("sell_high");
+    streamOf("/sell-high", sellStream);
+    render(<HomePage />);
+    await ask("who should I sell high");
+    await waitFor(() => expect(callsTo("/sell-high")).toHaveLength(1));
+    expect(JSON.parse(callsTo("/sell-high")[0][1].body)).toEqual({ roster_id: 3 });
+  });
+
+  it("shows each plain step before the whole Answer", async () => {
+    const stream = heldStream("/sell-high");
+    render(<HomePage />);
+    await openTopic("Sell high or buy low");
+    const article = await screen.findByRole("article", { name: "Sell high or buy low" });
+    const steps = () => within(within(article).getByRole("status", { name: "Steps" })).getAllByRole("listitem").map((step) => step.textContent);
+    expect(steps()).toEqual(["Reading your roster…"]);
+    const lines = sellStream.filter((part) => part.type === "data-step");
+    await stream.send({ type: "start" });
+    await stream.send(lines[0]);
+    await waitFor(() => expect(steps()).toEqual(["Lined up your 14 players"]));
+    expect(screen.queryByRole("region", { name: "Sell high or buy low" })).toBeNull();
+    for (const part of sellStream.slice(sellStream.indexOf(lines[0]) + 1)) await stream.send(part);
+    await stream.end();
+    expect(await screen.findByRole("region", { name: "Sell high or buy low" })).toBeTruthy();
+  });
+
+  it("shows the plain line of a roster with no clear sell", async () => {
+    const line = "No player on your roster is priced above what he gives you.";
+    const answer = sellStream.find((part) => part.type === "data-answer")!;
+    const empty = { ...answer, data: { ...answer.data, document: { ...answer.data!.document, picks: [], empty: line } } };
+    streamOf("/sell-high", [{ type: "start" }, empty, { type: "finish" }]);
+    render(<HomePage />);
+    await openTopic("Sell high or buy low");
+    expect((await screen.findByRole("region", { name: "Sell high or buy low" })).textContent).toContain(line);
+  });
+
+  it("names no inner tool and no manager word in any step or Answer", async () => {
+    streamOf("/sell-high", sellStream);
+    render(<HomePage />);
+    await openTopic("Sell high or buy low");
+    const text = ((await screen.findByRole("region", { name: "Sell high or buy low" })).textContent ?? "").toLowerCase();
+    for (const word of ["jev", "advisor", "finder", "rival", "brian"]) expect(text).not.toContain(word);
+    expect(JSON.stringify(sellStream).toLowerCase()).not.toMatch(/jev|advisor|finder|rival|brian/);
   });
 });

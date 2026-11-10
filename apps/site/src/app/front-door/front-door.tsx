@@ -145,8 +145,9 @@ export function FrontDoor({
       const passphrase = getPassphrase();
       if (!passphrase) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
       // A tapped Topic has no closest Topics of its own, so a cap line offers the Suggestions of the day, which cost
-      // nothing and never hold a trade Topic.
-      else void runTrade(nextId.current++, name, { mode, roster_id: team.id, partner }, passphrase, picks, true);
+      // nothing and never hold a trade Topic. Sell high speaks to the manager of the roster as "you", so it always
+      // reads Your team.
+      else void runTrade(nextId.current++, name, mode === "sell" ? { mode, roster_id: team.id } : { mode, roster_id: team.id, partner }, passphrase, picks, true);
       return;
     }
     const answer = (answers[owner] ?? []).find((candidate) => candidate.topic === key);
@@ -174,6 +175,7 @@ export function FrontDoor({
       const mode = route.route === "topic" && route.topic ? TRADE_TOPICS[route.topic] : undefined;
       // A trade Topic needs the trade judge, so the typed question goes on to its route with the team it names.
       if (mode === "check") return void (await runTrade(id, question, { mode, question, roster_id: team.id }, passphrase, route.closest));
+      if (mode === "sell") return void (await runTrade(id, question, { mode, roster_id: team.id }, passphrase, route.closest));
       if (mode === "ideas") {
         const partner = route.team !== null && route.team !== team.id ? route.team : null;
         return void (await runTrade(id, question, { mode, roster_id: team.id, partner }, passphrase, route.closest));

@@ -69,6 +69,10 @@ FINDER_PICK_EFFORT = "medium"
 # A retry of the whole pick call doubled the time and the cost of a press, so a failed pick gets this small call
 # instead. Low effort keeps it short. It runs on FINDER_PICK_MODEL.
 FINDER_REPAIR_EFFORT = "low"
+# The sell high pick reads one roster side by side, a small sheet, and a manager waits on it, so it runs on Sonnet 5.5
+# at medium effort, as the Finder pick does (spec of front-door).
+SELL_HIGH_MODEL = "claude-sonnet-5-5"
+SELL_HIGH_EFFORT = "medium"
 
 log = logging.getLogger(__name__)
 
@@ -250,6 +254,16 @@ def finder_repair_call(
     return parse_call(
         user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=FINDER_REPAIR_EFFORT, writer=writer,
         model=FINDER_PICK_MODEL,
+    )
+
+
+def sell_high_call(
+    system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None
+) -> BaseModel:
+    """The Claude call of the sell high pick. It is `analyzer_call` on SELL_HIGH_MODEL at SELL_HIGH_EFFORT."""
+    return parse_call(
+        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=SELL_HIGH_EFFORT, writer=writer,
+        model=SELL_HIGH_MODEL,
     )
 
 
