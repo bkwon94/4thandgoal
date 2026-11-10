@@ -10,13 +10,14 @@ import { TOPICS } from "./topics";
 
 /* One item of the Thread. A topic item shows the league Answer of `team`, with the typed question or the Topic name as
    its bubble. A note is one calm line, with an optional Topic chip of `team` (null for Your team) and an optional retry.
-   A trade item holds the steps of a trade Topic while it works, then its whole Answer. A free answer streams while its
+   A cap item holds the calm line of a cap, from the API, with the closest Topics. A trade item holds the steps of a trade Topic while it works, then its whole Answer. A free answer streams while its
    result is null, and keeps its checked result once the stream ends. */
 export type ThreadItem =
   | { kind: "topic"; key: string; team: number; question: string | null }
   | { kind: "pending"; question: string }
   | { kind: "passphrase"; question: string; wrong: boolean }
   | { kind: "miss"; question: string; closest: string[] }
+  | { kind: "cap"; question: string; line: string; closest: string[] }
   | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean }
   | { kind: "trade"; mode: TradeMode; question: string; steps: string[]; answer: TradeAnswer | null }
   | { kind: "free"; question: string; result: FreeResult | null };
@@ -56,6 +57,9 @@ export function itemOfRoute(
       return { kind: "miss", question, closest: route.closest };
     case "refuse":
       return { kind: "note", question, line: REFUSE_LINE, topic: null, team: null, retry: false };
+    case "cap":
+      // The API writes the line of each cap, so the site never says a cause or a date that the API did not check.
+      return { kind: "cap", question, line: route.line ?? "", closest: route.closest };
   }
 }
 

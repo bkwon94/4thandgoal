@@ -103,18 +103,22 @@ def call_cost(model: str, usage: anthropic.types.Usage) -> float:
 class PressMeter:
     """The Claude calls and the dollars of one press of the analyzer, so the log shows the cost of each press.
 
-    A lock guards the sums, because a call can come from a thread of the press.
+    A lock guards the sums, because a call can come from a thread of the press. A meter inside another meter adds each
+    call to the outer one too, so a caller of a press, such as the caps of the front door, reads the cost of the press.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, outer: "PressMeter | None" = None) -> None:
         self.calls = 0
         self.usd = 0.0
+        self._outer = outer
         self._lock = threading.Lock()
 
     def add(self, model: str, usage: anthropic.types.Usage) -> None:
         with self._lock:
             self.calls += 1
             self.usd += call_cost(model, usage)
+        if self._outer is not None:
+            self._outer.add(model, usage)
 
 
 # The meter of the press that runs in this context. A call outside a press finds None and counts on no meter.
@@ -124,7 +128,7 @@ _PRESS_METER: ContextVar[PressMeter | None] = ContextVar("press_meter", default=
 @contextmanager
 def metered_press() -> Iterator[PressMeter]:
     """A meter that adds up each Claude call of WRITER or of any ClaudeWriter made in this context."""
-    meter = PressMeter()
+    meter = PressMeter(outer=_PRESS_METER.get())
     token = _PRESS_METER.set(meter)
     try:
         yield meter

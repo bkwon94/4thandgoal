@@ -1,6 +1,6 @@
 /**
- * The Answers of the ask box that hold no Topic: the honest miss with its 3 closest Topics, a calm note such as the
- * refusal, the line while the question routes, and the field of the league passphrase. Each one sits in the Thread.
+ * The Answers of the ask box that hold no Topic: the honest miss and the cap line, each with its 3 closest Topics, a
+ * calm note such as the refusal, the line while the question routes, and the field of the league passphrase.
  */
 "use client";
 
@@ -64,6 +64,20 @@ export function TopicChip({ topic, team, index, onPick }: { topic: string; team?
   );
 }
 
+/* The closest Topics of a miss or a cap line, as chips that settle in one after another. */
+function ClosestTopics({ closest, onPick }: { closest: string[]; onPick: (key: string) => void }) {
+  return (
+    <div className="flex flex-col gap-sp-2">
+      <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">Closest Topics</span>
+      <div role="group" aria-label="Closest Topics" className="flex flex-wrap gap-sp-2">
+        {closest.map((topic, index) => (
+          <TopicChip key={topic} topic={topic} index={index} onPick={onPick} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* The honest miss: the question, the line of what the site holds, and the 3 closest Topics. */
 export const MissCard = forwardRef<HTMLElement, { question: string; closest: string[]; onPick: (key: string) => void }>(
   function MissCard({ question, closest, onPick }, ref) {
@@ -75,14 +89,32 @@ export const MissCard = forwardRef<HTMLElement, { question: string; closest: str
             <p className="m-0 text-body leading-tight font-semibold text-ink">{MISS_LEAD}</p>
             <p className="m-0 text-body leading-body text-ink-2">{MISS_DETAIL}</p>
           </div>
-          <div className="flex flex-col gap-sp-2">
-            <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">Closest Topics</span>
-            <div role="group" aria-label="Closest Topics" className="flex flex-wrap gap-sp-2">
-              {closest.map((topic, index) => (
-                <TopicChip key={topic} topic={topic} index={index} onPick={onPick} />
-              ))}
-            </div>
-          </div>
+          <ClosestTopics closest={closest} onPick={onPick} />
+        </Surface>
+      </article>
+    );
+  },
+);
+
+/* The cap line: the question, the calm line of the API that says why and when the questions come back, and the
+   closest Topics. It has the shape and the motion of the honest miss, because both say "not this one, try these".
+   The first sentence of the line says why and leads as the miss does, and the rest says when, in the softer ink. */
+export const CapCard = forwardRef<HTMLElement, { question: string; line: string; closest: string[]; onPick: (key: string) => void }>(
+  function CapCard({ question, line, closest, onPick }, ref) {
+    const cut = line.indexOf(". ");
+    const lead = cut < 0 ? line : line.slice(0, cut + 1);
+    const detail = cut < 0 ? "" : line.slice(cut + 2);
+    return (
+      <article ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+        <QuestionBubble question={question} />
+        <Surface>
+          {/* One paragraph, so a screen reader reads the line of the API as one sentence after the other. */}
+          <p className="m-0 flex flex-col gap-sp-1 text-body">
+            <span className="leading-tight font-semibold text-ink">{lead}</span>
+            {/* The space keeps the two sentences apart in the text of the page, and the column hides it. */}
+            {detail && <span className="leading-body text-ink-2"> {detail}</span>}
+          </p>
+          {closest.length > 0 && <ClosestTopics closest={closest} onPick={onPick} />}
         </Surface>
       </article>
     );

@@ -33,6 +33,7 @@ from pydantic_ai.ui.vercel_ai.response_types import (
 
 from cornerstone_api import free_tools
 from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, YES, Asker, ClientAsker, Route, route_question
+from cornerstone_api.caps import sonnet_cost
 from cornerstone_api.free_wording import (
     INSTRUCTIONS,
     check_questions,
@@ -275,6 +276,10 @@ async def answer_stream(asker: Asker, route: Route, question: str, roster_id: in
         history = attempt.messages
         prompt = rewrite_prompt(failed)
     logger.info(_usage_line(attempts, deps, outcome))
+    # Each run costs the league, whatever its end. Only a checked answer counts as an Answer of the team, because an
+    # honest miss and an error do not count toward the team cap.
+    usd = sum(sonnet_cost(a.result.usage) for a in attempts if a.result is not None)
+    await anyio.to_thread.run_sync(lambda: asker.caps.record(roster_id, usd, asker.clock(), counts=outcome == "checked"))
     yield FinishChunk(finish_reason="stop")
     yield DoneChunk()
 
@@ -309,6 +314,11 @@ async def free(body: FreeRequest, asker: ClientAsker, served: Served, request: R
         raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
     if route.kind != "free":
         raise HTTPException(status_code=409, detail="This question has no free answer. Ask again.")
+    hit = await anyio.to_thread.run_sync(asker.caps.check, body.roster_id, asker.clock())
+    if hit is not None:
+        # The ask route gives the cap line first, so only a client that skips it gets here. It makes no Claude call.
+        logger.info("A free answer stopped at the %s cap, with no Claude call", hit.cap)
+        raise HTTPException(status_code=429, detail={"cap": hit.cap, "line": hit.line})
     deps = FreeDeps(data=season_data(served, asker.season, body.week, rosters))
     instructions = run_instructions(asker.season, body.week, rosters[body.roster_id], route.team)
     adapter = _adapter(question)

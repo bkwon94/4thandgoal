@@ -16,7 +16,7 @@ import { type AskTarget, AskError, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
 import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, type ThreadItem, itemOfError, itemOfRoute } from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
-import { MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
+import { CapCard, MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
 import { GLIDE, riseIn } from "./motion";
 import { getOpened, markOpened } from "./opened-store";
 import { Suggestions } from "./suggestions";
@@ -95,8 +95,10 @@ export function FrontDoor({
   const picks = day === null ? [] : pickSuggestions(day, facts, opened);
   const avatars = Object.fromEntries(teams.map((candidate) => [candidate.id, candidate.avatar]));
   const empty = thread.length === 0;
-  // A miss shows its 3 closest Topics, so the chips of the dock hide and the Topics show only once (AT-13).
-  const missed = thread.at(-1)?.kind === "miss";
+  // A miss and a cap line show their 3 closest Topics, so the chips of the dock hide and the Topics show only once
+  // (AT-13).
+  const last = thread.at(-1)?.kind;
+  const missed = last === "miss" || last === "cap";
   /* Put the item in the place of its id. A new id appends. A reply after a change of Your team finds no place, so it
      never lands in the Thread of another team. */
   const put = (id: number, item: ThreadItem, append = false) =>
@@ -106,8 +108,8 @@ export function FrontDoor({
       return entries.map((entry, index) => (index === at ? { ...item, id } : entry));
     });
   /* Run a trade Topic in the place of `id`: each step lands as it comes, then the whole Answer. A failure is an error
-     line, never an Answer. */
-  const runTrade = async (id: number, question: string, request: TradeRequest, passphrase: string, append = false) => {
+     line, never an Answer. Past a cap, the cap line takes the place of the Answer, with `closest` as its Topics. */
+  const runTrade = async (id: number, question: string, request: TradeRequest, passphrase: string, closest: string[], append = false) => {
     let steps: string[] = [];
     const show = (answer: Extract<ThreadItem, { kind: "trade" }>["answer"], first = false) =>
       put(id, { kind: "trade", mode: request.mode, question, steps, answer }, first && append);
@@ -119,6 +121,7 @@ export function FrontDoor({
           show(null);
         },
         onAnswer: (answer) => show(answer),
+        onCap: (line) => put(id, { kind: "cap", question, line, closest }),
       });
     } catch (error) {
       if (error instanceof AskError && error.status === 401) clearPassphrase();
@@ -141,7 +144,9 @@ export function FrontDoor({
       }
       const passphrase = getPassphrase();
       if (!passphrase) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
-      else void runTrade(nextId.current++, name, { mode, roster_id: team.id, partner }, passphrase, true);
+      // A tapped Topic has no closest Topics of its own, so a cap line offers the Suggestions of the day, which cost
+      // nothing and never hold a trade Topic.
+      else void runTrade(nextId.current++, name, { mode, roster_id: team.id, partner }, passphrase, picks, true);
       return;
     }
     const answer = (answers[owner] ?? []).find((candidate) => candidate.topic === key);
@@ -168,10 +173,10 @@ export function FrontDoor({
       const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week });
       const mode = route.route === "topic" && route.topic ? TRADE_TOPICS[route.topic] : undefined;
       // A trade Topic needs the trade judge, so the typed question goes on to its route with the team it names.
-      if (mode === "check") return void (await runTrade(id, question, { mode, question, roster_id: team.id }, passphrase));
+      if (mode === "check") return void (await runTrade(id, question, { mode, question, roster_id: team.id }, passphrase, route.closest));
       if (mode === "ideas") {
         const partner = route.team !== null && route.team !== team.id ? route.team : null;
-        return void (await runTrade(id, question, { mode, roster_id: team.id, partner }, passphrase));
+        return void (await runTrade(id, question, { mode, roster_id: team.id, partner }, passphrase, route.closest));
       }
       put(id, itemOfRoute(route, question, team.id, answers));
     } catch (error) {
@@ -280,6 +285,8 @@ export function FrontDoor({
                         return <TradeCard ref={ref} question={entry.question} mode={entry.mode} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} />;
                       case "miss":
                         return <MissCard ref={ref} question={entry.question} closest={entry.closest} onPick={(key) => open(key)} />;
+                      case "cap":
+                        return <CapCard ref={ref} question={entry.question} line={entry.line} closest={entry.closest} onPick={(key) => open(key)} />;
                       case "free": {
                         // A chip of the team that the question names opens the Topic of that team.
                         const shared = {

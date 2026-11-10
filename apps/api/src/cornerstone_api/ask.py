@@ -23,6 +23,7 @@ from cornerstone_api.ask_wording import (
     route_state,
     team_key,
 )
+from cornerstone_api.caps import Caps
 from cornerstone_api.miss_log import MissLog
 from league.jev_port import Jev, JevError, JevResponse
 
@@ -41,6 +42,8 @@ QUESTION_MAX = 300
 WEEK_MAX = 18
 
 RouteKind = Literal["topic", "free", "miss", "refuse"]
+# The kinds of the answer of the ask route: a route, or the calm line of a cap in place of a free answer.
+AskKind = Literal["topic", "free", "miss", "refuse", "cap"]
 # The team name of each roster of the league, by roster id. The app gives the live rosters of the client.
 Rosters = Callable[[], dict[int, str]]
 
@@ -107,13 +110,14 @@ def route_question(jev: Jev, question: str, teams: list[str], season: int, week:
 
 @dataclass
 class Asker:
-    """The ask route of one client: its season, its Jev, its miss log, its rosters, and its clock."""
+    """The ask route of one client: its season, its Jev, its miss log, its rosters, its clock, and its caps."""
 
     season: int
     jev: Jev
     misses: MissLog
     rosters: Rosters
     clock: Callable[[], datetime]
+    caps: Caps
 
 
 def client_asker(request: Request) -> Asker:
@@ -150,9 +154,16 @@ def ask(body: AskRequest, asker: ClientAsker) -> dict:
         raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
     if route.kind == "miss":
         asker.misses.write(question, body.roster_id, rosters[body.roster_id], route.closest, asker.clock())
+    kind: AskKind = route.kind
+    line = None
+    # A free answer is a Claude call, so past a cap the route gives the calm line with the closest Topics instead.
+    if route.kind == "free" and (hit := asker.caps.check(body.roster_id, asker.clock())) is not None:
+        logger.info("A free answer stopped at the %s cap, with no Claude call", hit.cap)
+        kind, line = "cap", hit.line
     by_name = {name: roster_id for roster_id, name in rosters.items()}
     return {
-        "route": route.kind,
+        "route": kind,
+        "line": line,
         "topic": route.topic,
         "team": None if route.team is None else by_name[route.team],
         "closest": route.closest,
