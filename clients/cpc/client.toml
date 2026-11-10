@@ -23,12 +23,12 @@ finder = false
 commissioner = 6
 
 # Each item names the home page or one package of the list. The order is the order of the menu.
+# The front door at Home is the main way in, so the menu keeps four items. The Trade page and the midseason report
+# keep their routes, and the front door links to them (front-door PRD).
 [menu]
 items = [
   { page = "home", label = "Home" },
   { package = "week" },
   { package = "rankings", label = "Power Rankings" },
-  { package = "midseason", label = "Midseason Report" },
   { package = "managers", label = "Managers" },
-  { package = "analyzer", label = "Trade Analyzer" },
 ]

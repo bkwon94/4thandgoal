@@ -47,8 +47,8 @@ function longestNameRoute(): string {
 
 /*
  * The pages and the open states of the full floor: all four rules, in both themes, at both widths.
- * The spec names 7 pages and 4 open states per client. The closed home page is one of the 7 pages, and the open strip
- * of weeks is a tap on that same page. The Season So Far dial sits on the manager page of the list, so that page covers it.
+ * The spec names 7 pages and 4 open states per client. The home page is one of the 7 pages, and it shows the sheet of
+ * Your team on a first visit. The open strip of weeks is a tap on the latest week page. The Season So Far dial sits on the manager page of the list, so that page covers it.
  * A page not in the list, such as a past week, gets the fast sweep only, so it still has the text floor.
  */
 const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
@@ -68,8 +68,9 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   // panel of its game. The chevron has its own label, so the selector names the head.
   { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]:not([aria-label])' },
   "/",
-  // The open strip of weeks: a tap on the week chip of the top band opens the strip of the weeks of the season.
-  { route: "/", tap: "header details > summary", scope: 'header nav[aria-label="Weeks of the season"]' },
+  // The open strip of weeks: a tap on the week chip of the top band opens the strip of the weeks of the season. The
+  // sheet of Your team covers the band of the home page on a first visit, so the tap opens the strip on the latest week.
+  { route: LATEST_WEEK_ROUTE, tap: "header details > summary", scope: 'header nav[aria-label="Weeks of the season"]' },
 ];
 
 const routeOf = (entry: string | OpenState) => (typeof entry === "string" ? entry : entry.route);
@@ -403,24 +404,6 @@ for (const theme of THEMES) {
       expect(box!.y).toBe(railTop);
       expect(title!.y).toBeGreaterThanOrEqual(box!.y + box!.height);
       expect(title!.y).toBeLessThan(900 / 2);
-    });
-  }
-}
-
-/* The home page in the takeover: the opener of the report in place of the usual top, through the takeover end week.
-   Only a client with a report shows it, and after the end week the home page shows the tile, so the check skips both. */
-for (const theme of THEMES) {
-  for (const width of REPORT_WIDTHS) {
-    test(`midseason takeover: ${CLIENT} / ${theme} ${width}px`, async ({ page }) => {
-      test.skip(!hasReport, `${CLIENT} builds no midseason report`);
-      const label = `${CLIENT} / takeover ${theme} ${width}px`;
-      await page.setViewportSize({ width, height: 900 });
-      await openPage(page, `${server.url}/`, theme);
-      const takeover = page.getByRole("region", { name: `${SEASON} Midseason Report` });
-      test.skip((await takeover.count()) === 0, `${CLIENT} is past the takeover end week`);
-      const failures = await textFloor(page, label, Date.now());
-      failures.push(...(await scanTargets(page)).failures, ...(await scanWords(page)), ...(await scanContrast(page)));
-      expect(failures, `${label} breaks the readability floor`).toEqual([]);
     });
   }
 }

@@ -35,10 +35,11 @@ export function Dock({ items: all, current }: DockProps) {
   const items = all.filter((item): item is NavItem & { kind: Exclude<NavKind, "midseason"> } => item.kind !== "midseason");
   return (
     // The dock floats one step above the bottom edge and the safe area of the phone. The body keeps the same space free
-    // under the page (globals.css), so the dock never covers the end of the page.
+    // under the page (globals.css), so the dock never covers the end of the page. On a phone on its side, each end
+    // keeps clear of the notch.
     <nav
       aria-label="Bottom menu"
-      className="fixed inset-x-sp-3 bottom-[calc(var(--spacing-sp-3)+env(safe-area-inset-bottom))] z-40 rounded-card border border-rule bg-card p-sp-1 desktop:hidden"
+      className="fixed right-[max(var(--spacing-sp-3),env(safe-area-inset-right))] left-[max(var(--spacing-sp-3),env(safe-area-inset-left))] bottom-[calc(var(--spacing-sp-3)+env(safe-area-inset-bottom))] z-40 rounded-card border border-rule bg-card p-sp-1 desktop:hidden"
     >
       <ul className="m-0 grid list-none auto-cols-fr grid-flow-col gap-sp-1 p-0">
         {items.map((item) => {

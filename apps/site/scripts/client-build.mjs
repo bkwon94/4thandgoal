@@ -190,11 +190,6 @@ const ROUTES = {
   ],
 };
 
-/* The home tool of each package that has one: a row of the Tools chapter of the home page, in the order of the chapter.
-   The registry imports it only for a package of the list, so the home page of a client that omits the package holds
-   none of its code. The order is fixed here and not by the package list, so the order of client.toml never moves a row. */
-const HOME_TOOLS = { analyzer: "@/app/_routes/analyzer/home", managers: "@/app/_routes/managers/home" };
-
 /* The part that a package mounts on every page, such as the egg hunt. The registry imports it only for a package of the
    list, so the bundle of a client that omits the package holds none of its code. */
 const PAGE_PARTS = { eggs: "@/app/_routes/eggs/hunt" };
@@ -226,25 +221,16 @@ function routeText(slug, route) {
   return `${lines.join("\n")}\n`;
 }
 
-/* The packages that give the home page its parts. Each one has src/app/_routes/<package>/home.tsx, and each part
-   names its own place on the page. The order is fixed here and not by the package list, so the order of client.toml
-   never moves a part. */
-const HOME_SECTIONS = ["midseason", "rankings", "week"];
-
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
    the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */
 function registryText(slug, values) {
-  const tools = Object.keys(HOME_TOOLS).filter((name) => values.packages.includes(name));
-  const home = HOME_SECTIONS.filter((name) => values.packages.includes(name));
   const parts = Object.keys(PAGE_PARTS).filter((name) => values.packages.includes(name));
   const band = Object.keys(BAND_PARTS).filter((name) => values.packages.includes(name));
   const banners = Object.keys(HOME_BANNERS).filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart } from "@/lib/client-values";`,
+    `import type { BandPart, HomeBanner, MenuLinks, PagePart } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
-    ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
-    ...home.map((name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`),
     ...parts.map((name) => `import { PagePart as ${name}PagePart } from "${PAGE_PARTS[name]}";`),
     ...band.map((name) => `import { BandPart as ${name}BandPart } from "${BAND_PARTS[name]}";`),
     ...banners.map((name) => `import { HomeBanner as ${name}HomeBanner } from "${HOME_BANNERS[name]}";`),
@@ -253,14 +239,6 @@ function registryText(slug, values) {
     "export const menuLinks: MenuLinks = {",
     ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
     "};",
-    "",
-    "/* The home tool of each package of the client that has one, in the order of the Tools chapter. */",
-    `export const homeTools: HomeTool[] = [${tools.map((name) => `${name}HomeTool`).join(", ")}];`,
-    "",
-    "/* The home chapter of each package of the client, in the order of the home page. */",
-    "export const homeSections: HomeSections = [",
-    ...home.map((name) => `  ${name}HomeSection,`),
-    "];",
     "",
     "/* The part of each package of the client that every page mounts. */",
     `export const pageParts: PagePart[] = [${parts.map((name) => `${name}PagePart`).join(", ")}];`,

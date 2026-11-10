@@ -83,8 +83,8 @@ async function expectStatic(page: Page, name: string): Promise<void> {
   console.log(`${CLIENT}: the hero "${name}" is static, with ${await page.locator(CANVAS).count()} scene canvases on the page`);
 }
 
-/* The rankings, the midseason report, the home takeover, and the analyzer keep the static grid. Only the week page, the
-   home Matchup hero, the manager pages, and the 404 draw a scene. */
+/* The rankings, the midseason report, and the analyzer keep the static grid. Only the week page, the manager pages, and
+   the 404 draw a scene. The home page is the front door, with no hero. */
 test.describe(`the static heroes of ${CLIENT}`, () => {
   test.use({ viewport: PHONE });
 
@@ -101,17 +101,11 @@ test.describe(`the static heroes of ${CLIENT}`, () => {
     await expect(page.locator(CANVAS)).toHaveCount(0);
   });
 
-  test("the home page has no scene under the takeover, and one in the Matchup hero without it (AT-35, AT-44)", async ({ page }) => {
+  test("the home page is the front door, with no hero and no scene (AT-50 of front-door)", async ({ page }) => {
     await open(page, "/");
-    const takeover = page.getByRole("region", { name: `${SEASON} Midseason Report`, exact: true });
-    if ((await takeover.count()) > 0) {
-      await expectStatic(page, `${SEASON} Midseason Report`);
-      await expect(page.locator(CANVAS)).toHaveCount(0);
-    } else {
-      await expect(page.locator(CANVAS)).toHaveCount(1);
-      await expect(page.getByRole("region", { name: "Matchup of the Week" }).locator(CANVAS)).toHaveCount(1);
-      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest");
-    }
+    await expect(page.getByRole("dialog", { name: "Which team is yours?" })).toBeVisible();
+    await expect(page.locator("[data-hero-slot]")).toHaveCount(0);
+    await expect(page.locator(CANVAS)).toHaveCount(0);
   });
 
   test("the analyzer has no scene before a grade, and its title hero is static (AT-35, AT-44)", async ({ page }) => {

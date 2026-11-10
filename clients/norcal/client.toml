@@ -20,4 +20,12 @@ chart = "1QB1.0PPR4pt"
 [values.analyzer]
 finder = true
 
-# The file has no [menu], so the menu takes the home page, then the package list in its order.
+# Each item names the home page or one package of the list. The order is the order of the menu.
+# The front door at Home is the main way in, so the menu keeps the same four items as CPC (front-door PRD).
+[menu]
+items = [
+  { page = "home", label = "Home" },
+  { package = "week" },
+  { package = "rankings", label = "Power Rankings" },
+  { package = "managers", label = "Managers" },
+]
