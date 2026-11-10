@@ -14,4 +14,4 @@ The personal Topics are live (decision 01). One Claude answer takes about 20 to 
 
 ## Decision
 
-None yet.
+Partial. Brian, 2026-11-09: the site uses the Vercel AI SDK to stream the Answer. The server side, the cache, the wait, the caps, and the Jev check stay open for this ticket.
