@@ -89,7 +89,7 @@ A manager with a question has no place to ask it. The commissioner asked "week 1
 
 45. As the commissioner, I want each team capped at 25 Claude Answers a day, so that one manager cannot run up the bill.
 46. As the commissioner, I want each league capped at $25 a month, so that one league never uses the budget of the other.
-47. As the commissioner, I want a notice at 80% of the monthly cap, so that I can act before the stop.
+47. As the commissioner, I want an email at 80% of the monthly cap, so that I can act before the stop.
 48. As a manager, I want the league Topics, the kept Answers, the routes, and the honest misses to work past a cap, so that the front door never goes dark.
 49. As a manager, I want a calm line at a cap, such as "That's 25 questions today. Ask again tomorrow.", so that I know why and when it comes back.
 50. As a manager, I want the cap line to name no manager, so that nobody gets blamed.
@@ -199,6 +199,7 @@ The prototype hit rate was about 35 of 40 under these rules. The questions are i
 ### The judgment Topics
 
 - Trade check calls `POST /analyze`, and trade ideas calls `POST /find`, both as they are (decision 06).
+- A typed trade check, such as "is Chase Brown for Breece Hall fair", needs its players. Jev picks each player from the real rosters, with a Choice per side and a Noul for "names a player". If a pick is unsure, the Answer opens the Trade page with the form, and fills each player that Jev is sure of. Brian, 2026-11-10.
 - This spec adds `POST /sell-high` to the Advisor in the `analyzer` package. It uses Sonnet 5.5 and reuses the Playbook, the fact helpers, the verifier, and the Jev checks of the Advisor. Code puts each player's trade value, lineup value, trend of the last 4 weeks, and schedule ahead side by side. The Advisor picks the players and writes why.
 - The Advisor gets one optional stage callback. The route sends each stage as a data part, such as "Checked the players on each side", then the whole Answer. The Advisor does not stream its text, because a Lean must never show before the verifier passes it.
 - The Case leads with the reason for its Lean. The fairness line agrees with the Lean.
@@ -229,7 +230,7 @@ The prototype hit rate was about 35 of 40 under these rules. The questions are i
 
 - Each team gets 25 Claude Answers a day. A kept Answer, a route, an honest miss, and the head start of the top Suggestion do not count toward it (decision 04).
 - Each league gets $25 a month, as a separate cap. The head start counts toward it.
-- At 80% of the monthly cap, the API logs an alert and sends a notice to the commissioner.
+- At 80% of the monthly cap, the API logs an alert and sends one email to the commissioner. Brian, 2026-11-10.
 - Past a cap, everything that costs nothing still works. A new Claude Answer shows a calm line with the 3 closest Topics. The team line reads "That's 25 questions today. Ask again tomorrow." The league line reads "The league's question budget is used up for this month. It resets on <date>." Neither line names a manager.
 - The ask box needs the league passphrase, through the `X-League-Passphrase` header that the API uses now.
 - The API keeps the counts and the miss log in a store on its Fly volume, like the egg store.
@@ -248,7 +249,7 @@ The prototype hit rate was about 35 of 40 under these rules. The questions are i
 
 ### Records
 
-- ADR 0031 covers the text that managers type. It says what goes to TypeSafe and to Anthropic. It says that the miss log lives on Fly, never in the repo, and how long the log stays. Number 0030 is taken on the `manager-brain` branch.
+- ADR 0031 covers the text that managers type. It says what goes to TypeSafe and to Anthropic. It says that the miss log lives on Fly, never in the repo, and that each entry stays 90 days. Brian, 2026-11-10. Number 0030 is taken on the `manager-brain` branch.
 - `GLOSSARY.md` gets the terms "honest miss" and "route" in the front-door group.
 
 ## Testing Decisions
