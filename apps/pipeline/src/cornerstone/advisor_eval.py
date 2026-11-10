@@ -26,6 +26,7 @@ from analyzer.advisor import (
 from analyzer.finder_pick import pick_trades
 from analyzer.finder_search import search
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
+from analyzer.trade_news import FACT_PREFIX as NEWS_PREFIX
 from analyzer.trade_news import NewsFeed
 from facts.writer import ClaudeCall, ClaudeWriter, finder_pick_call
 from league.jev_port import Jev, JevResponse, NoulQuestion
@@ -46,6 +47,14 @@ JEV_INPUT = 0.042
 # second look at the final text.
 FORBIDDEN = ("trade value", "return bet")
 LEAN_ORDER = ("Send it", "Lean yes", "Gut call", "Lean no", "Pass")
+# The Sleeper feed holds only the news of now. A trade of an older week reads this feed, which has no item, so its
+# sheet never holds news from after its trade.
+NO_NEWS = NewsFeed(fetch=lambda _player_id: [])
+
+
+def live_news_feed() -> NewsFeed:
+    """The real Sleeper news feed, for the trades of the current week and the Finder askers."""
+    return NewsFeed()
 
 
 class TradeNotFound(Exception):
@@ -252,9 +261,9 @@ def _texts(read: TradeRead) -> list[str]:
 
 def _read_one(
         trade: EvalTrade, snapshot_of_week: dict[int, tuple[Snapshot, list[RawTransaction]]], known: dict[str, int],
-        jev: Jev, call: ClaudeCall,
+        jev: Jev, call: ClaudeCall, news: NewsFeed,
 ) -> dict:
-    """The record of one trade: the sheet and the read, or the error that stopped it."""
+    """The record of one trade: the sheet and the read, or the error that stopped it. The sheet reads `news`."""
     started = time.monotonic()
     claude_calls = 0
     record: dict = {"id": trade.id, "week": trade.week, "asker": trade.asker, "other": trade.other, "roster_note": None,
@@ -273,8 +282,7 @@ def _read_one(
         # A copy per trade, so each trade has its own rank table and the threads share no cache.
         snapshot = base.model_copy(update={"rosters": rosters})
         proposed = proposed_trade(trade, snapshot)
-        # The Sleeper feed holds only the news of now, so a past week gets no news, not news from after its trade.
-        facts = advisor_sheet(proposed, snapshot, jev, NewsFeed(fetch=lambda _player_id: []))
+        facts = advisor_sheet(proposed, snapshot, jev, news)
         read = read_trade_on_sheet(proposed, snapshot, facts, jev=jev, call=counted)
         record["sheet"] = {fid: fact.text for fid, fact in facts.items()}
         record |= {"lean": read.lean, "case": read.case,
@@ -301,7 +309,7 @@ def _trade_names(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, list[str
 
 def _find_one(
         number: int, asker: FinderAsker, week: int, snapshot_of_week: dict[int, tuple[Snapshot, list[RawTransaction]]],
-        known: dict[str, int], jev: Jev, call: ClaudeCall, meter: Meter,
+        known: dict[str, int], jev: Jev, call: ClaudeCall, news: NewsFeed, meter: Meter,
 ) -> dict:
     """The record of one Finder press with no partner: the search, the shortlist, and the picks, or the error.
 
@@ -321,8 +329,7 @@ def _find_one(
         snapshot, _ = snapshot_of_week[week]
         roster_id = _roster_of(snapshot, _name_in_week(asker.asker, snapshot, known))
         shortlist = search(roster_id, None, snapshot, jev)
-        # The Sleeper feed holds only the news of now, and this eval gives the Finder no news.
-        picks = pick_trades(shortlist, snapshot, news=NewsFeed(fetch=lambda _player_id: []), call=counted)
+        picks = pick_trades(shortlist, snapshot, news=news, call=counted)
         record |= {
             "partners_passed": [read.team for read in shortlist.partners if read.passed],
             "offers": len(shortlist.offers),
@@ -343,6 +350,7 @@ def _find_one(
 def run_eval(
         test_set: EvalSet, snapshot_of: SnapshotOfWeek, *, jev: Jev, call: ClaudeCall, out_dir: Path, meter: Meter,
         workers: int = 1, finder_call: ClaudeCall | None = None, current_week: int | None = None,
+        news: NewsFeed | None = None,
 ) -> dict:
     """Read each trade as of its week, run the Finder of each Finder asker, and give the summary.
 
@@ -351,6 +359,8 @@ def run_eval(
     The Finder askers have no week, so they press on `current_week`: by default the newest week of the trades, because
     the test set holds the trades up to the week of now. `finder_call` is the Claude call of the Finder pick. By
     default it is the real call on its own model, with a writer that puts its cost on the meter at the Sonnet prices.
+    A trade of `current_week` and each Finder asker read `news`, by default the live Sleeper feed. A trade of an older
+    week reads no news, because the feed holds only the news of now.
     """
     started = time.monotonic()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -363,19 +373,28 @@ def run_eval(
     weeks = {week: snapshot_of(week) for week in sorted({trade.week for trade in trades} | finder_weeks)}
     known = roster_ids_by_name(snapshot for _, (snapshot, _) in sorted(weeks.items()))
     metered = MeteredJev(jev, meter)
+    live = news if news is not None else live_news_feed()
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        records = list(pool.map(lambda trade: _read_one(trade, weeks, known, metered, call), trades))
+        records = list(pool.map(lambda trade: _read_one(trade, weeks, known, metered, call,
+                                                        live if trade.week == week_now else NO_NEWS), trades))
     for record in records:
         (out_dir / f"trade-{record['id']}.json").write_text(json.dumps(record, indent=1), encoding="utf-8")
     finds = []
     if askers and week_now is not None:
         pick_call = finder_call or partial(
             finder_pick_call, writer=ClaudeWriter(on_usage=partial(meter.add_claude, prices=SONNET_PRICES)))
-        finds = [_find_one(number, asker, week_now, weeks, known, metered, pick_call, meter)
+        finds = [_find_one(number, asker, week_now, weeks, known, metered, pick_call, live, meter)
                  for number, asker in enumerate(askers, start=1)]
     for find in finds:
         (out_dir / f"finder-{find['number']}.json").write_text(json.dumps(find, indent=1), encoding="utf-8")
     reads = [r for r in records if r["error"] is None]
+    # AT-13 lists each Bullet that cites a NEWS fact, from the trade reads and the Finder picks.
+    news_bullets = [{"trade": r["id"], "text": b["text"], "fact_id": b["fact_id"], "fact_text": b["fact_text"]}
+                    for r in reads for side in r["sides"] for b in side["bullets"]
+                    if b["fact_id"].startswith(NEWS_PREFIX)]
+    news_bullets += [{"finder": f["number"], "text": b["text"], "fact_id": b["fact_id"], "fact_text": b["fact_text"]}
+                     for f in finds for pick in f["picks"] or [] for b in pick["bullets"]
+                     if b["fact_id"].startswith(NEWS_PREFIX)]
     summary = {
         "trades": len(records),
         "reads": len(reads),
@@ -386,6 +405,8 @@ def run_eval(
         "finder": {str(f["number"]): {"asker": f["asker"], "week": f["week"], "picks": len(f["picks"] or []),
                                       "fallback": f["fallback"], "error": f["error"], "cost": f["cost"],
                                       "seconds": f["seconds"]} for f in finds},
+        "news_week": week_now,
+        "news_bullets": news_bullets,
         "claude_calls": meter.claude_calls,
         "cost": {"claude": meter.claude_usd, "jev": meter.jev_usd, "total": meter.claude_usd + meter.jev_usd},
         "seconds": round(time.monotonic() - started, 1),
@@ -414,6 +435,8 @@ def summary_lines(summary: dict) -> list[str]:
         lines.append(f"finder {number}: {result}, ${find['cost']:.2f}, {find['seconds']:.0f} s.")
     lines += [
         f"Checks: {summary['check_failures']} failed after the retry, {summary['inner_word_hits']} forbidden words.",
+        (f"News: week {summary['news_week']} reads the live feed, and {len(summary['news_bullets'])} "
+         f"{plural(len(summary['news_bullets']), 'Bullet cites', 'Bullets cite')} a NEWS fact."),
         (f"Cost: ${cost['total']:.2f} (Claude ${cost['claude']:.2f}, Jev ${cost['jev']:.3f}) "
          f"over {summary['claude_calls']} Claude calls."),
         f"Time: {summary['seconds']:.0f} s.",

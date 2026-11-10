@@ -1,7 +1,7 @@
 """
 Tests for the live eval of the Advisor: the test set, the trade of each entry as of its week, the saved reads, the
 Finder presses, and the summary. They feed the week 6 fixtures to the eval with a stub Advisor, a stub Finder pick, and
-FakeJev, so no test calls Claude or TypeSafe.
+FakeJev, so no test calls Claude or TypeSafe. The news feed is the recorded feed or no feed, so no test calls Sleeper.
 The test set of the tests names the teams of the fixtures through the snapshot, so no test file holds a team name.
 """
 import json
@@ -12,11 +12,13 @@ from pathlib import Path
 
 import pytest
 from cpc import cli_root, cpc_client, four_week
-from fakes import FakeJev, FakeWriter
+from fakes import FakeJev, FakeWriter, no_news, recorded_news
+from test_trade_news import NEWS_FACT, TAYLOR, feed, taylor_out
 
 from analyzer.advisor import AdvisorOut
 from analyzer.finder_pick import FinderPickOut
-from cornerstone import cli
+from analyzer.trade_news import NewsFeed
+from cornerstone import advisor_eval, cli
 from cornerstone.advisor_eval import (
     SONNET_PRICES,
     EvalSet,
@@ -41,6 +43,12 @@ from league.snapshot import load_snapshot
 CLIENT = cpc_client()
 # Roster 4 gives Collins to roster 12 for Kincaid and Wilson, as the Advisor tests do. Roster 4 asks.
 COLLINS, KINCAID, WILSON = "7569", "10236", "8146"
+
+
+@pytest.fixture(autouse=True)
+def no_live_news(monkeypatch):
+    """The eval reads the live Sleeper feed by default. A test gives it a recorded feed, or this one with no item."""
+    monkeypatch.setattr(advisor_eval, "live_news_feed", lambda: NewsFeed(fetch=no_news))
 
 
 @pytest.fixture
@@ -337,6 +345,57 @@ def test_the_finder_pick_costs_the_sonnet_prices():
     assert claude_cost(usage, SONNET_PRICES) == pytest.approx(2.0 + 0.10 + 4.0 + 10.0)
     assert meter.claude_usd == pytest.approx(16.10) and meter.claude_calls == 1
     assert claude_cost(usage) == pytest.approx(4.0 + 0.20 + 8.0 + 20.0)
+
+
+def taylor_trade(snap) -> dict:
+    """The entry of the news tests: roster 4 gives Nico Collins to roster 11 for Jonathan Taylor."""
+    return entry(snap, other=snap.teams[11].name, asker_gives=["Nico Collins"], asker_gets=[snap.players[TAYLOR].name])
+
+
+class CountedFeed:
+    """The recorded news feed, with each player id it was asked for."""
+
+    def __init__(self):
+        self.asked: list[str] = []
+        self.feed = feed(fetch=self.fetch)
+
+    def fetch(self, player_id):
+        self.asked.append(player_id)
+        return recorded_news(player_id)
+
+
+def test_a_trade_of_the_current_week_reads_the_live_feed_and_the_summary_lists_its_news_bullets(snap, weeks,
+                                                                                                tmp_path):
+    bullet = {"text": "Jonathan Taylor is reported as a fit in Denver.", "mark": "for", "fact_id": NEWS_FACT}
+    news = CountedFeed()
+    summary = run_eval(EvalSet(trades=[EvalTrade.model_validate(taylor_trade(snap))]), weeks, jev=FakeJev(),
+                       call=StubAdvisor(lambda facts: taylor_out(facts, bullet)), out_dir=tmp_path, meter=Meter(),
+                       news=news.feed)
+    saved = read_file(tmp_path, 1)
+    assert NEWS_FACT in saved["sheet"] and TAYLOR in news.asked
+    assert summary["news_week"] == 6
+    assert summary["news_bullets"] == [{"trade": 1, "text": bullet["text"], "fact_id": NEWS_FACT,
+                                        "fact_text": saved["sheet"][NEWS_FACT]}]
+    assert "News: week 6 reads the live feed, and 1 Bullet cites a NEWS fact." in summary_lines(summary)
+
+
+def test_a_trade_of_an_older_week_reads_no_news(snap, weeks, tmp_path):
+    news = CountedFeed()
+    summary = run_eval(EvalSet(trades=[EvalTrade.model_validate(taylor_trade(snap))]), weeks, jev=FakeJev(),
+                       call=StubAdvisor(lambda facts: taylor_out(facts)), out_dir=tmp_path, meter=Meter(),
+                       news=news.feed, current_week=7)
+    assert not any(fid.startswith("NEWS.") for fid in read_file(tmp_path, 1)["sheet"])
+    assert news.asked == [] and summary["news_bullets"] == []
+
+
+def test_the_finder_askers_read_the_live_feed_of_the_current_week(snap, weeks, tmp_path):
+    news = CountedFeed()
+    run_eval(EvalSet(trades=[], finder=[FinderAsker(asker=snap.teams[4].name)]), weeks, jev=FakeJev(),
+             call=StubAdvisor(), out_dir=tmp_path, meter=Meter(), finder_call=StubPick(), news=news.feed,
+             current_week=6)
+    shortlist = json.loads((tmp_path / "finder-1.json").read_text())["shortlist"]
+    assert shortlist and news.asked
+    assert weeks.asked == [6]
 
 
 def _eval_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch) -> Path:
