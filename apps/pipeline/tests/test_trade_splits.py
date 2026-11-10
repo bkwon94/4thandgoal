@@ -2,6 +2,8 @@
 Tests for the past-season splits of the Advisor sheet and for the cache of the past season files.
 They read a real slice of the nflverse files of 2023 to 2025: the rows of Derrick Henry and Nico Collins.
 """
+import csv
+import gzip
 import os
 import shutil
 import time
@@ -43,6 +45,51 @@ def test_a_veteran_has_a_split_for_each_of_the_last_three_seasons(cache):
     assert splits[0].early.games == 7
     # He moved from TEN to BAL after 2023.
     assert [s.team for s in splits] == ["TEN", "BAL", "BAL"]
+
+
+def _big_past_file(cache: Path, season: int, copies: int) -> None:
+    """The past season file of `season` with its rows, plus `copies` copies of them under other gsis ids.
+
+    A real past season file holds about 19,000 rows, so a file of this size shows the time of a full read.
+    """
+    path = cache / f"stats_player_week_{season}.csv.gz"
+    with gzip.open(path, "rt", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        fields, rows = reader.fieldnames, list(reader)
+    with gzip.open(path, "wt", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+        for copy in range(copies):
+            writer.writerows({**row, "player_id": f"{row['player_id']}-{copy}"} for row in rows)
+
+
+@pytest.mark.serial
+def test_the_splits_of_many_players_read_each_past_season_file_once(cache):
+    # The Finder pick builds a sheet for each shortlist offer, so a full read of each past season file per player
+    # costs seconds. The splits of 20 players must take well under a second after the first read.
+    for season in (2023, 2024, 2025):
+        _big_past_file(cache, season, copies=200)
+    first = season_splits(cache, 2026, HENRY_GSIS)
+    started = time.monotonic()
+    for _ in range(20):
+        assert season_splits(cache, 2026, HENRY_GSIS) == first
+    assert time.monotonic() - started < 0.5
+
+
+def test_a_past_season_file_that_changes_on_disk_is_read_again(cache):
+    before = season_splits(cache, 2026, HENRY_GSIS)
+    path = cache / "stats_player_week_2023.csv.gz"
+    with gzip.open(path, "rt", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        fields = reader.fieldnames
+        rows = [row for row in reader if row["player_id"] != HENRY_GSIS]
+    with gzip.open(path, "wt", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    os.utime(path, ns=(time.time_ns(), time.time_ns() + 10**9))
+    assert [s.season for s in season_splits(cache, 2026, HENRY_GSIS)] == [2024, 2025] != [s.season for s in before]
 
 
 @pytest.fixture

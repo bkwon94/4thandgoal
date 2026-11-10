@@ -2,6 +2,7 @@
 The past-season split facts of the traded players: per season of the last 3 complete seasons, the half PPR points per
 game in weeks 1 to 8, in weeks 9 to 17, and in cold games, each with its game count. It reads the cache only.
 """
+from functools import lru_cache
 from pathlib import Path
 from typing import NamedTuple
 
@@ -46,10 +47,48 @@ def _split(points: list[float]) -> Split | None:
     return Split(round(sum(points) / len(points), 2), len(points)) if points else None
 
 
-def _cold_games(schedules: Path) -> set[str]:
+# One regular season game of a player in a past season: the week, the team, the game id, and the half PPR points.
+class _Game(NamedTuple):
+    week: int
+    team: str
+    game_id: str
+    points: float
+
+
+def _stamp(path: Path) -> tuple[str, int]:
+    """The key of a file in the caches below: its path and its file time, so a file that changes is read again."""
+    return str(path), path.stat().st_mtime_ns
+
+
+@lru_cache(maxsize=8)
+def _cold_games_of(path: str, mtime_ns: int) -> frozenset[str]:
+    return frozenset(row["game_id"] for row in _rows(Path(path)) if row["roof"] in OUTDOOR_ROOFS
+                     and row["temp"] not in ("", "NA") and float(row["temp"]) <= COLD_F)
+
+
+def _cold_games(schedules: Path) -> frozenset[str]:
     """The game ids of every outdoor game at COLD_F or below, over every season in the file."""
-    return {row["game_id"] for row in _rows(schedules)
-            if row["roof"] in OUTDOOR_ROOFS and row["temp"] not in ("", "NA") and float(row["temp"]) <= COLD_F}
+    return _cold_games_of(*_stamp(schedules))
+
+
+@lru_cache(maxsize=8)
+def _games_of(path: str, mtime_ns: int) -> dict[str, list[_Game]]:
+    games: dict[str, list[_Game]] = {}
+    for row in _rows(Path(path)):
+        if row["season_type"] != "REG":
+            continue
+        # The league plays half PPR, which is the mean of the standard points and the full PPR points.
+        points = (_number(row["fantasy_points"]) + _number(row["fantasy_points_ppr"])) / 2
+        games.setdefault(row["player_id"], []).append(_Game(int(row["week"]), row["team"], row["game_id"], points))
+    return games
+
+
+def _season_games(path: Path) -> dict[str, list[_Game]]:
+    """The regular season games of each player of a past season file, by gsis id, in the order of the file.
+
+    A Finder press builds a sheet for each shortlist offer, so each file is read once per process, not per player.
+    """
+    return _games_of(*_stamp(path))
 
 
 def season_splits(cache_dir: Path, season: int, gsis: str) -> list[SeasonSplits]:
@@ -63,25 +102,19 @@ def season_splits(cache_dir: Path, season: int, gsis: str) -> list[SeasonSplits]
     if not pasts:
         return []
     schedules = cache_path(cache_dir, SCHEDULES_URL, season)
-    cold_ids = _cold_games(schedules) if schedules.exists() else set()
+    cold_ids = _cold_games(schedules) if schedules.exists() else frozenset()
     out = []
     for past in pasts:
-        path = past_stats_path(cache_dir, past)
         early, late, cold, team = [], [], [], ""
-        for row in _rows(path):
-            if row["player_id"] != gsis or row["season_type"] != "REG":
-                continue
-            # The league plays half PPR, which is the mean of the standard points and the full PPR points.
-            points = (_number(row["fantasy_points"]) + _number(row["fantasy_points_ppr"])) / 2
-            week = int(row["week"])
+        for game in _season_games(past_stats_path(cache_dir, past)).get(gsis, []):
             # The rows run in week order, so the last row names the team he ended the season with.
-            team = row["team"]
-            if EARLY_WEEKS[0] <= week <= EARLY_WEEKS[1]:
-                early.append(points)
-            elif LATE_WEEKS[0] <= week <= LATE_WEEKS[1]:
-                late.append(points)
-            if row["game_id"] in cold_ids:
-                cold.append(points)
+            team = game.team
+            if EARLY_WEEKS[0] <= game.week <= EARLY_WEEKS[1]:
+                early.append(game.points)
+            elif LATE_WEEKS[0] <= game.week <= LATE_WEEKS[1]:
+                late.append(game.points)
+            if game.game_id in cold_ids:
+                cold.append(game.points)
         if early or late or cold:
             out.append(SeasonSplits(past, team, _split(early), _split(late), _split(cold)))
     return out
