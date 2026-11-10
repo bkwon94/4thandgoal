@@ -535,6 +535,10 @@ A player of one side of the finder that Jev judges the other side would want. Th
 the targets only.
 _Avoid_: candidate, pick
 
+**Offer**:
+A trade that the finder builds from the targets of both sides, before Jev makes the shortlist. It has one player or two on each side. In code it is a `ProposedTrade`, and it has an `offer_id`.
+_Avoid_: proposal, option
+
 **Shortlist**:
 The trades of the finder that pass the Jev questions, for the Advisor to read.
 _Avoid_: candidates, top trades
