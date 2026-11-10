@@ -60,7 +60,9 @@ known-first-party = ["analyzer", "cornerstone_api", "eggs", "facts", "league"]
 [tool.pyright]
 typeCheckingMode = "basic"
 include = ["src/cornerstone_api/app.py", "src/cornerstone_api/refresh.py", "src/cornerstone_api/ask.py",
-           "src/cornerstone_api/ask_wording.py", "src/cornerstone_api/miss_log.py"]
+           "src/cornerstone_api/ask_wording.py", "src/cornerstone_api/miss_log.py",
+           "src/cornerstone_api/free_answer.py", "src/cornerstone_api/free_tools.py",
+           "src/cornerstone_api/free_wording.py"]
 
 [tool.uv.build-backend]
 module-name = "cornerstone_api"

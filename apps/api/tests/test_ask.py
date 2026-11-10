@@ -242,3 +242,12 @@ def test_the_default_miss_log_folder_is_ignored_by_the_repo():
     # AT-53: with no CORNERSTONE_ASK_DIR, the log sits in data/ask/ of the repo, and git never lists it.
     result = subprocess.run(["git", "check-ignore", "-q", "data/ask/cpc.sqlite"], cwd=REPO, check=False)
     assert result.returncode == 0
+
+
+def test_the_state_names_the_latest_week_in_each_topic_of_one_week(api, jev):
+    # AT-19: "week 1 results" routed to the week recap about 2 times in 3 until the recap named its week.
+    _ask(api, "who am i playing sunday")
+    topics = jev.requests[0].state["topics"]
+    assert topics["week_recap"].startswith("The recap of week 8, the latest fantasy week")
+    assert "week 8" in topics["last_matchup"]
+    assert set(topics) == set(TOPICS)
