@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-11, AT-12, AT-19, AT-20,
 
 **Blocked by:** 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The first commit pins `pydantic-ai`, `ai`, and `@ai-sdk/react` to a pair that the adapter supports.
 - [x] "highest scoring team this season" names the team with the most points for in weeks 1 to 8 (AT-11), with the top Topic chip under it (AT-12).
