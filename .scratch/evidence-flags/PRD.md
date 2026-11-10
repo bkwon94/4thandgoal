@@ -5,7 +5,7 @@ Date: 2026-11-10
 Apps: pipeline. The pipeline CLI gets the commands `evidence-flags` and `evidence-flags-eval`, and the `Jev` port gets an image type. The workflow skills of `cpc:implement` run the command in the evidence stage. The site does not change.
 Spec branch: `evidence-flags`.
 Source: the map `.scratch/evidence-flags/MAP.md` and decision tickets 01 to 06, from the sessions of 2026-11-10. ADR 0026 (the Judge), ADR 0029 (Jev is the second vendor).
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 05, in `issues/`.
 
 ## Problem Statement
 
