@@ -421,12 +421,9 @@ describe("AnalyzeResult", () => {
     expect(screen.getByText(/^Stats through week 6 · rosters fetched$/)).toBeTruthy();
   });
 
-  it.each([
-    ["win_win", "Good for both"],
-    ["fair", "Fair"],
-  ] as const)("shows the fairness state %s as the line %s", (state, line) => {
-    render(<AnalyzeResult doc={withFairness(state)} />);
-    expect(screen.getByText(line)).toBeTruthy();
+  it("shows the fairness state fair as the line Fair", () => {
+    render(<AnalyzeResult doc={withFairness("fair")} />);
+    expect(screen.getByText("Fair")).toBeTruthy();
   });
 
   it("names the team that gives more on a lopsided line", () => {
@@ -434,13 +431,10 @@ describe("AnalyzeResult", () => {
     expect(screen.getByText("Lopsided: Amon-Ra Dawg Your Team gives more.")).toBeTruthy();
   });
 
-  it.each([
-    ["win_win", "Every side gets more than it gives."],
-    ["fair", "No side gives much more than it gets, so every side can take it without a loss."],
-  ] as const)("shows the meaning of the fairness state %s under the word", (state, meaning) => {
-    render(<AnalyzeResult doc={withFairness(state)} />);
-    const word = screen.getByText(state === "fair" ? "Fair" : "Good for both");
-    const sentence = screen.getByText(meaning);
+  it("shows the meaning of the fairness state fair under the word", () => {
+    render(<AnalyzeResult doc={withFairness("fair")} />);
+    const word = screen.getByText("Fair");
+    const sentence = screen.getByText("No side gives much more than it gets, so every side can take it without a loss.");
     expect(word.compareDocumentPosition(sentence) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
@@ -449,14 +443,6 @@ describe("AnalyzeResult", () => {
     const line = screen.getByText("Lopsided: Amon-Ra Dawg Your Team gives more.");
     const sentence = screen.getByText("It gives more than it gets.");
     expect(line.compareDocumentPosition(sentence) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  });
-
-  it("says Good for all on a win-win trade of three sides", () => {
-    // The three-side fixture is fair, so the test makes it win-win.
-    render(<AnalyzeResult doc={{ ...three, fairness: { ...three.fairness!, state: "win_win", gives_more: null } as Fairness }} />);
-    expect(screen.getByText("Good for all")).toBeTruthy();
-    expect(screen.queryByText("Good for both")).toBeNull();
-    expect(screen.getByText("Every side gets more than it gives.")).toBeTruthy();
   });
 
   it("puts the fairness line under the Lean and above the swap card", () => {
@@ -491,9 +477,9 @@ describe("AnalyzeResult", () => {
 
   it("shows the two fairness reasons under the line, the asker's side first", () => {
     // The asker here is roster 12, the second side of the trade, so the order must flip.
-    const doc = withFairness("win_win");
+    const doc = withFairness("fair");
     render(<AnalyzeResult doc={{ ...doc, trade: { ...doc.trade, asker: 12 } }} />);
-    const line = screen.getByText("Good for both");
+    const line = screen.getByText("Fair");
     const theirs = screen.getByText(THEIR_REASON);
     const mine = screen.getByText(MY_REASON);
     expect(line.compareDocumentPosition(theirs) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

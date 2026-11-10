@@ -506,13 +506,9 @@ such as "if you believe Henry bounces back, this is worth it". It backs its clai
 _Avoid_: reason, verdict reason, summary
 
 **Fairness**:
-Whether a proposed trade is good for both sides, with one reason per side. The Advisor sets it, and it has
-three states: good for both, fair, and lopsided. A lopsided trade names the side that gives more.
+Whether a proposed trade is fair to every side, with one reason per side. The Advisor sets it, and it has
+two states: fair and lopsided. A lopsided trade names the side that gives more.
 _Avoid_: balance, even trade
-
-**Good for both**:
-The page word for the win-win state of the fairness when the trade has two sides. With three or more sides the page word is "Good for all". Use "win_win" in code. The finder shows two-side trades, so it always says "Good for both".
-_Avoid_: win-win on the page
 
 **Finder**:
 The search for trades the asker could send. It looks at every partner, or at one partner the asker picks. The

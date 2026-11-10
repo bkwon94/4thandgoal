@@ -1,12 +1,12 @@
 /**
  * The analyzer result from one analyze document, in one column: the Lean on its scale, the Case, the fairness line, the swap card, and one tab per side.
- * The trade finder reuses SwapCard, FairnessBlock, and AsOfLine. No letter grade shows anywhere.
+ * The trade finder reuses SwapCard and AsOfLine. No letter grade shows anywhere.
  */
 "use client";
 
 import { motion } from "framer-motion";
 import { useId, useState, type ReactNode } from "react";
-import type { AnalyzeResponse, AsOf, DecidedSide, Fairness, Lean, TradeSide, TradedPlayer } from "../lib/analyze-types";
+import type { AnalyzeResponse, AsOf, ReadSide, Fairness, Lean, TradeSide, TradedPlayer } from "../lib/analyze-types";
 import { knownGamesSegments } from "../lib/known-games-segments";
 import { BulletRows } from "./bullet-rows";
 import { SideTabs } from "./side-tabs";
@@ -25,7 +25,7 @@ import { stableId, textId, TRADE_ANSWER, TRADE_KEY } from "@cpc/design/lib/stabl
 export type SwapSide = TradeSide & { mine: boolean };
 
 /* A trade side joined to its read, so each side reads from one object. */
-type Side = SwapSide & DecidedSide;
+type Side = SwapSide & ReadSide;
 
 /* Join the trade sides to the read sides by roster id. The asker's side goes first, so the Lean and "Your Side" name the same team. */
 function joinSides(doc: AnalyzeResponse): Side[] {
@@ -244,7 +244,7 @@ function CaseText({ readCase }: { readCase: string }) {
 }
 
 /* The read fills the hero slots: the side as the eyebrow and the Lean word as the title. The feature holds the rest
-   in the order of decision 05: the scale, the Case, then the fairness line. Each chapter of the result opens with a
+   in this order: the scale, the Case, then the fairness line. Each chapter of the result opens with a
    level-two heading, so the title is level two. The Lean word rises in once, so the call lands with a beat. With
    motion off, it shows at rest at once. The no-values note and the fairness block sit on a card under the Case, so
    their text keeps the colors of the card. The read has no stats and no action, so the hero shows no empty area. */
@@ -298,10 +298,8 @@ function ReadHero({
   );
 }
 
-/* The page words of the fairness states. The glossary says "Good for both" on the page, never "win-win".
-   Each state has a short meaning, because one word alone does not tell the reader what it means. */
+/* The page words of the fairness states. Each state has a short meaning, because one word alone does not tell the reader what it means. */
 const FAIRNESS_WORD = {
-  win_win: { word: "Good for both", color: "text-accent-ink", meaning: "Every side gets more than it gives." },
   fair: {
     word: "Fair",
     color: "text-mute",
@@ -311,12 +309,11 @@ const FAIRNESS_WORD = {
 } as const;
 
 /* The fairness line rises in like the Lean word, so both read as one call. With motion off, it shows at rest at once. */
-export function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairness }) {
+function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairness }) {
   const off = useMotionOff();
   const state = FAIRNESS_WORD[fairness.state];
   // A lopsided line names the side that gives more, so the reader knows who loses. The type says a lopsided block always has gives_more, and the pipeline sets it to a side of the trade.
-  // "Both" fits two sides only, so a win-win trade of three or more sides says "Good for all".
-  const word = fairness.state === "win_win" && sides.length > 2 ? "Good for all" : state.word;
+  const word = state.word;
   const line =
     fairness.state === "lopsided"
       ? `${word}: ${sides.find((s) => s.roster_id === fairness.gives_more)!.team} gives more.`
@@ -454,7 +451,7 @@ export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
   /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has four chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
-    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition.
+    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition. The attribute data-trade-answer and the stable id verdict-word keep their names, because the eggs read them.
     <div className="tablet:flex tablet:flex-col tablet:gap-card-gap" {...{ [TRADE_KEY]: tradeKey(doc), [TRADE_ANSWER]: LEAN_ANSWER[doc.lean] }}>
       <ReadHero lean={doc.lean} readCase={doc.case} team={askerTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
 
