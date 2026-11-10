@@ -132,7 +132,7 @@ export const analyzeResponseSchema = z.object({
 });
 
 /* One trade of the finder. The sides share the analyze document's side shape, and the Bullets share its Bullet shape,
-   so the site renders a side and a row one way. A pick has a headline and 2 to 3 Bullets, and no fact line.
+   so the site renders a side and a row one way. A pick has a headline and 2 to 4 Bullets, and no fact line.
    After a fallback, the headline is null, no Bullet stands, and fact_lines holds plain facts of the offer. */
 export const finderTradeSchema = z.object({
   // The id of the offer on the shortlist, such as "2:10213-10:10235". The card keys on it.
