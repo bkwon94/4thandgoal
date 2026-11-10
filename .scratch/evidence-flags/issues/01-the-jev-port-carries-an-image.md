@@ -8,7 +8,7 @@ Spec: `.scratch/evidence-flags/PRD.md`. Acceptance test AT-13, and Implementatio
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The port has its own image type for PNG bytes, and only the TypeSafe adapter imports `typesafe_sdk` outside tests (AT-13).
 - [x] The adapter wraps each image of a state in the SDK image type before the call.
