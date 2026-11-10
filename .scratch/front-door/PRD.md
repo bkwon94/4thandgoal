@@ -5,7 +5,7 @@ Date: 2026-11-10
 Apps: site, pipeline, and api. The site renders the front door at `/`, the Thread, and the stream. The pipeline writes the Answers of the league Topics each week. The API routes each question with Jev, streams the live Answers, keeps the caps, and logs the misses.
 Spec branch: `front-door`.
 Source: the map `.scratch/front-door/MAP.md` and decision tickets 01 to 12. ADR 0029. A new ADR, 0031, covers the text that managers type.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 11, in `issues/`.
 
 ## Problem Statement
 
@@ -204,7 +204,6 @@ The prototype hit rate was about 35 of 40 under these rules. The questions are i
 - The Advisor gets one optional stage callback. The route sends each stage as a data part, such as "Checked the players on each side", then the whole Answer. The Advisor does not stream its text, because a Lean must never show before the verifier passes it.
 - The Case leads with the reason for its Lean. The fairness line agrees with the Lean.
 - The trade ideas Topic calls `/find` for each client. The `finder` flag of `client.toml` keeps its meaning for the analyzer page only.
-- The three judgment Topics wait for the merge of `manager-brain` to `main`.
 
 ### Suggestions
 
@@ -249,7 +248,7 @@ The prototype hit rate was about 35 of 40 under these rules. The questions are i
 
 ### Records
 
-- ADR 0031 covers the text that managers type. It says what goes to TypeSafe and to Anthropic. It says that the miss log lives on Fly, never in the repo, and that each entry stays 90 days. Brian, 2026-11-10. Number 0030 is taken on the `manager-brain` branch.
+- ADR 0031 covers the text that managers type. It says what goes to TypeSafe and to Anthropic. It says that the miss log lives on Fly, never in the repo, and that each entry stays 90 days. Brian, 2026-11-10. Number 0030 is the ADR of `manager-brain`.
 - `GLOSSARY.md` gets the terms "honest miss" and "route" in the front-door group.
 
 ## Testing Decisions
@@ -283,7 +282,7 @@ A good test drives the front door from outside: a request to the API, a page ren
 
 ## Further Notes
 
-- `cpc:implement front-door` waits for the merge of `manager-brain` to `main`. Then the `front-door` branch merges `main` before the first ticket. If `manager-brain` is still open when the tickets are ready, only the three judgment Topics wait.
+- `manager-brain` merged to `main` as `c133eb89` on 2026-11-10. The `front-door` branch merges `main` before the first ticket.
 - For the API work, load the skill `building-pydantic-ai-agents` from `pydantic/skills`, plugin `ai@pydantic-skills`. Load `typesafe:typesafe-ai` before any Jev question or state.
 - A copy of the code of prototypes 08 and 09 sits in a session scratchpad, outside the repo. The decisions are the source of truth.
 - Cost: about $1 to $66 a month for 2 leagues, by use. Claude is over 95% of it. The caps hold the worst month near $50.
