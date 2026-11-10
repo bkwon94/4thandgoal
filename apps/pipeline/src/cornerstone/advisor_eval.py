@@ -1,6 +1,6 @@
 """
-The live eval of the Advisor: it reads each trade of a test set as of its week and saves the sheet and the read.
-The test set and the output name league managers, so both stay outside the repo.
+The live eval of the Advisor: it reads each trade of a test set as of its week, runs the Finder of each Finder asker,
+and saves each sheet, read, and pick. The test set and the output name league managers, so both stay outside the repo.
 """
 import json
 import re
@@ -8,6 +8,7 @@ import threading
 import time
 from collections.abc import Callable, Iterable
 from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -22,9 +23,11 @@ from analyzer.advisor import (
     check_read,
     read_trade_on_sheet,
 )
+from analyzer.finder_pick import pick_trades
+from analyzer.finder_search import search
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_news import NewsFeed
-from facts.writer import ClaudeCall
+from facts.writer import ClaudeCall, ClaudeWriter, finder_pick_call
 from league.jev_port import Jev, JevResponse, NoulQuestion
 from league.numbers import plural
 from league.provider.raw import RawTransaction
@@ -34,6 +37,10 @@ from league.snapshot import Snapshot
 # pricing page of Anthropic. The Advisor call keeps the one-hour cache, which writes at twice the input price.
 # Jev is $0.042 per million input tokens and gives its output free, from docs.typesafe.ai/models.md.
 CLAUDE_INPUT, CLAUDE_OUTPUT, CLAUDE_CACHE_READ, CLAUDE_CACHE_WRITE = 4.0, 20.0, 0.20, 8.0
+OPUS_PRICES = (CLAUDE_INPUT, CLAUDE_OUTPUT, CLAUDE_CACHE_READ, CLAUDE_CACHE_WRITE)
+# The Finder pick runs on Claude Sonnet 5.5: $2 for input, $10 for output, and $0.10 for a cache read, from the same
+# page. Its one-hour cache write is twice the input price too.
+SONNET_PRICES = (2.0, 10.0, 0.10, 4.0)
 JEV_INPUT = 0.042
 # The words that AT-20 forbids in a read. The guards of the Advisor hold more inner words, and this count is the
 # second look at the final text.
@@ -56,9 +63,22 @@ class EvalTrade(BaseModel):
     asker_gets: list[str]
 
 
-def load_test_set(path: Path) -> list[EvalTrade]:
-    """The trades of the test set file, in file order."""
-    return [EvalTrade.model_validate(item) for item in json.loads(path.read_text(encoding="utf-8"))["trades"]]
+class FinderAsker(BaseModel):
+    """One Finder asker of the test set, by team name. The saved Finder run of prototype 04 beside it is not read."""
+
+    asker: str
+
+
+class EvalSet(BaseModel):
+    """The trades and the Finder askers of the test set, each in file order."""
+
+    trades: list[EvalTrade]
+    finder: list[FinderAsker] = []
+
+
+def load_test_set(path: Path) -> EvalSet:
+    """The trades and the Finder askers of the test set file. A file with no `finder` key has no Finder asker."""
+    return EvalSet.model_validate(json.loads(path.read_text(encoding="utf-8")))
 
 
 # A player name matches in lower case, with no punctuation and no suffix, because the test set and the saved raw data
@@ -86,14 +106,16 @@ def roster_ids_by_name(snapshots: Iterable[Snapshot]) -> dict[str, int]:
     return {team.name: roster_id for snapshot in snapshots for roster_id, team in snapshot.teams.items()}
 
 
+def _name_in_week(team: str, snapshot: Snapshot, known: dict[str, int]) -> str:
+    if team in {each.name for each in snapshot.teams.values()} or team not in known:
+        return team
+    return snapshot.teams[known[team]].name
+
+
 def named_in_week(trade: EvalTrade, snapshot: Snapshot, known: dict[str, int]) -> EvalTrade:
     """The trade with the team names the week has. A name that the week lacks comes from `known` by its roster id."""
-    def in_week(team: str) -> str:
-        if team in {each.name for each in snapshot.teams.values()} or team not in known:
-            return team
-        return snapshot.teams[known[team]].name
-
-    return trade.model_copy(update={"asker": in_week(trade.asker), "other": in_week(trade.other)})
+    return trade.model_copy(update={"asker": _name_in_week(trade.asker, snapshot, known),
+                                    "other": _name_in_week(trade.other, snapshot, known)})
 
 
 def _player_of(snapshot: Snapshot, roster_id: int, name: str) -> str:
@@ -159,14 +181,15 @@ def rosters_before(
     raise TradeNotFound(f"{missing} is not on the roster of his giver, and no trade on file puts him there.")
 
 
-def claude_cost(usage) -> float:
-    """The dollars of one Claude response, from its usage."""
+def claude_cost(usage, prices: tuple[float, float, float, float] = OPUS_PRICES) -> float:
+    """The dollars of one Claude response, from its usage and the prices of its model."""
     def tokens(name: str) -> int:
         return getattr(usage, name, 0) or 0
 
-    return (tokens("input_tokens") * CLAUDE_INPUT + tokens("output_tokens") * CLAUDE_OUTPUT
-            + tokens("cache_read_input_tokens") * CLAUDE_CACHE_READ
-            + tokens("cache_creation_input_tokens") * CLAUDE_CACHE_WRITE) / 1_000_000
+    input_price, output_price, cache_read_price, cache_write_price = prices
+    return (tokens("input_tokens") * input_price + tokens("output_tokens") * output_price
+            + tokens("cache_read_input_tokens") * cache_read_price
+            + tokens("cache_creation_input_tokens") * cache_write_price) / 1_000_000
 
 
 class Meter:
@@ -180,15 +203,19 @@ class Meter:
         self.jev_requests = 0
         self._lock = threading.Lock()
 
-    def add_claude(self, usage) -> None:
+    def add_claude(self, usage, prices: tuple[float, float, float, float] = OPUS_PRICES) -> None:
         with self._lock:
-            self.claude_usd += claude_cost(usage)
+            self.claude_usd += claude_cost(usage, prices)
             self.claude_calls += 1
 
     def add_jev(self, input_tokens: int | None) -> None:
         with self._lock:
             self.jev_usd += (input_tokens or 0) * JEV_INPUT / 1_000_000
             self.jev_requests += 1
+
+    def total(self) -> float:
+        with self._lock:
+            return self.claude_usd + self.jev_usd
 
 
 class MeteredJev:
@@ -266,24 +293,88 @@ def _read_one(
     return record
 
 
-def run_eval(
-        trades: list[EvalTrade], snapshot_of: SnapshotOfWeek, *, jev: Jev, call: ClaudeCall, out_dir: Path, meter: Meter,
-        workers: int = 1,
-) -> dict:
-    """Read each trade as of its week, save trade-<id>.json for each and summary.json, and give the summary.
+def _trade_names(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, list[str]]:
+    """The players that each team of a trade gives, by name, so a reader of the saved file needs no id."""
+    return {snapshot.teams[side.roster_id].name: [snapshot.players[p.player_id].name for p in side.gives]
+            for side in trade.sides}
 
-    A trade that fails is an error in its record and in the summary, and the other trades go on.
+
+def _find_one(
+        number: int, asker: FinderAsker, week: int, snapshot_of_week: dict[int, tuple[Snapshot, list[RawTransaction]]],
+        known: dict[str, int], jev: Jev, call: ClaudeCall, meter: Meter,
+) -> dict:
+    """The record of one Finder press with no partner: the search, the shortlist, and the picks, or the error.
+
+    The cost is the change of the meter over the press, so the presses run one at a time, after the trade reads.
+    """
+    started, spent = time.monotonic(), meter.total()
+    claude_calls = 0
+    record: dict = {"number": number, "asker": asker.asker, "week": week, "partners_passed": None, "offers": None,
+                    "shortlist": None, "picks": None, "none_line": None, "fallback": None, "error": None}
+
+    def counted(system: str, user: str, output_model):
+        nonlocal claude_calls
+        claude_calls += 1
+        return call(system, user, output_model)
+
+    try:
+        snapshot, _ = snapshot_of_week[week]
+        roster_id = _roster_of(snapshot, _name_in_week(asker.asker, snapshot, known))
+        shortlist = search(roster_id, None, snapshot, jev)
+        # The Sleeper feed holds only the news of now, and this eval gives the Finder no news.
+        picks = pick_trades(shortlist, snapshot, news=NewsFeed(fetch=lambda _player_id: []), call=counted)
+        record |= {
+            "partners_passed": [read.team for read in shortlist.partners if read.passed],
+            "offers": len(shortlist.offers),
+            "shortlist": [{"offer_id": offer.offer_id, "score": offer.score, "fair": offer.fair,
+                           "trade": _trade_names(offer.trade, snapshot)} for offer in shortlist.shortlist],
+            "picks": [{"offer_id": pick.offer.offer_id, "trade": _trade_names(pick.offer.trade, snapshot),
+                       "headline": pick.headline, "bullets": [b.model_dump() for b in pick.bullets],
+                       "fact_lines": pick.fact_lines} for pick in picks.picks],
+            "none_line": picks.none_line, "fallback": picks.fallback}
+    except (TradeNotFound, ValueError) as error:
+        record["error"] = str(error)
+    record["claude_calls"] = claude_calls
+    record["cost"] = meter.total() - spent
+    record["seconds"] = round(time.monotonic() - started, 2)
+    return record
+
+
+def run_eval(
+        test_set: EvalSet, snapshot_of: SnapshotOfWeek, *, jev: Jev, call: ClaudeCall, out_dir: Path, meter: Meter,
+        workers: int = 1, finder_call: ClaudeCall | None = None, current_week: int | None = None,
+) -> dict:
+    """Read each trade as of its week, run the Finder of each Finder asker, and give the summary.
+
+    It saves trade-<id>.json for each trade, finder-<n>.json for each Finder asker, and summary.json. A trade or a
+    Finder press that fails is an error in its record and in the summary, and the others go on.
+    The Finder askers have no week, so they press on `current_week`: by default the newest week of the trades, because
+    the test set holds the trades up to the week of now. `finder_call` is the Claude call of the Finder pick. By
+    default it is the real call on its own model, with a writer that puts its cost on the meter at the Sonnet prices.
     """
     started = time.monotonic()
     out_dir.mkdir(parents=True, exist_ok=True)
+    trades, askers = test_set.trades, test_set.finder
+    week_now = current_week if current_week is not None else max((trade.week for trade in trades), default=None)
+    if askers and week_now is None:
+        raise ValueError("The test set has Finder askers and no trade, so the eval has no week for the Finder.")
+    finder_weeks = {week_now} if askers and week_now is not None else set()
     # One snapshot per week, built before the threads start, so no two threads build the same one.
-    weeks = {week: snapshot_of(week) for week in sorted({trade.week for trade in trades})}
+    weeks = {week: snapshot_of(week) for week in sorted({trade.week for trade in trades} | finder_weeks)}
     known = roster_ids_by_name(snapshot for _, (snapshot, _) in sorted(weeks.items()))
     metered = MeteredJev(jev, meter)
     with ThreadPoolExecutor(max_workers=workers) as pool:
         records = list(pool.map(lambda trade: _read_one(trade, weeks, known, metered, call), trades))
     for record in records:
         (out_dir / f"trade-{record['id']}.json").write_text(json.dumps(record, indent=1), encoding="utf-8")
+    finds = []
+    if askers and week_now is not None:
+        pick_call = finder_call or partial(
+            finder_pick_call, writer=ClaudeWriter(on_usage=partial(meter.add_claude, prices=SONNET_PRICES)))
+        finds = [_find_one(number, asker, week_now, weeks, known, metered, pick_call, meter)
+                 for number, asker in enumerate(askers, start=1)]
+    for find in finds:
+        (out_dir / f"finder-{find['number']}.json").write_text(json.dumps(find, indent=1), encoding="utf-8")
     reads = [r for r in records if r["error"] is None]
     summary = {
         "trades": len(records),
@@ -292,6 +383,9 @@ def run_eval(
         "errors": {str(r["id"]): r["error"] for r in records if r["error"] is not None},
         "check_failures": sum(len(r["check_failures"]) for r in reads),
         "inner_word_hits": sum(r["inner_word_hits"] for r in reads),
+        "finder": {str(f["number"]): {"asker": f["asker"], "week": f["week"], "picks": len(f["picks"] or []),
+                                      "fallback": f["fallback"], "error": f["error"], "cost": f["cost"],
+                                      "seconds": f["seconds"]} for f in finds},
         "claude_calls": meter.claude_calls,
         "cost": {"claude": meter.claude_usd, "jev": meter.jev_usd, "total": meter.claude_usd + meter.jev_usd},
         "seconds": round(time.monotonic() - started, 1),
@@ -313,6 +407,11 @@ def summary_lines(summary: dict) -> list[str]:
     ]
     ids = sorted({*summary["leans"], *summary["errors"]}, key=int)
     lines += [f"trade {each}: {summary['leans'].get(each) or 'error, ' + summary['errors'][each]}" for each in ids]
+    for number, find in summary["finder"].items():
+        result = (f"error, {find['error']}" if find["error"] is not None
+                  else f"{find['picks']} {plural(find['picks'], 'pick', 'picks')}"
+                       + (", fallback" if find["fallback"] else ""))
+        lines.append(f"finder {number}: {result}, ${find['cost']:.2f}, {find['seconds']:.0f} s.")
     lines += [
         f"Checks: {summary['check_failures']} failed after the retry, {summary['inner_word_hits']} forbidden words.",
         (f"Cost: ${cost['total']:.2f} (Claude ${cost['claude']:.2f}, Jev ${cost['jev']:.3f}) "

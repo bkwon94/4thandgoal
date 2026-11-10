@@ -1,6 +1,7 @@
 """
-Tests for the live eval of the Advisor: the test set, the trade of each entry as of its week, the saved reads, and
-the summary. They feed the week 6 fixtures to the eval with a stub Advisor and FakeJev, so no test calls Claude or TypeSafe.
+Tests for the live eval of the Advisor: the test set, the trade of each entry as of its week, the saved reads, the
+Finder presses, and the summary. They feed the week 6 fixtures to the eval with a stub Advisor, a stub Finder pick, and
+FakeJev, so no test calls Claude or TypeSafe.
 The test set of the tests names the teams of the fixtures through the snapshot, so no test file holds a team name.
 """
 import json
@@ -14,9 +15,13 @@ from cpc import cli_root, cpc_client, four_week
 from fakes import FakeJev, FakeWriter
 
 from analyzer.advisor import AdvisorOut
+from analyzer.finder_pick import FinderPickOut
 from cornerstone import cli
 from cornerstone.advisor_eval import (
+    SONNET_PRICES,
+    EvalSet,
     EvalTrade,
+    FinderAsker,
     Meter,
     TradeNotFound,
     claude_cost,
@@ -55,14 +60,14 @@ def entry(snap, **changes) -> dict:
     return base | changes
 
 
-def write_test_set(path: Path, *entries: dict) -> Path:
-    path.write_text(json.dumps({"meta": {}, "trades": list(entries), "finder": []}))
+def write_test_set(path: Path, *entries: dict, finder: list[dict] | None = None) -> Path:
+    path.write_text(json.dumps({"meta": {}, "trades": list(entries), "finder": finder or []}))
     return path
 
 
 def test_the_test_set_loads_each_trade_and_ignores_the_other_fields(snap, tmp_path):
     path = write_test_set(tmp_path / "set.json", entry(snap), entry(snap, id=2))
-    trades = load_test_set(path)
+    trades = load_test_set(path).trades
     assert [t.id for t in trades] == [1, 2]
     assert trades[0] == EvalTrade(id=1, week=6, asker=snap.teams[4].name, other=snap.teams[12].name,
                                   asker_gives=["Nico Collins"], asker_gets=["Dalton Kincaid", "Garrett Wilson"])
@@ -184,9 +189,10 @@ def weeks(snap, fixture_raw_dir):
     return Weeks(snap, fixture_raw_dir)
 
 
-def trades_of(snap, *changes) -> list[EvalTrade]:
-    return [EvalTrade(**{k: v for k, v in entry(snap, id=number, **change).items() if k in EvalTrade.model_fields})
-            for number, change in enumerate(changes, start=1)]
+def trades_of(snap, *changes, finder: list[FinderAsker] | None = None) -> EvalSet:
+    return EvalSet(trades=[EvalTrade(**{k: v for k, v in entry(snap, id=number, **change).items()
+                                        if k in EvalTrade.model_fields})
+                           for number, change in enumerate(changes, start=1)], finder=finder or [])
 
 
 def read_file(out_dir: Path, number: int) -> dict:
@@ -269,6 +275,68 @@ def test_the_summary_lines_give_the_leans_the_cost_and_the_time(snap, weeks, tmp
     assert any(line.startswith("Cost: $") and "Claude $" in line and "Jev $" in line for line in lines)
     assert any(line.startswith("Time: ") and line.endswith(" s.") for line in lines)
     assert any(line.startswith("trade 2: ") and "Nobody Atall" in line for line in lines)
+
+
+def test_the_test_set_loads_each_finder_asker_and_ignores_the_saved_run(snap, tmp_path):
+    path = write_test_set(tmp_path / "set.json", entry(snap),
+                          finder=[{"asker": snap.teams[4].name, "weak": {}, "pick": {"parsed": None}}])
+    assert load_test_set(path).finder == [FinderAsker(asker=snap.teams[4].name)]
+
+
+class StubPick:
+    """The Claude call of the Finder pick: it picks the first offer of the message with two Bullets that cite the first
+    two facts of that offer and say no name and no number. It counts the calls it got."""
+
+    def __init__(self):
+        self.calls = 0
+
+    def __call__(self, system, user, output_model):
+        self.calls += 1
+        first = user.split("\nOffer ")[1]
+        offer_id = first.split("\n", 1)[0].strip()
+        fact_ids = re.findall(r"^- (\S+): ", first, re.MULTILINE)
+        bullets = [{"text": "This trade helps the asker.", "mark": "for", "fact_id": fact_ids[0]},
+                   {"text": "The other side gets depth.", "mark": "even", "fact_id": fact_ids[1]}]
+        return FinderPickOut.model_validate({"picks": [{"offer_id": offer_id, "lean": "Gut call",
+                                                        "headline": "A swap that fits both teams.",
+                                                        "bullets": bullets}], "none_line": None})
+
+
+def test_the_eval_runs_the_finder_of_each_asker_on_the_newest_week_and_saves_the_picks(snap, weeks, tmp_path):
+    picker = StubPick()
+    summary = run_eval(trades_of(snap, {}, finder=[FinderAsker(asker=snap.teams[4].name)]), weeks, jev=FakeJev(),
+                       call=StubAdvisor(), out_dir=tmp_path, meter=Meter(), finder_call=picker)
+    saved = json.loads((tmp_path / "finder-1.json").read_text())
+    assert saved["error"] is None and saved["week"] == 6 and saved["asker"] == snap.teams[4].name
+    assert saved["offers"] > 0 and 0 < len(saved["shortlist"]) <= 10
+    assert len(saved["picks"]) == 1 and saved["picks"][0]["offer_id"] == saved["shortlist"][0]["offer_id"]
+    assert saved["picks"][0]["headline"] == "A swap that fits both teams."
+    assert all(b["fact_text"] for b in saved["picks"][0]["bullets"])
+    assert picker.calls == 1 and saved["claude_calls"] == 1
+    # FakeJev reads 100 tokens per question, so the press has a Jev cost and no Claude cost from the stub.
+    assert saved["cost"] > 0
+    assert summary["finder"] == {"1": {"asker": snap.teams[4].name, "week": 6, "picks": 1, "fallback": False,
+                                       "error": None, "cost": saved["cost"], "seconds": saved["seconds"]}}
+    assert weeks.asked == [6]
+    assert any(line.startswith("finder 1: 1 pick, $") for line in summary_lines(summary))
+
+
+def test_a_finder_asker_with_an_unknown_team_is_an_error_and_the_trades_still_read(snap, weeks, tmp_path):
+    summary = run_eval(trades_of(snap, {}, finder=[FinderAsker(asker="No Such Team")]), weeks, jev=FakeJev(),
+                       call=StubAdvisor(), out_dir=tmp_path, meter=Meter(), finder_call=StubPick())
+    assert "No Such Team" in summary["finder"]["1"]["error"]
+    assert summary["leans"] == {"1": "Gut call"}
+    assert any(line.startswith("finder 1: error, ") for line in summary_lines(summary))
+
+
+def test_the_finder_pick_costs_the_sonnet_prices():
+    usage = type("Usage", (), {"input_tokens": 1_000_000, "cache_read_input_tokens": 1_000_000,
+                               "cache_creation_input_tokens": 1_000_000, "output_tokens": 1_000_000})
+    meter = Meter()
+    meter.add_claude(usage, prices=SONNET_PRICES)
+    assert claude_cost(usage, SONNET_PRICES) == pytest.approx(2.0 + 0.10 + 4.0 + 10.0)
+    assert meter.claude_usd == pytest.approx(16.10) and meter.claude_calls == 1
+    assert claude_cost(usage) == pytest.approx(4.0 + 0.20 + 8.0 + 20.0)
 
 
 def _eval_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch) -> Path:
