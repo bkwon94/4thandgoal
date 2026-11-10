@@ -19,6 +19,7 @@ from pydantic_ai.models.function import AgentInfo, DeltaToolCall, DeltaToolCalls
 
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.app import create_app
+from cornerstone_api.ask import FREE_ROUTE_SECONDS, FreeRoutes
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
@@ -33,6 +34,7 @@ NOW = datetime(2026, 11, 11, 12, 0, tzinfo=ET)
 PASSPHRASE = "cornerstone-test"
 PASS = {"X-League-Passphrase": PASSPHRASE}
 FREE = "/clients/cpc/ask/free"
+ASK = "/clients/cpc/ask"
 LIL_FRIDGE = 3
 BO_GIRDS = 6
 INTERNAL = ("Jev", "Advisor", "Finder")
@@ -147,6 +149,12 @@ def _text(chunks: list[dict]) -> str:
 
 
 def _ask(api: TestClient, question: str, roster_id: int = LIL_FRIDGE, **extra):
+    """The two calls of the site: the ask route first, then the stream of the free answer with the same body."""
+    api.post(ASK, json={"question": question, "roster_id": roster_id, "week": 8}, headers=PASS)
+    return _free(api, question, roster_id, **extra)
+
+
+def _free(api: TestClient, question: str, roster_id: int = LIL_FRIDGE, **extra):
     return api.post(FREE, json={"question": question, "roster_id": roster_id, "week": 8, **extra}, headers=PASS)
 
 
@@ -421,3 +429,41 @@ def test_an_honest_miss_keeps_nothing_so_a_repeat_asks_claude_again(repo, fixtur
     _ask(api, "highest scoring team this season")
     assert len([c for c in _chunks(_ask(api, "highest scoring team this season")) if c["type"] == "data-miss"]) == 1
     assert len(script.requests) == 9
+
+
+def _routes(jev: FakeJev) -> list:
+    return [request for request in jev.requests if "tool_results" not in request.state]
+
+
+def test_the_free_answer_reads_the_route_of_the_ask_route_with_no_second_jev_request(repo, fixture_raw_dir):
+    # P9 of the spec: each typed question gets one Jev request, so the stream reads the kept route of /ask.
+    jev = FakeJev(answer=Checks([True]).answer, choose=_choice)
+    api = _api(repo, fixture_raw_dir, jev, Script("standings", {}, _leader).model())
+    chunks = _chunks(_ask(api, "highest scoring team this season"))
+    assert any(c["type"] == "data-suggestion" for c in chunks)
+    assert len(_routes(jev)) == 1
+
+
+def test_a_free_answer_with_no_route_from_the_ask_route_gets_409_and_no_jev_or_claude_call(repo, fixture_raw_dir):
+    # Only a question that the ask route sent to a free answer reaches Claude, whatever the client sends.
+    jev = FakeJev(answer=Checks([True]).answer, choose=_choice)
+    script = Script("standings", {}, _leader)
+    api = _api(repo, fixture_raw_dir, jev, script.model())
+    assert _free(api, "highest scoring team this season").status_code == 409
+    # A route of another team or another question is not the route of this body.
+    api.post(ASK, json={"question": "week 1 results", "roster_id": LIL_FRIDGE, "week": 8}, headers=PASS)
+    assert _free(api, "week 1 results", roster_id=BO_GIRDS).status_code == 409
+    assert _free(api, "highest scoring team this season").status_code == 409
+    assert len(_routes(jev)) == 1
+    assert script.requests == []
+
+
+def test_a_kept_free_route_ends_after_its_time_limit(repo, fixture_raw_dir):
+    clock = [0.0]
+    script = Script("standings", {}, _leader)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=Checks([True]).answer, choose=_choice), script.model())
+    api.app.state.askers["cpc"].free_routes = FreeRoutes(now=lambda: clock[0])
+    api.post(ASK, json={"question": "week 1 results", "roster_id": LIL_FRIDGE, "week": 8}, headers=PASS)
+    clock[0] = FREE_ROUTE_SECONDS
+    assert _free(api, "week 1 results").status_code == 409
+    assert script.requests == []

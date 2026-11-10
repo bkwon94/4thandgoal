@@ -24,11 +24,10 @@ from pydantic_ai.ui.vercel_ai.response_types import BaseChunk, DoneChunk, Finish
 from analyzer.routes import ServedClient
 from cornerstone_api import free_tools
 from cornerstone_api.answer_store import AnswerStore
-from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Route, route_question
+from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Route
 from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data, kept_text
 from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt, run_instructions
 from facts.writer import route_model
-from league.jev_port import JevError
 from league.live import fetch_live_week
 from league.paths import history_root
 
@@ -233,19 +232,16 @@ def season_data(served: Any, season: int, week: int, teams: dict[int, str]) -> f
 @router.post("/ask/free")
 async def free(body: FreeRequest, asker: ClientAsker, served: ServedClient,
                request: Request) -> StreamingResponse:
-    """The stream of one free answer. The route runs again first, so only a question that Jev routes to a free answer
-    reaches Claude, whatever the client sends."""
+    """The stream of one free answer. It reads the free route that the ask route gave for the same question, team, and
+    week, so the question gets no second Jev request. A question with no kept free route gets 409 and no Claude call,
+    so only a question that Jev routes to a free answer reaches Claude, whatever the client sends."""
     rosters = await anyio.to_thread.run_sync(asker.rosters)
     if body.roster_id not in rosters:
         raise HTTPException(status_code=422, detail="Pick your team again.")
     question = body.question.strip()
-    try:
-        route = await anyio.to_thread.run_sync(route_question, asker.jev, question, list(rosters.values()),
-                                               asker.season, body.week)
-    except JevError as error:
-        logger.warning("The route of a free answer failed (%s)", type(error).__name__)
-        raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
-    if route.kind != "free":
+    route = asker.free_routes.get(body.roster_id, body.week, question)
+    if route is None:
+        logger.info("A free answer had no free route from the ask route, so it makes no Claude call")
         raise HTTPException(status_code=409, detail="This question has no free answer. Ask again.")
     deps = FreeDeps(data=season_data(served, asker.season, body.week, rosters))
     instructions = run_instructions(asker.season, body.week, rosters[body.roster_id], route.team)
