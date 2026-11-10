@@ -1,0 +1,4 @@
+$ rg -il 'jev|evidence-flags' .claude/plugin/skills
+.claude/plugin/skills/implement/evidence.md
+.claude/plugin/skills/implement/pr.md
+exit: 0

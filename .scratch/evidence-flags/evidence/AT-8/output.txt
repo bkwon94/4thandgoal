@@ -1,0 +1,54 @@
+# The script, labels.py:
+"""Count the labels of the evidence-flags label file, and search it for each manager name.
+A manager name is the team name and the owner of each entry of clients/cpc/build/2026/managers.json."""
+import json
+from collections import Counter
+from pathlib import Path
+
+labels_path = Path("apps/pipeline/src/cornerstone/evidence_labels.json")
+labels = json.loads(labels_path.read_text())
+text = labels_path.read_text().lower()
+print(f"tests: {len(labels['tests'])}")
+for label, count in sorted(Counter(t["label"] for t in labels["tests"]).items()):
+    print(f"{label}: {count}")
+managers = json.loads(Path("clients/cpc/build/2026/managers.json").read_text())["managers"]
+names = [n for m in managers for n in (m["team"]["name"], m["team"]["owner"])]
+found = [n for n in names if n.lower() in text]
+print(f"manager names searched: {len(names)}")
+for n in names:
+    print(f"  {n!r}: {'found' if n.lower() in text else 'not found'}")
+print(f"manager names found: {len(found)} {found}")
+
+# Its output:
+$ python3 -I .scratch/evidence-flags/evidence/AT-8/labels.py
+tests: 56
+defect: 5
+gap: 7
+pass: 44
+manager names searched: 24
+  'The Blue Tent': not found
+  'tjhong0104': not found
+  'All You Need Is Love': not found
+  'wsh5022': not found
+  'Lil Fridge': not found
+  'TeamJu': not found
+  'NFC Least': not found
+  'justinjjoo': not found
+  'London Cooking': not found
+  'DumpsterFiresRUs': not found
+  'Bo Girds': not found
+  'bkwon': not found
+  'To Infinity and Bijan': not found
+  'bjpicard96': not found
+  'Return of T Mac': not found
+  'jkwak03': not found
+  "Maye d'force B with U": not found
+  'dkim475': not found
+  'behold the lamb': not found
+  'steveekimm': not found
+  'Unsolicited Dak Picks': not found
+  'mkim120': not found
+  'Teehee': not found
+  'pdurkim': not found
+manager names found: 0 []
+exit: 0

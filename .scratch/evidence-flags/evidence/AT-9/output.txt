@@ -1,0 +1,13 @@
+$ uv run --exact --package cornerstone pytest apps/pipeline/tests/test_evidence_flags_eval.py -v -k test_a_jev_error_counts_each_test_as_an_error_never_as_a_miss_or_a_pass
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/aaecc628-e399-4c35-b1c5-763662abb3bc/scratchpad/evidence-flags-ev/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/aaecc628-e399-4c35-b1c5-763662abb3bc/scratchpad/evidence-flags-ev/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 4 items / 3 deselected / 1 selected
+
+apps/pipeline/tests/test_evidence_flags_eval.py::test_a_jev_error_counts_each_test_as_an_error_never_as_a_miss_or_a_pass PASSED [100%]
+
+======================= 1 passed, 3 deselected in 0.28s ========================
+exit: 0

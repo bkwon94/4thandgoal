@@ -1,0 +1,2 @@
+$ git diff main -- .claude/plugin/skills/implement/judge.md
+exit: 0

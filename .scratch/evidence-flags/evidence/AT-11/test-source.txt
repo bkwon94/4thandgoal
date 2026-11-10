@@ -1,0 +1,19 @@
+# apps/pipeline/tests/test_evidence_flags.py, lines 188 to 204, at ce7257c6
+
+def test_a_state_over_32_mib_sends_the_shots_that_fit_in_the_order_of_files_and_logs_the_cut(tmp_path, capsys):
+    names = [f"shot-{n}.png" for n in range(1, 7)]
+    folder = _one_test(tmp_path, ["steps.txt", *names])
+    (folder / "evidence" / "AT-1" / "steps.txt").write_text("1. Open the page.\n", encoding="utf-8")
+    for name in names:
+        _png(folder / "evidence" / "AT-1" / name, 1568, 1568, noise=True)
+    jev = FakeJev(yes=0.95)
+
+    code = cli.main(["evidence-flags", "demo", "--root", str(tmp_path)], jev=jev)
+
+    assert code == 0
+    evidence = jev.requests[0].state["evidence"]
+    sent = list(evidence["screenshots"])
+    assert 0 < len(sent) < len(names)
+    assert sent == [f"evidence/AT-1/{name}" for name in names[:len(sent)]]
+    assert evidence["text_files"] == {"evidence/AT-1/steps.txt": "1. Open the page.\n"}
+    assert capsys.readouterr().out.strip().splitlines()[-1].endswith(", 1 cut")

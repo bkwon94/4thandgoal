@@ -1,0 +1,13 @@
+$ uv run --exact --package cornerstone pytest apps/pipeline/tests/test_evidence_flags.py -v -k test_a_fact_that_no_file_shows_gets_an_open_flag_and_a_test_with_no_files_gets_no_request
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/aaecc628-e399-4c35-b1c5-763662abb3bc/scratchpad/evidence-flags-ev/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/aaecc628-e399-4c35-b1c5-763662abb3bc/scratchpad/evidence-flags-ev/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 18 items / 17 deselected / 1 selected
+
+apps/pipeline/tests/test_evidence_flags.py::test_a_fact_that_no_file_shows_gets_an_open_flag_and_a_test_with_no_files_gets_no_request PASSED [100%]
+
+======================= 1 passed, 17 deselected in 0.14s =======================
+exit: 0

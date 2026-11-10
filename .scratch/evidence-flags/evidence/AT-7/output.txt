@@ -1,0 +1,176 @@
+$ uv run --exact --package cornerstone cornerstone evidence-flags-eval
+Uninstalled 3 packages in 5ms
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 163ms (request req_01a1c790db667224a41fe04e45f3a0aa)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 173ms (request req_01a1c790db6e75268b3bfe946b21bb65)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 72ms (request req_01a1c790dbed783c9c1c87ebd5df285a)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 514ms (request req_01a1c790dc8372648a4b3d911ffe9b06)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 130ms (request req_01a1c790de6c7522a9df07c642b74675)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 734ms (request req_01a1c790dccc74b9946dfe6a77c45b28)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 427ms (request req_01a1c790ddd279f983d7f78a7b8e3ea4)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 66ms (request req_01a1c790df1b7c15a44e8624742b3094)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 91ms (request req_01a1c790df207c1f8aadfed2ee97a318)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 64ms (request req_01a1c790df537150ab6f101403c7bb19)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 545ms (request req_01a1c790de4375d891eb97428c8f4e26)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 59ms (request req_01a1c790df9975d1bd2c0a64df884215)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 62ms (request req_01a1c790dfb57cbda5bb47c3ff95d599)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 62ms (request req_01a1c790dff67236a481da43c4a021ec)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 77ms (request req_01a1c790dff9759397dcf7860fba4afb)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 341ms (request req_01a1c790e1ba7febab6aebb851065475)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 400ms (request req_01a1c790e1dd72c6b46da67a77038fa9)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 535ms (request req_01a1c790e17b730eaa01c61af3812abc)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 74ms (request req_01a1c790e360769aba0a9f342339e099)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 640ms (request req_01a1c790e1ee749695d447b13a395b5a)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 65ms (request req_01a1c790e3dc75219a17134d5e62661c)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 53ms (request req_01a1c790e4437d2588162f21bfafac75)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 102ms (request req_01a1c790e4287e82964eb44c7c01cb02)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 296ms (request req_01a1c790e3c1722ab3c6b3dc9892e794)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 59ms (request req_01a1c790e4da7d418fafd9ebcebd251b)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 117ms (request req_01a1c790e56272c0b8cc4c926e139967)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 81ms (request req_01a1c790e6087628a985a8f135c97143)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 480ms (request req_01a1c790e53672b191ae629053a3dcf4)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 336ms (request req_01a1c790e5ca72b3bf064c0d6d763d9a)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 162ms (request req_01a1c790e69073308963a5fcc08771fe)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 45ms (request req_01a1c790e705773f83ee9f0c6aceadbf)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 78ms (request req_01a1c790e6f278a3b7bfda8eee281387)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 50ms (request req_01a1c790e7457be593772c1ffb55bb3d)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 450ms (request req_01a1c790e602798ea68ca12804ce44a6)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 129ms (request req_01a1c790e75f7c498976575ba708e35b)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 75ms (request req_01a1c790e7c07627853d8edb5c2191d2)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 95ms (request req_01a1c790e7c6798a9f73483fabcd2f07)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 110ms (request req_01a1c790e850783385e69ec146616d43)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 192ms (request req_01a1c790e9677d36a3d92e304682ab3e)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 373ms (request req_01a1c790e97d71aa9d31a83b8870fcb5)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 377ms (request req_01a1c790e9ac7de8903695ed3bdfa2c8)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 73ms (request req_01a1c790eaac7b3d84b2825d2da6cfb2)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 492ms (request req_01a1c790e9b67b2cbed30cca652fff46)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 487ms (request req_01a1c790ebd876a9bc65367b584f2f9c)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 299ms (request req_01a1c790ec8172778185298db4e29013)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 481ms (request req_01a1c790ec2e7777be526febd62f8456)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 550ms (request req_01a1c790ec44700081d5aa4b6655755c)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 174ms (request req_01a1c790ee3571d59703ef6f553198a3)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 220ms (request req_01a1c790ee8576348603a1234241c82b)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 232ms (request req_01a1c790ef9e737baab242aea3ed93ae)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 173ms (request req_01a1c790efdf7628950c10892a6981c2)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 65ms (request req_01a1c790f0807ff4a1447c398d14e7e7)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 369ms (request req_01a1c790efe275fc86bb8d7188ad53f6)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 447ms (request req_01a1c790efd4752282eb442273d2fa16)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 164ms (request req_01a1c790f09979caa84cec5cccbf62e9)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 204ms (request req_01a1c790f12a73be93b0e89b827e29ba)
+easter-eggs AT-3 at 8d646bd0 (gap, fact): (a) 0.82
+easter-eggs AT-34 at 8d646bd0 (defect): (b) 0.95
+easter-eggs AT-41 at 8d646bd0 (defect): (c) 0.97, cut
+easter-eggs AT-50 at 8d646bd0 (defect): (a) 0.85
+easter-eggs AT-50 at 35ca282e (gap, observation): no flags
+easter-eggs AT-32 at 566d11e7 (gap, motion): (b) 0.98
+easter-eggs AT-34 at 566d11e7 (gap, motion): (b) 0.95
+easter-eggs AT-54 at 9582a573 (gap, observation): (d) 0.87
+easter-eggs AT-55 at 9582a573 (gap, observation): (d) 0.84
+manager-brain AT-19 at 878ccd3a (defect): (a) 0.84
+manager-brain AT-36 at 878ccd3a (defect): (a) 0.85
+manager-brain AT-47 at 878ccd3a (gap, fact): no flags, cut
+easter-eggs AT-11 at 46abaa50 (pass): no flags
+easter-eggs AT-22 at 46abaa50 (pass): no flags
+easter-eggs AT-7 at 46abaa50 (pass): no flags
+easter-eggs AT-20 at 46abaa50 (pass): no flags
+easter-eggs AT-24 at 46abaa50 (pass): no flags, cut
+easter-eggs AT-43 at 46abaa50 (pass): no flags, cut
+easter-eggs AT-49 at 46abaa50 (pass): no flags
+easter-eggs AT-38 at 46abaa50 (pass): no flags
+easter-eggs AT-37 at 46abaa50 (pass): (a) 0.82
+manager-brain AT-12 at a64a0b91 (pass): no flags
+manager-brain AT-50 at a64a0b91 (pass): no flags
+manager-brain AT-22 at a64a0b91 (pass): no flags
+manager-brain AT-15 at a64a0b91 (pass): no flags
+manager-brain AT-43 at a64a0b91 (pass): no flags, cut
+manager-brain AT-46 at a64a0b91 (pass): no flags
+manager-brain AT-49 at a64a0b91 (pass): (d) 0.72
+manager-brain AT-44 at a64a0b91 (pass): no flags
+jev AT-9 at 47b1dc6d (pass): no flags
+jev AT-3 at 47b1dc6d (pass): no flags
+jev AT-6 at 47b1dc6d (pass): no flags
+jev AT-10 at 47b1dc6d (pass): no flags
+jev AT-8 at 47b1dc6d (pass): no flags
+jev AT-7 at 47b1dc6d (pass): no flags
+egg-polish AT-15 at d09f540a (pass): no flags
+egg-polish AT-12 at d09f540a (pass): no flags
+egg-polish AT-32 at d09f540a (pass): (d) 0.71
+egg-polish AT-35 at d09f540a (pass): (d) 0.90
+egg-polish AT-14 at d09f540a (pass): no flags
+egg-polish AT-10 at d09f540a (pass): no flags
+egg-polish AT-11 at d09f540a (pass): no flags
+card-polish AT-8 at 2813de83 (pass): no flags, cut
+card-polish AT-10 at 2813de83 (pass): no flags
+card-polish AT-25 at 2813de83 (pass): no flags
+card-polish AT-3 at 2813de83 (pass): (a) 0.76, cut
+card-polish AT-29 at 2813de83 (pass): no flags
+card-polish AT-11 at 2813de83 (pass): no flags, cut
+card-polish AT-17 at 2813de83 (pass): no flags, cut
+hero-slots AT-4 at f9304b5e (pass): no flags
+hero-slots AT-6 at f9304b5e (pass): no flags
+hero-slots AT-12 at f9304b5e (pass): no flags
+hero-slots AT-29 at f9304b5e (pass): no flags
+hero-slots AT-16 at f9304b5e (pass): no flags
+hero-slots AT-35 at f9304b5e (pass): no flags
+hero-slots AT-43 at f9304b5e (pass): no flags
+(a) the facts, cut 0.70, kind fact: 1 hits, 1 misses of 2 gaps, 2 false flags of 44 pass tests, 0 errors, meets the bar: yes
+(b) motion, cut 0.70, kind motion: 2 hits, 0 misses of 2 gaps, 0 false flags of 44 pass tests, 0 errors, meets the bar: yes
+(c) cut-off text, cut 0.90, kind cut-text: 0 hits, 0 misses of 0 gaps, 0 false flags of 44 pass tests, 0 errors, meets the bar: no
+(d) the Observation, cut 0.70, kind observation: 2 hits, 1 misses of 3 gaps, 3 false flags of 44 pass tests, 0 errors, meets the bar: yes
+Evidence flags eval: 56 tests, 0 errors, 664904 input tokens, 9 cut
+exit: 0

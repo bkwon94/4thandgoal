@@ -1,0 +1,73 @@
+# The text of each question
+$ rg -n -F --glob '!**/tests/**' 'show this fact from the Then line' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:37:FACT_SHOWN = "Do the files in `evidence` show this fact from the Then line of `test`: \"{fact}\"?"
+exit: 0
+
+$ rg -n -F --glob '!**/tests/**' 'describe something that moves or animates on the screen over time' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:83:ASKS_MOTION = "Does the Then line of `test` describe something that moves or animates on the screen over time?"
+exit: 0
+
+$ rg -n -F --glob '!**/tests/**' 'log animation values' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:91:    "Does a file in `evidence.text_files` log animation values, such as opacity, scale, a transform, "
+exit: 0
+
+$ rg -n -F --glob '!**/tests/**' 'cut off or too big for its space' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:137:    "cut off or too big for its space?"
+apps/pipeline/src/cornerstone/evidence_questions.py:161:    return answers[key], f"The shot `{path}` may show the text of the Then line cut off or too big for its space."
+exit: 0
+
+$ rg -n -F --glob '!**/tests/**' 'show this statement of `agent_observation`' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:172:OBS_SHOWN = "Do the files in `evidence` show this statement of `agent_observation`: \"{sentence}\"?"
+exit: 0
+
+$ rg -n -F --glob '!**/tests/**' 'report a result that the Then line of' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:179:    "Does this statement of `agent_observation` report a result that the Then line of `test` asks for: \"{sentence}\"?"
+exit: 0
+
+# Each cut
+$ rg -n -F --glob '!**/tests/**' 'cut=0.7' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:77:FACTS = Question(key="a", name="the facts", kind="fact", cut=0.7, in_flow=True, nouls=_fact_nouls,
+apps/pipeline/src/cornerstone/evidence_questions.py:129:MOTION = Question(key="b", name="motion", kind="motion", cut=0.7, in_flow=True, nouls=_motion_nouls,
+apps/pipeline/src/cornerstone/evidence_questions.py:221:OBSERVATION = Question(key="d", name="the Observation", kind="observation", cut=0.7, in_flow=True,
+exit: 0
+
+$ rg -n -F --glob '!**/tests/**' 'cut=0.9' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:166:CUT_TEXT = Question(key="c", name="cut-off text", kind="cut-text", cut=0.9, in_flow=False, nouls=_cut_text_nouls,
+exit: 0
+
+$ rg -n --glob '!**/tests/**' '\bcut\s*=\s*0\.' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:77:FACTS = Question(key="a", name="the facts", kind="fact", cut=0.7, in_flow=True, nouls=_fact_nouls,
+apps/pipeline/src/cornerstone/evidence_questions.py:129:MOTION = Question(key="b", name="motion", kind="motion", cut=0.7, in_flow=True, nouls=_motion_nouls,
+apps/pipeline/src/cornerstone/evidence_questions.py:166:CUT_TEXT = Question(key="c", name="cut-off text", kind="cut-text", cut=0.9, in_flow=False, nouls=_cut_text_nouls,
+apps/pipeline/src/cornerstone/evidence_questions.py:221:OBSERVATION = Question(key="d", name="the Observation", kind="observation", cut=0.7, in_flow=True,
+exit: 0
+
+# The bar values
+$ rg -n -F --glob '!**/tests/**' 'BAR_HIT_RATE' apps packages
+apps/pipeline/src/cornerstone/evidence_eval.py:15:from cornerstone.evidence_questions import BAR_FALSE_FLAG_RATE, BAR_HIT_RATE, QUESTIONS, Question
+apps/pipeline/src/cornerstone/evidence_eval.py:92:        return (self.gaps > 0 and self.passes > 0 and self.hits / self.gaps >= BAR_HIT_RATE
+apps/pipeline/src/cornerstone/evidence_questions.py:13:BAR_HIT_RATE = 0.5
+exit: 0
+
+$ rg -n -F --glob '!**/tests/**' 'BAR_FALSE_FLAG_RATE' apps packages
+apps/pipeline/src/cornerstone/evidence_eval.py:15:from cornerstone.evidence_questions import BAR_FALSE_FLAG_RATE, BAR_HIT_RATE, QUESTIONS, Question
+apps/pipeline/src/cornerstone/evidence_eval.py:93:                and self.false_flags / self.passes <= BAR_FALSE_FLAG_RATE)
+apps/pipeline/src/cornerstone/evidence_questions.py:14:BAR_FALSE_FLAG_RATE = 0.10
+exit: 0
+
+$ rg -n --glob '!**/tests/**' '= *0\.(5|10?)\b' apps/pipeline/src/cornerstone/evidence_*.py packages/league/python/src/league/jev*.py
+apps/pipeline/src/cornerstone/evidence_questions.py:13:BAR_HIT_RATE = 0.5
+apps/pipeline/src/cornerstone/evidence_questions.py:14:BAR_FALSE_FLAG_RATE = 0.10
+exit: 0
+
+# The in-flow marks
+$ rg -n -F --glob '!**/tests/**' 'in_flow=True' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:77:FACTS = Question(key="a", name="the facts", kind="fact", cut=0.7, in_flow=True, nouls=_fact_nouls,
+apps/pipeline/src/cornerstone/evidence_questions.py:129:MOTION = Question(key="b", name="motion", kind="motion", cut=0.7, in_flow=True, nouls=_motion_nouls,
+apps/pipeline/src/cornerstone/evidence_questions.py:221:OBSERVATION = Question(key="d", name="the Observation", kind="observation", cut=0.7, in_flow=True,
+exit: 0
+
+$ rg -n -F --glob '!**/tests/**' 'in_flow=False' apps packages
+apps/pipeline/src/cornerstone/evidence_questions.py:166:CUT_TEXT = Question(key="c", name="cut-off text", kind="cut-text", cut=0.9, in_flow=False, nouls=_cut_text_nouls,
+exit: 0
+
