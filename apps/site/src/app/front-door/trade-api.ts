@@ -1,9 +1,9 @@
 /**
- * The client of the trade Topics of the API, the trade check and trade ideas, with the Zod schema of each part. The
- * API streams a plain step for each stage, then the whole Answer, as `data:` lines of an event stream.
+ * The client of the trade Topics of the API, the trade check, trade ideas, and sell high, with the Zod schema of each
+ * part. The API streams a plain step for each stage, then the whole Answer, as `data:` lines of an event stream.
  */
 import { z } from "zod";
-import { analyzeResponseSchema, findResponseSchema } from "@cpc/analyzer/lib/schemas/api";
+import { analyzeResponseSchema, asOfSchema, bulletSchema, findResponseSchema, tradedPlayerSchema } from "@cpc/analyzer/lib/schemas/api";
 import { AskError, type AskTarget } from "./ask-api";
 
 /* The form of the Trade page for an unsure pick: Your team, the partner of a sure player, and each sure player. */
@@ -15,11 +15,24 @@ export const tradeFormSchema = z.object({
 });
 export type TradeForm = z.infer<typeof tradeFormSchema>;
 
-/* The whole Answer of a trade Topic: the read of a trade check, the form of an unsure pick, or the trade ideas. */
+/* The sell high document: Your team, and each player of its roster to sell with the headline and the Bullets of why,
+   or the plain line of a roster with no clear sell. */
+export const sellHighSchema = z.object({
+  season: z.number(),
+  team: z.object({ roster_id: z.number(), team: z.string() }),
+  picks: z.array(z.object({ player: tradedPlayerSchema, headline: z.string(), bullets: z.array(bulletSchema) })),
+  empty: z.string().nullable(),
+  as_of: asOfSchema,
+});
+export type SellHigh = z.infer<typeof sellHighSchema>;
+
+/* The whole Answer of a trade Topic: the read of a trade check, the form of an unsure pick, the trade ideas, or the
+   players to sell. */
 export const tradeAnswerSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("check"), document: analyzeResponseSchema }),
   z.object({ kind: z.literal("form"), form: tradeFormSchema }),
   z.object({ kind: z.literal("ideas"), document: findResponseSchema }),
+  z.object({ kind: z.literal("sell"), document: sellHighSchema }),
 ]);
 export type TradeAnswer = z.infer<typeof tradeAnswerSchema>;
 
@@ -36,7 +49,11 @@ export type TradeEvents = { onStep: (line: string) => void; onAnswer: (answer: T
 /* The body of each route: the typed question of a trade check, or the partner that a question of trade ideas names. */
 export type TradeRequest =
   | { mode: "check"; question: string; roster_id: number }
-  | { mode: "ideas"; roster_id: number; partner: number | null };
+  | { mode: "ideas"; roster_id: number; partner: number | null }
+  | { mode: "sell"; roster_id: number };
+
+/* The path of the route of each mode, after /clients/<slug>/. */
+const ROUTE_PATH: Record<TradeRequest["mode"], string> = { check: "trade-check", ideas: "trade-ideas", sell: "sell-high" };
 
 /* Read each `data:` line of `body` and give its part to `events`. A line of no known type, such as the start, is
    skipped. An error part throws an AskError with its status and its line. */
@@ -71,7 +88,7 @@ export async function streamTrade(target: AskTarget, passphrase: string, request
   const { mode, ...body } = request;
   let response: Response;
   try {
-    response = await fetch(`${target.url}/clients/${encodeURIComponent(target.client)}/trade-${mode}`, {
+    response = await fetch(`${target.url}/clients/${encodeURIComponent(target.client)}/${ROUTE_PATH[mode]}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-League-Passphrase": passphrase },
       body: JSON.stringify(body),
