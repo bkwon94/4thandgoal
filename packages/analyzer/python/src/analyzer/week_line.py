@@ -1,7 +1,7 @@
 """
 The Week line of each side of a grade, for the trade week and the next week: the count of its players who play, the
-opponent of each player it gets, each bye, each player who is out, and each player who steps up. The code writes it,
-and it never moves a letter.
+opponent of each player it gets, each bye, each player who is out, and each player who steps up. The code writes it
+as a plain fact for the page, and the Advisor makes the call.
 """
 from datetime import timedelta
 from zoneinfo import ZoneInfo
@@ -37,7 +37,7 @@ class WeekLine(BaseModel):
 def week_lines(trade: ProposedTrade, snapshot: Snapshot) -> dict[int, list[WeekLine]]:
     """The Week lines of each side by roster id, one for the trade week and one for the next week.
 
-    A next week past the regular season has no line, because the letter already grades the rest of the season.
+    A next week past the regular season has no line, because a Week line covers the weeks of the regular season only.
     """
     weeks = [week for week in (snapshot.week, snapshot.week + 1)
              if week <= snapshot.client.settings.last_regular_week]

@@ -184,7 +184,7 @@ def read_document(trade: ProposedTrade, snapshot: Snapshot, read: TradeRead) -> 
     """The result the site renders: the Lean, the Case, the fairness, then the Bullets and the Week lines per side.
 
     Each Bullet carries the text of its fact, so a tap on the page opens the fact with no logic of the site.
-    It holds no letter and no score.
+    It holds no score, because the Advisor gives a Lean and a Case in words.
     """
     lines = week_lines(trade, snapshot)
     bullets = {side.roster_id: side.bullets for side in read.sides}
@@ -295,7 +295,7 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
     Each trade holds its offer id, its sides, the headline, and the Bullets of the Advisor. A Bullet has the shape of
     the analyze document, so the site renders the rows one way. After a fallback, each trade of the shortlist has no
     headline and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the press, so
-    the page needs no words of its own. No trade holds a letter.
+    the page needs no words of its own. No trade holds a score.
     """
     trades = [
         {
