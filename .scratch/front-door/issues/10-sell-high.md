@@ -10,6 +10,6 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-27.
 
 **Status:** ready-for-agent
 
-- [ ] The Answer names at least one player on the roster of Lil Fridge to sell, with the reason (AT-27).
-- [ ] The route reuses the verifier and the Jev checks of the Advisor. No math screen picks the players.
-- [ ] The steps show before the whole Answer, as in ticket 09.
+- [x] The Answer names at least one player on the roster of Lil Fridge to sell, with the reason (AT-27).
+- [x] The route reuses the verifier and the Jev checks of the Advisor. No math screen picks the players.
+- [x] The steps show before the whole Answer, as in ticket 09.
