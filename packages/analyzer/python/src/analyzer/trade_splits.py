@@ -58,13 +58,15 @@ def season_splits(cache_dir: Path, season: int, gsis: str) -> list[SeasonSplits]
     The reader counts the regular season games of the file. The schedules file gives the cold games, so with no
     schedules file a season has no cold split.
     """
+    # A cache with no past season file gives no split, so the reader skips the schedules file too.
+    pasts = [past for past in past_seasons(season) if past_stats_path(cache_dir, past).exists()]
+    if not pasts:
+        return []
     schedules = cache_path(cache_dir, SCHEDULES_URL, season)
     cold_ids = _cold_games(schedules) if schedules.exists() else set()
     out = []
-    for past in past_seasons(season):
+    for past in pasts:
         path = past_stats_path(cache_dir, past)
-        if not path.exists():
-            continue
         early, late, cold, team = [], [], [], ""
         for row in _rows(path):
             if row["player_id"] != gsis or row["season_type"] != "REG":

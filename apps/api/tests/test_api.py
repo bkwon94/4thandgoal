@@ -20,16 +20,15 @@ import anthropic
 import httpx
 import pytest
 from conftest import strip_trend_numbers
-from cpc import FIXTURE_LEAGUE, cli_root, cpc_client, four_week
+from cpc import FIXTURE_LEAGUE, cli_root, cpc_client
 from fakes import NEWS_RECORDED, FakeJev, recorded_news
 from fastapi.testclient import TestClient
 
 from analyzer.adjusters import INJURY, ROSTER_FIT, SCHEDULE, TREND
 from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import ResultCache, cache_key, finder_cache_key
-from analyzer.finder import find_win_wins
-from analyzer.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
-from analyzer.finder_search import Shortlist, ShortlistOffer, offer_id, search
+from analyzer.finder_pick import NO_OFFER, FinderPickOut, pick_trades
+from analyzer.finder_search import search
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.rubric import ProposedTrade
 from analyzer.trade_news import NewsFeed
@@ -44,7 +43,6 @@ from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_U
 from league.paths import client_dir, league_file
 from league.provider.raw import RawLeague
 from league.provider.sleeper import fetch_news, league_settings, load_raw
-from league.ranks import recent_points_per_game
 from league.snapshot import SnapshotPlayer
 from league.tunables import TEAMS_CACHE_SECONDS
 
@@ -1259,8 +1257,9 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
 NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through", "completed_through",
                "season", "week", "games", "in_progress", "snaps", "usage", "to", "from"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
-# A Season rank and a Recent rank, such as WR60, hold the rank as digits.
-DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name", "season_rank", "recent_rank"}
+# A Season rank and a Recent rank, such as WR60, hold the rank as digits. The offer id of a Finder trade holds ids.
+DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name", "season_rank", "recent_rank",
+                     "offer_id"}
 
 
 # One count of the roster fit reason: the players at a position in the top N, before and after.
@@ -1409,97 +1408,86 @@ def test_a_refresh_needs_the_passphrase(settings, sources):
     assert response.content == b""
 
 
-# The find route. The fixture chart lists mostly stars, so no pair of the week 6 snapshot has a win-win on it.
-# The finder tests give chart rows to the players a test needs, and these tests do the same for rosters 2 and 3,
-# so the pair has three win-wins that share no player.
-CHART_POSITIONS = frozenset({"RB", "WR", "TE", "QB"})
+# The find route. The Finder search runs with FakeJev at the Jev port, and the stub Advisor makes the pick, so the
+# sheets, the guards, the retry, and the fallback of the pick run with no network.
 FIND = {"season": 2026, "asker": 2, "partner": 3}
+HEADLINE = "A swap that fits both lineups."
 
 
-@pytest.fixture
-def find_sources(settings, sources, chart_week6, fixture_raw_dir):
-    """The sources with a chart row for every RB, WR, TE, and QB of rosters 2 and 3, at his recent points per game.
-
-    The fetch has no week 6 stat lines, as before the first week 6 game, so the trades match the find fixture.
-    """
-    def before_kickoff(league_id):
-        raw = load_raw(fixture_raw_dir)
-        raw.stats = []
-        return raw, FETCHED
-
-    sources = dataclasses.replace(sources, fetch_sleeper=before_kickoff)
-    snapshot = _here(sources, settings).snapshot(2026)
-    rows = {pid: float(max(1, round(recent_points_per_game(snapshot, pid))))
-            for roster_id in (2, 3) for pid in snapshot.rosters[roster_id]
-            if snapshot.players[pid].position in CHART_POSITIONS and pid not in chart_week6.values}
-    chart = chart_week6.model_copy(update={"values": {**chart_week6.values, **rows}})
-    return dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines, **_: chart)
+def passing_pick(user: str, **changes) -> dict:
+    """A pick that passes every guard: the first offers of the shortlist, up to 3, each Bullet on the week fact."""
+    offers = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)[:3]
+    bullets = [{"text": "The trade lands in the middle of the season.", "mark": "for", "fact_id": "trade.week"},
+               {"text": "The other manager gets help where he needs it.", "mark": "for", "fact_id": "trade.week"}]
+    out = {"picks": [{"offer_id": offer, "headline": HEADLINE, "bullets": bullets} for offer in offers],
+           "none_line": None}
+    return out | changes
 
 
-class FakeFinderClaude:
-    """The Claude call of the finder with no network: one reason per trade in the user message.
+class StubPicker:
+    """The Claude call of the Finder pick with no network: it answers from a list of builders, one per call.
 
-    `texts` gives the reason text of each attempt in turn. The last text repeats past the end of the list.
+    Each builder takes the user message and gives the output. The last builder answers every later call.
     """
 
-    TEXT = "Each side fills a need at a position it starts every week."
-
-    def __init__(self, *texts):
-        self.texts = list(texts) or [self.TEXT]
-        self.calls = []
+    def __init__(self, *builders):
+        self.builders = list(builders) or [passing_pick]
+        self.calls: list[tuple[str, str]] = []
 
     def __call__(self, system, user, output_model):
+        assert output_model is FinderPickOut
         self.calls.append((system, user))
-        text = self.texts[min(len(self.calls), len(self.texts)) - 1]
-        numbers = [int(n) for n in re.findall(r"^Trade (\d+)$", user, re.MULTILINE)]
-        reasons = [{"trade": n, "reason": text,
-                    "cited": re.findall(rf"^- (t{n}\.[\w.]+): ", user, re.MULTILINE)[:1]} for n in numbers]
-        return output_model.model_validate({"reasons": reasons})
+        build = self.builders[min(len(self.calls), len(self.builders)) - 1]
+        return FinderPickOut.model_validate(build(user))
 
 
-def rubric_search(asker, partner, snapshot):
-    """A Finder search at the port with no Jev: the win-wins of the rubric as the shortlist, best first.
+def _no_partner(key, question, state):
+    """A Jev that stops every partner at the partner filter, so the shortlist is empty."""
+    return 0.1 if key.startswith(("partner_", "asker_")) else 0.9
 
-    The tests of the document, the cache, the limit, and the reasons read the same trades as before the Jev search.
+
+def _find_client(settings, sources, picker=None, clock=None, jev=None, news=None):
+    """A client whose Finder search asks `jev` (FakeJev by default) and whose pick makes the call of `picker`.
+
+    With a clock, the grade and general limits read it.
     """
-    trades = [item.trade for item in find_win_wins(asker, partner, snapshot)]
-    return Shortlist(asker=asker, partners=[], targets={}, offers=trades, shortlist=[
-        ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=1.0, needs={}, score=1.0) for trade in trades])
-
-
-def _find_client(settings, sources, fake, clock=None, search=rubric_search):
-    """A client whose finder reasons make the fake call. With a clock, the grade and general limits read it."""
-    client = TestClient(create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=StubAnalyzer(),
-                                   finder_reasons=functools.partial(write_reasons, call=fake), finder_search=search))
+    news = news or NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
+    client = TestClient(create_app(
+        settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=StubAnalyzer(),
+        finder_search=functools.partial(search, jev=jev or FakeJev()),
+        finder_pick=functools.partial(pick_trades, news=news, call=picker or StubPicker())))
     if clock is not None:
         client.app.state.served["cpc"].grade_limiter.clock = clock
         client.app.state.limiter.clock = lambda: clock().timestamp()
     return client
 
 
-def test_find_returns_three_win_win_trades_with_one_reason_each(settings, find_sources):
-    fake = FakeFinderClaude()
-    response = _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS)
+def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_headline_and_bullets(settings, sources):
+    picker = StubPicker()
+    response = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
+                                                            headers=HEADERS)
     assert response.status_code == 200
     doc = response.json()
-    assert len(fake.calls) == 1
+    assert len(picker.calls) == 1
     assert doc["fallback"] is False
     assert doc["empty"] is None
-    assert [team["roster_id"] for team in doc["trade_pair"].values()] == [2, 3]
-    assert len(doc["trades"]) == 3
+    assert 1 <= len(doc["trades"]) <= 3
     for item in doc["trades"]:
-        assert item["fairness"]["state"] == "win_win"
-        assert item["reason"] == FakeFinderClaude.TEXT
+        assert item["headline"] == HEADLINE
+        assert 2 <= len(item["bullets"]) <= 3
+        # Each Bullet carries the text of its fact, so a tap on the card opens the fact.
+        for bullet in item["bullets"]:
+            assert set(bullet) == {"text", "mark", "fact_id", "fact_text"}
+            assert bullet["fact_text"].startswith("The trade is in week")
+        assert item["fact_lines"] == []
         # The asker's side comes first, as in the analyze document.
-        assert [side["roster_id"] for side in item["sides"]] == [2, 3]
+        assert item["sides"][0]["roster_id"] == 2
     assert doc["as_of"]["chart_week"] == 6
-    assert doc["as_of"]["stats_through"] == 5
-    assert doc["as_of"]["completed_through"] == 5
 
 
-def test_find_with_no_partner_runs_the_partner_filter_on_every_other_team(settings, find_sources, caplog):
+def test_find_with_no_partner_runs_the_partner_filter_on_every_other_team(settings, sources, caplog):
     jev = FakeJev()
-    client = _find_client(settings, find_sources, FakeFinderClaude(), search=functools.partial(search, jev=jev))
+    client = _find_client(settings, sources, jev=jev)
     with caplog.at_level("INFO", logger="analyzer"):
         response = client.post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS)
     assert response.status_code == 200
@@ -1510,15 +1498,11 @@ def test_find_with_no_partner_runs_the_partner_filter_on_every_other_team(settin
     filtered = sorted(r.state["teams"]["partner"]["roster_id"] for r in jev.requests if "partner_has" in r.questions)
     assert filtered == [rid for rid in range(1, 13) if rid != 2]
     assert sum("Partner filter of" in record.getMessage() for record in caplog.records) == 11
-    assert 1 <= len(doc["trades"]) <= 3
-    for item in doc["trades"]:
-        assert item["sides"][0]["roster_id"] == 2
 
 
-def test_find_with_a_partner_keeps_every_trade_to_that_partner(settings, find_sources):
+def test_find_with_a_partner_keeps_every_pick_to_that_partner(settings, sources):
     jev = FakeJev()
-    client = _find_client(settings, find_sources, FakeFinderClaude(), search=functools.partial(search, jev=jev))
-    doc = client.post("/find", json=FIND, headers=HEADERS).json()
+    doc = _find_client(settings, sources, jev=jev).post("/find", json=FIND, headers=HEADERS).json()
     assert [r.state["teams"]["partner"]["roster_id"] for r in jev.requests if "partner_has" in r.questions] == [3]
     assert doc["trade_pair"]["partner"]["roster_id"] == 3
     assert doc["trades"]
@@ -1530,13 +1514,14 @@ def test_a_find_with_no_partner_and_one_with_a_partner_have_two_cache_keys(setti
     assert finder_cache_key(2026, 2, None, snapshot) != finder_cache_key(2026, 2, 3, snapshot)
 
 
-def test_find_with_no_win_win_gives_the_empty_line_and_makes_no_claude_call(settings, sources):
-    fake = FakeFinderClaude()
-    doc = _find_client(settings, sources, fake).post("/find", json=FIND, headers=HEADERS).json()
+def test_an_empty_shortlist_gives_the_empty_line_and_makes_no_claude_call(settings, sources):
+    picker = StubPicker()
+    doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_partner)).post(
+        "/find", json=FIND, headers=HEADERS).json()
     assert doc["trades"] == []
-    assert doc["empty"] == "No swap between these rosters is good for both."
+    assert doc["empty"] == NO_OFFER
     assert doc["fallback"] is False
-    assert fake.calls == []
+    assert picker.calls == []
     # The finder reads the same bounds and the same known games as the grade.
     assert doc["as_of"]["stats_through"] == 6
     assert doc["as_of"]["completed_through"] == 5
@@ -1544,30 +1529,26 @@ def test_find_with_no_win_win_gives_the_empty_line_and_makes_no_claude_call(sett
 
 
 def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_call(settings, sources):
-    fake = FakeFinderClaude()
-    client = _find_client(settings, sources, fake, MovingClock(NOW))
+    picker = StubPicker()
+    client = _find_client(settings, sources, picker, MovingClock(NOW), jev=FakeJev(answer=_no_partner))
     first = client.post("/find", json=FIND, headers=HEADERS).json()
     assert first["trades"] == []
     assert client.post("/find", json=FIND, headers=HEADERS).json() == first
-    assert fake.calls == []
+    assert picker.calls == []
     assert json.loads((settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
 
 
 def test_a_find_in_a_week_with_no_chart_answers_and_says_so(settings, fixture_raw_dir):
-    # With no chart every player is unlisted, so the finder finds no win-win and makes no Claude call.
-    fake = FakeFinderClaude()
-    response = _find_client(settings, _no_chart_sources(fixture_raw_dir), fake).post(
-        "/find", json=FIND, headers=HEADERS)
+    response = _find_client(settings, _no_chart_sources(fixture_raw_dir)).post("/find", json=FIND, headers=HEADERS)
     assert response.status_code == 200
     doc = response.json()
-    assert doc["trades"] == []
+    assert doc["trades"]
     assert doc["as_of"]["no_chart"] is True
     assert doc["as_of"]["no_chart_note"] == "This week's player values are not out yet, so both sides start even."
-    assert fake.calls == []
 
 
 def test_find_needs_the_passphrase(settings, sources):
-    response = _find_client(settings, sources, FakeFinderClaude()).post("/find", json=FIND)
+    response = _find_client(settings, sources).post("/find", json=FIND)
     assert response.status_code == 401
     assert response.content == b""
 
@@ -1577,8 +1558,7 @@ def test_find_needs_the_passphrase(settings, sources):
     ({"asker": 2, "partner": 99}, "Roster 99 is not in the league"),
 ])
 def test_find_with_the_same_roster_twice_or_a_roster_not_in_the_league_is_422(settings, sources, pair, message):
-    response = _find_client(settings, sources, FakeFinderClaude()).post(
-        "/find", json={"season": 2026, **pair}, headers=HEADERS)
+    response = _find_client(settings, sources).post("/find", json={"season": 2026, **pair}, headers=HEADERS)
     assert response.status_code == 422
     assert response.json() == {"detail": {"message": message}}
     assert not (settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).exists()
@@ -1587,7 +1567,7 @@ def test_find_with_the_same_roster_twice_or_a_roster_not_in_the_league_is_422(se
 def test_the_sixth_find_in_a_minute_is_429_with_the_minute_text(settings, sources):
     from analyzer.tunables import GRADES_PER_MINUTE
 
-    client = _find_client(settings, sources, FakeFinderClaude(), MovingClock(NOW))
+    client = _find_client(settings, sources, clock=MovingClock(NOW))
     # A new partner each time, so no request is a cached repeat and each one counts as one grade.
     for partner in range(3, 3 + GRADES_PER_MINUTE):
         assert client.post("/find", json={**FIND, "partner": partner}, headers=HEADERS).status_code == 200
@@ -1600,7 +1580,7 @@ def test_the_sixth_find_in_a_minute_is_429_with_the_minute_text(settings, source
 def test_a_find_and_an_analyze_count_against_the_same_grade_limit(settings, sources):
     from analyzer.tunables import GRADES_PER_MINUTE
 
-    client = _find_client(settings, sources, FakeFinderClaude(), MovingClock(NOW))
+    client = _find_client(settings, sources, clock=MovingClock(NOW))
     client.app.state.analyzer = _uncached()
     _drop_store(client.app)
     for _ in range(GRADES_PER_MINUTE - 1):
@@ -1609,15 +1589,15 @@ def test_a_find_and_an_analyze_count_against_the_same_grade_limit(settings, sour
     assert client.post("/find", json={**FIND, "partner": 4}, headers=HEADERS).status_code == 429
 
 
-def test_a_cached_find_repeat_does_not_count_and_makes_no_claude_call(settings, find_sources):
+def test_a_cached_find_repeat_does_not_count_and_makes_no_claude_call(settings, sources):
     from analyzer.tunables import GRADES_PER_MINUTE
 
-    fake = FakeFinderClaude()
-    client = _find_client(settings, find_sources, fake, MovingClock(NOW))
+    picker = StubPicker()
+    client = _find_client(settings, sources, picker, MovingClock(NOW))
     first = client.post("/find", json=FIND, headers=HEADERS).json()
     for _ in range(GRADES_PER_MINUTE):
         assert client.post("/find", json=FIND, headers=HEADERS).json() == first
-    assert len(fake.calls) == 1
+    assert len(picker.calls) == 1
     assert json.loads((settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
 
 
@@ -1630,7 +1610,7 @@ def test_the_find_cache_key_is_the_ordered_pair_and_the_chart_week(settings, sou
     key = finder_cache_key(2026, 2, 3, snapshot)
     # The rosters fetch time moves on every request, so it is not in the key.
     assert finder_cache_key(2026, 2, 3, _with_as_of(snapshot, rosters_fetched=FETCHED.replace(minute=55))) == key
-    # The asker's side comes first and the rank reads the asker's letter, so the other order is another key.
+    # The asker's side comes first, so the other order is another key.
     assert finder_cache_key(2026, 3, 2, snapshot) != key
     assert finder_cache_key(2026, 2, 3, _with_as_of(snapshot, chart_week=7)) != key
     # A finder key never equals the key of a trade in the shared result directory.
@@ -1646,162 +1626,191 @@ def test_the_find_cache_key_changes_with_the_document_version(settings, sources,
     assert finder_cache_key(2026, 2, 3, snapshot) != key
 
 
-def test_the_other_order_of_the_pair_misses_the_cache(settings, find_sources):
-    fake = FakeFinderClaude()
-    client = _find_client(settings, find_sources, fake)
+def test_the_other_order_of_the_pair_misses_the_cache(settings, sources):
+    picker = StubPicker()
+    client = _find_client(settings, sources, picker)
     client.post("/find", json=FIND, headers=HEADERS)
     swapped = client.post("/find", json={**FIND, "asker": 3, "partner": 2}, headers=HEADERS).json()
-    assert len(fake.calls) == 2
+    assert len(picker.calls) == 2
     assert [team["roster_id"] for team in swapped["trade_pair"].values()] == [3, 2]
     assert all(item["sides"][0]["roster_id"] == 3 for item in swapped["trades"])
 
 
-# A reason that names a letter grade. The prose checks of the analysis reject it.
-LETTER_REASON = "Each side moves up to a grade of B in this swap."
+def _offers_in(user: str) -> dict[str, list[str]]:
+    """The fact ids of each offer of a pick message, by offer id."""
+    offers, current = {}, None
+    for line in user.splitlines():
+        if line.startswith("Offer "):
+            current = line.removeprefix("Offer ")
+            offers[current] = []
+        elif current is not None and line.startswith("- "):
+            offers[current].append(line[2:].split(": ", 1)[0])
+    return offers
 
 
-def test_a_failed_claude_call_retries_once_then_each_reason_is_empty(settings, find_sources):
-    fake = FakeFinderClaude(LETTER_REASON)
-    client = _find_client(settings, find_sources, fake)
-    doc = client.post("/find", json=FIND, headers=HEADERS).json()
-    assert len(fake.calls) == 2
-    # The second attempt carries the failures of the first as feedback.
-    assert "Feedback from the last attempt:" in fake.calls[1][1]
-    assert doc["fallback"] is True
-    assert len(doc["trades"]) == 3
-    for item in doc["trades"]:
-        # The fairness block already holds the code's reasons, so the card shows the fairness line alone.
-        assert item["reason"] is None
-        assert all(side["reason"] for side in item["fairness"]["sides"])
-    # A fallback is not stored, so a repeat tries the Claude call again.
-    client.post("/find", json=FIND, headers=HEADERS)
-    assert len(fake.calls) == 4
+def _bad_pick(change):
+    """A builder whose first Bullet of the first pick breaks a guard with `change`."""
+    def build(user):
+        out = passing_pick(user)
+        bullets = out["picks"][0]["bullets"]
+        out["picks"][0]["bullets"] = [bullets[0] | change, *bullets[1:]]
+        return out
+    return build
 
 
-def test_a_reason_that_fails_once_and_passes_on_the_retry_stands(settings, find_sources):
-    fake = FakeFinderClaude(LETTER_REASON, FakeFinderClaude.TEXT)
-    doc = _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS).json()
-    assert len(fake.calls) == 2
-    assert doc["fallback"] is False
-    assert [item["reason"] for item in doc["trades"]] == [FakeFinderClaude.TEXT] * 3
+def _news_pick(user):
+    """A pick of the first offer with a NEWS fact, whose first Bullet cites that fact and names no report."""
+    out = passing_pick(user)
+    offer, fid = next((offer, fid) for offer, ids in _offers_in(user).items() for fid in ids if fid.startswith("NEWS."))
+    bullets = out["picks"][0]["bullets"]
+    out["picks"] = [{"offer_id": offer, "headline": HEADLINE,
+                     "bullets": [bullets[0] | {"fact_id": fid}, *bullets[1:]]}]
+    return out
 
 
-@pytest.fixture
-def found(settings, find_sources):
-    """The week 6 snapshot with the extra chart rows, and the three trades the finder finds for rosters 2 and 3.
-
-    The find fixture is a run with the 4-week measure, so the snapshot takes it and the finder finds the same trades.
-    """
-    snapshot = four_week(_here(find_sources, settings).snapshot(2026))
-    return snapshot, find_win_wins(2, 3, snapshot)
-
-
-def _sheets(snapshot, items):
-    return [trade_facts(n, item, snapshot) for n, item in enumerate(items, start=1)]
-
-
-def _reasons(sheets, texts, cited=None):
-    """One reason per trade. Each cites the first fact of its own trade, unless `cited` gives the IDs for all."""
-    texts = [texts] * len(sheets) if isinstance(texts, str) else texts
-    return FinderReasonsOut.model_validate({"reasons": [
-        {"trade": n, "reason": text, "cited": list(cited) if cited is not None else [next(iter(sheet))]}
-        for n, (sheet, text) in enumerate(zip(sheets, texts), start=1)]})
-
-
-@pytest.mark.parametrize("text, rule", [
-    (LETTER_REASON, "names a letter grade"),
-    ("Each side gets the better letter in this swap.", "the word 'letter' is not allowed"),
-    ("Each side climbs the chart in this swap.", "the word 'chart' is not allowed"),
-    ("Each side gets 41 points of value in this swap.", "41"),
-    ("Each side fills a need. Both start the player at once.", "it needs exactly 1"),
+@pytest.mark.parametrize("builder, failure", [
+    (_bad_pick({"fact_id": "NO.such"}), "fact ID NO.such is not on the sheet of offer"),
+    (_bad_pick({"text": "The trade lands in week 9."}), "number 9 is not in the cited facts"),
+    (_bad_pick({"text": "A rival gets help here."}), "the words 'rival' are not allowed"),
+    (_bad_pick({"text": "Josh Jacobs would fit here."}), "the name Josh Jacobs is not in the trade"),
+    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"offer_id": "1:2-3:4"}]},
+     "offer 1:2-3:4 is not on the shortlist"),
+    (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 2}, "is picked twice"),
+    (lambda user: {"picks": [passing_pick(user)["picks"][0] | {"bullets": passing_pick(user)["picks"][0]["bullets"][:1]}],
+                   "none_line": None}, "it has 1 bullets; the range is 2 to 3"),
+    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"headline": "Send it for 12 points."}]},
+     "pick 1 headline: number 12 is not in the cited facts"),
+    (lambda user: {"picks": [], "none_line": None}, "a response with no pick needs a none_line"),
 ])
-def test_the_prose_checks_reject_a_reason_that_breaks_a_rule(found, text, rule):
-    snapshot, items = found
-    sheets = _sheets(snapshot, items)
-    failures = check_reasons(_reasons(sheets, text), items, snapshot, sheets)
-    assert len(failures) == len(items)
-    assert all(rule in failure for failure in failures)
+def test_a_pick_that_fails_a_guard_retries_once_and_the_second_pick_stands(settings, sources, builder, failure):
+    picker = StubPicker(builder, passing_pick)
+    doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
+                                                       headers=HEADERS).json()
+    assert len(picker.calls) == 2
+    assert failure in picker.calls[1][1]
+    assert doc["fallback"] is False
+    assert [item["headline"] for item in doc["trades"]] == [HEADLINE] * len(doc["trades"])
 
 
-def test_a_reason_that_cites_no_fact_fails(found):
-    snapshot, items = found
-    sheets = _sheets(snapshot, items)
-    failures = check_reasons(_reasons(sheets, FakeFinderClaude.TEXT, cited=[]), items, snapshot, sheets)
-    assert failures == [f"trade {n}: the reason cites no fact" for n in range(1, len(items) + 1)]
+def _taylor_first(key, question, state):
+    """A Jev that rates Jonathan Taylor of roster 11 above every other target, so an offer holds him and his news."""
+    return 0.99 if key == "11.6813" else 0.9
 
 
-def test_a_reason_may_cite_only_the_facts_of_its_own_trade(found):
-    snapshot, items = found
-    sheets = _sheets(snapshot, items)
-    other = next(iter(sheets[1]))
-    failures = check_reasons(_reasons(sheets, FakeFinderClaude.TEXT, [other]), items, snapshot, sheets)
-    assert f"trade 1: fact ID {other} is not in the facts" in failures
+def test_a_pick_bullet_that_cites_news_and_names_no_report_retries_once(settings, sources):
+    picker = StubPicker(_news_pick, passing_pick)
+    doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_taylor_first)).post(
+        "/find", json={"season": 2026, "asker": 4, "partner": 11}, headers=HEADERS).json()
+    assert len(picker.calls) == 2
+    assert "it cites the news fact NEWS.6813." in picker.calls[1][1]
+    assert "so it must say 'reported', 'per', or the source" in picker.calls[1][1]
+    assert doc["fallback"] is False
 
 
-def test_a_response_with_a_trade_left_out_fails_the_shape(found):
-    snapshot, items = found
-    out = FinderReasonsOut.model_validate({"reasons": [{"trade": 1, "reason": FakeFinderClaude.TEXT, "cited": []}]})
-    assert check_reasons(out, items, snapshot, _sheets(snapshot, items)) == [
-        "the response must have exactly 3 reasons: trades 1, 2, 3 in order, each once; it had trades 1"]
+def test_no_good_offer_gives_the_plain_line_of_the_advisor(settings, sources):
+    line = "No offer on the list helps your lineup enough to send."
+    picker = StubPicker(lambda user: {"picks": [], "none_line": line})
+    doc = _find_client(settings, sources, picker).post("/find", json=FIND, headers=HEADERS).json()
+    assert doc["trades"] == []
+    assert doc["empty"] == line
+    assert doc["fallback"] is False
 
 
-def test_the_finder_prompt_holds_the_reason_rules(settings, find_sources):
-    fake = FakeFinderClaude()
-    _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS)
-    # The prompt wraps its lines, so the check reads it as one line.
-    system = " ".join(fake.calls[0][0].split())
-    for line in (
-        "Write one sentence for each trade. It ends with a period. A manager pastes it into the group chat.",
-        "Cite only the facts of that trade.",
-        "Use only numbers from the facts you cite or the breakdown of that trade.",
-        "Never write a trade value, a sum, a ratio, a new number, or a difference.",
-        "Never count the players, starters, or weeks in the trade yourself",
-        "Put at most two numbers in the reason.",
-        "Name each team in the trade at most once in the reason.",
-        "Never name a letter grade. Never write the word letter.",
-        'Never write win-win, lopsided, or fair. Write "good for both" if you need to.',
-    ):
+def _assert_the_shortlist_fallback(doc, user):
+    """The document of a fallback: every offer of the pick message, each with fact lines and no headline."""
+    assert doc["fallback"] is True
+    assert doc["empty"] is None
+    assert [item["offer_id"] for item in doc["trades"]] == list(_offers_in(user))
+    for item in doc["trades"]:
+        assert item["headline"] is None
+        assert item["bullets"] == []
+        players = [player["name"] for side in item["sides"] for player in side["gives"]]
+        # One plain line per traded player, from his fact on the sheet, in the order of the sides.
+        assert len(item["fact_lines"]) == len(players)
+        assert all(line.startswith(name) for line, name in zip(item["fact_lines"], players))
+
+
+def test_two_failed_picks_give_the_shortlist_with_fact_lines_and_the_fallback_flag(settings, sources, caplog):
+    picker = StubPicker(_bad_pick({"fact_id": "NO.such"}))
+    client = _find_client(settings, sources, picker)
+    doc = client.post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS).json()
+    assert len(picker.calls) == 2
+    assert "finder pick attempt 2 failed" in caplog.text
+    _assert_the_shortlist_fallback(doc, picker.calls[0][1])
+    # A fallback is not stored, so a repeat tries the Claude call again.
+    client.post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS)
+    assert len(picker.calls) == 4
+
+
+def test_an_anthropic_key_that_is_not_valid_gives_the_shortlist_fallback(settings, sources):
+    calls = []
+
+    def refused(system, user, output_model):
+        calls.append(user)
+        request = httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+        raise anthropic.AuthenticationError("invalid x-api-key", response=httpx.Response(401, request=request),
+                                            body=None)
+
+    response = _find_client(settings, sources, refused).post("/find", json={"season": 2026, "asker": 2},
+                                                             headers=HEADERS)
+    assert response.status_code == 200
+    assert len(calls) == 2
+    _assert_the_shortlist_fallback(response.json(), calls[0])
+
+
+def test_the_pick_reads_news_only_of_the_shortlist_players_and_asks_jev_no_new_question(settings, sources):
+    fetched, jev, picker = [], FakeJev(), StubPicker()
+
+    def counted(pid):
+        fetched.append(pid)
+        return recorded_news(pid)
+
+    news = NewsFeed(fetch=counted, now=lambda: NEWS_RECORDED)
+    _find_client(settings, sources, picker, jev=jev, news=news).post("/find", json={"season": 2026, "asker": 2},
+                                                                     headers=HEADERS)
+    user = picker.calls[0][1]
+    offers = _offers_in(user)
+    players = {pid for offer in offers for side in offer.split("-") for pid in side.partition(":")[2].split("+")}
+    assert set(fetched) == players
+    # Each player is fetched once, though he is on more than one offer.
+    assert len(fetched) == len(players)
+    # The sheet holds the Jev answers of the shortlist, so no request asks the accept question of one trade.
+    assert all(fids.count("JEV.fair") == 1 for fids in offers.values())
+    assert not any(key.startswith("accept.") for request in jev.requests for key in request.questions)
+
+
+def test_the_pick_prompt_holds_the_playbook_and_the_pick_rules(settings, sources):
+    picker = StubPicker()
+    _find_client(settings, sources, picker).post("/find", json=FIND, headers=HEADERS)
+    system = " ".join(picker.calls[0][0].split())
+    for line in ("picks: up to 3 offers that you would send, best first, each once.",
+                 "bullets: 2 to 3 Bullets, one claim each, in plain words.",
+                 "Say why the asker sends it and why the other manager says yes.",
+                 "Never name the commissioner, and never give a letter grade.",
+                 " ".join(CLIENT.voice_dir.joinpath("playbook.md").read_text(encoding="utf-8").split())[:80]):
         assert line in system
-    # The rubric comes before the finder rules, so the adjuster names in the breakdown lines mean what it says.
-    assert system.index("# Finder rules") > 0
 
 
-def test_a_good_find_returns_the_document_in_the_fixture_shape(settings, find_sources):
-    doc = _find_client(settings, find_sources, FakeFinderClaude()).post("/find", json=FIND, headers=HEADERS).json()
+def test_a_good_find_returns_the_document_in_the_fixture_shape(settings, sources):
+    doc = _find_client(settings, sources).post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS).json()
     fixture = json.loads(FIND_FIXTURE.read_text(encoding="utf-8"))
     assert len(fixture["trades"]) == 3
     assert _same_shape(doc, _shape(fixture))
     # Every trade has the shape of the fixture's first, so no item drops a key.
     for item in doc["trades"]:
         assert _shape(item) == _shape(fixture["trades"][0])
-    # The sides and the fairness of an item have the shape of the analyze document, so the site renders them once.
+    # The sides and the Bullets of a pick have the shape of the analyze document, so the site renders them once.
     analyze_fixture = json.loads(RESPONSE_FIXTURE.read_text(encoding="utf-8"))
     assert _shape(fixture["trades"][0]["sides"]) == _shape(analyze_fixture["trade"]["sides"])
-    assert _shape(fixture["trades"][0]["fairness"]) == _shape(analyze_fixture["fairness"])
+    assert _shape(fixture["trades"][0]["bullets"]) == _shape(analyze_fixture["sides"][0]["bullets"])
     assert doc["season"] == fixture["season"] == FIND["season"]
-
-
-def test_the_find_fixture_reasons_pass_the_real_reason_checks(found):
-    # The fixture reasons are written by hand, so the real checks keep a broken rule out of the site's copy.
-    snapshot, items = found
-    fixture = json.loads(FIND_FIXTURE.read_text(encoding="utf-8"))
-    # The fixture is the run on these rosters, so its trades are the finder's trades in the same order.
-    assert [[[player["player_id"] for player in side["gives"]] for side in item["sides"]]
-            for item in fixture["trades"]] == [[side.player_ids for side in item.trade.sides] for item in items]
-    sheets = _sheets(snapshot, items)
-    out = _reasons(sheets, [item["reason"] for item in fixture["trades"]])
-    assert check_reasons(out, items, snapshot, sheets) == []
 
 
 def test_the_find_fixture_names_no_letter_and_no_number_outside_ids():
     fixture = json.loads(FIND_FIXTURE.read_text(encoding="utf-8"))
     found = [text for text in _strings(fixture)
-             if re.search(r"\b[A-F]\b", text) or re.search(r"\bletters?\b", text, re.IGNORECASE)]
+             if re.search(r"\b[A-F][+-]?(?![\w'])", text) or re.search(r"\bletters?\b", text, re.IGNORECASE)]
     assert found == []
-    # The fairness reasons reuse the breakdown reasons, so a trend reason may give its share percents and air yards.
-    for item in fixture["trades"]:
-        for side in item["fairness"]["sides"]:
-            side["reason"] = strip_trend_numbers(side["reason"])
     assert _digits_outside_ids(fixture) == []
 
 
@@ -1963,7 +1972,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_19():
+def test_the_document_version_is_20():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -1978,7 +1987,8 @@ def test_the_document_version_is_19():
     # A Week line names each player who steps up, so a stored Week line must never serve.
     # The injury and handcuff rows name no id map, so a stored row must never serve.
     # The read of the Advisor takes the place of the decision and the factor rows, so no rubric result serves.
-    assert cache_module.DOCUMENT_VERSION == 19
+    # The Finder pick takes the place of the fairness and the reason of each finder trade, so no old list serves.
+    assert cache_module.DOCUMENT_VERSION == 20
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per
@@ -2161,3 +2171,4 @@ def test_a_bad_client_toml_stops_the_start_with_the_file_and_the_key(tmp_path):
         load_clients(root, _fixture_settings)
     assert str(path) in str(error.value)
     assert "- timezone: is required" in str(error.value)
+

@@ -207,6 +207,8 @@ LAYER_OF: dict[str, str] = {
     "week.median": "write",
     "analyzer.analysis": "write",
     "analyzer.finder_reasons": "write",
+    # The Finder pick makes the Claude call of the Advisor, as the read of one trade does.
+    "analyzer.finder_pick": "write",
     "analyzer.routes": "write",
     "analyzer.advisor": "write",
     "waiver.research": "write",

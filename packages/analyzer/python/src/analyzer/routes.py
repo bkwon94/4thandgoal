@@ -16,8 +16,7 @@ from analyzer.advisor import AdvisorFailed, TradeRead
 from analyzer.analysis import Analysis
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key
 from analyzer.errors import season_in_progress
-from analyzer.finder import NO_WIN_WIN, FinderTrade, graded_offers
-from analyzer.finder_reasons import FinderReasons
+from analyzer.finder_pick import FinderPicks
 from analyzer.finder_search import Shortlist
 from analyzer.ratelimit import GradeLimiter, request_address
 from analyzer.rubric import (
@@ -51,8 +50,9 @@ Analyzer = Callable[[ProposedTrade, Snapshot], TradeRead]
 # The plain error of a failed read. A failed read never counts as a grade, so the error says so.
 ADVISOR_ERROR = ("The read of this trade did not come through. Try again in a minute. "
                  "This try does not count toward your grades.")
-# The Claude call of the finder sits on the app state, so a test swaps in a writer with a fake call.
-ReasonWriter = Callable[[list[FinderTrade], Snapshot], FinderReasons]
+# The Finder pick of the Advisor: the shortlist and the snapshot in, the picks out. It sits on the app state with the
+# real Claude call and the real news feed, so a test swaps in a pick with a stub call.
+FinderPicker = Callable[[Shortlist, Snapshot], FinderPicks]
 # The Finder search: the asker, the picked partner or None for every other team, and the snapshot in, the shortlist
 # out. It sits on the app state with the real Jev, so a test swaps in FakeJev or a search of its own.
 FinderSearch = Callable[[int, int | None, Snapshot], Shortlist]
@@ -338,20 +338,23 @@ def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
     return {"roster_id": roster_id, "team": snapshot.teams[roster_id].name}
 
 
-def finder_document(pair: FindRequest, snapshot: Snapshot, found: list[FinderTrade], reasons: FinderReasons) -> dict:
+def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -> dict:
     """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
 
-    Each trade holds its sides, its fairness, and its reason. A reason is null after a fallback.
-    Each item's sides and fairness have the shape of the analyze document, so the site renders them the same way.
-    An empty list carries the line that no swap is good for both, so the page needs no words of its own.
+    Each trade holds its offer id, its sides, the headline, and the Bullets of the Advisor. A Bullet has the shape of
+    the analyze document, so the site renders the rows one way. After a fallback, each trade of the shortlist has no
+    headline and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the press, so
+    the page needs no words of its own. No trade holds a letter.
     """
     trades = [
         {
-            "sides": _echoed_sides(item.trade, snapshot),
-            "fairness": item.fairness.model_dump(mode="json"),
-            "reason": reason,
+            "offer_id": pick.offer.offer_id,
+            "sides": _echoed_sides(pick.offer.trade, snapshot),
+            "headline": pick.headline,
+            "bullets": [bullet.model_dump() for bullet in pick.bullets],
+            "fact_lines": pick.fact_lines,
         }
-        for item, reason in zip(found, reasons.reasons)
+        for pick in picks.picks
     ]
     return {
         # The site calls the analyze route per card, and that route needs the season with the pair and the sides.
@@ -359,9 +362,9 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, found: list[FinderTra
         "trade_pair": {"asker": _team(snapshot, pair.asker), "partner": _team(snapshot, pair.partner)},
         "trades": trades,
         # The key is always there, so the document keeps one shape with a list and without one.
-        "empty": None if trades else NO_WIN_WIN,
+        "empty": None if trades else picks.none_line,
         "as_of": _as_of(snapshot),
-        "fallback": reasons.fallback,
+        "fallback": picks.fallback,
         "missing": list(snapshot.missing),
         "stale": list(snapshot.stale),
     }
@@ -371,7 +374,7 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, found: list[FinderTra
 def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
     """Search for trades of the asker on the live snapshot, with the picked partner or every other team.
 
-    The Jev search makes the shortlist, and the top trades of it come back, each with one reason.
+    The Jev search makes the shortlist, and the Advisor picks up to 3 trades of it, each with a headline and Bullets.
     """
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
@@ -392,10 +395,9 @@ def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
     # The count comes after the cache, because a cached repeat runs no finder and makes no Claude call.
     _count_grade(request, served)
     shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot)
-    found = graded_offers([offer.trade for offer in shortlist.shortlist], snapshot)
-    reasons = request.app.state.finder_reasons(found, snapshot)
-    document = finder_document(pair, snapshot, found, reasons)
+    picks = request.app.state.finder_pick(shortlist, snapshot)
+    document = finder_document(pair, snapshot, picks)
     # A fallback is not stored, so the next request of the same pair tries the Claude call again.
-    if not reasons.fallback:
+    if not picks.fallback:
         cache.put(key, document)
     return document

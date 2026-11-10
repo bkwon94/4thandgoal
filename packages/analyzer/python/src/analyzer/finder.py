@@ -139,17 +139,3 @@ def find_win_wins(asker: int, partner: int, snapshot: Snapshot) -> list[FinderTr
             found.append(FinderTrade(trade=trade, breakdowns=breakdowns, fairness=result))
     return _no_shared_player(rank(found))
 
-
-def graded_offers(trades: list[ProposedTrade], snapshot: Snapshot) -> list[FinderTrade]:
-    """The first FINDER_TOP trades of a Finder shortlist, in its order, with no player in two of them.
-
-    Each one carries its breakdowns and its fairness, so the finder document and the finder reasons keep their shape
-    until the Advisor pick replaces them. No grade drops a trade here: Jev judgments made the shortlist.
-    """
-    names = reason_names(snapshot)
-    items = []
-    for trade in trades:
-        breakdowns = grade(trade, snapshot)
-        result = fairness((breakdowns[0].final_letter, breakdowns[1].final_letter), breakdowns, names=names)
-        items.append(FinderTrade(trade=trade, breakdowns=breakdowns, fairness=result))
-    return _no_shared_player(items)

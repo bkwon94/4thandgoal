@@ -106,11 +106,16 @@ class AdvisorFailed(Exception):
     """The Advisor gave no read that passed the guards in two calls. The API answers with an honest error."""
 
 
-def advisor_sheet(trade: ProposedTrade, snapshot: Snapshot, jev: Jev, news: NewsFeed) -> dict[str, Fact]:
-    """The facts the Advisor reads by id: the facts of the trade, the team facts, the news of its players, then its
-    Jev answers. A team fact takes the place of a trade fact with the same id."""
+def measured_sheet(trade: ProposedTrade, snapshot: Snapshot, news: NewsFeed) -> dict[str, Fact]:
+    """The facts of a sheet that code measures, by id: the facts of the trade, the team facts, the splits, and the news
+    of its players. A team fact takes the place of a trade fact with the same id. The Jev answers come after."""
     return {**trade_fact_sheet(trade, snapshot), **team_facts(trade, snapshot), **trade_split_facts(trade, snapshot),
-            **news_facts(trade.player_ids, snapshot, news), **trade_jev_facts(trade, snapshot, jev)}
+            **news_facts(trade.player_ids, snapshot, news)}
+
+
+def advisor_sheet(trade: ProposedTrade, snapshot: Snapshot, jev: Jev, news: NewsFeed) -> dict[str, Fact]:
+    """The facts the Advisor reads by id: the measured facts of the trade, then its Jev answers."""
+    return {**measured_sheet(trade, snapshot, news), **trade_jev_facts(trade, snapshot, jev)}
 
 
 def load_playbook(client: Client) -> str:
@@ -127,15 +132,15 @@ def _league_line(snapshot: Snapshot) -> str:
     return f"The league: {len(snapshot.teams)} teams, {scoring}. Each team starts {', '.join(starters)}."
 
 
-def build_advisor_prompt(
-    trade: ProposedTrade, snapshot: Snapshot, facts: dict[str, Fact], feedback: str | None,
-) -> tuple[str, str]:
-    """The system prompt and the user message of the Advisor call.
+def system_prompt(snapshot: Snapshot, prompt_file: str) -> str:
+    """The rule prompt, the Playbook of the client, and the league line. It is the same for every press of a client,
+    so the cache of its prefix holds across presses."""
+    return "\n\n".join([load_prompt(snapshot.client.voice_dir, prompt_file, RULE_PROMPTS),
+                         load_playbook(snapshot.client), _league_line(snapshot)])
 
-    The system prompt is the same for every trade of a client, so the cache of its prefix holds across presses.
-    """
-    system = "\n\n".join([load_prompt(snapshot.client.voice_dir, PROMPT_FILE, RULE_PROMPTS),
-                            load_playbook(snapshot.client), _league_line(snapshot)])
+
+def side_lines(trade: ProposedTrade, snapshot: Snapshot) -> list[str]:
+    """Each side of the trade in the user message: its roster and team, what it gives, and what it gets."""
     team = {side.roster_id: snapshot.teams[side.roster_id].name for side in trade.sides}
     givers = trade.givers
     lines = []
@@ -145,6 +150,15 @@ def build_advisor_prompt(
         gets = ", ".join(f"{snapshot.players[pid].name} from {team[givers[pid]]}" for pid in trade.gets(side.roster_id))
         lines += [f"Side: roster {side.roster_id}, {team[side.roster_id]}{asks}", f"Gives: {gives}", f"Gets: {gets}",
                   ""]
+    return lines
+
+
+def build_advisor_prompt(
+    trade: ProposedTrade, snapshot: Snapshot, facts: dict[str, Fact], feedback: str | None,
+) -> tuple[str, str]:
+    """The system prompt and the user message of the Advisor call."""
+    system = system_prompt(snapshot, PROMPT_FILE)
+    lines = side_lines(trade, snapshot)
     lines += ["Facts:", *(f"- {fid}: {f.text}" for fid, f in facts.items())]
     if feedback is not None:
         order = ", then ".join(f"roster {side.roster_id}" for side in trade.sides)
@@ -157,7 +171,12 @@ def _names_in(text: str, names: list[str]) -> list[str]:
     return [name for name in names if re.search(rf"(?<!\w){re.escape(name)}(?!\w)", text)]
 
 
-class _Guard:
+def inner_word_failures(label: str, text: str) -> list[str]:
+    """The inner words that a text holds, each as one failure."""
+    return [f"{label}: the words '{word}' are not allowed" for word, pattern in _INNER.items() if pattern.search(text)]
+
+
+class TextGuard:
     """The guards of one read: the names and numbers each text may hold, from the facts it cites."""
 
     def __init__(self, trade: ProposedTrade, snapshot: Snapshot, facts: dict[str, Fact]) -> None:
@@ -170,8 +189,7 @@ class _Guard:
 
     def text_failures(self, label: str, text: str, cited: list[str]) -> list[str]:
         """The inner words, the names, and the numbers of one text against the facts it cites."""
-        failures = [f"{label}: the words '{word}' are not allowed" for word, pattern in _INNER.items()
-                    if pattern.search(text)]
+        failures = inner_word_failures(label, text)
         found = _names_in(text, self.names)
         allowed = set(self.trade_names)
         for fid in cited:
@@ -202,7 +220,7 @@ def check_read(out: AdvisorOut, trade: ProposedTrade, snapshot: Snapshot, facts:
         failures.append("case: the chart of the week is missing, so the case must say the chart is missing")
     if out.fairness == "lopsided" and out.gives_more not in rosters:
         failures.append(f"fairness: a lopsided read needs gives_more, one of the rosters {rosters}")
-    guard = _Guard(trade, snapshot, facts)
+    guard = TextGuard(trade, snapshot, facts)
     every: list[str] = []
     for side in out.sides:
         label = f"roster {side.roster_id}"

@@ -24,7 +24,7 @@ from fastapi.responses import JSONResponse
 from analyzer import routes as analyzer_routes
 from analyzer.advisor import read_trade
 from analyzer.cache import ResultCache, TeamsCache
-from analyzer.finder_reasons import write_reasons
+from analyzer.finder_pick import pick_trades
 from analyzer.finder_search import search as search_trades
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
 from analyzer.trade_news import NEWS
@@ -179,11 +179,11 @@ def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) ->
 
 def create_app(
         settings: Settings, clients: Sequence[Client], sources: Mapping[str, Sources] | None = None,
-        analyzer: analyzer_routes.Analyzer | None = None, finder_reasons: analyzer_routes.ReasonWriter | None = None,
-        finder_search: analyzer_routes.FinderSearch | None = None,
+        analyzer: analyzer_routes.Analyzer | None = None, finder_search: analyzer_routes.FinderSearch | None = None,
+        finder_pick: analyzer_routes.FinderPicker | None = None,
         *, refresh_on_start: bool = False) -> FastAPI:
     """The app that serves each of `clients`. Tests give fixture-backed sources by slug, an analyzer, a finder
-    reason writer, and a finder search. The defaults are the real ones.
+    search, and a finder pick. The defaults are the real ones.
 
     With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
     """
@@ -210,10 +210,10 @@ def create_app(
     # The default is the real Advisor with the real Claude call, the real Jev, and the real news feed. A test injects a
     # stub Advisor, FakeJev, and a recorded feed, so no test needs the network.
     app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV, news=NEWS)
-    # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
-    app.state.finder_reasons = finder_reasons or write_reasons
     # The Finder search asks the real Jev by default, so a test injects a search with FakeJev.
     app.state.finder_search = finder_search or functools.partial(search_trades, jev=JEV)
+    # The Finder pick makes the real Claude call with the real news feed by default, so a test injects a stub call.
+    app.state.finder_pick = finder_pick or functools.partial(pick_trades, news=NEWS)
 
     # The site calls the API from the browser, so only its origins and the local dev servers may read the answers.
     app.add_middleware(

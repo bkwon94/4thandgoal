@@ -139,8 +139,15 @@ def trade_jev_facts(trade: ProposedTrade, snapshot: Snapshot, jev: Jev) -> dict[
         log.warning("The Jev request of the trade failed, so the sheet has no Jev answer: %s", error)
         return {}
     log.info("The Jev request of the trade: model=%s input_tokens=%s", response.model, response.input_tokens)
+    return jev_answer_facts(trade, snapshot, questions, response.nouls)
+
+
+def jev_answer_facts(trade: ProposedTrade, snapshot: Snapshot, questions: dict[str, NoulQuestion],
+                     nouls: dict[str, float]) -> dict[str, Fact]:
+    """The Jev answers by question key as facts by id, such as JEV.fair. The Finder pick passes the answers of its
+    shortlist here, so a pick sheet holds the same words as the sheet of one trade, with no new Jev call."""
     facts = {}
-    for key, p in response.nouls.items():
+    for key, p in nouls.items():
         _, _, rid = key.partition(".")
         teams = [snapshot.teams[int(rid)].name] if rid else []
         asked = str(questions[key].instructions)

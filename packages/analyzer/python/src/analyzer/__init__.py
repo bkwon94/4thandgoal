@@ -4,5 +4,5 @@ RULE_PROMPTS is the folder of its rule prompts, which facts.writer.load_prompt r
 """
 from pathlib import Path
 
-# The rule prompts of the analyzer: advisor.md, analysis.md, finder.md, and rubric.md. A client never changes a rule prompt.
+# The rule prompts of the analyzer: advisor.md, analysis.md, finder.md, finder_pick.md, and rubric.md. A client never changes a rule prompt.
 RULE_PROMPTS = Path(__file__).parent / "prompts"
