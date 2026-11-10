@@ -10,7 +10,8 @@ from pathlib import Path
 from fakes import FakeJev
 from PIL import Image
 
-from cornerstone import cli
+from cornerstone import cli, evidence_flags
+from cornerstone.evidence_questions import QUESTIONS, in_flow
 from league.jev_port import JevError, JevImage
 
 # The real files of easter-eggs AT-32 at the round 566d11e7, where the Judge failed it: twelve shots and two logs.
@@ -87,7 +88,7 @@ def test_a_fact_that_no_file_shows_gets_an_open_flag_and_a_test_with_no_files_ge
     assert "Action: open" in flags
     assert "Reason: " in flags
     assert "## AT-1, question (a)" in out
-    assert "AT-1: asked a, b, c, d" in out
+    assert f"AT-1: asked {', '.join(question.key for question in in_flow())}" in out
     assert "AT-2" not in flags
     assert out.strip().splitlines()[-1] == "Evidence flags: 1 tests, 1 flags, 0 errors, 600 input tokens"
 
@@ -227,6 +228,23 @@ def test_a_state_over_the_token_limit_sends_the_shots_that_fit_in_the_order_of_f
     assert capsys.readouterr().out.strip().splitlines()[-1].endswith(", 1 cut")
 
 
+def test_a_test_in_two_halves_gets_one_request_with_the_files_and_observation_of_both(tmp_path, capsys):
+    folder = _scratch(tmp_path, evidence=EVIDENCE.replace("## AT-1: A clock window holds\n", (
+        "## AT-1 (pipeline half): A clock window holds\n")).replace("## AT-2:", (
+        "## AT-1 (site half)\n\nApp: site\nFiles: `evidence/AT-1/site.txt`\n"
+        "Observation: The page shows the window.\n\n## AT-2:")))
+    (folder / "evidence" / "AT-1" / "site.txt").write_text("window 23:00-00:00 ET\n", encoding="utf-8")
+    jev = FakeJev(yes=0.95)
+
+    code = cli.main(["evidence-flags", "demo", "AT-1", "--root", str(tmp_path)], jev=jev)
+
+    assert code == 0
+    assert len(jev.requests) == 1
+    state = jev.requests[0].state
+    assert state["evidence"]["file_names"] == ["evidence/AT-1/output.txt", "evidence/AT-1/site.txt"]
+    assert state["agent_observation"] == "At 00:40 ET the check answered no match.\nThe page shows the window."
+
+
 def _by_prefix(default: float = 0.95, **answers: float):
     """An `answer` callback for FakeJev: each Noul whose key starts with a name of `answers` gets that value."""
     def answer(key, question, state):
@@ -301,7 +319,20 @@ def test_an_observation_of_three_sentences_gets_one_d_question_per_sentence(tmp_
     assert "The run took 17 s." in flags
 
 
-def test_a_shot_with_the_then_text_cut_off_gets_a_c_flag_with_one_question_per_shot(tmp_path, capsys):
+def test_the_command_asks_only_the_questions_in_the_flow(tmp_path, capsys):
+    _scratch(tmp_path)
+    jev = FakeJev(yes=0.95)
+
+    cli.main(["evidence-flags", "demo", "--root", str(tmp_path)], jev=jev)
+
+    flow = [question.key for question in QUESTIONS if question.in_flow]
+    assert f"AT-1: asked {', '.join(flow)}" in capsys.readouterr().out
+    assert {key.split("_", 1)[0] for key in jev.requests[0].questions} <= set(flow)
+
+
+def test_a_shot_with_the_then_text_cut_off_gets_a_c_flag_with_one_question_per_shot(tmp_path, capsys, monkeypatch):
+    # (c) may be out of the flow after the eval, so the test asks every question of the module.
+    monkeypatch.setattr(evidence_flags, "in_flow", lambda: QUESTIONS)
     names = ["tuesday-375-light.png", "tuesday-1280-light.png"]
     folder = _one_test(tmp_path, names)
     for name in names:

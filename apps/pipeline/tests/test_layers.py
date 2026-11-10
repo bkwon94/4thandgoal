@@ -225,6 +225,7 @@ LAYER_OF: dict[str, str] = {
     "egg_drop": "output",
     "egg_draft": "output",
     "evidence_flags": "output",
+    "evidence_eval": "output",
     "pipeline": "output",
     "cli": "output",
 }

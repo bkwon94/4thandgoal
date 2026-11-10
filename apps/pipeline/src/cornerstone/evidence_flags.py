@@ -91,20 +91,28 @@ def acceptance_tests(text: str) -> dict[str, dict[str, str]]:
 
 
 def evidence_entries(text: str) -> dict[str, Evidence]:
-    """Each entry of EVIDENCE.md by its test id. A line with no key of its own goes on to the key above it."""
+    """Each entry of EVIDENCE.md by its test id. A line with no key of its own goes on to the key above it.
+
+    A test of two apps can have one entry per half, such as `## AT-50 (pipeline half): ...` and `## AT-50 (site
+    half)`. The halves make one entry: each key of a later half goes on a new line after the same key of the first.
+    """
     entries: dict[str, Evidence] = {}
     current: Evidence | None = None
     key: str | None = None
+    seen: set[str] = set()
     for line in text.splitlines():
-        head = re.match(r"^## (AT-\d+): (.*)$", line)
+        head = re.match(r"^## (AT-\d+)(?: \([^)]*\))?(?:: (.*))?$", line)
         if head:
-            current = entries[head.group(1)] = Evidence(head.group(1), head.group(2).strip(), {}, [])
-            key = None
+            current = entries.setdefault(head.group(1), Evidence(head.group(1), "", {}, []))
+            current.title = current.title or (head.group(2) or "").strip()
+            key, seen = None, set()
         elif line.startswith("## "):
             current = None
         elif current is not None and (named := re.match(r"^([A-Z][A-Za-z ]*): (.*)$", line)):
             key = named.group(1).lower()
-            current.keys[key] = named.group(2).strip()
+            value = named.group(2).strip()
+            current.keys[key] = f"{current.keys[key]}\n{value}" if key in current.keys and key not in seen else value
+            seen.add(key)
         elif current is not None and key is not None and line.strip():
             current.keys[key] += "\n" + line.strip()
     for entry in entries.values():

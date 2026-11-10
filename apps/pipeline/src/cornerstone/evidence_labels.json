@@ -1,0 +1,360 @@
+{
+ "about": "The labeled past acceptance tests that evidence-flags-eval reads. Each test names its spec, its round commit, and its label: gap with its kind, defect, or pass. The 12 FAIL and BLOCKED results and the 44 PASS tests come from decision tickets 02 and 06 of evidence-flags. The PASS tests are the sample of ticket 02, seed 20261110. The file names no league manager.",
+ "tests": [
+  {
+   "spec": "easter-eggs",
+   "commit": "8d646bd0",
+   "test": "AT-3",
+   "label": "gap",
+   "kind": "fact",
+   "why": "output.txt shows only a pytest pass line, no check inside the window"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "8d646bd0",
+   "test": "AT-34",
+   "label": "defect",
+   "why": "the disabled card was not faded"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "8d646bd0",
+   "test": "AT-41",
+   "label": "defect",
+   "why": "the banner text was cut at 375 px"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "8d646bd0",
+   "test": "AT-50",
+   "label": "defect",
+   "why": "contrast failures"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "35ca282e",
+   "test": "AT-50",
+   "label": "gap",
+   "kind": "observation",
+   "why": "the Observation claims no axe incomplete item, and no file shows it"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "566d11e7",
+   "test": "AT-32",
+   "label": "gap",
+   "kind": "motion",
+   "why": "the Then line names motion, and the files hold only still shots"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "566d11e7",
+   "test": "AT-34",
+   "label": "gap",
+   "kind": "motion",
+   "why": "the Then line names a pulse, and the files hold only still shots"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "9582a573",
+   "test": "AT-54",
+   "label": "gap",
+   "kind": "observation",
+   "why": "the Observation says 17 s, and site-N.txt says 8 s"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "9582a573",
+   "test": "AT-55",
+   "label": "gap",
+   "kind": "observation",
+   "why": "the Observation gives pointerup times that differ from site-N.txt"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "878ccd3a",
+   "test": "AT-19",
+   "label": "defect",
+   "why": "the wording of the test, revised"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "878ccd3a",
+   "test": "AT-36",
+   "label": "defect",
+   "why": "the code still held the old id of the Lean element"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "878ccd3a",
+   "test": "AT-47",
+   "label": "gap",
+   "kind": "fact",
+   "why": "no shot shows a tap on a card Bullet"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "46abaa50",
+   "test": "AT-11",
+   "label": "pass"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "46abaa50",
+   "test": "AT-22",
+   "label": "pass"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "46abaa50",
+   "test": "AT-7",
+   "label": "pass"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "46abaa50",
+   "test": "AT-20",
+   "label": "pass"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "46abaa50",
+   "test": "AT-24",
+   "label": "pass"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "46abaa50",
+   "test": "AT-43",
+   "label": "pass"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "46abaa50",
+   "test": "AT-49",
+   "label": "pass"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "46abaa50",
+   "test": "AT-38",
+   "label": "pass"
+  },
+  {
+   "spec": "easter-eggs",
+   "commit": "46abaa50",
+   "test": "AT-37",
+   "label": "pass"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "a64a0b91",
+   "test": "AT-12",
+   "label": "pass"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "a64a0b91",
+   "test": "AT-50",
+   "label": "pass"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "a64a0b91",
+   "test": "AT-22",
+   "label": "pass"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "a64a0b91",
+   "test": "AT-15",
+   "label": "pass"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "a64a0b91",
+   "test": "AT-43",
+   "label": "pass"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "a64a0b91",
+   "test": "AT-46",
+   "label": "pass"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "a64a0b91",
+   "test": "AT-49",
+   "label": "pass"
+  },
+  {
+   "spec": "manager-brain",
+   "commit": "a64a0b91",
+   "test": "AT-44",
+   "label": "pass"
+  },
+  {
+   "spec": "jev",
+   "commit": "47b1dc6d",
+   "test": "AT-9",
+   "label": "pass"
+  },
+  {
+   "spec": "jev",
+   "commit": "47b1dc6d",
+   "test": "AT-3",
+   "label": "pass"
+  },
+  {
+   "spec": "jev",
+   "commit": "47b1dc6d",
+   "test": "AT-6",
+   "label": "pass"
+  },
+  {
+   "spec": "jev",
+   "commit": "47b1dc6d",
+   "test": "AT-10",
+   "label": "pass"
+  },
+  {
+   "spec": "jev",
+   "commit": "47b1dc6d",
+   "test": "AT-8",
+   "label": "pass"
+  },
+  {
+   "spec": "jev",
+   "commit": "47b1dc6d",
+   "test": "AT-7",
+   "label": "pass"
+  },
+  {
+   "spec": "egg-polish",
+   "commit": "d09f540a",
+   "test": "AT-15",
+   "label": "pass"
+  },
+  {
+   "spec": "egg-polish",
+   "commit": "d09f540a",
+   "test": "AT-12",
+   "label": "pass"
+  },
+  {
+   "spec": "egg-polish",
+   "commit": "d09f540a",
+   "test": "AT-32",
+   "label": "pass"
+  },
+  {
+   "spec": "egg-polish",
+   "commit": "d09f540a",
+   "test": "AT-35",
+   "label": "pass"
+  },
+  {
+   "spec": "egg-polish",
+   "commit": "d09f540a",
+   "test": "AT-14",
+   "label": "pass"
+  },
+  {
+   "spec": "egg-polish",
+   "commit": "d09f540a",
+   "test": "AT-10",
+   "label": "pass"
+  },
+  {
+   "spec": "egg-polish",
+   "commit": "d09f540a",
+   "test": "AT-11",
+   "label": "pass"
+  },
+  {
+   "spec": "card-polish",
+   "commit": "2813de83",
+   "test": "AT-8",
+   "label": "pass"
+  },
+  {
+   "spec": "card-polish",
+   "commit": "2813de83",
+   "test": "AT-10",
+   "label": "pass"
+  },
+  {
+   "spec": "card-polish",
+   "commit": "2813de83",
+   "test": "AT-25",
+   "label": "pass"
+  },
+  {
+   "spec": "card-polish",
+   "commit": "2813de83",
+   "test": "AT-3",
+   "label": "pass"
+  },
+  {
+   "spec": "card-polish",
+   "commit": "2813de83",
+   "test": "AT-29",
+   "label": "pass"
+  },
+  {
+   "spec": "card-polish",
+   "commit": "2813de83",
+   "test": "AT-11",
+   "label": "pass"
+  },
+  {
+   "spec": "card-polish",
+   "commit": "2813de83",
+   "test": "AT-17",
+   "label": "pass"
+  },
+  {
+   "spec": "hero-slots",
+   "commit": "f9304b5e",
+   "test": "AT-4",
+   "label": "pass"
+  },
+  {
+   "spec": "hero-slots",
+   "commit": "f9304b5e",
+   "test": "AT-6",
+   "label": "pass"
+  },
+  {
+   "spec": "hero-slots",
+   "commit": "f9304b5e",
+   "test": "AT-12",
+   "label": "pass"
+  },
+  {
+   "spec": "hero-slots",
+   "commit": "f9304b5e",
+   "test": "AT-29",
+   "label": "pass"
+  },
+  {
+   "spec": "hero-slots",
+   "commit": "f9304b5e",
+   "test": "AT-16",
+   "label": "pass"
+  },
+  {
+   "spec": "hero-slots",
+   "commit": "f9304b5e",
+   "test": "AT-35",
+   "label": "pass"
+  },
+  {
+   "spec": "hero-slots",
+   "commit": "f9304b5e",
+   "test": "AT-43",
+   "label": "pass"
+  }
+ ]
+}

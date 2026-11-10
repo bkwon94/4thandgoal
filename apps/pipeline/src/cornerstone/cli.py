@@ -1,7 +1,7 @@
 """
 Command line entry point for Cornerstone Weekly.
 It defines the build, publish, rewrite, page-json, rankings, midseason, midseason-publish, history, chart,
-advisor-eval, egg-draft, egg-drop, check-client, and evidence-flags subcommands.
+advisor-eval, egg-draft, egg-drop, check-client, evidence-flags, and evidence-flags-eval subcommands.
 """
 import argparse
 import logging
@@ -16,6 +16,7 @@ import httpx
 from cornerstone.advisor_eval import Meter, fetch_press_sources, load_test_set, run_eval, summary_lines
 from cornerstone.egg_draft import run_egg_draft
 from cornerstone.egg_drop import drop_after_publish, drop_from_env
+from cornerstone.evidence_eval import DEFAULT_LABELS, run_evidence_eval
 from cornerstone.evidence_flags import run_evidence_flags
 from cornerstone.pipeline import (
     BuildStopped,
@@ -138,6 +139,12 @@ def build_parser() -> argparse.ArgumentParser:
     flags.add_argument("slug", help="the feature folder under .scratch/")
     flags.add_argument("tests", nargs="*", metavar="AT-<n>", help="the tests to read; the default is every test in EVIDENCE.md")
     flags.add_argument("--root", type=Path, help="the folder that holds .scratch/; the default is the current worktree")
+
+    flags_eval = sub.add_parser("evidence-flags-eval",
+                                help="run each Evidence flag question on the labeled past tests and give the bar result")
+    flags_eval.add_argument("--labels", type=Path, default=DEFAULT_LABELS, help="the label file")
+    flags_eval.add_argument("--repo", type=Path, default=Path.cwd(),
+                            help="a folder of the git repo that holds the round commits; the default is the current one")
 
     return parser
 
@@ -328,6 +335,8 @@ def main(
             print(f"No .scratch folder in {Path.cwd()} or above it. Run the command inside a worktree, or pass --root.")
             return 2
         return run_evidence_flags(root, args.slug, args.tests, JEV if jev is None else jev)
+    if args.command == "evidence-flags-eval":
+        return run_evidence_eval(args.repo, args.labels, JEV if jev is None else jev)
     repo = Path.cwd()
     if not (repo / "pyproject.toml").exists():
         print("Run cornerstone from the pipeline folder. No pyproject.toml in the current directory.")

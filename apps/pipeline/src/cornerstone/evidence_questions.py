@@ -16,13 +16,17 @@ BAR_FALSE_FLAG_RATE = 0.10
 
 @dataclass(frozen=True)
 class Question:
-    """One Evidence flag question: its key, its cut, its in-flow mark, its Nouls, and the code that makes its flag.
+    """One Evidence flag question: its key, its kind, its cut, its in-flow mark, its Nouls, and the code of its flag.
+
+    `kind` names the kind of evidence gap that the question targets. The eval scores a question only on the past gaps
+    of its own kind.
 
     `nouls` gives the Nouls of one test from its state, each key with the prefix `<key>_`. `flag` gives the flag
     probability and the reason from the answers of those Nouls. A flag probability at or above `cut` is a flag.
     """
     key: str
     name: str
+    kind: str
     cut: float
     in_flow: bool
     nouls: Callable[[dict], dict[str, NoulQuestion]]
@@ -70,7 +74,8 @@ def _fact_flag(answers: dict[str, float], state: dict) -> tuple[float, str]:
     return 1 - answers[key], f"No file may show this fact of the Then line: \"{fact}\" (shown at {answers[key]:.2f})."
 
 
-FACTS = Question(key="a", name="the facts", cut=0.7, in_flow=True, nouls=_fact_nouls, flag=_fact_flag)
+FACTS = Question(key="a", name="the facts", kind="fact", cut=0.7, in_flow=True, nouls=_fact_nouls,
+                 flag=_fact_flag)
 
 # Question (b): code first looks for a video or timed frames among the files, and then asks nothing. Jev judges only
 # whether the Then line asks for motion and whether a text log holds animation values, because a draft that asked
@@ -121,7 +126,8 @@ def _motion_flag(answers: dict[str, float], state: dict) -> tuple[float, str]:
         f"frames, and no log of animation values (a log at {answers['b_logs_motion']:.2f}).")
 
 
-MOTION = Question(key="b", name="motion", cut=0.7, in_flow=True, nouls=_motion_nouls, flag=_motion_flag)
+MOTION = Question(key="b", name="motion", kind="motion", cut=0.7, in_flow=True, nouls=_motion_nouls,
+                  flag=_motion_flag)
 
 # Question (c): one Noul per shot, scoped to the text that the Then line names. A draft that asked about any text of
 # the page was mostly right about the image, but it flagged a design ellipsis or a fixed bar over text that the test
@@ -155,7 +161,10 @@ def _cut_text_flag(answers: dict[str, float], state: dict) -> tuple[float, str]:
     return answers[key], f"The shot `{path}` may show the text of the Then line cut off or too big for its space."
 
 
-CUT_TEXT = Question(key="c", name="cut-off text", cut=0.9, in_flow=True, nouls=_cut_text_nouls, flag=_cut_text_flag)
+# The eval run of ticket 04 found no past gap of the kind cut-text, only the defect of easter-eggs AT-41. With no gap
+# of its kind, the eval cannot show that (c) meets the bar, so it stays out of the flow.
+CUT_TEXT = Question(key="c", name="cut-off text", kind="cut-text", cut=0.9, in_flow=False, nouls=_cut_text_nouls,
+                    flag=_cut_text_flag)
 
 # Question (d): two Nouls per sentence of the Observation. The first asks if the files show it. The second asks if it
 # reports a result that the Then line asks for, because a draft with the first Noul alone flagged true but harmless
@@ -209,8 +218,8 @@ def _observation_flag(answers: dict[str, float], state: dict) -> tuple[float, st
         f"(shown at {answers[f'd_shown_{worst}']:.2f}, a result of the Then line at {answers[f'd_rel_{worst}']:.2f}).")
 
 
-OBSERVATION = Question(key="d", name="the Observation", cut=0.7, in_flow=True, nouls=_observation_nouls,
-                       flag=_observation_flag)
+OBSERVATION = Question(key="d", name="the Observation", kind="observation", cut=0.7, in_flow=True,
+                       nouls=_observation_nouls, flag=_observation_flag)
 
 # Every question of the module, in the order that FLAGS.md lists them.
 QUESTIONS: tuple[Question, ...] = (FACTS, MOTION, CUT_TEXT, OBSERVATION)

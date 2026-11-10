@@ -10,9 +10,9 @@ Spec: `.scratch/evidence-flags/PRD.md`. Acceptance tests AT-4, AT-7, AT-8, AT-9,
 
 **Status:** ready-for-agent
 
-- [ ] The live eval prints the four rows and the bar result, and the marks of the module equal them (AT-7).
-- [ ] On easter-eggs AT-41 at `8d646bd0`, the printed question keys equal the in-flow keys (AT-4).
-- [ ] A script counts 56 tests, 7 `gap`, 5 `defect`, and 44 `pass`, and finds no name of `managers.json` (AT-8).
-- [ ] A CLI test with a temp git repo and a `FakeJev` error counts each test as an error, never as a miss or a pass (AT-9).
-- [ ] A search finds each question text, cut, and bar value in one module only (AT-14).
-- [ ] `env -u TYPESAFE_API_KEY make -C apps/pipeline check` passes (AT-22).
+- [x] The live eval prints the four rows and the bar result, and the marks of the module equal them (AT-7).
+- [x] On easter-eggs AT-41 at `8d646bd0`, the printed question keys equal the in-flow keys (AT-4).
+- [x] A script counts 56 tests, 7 `gap`, 5 `defect`, and 44 `pass`, and finds no name of `managers.json` (AT-8).
+- [x] A CLI test with a temp git repo and a `FakeJev` error counts each test as an error, never as a miss or a pass (AT-9).
+- [x] A search finds each question text, cut, and bar value in one module only (AT-14).
+- [x] `env -u TYPESAFE_API_KEY make -C apps/pipeline check` passes (AT-22).
