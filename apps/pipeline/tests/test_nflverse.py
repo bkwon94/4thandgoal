@@ -182,6 +182,29 @@ def test_read_injury_plays_gives_the_first_injury_play_of_each_carrier(tmp_path)
     assert (play.quarter, play.clock, play.away, play.home) == (1, "10:04", "BAL", "LAR")
 
 
+def test_read_injury_plays_gives_no_play_to_a_player_who_returns_to_the_game(tmp_path):
+    game = {"week": "9", "game_id": "2026_09_BUF_MIN", "away_team": "BUF", "home_team": "MIN", "posteam": "MIN"}
+    pbp = _plays(tmp_path / "pbp.csv.gz", [
+        {**game, "qtr": "1", "time": "01:13", "receiver_player_id": "00-6", "receiver_player_name": "J.Jefferson",
+         "desc": "pass incomplete to 18-J.Jefferson. MIN-18-J.Jefferson was injured during the play."},
+        {**game, "qtr": "2", "time": "15:00", "rusher_player_id": "00-7", "rusher_player_name": "A.Jones",
+         "desc": "33-A.Jones right tackle. ** Injury Update: MIN-18-J.Jefferson has returned to the game."},
+    ])
+    assert read_injury_plays(pbp, 9) == {}
+
+
+def test_read_injury_plays_gives_the_play_after_the_last_return_of_a_player(tmp_path):
+    game = {"week": "9", "game_id": "2026_09_BUF_MIN", "away_team": "BUF", "home_team": "MIN", "posteam": "MIN"}
+    pbp = _plays(tmp_path / "pbp.csv.gz", [
+        {**game, "qtr": "1", "time": "01:13", "receiver_player_id": "00-6", "receiver_player_name": "J.Jefferson",
+         "desc": "pass to 18-J.Jefferson. MIN-18-J.Jefferson was injured during the play."},
+        {**game, "qtr": "2", "time": "15:00", "desc": "run. ** Injury Update: MIN-18-J.Jefferson has returned to the game."},
+        {**game, "qtr": "4", "time": "03:00", "desc": "run. MIN-18-J.Jefferson was injured during the play."},
+    ])
+    plays = read_injury_plays(pbp, 9)
+    assert list(plays) == ["00-6"] and (plays["00-6"].quarter, plays["00-6"].clock) == (4, "03:00")
+
+
 def test_read_injury_plays_reads_a_name_with_a_space_or_a_hyphen(tmp_path):
     game = {"week": "8", "game_id": "2026_08_DET_SEA", "away_team": "DET", "home_team": "SEA", "qtr": "4", "time": "02:00"}
     pbp = _plays(tmp_path / "pbp.csv.gz", [

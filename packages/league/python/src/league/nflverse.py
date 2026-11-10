@@ -158,6 +158,9 @@ def read_injuries(path: Path, week: int) -> dict[str, dict[int, str]] | None:
 # The play by play names each hurt player in the text of the play, as "BAL-8-L.Jackson was injured during the play".
 # The name has no digit, so a match never runs across the team and jersey tag of another player.
 INJURED = re.compile(r"\b([A-Z]{2,3})-\d+-([A-Za-z.' -]+?) was injured during the play")
+# A later play of the same game names a hurt player who comes back, as "** Injury Update: MIN-18-J.Jefferson has
+# returned to the game."
+RETURNED = re.compile(r"\b([A-Z]{2,3})-\d+-([A-Za-z.' -]+?) has returned to the game")
 # The ball carriers of a play, as the id column and the name column of each one.
 CARRIER_COLUMNS = (("passer_player_id", "passer_player_name"), ("rusher_player_id", "rusher_player_name"),
                    ("receiver_player_id", "receiver_player_name"))
@@ -181,11 +184,22 @@ def read_injury_plays(path: Path, week: int) -> dict[str, InjuryPlay] | None:
             pid, name = row.get(id_column) or "", row.get(name_column) or ""
             if pid not in ("", "NA") and name not in ("", "NA"):
                 ids.setdefault((row.get("posteam") or "", name), set()).add(pid)
+    # A player who returns to the game was not out of it, so a hurt play before his return is no injury. The last
+    # event of the player in a game decides, so a second hurt play after the return still counts. The rows of a game
+    # keep file order, so the index of a row tells which event is later.
+    returned_at: dict[tuple[str, str], int] = {}
+    for index, row in enumerate(rows):
+        for team, name in RETURNED.findall(row.get("desc") or ""):
+            found = ids.get((team, name), set())
+            if len(found) == 1:
+                returned_at[(row.get("game_id") or "", next(iter(found)))] = index
     plays: dict[str, InjuryPlay] = {}
-    for row in rows:
+    for index, row in enumerate(rows):
         for team, name in INJURED.findall(row.get("desc") or ""):
             found = ids.get((team, name), set())
             if len(found) != 1 or (gsis := next(iter(found))) in plays:
+                continue
+            if returned_at.get((row.get("game_id") or "", gsis), -1) > index:
                 continue
             # A failure of any source never stops a build, so a malformed row is skipped with one log line.
             try:
