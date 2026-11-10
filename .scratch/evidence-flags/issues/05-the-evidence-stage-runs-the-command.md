@@ -8,7 +8,7 @@ Spec: `.scratch/evidence-flags/PRD.md`. Acceptance tests AT-15 to AT-21, and Imp
 
 **Blocked by:** 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The diff of `evidence.md` shows when to run the command, and the commit of `FLAGS.md` with the evidence (AT-15).
 - [x] The diff of `evidence.md` shows the three actions, and no entry at `open` at the evidence commit (AT-16).
