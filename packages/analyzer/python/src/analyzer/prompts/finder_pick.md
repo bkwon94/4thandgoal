@@ -35,7 +35,7 @@ in a certain direction of what they should do on a trade."
    - lean: the Lean you would give this trade for the asker if he graded it alone: Send it, Lean
      yes, Gut call, Lean no, or Pass. Pick only an offer that reads Send it, Lean yes, or Gut call.
    - headline: one short sentence that says why this trade works, in the voice above.
-   - bullets: 2 to 3 Bullets, one claim each, in plain words. Say why the asker sends it and why the
+   - bullets: 2 to 4 Bullets, one claim each, in plain words. Say why the asker sends it and why the
      other manager says yes. The mark is for, against, or even for the asker. fact_id is the one ID on
      the sheet of that offer that the claim rests on.
 2. none_line: null when you give a pick. With no offer worth sending, give no pick, and say why in

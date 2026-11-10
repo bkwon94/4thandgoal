@@ -1702,6 +1702,22 @@ def _bad_pick(change):
     return build
 
 
+# Plain Bullets on the week fact, each one a separate claim, so a pick of any count passes each other guard.
+PLAIN_BULLETS = ["The trade lands in the middle of the season.", "The other manager gets help where he needs it.",
+                 "Your bench gets deeper at the spot you need.", "Your lineup keeps its best players.",
+                 "The other team gets a starter for the rest of the year."]
+
+
+def _pick_of_bullets(count):
+    """A builder whose first pick holds `count` plain Bullets, each on the week fact."""
+    def build(user):
+        out = passing_pick(user)
+        out["picks"][0]["bullets"] = [{"text": text, "mark": "for", "fact_id": "trade.week"}
+                                      for text in PLAIN_BULLETS[:count]]
+        return out
+    return build
+
+
 def _news_pick(user):
     """A pick of the first offer with a NEWS fact, whose first Bullet cites that fact and names no report."""
     out = passing_pick(user)
@@ -1721,7 +1737,8 @@ def _news_pick(user):
      "offer 1:2-3:4 is not on the shortlist"),
     (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 2}, "is picked twice"),
     (lambda user: {"picks": [passing_pick(user)["picks"][0] | {"bullets": passing_pick(user)["picks"][0]["bullets"][:1]}],
-                   "none_line": None}, "it has 1 bullets; the range is 2 to 3"),
+                   "none_line": None}, "it has 1 bullets; the range is 2 to 4"),
+    (_pick_of_bullets(5), "it has 5 bullets; the range is 2 to 4"),
     (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"headline": "Send it for 12 points."}]},
      "pick 1 headline: number 12 is not in the cited facts"),
     (lambda user: {"picks": [], "none_line": None}, "a response with no pick needs a none_line"),
@@ -1737,6 +1754,15 @@ def test_a_pick_that_fails_a_guard_retries_once_and_the_second_pick_stands(setti
     assert failure in picker.calls[1][1]
     assert doc["fallback"] is False
     assert [item["headline"] for item in doc["trades"]] == [HEADLINE] * len(doc["trades"])
+
+
+def test_a_pick_with_4_bullets_passes_the_guard_with_one_call(settings, sources):
+    picker = StubPicker(_pick_of_bullets(4))
+    doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
+                                                       headers=HEADERS).json()
+    assert len(picker.calls) == 1
+    assert doc["fallback"] is False
+    assert len(doc["trades"][0]["bullets"]) == 4
 
 
 def _taylor_first(key, question, state):
@@ -1843,7 +1869,7 @@ def test_the_pick_prompt_holds_the_playbook_and_the_pick_rules(settings, sources
     _find_client(settings, sources, picker).post("/find", json=FIND, headers=HEADERS)
     system = " ".join(picker.calls[0][0].split())
     for line in ("picks: up to 3 offers that you would send, best first, each once.",
-                 "bullets: 2 to 3 Bullets, one claim each, in plain words.",
+                 "bullets: 2 to 4 Bullets, one claim each, in plain words.",
                  "Say why the asker sends it and why the other manager says yes.",
                  "Never name the commissioner, and never give a letter grade.",
                  " ".join(CLIENT.voice_dir.joinpath("playbook.md").read_text(encoding="utf-8").split())[:80]):

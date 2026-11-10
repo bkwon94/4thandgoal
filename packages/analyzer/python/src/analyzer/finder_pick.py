@@ -1,10 +1,10 @@
 """
 The Finder pick: one sheet per shortlist offer, then one Advisor call that picks up to 3 offers, each with a headline
-and 2 to 3 Bullets. A pick that fails a guard retries once. After two failed calls, the shortlist stands with fact lines.
+and 2 to 4 Bullets. A pick that fails a guard retries once. After two failed calls, the shortlist stands with fact lines.
 """
 import logging
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from analyzer.advisor import (
     Bullet,
@@ -31,7 +31,7 @@ log = logging.getLogger(__name__)
 
 PROMPT_FILE = "finder_pick.md"
 MAX_PICKS = 3
-MIN_BULLETS, MAX_BULLETS = 2, 3
+MIN_BULLETS, MAX_BULLETS = 2, 4
 # The line of a press whose search kept no offer. No Claude call runs, so code writes it.
 NO_OFFER = "The search found no trade that works for both teams."
 # The Leans of a trade that the asker sends. A pick reads as one of them, so the analyzer read of a pick agrees.
@@ -42,18 +42,22 @@ SAME_FACT = "(the same text as in an earlier offer)"
 
 class PickOut(BaseModel):
     """One pick as the Advisor gives it: the offer id of the shortlist, the Lean of the trade if the asker graded it
-    alone, a headline, and 2 to 3 Bullets. The Lean stays out of the document, because the card shows no Lean."""
+    alone, a headline, and 2 to 4 Bullets. The Lean stays out of the document, because the card shows no Lean."""
 
     offer_id: str
     lean: Lean
     headline: str
-    bullets: list[Bullet]
+    # The counts sit in the description, so the model reads them in the schema. The API does not enforce an array
+    # count above minItems 1, and a min_length or max_length here only moves the check into the SDK, so the guard
+    # checks the count and retries.
+    bullets: list[Bullet] = Field(description=f"{MIN_BULLETS} to {MAX_BULLETS} Bullets")
 
 
 class FinderPickOut(BaseModel):
     """The structured output of the pick call: up to 3 picks, or no pick and a plain line that says why."""
 
-    picks: list[PickOut]
+    # The count is a description only, as with the Bullets: the guard checks it.
+    picks: list[PickOut] = Field(description=f"Up to {MAX_PICKS} picks")
     none_line: str | None
 
 
