@@ -31,12 +31,12 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - The ask box uses the league passphrase, a cap for each team, and one cap for the league each month. Past the cap, only Jev routes and honest misses run. Brian, 2026-11-09.
 - The terms are Topic, Answer, Suggestion, and Thread. `GLOSSARY.md`.
 - The first build has 13 Topics. The personal Topics use the Roster grade, the slot ranks, and facts side by side, with no new formula. The Advisor judges sell high. Only the personal Topics get new Claude text. `decisions/01-grill-the-first-topics.md`.
+- Jev costs close to nothing, and Claude is over 95% of the cost. TypeSafe allows 80 requests and 100,000 tokens per second. Jev picks the slice of facts by the Topic, and an open question gets the full sheet. A new ADR covers the text that managers type. `decisions/03-research-jev-live-cost.md`.
 - `/` becomes the front door. The hero and the tool tiles go away. The menu stays with fewer links. Brian, 2026-11-09.
 
 ## NOT YET SPECIFIED
 
 - How is a Suggestion picked and put in order? `decisions/02-grill-how-suggestions-rank.md`.
-- What do the Jev questions cost live, and which TypeSafe rate limits apply? `decisions/03-research-jev-live-cost.md`.
 - What are the numbers of the caps? `decisions/04-grill-the-cap-numbers.md`.
 - Does the Thread stay across visits, and does it reset each week? `decisions/05-grill-the-thread-across-visits.md`.
 - Where is the border with `manager-brain`? `decisions/06-grill-the-manager-brain-border.md`.
@@ -44,6 +44,7 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - How does the front door look and move on a phone? `decisions/08-prototype-the-front-door.md`.
 - Does the Jev route pick the right Topic for real questions? `decisions/09-prototype-the-jev-route.md`.
 - How does a live personal Answer stay fast and cheap? `decisions/11-grill-live-answer-speed.md`.
+- How wide is a free answer: the sheet of this week only, or tools over all our data? `decisions/12-grill-free-answer-width.md`.
 - Which links stay in the menu, and what does each Answer link to? `decisions/10-spec-the-menu-and-pages.md`.
 
 ## OUT OF SCOPE
