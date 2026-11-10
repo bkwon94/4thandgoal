@@ -343,6 +343,8 @@ export function FrontDoor({
                             body={{ topic: entry.key, roster_id: team.id, team: entry.team === team.id ? null : entry.team }}
                             onDone={(result) => put(entry.id, { ...entry, result })}
                             onMiss={(closest) => put(entry.id, { kind: "miss", question: shared.name, closest })}
+                            // Past a cap, the API writes the line and sends the closest Topics of this Topic.
+                            onCap={(cap) => put(entry.id, { kind: "cap", question: shared.name, line: cap.line, closest: cap.closest })}
                             // A retry sends the name of the Topic through the route, which opens the same Topic again.
                             onError={() => put(entry.id, { kind: "note", question: shared.name, line: RETRY_LINE, topic: null, team: null, retry: true })}
                             {...shared}

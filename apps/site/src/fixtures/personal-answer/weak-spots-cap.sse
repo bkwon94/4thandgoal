@@ -1,0 +1,12 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"weak_spots","team":3,"fact":"QB ranks 7th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"Holes","value":"0"}],"rows":[{"label":"QB","value":"7th of 12","note":"fine","roster_id":null,"you":false},{"label":"RB","value":"7th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"3rd of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"3rd of 12","note":"fine","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"98348d20d2a6d5fa81add8df514ec8811ee6b558a59e65614f7b98aba4eda8d0"}}
+
+data: {"type":"data-cap","data":{"cap":"team","line":"That's 25 questions today. Ask again tomorrow.","closest":["stack_up","waiver_targets","trade_ideas"]}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

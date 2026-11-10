@@ -30,6 +30,7 @@ from pydantic_ai.ui.vercel_ai.response_types import (
 
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import Asker, ClientAsker
+from cornerstone_api.caps import CapHit, sonnet_cost
 from cornerstone_api.free_answer import MODEL, STREAM_ERROR, _adapter, _Attempt, _data, _run, check
 from cornerstone_api.personal_facts import (
     PersonalFacts,
@@ -108,11 +109,13 @@ def _usage_line(topic: str, attempts: list[_Attempt], outcome: str) -> str:
 
 
 async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: PersonalFacts, key: str, own: bool,
-                        your_team: str, model: Model | None) -> AsyncIterator[BaseChunk]:
+                        your_team: str, model: Model | None, roster_id: int | None) -> AsyncIterator[BaseChunk]:
     """The one place where a personal Answer calls Claude: the first text, the Jev check of each sentence against the
     slice, at most one rewrite, and the honest miss of a second failed check. A checked text goes to the store.
 
-    A kept Answer never reaches this function, so a count of its calls is the count of the Claude Answers.
+    A kept Answer never reaches this function, so a count of its calls is the count of the Claude Answers. The caller
+    asks the caps first. After the runs, the cost goes to the league month. Only a checked Answer of `roster_id` counts
+    toward the team cap. The head start gives None, so it counts toward the league cap only (decision 04).
     """
     team = facts.slice["team"]
     question = check_question(topic, team)
@@ -155,6 +158,10 @@ async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: Per
         history = attempt.messages
         prompt = rewrite_prompt(failed)
     logger.info(_usage_line(topic, attempts, outcome))
+    # Each run costs the league, whatever its end. An honest miss and an error do not count toward the team cap.
+    usd = sum(sonnet_cost(a.result.usage) for a in attempts if a.result is not None)
+    counts = roster_id is not None and outcome == "checked"
+    await anyio.to_thread.run_sync(lambda: asker.caps.record(roster_id, usd, asker.clock(), counts=counts))
 
 
 async def _kept(answer: dict) -> AsyncIterator[BaseChunk]:
@@ -163,6 +170,11 @@ async def _kept(answer: dict) -> AsyncIterator[BaseChunk]:
     yield TextDeltaChunk(id="kept", delta=answer["text"])
     yield TextEndChunk(id="kept")
     yield _data("check", {"state": "checked"}, id="check")
+
+
+async def _capped(topic: str, hit: CapHit) -> AsyncIterator[BaseChunk]:
+    """The calm line of a cap in place of the text, with the 3 closest Topics, and no Claude call."""
+    yield _data("cap", {"cap": hit.cap, "line": hit.line, "closest": CLOSEST[topic]})
 
 
 async def answer_stream(facts: PersonalFacts, key: str, text: AsyncIterator[BaseChunk]) -> AsyncIterator[BaseChunk]:
@@ -199,7 +211,11 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: Served, re
     if kept is not None:
         logger.info("The personal Topic %s came from the store, with no Claude call", body.topic)
         text = _kept(kept)
+    elif (hit := await anyio.to_thread.run_sync(asker.caps.check, body.roster_id, asker.clock())) is not None:
+        # Past a cap, everything that costs nothing still works: the data block from code, and the cap line.
+        logger.info("The personal Topic %s stopped at the %s cap, with no Claude call", body.topic, hit.cap)
+        text = _capped(body.topic, hit)
     else:
         text = claude_answer(asker, store, body.topic, facts, key, own, snapshot.teams[body.roster_id].name,
-                             request.app.state.personal_model)
+                             request.app.state.personal_model, body.roster_id)
     return _adapter("", agent=AGENT).streaming_response(answer_stream(facts, key, text))

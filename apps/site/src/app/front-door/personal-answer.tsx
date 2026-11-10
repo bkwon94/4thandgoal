@@ -12,7 +12,7 @@ import type { AskTarget } from "./ask-api";
 import { FreeBody, Shimmer } from "./free-answer";
 import { shownText } from "./free-stream";
 import { QuestionBubble } from "./miss-card";
-import { type PersonalBlock, type PersonalResult, type PersonalTopic, type PersonalView, personalViewOf } from "./personal-stream";
+import { type PersonalBlock, type PersonalCap, type PersonalResult, type PersonalTopic, type PersonalView, personalViewOf } from "./personal-stream";
 
 /* The line before the data block lands, while the API reads the rosters now. */
 export const READING_LINE = "Reading the rosters…";
@@ -40,7 +40,7 @@ export const PersonalAnswerCard = forwardRef<HTMLElement, Shared & { result: Per
   { name, href, avatars, result },
   ref,
 ) {
-  const view: PersonalView = { steps: [], first: result.text, second: null, check: "checked", suggestion: null, closest: null, block: result.block, key: result.key };
+  const view: PersonalView = { steps: [], first: result.text, second: null, check: "checked", suggestion: null, closest: null, block: result.block, key: result.key, cap: null };
   return (
     <article ref={ref} aria-label={name} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={name} />
@@ -50,7 +50,7 @@ export const PersonalAnswerCard = forwardRef<HTMLElement, Shared & { result: Per
 });
 
 /* A personal Answer as it streams. On the end it hands the Thread a checked result, the closest Topics of an honest
-   miss, or an error, so the Thread keeps only what ended. */
+   miss, the line of a cap, or an error, so the Thread keeps only what ended. */
 export const PersonalAnswerLive = forwardRef<
   HTMLElement,
   Shared & {
@@ -59,9 +59,10 @@ export const PersonalAnswerLive = forwardRef<
     body: { topic: PersonalTopic; roster_id: number; team: number | null };
     onDone: (result: PersonalResult) => void;
     onMiss: (closest: string[]) => void;
+    onCap: (cap: PersonalCap) => void;
     onError: () => void;
   }
->(function PersonalAnswerLive({ name, href, avatars, target, passphrase, body, onDone, onMiss, onError }, ref) {
+>(function PersonalAnswerLive({ name, href, avatars, target, passphrase, body, onDone, onMiss, onCap, onError }, ref) {
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -90,6 +91,9 @@ export const PersonalAnswerLive = forwardRef<
     } else if (status === "ready" && view.check === "checked" && view.block && view.key) {
       ended.current = true;
       onDone({ block: view.block, text: shownText(view), key: view.key });
+    } else if (status === "ready" && view.cap) {
+      ended.current = true;
+      onCap(view.cap);
     } else if (status === "ready" && view.closest) {
       ended.current = true;
       onMiss(view.closest);
