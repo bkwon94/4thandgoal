@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-26, AT-30, AT-31, AT-
 
 **Blocked by:** 04 and 09
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A Find for Maye d'force B with U with no partner returns 1 to 3 picks, each with a headline and 2 to 3 Bullets.
 - [x] With Return of T Mac as the partner, no pick sends Jahmyr Gibbs for Bijan Robinson.
