@@ -1,6 +1,6 @@
 """
-The trade Topics of the front door: the trade check calls the analyze press, and trade ideas calls the find press.
-Each route streams a plain step for each stage of the Advisor, then the whole Answer, as parts of an event stream.
+The trade Topics of the front door: the trade check calls the analyze press, trade ideas the find press, and sell high
+the sell high press. Each route streams a plain step for each stage of the Advisor, then the whole Answer.
 """
 import contextvars
 import json
@@ -214,3 +214,22 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
 
     return stream(work)
 
+
+
+class SellHighRequest(BaseModel):
+    """The body of sell high: the roster id of Your team."""
+
+    roster_id: int
+
+
+@router.post("/sell-high")
+def sell_high(request: Request, body: SellHighRequest, asker: ClientAsker, served: ServedClient) -> StreamingResponse:
+    """Sell high or buy low for Your team: the steps of the sell high press and its document. The Advisor picks the
+    players of the roster to sell from their facts side by side, and writes why."""
+    _teams(asker, served, body.roster_id)
+
+    def work(emit: Emit) -> None:
+        document = analyzer_routes.sell_high_press(request, asker.season, body.roster_id, served, _step(emit))
+        emit("data-answer", {"kind": "sell", "document": document})
+
+    return stream(work)

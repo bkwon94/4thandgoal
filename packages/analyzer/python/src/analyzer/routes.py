@@ -15,11 +15,12 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from analyzer.advisor import AdvisorFailed, TradeRead
-from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key
+from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key, sell_high_cache_key
 from analyzer.errors import season_in_progress
 from analyzer.finder_pick import FinderPicks
 from analyzer.finder_search import Shortlist
 from analyzer.ratelimit import GradeLimiter, request_address
+from analyzer.sell_high import SellHigh, SellHighFailed
 from analyzer.stage import Stage
 from analyzer.trade import ProposedTrade, TradeInputError, check_trade
 from analyzer.trade_facts import shown_ranks
@@ -44,6 +45,13 @@ GRADE_LIMIT_DETAIL = {
 # The read of the Advisor: a proposed trade and its snapshot in, the read out. It raises AdvisorFailed after two
 # failed calls. A press of the front door adds the keyword `stage`, so the type takes any arguments.
 Analyzer = Callable[..., TradeRead]
+# The sell high pick of the Advisor: the roster id and the snapshot in, the picks out, with the keyword `stage`. It sits
+# on the app state with the real Claude call, the real Jev, and the real news feed, so a test swaps in a stub call. It
+# raises SellHighFailed after two failed calls.
+SellHighPicker = Callable[..., SellHigh]
+# The plain error of a failed sell high pick. A failed pick never counts as a grade, as a failed read does not.
+SELL_HIGH_ERROR = ("The sell high read did not come through. Try again in a minute. "
+                   "This try does not count toward your grades.")
 # The plain error of a failed read. A failed read never counts as a grade, so the error says so.
 ADVISOR_ERROR = ("The read of this trade did not come through. Try again in a minute. "
                  "This try does not count toward your grades.")
@@ -383,3 +391,45 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
     if not picks.fallback:
         cache.put(key, document)
     return document
+
+
+def sell_high_document(season: int, snapshot: Snapshot, sells: SellHigh) -> dict:
+    """The sell high result the site renders: Your team, each player to sell with his ranks, the headline, and the
+    Bullets, and the as-of stamps. An empty list carries the plain line of the Advisor. No pick holds a score."""
+    return {
+        "season": season,
+        "team": _team(snapshot, sells.roster_id),
+        "picks": [{"player": _traded_player(snapshot, pick.player_id), "headline": pick.headline,
+                   "bullets": [bullet.model_dump() for bullet in pick.bullets]} for pick in sells.picks],
+        "empty": sells.none_line,
+        "as_of": _as_of(snapshot),
+        "missing": list(snapshot.missing),
+        "stale": list(snapshot.stale),
+    }
+
+
+def sell_high_press(request: Request, season: int, roster_id: int, served: Served, stage: Stage) -> dict:
+    """The sell high press of the front door: the players of the roster that the Advisor would sell, with why.
+
+    A repeat on the same roster and snapshot comes from the result cache with no Claude call. A failed pick is a 503.
+    """
+    with _press_log("sell_high", served):
+        snapshot = _snapshot(served, season)
+        if roster_id not in snapshot.rosters:
+            served.teams_cache.clear(season)
+            raise HTTPException(status_code=422, detail={"message": f"Roster {roster_id} is not in the league"})
+        key = sell_high_cache_key(season, roster_id, snapshot)
+        cached = served.cache.get(key)
+        if cached is not None:
+            return cached
+        # The count comes after the cache, because a cached repeat makes no Claude call and costs nothing.
+        _count_grade(request, served)
+        # CAP-WIRE: the team cap and the league cap of ticket 08 ask here, before the one Claude call of the press.
+        try:
+            sells = request.app.state.sell_high(roster_id, snapshot, stage=stage)
+        except SellHighFailed:
+            served.grade_limiter.release(request_address(request))
+            raise HTTPException(status_code=503, detail={"message": SELL_HIGH_ERROR}) from None
+        document = sell_high_document(season, snapshot, sells)
+        served.cache.put(key, document)
+        return document

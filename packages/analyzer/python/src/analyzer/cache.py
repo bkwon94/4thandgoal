@@ -192,6 +192,24 @@ def finder_cache_key(season: int, asker: int, partner: int | None, snapshot: Sna
     return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()
 
 
+def sell_high_cache_key(season: int, roster_id: int, snapshot: Snapshot) -> str:
+    """The hash of the roster and the content of the snapshot that the sell high pick reads.
+
+    The kind keeps a sell high key apart from every analyze key and every finder key in the shared directory.
+    """
+    as_of = snapshot.as_of
+    parts = {
+        "document_version": DOCUMENT_VERSION,
+        "kind": "sell_high",
+        "season": season,
+        "roster": roster_id,
+        "chart_week": as_of.chart_week,
+        "stats_through": as_of.stats_through,
+        "content": _content_hash(snapshot, [roster_id]),
+    }
+    return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()
+
+
 class ResultCache:
     """The result documents on disk, one file per key, under a directory on the data volume."""
 
