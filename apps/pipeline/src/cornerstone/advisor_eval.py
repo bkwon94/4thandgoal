@@ -28,7 +28,15 @@ from analyzer.finder_search import search
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_news import FACT_PREFIX as NEWS_PREFIX
 from analyzer.trade_news import NewsFeed
-from facts.writer import FINDER_PICK_MODEL, MODEL, ClaudeCall, ClaudeWriter, call_cost, finder_pick_call
+from facts.writer import (
+    FINDER_PICK_MODEL,
+    MODEL,
+    ClaudeCall,
+    ClaudeWriter,
+    call_cost,
+    finder_pick_call,
+    finder_repair_call,
+)
 from league.client import Client
 from league.jev_port import Jev, JevResponse, NoulQuestion
 from league.nflverse import STATS_TEAM_URL, cache_path, download
@@ -313,7 +321,7 @@ def _trade_names(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, list[str
 
 def _find_one(
         number: int, asker: FinderAsker, week: int, snapshot_of_week: dict[int, tuple[Snapshot, list[RawTransaction]]],
-        known: dict[str, int], jev: Jev, call: ClaudeCall, news: NewsFeed, meter: Meter,
+        known: dict[str, int], jev: Jev, call: ClaudeCall, repair_call: ClaudeCall, news: NewsFeed, meter: Meter,
 ) -> dict:
     """The record of one Finder press with no partner: the search, the shortlist, and the picks, or the error.
 
@@ -321,19 +329,25 @@ def _find_one(
     """
     started, spent = time.monotonic(), meter.total()
     claude_calls = 0
+    # The repairs of the picks run in threads, so a lock guards the count.
+    count_lock = threading.Lock()
     record: dict = {"number": number, "asker": asker.asker, "week": week, "partners_passed": None, "offers": None,
                     "shortlist": None, "picks": None, "none_line": None, "fallback": None, "error": None}
 
-    def counted(system: str, user: str, output_model):
-        nonlocal claude_calls
-        claude_calls += 1
-        return call(system, user, output_model)
+    def counted_by(inner: ClaudeCall) -> ClaudeCall:
+        def counted(system: str, user: str, output_model):
+            nonlocal claude_calls
+            with count_lock:
+                claude_calls += 1
+            return inner(system, user, output_model)
+        return counted
 
     try:
         snapshot, _ = snapshot_of_week[week]
         roster_id = _roster_of(snapshot, _name_in_week(asker.asker, snapshot, known))
         shortlist = search(roster_id, None, snapshot, jev)
-        picks = pick_trades(shortlist, snapshot, news=news, jev=jev, call=counted)
+        picks = pick_trades(shortlist, snapshot, news=news, jev=jev, call=counted_by(call),
+                            repair_call=counted_by(repair_call))
         record |= {
             "partners_passed": [read.team for read in shortlist.partners if read.passed],
             "offers": len(shortlist.offers),
@@ -353,7 +367,8 @@ def _find_one(
 
 def run_eval(
         test_set: EvalSet, snapshot_of: SnapshotOfWeek, *, jev: Jev, call: ClaudeCall, out_dir: Path, meter: Meter,
-        workers: int = 1, finder_call: ClaudeCall | None = None, current_week: int | None = None,
+        workers: int = 1, finder_call: ClaudeCall | None = None, repair_call: ClaudeCall | None = None,
+        current_week: int | None = None,
         news: NewsFeed | None = None,
 ) -> dict:
     """Read each trade as of its week, run the Finder of each Finder asker, and give the summary.
@@ -363,6 +378,8 @@ def run_eval(
     The Finder askers have no week, so they press on `current_week`: by default the newest week of the trades, because
     the test set holds the trades up to the week of now. `finder_call` is the Claude call of the Finder pick. By
     default it is the real call on its own model, with a writer that puts its cost on the meter at the Sonnet prices.
+    `repair_call` is the Claude call that repairs a failed Finder pick, by default the real repair call with the same
+    kind of writer, so the meter and the Claude call count of the press include each repair.
     A trade of `current_week` and each Finder asker read `news`, by default the live Sleeper feed. A trade of an older
     week reads no news, because the feed holds only the news of now.
     """
@@ -387,7 +404,9 @@ def run_eval(
     if askers and week_now is not None:
         pick_call = finder_call or partial(
             finder_pick_call, writer=ClaudeWriter(on_usage=partial(meter.add_claude, model=FINDER_PICK_MODEL)))
-        finds = [_find_one(number, asker, week_now, weeks, known, metered, pick_call, live, meter)
+        repair = repair_call or partial(
+            finder_repair_call, writer=ClaudeWriter(on_usage=partial(meter.add_claude, model=FINDER_PICK_MODEL)))
+        finds = [_find_one(number, asker, week_now, weeks, known, metered, pick_call, repair, live, meter)
                  for number, asker in enumerate(askers, start=1)]
     for find in finds:
         (out_dir / f"finder-{find['number']}.json").write_text(json.dumps(find, indent=1), encoding="utf-8")

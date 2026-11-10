@@ -346,6 +346,45 @@ def test_the_eval_runs_the_finder_of_each_asker_on_the_newest_week_and_saves_the
     assert any(line.startswith("finder 1: 1 pick, $") for line in summary_lines(summary))
 
 
+class ShortFirstPick(StubPick):
+    """A Finder pick call whose first answer holds one Bullet, so the pick fails the count guard."""
+
+    def __call__(self, system, user, output_model):
+        out = super().__call__(system, user, output_model)
+        if self.calls == 1:
+            out.picks[0].bullets = out.picks[0].bullets[:1]
+        return out
+
+
+def test_the_eval_meters_the_repair_call_of_a_finder_pick(snap, weeks, tmp_path, monkeypatch):
+    usage = _usage(input_tokens=1_000_000, cache_read_input_tokens=1_000_000, cache_creation_input_tokens=1_000_000,
+                   output_tokens=1_000_000)
+    repairs = []
+
+    class UsageWriter:
+        """A writer that keeps its usage hook, so the stub repair call reports its usage as the real writer does."""
+
+        def __init__(self, on_usage):
+            self.on_usage = on_usage
+
+    def repair_call(system, user, output_model, *, writer):
+        repairs.append(user)
+        writer.on_usage(usage)
+        return StubPick()(system, user, FinderPickOut).picks[0]
+
+    monkeypatch.setattr(advisor_eval, "ClaudeWriter", UsageWriter)
+    monkeypatch.setattr(advisor_eval, "finder_repair_call", repair_call)
+    meter = Meter()
+    run_eval(trades_of(snap, {}, finder=[FinderAsker(asker=snap.teams[4].name)]), weeks, jev=FakeJev(),
+             call=StubAdvisor(), out_dir=tmp_path, meter=meter, finder_call=ShortFirstPick())
+    saved = json.loads((tmp_path / "finder-1.json").read_text())
+    assert len(repairs) == 1 and len(saved["picks"]) == 1 and saved["fallback"] is False
+    # The pick call and the repair call are 2 Claude calls, and the repair costs the Sonnet prices.
+    assert saved["claude_calls"] == 2
+    assert meter.claude_usd == pytest.approx(call_cost(FINDER_PICK_MODEL, usage))
+    assert saved["cost"] >= meter.claude_usd
+
+
 def test_a_finder_asker_with_an_unknown_team_is_an_error_and_the_trades_still_read(snap, weeks, tmp_path):
     summary = run_eval(trades_of(snap, {}, finder=[FinderAsker(asker="No Such Team")]), weeks, jev=FakeJev(),
                        call=StubAdvisor(), out_dir=tmp_path, meter=Meter(), finder_call=StubPick())
