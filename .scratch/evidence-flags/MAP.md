@@ -21,7 +21,7 @@ After the evidence agent records each acceptance test, Jev reads the test and it
 
 ## NOT YET SPECIFIED
 
-- What hit rate and what false-flag rate let Jev into the flow? `decisions/03-grill-replay-bar.md`, after ticket 06.
+- What hit rate and what false-flag rate let Jev into the flow? `decisions/03-grill-replay-bar.md`.
 - What does Jev read, what happens when Jev is down or the key is missing, and what does the cost log line show? How does the caller cut a tall full-page shot into parts of 1568 px or less? `decisions/05-spec-state-failure-log.md`.
 
 ## OUT OF SCOPE
