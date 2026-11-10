@@ -33,8 +33,9 @@ from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import ask as ask_routes
 from cornerstone_api import free_answer as free_routes
+from cornerstone_api import personal_topics, trade_topics
 from cornerstone_api import refresh as refresh_routes
-from cornerstone_api import trade_topics
+from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.miss_log import MissLog
 from cornerstone_api.settings import Settings, ask_dir, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
 from cornerstone_api.sources import Sources
@@ -231,6 +232,10 @@ def create_app(
                         for client in clients}
     # The free answer runs the model of its agent, Claude Sonnet 5.5. A test sets a test model of Pydantic AI here.
     app.state.free_model = None
+    # The kept Answers of the personal Topics of each client sit next to its miss log, on the volume on Fly.
+    app.state.kept = {client.slug: AnswerStore(ask_dir(settings) / f"{client.slug}-answers.sqlite") for client in clients}
+    # A personal Topic runs the model of its agent, Claude Sonnet 5.5. A test sets a test model of Pydantic AI here.
+    app.state.personal_model = None
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
@@ -268,6 +273,7 @@ def create_app(
     app.include_router(ask_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(free_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
+    app.include_router(personal_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
 
     # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
     # commissioner key. The check and the board each have their own limit of each address, and each other group keeps

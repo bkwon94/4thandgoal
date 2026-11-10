@@ -13,6 +13,7 @@ dependencies = [
     "cpc-eggs",
     "cpc-facts",
     "cpc-league",
+    "cpc-managers",
     "fastapi>=0.158.0",
     "httpx>=0.28.1",
     "pydantic>=2.14.1",
@@ -28,6 +29,7 @@ cpc-analyzer = { workspace = true }
 cpc-eggs = { workspace = true }
 cpc-facts = { workspace = true }
 cpc-league = { workspace = true }
+cpc-managers = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.8.18,<0.9.0"]
@@ -54,7 +56,7 @@ line-length = 120
 # The API imports the analyzer, the eggs, the league, and the facts packages as its own code, so each sorts as first
 # party.
 [tool.ruff.lint.isort]
-known-first-party = ["analyzer", "cornerstone_api", "eggs", "facts", "league"]
+known-first-party = ["analyzer", "cornerstone_api", "eggs", "facts", "league", "managers"]
 
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 [tool.pyright]
@@ -62,7 +64,9 @@ typeCheckingMode = "basic"
 include = ["src/cornerstone_api/app.py", "src/cornerstone_api/refresh.py", "src/cornerstone_api/ask.py",
            "src/cornerstone_api/ask_wording.py", "src/cornerstone_api/miss_log.py",
            "src/cornerstone_api/free_answer.py", "src/cornerstone_api/free_tools.py",
-           "src/cornerstone_api/free_wording.py"]
+           "src/cornerstone_api/free_wording.py", "src/cornerstone_api/personal_topics.py",
+           "src/cornerstone_api/personal_facts.py", "src/cornerstone_api/personal_wording.py",
+           "src/cornerstone_api/answer_store.py"]
 
 [tool.uv.build-backend]
 module-name = "cornerstone_api"

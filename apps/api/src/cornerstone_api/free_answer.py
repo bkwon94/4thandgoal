@@ -163,22 +163,23 @@ class _Attempt:
     result: AgentRunResult | None = None
 
 
-def _adapter(prompt: str, message_id: str = "ask") -> VercelAIAdapter[FreeDeps, str]:
+def _adapter(prompt: str, message_id: str = "ask", agent: Agent[Any, str] = AGENT) -> VercelAIAdapter[Any, str]:
     """The adapter of one run. Its one user message is the prompt from code, never a message from the client.
 
     Each run gives its message its own id, so the adapter never reads the rewrite as a repeat of the question.
+    The free answer runs AGENT, and a personal Topic runs its own agent through the same stream.
     """
     message = UIMessage(id=message_id, role="user", parts=[TextUIPart(text=prompt)])
     run_input = SubmitMessage(id="free", messages=[message])
-    return VercelAIAdapter(agent=AGENT, run_input=run_input, sdk_version=SDK_VERSION)
+    return VercelAIAdapter(agent=agent, run_input=run_input, sdk_version=SDK_VERSION)
 
 
 # The adapter frames each run with its own start, finish, and done. The free answer has one frame for all its runs.
 _FRAME = (StartChunk, FinishChunk, DoneChunk, MessageMetadataChunk)
 
 
-async def _run(prompt: str, deps: FreeDeps, instructions: str, history: list[ModelMessage], attempt: _Attempt,
-               model: Model | None) -> AsyncIterator[BaseChunk]:
+async def _run(prompt: str, deps: Any, instructions: str, history: list[ModelMessage], attempt: _Attempt,
+               model: Model | None, agent: Agent[Any, str] = AGENT) -> AsyncIterator[BaseChunk]:
     """The chunks of one run, with the frame chunks left out. It keeps the text that streamed in `attempt`."""
 
     async def keep(result: AgentRunResult) -> None:
@@ -186,7 +187,7 @@ async def _run(prompt: str, deps: FreeDeps, instructions: str, history: list[Mod
         attempt.messages = result.all_messages()
 
     texts: list[str] = []
-    async for chunk in _adapter(prompt, f"ask-{len(history)}").run_stream(deps=deps, instructions=instructions, message_history=history,
+    async for chunk in _adapter(prompt, f"ask-{len(history)}", agent).run_stream(deps=deps, instructions=instructions, message_history=history,
                                                    model=model, on_complete=keep):
         if isinstance(chunk, _FRAME):
             continue

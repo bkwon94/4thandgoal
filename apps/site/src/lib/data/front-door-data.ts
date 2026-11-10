@@ -4,7 +4,7 @@
  */
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { managerHref, managersHref, rankingsHref, weekHref } from "../routes";
+import { managerHref, managersHref, rankingsHref, waiverHref, weekHref } from "../routes";
 import { readPublished } from "./published-file";
 import { type LeagueTopic, type TopicAnswer, topicsFileSchema } from "./topics-schema";
 import { listWeeks, loadWeek, type WeekRef } from "./week-data";
@@ -20,7 +20,12 @@ export type FrontDoorData = {
   teams: DoorTeam[];
   // The league Answers of each team by roster id. A week from before the weekly build wrote topics.json has none.
   answers: Record<number, DoorAnswer[]>;
+  // The page of each personal Topic of each team by roster id, or null when the client lacks that page.
+  personalHrefs: Record<number, Record<PersonalTopic, string | null>>;
 };
+
+/* The 3 personal Topics, which the API answers live. Their pages come from the build, as the league Topics do. */
+type PersonalTopic = "weak_spots" | "stack_up" | "waiver_targets";
 
 /* The Topics file layout version this site reads. It counts apart from the page JSON version. */
 const TOPICS_VERSION = 1;
@@ -50,6 +55,14 @@ function hrefOf(topic: LeagueTopic, ref: WeekRef, rosterId: number): string | nu
   }
 }
 
+/* The page of each personal Topic, as the table of the spec names it. Waiver targets link to the waiver page of the week
+   only when the client publishes its waiver file, and the other two link to the manager page of the team. */
+function personalHrefsOf(ref: WeekRef, rosterId: number): Record<PersonalTopic, string | null> {
+  const manager = existsSync(publicFile(ref.season, "managers.json")) ? managerHref(ref.season, rosterId) : null;
+  const waiver = existsSync(publicFile(ref.season, ref.week, "waiver.json")) ? waiverHref(ref.season, ref.week) : null;
+  return { weak_spots: manager, stack_up: manager, waiver_targets: waiver };
+}
+
 /* The data of the latest published week, or null when no week is published yet. listWeeks sorts by season, then by
    week, so the last ref is the latest. */
 export function loadFrontDoor(): FrontDoorData | null {
@@ -77,5 +90,6 @@ export function loadFrontDoor(): FrontDoorData | null {
     const rosterId = Number(key);
     answers[rosterId] = list.map((answer) => ({ ...answer, href: hrefOf(answer.topic, ref, rosterId) }));
   }
-  return { week: page.week, teams, answers };
+  const personalHrefs = Object.fromEntries(teams.map((team) => [team.id, personalHrefsOf(ref, team.id)]));
+  return { week: page.week, teams, answers, personalHrefs };
 }

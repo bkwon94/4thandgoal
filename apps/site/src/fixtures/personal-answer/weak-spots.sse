@@ -1,0 +1,90 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"weak_spots","team":3,"fact":"QB ranks 7th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"Holes","value":"0"}],"rows":[{"label":"QB","value":"7th of 12","note":"fine","roster_id":null,"you":false},{"label":"RB","value":"7th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"3rd of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"3rd of 12","note":"fine","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"98348d20d2a6d5fa81add8df514ec8811ee6b558a59e65614f7b98aba4eda8d0"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"Your team has no true","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" holes.","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" Every starter is in","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"side the starter line.","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" The","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" weakest spots","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" by","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" league","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" rank are QB and RB","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":", where","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" you","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" s","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"it ","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"7th of","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" 12 at each.","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" Bryce Young is the","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" ","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"8th-","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"ranked QB, and","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" Derrick Henry is the","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" ","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"16th-ranked RB","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" next","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" to Christian McCaff","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"rey. Your l","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"owest-","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"ranked starters are the","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" flex WRs, Kh","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"alil Shakir at ","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"33r","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":"d and Jakobi","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" Meyers at 29th,","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" but both","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-delta","delta":" are still inside the line.","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"text-end","id":"01665136-ecf8-4247-b965-2a25b45e289c"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

@@ -18,6 +18,8 @@ import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, type ThreadItem, itemOfError, it
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
 import { MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
 import { riseIn } from "./motion";
+import { PersonalAnswerCard, PersonalAnswerLive } from "./personal-answer";
+import { PERSONAL_LINES, isPersonal } from "./personal-stream";
 import { getOpened, markOpened } from "./opened-store";
 import { Suggestions } from "./suggestions";
 import { TeamSheet } from "./team-sheet";
@@ -42,12 +44,15 @@ export function FrontDoor({
   week,
   teams,
   answers,
+  personalHrefs = {},
   askTarget,
 }: {
   siteName: string;
   week: number;
   teams: DoorTeam[];
   answers: Record<number, DoorAnswer[]>;
+  // The page of each personal Topic of each team, by roster id. A team with no entry has no link.
+  personalHrefs?: Record<number, Record<string, string | null>>;
   askTarget: AskTarget;
 }) {
   const off = useMotionOff();
@@ -146,6 +151,14 @@ export function FrontDoor({
       const passphrase = getPassphrase();
       if (!passphrase) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
       else void runTrade(nextId.current++, name, { mode, roster_id: team.id, partner }, passphrase, true);
+      return;
+    }
+    // A personal Topic builds live on the API, so it needs the passphrase as a typed question does.
+    if (isPersonal(key)) {
+      setMoreOpen(false);
+      const name = TOPICS.find((topic) => topic.key === key)?.name ?? key;
+      if (!getPassphrase()) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
+      else put(nextId.current++, { kind: "personal", key, team: owner, question: null, result: null }, true);
       return;
     }
     const answer = (answers[owner] ?? []).find((candidate) => candidate.topic === key);
@@ -306,6 +319,31 @@ export function FrontDoor({
                           />
                         );
                       }
+                      case "personal": {
+                        // A tapped Topic shows its name, with the team after it when it is not Your team.
+                        const topicName = TOPICS.find((topic) => topic.key === entry.key)?.name ?? entry.key;
+                        const other = entry.team !== team.id ? teams.find((candidate) => candidate.id === entry.team)?.name : undefined;
+                        const shared = {
+                          name: entry.question ?? (other ? `${topicName}: ${other}` : topicName),
+                          href: personalHrefs[entry.team]?.[entry.key] ?? null,
+                          avatars,
+                        };
+                        return entry.result ? (
+                          <PersonalAnswerCard ref={ref} result={entry.result} {...shared} />
+                        ) : (
+                          <PersonalAnswerLive
+                            ref={ref}
+                            target={askTarget}
+                            passphrase={getPassphrase() ?? ""}
+                            body={{ topic: entry.key, roster_id: team.id, team: entry.team === team.id ? null : entry.team }}
+                            onDone={(result) => put(entry.id, { ...entry, result })}
+                            onMiss={(closest) => put(entry.id, { kind: "miss", question: shared.name, closest })}
+                            // A retry sends the name of the Topic through the route, which opens the same Topic again.
+                            onError={() => put(entry.id, { kind: "note", question: shared.name, line: RETRY_LINE, topic: null, team: null, retry: true })}
+                            {...shared}
+                          />
+                        );
+                      }
                       case "note":
                         return (
                           <NoteCard
@@ -330,7 +368,7 @@ export function FrontDoor({
             >
               {!missed && (picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
-                  <Suggestions picks={picks} facts={{ ...TRADE_LINES, ...facts }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
+                  <Suggestions picks={picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
                 </motion.div>
               ) : null}
               <motion.div {...riseIn(off, { delay: 0.08 })}>
