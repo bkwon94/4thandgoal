@@ -157,7 +157,7 @@ App: pipeline
 Stories: 53, 54
 Given: the 28 live eval reads and their sheets.
 When: check each Bullet and each Case against its sheet.
-Then: each cited fact id is on its sheet, and each number and each player name in a Bullet or a Case is in a cited fact.
+Then: each cited fact id is on its sheet, and each number in a Bullet or a Case is in a cited fact. Each player name is in a cited fact or is a player of the trade itself.
 Evidence: the check output for the 28 reads.
 
 AT-20: No inner word reaches a read
@@ -515,3 +515,4 @@ Out of scope "Suggested counters": no test. Reason: no ticket of this spec touch
 - 2026-11-10, AT-26 and AT-47, by Brian: a Finder pick holds 2 to 4 Bullets, not 2 to 3. Reason: the API does not enforce an array count, so a pick with a 4th Bullet made the guard retry, and the retry put the Finder press over the time and cost limits of AT-33. The PRD (story 39 and the press output) and ticket 10 say the same.
 - 2026-11-10, AT-33, by Brian: the test takes 5 cold presses of each kind. At least 4 of 5 hold the time limit, and all 5 hold the cost cap. Reason: the time of one call varies by a few seconds, and one cold analyze press took 30.9 s while others took 24 to 27 s with no change to the code.
 - 2026-11-10, AT-34, by Brian: the Leans cover at least 3 of the 5 steps of the scale, in place of at least one Gut call. Reason: the point is that the Advisor uses the scale, not one fixed word, and one run had no Gut call while the runs before each had one.
+- 2026-11-10, AT-19, by Brian: a player name may also be a player of the trade itself, not only a name in a cited fact. Reason: the guard allows the players of the trade by design, and a Bullet names the player it is about.
