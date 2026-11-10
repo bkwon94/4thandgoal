@@ -12,7 +12,7 @@ import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AnswerBody, AnswerCard } from "./answer-card";
 import { QUICK, SMOOTH, fadeIn, morphId } from "./motion";
 import type { ThreadItem } from "./ask-thread";
-import { TOPICS } from "./topics";
+import { topicName } from "./topics";
 
 /* A fold grows and shrinks its height on --duration-fast and --ease-smooth-out, and its content sharpens from
    --blur-small, as the accordion of transitions-dev. The close is the same length, so a quick second tap never jumps. */
@@ -53,7 +53,7 @@ export function Thread({
         const answer = (answers[entry.team] ?? []).find((candidate) => candidate.topic === entry.key);
         if (!answer) return null;
         // A typed question shows as its own bubble. A tapped Topic shows its name.
-        const name = entry.question ?? TOPICS.find((topic) => topic.key === entry.key)?.name ?? entry.key;
+        const name = entry.question ?? topicName(entry.key);
         return last ? (
           // The newest Answer sits a step below the folds, so the open card reads apart from the list above it.
           <div key={entry.id} className={index > 0 ? "pt-sp-6" : ""}>

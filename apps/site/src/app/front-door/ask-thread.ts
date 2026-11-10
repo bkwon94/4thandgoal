@@ -7,7 +7,7 @@ import { AskError, type AskAnswer } from "./ask-api";
 import type { TradeAnswer } from "./trade-api";
 import type { FreeResult } from "./free-stream";
 import { type PersonalResult, type PersonalTopic, isPersonal } from "./personal-stream";
-import { TOPICS } from "./topics";
+import { topicName } from "./topics";
 
 /* One item of the Thread. A topic item shows the league Answer of `team`, with the typed question or the Topic name as
    its bubble. A note is one calm line, with an optional Topic chip of `team` (null for Your team) and an optional retry.
@@ -38,8 +38,6 @@ export const TRADE_LINES: Record<string, string> = {
 
 export const REFUSE_LINE = "That is not a question the front door answers. Ask about your team, another team, or the league.";
 export const RETRY_LINE = "The question did not go through. Ask again.";
-
-const topicName = (key: string) => TOPICS.find((topic) => topic.key === key)?.name ?? key;
 
 /* The item of a route. A Topic route opens the Answer of the team that the question names, else of Your team. A Topic
    with no Answer in this build, such as a live Topic, says that it opens soon. */

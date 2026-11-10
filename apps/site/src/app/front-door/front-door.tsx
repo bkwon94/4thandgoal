@@ -26,7 +26,7 @@ import { TeamSheet } from "./team-sheet";
 import { type Entry, Thread } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
 import { type ServedSuggestions, checkCurrent, fetchSuggestions, staleLine } from "./suggestions-api";
-import { TOPICS, dayOrder, pickSuggestions } from "./topics";
+import { dayOrder, pickSuggestions, topicName } from "./topics";
 import { TradeCard } from "./trade-answer";
 import { type TradeRequest, streamTrade } from "./trade-api";
 import { getYourTeam, setYourTeam } from "./your-team-store";
@@ -189,7 +189,7 @@ export function FrontDoor({
     const mode = TRADE_TOPICS[key];
     if (mode) {
       setMoreOpen(false);
-      const name = TOPICS.find((topic) => topic.key === key)?.name ?? key;
+      const name = topicName(key);
       const partner = owner === team.id ? null : owner;
       // A tapped trade check names no trade, so it opens the Trade page with Your team and the team it is about.
       if (mode === "check") {
@@ -207,7 +207,7 @@ export function FrontDoor({
     // A personal Topic builds live on the API, so it needs the passphrase as a typed question does.
     if (isPersonal(key)) {
       setMoreOpen(false);
-      const name = TOPICS.find((topic) => topic.key === key)?.name ?? key;
+      const name = topicName(key);
       if (!getPassphrase()) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
       else {
         // A personal Topic of Your team drops off the Suggestions until the API serves a new fact for it.
@@ -220,7 +220,7 @@ export function FrontDoor({
     setMoreOpen(false);
     if (!answer) {
       // A closest Topic of a miss can be a live Topic, which this build cannot answer yet.
-      const name = TOPICS.find((topic) => topic.key === key)?.name ?? key;
+      const name = topicName(key);
       put(nextId.current++, { kind: "note", question: name, line: `${name} opens here soon.`, topic: null, team: null, retry: false }, true);
       return;
     }
@@ -379,10 +379,10 @@ export function FrontDoor({
                       }
                       case "personal": {
                         // A tapped Topic shows its name, with the team after it when it is not Your team.
-                        const topicName = TOPICS.find((topic) => topic.key === entry.key)?.name ?? entry.key;
+                        const topic = topicName(entry.key);
                         const other = entry.team !== team.id ? teams.find((candidate) => candidate.id === entry.team)?.name : undefined;
                         const shared = {
-                          name: entry.question ?? (other ? `${topicName}: ${other}` : topicName),
+                          name: entry.question ?? (other ? `${topic}: ${other}` : topic),
                           href: personalHrefs[entry.team]?.[entry.key] ?? null,
                           avatars,
                         };
