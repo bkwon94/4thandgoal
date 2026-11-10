@@ -130,6 +130,11 @@ def build_context(
     teams = data.teams
     text = {key: " ".join(s.text for s in b.sentences) for key, b in blurbs.items()}
     pick_facts = next(f for f in data.matchups if f.matchup_id == data.pick.matchup_id)
+    # Each chapter is written and checked alone, so the matchup of the week can fall back while the recap of
+    # the same game passes. The page then shows the passed recap, not one dull template line. The blurbs keep the fallback record.
+    recap = blurbs.get(f"recap_{pick_facts.matchup_id}")
+    if "motw" in blurbs and blurbs["motw"].fallback and recap and not recap.fallback:
+        text["motw"] = text[f"recap_{pick_facts.matchup_id}"]
     pick_sides = _sides(pick_facts, teams)
     game_changer = next((a for a in data.awards if a.key == "game_changer"), None)
 
