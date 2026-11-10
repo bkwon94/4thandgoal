@@ -59,6 +59,8 @@ class KeyItem(BaseModel):
 
 
 class CurrentRequest(BaseModel):
+    """The body of the key check: the personal Answers of the Thread, each with the key that the API kept it under."""
+
     answers: list[KeyItem] = Field(max_length=CHECK_MAX)
 
 
