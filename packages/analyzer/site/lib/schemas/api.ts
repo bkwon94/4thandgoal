@@ -59,7 +59,7 @@ export const bulletSchema = z.object({
   fact_text: z.string(),
 });
 
-/* The Week line of one side for one week, written by the code: the count of the players who play, the opponent, each bye, and each player who is out. It moves no letter. */
+/* The Week line of one side for one week, written by the code: the count of the players who play, the opponent, each bye, and each player who is out. It is a plain line of text that the page shows as is. */
 export const weekLineSchema = z.object({
   week: z.number(),
   text: z.string(),
