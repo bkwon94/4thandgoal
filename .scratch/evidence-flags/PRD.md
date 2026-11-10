@@ -65,7 +65,9 @@ The expected gain is fewer Judge loops and fewer hard stops on a spec that goes 
 - `cornerstone evidence-flags <slug> [AT-<n> ...]` reads `.scratch/<slug>/ACCEPTANCE.md`, `EVIDENCE.md`, and `evidence/AT-<n>/` of the Spec worktree. With no test ids, it reads every test that has an entry in `EVIDENCE.md`. It makes one Jev request per test, with every question of the flow in that request.
 - For each yes past the cut of its question, the command adds an entry to `.scratch/<slug>/FLAGS.md`, with `Action: open`. It prints the same entries. The agent then sets the action of each entry.
 - A test with `Files: none`, a skipped test, and a `Retired` test get no request.
-- `cornerstone evidence-flags-eval` reads a label file, runs the questions of the module on each labeled test at its commit, and prints, per question, the hits, the misses, and the false flags at its cut, and whether it meets the bar. It reads the past files through `git show <commit>:<path>`, so it needs no checkout of an old commit.
+- `--root <path>` sets the folder that holds `.scratch/`. The default is the current worktree. A test of a past round copies its feature folder into a temp root.
+- The command prints the question keys that it asked for each test.
+- `cornerstone evidence-flags-eval` reads a label file, runs the questions of the module on each labeled test at its commit, and prints, per question, the hits, the misses, and the false flags at its cut, and `meets the bar: yes` or `meets the bar: no`. It reads the past files through `git show <commit>:<path>`, so it needs no checkout of an old commit.
 - Both commands take the Jev by injection, in the shape of `advisor_eval` and its `MeteredJev`, so a test passes a `FakeJev`.
 
 ### The questions module
