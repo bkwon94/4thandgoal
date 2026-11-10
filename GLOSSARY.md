@@ -173,7 +173,7 @@ A Topic that the front door offers for Your team before the manager asks, such a
 _Avoid_: Recommendation, prompt, nudge, tip
 
 **Thread**:
-The list of the questions of a manager and their Answers on the front door.
+The list of the questions of a manager and their Answers on the front door, for one team in one fantasy week.
 _Avoid_: Chat, conversation, feed, history
 
 ### The code

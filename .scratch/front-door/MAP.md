@@ -39,10 +39,10 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - Each team gets 25 Claude Answers a day, and each league gets $25 a month. Past a cap, only what costs nothing runs. Every Claude answer uses Sonnet 5.5, and the route picks the model by a table. `decisions/04-grill-the-cap-numbers.md`.
 - `/` becomes the front door. The hero and the tool tiles go away. The menu stays with fewer links. Brian, 2026-11-09.
 - The trade check and trade ideas call `/analyze` and `/find` of `manager-brain` as they are. This spec adds `/sell-high` to the Advisor with Sonnet 5.5. The Advisor does not stream: its stages show as steps, then the whole Answer. `cpc:implement` waits for the merge of `manager-brain`. `decisions/06-grill-the-manager-brain-border.md`.
+- The browser keeps one Thread per team for the fantasy week, and the Tuesday build empties it. A stale Answer shows dimmed with a Refresh. A Clear action empties the Thread. `decisions/05-grill-the-thread-across-visits.md`.
 
 ## NOT YET SPECIFIED
 
-- Does the Thread stay across visits, and does it reset each week? `decisions/05-grill-the-thread-across-visits.md`.
 - How does the front door look and move on a phone? `decisions/08-prototype-the-front-door.md`.
 - Does the Jev route pick the right Topic for real questions? `decisions/09-prototype-the-jev-route.md`.
 - Which links stay in the menu, and what does each Answer link to? `decisions/10-spec-the-menu-and-pages.md`.
