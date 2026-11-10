@@ -16,67 +16,76 @@ export const AnswerCard = forwardRef<HTMLElement, { name: string; answer: DoorAn
   function AnswerCard({ name, answer, avatars }, ref) {
     const off = useMotionOff();
     return (
-      <article ref={ref} aria-label={name} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+      <article ref={ref} aria-label={name} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
         {/* The tap reads as the manager's question, on the right as in a chat. */}
         <motion.p className="m-0 max-w-[85%] self-end rounded-hero rounded-br-letter bg-ink px-sp-4 py-sp-2 text-body leading-tight font-semibold text-card" {...riseIn(off)}>
           {name}
         </motion.p>
-        {/* The data block settles from a soft blur at 0.98 (decision 07). With motion off, it only fades in. */}
-        <motion.div
-          className="flex flex-col gap-sp-4 rounded-card border border-rule bg-card p-sp-4"
-          initial={off ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: "blur(6px)" }}
-          animate={off ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
-          transition={fadeIn(SLOW, 0.08)}
-        >
-          {answer.stats.length > 0 && (
-            // Each stat takes the width of its own value, so three short stats share one row on a phone and a long value
-            // such as "12th of 12" wraps to the next row whole.
-            <dl className="m-0 flex flex-wrap gap-x-sp-6 gap-y-sp-3">
-              {answer.stats.map((stat) => (
-                <div key={stat.label} className="flex min-w-0 flex-col gap-sp-1">
-                  <dt className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{stat.label}</dt>
-                  <dd className="m-0 text-stat leading-tight font-bold whitespace-nowrap tabular-nums">{stat.value}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-          {answer.rows.length > 0 && (
-            <ul className="m-0 flex list-none flex-col border-t border-rule p-0">
-              {answer.rows.map((row, index) => (
-                <AnswerRow key={`${row.label}-${index}`} row={row} avatar={row.roster_id === null ? undefined : avatars[row.roster_id]} />
-              ))}
-            </ul>
-          )}
-          {answer.text.length > 0 && (
-            <motion.div className="flex flex-col gap-sp-3" {...riseIn(off, { delay: 0.2, text: true })}>
-              {answer.text.map((paragraph, index) => (
-                <p key={index} className="m-0 text-body leading-body text-ink-2">
-                  {paragraph}
-                </p>
-              ))}
-            </motion.div>
-          )}
-          {answer.href !== null && (
-            <motion.a
-              href={answer.href}
-              className="press group -mx-sp-2 flex min-h-touch items-center gap-sp-2 self-start rounded-pill px-sp-2 text-body leading-tight font-semibold text-accent-ink no-underline"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={fadeIn(VERY_SLOW, 0.3)}
-            >
-              <span>Read the full report</span>
-              <ArrowRightIcon
-                aria-hidden
-                className="size-sp-4 transition-transform duration-150 ease-out group-hover:translate-x-sp-0 motion-reduce:transition-none"
-                strokeWidth={2.25}
-              />
-            </motion.a>
-          )}
-        </motion.div>
+        <AnswerBody answer={answer} avatars={avatars} />
       </article>
     );
   },
 );
+
+/* The data block, the text, and the link of one Answer. The newest Answer shows it on a card that settles in. An
+   opened fold shows it flat, with no card and no settle, so a reread opens calm (decision 08). */
+export function AnswerBody({ answer, avatars, flat = false }: { answer: DoorAnswer; avatars: Record<number, string | null>; flat?: boolean }) {
+  const off = useMotionOff();
+  return (
+    /* The data block settles from a soft blur at 0.98 (decision 07). With motion off, it only fades in. */
+    <motion.div
+      className={flat ? "flex flex-col gap-sp-4 pt-sp-1 pb-sp-5" : "flex flex-col gap-sp-4 rounded-card border border-rule bg-card p-sp-4"}
+      initial={flat ? false : off ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: "blur(6px)" }}
+      animate={off ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
+      transition={fadeIn(SLOW, 0.08)}
+    >
+      {answer.stats.length > 0 && (
+        // Each stat takes the width of its own value, so three short stats share one row on a phone and a long value
+        // such as "12th of 12" wraps to the next row whole.
+        <dl className="m-0 flex flex-wrap gap-x-sp-6 gap-y-sp-3">
+          {answer.stats.map((stat) => (
+            <div key={stat.label} className="flex min-w-0 flex-col gap-sp-1">
+              <dt className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{stat.label}</dt>
+              <dd className="m-0 text-stat leading-tight font-bold whitespace-nowrap tabular-nums">{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {answer.rows.length > 0 && (
+        <ul className="m-0 flex list-none flex-col border-t border-rule p-0">
+          {answer.rows.map((row, index) => (
+            <AnswerRow key={`${row.label}-${index}`} row={row} avatar={row.roster_id === null ? undefined : avatars[row.roster_id]} />
+          ))}
+        </ul>
+      )}
+      {answer.text.length > 0 && (
+        <motion.div className="flex flex-col gap-sp-3" {...(flat ? {} : riseIn(off, { delay: 0.2, text: true }))}>
+          {answer.text.map((paragraph, index) => (
+            <p key={index} className="m-0 text-body leading-body text-ink-2">
+              {paragraph}
+            </p>
+          ))}
+        </motion.div>
+      )}
+      {answer.href !== null && (
+        <motion.a
+          href={answer.href}
+          className="press group -mx-sp-2 flex min-h-touch items-center gap-sp-2 self-start rounded-pill px-sp-2 text-body leading-tight font-semibold text-accent-ink no-underline"
+          initial={flat ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={fadeIn(VERY_SLOW, 0.3)}
+        >
+          <span>Read the full report</span>
+          <ArrowRightIcon
+            aria-hidden
+            className="size-sp-4 transition-transform duration-150 ease-out group-hover:translate-x-sp-0 motion-reduce:transition-none"
+            strokeWidth={2.25}
+          />
+        </motion.a>
+      )}
+    </motion.div>
+  );
+}
 
 /* One line of the data block. The line of Your team carries the ink, so it stands out from the lines around it. */
 function AnswerRow({ row, avatar }: { row: TopicRow; avatar: string | null | undefined }) {

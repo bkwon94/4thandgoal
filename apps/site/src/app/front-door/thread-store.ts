@@ -1,0 +1,48 @@
+/**
+ * The Thread of each team in local storage: the entries that the manager opened this fantasy week, oldest first.
+ * The week of the latest build keys each Thread, so the Tuesday build starts an empty one (decision 05).
+ */
+// Its own key, so the Thread never mixes with Your team or the opened Topics.
+export const THREAD_KEY = "cpc.thread";
+
+/* One entry of the Thread. A Topic entry names its Topic, and its Answer reads from the published week.
+   The kind leaves room for the Answers of the ask box. */
+export type ThreadEntry = { kind: "topic"; topic: string };
+
+type Threads = Record<string, { week: number; entries: ThreadEntry[] }>;
+
+function readAll(): Threads {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(THREAD_KEY) ?? "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Threads) : {};
+  } catch {
+    // Blocked storage or a bad value reads as an empty Thread.
+    return {};
+  }
+}
+
+function writeAll(all: Threads): void {
+  try {
+    localStorage.setItem(THREAD_KEY, JSON.stringify(all));
+  } catch {
+    // The page still shows the Thread for this visit. The next load shows it empty.
+  }
+}
+
+/* The Thread of one team in this week. A Thread of an older week reads as empty. */
+export function getThread(teamId: number, week: number): ThreadEntry[] {
+  const entry = readAll()[String(teamId)];
+  if (!entry || entry.week !== week || !Array.isArray(entry.entries)) return [];
+  return entry.entries.filter((item) => item && item.kind === "topic" && typeof item.topic === "string");
+}
+
+export function appendToThread(teamId: number, week: number, item: ThreadEntry): ThreadEntry[] {
+  const entries = [...getThread(teamId, week), item];
+  writeAll({ ...readAll(), [String(teamId)]: { week, entries } });
+  return entries;
+}
+
+/* Clear empties the Thread of this week for one team. The Threads of the other teams stay. */
+export function clearThread(teamId: number, week: number): void {
+  writeAll({ ...readAll(), [String(teamId)]: { week, entries: [] } });
+}

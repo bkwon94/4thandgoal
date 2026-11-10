@@ -3,10 +3,10 @@
  * a manager sees: the sheet that asks for Your team on the first visit, then the empty Thread with the ask box.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { cpSync, mkdtempSync, rmSync } from "node:fs";
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import HomePage from "./page";
 
 /* The temp public/ folders that homeOfClient made, so each test removes its own folder. */
@@ -211,13 +211,165 @@ describe("the front door of NorCal", () => {
   });
 });
 
-/* A temp public/ folder with the published files of one client, as its client build copies them. */
-async function homeOfClient(slug: string) {
+/* A temp public/ folder with the published files of one client, as its client build copies them. With nextWeek, it
+   also holds a later latest week. */
+async function homeOfClient(slug: string, { nextWeek = false }: { nextWeek?: boolean } = {}) {
   const root = mkdtempSync(join(tmpdir(), "home-page-"));
   roots.push(root);
   cpSync(join(process.cwd(), "..", "..", "clients", slug, "published"), join(root, "public"), { recursive: true });
+  // The next week of a test is a rebuild that publishes week 9: the files of week 8 under the number 9.
+  if (nextWeek) {
+    const next = join(root, "public", "2026", "week-09");
+    cpSync(join(root, "public", "2026", "week-08"), next, { recursive: true });
+    for (const file of ["page.json", "topics.json"]) {
+      const path = join(next, file);
+      writeFileSync(path, JSON.stringify({ ...JSON.parse(readFileSync(path, "utf8")), week: 9 }));
+    }
+  }
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
   vi.resetModules();
   return (await import("./page")).default;
 }
+
+/* Opens one Topic from "More", as a manager who looks past the 3 Suggestions does. */
+async function openTopic(name: string) {
+  const [more] = await suggestionChips();
+  if (more.getAttribute("aria-expanded") !== "true") fireEvent.click(more);
+  fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: new RegExp(`^${name}`) }));
+  return screen.findAllByRole("article", { name });
+}
+
+describe("the Thread of Lil Fridge", () => {
+  it("keeps one Thread per team, so a change of Your team and a change back shows the first Thread again (AT-3)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    await openTopic("Week recap");
+    const pickTeam = async (from: string, to: string) => {
+      fireEvent.click(screen.getByRole("button", { name: `Your team: ${from}. Change the team` }));
+      fireEvent.click(within(await screen.findByRole("dialog", { name: "Which team is yours?" })).getByRole("button", { name: new RegExp(to) }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
+    };
+
+    await pickTeam("Lil Fridge", "Bo Girds");
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Ask about Bo Girds");
+    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+
+    await pickTeam("Bo Girds", "Lil Fridge");
+    const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap"]);
+    expect(articles[0].textContent).toContain("Read the full report");
+  });
+
+  it("puts a new Answer open at the bottom and folds the older one to its question and one fact (AT-30)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    await openTopic("Week recap");
+    await openTopic("Power rankings");
+    const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings"]);
+    const [recap, rankings] = articles;
+    const fold = within(recap).getByRole("button", { name: "Week recap: You scored 80.11, 12th of 12" });
+    expect(fold.getAttribute("aria-expanded")).toBe("false");
+    expect(within(recap).queryByRole("link", { name: "Read the full report" })).toBeNull();
+    expect(within(rankings).getByRole("link", { name: "Read the full report" })).toBeTruthy();
+    expect(within(rankings).queryByRole("button", { expanded: false })).toBeNull();
+  });
+
+  it("opens a fold in place at its top under the Thread header, and folds it on a second tap (AT-31)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    // jsdom does no layout and has no scrollIntoView, so the test records each element that asks to scroll.
+    const scrolled: Element[] = [];
+    Element.prototype.scrollIntoView = function (this: Element) {
+      scrolled.push(this);
+    };
+    onTestFinished(() => {
+      delete (Element.prototype as Partial<Element>).scrollIntoView;
+    });
+    render(<HomePage />);
+    await openTopic("Week recap");
+    await openTopic("Power rankings");
+    const [recap] = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    const fold = within(recap).getByRole("button", { name: /^Week recap/ });
+    scrolled.length = 0;
+
+    fireEvent.click(fold);
+    expect(fold.getAttribute("aria-expanded")).toBe("true");
+    expect(within(recap).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/2026/week-08/");
+    // It opens in place: the week recap stays above the power rankings, and the page scrolls to its top.
+    const order = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    expect(order.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings"]);
+    expect(scrolled).toEqual([recap]);
+    expect(recap.className).toContain("scroll-mt-door-under-head");
+
+    fireEvent.click(fold);
+    expect(fold.getAttribute("aria-expanded")).toBe("false");
+    await waitFor(() => expect(within(recap).queryByRole("link", { name: "Read the full report" })).toBeNull());
+  });
+
+  it("keeps the Thread after a closed tab on the same day (AT-32)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    await openTopic("Week recap");
+    await openTopic("Power rankings");
+
+    // A closed tab drops the page. The store of the browser stays.
+    cleanup();
+    onDay("2026-11-11T21:00:00");
+    render(<HomePage />);
+    await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
+    const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings"]);
+    expect(within(articles[0]).getByRole("button", { name: /^Week recap/ }).getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("starts an empty Thread when a rebuild publishes a later latest week (AT-33)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    const WeekEight = await homeOfClient("cpc");
+    render(<WeekEight />);
+    await openTopic("Week recap");
+    await openTopic("Power rankings");
+    expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toHaveLength(2);
+
+    // The Tuesday build publishes week 9.
+    cleanup();
+    vi.restoreAllMocks();
+    const WeekNine = await homeOfClient("cpc", { nextWeek: true });
+    render(<WeekNine />);
+    await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
+    expect(within(screen.getByRole("region", { name: "Thread" })).getByText(/Week 9/)).toBeTruthy();
+    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+  });
+
+  it("empties the Thread at once on Clear, with no confirm, and keeps the opened Topics off the Suggestions (AT-36)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    const confirm = vi.spyOn(window, "confirm");
+    render(<HomePage />);
+    const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"))!;
+    fireEvent.click(rankings);
+    await openTopic("Week recap");
+    expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toHaveLength(2);
+
+    fireEvent.click(within(screen.getByRole("banner", { name: "Thread header" })).getByRole("button", { name: "Clear" }));
+    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+    expect(confirm).not.toHaveBeenCalled();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    // A chip that left the row fades out first, so the check waits for the row to settle.
+    await waitFor(
+      async () => {
+        const labels = (await suggestionChips()).map((chip) => chip.getAttribute("aria-label"));
+        expect(labels).toHaveLength(4);
+        expect(labels).not.toContainEqual(expect.stringMatching(/^(Power rankings|Week recap)/));
+      },
+      { timeout: 3000 },
+    );
+
+    // The Thread stays empty after a reload.
+    cleanup();
+    render(<HomePage />);
+    await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
+    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+  });
+});
