@@ -203,6 +203,30 @@ def test_a_state_over_32_mib_sends_the_shots_that_fit_in_the_order_of_files_and_
     assert capsys.readouterr().out.strip().splitlines()[-1].endswith(", 1 cut")
 
 
+def test_a_state_over_the_token_limit_sends_the_shots_that_fit_in_the_order_of_files_and_logs_the_cut(
+        tmp_path, capsys):
+    # Plain shots compress to a few KiB, so eight desktop tiles stay far under 32 MiB. At about one token per 380 px,
+    # each 1280 x 1568 tile costs about 5300 tokens, so eight of them pass the 32k tokens of one question.
+    names = [f"shot-{n}.png" for n in range(1, 9)]
+    folder = _one_test(tmp_path, ["steps.txt", *names])
+    (folder / "evidence" / "AT-1" / "steps.txt").write_text("1. Open the page.\n", encoding="utf-8")
+    for name in names:
+        _png(folder / "evidence" / "AT-1" / name, 1280, 1568)
+    jev = FakeJev(yes=0.95)
+
+    code = cli.main(["evidence-flags", "demo", "--root", str(tmp_path)], jev=jev)
+
+    assert code == 0
+    evidence = jev.requests[0].state["evidence"]
+    sent = list(evidence["screenshots"])
+    assert 0 < len(sent) < len(names)
+    assert sent == [f"evidence/AT-1/{name}" for name in names[:len(sent)]]
+    pixels = sum(width * height for tiles in evidence["screenshots"].values() for width, height in _sizes(tiles))
+    assert pixels / 380 < 32_000
+    assert evidence["text_files"] == {"evidence/AT-1/steps.txt": "1. Open the page.\n"}
+    assert capsys.readouterr().out.strip().splitlines()[-1].endswith(", 1 cut")
+
+
 def _by_prefix(default: float = 0.95, **answers: float):
     """An `answer` callback for FakeJev: each Noul whose key starts with a name of `answers` gets that value."""
     def answer(key, question, state):

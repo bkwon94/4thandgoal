@@ -24,6 +24,15 @@ VIDEO_EXT = {"webm", "mp4", "mov", "gif"}
 REQUEST_LIMIT = 32 * 1024 * 1024
 REQUEST_MARGIN = 256 * 1024
 PART_FRAMING = 1024
+# Jev 1.14 takes 32k tokens for the state plus one question, and 64k for the state plus all questions
+# (https://docs.typesafe.ai/go/models.md, "Context length"). A live probe on 2026-11-10 agrees: a state of six plain
+# 1280 x 1568 tiles passed at 31,442 input tokens, and seven tiles gave `400 max_tokens_exceeded`. The budget of the
+# state sits about 4,000 tokens under 32k. The margin covers the longest question and the error of the estimate.
+TOKEN_BUDGET = 28_000
+# A calibration run of decision ticket 02 measured about one input token per 350 to 390 px of an image, and the probe
+# above measured 387 px. Text costs about one token per 4 bytes, and 3 bytes a token keeps the estimate on the safe side.
+PIXELS_PER_TOKEN = 380
+BYTES_PER_TOKEN = 3
 # A whole round has about 40 tests, and four requests at one time keep it to about a minute.
 WORKERS = 4
 NO_REQUEST_TITLE = re.compile(r"^(Retired|Skipped)\b", re.IGNORECASE)
@@ -133,6 +142,11 @@ def tiles(data: bytes) -> list[JevImage]:
     return out
 
 
+def _pixels(image: JevImage) -> int:
+    width, height = Image.open(io.BytesIO(image.png)).size
+    return width * height
+
+
 def _kind(path: str) -> str:
     ext = path.rsplit(".", 1)[-1].lower() if "." in path else ""
     return "shot" if ext in SHOT_EXT else "video" if ext in VIDEO_EXT else "text"
@@ -142,7 +156,8 @@ def build_state(test_id: str, accepted: dict[str, str], entry: Evidence, folder:
     """The state of one test, and True when its shots did not all fit in one request.
 
     The state holds the test, the Observation, the list of files, each text file in full, and every shot as tiles.
-    The text always goes. The shots go in the order of `Files:` until the next shot would pass the request limit.
+    The text always goes. The shots go in the order of `Files:` until the next shot would pass the request limit
+    in bytes or the token budget.
     """
     text_files: dict[str, str] = {}
     videos, missing, shots = [], [], []
@@ -168,17 +183,21 @@ def build_state(test_id: str, accepted: dict[str, str], entry: Evidence, folder:
         "agent_observation": entry.keys.get("observation", ""),
         "evidence": evidence,
     }
-    size = len(json.dumps(state).encode("utf-8")) + REQUEST_MARGIN
+    text_size = len(json.dumps(state).encode("utf-8"))
+    size = text_size + REQUEST_MARGIN
+    tokens = text_size / BYTES_PER_TOKEN
     screenshots: dict[str, list[JevImage]] = {}
     cut = False
     for path in shots:
         parts = tiles((folder / path).read_bytes())
         more = sum(len(part.png) + PART_FRAMING for part in parts) + len(path)
-        if size + more > REQUEST_LIMIT:
+        more_tokens = sum(_pixels(part) for part in parts) / PIXELS_PER_TOKEN + len(path) / BYTES_PER_TOKEN
+        if size + more > REQUEST_LIMIT or tokens + more_tokens > TOKEN_BUDGET:
             cut = True
             break
         screenshots[path] = parts
         size += more
+        tokens += more_tokens
     evidence["screenshots"] = screenshots
     return state, cut
 
