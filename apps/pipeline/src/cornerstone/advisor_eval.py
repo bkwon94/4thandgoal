@@ -329,7 +329,7 @@ def _find_one(
         snapshot, _ = snapshot_of_week[week]
         roster_id = _roster_of(snapshot, _name_in_week(asker.asker, snapshot, known))
         shortlist = search(roster_id, None, snapshot, jev)
-        picks = pick_trades(shortlist, snapshot, news=news, call=counted)
+        picks = pick_trades(shortlist, snapshot, news=news, jev=jev, call=counted)
         record |= {
             "partners_passed": [read.team for read in shortlist.partners if read.passed],
             "offers": len(shortlist.offers),

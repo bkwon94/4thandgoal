@@ -19,9 +19,11 @@ from analyzer.advisor import (
     system_prompt,
 )
 from analyzer.finder_search import Shortlist, ShortlistOffer
+from analyzer.read_jev_check import log_read_jev_checks
 from analyzer.trade_jev import jev_answer_facts, trade_jev_questions
 from analyzer.trade_news import NewsFeed
 from facts.writer import ClaudeCall, call_with_retry, finder_pick_call
+from league.jev_port import Jev
 from league.models import Fact
 from league.snapshot import Snapshot
 
@@ -65,6 +67,13 @@ class FinderPick(BaseModel):
     headline: str | None
     bullets: list[ReadBullet]
     fact_lines: list[str]
+
+
+class _PickSide(BaseModel):
+    """The Bullets of one pick in the shape of a side, for the Jev checks. The Bullets advise the asker."""
+
+    roster_id: int
+    bullets: list[Bullet]
 
 
 class FinderPicks(BaseModel):
@@ -140,7 +149,7 @@ def _fact_lines(offer: ShortlistOffer, sheet: dict[str, Fact]) -> list[str]:
     return [sheet[f"{pid}.ppg"].text for side in offer.trade.sides for pid in side.player_ids if f"{pid}.ppg" in sheet]
 
 
-def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed,
+def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev: Jev,
                 call: ClaudeCall = finder_pick_call) -> FinderPicks:
     """The picks of the Advisor from the shortlist. An empty shortlist makes no call and gives the NO_OFFER line.
 
@@ -159,6 +168,10 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed,
         return FinderPicks(picks=[FinderPick(offer=offer, headline=None, bullets=[],
                                              fact_lines=_fact_lines(offer, sheets[offer.offer_id]))
                                   for offer in shortlist.shortlist], none_line=None, fallback=True)
+    # The Jev checks run on each pick against its own sheet, as on the read of one trade. They only log, so no answer
+    # and no failure ever blocks a pick.
+    for pick in out.picks:
+        log_read_jev_checks([_PickSide(roster_id=shortlist.asker, bullets=pick.bullets)], sheets[pick.offer_id], jev)
     offers = {offer.offer_id: offer for offer in shortlist.shortlist}
     picks = [FinderPick(offer=offers[pick.offer_id], headline=pick.headline, fact_lines=[],
                         bullets=read_bullets(pick.bullets, sheets[pick.offer_id])) for pick in out.picks]

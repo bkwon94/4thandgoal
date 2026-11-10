@@ -37,6 +37,7 @@ from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
 from facts.writer import ClaudeWriter
 from league.client import ClientError
+from league.jev_port import JevError
 from league.live import RefreshResult
 from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from league.paths import client_dir, league_file
@@ -1470,14 +1471,39 @@ def _find_client(settings, sources, picker=None, clock=None, jev=None, news=None
     With a clock, the grade and general limits read it.
     """
     news = news or NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
+    jev = jev or FakeJev()
     client = TestClient(create_app(
         settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=StubAnalyzer(),
-        finder_search=functools.partial(search, jev=jev or FakeJev()),
-        finder_pick=functools.partial(pick_trades, news=news, call=picker or StubPicker())))
+        finder_search=functools.partial(search, jev=jev),
+        finder_pick=functools.partial(pick_trades, news=news, jev=jev, call=picker or StubPicker())))
     if clock is not None:
         client.app.state.served["cpc"].grade_limiter.clock = clock
         client.app.state.limiter.clock = lambda: clock().timestamp()
     return client
+
+
+def test_the_bullets_of_each_pick_get_the_jev_checks_and_they_only_log(settings, sources, caplog):
+    caplog.set_level("INFO", logger="analyzer.read_jev_check")
+    jev = FakeJev()
+    doc = _find_client(settings, sources, jev=jev).post("/find", json={"season": 2026, "asker": 2},
+                                                        headers=HEADERS).json()
+    checks = [r for r in jev.requests if r.questions and all(k.startswith(("faithful.", "rumor.")) for k in r.questions)]
+    # One request per pick, with one faithfulness question per Bullet of that pick.
+    assert [sum(k.startswith("faithful.") for k in r.questions) for r in checks] == [
+        len(item["bullets"]) for item in doc["trades"]]
+    assert caplog.text.count("Jev checks of the read, log only") == len(doc["trades"])
+
+
+def test_a_failed_jev_check_of_a_pick_never_blocks_the_picks(settings, sources, caplog):
+    def answer(key, question, state):
+        if key.startswith(("faithful.", "rumor.")):
+            raise JevError("429 Too Many Requests")
+        return 0.9
+
+    doc = _find_client(settings, sources, jev=FakeJev(answer=answer)).post(
+        "/find", json={"season": 2026, "asker": 2}, headers=HEADERS).json()
+    assert doc["fallback"] is False and doc["trades"]
+    assert "The Jev checks of the read failed" in caplog.text
 
 
 def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_headline_and_bullets(settings, sources):

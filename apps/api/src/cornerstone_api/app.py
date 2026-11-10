@@ -212,8 +212,9 @@ def create_app(
     app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV, news=NEWS)
     # The Finder search asks the real Jev by default, so a test injects a search with FakeJev.
     app.state.finder_search = finder_search or functools.partial(search_trades, jev=JEV)
-    # The Finder pick makes the real Claude call with the real news feed by default, so a test injects a stub call.
-    app.state.finder_pick = finder_pick or functools.partial(pick_trades, news=NEWS)
+    # The Finder pick makes the real Claude call with the real news feed and the real Jev by default, so a test injects
+    # a stub call and FakeJev.
+    app.state.finder_pick = finder_pick or functools.partial(pick_trades, news=NEWS, jev=JEV)
 
     # The site calls the API from the browser, so only its origins and the local dev servers may read the answers.
     app.add_middleware(
