@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-4, AT-5, AT-7, AT-23, AT
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The build of CPC 2026 week 8 writes an Answer of each of the 7 league Topics for each of the 12 teams (AT-51).
 - [ ] The `page.json` of week 8 is the same as on `main` (AT-56).
