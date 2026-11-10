@@ -33,6 +33,7 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - The first build has 13 Topics. The personal Topics use the Roster grade, the slot ranks, and facts side by side, with no new formula. The Advisor judges sell high. Only the personal Topics get new Claude text. `decisions/01-grill-the-first-topics.md`.
 - Jev costs close to nothing, and Claude is over 95% of the cost. TypeSafe allows 80 requests and 100,000 tokens per second. Jev picks the slice of facts by the Topic, and an open question gets the full sheet. A new ADR covers the text that managers type. `decisions/03-research-jev-live-cost.md`.
 - The day of the week sets the order of the Suggestions, and Jev lifts an urgent Topic. Each one shows its name and one fact from code. Three show, plus a "More" row. An opened Topic drops off until its fact changes. `decisions/02-grill-how-suggestions-rank.md`.
+- The front door takes the structure and the motion of variant C in the brand of variant A. The look of C becomes the dark theme, with a light theme beside it. `decisions/07-prototype-the-design-language.md`.
 - `/` becomes the front door. The hero and the tool tiles go away. The menu stays with fewer links. Brian, 2026-11-09.
 
 ## NOT YET SPECIFIED
@@ -40,7 +41,6 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - What are the numbers of the caps? `decisions/04-grill-the-cap-numbers.md`.
 - Does the Thread stay across visits, and does it reset each week? `decisions/05-grill-the-thread-across-visits.md`.
 - Where is the border with `manager-brain`? `decisions/06-grill-the-manager-brain-border.md`.
-- What is the look and the motion system of the front door? `decisions/07-prototype-the-design-language.md`.
 - How does the front door look and move on a phone? `decisions/08-prototype-the-front-door.md`.
 - Does the Jev route pick the right Topic for real questions? `decisions/09-prototype-the-jev-route.md`.
 - How does a live personal Answer stay fast and cheap? `decisions/11-grill-live-answer-speed.md`.
