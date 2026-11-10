@@ -4,20 +4,21 @@
  */
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AskError, type AskAnswer } from "./ask-api";
+import type { FreeResult } from "./free-stream";
 import { TOPICS } from "./topics";
 
 /* One item of the Thread. A topic item shows the league Answer of `team`, with the typed question or the Topic name as
-   its bubble. A note is one calm line, with an optional Topic chip of `team` (null for Your team) and an optional retry. */
+   its bubble. A note is one calm line, with an optional Topic chip of `team` (null for Your team) and an optional retry.
+   A free answer streams while its result is null, and keeps its checked result once the stream ends. */
 export type ThreadItem =
   | { kind: "topic"; key: string; team: number; question: string | null }
   | { kind: "pending"; question: string }
   | { kind: "passphrase"; question: string; wrong: boolean }
   | { kind: "miss"; question: string; closest: string[] }
-  | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean };
+  | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean }
+  | { kind: "free"; question: string; result: FreeResult | null };
 
 export const REFUSE_LINE = "That is not a question the front door answers. Ask about your team, another team, or the league.";
-export const FREE_LINE = "Short answers from this season's data come soon. Until then, this Topic is the closest.";
-export const FREE_LINE_ALONE = "Short answers from this season's data come soon.";
 export const RETRY_LINE = "The question did not go through. Ask again.";
 
 const topicName = (key: string) => TOPICS.find((topic) => topic.key === key)?.name ?? key;
@@ -40,9 +41,8 @@ export function itemOfRoute(
         : { kind: "note", question, line: `${topicName(key)} opens here soon.`, topic: null, team: null, retry: false };
     }
     case "free":
-      return route.suggestion
-        ? { kind: "note", question, line: FREE_LINE, topic: route.suggestion, team: route.team, retry: false }
-        : { kind: "note", question, line: FREE_LINE_ALONE, topic: null, team: null, retry: false };
+      // The stream of the free answer brings its own Suggestion after the check, so the route adds none here.
+      return { kind: "free", question, result: null };
     case "miss":
       return { kind: "miss", question, closest: route.closest };
     case "refuse":

@@ -9,10 +9,16 @@ export const THREAD_KEY = "cpc.thread";
 
 /* One entry of the Thread that the browser keeps. A Topic entry names its Topic and its team, and its Answer reads
    from the published week. A miss and a note keep their lines. A question in flight and the passphrase card stay out,
-   because they mean nothing after a reload. */
-export type ThreadEntry = Extract<ThreadItem, { kind: "topic" | "miss" | "note" }>;
+   because they mean nothing after a reload. A free answer stays once it ends with its checked result, so a reload shows
+   it with no new stream and no cost. */
+export type ThreadEntry =
+  | Extract<ThreadItem, { kind: "topic" | "miss" | "note" }>
+  | (Extract<ThreadItem, { kind: "free" }> & { result: NonNullable<Extract<ThreadItem, { kind: "free" }>["result"]> });
 
 const KEPT = new Set(["topic", "miss", "note"]);
+
+/* True for an entry that means something after a reload. */
+const kept = (item: ThreadItem): item is ThreadEntry => KEPT.has(item.kind) || (item.kind === "free" && item.result !== null);
 
 type Threads = Record<string, { week: number; entries: ThreadEntry[] }>;
 
@@ -38,12 +44,12 @@ function writeAll(all: Threads): void {
 export function getThread(teamId: number, week: number): ThreadEntry[] {
   const entry = readAll()[String(teamId)];
   if (!entry || entry.week !== week || !Array.isArray(entry.entries)) return [];
-  return entry.entries.filter((item) => item && typeof item === "object" && KEPT.has(item.kind));
+  return entry.entries.filter((item) => item && typeof item === "object" && kept(item));
 }
 
 /* Keep the Thread of one team for this week. Only the kinds that mean something after a reload stay. */
 export function saveThread(teamId: number, week: number, items: ThreadItem[]): void {
-  const entries = items.filter((item): item is ThreadEntry => KEPT.has(item.kind));
+  const entries = items.filter(kept);
   writeAll({ ...readAll(), [String(teamId)]: { week, entries } });
 }
 

@@ -31,7 +31,7 @@ export function QuestionBubble({ question }: { question: string }) {
 }
 
 /* The surface of each card here: the plain card of the Thread, which settles in with a soft fade under the bubble. */
-function Surface({ children }: { children: ReactNode }) {
+export function Surface({ children }: { children: ReactNode }) {
   const off = useMotionOff();
   return (
     <motion.div
@@ -46,7 +46,7 @@ function Surface({ children }: { children: ReactNode }) {
 }
 
 /* One Topic chip, as a Suggestion chip with no fact. A chip of another team names that team after the Topic. */
-function TopicChip({ topic, team, index, onPick }: { topic: string; team?: string; index: number; onPick: (key: string) => void }) {
+export function TopicChip({ topic, team, index, onPick }: { topic: string; team?: string; index: number; onPick: (key: string) => void }) {
   const off = useMotionOff();
   const name = TOPICS.find((candidate) => candidate.key === topic)?.name ?? topic;
   return (
