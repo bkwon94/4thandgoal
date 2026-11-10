@@ -1,0 +1,2 @@
+The cpc client has finder = false in clients/cpc/client.toml, so the Finder does not show on the cpc build. This test ran with CLIENT_ROOT set to a copy of the cpc client folder with finder = true (the file in the Spec worktree is unchanged):
+CLIENT_ROOT=<scratchpad>/e3/finder-root pnpm --dir apps/site evidence manager-brain AT-47 AT-48

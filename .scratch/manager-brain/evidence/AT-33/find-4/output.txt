@@ -1,0 +1,124 @@
+$ curl -s -w '\nHTTP %{http_code} time=%{time_total}s\n' -X POST -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @request.json http://localhost:8081/clients/cpc/find
+
+Request (request.json):
+{"season": 2026, "asker": 9}
+
+
+HTTP 200 time=24.055925s
+Response:
+{
+    "season": 2026,
+    "trade_pair": {
+        "asker": {
+            "roster_id": 9,
+            "team": "Maye d'force B with U"
+        },
+        "partner": null
+    },
+    "trades": [
+        {
+            "offer_id": "9:6790-1:8167",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "to": 1
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8167",
+                            "name": "Christian Watson",
+                            "position": "WR",
+                            "nfl_team": "GB",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                            "season_rank": "WR3",
+                            "recent_rank": null,
+                            "from": 1
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 1,
+                    "team": "The Blue Tent",
+                    "gives": [
+                        {
+                            "player_id": "8167",
+                            "name": "Christian Watson",
+                            "position": "WR",
+                            "nfl_team": "GB",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                            "season_rank": "WR3",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": "Swift for Watson is a fair swap: you get a hot receiver and the Blue Tent gets the back it needs.",
+            "bullets": [
+                {
+                    "text": "Watson is WR3 on the season at 16.9 points per game, so you get a top receiver for one back.",
+                    "mark": "for",
+                    "fact_id": "8167.ppg",
+                    "fact_text": "Christian Watson (WR, GB) scored 16.9 points per game over 9 games before the trade. His Season rank is WR3, by total points this season."
+                },
+                {
+                    "text": "You go from 4 RBs in the top 36 to 3 and still get the better player, and your points stay about the same.",
+                    "mark": "for",
+                    "fact_id": "9.measure.fit",
+                    "fact_text": "The roster fit measure for Maye d'force B with U: You go from 4 RBs in the top 36 to 3 and go from 2 WRs in the top 36 to 3, and you get the better player."
+                },
+                {
+                    "text": "The Blue Tent goes from 2 RBs in the top 36 to 3, so it has a real reason to say yes.",
+                    "mark": "for",
+                    "fact_id": "1.depth.rb",
+                    "fact_text": "For The Blue Tent, the RBs in the top 36 go from 2 to 3."
+                },
+                {
+                    "text": "Watson has little history to lean on, so you are betting on this season's form.",
+                    "mark": "against",
+                    "fact_id": "8167.history",
+                    "fact_text": "In 2023, Christian Watson played for GB and scored half PPR points per game as follows: 7.15 in weeks 1 to 8 over 4 games; 11.74 in weeks 9 to 17 over 5 games; 14.45 in cold games over 2 games. In 2024, Christian Watson played for GB and scored half PPR points per game as follows: 6.28 in weeks 1 to 8 over 6 games; 7.59 in weeks 9 to 17 over 7 games; 3.33 in cold games over 3 games. In 2025, Christian Watson played for GB and scored half PPR points per game as follows: 10.5 in weeks 1 to 8 over 1 game; 11.6 in weeks 9 to 17 over 9 games; 12.72 in cold games over 4 games. A cold game is outdoors at 40 degrees F or below."
+                }
+            ],
+            "fact_lines": []
+        }
+    ],
+    "empty": null,
+    "as_of": {
+        "chart_week": null,
+        "stats_through": 9,
+        "completed_through": 9,
+        "rosters_fetched": "2026-11-10T10:48:18.980266-05:00",
+        "known_games": null,
+        "no_chart": true,
+        "no_chart_note": "This week's player values are not out yet."
+    },
+    "fallback": false,
+    "missing": [
+        "chart"
+    ],
+    "stale": []
+}

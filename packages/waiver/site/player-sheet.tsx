@@ -1,7 +1,7 @@
 /**
  * The sheet of the waiver page: the open player's name, his facts, his research claims, the bid to win, and the last like him.
  * A drop names the roster that holds him in place of a price. A line says when the research step found no experts this week.
- * With a team pick, a box counts the rivals that can outbid the viewer.
+ * With a team pick, a box counts the managers that can outbid the viewer.
  */
 "use client";
 
@@ -46,7 +46,7 @@ export function PlayerSheet({
   const last = price?.last_like ?? null;
   // The pipeline keys the map by budget level as a string. It already leaves the viewer out of the count, so the site only looks it up.
   const outbid = price && viewerBudget !== null ? price.outbid[String(viewerBudget)] : undefined;
-  // The engine counts the rivals over the lower of the bid and the viewer's budget, so the line names that amount.
+  // The engine counts the managers over the lower of the bid and the viewer's budget, so the line names that amount.
   const outbidOver = price && viewerBudget !== null ? Math.min(price.bid, viewerBudget) : null;
   // The sheet is a black card. The dark theme turns ink into a text color, so ink would paint it white.
   return (
@@ -103,7 +103,7 @@ export function PlayerSheet({
               )}
               {outbid !== undefined && (
                 <BidBox name="Can outbid you" value={String(outbid)}>
-                  {`Rivals over $${outbidOver}`}
+                  {`Managers over $${outbidOver}`}
                 </BidBox>
               )}
             </div>

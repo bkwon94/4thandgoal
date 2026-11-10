@@ -1,0 +1,25 @@
+# analyze press on server a (plain, cold): the trade of AT-16
+$ grep -ciE 'web_search|web search|server_tool_use' analyze/log.txt
+0
+$ grep -oE 'HTTP Request: [A-Z]+ https?://[^/ "]+' analyze/log.txt | sort | uniq -c
+  17 HTTP Request: GET https://api.sleeper.app
+   1 HTTP Request: GET https://peakedinhighskool.com
+   1 HTTP Request: POST https://api.anthropic.com
+   2 HTTP Request: POST https://api.typesafe.ai
+INFO:     facts.writer: AdvisorOut call: cache_creation_input_tokens=0 cache_read_input_tokens=2926 input_tokens=3313
+INFO:     analyzer.routes: Press of analyze for cpc: time=30.9s cost=$0.0685 claude_calls=1
+
+# find press on server a (plain, cold): Find for Maye d'force B with U, no partner (AT-26)
+$ grep -ciE 'web_search|web search|server_tool_use' find/log.txt
+0
+$ grep -oE 'HTTP Request: [A-Z]+ https?://[^/ "]+' find/log.txt | sort | uniq -c
+  20 HTTP Request: GET https://api.sleeper.app
+   1 HTTP Request: GET https://peakedinhighskool.com
+   1 HTTP Request: POST https://api.anthropic.com
+  22 HTTP Request: POST https://api.typesafe.ai
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3030 input_tokens=28215
+INFO:     analyzer.routes: Press of find for cpc: time=20.2s cost=$0.0739 claude_calls=1
+
+$ grep -h peakedinhighskool analyze/log.txt; grep -rln peakedinhighskool packages apps/pipeline/src apps/api/src
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+packages/league/python/src/league/chart.py

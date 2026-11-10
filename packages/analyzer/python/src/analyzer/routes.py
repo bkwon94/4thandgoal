@@ -4,38 +4,35 @@ The app mounts it at /clients/<slug>/ for each client it serves. Each route read
 The routes build the live snapshot through the sources of the client, so a test swaps every fetch.
 The teams route keeps its answer per season in memory for a short window, so the form fills at once.
 """
-from collections.abc import Callable
+import logging
+import time
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Annotated, Literal, Protocol
+from typing import Annotated, Protocol
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
-from analyzer.adjusters import Adjuster, Lean
-from analyzer.analysis import Analysis
+from analyzer.advisor import AdvisorFailed, TradeRead
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key
 from analyzer.errors import season_in_progress
-from analyzer.finder import NO_WIN_WIN, FinderTrade, find_win_wins
-from analyzer.finder_reasons import FinderReasons
+from analyzer.finder_pick import FinderPicks
+from analyzer.finder_search import Shortlist
 from analyzer.ratelimit import GradeLimiter, request_address
-from analyzer.rubric import (
-    NO_CHART_NOTE,
-    Breakdown,
-    ProposedTrade,
-    TradeInputError,
-    check_trade,
-    deal_reason,
-    fairness,
-    reason_names,
-)
+from analyzer.trade import ProposedTrade, TradeInputError, check_trade
 from analyzer.trade_facts import shown_ranks
 from analyzer.week_line import week_lines
+from facts.writer import metered_press
 from league.client import Client
 from league.player_ids import headshot_url, is_def
 from league.snapshot import Snapshot
 
 router = APIRouter()
+log = logging.getLogger(__name__)
 
+# The line the site shows when the trade week has no chart. It names no source, so a manager reads plain words.
+NO_CHART_NOTE = "This week's player values are not out yet."
 # One 429 body for each full window.
 GRADE_LIMIT_DETAIL = {
     "minute": "Too many grades this minute. Try again later.",
@@ -43,10 +40,18 @@ GRADE_LIMIT_DETAIL = {
 }
 
 
-# The grade plus the Claude call: a proposed trade and its snapshot in, the analysis out.
-Analyzer = Callable[[ProposedTrade, Snapshot], Analysis]
-# The Claude call of the finder sits on the app state, so a test swaps in a writer with a fake call.
-ReasonWriter = Callable[[list[FinderTrade], Snapshot], FinderReasons]
+# The read of the Advisor: a proposed trade and its snapshot in, the read out. It raises AdvisorFailed after two
+# failed calls.
+Analyzer = Callable[[ProposedTrade, Snapshot], TradeRead]
+# The plain error of a failed read. A failed read never counts as a grade, so the error says so.
+ADVISOR_ERROR = ("The read of this trade did not come through. Try again in a minute. "
+                 "This try does not count toward your grades.")
+# The Finder pick of the Advisor: the shortlist and the snapshot in, the picks out. It sits on the app state with the
+# real Claude call and the real news feed, so a test swaps in a pick with a stub call.
+FinderPicker = Callable[[Shortlist, Snapshot], FinderPicks]
+# The Finder search: the asker, the picked partner or None for every other team, and the snapshot in, the shortlist
+# out. It sits on the app state with the real Jev, so a test swaps in FakeJev or a search of its own.
+FinderSearch = Callable[[int, int | None, Snapshot], Shortlist]
 
 
 class SnapshotSource(Protocol):
@@ -149,32 +154,11 @@ def _as_of(snapshot: Snapshot) -> dict:
         "rosters_fetched": stamps.rosters_fetched.isoformat() if stamps.rosters_fetched else None,
         # The week N games that the player stats read. None when the grade reads no week N game.
         "known_games": stamps.known_games.model_dump() if stamps.known_games else None,
-        # The chart site posts the new chart hours after the trade week starts. The grade runs in that window too,
+        # The chart site posts the new chart hours after the trade week starts. The read runs in that window too,
         # so the document says the week has no chart, and the site shows the note with no words of its own.
         "no_chart": snapshot.chart is None,
         "no_chart_note": NO_CHART_NOTE if snapshot.chart is None else None,
     }
-
-
-# The decision a manager acts on, from the verdict choice of the rubric.
-Answer = Literal["yes", "no", "not_as_is"]
-ANSWERS: dict[str, Answer] = {"accept": "yes", "decline": "no", "counter": "not_as_is"}
-# The deal row of a side, from its start letter. It is the first factor, and no letter reaches the document.
-# Its words name no source of the values, so the row reads as plain advice.
-DEAL = "deal"
-DEAL_LEANS: dict[str, Lean] = {"A": "for", "B": "for", "C": "even", "D": "against", "F": "against"}
-
-
-def _deal_row(breakdown: Breakdown) -> dict:
-    """The deal row of one side: the start letter as a lean and one plain sentence."""
-    return {"name": DEAL, "lean": DEAL_LEANS[breakdown.start_letter], "reason": deal_reason(breakdown)}
-
-
-def _factor_lean(adjuster: Adjuster) -> Lean:
-    """The lean of one adjuster. The schedule never steps, so it keeps its own lean."""
-    if adjuster.lean is not None:
-        return adjuster.lean
-    return "for" if adjuster.step > 0 else "against" if adjuster.step < 0 else "even"
 
 
 def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
@@ -196,55 +180,58 @@ def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
     ]
 
 
-def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
-    """The result the site renders: a decision first, the fairness, then the bullets, the Week lines, and the factors
-    per side.
+def read_document(trade: ProposedTrade, snapshot: Snapshot, read: TradeRead) -> dict:
+    """The result the site renders: the Lean, the Case, the fairness, then the Bullets and the Week lines per side.
 
-    The deal row is the first factor of each side. The Week lines are never a factor, because they move no letter.
-
-    It holds no letter, no step, and never a trade value, sum, or ratio. A manager acts on a decision, not a letter.
+    Each Bullet carries the text of its fact, so a tap on the page opens the fact with no logic of the site.
+    It holds no score, because the Advisor gives a Lean and a Case in words.
     """
-    echoed = _echoed_sides(trade, snapshot)
     lines = week_lines(trade, snapshot)
-    sides = [
-        {
-            "roster_id": breakdown.roster_id,
-            "bullets": side.bullets,
-            "week_lines": [line.model_dump() for line in lines[breakdown.roster_id]],
-            "factors": [
-                _deal_row(breakdown),
-                # A row shows when it moves the grade or says something new, so a silent row with no step drops.
-                # The letter math still reads every step.
-                *({"name": adj.name, "lean": _factor_lean(adj), "reason": adj.reason}
-                  for adj in breakdown.adjusters if adj.step != 0 or not adj.silent),
-            ],
-        }
-        for breakdown, side in zip(analysis.breakdowns, analysis.sides)
-    ]
-    # The fairness reads the letters that stand after the Claude call, the same letters the verdict that stands
-    # comes with. The document drops the letters, so this function builds the block and a stored document cannot.
-    fairness_result = fairness(analysis.standing_letters, analysis.breakdowns, names=reason_names(snapshot))
+    bullets = {side.roster_id: side.bullets for side in read.sides}
     return {
-        "trade": {"asker": trade.asker, "sides": echoed},
-        "decision": {
-            "for_roster": trade.asker,
-            "answer": ANSWERS[analysis.verdict.choice],
-            "reason": analysis.verdict.reason,
-            "differs": analysis.verdict_differs,
-        },
-        # The fairness is for every side, after the decision, so the asker's own answer stays the lead.
-        "fairness": fairness_result.model_dump(mode="json"),
-        "sides": sides,
+        "trade": {"asker": trade.asker, "sides": _echoed_sides(trade, snapshot)},
+        "lean": read.lean,
+        "case": read.case,
+        "fairness": read.fairness.model_dump(mode="json"),
+        "sides": [
+            {
+                "roster_id": side.roster_id,
+                "bullets": [bullet.model_dump() for bullet in bullets[side.roster_id]],
+                "week_lines": [line.model_dump() for line in lines[side.roster_id]],
+            }
+            for side in trade.sides
+        ],
         "as_of": _as_of(snapshot),
-        "fallback": analysis.fallback,
         "missing": list(snapshot.missing),
         "stale": list(snapshot.stale),
     }
 
 
+@contextmanager
+def _press_log(route: str, served: Served) -> Iterator[None]:
+    """One log line per press of a route, with its time and the cost of its Claude calls, whatever the answer.
+
+    A press must stay in time and in cost, so the log shows both for each one. A cached repeat logs too, at no cost.
+    The Jev requests are not on the meter: Jev costs $0.042 per million input tokens, about a hundredth of the price
+    of Claude, so its part of a press is small.
+    """
+    start = time.monotonic()
+    with metered_press() as meter:
+        try:
+            yield
+        finally:
+            log.info("Press of %s for %s: time=%.1fs cost=$%.4f claude_calls=%d", route, served.client.slug,
+                     time.monotonic() - start, meter.usd, meter.calls)
+
+
 @router.post("/analyze")
 def analyze(request: Request, trade: ProposedTrade, served: ServedClient) -> dict:
-    """Grade the proposed trade on the live snapshot and return the result document."""
+    """Read the proposed trade on the live snapshot and return the read document, or a 503 after a failed read."""
+    with _press_log("analyze", served):
+        return _analyze(request, trade, served)
+
+
+def _analyze(request: Request, trade: ProposedTrade, served: Served) -> dict:
     snapshot = _snapshot(served, trade.season)
     try:
         check_trade(trade, snapshot)
@@ -260,11 +247,14 @@ def analyze(request: Request, trade: ProposedTrade, served: ServedClient) -> dic
         return cached
     # The count comes after the cache, because a cached repeat makes no Claude call and costs nothing.
     _count_grade(request, served)
-    analysis = request.app.state.analyzer(trade, snapshot)
-    document = result_document(trade, snapshot, analysis)
-    # A fallback is not stored, so the next request of the same trade tries the Claude call again.
-    if not analysis.fallback:
-        cache.put(key, document)
+    try:
+        read = request.app.state.analyzer(trade, snapshot)
+    except AdvisorFailed:
+        # A failed read costs the manager nothing, and nothing is stored, so the next press calls the Advisor again.
+        served.grade_limiter.release(request_address(request))
+        raise HTTPException(status_code=503, detail={"message": ADVISOR_ERROR}) from None
+    document = read_document(trade, snapshot, read)
+    cache.put(key, document)
     return document
 
 
@@ -279,32 +269,43 @@ def _count_grade(request: Request, served: Served) -> None:
 
 
 class FindRequest(BaseModel):
-    """The body of the find route: the season, the roster that asks, and the partner roster."""
+    """The body of the find route: the season, the roster that asks, and the partner roster.
+
+    The partner is optional. With no partner, the search runs over every other team of the league.
+    """
 
     season: int
     asker: int
-    partner: int
+    partner: int | None = None
 
 
-def _team(snapshot: Snapshot, roster_id: int) -> dict:
-    """One roster of the pair as the finder document shows it: the roster id and the team name."""
+def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
+    """One roster of the pair as the finder document shows it: the roster id and the team name.
+
+    None for a find with no partner, because each trade then names its own partner in its sides.
+    """
+    if roster_id is None:
+        return None
     return {"roster_id": roster_id, "team": snapshot.teams[roster_id].name}
 
 
-def finder_document(pair: FindRequest, snapshot: Snapshot, found: list[FinderTrade], reasons: FinderReasons) -> dict:
+def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -> dict:
     """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
 
-    Each trade holds its sides, its fairness, and its reason. A reason is null after a fallback.
-    Each item's sides and fairness have the shape of the analyze document, so the site renders them the same way.
-    An empty list carries the line that no swap is good for both, so the page needs no words of its own.
+    Each trade holds its offer id, its sides, the headline, and the Bullets of the Advisor. A Bullet has the shape of
+    the analyze document, so the site renders the rows one way. After a fallback, each trade of the shortlist has no
+    headline and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the press, so
+    the page needs no words of its own. No trade holds a score.
     """
     trades = [
         {
-            "sides": _echoed_sides(item.trade, snapshot),
-            "fairness": item.fairness.model_dump(mode="json"),
-            "reason": reason,
+            "offer_id": pick.offer.offer_id,
+            "sides": _echoed_sides(pick.offer.trade, snapshot),
+            "headline": pick.headline,
+            "bullets": [bullet.model_dump() for bullet in pick.bullets],
+            "fact_lines": pick.fact_lines,
         }
-        for item, reason in zip(found, reasons.reasons)
+        for pick in picks.picks
     ]
     return {
         # The site calls the analyze route per card, and that route needs the season with the pair and the sides.
@@ -312,9 +313,9 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, found: list[FinderTra
         "trade_pair": {"asker": _team(snapshot, pair.asker), "partner": _team(snapshot, pair.partner)},
         "trades": trades,
         # The key is always there, so the document keeps one shape with a list and without one.
-        "empty": None if trades else NO_WIN_WIN,
+        "empty": None if trades else picks.none_line,
         "as_of": _as_of(snapshot),
-        "fallback": reasons.fallback,
+        "fallback": picks.fallback,
         "missing": list(snapshot.missing),
         "stale": list(snapshot.stale),
     }
@@ -322,12 +323,21 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, found: list[FinderTra
 
 @router.post("/find")
 def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
-    """List the top win-win trades between the asker and the partner on the live snapshot, each with one reason."""
+    """Search for trades of the asker on the live snapshot, with the picked partner or every other team.
+
+    The Jev search makes the shortlist, and the Advisor picks up to 3 trades of it, each with a headline and Bullets.
+    """
+    with _press_log("find", served):
+        return _find(request, pair, served)
+
+
+def _find(request: Request, pair: FindRequest, served: Served) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
     snapshot = _snapshot(served, pair.season)
-    gone = [roster_id for roster_id in (pair.asker, pair.partner) if roster_id not in snapshot.rosters]
+    asked = [pair.asker] if pair.partner is None else [pair.asker, pair.partner]
+    gone = [roster_id for roster_id in asked if roster_id not in snapshot.rosters]
     if gone:
         # The form showed a roster that Sleeper no longer has, so the next teams request builds from Sleeper again.
         served.teams_cache.clear(pair.season)
@@ -340,10 +350,10 @@ def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
         return cached
     # The count comes after the cache, because a cached repeat runs no finder and makes no Claude call.
     _count_grade(request, served)
-    found = find_win_wins(pair.asker, pair.partner, snapshot)
-    reasons = request.app.state.finder_reasons(found, snapshot)
-    document = finder_document(pair, snapshot, found, reasons)
+    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot)
+    picks = request.app.state.finder_pick(shortlist, snapshot)
+    document = finder_document(pair, snapshot, picks)
     # A fallback is not stored, so the next request of the same pair tries the Claude call again.
-    if not reasons.fallback:
+    if not picks.fallback:
         cache.put(key, document)
     return document

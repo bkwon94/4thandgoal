@@ -5,6 +5,7 @@ The pipeline tests and the golden build share them, so both run the same offline
 import json
 import shutil
 import tempfile
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
@@ -22,7 +23,7 @@ from league.models import ResearchOut
 from league.nflverse import nflverse_week
 from league.provider.base import Provider
 from league.provider.raw import RawAheadWeek, RawDraft, RawPastWeek, RawRoster, RawWeek
-from league.provider.sleeper import DRAFT_FILE, PICKS_FILE, league_settings, load_draft, load_raw
+from league.provider.sleeper import DRAFT_FILE, PICKS_FILE, fetch_news, league_settings, load_draft, load_raw
 
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 RAW_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw"
@@ -36,10 +37,23 @@ CPC_TRANSACTIONS = Path(__file__).parent / "fixtures" / "2026" / "cpc-transactio
 NORCAL_TRANSACTIONS = Path(__file__).parent / "fixtures" / "2026" / "norcal-transactions"
 # The recorded week 6 has no fetch time, so the live fetch gives this one.
 FIXTURE_FETCHED = datetime(2026, 10, 21, 9, 30, tzinfo=ZoneInfo("America/New_York"))
+# The real Sleeper news feeds by player id, as Sleeper gave them at NEWS_RECORDED. 6813 is Jonathan Taylor, one day
+# before the trade deadline of 2026.
+NEWS_FIXTURES = Path(__file__).parent / "fixtures" / "news"
+NEWS_RECORDED = datetime(2026, 11, 9, 22, 45, tzinfo=ZoneInfo("UTC"))
 
 
 def no_news(player_id):
     return []
+
+
+def recorded_news(player_id: str) -> list[dict]:
+    """The news feed of a player through the real fetch_news, answered from NEWS_FIXTURES. A player with no file
+    has an empty feed."""
+    def body(url, params):
+        path = NEWS_FIXTURES / f"{url.rstrip('/').split('/')[-2]}.json"
+        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    return fetch_news(player_id, transport=json_transport(body))
 
 
 def no_network(url):
@@ -159,6 +173,7 @@ class FakeWriter:
     def parse(
         self, content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
         cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
+        model: str | None = None,
     ) -> BaseModel:
         self.calls.append(WriterCall(content, output_model, system, cache_ttl, effort, tools))
         if not self.answers:
@@ -186,20 +201,27 @@ class FakeJev:
     """A Jev that gives `yes` for each question and keeps each request in `requests`. It never calls TypeSafe.
 
     With `error`, each call raises that JevError, as a failed TypeSafe call does.
+    With `answer`, each question gets `answer(key, question, state)` in place of `yes`, so a test can say no to some.
+    The call is safe from many threads, because the Finder sends its requests in waves.
     """
 
     MODEL = "jev-fake"
 
-    def __init__(self, yes: float = 0.9, error: JevError | None = None):
+    def __init__(self, yes: float = 0.9, error: JevError | None = None,
+                 answer: Callable[[str, NoulQuestion, dict], float] | None = None):
         self.yes = yes
         self.error = error
+        self.answer = answer
         self.requests: list[JevRequest] = []
+        self._lock = threading.Lock()
 
     def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevResponse:
-        self.requests.append(JevRequest(state, questions))
+        with self._lock:
+            self.requests.append(JevRequest(state, questions))
         if self.error is not None:
             raise self.error
-        nouls = {key: self.yes for key in questions}
+        answer = self.answer
+        nouls = {key: (answer(key, q, state) if answer is not None else self.yes) for key, q in questions.items()}
         return JevResponse(model=self.MODEL, nouls=nouls, input_tokens=100 * len(questions))
 
 

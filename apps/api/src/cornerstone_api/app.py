@@ -1,15 +1,18 @@
 """
 The app factory of the Cornerstone API: CORS, the passphrase check, the rate limits, and the routes of each client.
 The service needs CORNERSTONE_PASSPHRASE_<SLUG> for each client, such as CORNERSTONE_PASSPHRASE_CPC,
-CORNERSTONE_COMMISSIONER_KEY_<SLUG> for each client of the eggs package, and ANTHROPIC_API_KEY for the Claude call.
+CORNERSTONE_COMMISSIONER_KEY_<SLUG> for each client of the eggs package, ANTHROPIC_API_KEY for the Claude call,
+and TYPESAFE_API_KEY for the Jev call of the Advisor.
 It reads CORNERSTONE_REPO, CORNERSTONE_RESULT_CACHE_DIR, CORNERSTONE_EGGS_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
 Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.0.0.0 --port 8080`.
 At start it reads each client folder under clients/, and a bad client.toml stops the start.
 Each client answers at /clients/<slug>/. The old paths with no client answer as cpc, so an old page still works.
 On start, the real app refreshes the slow sources in a background thread, so the first request finds them on disk.
 """
+import functools
 import hmac
 import logging
+import sys
 import threading
 from collections.abc import Mapping, Sequence
 from datetime import datetime
@@ -20,10 +23,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from analyzer import routes as analyzer_routes
-from analyzer.analysis import analyze
+from analyzer.advisor import read_trade
 from analyzer.cache import ResultCache, TeamsCache
-from analyzer.finder_reasons import write_reasons
+from analyzer.finder_pick import pick_trades
+from analyzer.finder_search import search as search_trades
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
+from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.settings import Settings, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
@@ -34,6 +39,8 @@ from eggs.store import EggStore
 from eggs.tunables import BOARD_READS_PER_MINUTE, BOARD_WINDOW_SECONDS, CHECK_WINDOW_SECONDS, CHECKS_PER_HOUR
 from eggs.values import EggsValues
 from league.client import Client, SettingsFetch, load_client
+from league.jev import JEV
+from league.nflverse import http_get
 from league.paths import provider_cache_dir
 from league.provider.sleeper import SleeperProvider, fetch_settings
 from league.tunables import TEAMS_CACHE_SECONDS
@@ -51,6 +58,9 @@ COMMISSIONER_HEADER = "X-Commissioner-Key"
 EGGS_PREFIX = f"{CLIENT_PREFIX}/eggs"
 # The file of the daily grade counts of a client, in the result cache dir of the client.
 GRADE_COUNTS_FILE = "grade-counts.json"
+# The name of the stderr handler on the root logger, so a second setup finds it and adds no second copy.
+LOG_HANDLER_NAME = "cornerstone-api-stderr"
+LOG_FORMAT = "%(levelname)s:     %(name)s: %(message)s"
 
 
 class _Unauthorized(Exception):
@@ -143,7 +153,7 @@ def refresh_sources_on_start(settings: Settings, sources: Mapping[str, Sources])
 def _real_sources(client: Client) -> Sources:
     """The real fetches of `client`. The Sleeper adapter takes the shared NFL cache dir, which holds the players file."""
     return Sources(client, clock=lambda: datetime.now(client.tz),
-                   fetch_sleeper=SleeperProvider(provider_cache_dir(client.nfl_dir)).fetch_live)
+                   fetch_sleeper=SleeperProvider(provider_cache_dir(client.nfl_dir)).fetch_live, fetch_past=http_get)
 
 
 def _served(settings: Settings, client: Client, sources: Sources) -> analyzer_routes.Served:
@@ -173,10 +183,11 @@ def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) ->
 
 def create_app(
         settings: Settings, clients: Sequence[Client], sources: Mapping[str, Sources] | None = None,
-        analyzer: analyzer_routes.Analyzer | None = None, finder_reasons: analyzer_routes.ReasonWriter | None = None,
+        analyzer: analyzer_routes.Analyzer | None = None, finder_search: analyzer_routes.FinderSearch | None = None,
+        finder_pick: analyzer_routes.FinderPicker | None = None,
         *, refresh_on_start: bool = False) -> FastAPI:
-    """The app that serves each of `clients`. Tests give fixture-backed sources by slug, an analyzer, and a finder
-    reason writer. The defaults are the real ones.
+    """The app that serves each of `clients`. Tests give fixture-backed sources by slug, an analyzer, a finder
+    search, and a finder pick. The defaults are the real ones.
 
     With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
     """
@@ -200,10 +211,14 @@ def create_app(
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
-    # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
-    app.state.analyzer = analyzer or analyze
-    # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
-    app.state.finder_reasons = finder_reasons or write_reasons
+    # The default is the real Advisor with the real Claude call, the real Jev, and the real news feed. A test injects a
+    # stub Advisor, FakeJev, and a recorded feed, so no test needs the network.
+    app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV, news=NEWS)
+    # The Finder search asks the real Jev by default, so a test injects a search with FakeJev.
+    app.state.finder_search = finder_search or functools.partial(search_trades, jev=JEV)
+    # The Finder pick makes the real Claude call with the real news feed and the real Jev by default, so a test injects
+    # a stub call and FakeJev.
+    app.state.finder_pick = finder_pick or functools.partial(pick_trades, news=NEWS, jev=JEV)
 
     # The site calls the API from the browser, so only its origins and the local dev servers may read the answers.
     app.add_middleware(
@@ -260,11 +275,29 @@ def load_clients(repo: Path, fetch: SettingsFetch = fetch_settings) -> list[Clie
     return [load_client(repo, folder.name, None, fetch, VALUE_MODELS) for folder in folders]
 
 
+def configure_logging() -> None:
+    """Send each INFO line of the app to stderr, through one handler on the root logger.
+
+    uvicorn sets only its own loggers, so with no root handler each INFO line of the analyzer, such as the press line
+    and the Jev checks of the read, never reaches the Fly log. The uvicorn loggers keep their own handlers and do not
+    propagate, so the access log stays as it is and no line prints two times.
+    """
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+    if any(handler.get_name() == LOG_HANDLER_NAME for handler in root.handlers):
+        return
+    handler = logging.StreamHandler(sys.stderr)
+    handler.set_name(LOG_HANDLER_NAME)
+    handler.setFormatter(logging.Formatter(LOG_FORMAT))
+    root.addHandler(handler)
+
+
 def app_from_env() -> FastAPI:
     """The app with the settings from the environment and each client. The uvicorn factory flag calls it.
 
     A missing or bad client.toml stops the start, so a bad value never reaches a reader.
     """
+    configure_logging()
     clients = load_clients(repo_from_env())
     # The passphrases and the commissioner keys stay in the settings, because each one is a secret, so client.toml
     # never holds one.

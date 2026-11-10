@@ -1,0 +1,190 @@
+{
+    "trade": {
+        "asker": 2,
+        "sides": [
+            {
+                "roster_id": 2,
+                "team": "All You Need Is Love",
+                "gives": [
+                    {
+                        "player_id": "7564",
+                        "name": "Ja'Marr Chase",
+                        "position": "WR",
+                        "nfl_team": "CIN",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                        "season_rank": "WR7",
+                        "recent_rank": null,
+                        "to": 4
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "11624",
+                        "name": "Xavier Worthy",
+                        "position": "WR",
+                        "nfl_team": "KC",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/11624.jpg",
+                        "season_rank": "WR59",
+                        "recent_rank": null,
+                        "from": 4
+                    }
+                ]
+            },
+            {
+                "roster_id": 4,
+                "team": "NFC Least",
+                "gives": [
+                    {
+                        "player_id": "11624",
+                        "name": "Xavier Worthy",
+                        "position": "WR",
+                        "nfl_team": "KC",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/11624.jpg",
+                        "season_rank": "WR59",
+                        "recent_rank": null,
+                        "to": 2
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "7564",
+                        "name": "Ja'Marr Chase",
+                        "position": "WR",
+                        "nfl_team": "CIN",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                        "season_rank": "WR7",
+                        "recent_rank": null,
+                        "from": 2
+                    }
+                ]
+            }
+        ]
+    },
+    "lean": "Pass",
+    "case": "If you think Worthy is about to break out in Kansas City, you could talk yourself into this, but nothing in his usage points that way. Chase is the WR7 on the season, and his share of the targets is going up, not down. Worthy is at WR59, and Rotowire reports he is day-to-day with a hamstring issue. Your WRs in the top 36 drop to 2, right when you're in a playoff spot and need points every week. The upside is all on the other side, and the risk is all on yours. Keep Chase and let NFC Least find someone else.",
+    "fairness": {
+        "state": "lopsided",
+        "gives_more": 2,
+        "sides": [
+            {
+                "roster_id": 2,
+                "reason": "You get Xavier Worthy, a part-time target in the Chiefs offense."
+            },
+            {
+                "roster_id": 4,
+                "reason": "NFC Least gets Ja'Marr Chase, a true top WR, for very little."
+            }
+        ]
+    },
+    "sides": [
+        {
+            "roster_id": 2,
+            "bullets": [
+                {
+                    "text": "Chase is the WR7 this season at 16.7 points per game, and you would be giving him up.",
+                    "mark": "against",
+                    "fact_id": "7564.ppg",
+                    "fact_text": "Ja'Marr Chase (WR, CIN) scored 16.7 points per game over 8 games before the trade. His Season rank is WR7, by total points this season."
+                },
+                {
+                    "text": "Worthy scores 6.3 points per game and ranks WR59.",
+                    "mark": "against",
+                    "fact_id": "11624.ppg",
+                    "fact_text": "Xavier Worthy (WR, KC) scored 6.3 points per game over 8 games before the trade. His Season rank is WR59, by total points this season."
+                },
+                {
+                    "text": "Your WRs in the top 36 go from 3 to 2.",
+                    "mark": "against",
+                    "fact_id": "2.depth.wr",
+                    "fact_text": "For All You Need Is Love, the WRs in the top 36 go from 3 to 2."
+                },
+                {
+                    "text": "Rotowire reports Worthy is day-to-day with a hamstring issue.",
+                    "mark": "against",
+                    "fact_id": "NEWS.11624.2",
+                    "fact_text": "Reported on 2026-11-09 by Rotowire: Coach Andy Reid said Monday that Worthy (hamstring) is considered day-to-day in advance of Sunday's game against the Falcons, Matt McMullen of the Chiefs' official site reports."
+                },
+                {
+                    "text": "Your RB depth stays the same, with 2 in the top 36.",
+                    "mark": "even",
+                    "fact_id": "2.depth.rb",
+                    "fact_text": "For All You Need Is Love, the RBs in the top 36 go from 2 to 2."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 9,
+                    "text": "Week 9: WRs in the top 36 who play go from 3 to 2. Worthy plays NYJ at home, 23rd most points to WRs. Robinson has a bye."
+                },
+                {
+                    "week": 10,
+                    "text": "Week 10: WRs in the top 36 who play go from 3 to 2. Worthy plays at ATL, 19th most points to WRs. Cooper has a bye."
+                }
+            ]
+        },
+        {
+            "roster_id": 4,
+            "bullets": [
+                {
+                    "text": "Chase is a superstar, a top 8 player this week.",
+                    "mark": "for",
+                    "fact_id": "4.measure.superstar",
+                    "fact_text": "The superstar measure for NFC Least: Ja'Marr Chase is a superstar, a top 8 player this week."
+                },
+                {
+                    "text": "Chase's target share is 37 percent and rising.",
+                    "mark": "for",
+                    "fact_id": "7564.targets",
+                    "fact_text": "Ja'Marr Chase's target share was 37 percent over the last 2 weeks before the trade, up from the 2 weeks before that."
+                },
+                {
+                    "text": "Their WRs in the top 36 go from 3 to 4.",
+                    "mark": "for",
+                    "fact_id": "4.depth.wr",
+                    "fact_text": "For NFC Least, the WRs in the top 36 go from 3 to 4."
+                },
+                {
+                    "text": "At 3-13 and out of the race, they can grab a star with no pressure on the standings.",
+                    "mark": "for",
+                    "fact_id": "4.team",
+                    "fact_text": "NFC Least was 3-13, 12th of 12, before the trade. Its race group is Out, with 1% playoff odds after week 8."
+                },
+                {
+                    "text": "The Bengals rank 4th of 32 on offense, so Chase gets plenty of chances.",
+                    "mark": "for",
+                    "fact_id": "7564.nfl_team",
+                    "fact_text": "Ja'Marr Chase's NFL team, the Bengals, ranks 4th of 32 on offense: 11.65 expected points added per 100 plays over 7 games before the trade."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 9,
+                    "text": "Week 9: WRs in the top 36 who play go from 2 to 3. Chase plays at ATL, 19th most points to WRs. Smith is listed Out. Lemon steps up."
+                },
+                {
+                    "week": 10,
+                    "text": "Week 10: WRs in the top 36 who play go from 2 to 3. Chase plays PIT at home, 25th most points to WRs. Lemon and Smith have a bye."
+                }
+            ]
+        }
+    ],
+    "as_of": {
+        "chart_week": 9,
+        "stats_through": 9,
+        "completed_through": 8,
+        "rosters_fetched": "2026-11-09T23:03:53.831230-05:00",
+        "known_games": {
+            "week": 9,
+            "games": 15,
+            "in_progress": 1,
+            "pending": {
+                "snaps": 1,
+                "usage": 2
+            }
+        },
+        "no_chart": false,
+        "no_chart_note": null
+    },
+    "missing": [],
+    "stale": []
+}

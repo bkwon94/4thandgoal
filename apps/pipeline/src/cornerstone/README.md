@@ -3,7 +3,7 @@
 ## Knows
 
 - The weekly build: fetch from the provider, parse, build the fact sheet, write, verify, render, and publish.
-- The `analyze` and `find` commands of the CLI. The `analyzer` package holds the rubric, the grade, and the finder.
+- The `advisor-eval` command of the CLI. The `analyzer` package holds the fact sheet, the Advisor, and the Finder.
 - The build of each week and the season files. The `rankings`, `managers`, and `waiver` packages hold their own rules.
 - The build and the publish of the midseason report: `midseason` runs the sim through `season_sim.py`, reads the pairs left through `season_schedule.py`, and writes the draft and the review file, and `midseason-publish` checks each blurb again and commits `midseason.json` and `sim.json`.
 - The six layers: model, provider, load, facts, write, output. A module imports only from its own layer or a lower one.

@@ -230,7 +230,7 @@ The full name "Drake London" still fails.
 **Jev check**:
 One request to the TypeSafe Jev model about one blurb, with all its questions. It returns one Jev answer per question.
 In the weekly build, it runs beside the Claude check and logs only.
-_Avoid_: Jev verdict (a verdict is the analyzer's choice, and a Test verdict is the Judge's)
+_Avoid_: Jev verdict (a Test verdict is the Judge's, and the analyzer gives a Lean)
 
 **Jev answer**:
 The typed result of one question of a Jev check, such as the probability that a sentence follows from its facts.
@@ -451,32 +451,34 @@ between two sides.
 
 ### The analyzer
 
+**Advisor**:
+The part of the analyzer and the finder that reads the trade fact sheet and the playbook and advises the asker on a proposed trade, as a manager of the league does. It gives the lean, the case, and the fairness.
+_Avoid_: Judge (that is the Workflow subagent), grader, analyst, engine
+
+**Playbook**:
+The trade tips of one client, in its voice folder, that the Advisor reads, such as "RBs are worth more this
+season in half PPR". A tip states a rule, not a list of names.
+_Avoid_: rubric, rules, criteria
+
 **Proposed trade**:
 A proposed swap of players between two to four teams that the analyzer grades before it happens: the sides,
 the players each gives, the destination of each given player, and which side asked.
 _Avoid_: Trade (alone; that is the Sleeper transaction), deal, proposal, swap
 
-**Rubric**:
-The criteria the grade follows, their order, their caps, and what each letter means.
-_Avoid_: criteria (alone), system, scoring
-
 **Grade**:
-The analyzer's letter, A to F, for one side of a proposed trade, formed by the rubric. The weekly
-page shows no grade.
-_Avoid_: score, rating
+The whole read of the Advisor on one proposed trade: the lean, the case, and the fairness. A grade holds
+no letter. "Grade the Trade" asks for one. The weekly page shows no grade.
+_Avoid_: score, rating, letter
 
 **Grade limit**:
 The cap on analyze calls that reach Claude, per client address: 5 per minute and 20 per day.
 A finder call counts one grade too. A cached repeat does not count.
 _Avoid_: quota, rate limit (alone)
 
-**Start letter**:
-The letter the chart ratio gives one side before any adjuster.
-_Avoid_: anchor, base grade
-
-**Adjuster**:
-One named criterion of the rubric that moves a grade by at most one step: roster fit, standing,
-trend and usage, injury history, handcuff, schedule, or expected gap.
+**Measure**:
+One named computation that turns raw data into a fact of the trade fact sheet: roster fit, standing, trend and
+usage, injury, upside, superstar, handcuff, schedule, or expected gap. It moves nothing. The Advisor weighs its fact.
+_Avoid_: adjuster, factor, criterion, rule
 
 **Lineup**:
 The best set of starters of one roster: which starting slot takes which player, who is out, and who covers a bye. It is a term of the league package, so every package reads the same lineup.
@@ -492,104 +494,73 @@ _Avoid_: value (alone), worth
 A player the returns file lists with a return week after the last completed week, so he is out now and returns later.
 _Avoid_: injured (alone), on the mend
 
-**Breakdown**:
-The start letter, every adjuster with its step, and the final letter, for one side.
+**Lean**:
+The advice of the Advisor for the asker on one proposed trade: Send it, Lean yes, Gut call, Lean no, or Pass.
+A gut call is a real answer for a close trade, not a failure. The page leads with the lean. Use "lean" in code
+and on the page.
+_Avoid_: verdict (that is the Workflow test verdict), decision, answer, recommendation
 
-**Contender**:
-A team in a playoff spot by record.
-
-**Seller**:
-A team more than two games out of the last playoff spot.
-_Avoid_: rebuilder, tanker
-
-**Middle team**:
-A team that is neither a contender nor a seller. The standing adjuster gives it no step.
-
-**Highest-value player**:
-The one player in a proposed trade with the most trade value, or the most recent points per game
-when trade value does not compare.
-_Avoid_: best player, top player
-
-**Verdict**:
-Accept, counter, or decline, for the side that asked, with one reason.
-_Avoid_: recommendation, advice
-
-**Decision**:
-The page word for the verdict. The result document leads with it. Use "verdict" in code and
-"decision" on the page.
-_Avoid_: call, recommendation
-
-**Answer**:
-The decision as the page shows it: yes, no, or not as is. It maps from the verdict choice: accept
-to yes, decline to no, counter to not as is. Use "choice" in code and "answer" on the page.
+**Case**:
+The advice under the lean, in the voice of the league: the risk, the upside, and the condition it rests on,
+such as "if you believe Henry bounces back, this is worth it". It backs its claims with facts but does not list stats.
+_Avoid_: reason, verdict reason, summary
 
 **Fairness**:
-Whether a proposed trade is good for both sides, with one reason per side. It reads the final
-letters that stand and has three states: good for both, fair, and lopsided. The rubric file sets
-the bounds of each state. A lopsided trade names the side that gives more.
+Whether a proposed trade is fair to every side, with one reason per side. The Advisor sets it, and it has
+two states: fair and lopsided. A lopsided trade names the side that gives more.
 _Avoid_: balance, even trade
 
-**Good for both**:
-The page word for the win-win state of the fairness when the trade has two sides. With three or more sides the page word is "Good for all". Use "win_win" in code. The finder shows two-side trades, so it always says "Good for both".
-_Avoid_: win-win on the page
-
 **Finder**:
-The code that grades every one-for-one and two-for-one trade between the asker's roster and one
-partner roster, and returns the top three that are good for both. The rank is the net sum of the
-adjuster steps on both sides, then the higher of the two lower final letters, then the smaller gap
-between the two final letters, then the asker's letter. The three trades share no player. A handcuff,
-a player out with no return week, and an unlisted player are never in a trade. The chart lists no
+The search for trades the asker could send. It looks at every partner, or at one partner the asker picks. The
+partner filter runs first. For each partner that passes, Jev picks the targets on each side, code builds
+every one-for-one, two-for-one, and one-for-two trade from the targets only, and Jev makes the shortlist. The Advisor then
+picks up to three trades from the shortlist that are good for both, and writes why each one works. The trades share no player. A
+handcuff, a player out with no return week, and an unlisted player are never in a trade. The chart lists no
 kicker and no defense, so they are always unlisted.
 _Avoid_: suggested trades, counters (a counter changes one trade for one side)
 
+**Partner filter**:
+The first step of the finder: four Jev questions for each partner. Does he have a player at the asker's need
+who would start for the asker? Can he give that player up with no hole in his lineup? Does the asker have a
+player at his need who would start for him? Can the asker give that player up with no hole? Code counts the
+depth, and only a partner with four yes answers goes on. With no partner left, the finder says so plainly.
+_Avoid_: prefilter, screen
+
+**Target**:
+A player of one side of the finder that Jev judges the other side would want. The finder builds its trades from
+the targets only.
+_Avoid_: candidate, pick
+
+**Offer**:
+A trade that the finder builds from the targets of both sides, before Jev makes the shortlist. It has one player or two on each side. In code it is a `ProposedTrade`, and it has an `offer_id`.
+_Avoid_: proposal, option
+
+**Shortlist**:
+The trades of the finder that pass the Jev questions, for the Advisor to read.
+_Avoid_: candidates, top trades
+
 **Finder document**:
 The answer of the find route that the site renders: the season, the two teams, the as-of stamps, and up to
-three trades. Each trade holds its two sides, its fairness block, and one reason that Claude writes. When the
-Claude call fails twice, each reason is empty, the fairness block stands, and the document flags the fallback.
-An empty list carries the line that no swap between these rosters is good for both.
+three trades. Each trade holds its offer id, its two sides, the headline, and the Bullets of the Advisor. When the
+Advisor fails twice, each trade of the shortlist has no headline and no Bullet, its fact lines hold plain facts, and
+the document flags the fallback. An empty list carries a plain line that says why no trade works.
 _Avoid_: finder result, suggestions
 
-**Factor**:
-The page word for an adjuster. Use "adjuster" in code and "factor" on the page.
-_Avoid_: criterion (alone)
-
-**Deal row**:
-The first factor of each side: the start letter as one plain sentence, such as "You get far more
-than you give." It names no source. Its lean maps from the start letter: A and B to for, C to
-even, D and F to against. Use "start letter" in code and "deal row" on the page.
-_Avoid_: chart lean, The Data
-
-**Silent row**:
-A factor with no step and no new fact, such as "No player it gets is a handcuff." The adjuster marks it
-silent, and the result document drops it. A row with a step always shows. A check that did not run is a
-new fact, so its row shows. Use `silent` in code.
-_Avoid_: empty row, hidden factor
-
-**Roster row**:
-The roster fit factor on the page. It counts the side's players in the top N at each position the trade
-touches, before and after, where N is the line of the position as a plain rank: "You keep 3 WRs in the
-top 36, and you get the better player." It never names a slot or the best lineup.
-_Avoid_: hole sentence (on the page)
-
-**Standing row**:
-The standing factor on the page: the race of the side, its need, and whether the trade meets it, in one
-sentence. "Out of the playoff race, so you want the better player for the rest of the season, and you
-get him."
-
 **Inner word**:
-A word of the grade's code that a manager does not use: "trade value", "highest-value", "best lineup",
-"the line", "hole", "win-now move", "return bet", "star", "opportunity", "one step", "no step", "takes RB",
-"takes WR", "takes TE", "takes QB", and "sits on the bench". No bullet, row, or verdict reason holds one.
-"The better player" replaces "the highest-value player". Decision 03 of grade-clarity.
+A word of the code that a manager does not use: "trade value", "highest-value", "best lineup", "the line",
+"hole", "return bet", "one step", "no step", "takes RB", "takes WR", "takes TE", "takes QB", and "sits on the
+bench". No bullet and no case holds one. "The better player" replaces "the highest-value player". "Star",
+"opportunity", and "win-now move" are words a manager uses, so they are not inner words.
 _Avoid_: banned word (alone)
 
 **Bullets**:
-The 2 or 3 sentences that Claude writes for one side, one claim each. The fallback has none.
-_Avoid_: analysis paragraph
+The 3 to 5 sentences that the Advisor writes for one side, one claim each, each with a mark. Each claim rests on
+a fact of the trade fact sheet. A finder trade gets 2 to 4 bullets. The fallback has none.
+_Avoid_: analysis paragraph, factor, row
 
-**Factor lean**:
-For, against, or even, for one factor. It maps from the sign of the adjuster's step, or from the
-schedule lean for the schedule adjuster. Use "step" in code and "factor lean" on the page.
+**Mark**:
+For, against, or even, for one bullet. Use `mark` in code and on the page.
+_Avoid_: lean (that is the advice of the Advisor), factor lean, sign
 
 **Side shape**:
 The exact two sides, in roster order, each once, that an analysis response must hold.
@@ -605,7 +576,7 @@ _Avoid_: partial week, live stats, current week
 
 **In progress**:
 A week N game past its kickoff by less than 4 hours 30 minutes. The as-of stamp counts them, and every
-factor reason that reads one says so.
+bullet that reads one says so.
 _Avoid_: live game, ongoing
 
 **Pending**:
@@ -614,34 +585,30 @@ skips that count for that game and never reads it as zero. The as-of stamp names
 _Avoid_: missing, late
 
 **Trade value**:
-A player's worth on the half-PPR redraft trade value chart for the week of the trade. It feeds the
-start letter and never appears on a page.
+A player's worth on the half-PPR redraft trade value chart for the week of the trade. It is a fact the
+Advisor weighs, and the words never appear on a page.
 _Avoid_: value (alone), chart value, price
 
 **Chart week**:
 The chart whose date falls in a week's trade window. A trade in week N uses the week N chart.
 
 **Unlisted**:
-A traded player with no row on the chart week's chart. He gets no trade value, so his side gets
-no start letter and the rubric grades from the adjusters alone.
+A traded player with no row on the chart week's chart. He gets no trade value, so the Advisor weighs his side on the
+other facts alone.
 
 **Consolidation**:
-A trade where one side gets more players than the other. A margin divides the sum of the side with more players
-before the sides count as even. Two margins exist:
-
-- The one-for-many margin, `CONSOLIDATION_MARGIN`, is 1.25. It is for one player for two or more.
-- The uneven margin, `UNEVEN_MARGIN`, is 1.10. It is for any other uneven count, such as three for two.
+A trade where one side gets more players than the other, such as two for one.
 
 **Handcuff**:
 The backup to a roster's own starting running back. Insurance, never a player with no stats. A backup who
 takes 25% or more of his team's carries over his last 3 played games is not a handcuff. He scores points of
-his own, so every adjuster and the finder grade him as any running back. A handcuff blocks a lineup loss
+his own, so every measure and the finder read him as any running back. A handcuff blocks a lineup loss
 in roster fit, never a hole. This gate reads his carries over
 those 3 games from the Sleeper stat lines, not the one-game carry share from the play by play. With fewer
 than 2 played games, or with no carry data, the depth chart alone decides.
 
 **Position order**:
-The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, QB over
+The tie rule the measures use at equal rank and points: RB over WR, WR over TE, TE over QB, QB over
 K, K over DEF.
 
 **Position rank**:
@@ -666,7 +633,7 @@ _Avoid_: form rank, hot rank, rank (alone)
 The line of a grade that says, for one side and one week, how the trade changes the players who play that week at
 each position the trade touches. It names byes, players listed Out or IR, players who step up, and the opponent of
 each player the side gets with its rank at his position. The code writes it for the trade week and the next week. It
-never moves the letter.
+is a fact the Advisor weighs.
 _Avoid_: weekly impact, matchup line, lineup fit
 
 **Steps up**:
@@ -684,9 +651,9 @@ _Avoid_: replacement level, floor, cutoff
 **Hole**:
 A starting slot that, after a trade, holds a player below the line or holds no player. A starter due back
 inside the return window with no bench player above the line to cover him is a hole. A starter due back
-after the return window is a hole. A starter out with no return week on file is a hole. For a middle team,
-a player it gets who starts after the trade and has his bye in the trade week is a hole. A bye in any
-other week, or on any other team, is never a hole. A hole that exists before the trade too is not new.
+after the return window is a hole. A starter out with no return week on file is a hole. A bye is never a hole.
+A player a side gets who starts after the trade and has his bye in the trade week is a fact of the sheet,
+and the Advisor weighs it with the race group of the side. A hole that exists before the trade too is not new.
 _Avoid_: gap, weakness, need, bye hole
 
 **Return window**:
@@ -726,17 +693,17 @@ _Avoid_: toss-up, close call, coin flip
 
 **Source**:
 The plain name of the dataset a fact came from, its week span, and a URL. Code writes every source. The page
-shows one under each factor.
+shows one under each bullet.
 _Avoid_: citation, reference
 
 ### Player data from nflverse
 
-**Target**:
+**Pass target**:
 A pass play with a receiver, two-point tries left out. The nflverse rule, which our count follows.
-_Avoid_: look, pass attempt to
+_Avoid_: look, pass attempt to, target (alone; "Target" is a player of the finder)
 
 **Target share**:
-A player's share of his team's targets in one game, from the nflverse weekly player file. Our own count is the fallback for a week the file lacks. The trade rubric reads the Sleeper share, which holds the same counts.
+A player's share of his team's pass targets in one game, from the nflverse weekly player file. Our own count is the fallback for a week the file lacks. The trade measures read the Sleeper share, which holds the same counts.
 _Avoid_: target rate, target percent
 
 **Air yards share**:
@@ -760,7 +727,7 @@ A player's points in this league minus his expected points, per game. Positive i
 _Avoid_: luck, regression, variance
 
 **Expected window**:
-The last 3 games a player played, the span the expected gap averages over for the rubric. A player with fewer than 2 games in it has no gap.
+The last 3 games a player played, the span the expected gap averages over for the trade measures. A player with fewer than 2 games in it has no gap.
 _Avoid_: recent games, sample
 
 **Pass rate over expected**:
@@ -848,7 +815,7 @@ projection, weeks N+1 to 17, ranked inside the position. A score with no input c
 _Avoid_: rank (that is the place in a bucket), value, power score
 
 **Usage trend**:
-The rise in a player's snap share plus his targets or carries share over the last `USAGE_WEEKS` weeks, ranked inside the position.
+The rise in a player's snap share plus his pass targets or carries share over the last `USAGE_WEEKS` weeks, ranked inside the position.
 _Avoid_: momentum, buzz
 
 **Environment**:
@@ -869,8 +836,8 @@ _Avoid_: rush efficiency, YPC
 
 **Bid to win**:
 The price of a pool player: the smallest whole dollar above the highest bid the model expects from any
-rival. A rival's expected bid is his budget left times `NEED_SHARE` times the player's board score.
-The need share is 0.35 when the rival has fewer healthy starters at the position than the lineup's
+bidder. A bidder's expected bid is his budget left times `NEED_SHARE` times the player's board score.
+The need share is 0.35 when the bidder has fewer healthy starters at the position than the lineup's
 dedicated slots need. It is 0.12 otherwise. The most recent winning claim at the position in the last
 `FLOOR_WEEKS` weeks raises the floor to that bid plus one. The price never exceeds the highest budget
 left in the league. Every bucket but drops carries it, as a fact with its inputs in the numbers.
@@ -892,7 +859,7 @@ player, the board sets `experts_missing`. Use "experts" on the page.
 _Avoid_: expert take (alone), quote, rumor
 
 **Upside**:
-The adjuster that credits a side for a player it gets who is a star return bet or who has an opportunity. It steps up or not at all, never down.
+The measure that finds a player a side gets who is a star return bet or who has an opportunity. Its fact says so, and the Advisor weighs it.
 _Avoid_: potential, ceiling, buy low
 
 **Star**:
@@ -907,7 +874,7 @@ QB. A week with no chart reads the newest saved chart of the two weeks before, a
 _Avoid_: stud, elite
 
 **Star return bet**:
-A star who is out now and is not out for the season. His return week may be missing. The injury adjuster does not count him against the side that gets him.
+A star who is out now and is not out for the season. His return week may be missing. The injury measure states his return, and the Advisor weighs it.
 _Avoid_: injured star, stash
 
 **Out for the season**:
@@ -1193,7 +1160,7 @@ _Avoid_: Test case, QA step, check, criterion
 
 **Test verdict**:
 The word PASS, FAIL, or BLOCKED that the Judge gives to one acceptance test. Only a test verdict counts toward a merge. A FAIL from Brian overrides it.
-_Avoid_: Verdict (alone; that is the answer of the analyzer), result, approval, sign-off, status
+_Avoid_: Verdict (alone), lean (that is the advice of the analyzer), result, approval, sign-off, status
 
 **Judge**:
 The subagent that reads only the acceptance tests and their evidence, and gives each test its Test verdict. It did not build the work.

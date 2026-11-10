@@ -1,0 +1,30 @@
+$ python3 -I inner_words.py <scratchpad>/eval/out-6ba7   # the eval at 6ba706cf
+trade 3: 11 texts searched, hits=0 
+trade 4: 11 texts searched, hits=0 
+trade 5: 11 texts searched, hits=0 
+trade 6: 11 texts searched, hits=0 
+trade 9: 11 texts searched, hits=0 
+trade 11: 11 texts searched, hits=0 
+trade 12: 11 texts searched, hits=0 
+trade 13: 11 texts searched, hits=0 
+trade 14: 11 texts searched, hits=0 
+trade 15: 11 texts searched, hits=0 
+trade 16: 11 texts searched, hits=0 
+trade 17: 11 texts searched, hits=0 
+trade 18: 11 texts searched, hits=0 
+trade 19: 11 texts searched, hits=0 
+trade 20: 10 texts searched, hits=0 
+trade 21: 11 texts searched, hits=0 
+trade 22: 10 texts searched, hits=0 
+trade 23: 11 texts searched, hits=0 
+trade 24: 11 texts searched, hits=0 
+trade 25: 11 texts searched, hits=0 
+trade 26: 10 texts searched, hits=0 
+trade 27: 11 texts searched, hits=0 
+trade 28: 11 texts searched, hits=0 
+trade 29: 11 texts searched, hits=0 
+trade 30: 11 texts searched, hits=0 
+trade 31: 11 texts searched, hits=0 
+trade 32: 11 texts searched, hits=0 
+trade 33: 10 texts searched, hits=0 
+TOTAL reads=28 texts=304 hits=0

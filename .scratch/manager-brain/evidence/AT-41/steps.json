@@ -1,0 +1,119 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[type=submit]"
+    },
+    {
+      "wait": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "wait": "ul[aria-label=\"Teams\"] button:has-text(\"Maye d'force B with U\")"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Maye d'force B with U\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "button[aria-label=\"Pick Team Two\"]"
+    },
+    {
+      "wait": "ul[aria-label=\"Teams\"] button:has-text(\"Return of T Mac\")"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Return of T Mac\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "button:has-text(\"Add a player Your Team gets\")"
+    },
+    {
+      "wait": "[role=dialog] input[type=search]"
+    },
+    {
+      "fill": {
+        "selector": "[role=dialog] input[type=search]",
+        "value": "Bijan"
+      }
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "[role=dialog] ul[aria-label^=\"Players of\"] li:first-child button"
+    },
+    {
+      "wait": 400
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Done\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "button:has-text(\"Add a player Team Two gets\")"
+    },
+    {
+      "wait": "[role=dialog] input[type=search]"
+    },
+    {
+      "fill": {
+        "selector": "[role=dialog] input[type=search]",
+        "value": "Gibbs"
+      }
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "[role=dialog] ul[aria-label^=\"Players of\"] li:first-child button"
+    },
+    {
+      "wait": 400
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Done\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "button:has-text(\"Grade the Trade\")"
+    },
+    {
+      "wait": "ol[aria-label=\"The Lean scale\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "shot": "before"
+    },
+    {
+      "click": "[role=tab]:has-text(\"Return of T Mac\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "shot": "after"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+$ uv run --exact --package cornerstone cornerstone advisor-eval --client cpc --season 2026 --test-set <the test set, outside the repo> --out <scratchpad>/eval/out-6ba7   # at commit 6ba706cf
+# Trade 30, week 8, from trade-30.json. Unsolicited Dak Picks gives Jonathan Taylor (player id 6813).
+# The facts whose id starts with NEWS.6813., in sheet order:
+NEWS.6813.1: Reported on 2026-11-09 by Rotoballer: The Denver Broncos enter their Week 10 bye at 7-2 with the NFL trade deadline set for 2 p.m. MT on Tuesday, Nov. 10. DNVR's Zac Stevens pointed to running back, tight end, and the offensive line as areas Denver could address. He floated Indianapolis Colts running back Jonathan Taylor and
+NEWS.6813.2: Reported on 2026-11-09 by Rotoballer: According to ESPN's Jordan Raanan, it would be a surprise if the New York Giants traded for star running back Jonathan Taylor. Raanan notes that the interior defensive line is a higher priority for the Giants than the running back position. Over the weekend, it was reported that the Giants offered
+
+# The time of the press: the eval wrote trade-30.json at 2026-11-10T10:34:47-05:00 (file time).
+# The record keeps the text of each fact, not its numbers. See numbers.txt for the numbers.

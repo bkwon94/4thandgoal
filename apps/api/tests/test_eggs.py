@@ -495,11 +495,11 @@ def test_a_selected_word_egg_matches_only_its_word_in_its_blurb(api):
 
 def test_the_two_teams_of_a_trade_the_scroll_and_the_404_page_each_hold_as_a_condition(api):
     _drop(api,
-          {**T1, "page": "/analyzer/", "target": "verdict-word", "action": "tap2", "conditions": {"trade_teams": [1, 3]}},
+          {**T1, "page": "/analyzer/", "target": "lean-word", "action": "tap2", "conditions": {"trade_teams": [1, 3]}},
           {**T1, "target": "page-end", "action": "hold", "conditions": {"scrolled_end": True}},
           {**T1, "page": "/old-week/", "target": "not-found-hero", "action": "tap2", "conditions": {"not_found": True}})
-    assert _check(api, page="/analyzer/", target="verdict-word", action="tap2") == {"match": False}
-    assert _check(api, page="/analyzer/", target="verdict-word", action="tap2",
+    assert _check(api, page="/analyzer/", target="lean-word", action="tap2") == {"match": False}
+    assert _check(api, page="/analyzer/", target="lean-word", action="tap2",
                   conditions={"trade_teams": [1, 12]}) == {"match": False}
     assert _check(api, target="page-end", action="hold") == {"match": False}
     assert _check(api, target="page-end", action="hold", conditions={"scrolled_end": True})["match"] is True
@@ -511,9 +511,9 @@ def test_the_two_teams_of_a_trade_the_scroll_and_the_404_page_each_hold_as_a_con
 @pytest.mark.parametrize("teams", [[1, 3], [3, 1]])
 def test_a_two_team_egg_matches_any_trade_between_those_two_teams_in_either_direction(api, teams):
     # The listener sends the roster ids of the sides of the trade key, so any players of the two teams match.
-    _drop(api, {**T1, "page": "/analyzer/", "target": "verdict-word", "action": "tap2",
+    _drop(api, {**T1, "page": "/analyzer/", "target": "lean-word", "action": "tap2",
                 "conditions": {"trade_teams": teams, "trade_answer": "yes"}})
-    check = {"page": "/analyzer/", "target": "verdict-word", "action": "tap2"}
+    check = {"page": "/analyzer/", "target": "lean-word", "action": "tap2"}
     assert _check(api, **check, conditions={"trade_teams": [1, 3], "trade_answer": "yes"})["match"] is True
     assert _check(api, **check, conditions={"trade_teams": [3, 1], "trade_answer": "yes"})["match"] is True
     assert _check(api, **check, conditions={"trade_teams": [1, 3], "trade_answer": "no"}) == {"match": False}

@@ -1,0 +1,47 @@
+# Spec worktree at 6ba706cf
+
+$ grep -rniE 'rubric|start letter|start_letter|breakdown|adjuster|factor row|factor_row|letter grade|letter_grade|side letter|side_letter' packages/analyzer/python/src apps/api/src
+packages/analyzer/python/src/analyzer/prompts/advisor.md:67:- Never name the commissioner, and never give a letter grade.
+packages/analyzer/python/src/analyzer/prompts/finder_pick.md:69:- Never name the commissioner, and never give a letter grade.
+packages/analyzer/python/src/analyzer/prompts/finder_pick_repair.md:34:- Never name the commissioner, and never give a letter grade.
+exit: 0
+
+$ grep -rniw 'verdict' packages/analyzer/python/src apps/api/src
+exit: 1
+
+$ grep -rniE '"(letter|letters|factor|factors|decision|answer|verdict|breakdown|steps)"' packages/analyzer/python/src apps/api/src
+exit: 1
+
+$ sed -n 1172,1177p packages/analyzer/python/src/analyzer/measures.py
+MEASURES: tuple[Callable[[Snapshot, Side], MeasureRead], ...] = measures(EXPECTED_MEASURE_ON)
+
+# The short id of each Measure, the last part of its fact id, such as 10.measure.trend.
+MEASURE_IDS = {ROSTER_FIT: "fit", STANDING: "standing", TREND: "trend", INJURY: "injury", UPSIDE: "upside",
+               SUPERSTAR: "superstar", HANDCUFF: "handcuff", SCHEDULE: "schedule", CONSOLIDATION: "consolidation",
+               EXPECTED: "expected"}
+exit: 0
+
+$ ls packages/analyzer/python/src/analyzer/rubric.py packages/analyzer/python/src/analyzer/adjusters.py packages/analyzer/python/src/analyzer/analysis.py packages/analyzer/python/src/analyzer/prompts/rubric.md
+"packages/analyzer/python/src/analyzer/rubric.py": No such file or directory (os error 2)
+"packages/analyzer/python/src/analyzer/adjusters.py": No such file or directory (os error 2)
+"packages/analyzer/python/src/analyzer/analysis.py": No such file or directory (os error 2)
+"packages/analyzer/python/src/analyzer/prompts/rubric.md": No such file or directory (os error 2)
+exit: 2
+
+$ git grep -ciE 'rubric|start letter|start_letter|breakdown|adjuster|factor row|factor_row|letter grade|side letter' main -- packages/analyzer/python/src apps/api/src
+main:packages/analyzer/python/src/analyzer/__init__.py:2
+main:packages/analyzer/python/src/analyzer/adjusters.py:76
+main:packages/analyzer/python/src/analyzer/analysis.py:77
+main:packages/analyzer/python/src/analyzer/cache.py:2
+main:packages/analyzer/python/src/analyzer/finder.py:15
+main:packages/analyzer/python/src/analyzer/finder_reasons.py:5
+main:packages/analyzer/python/src/analyzer/prompts/analysis.md:6
+main:packages/analyzer/python/src/analyzer/prompts/finder.md:5
+main:packages/analyzer/python/src/analyzer/prompts/rubric.md:28
+main:packages/analyzer/python/src/analyzer/routes.py:19
+main:packages/analyzer/python/src/analyzer/rubric.py:56
+main:packages/analyzer/python/src/analyzer/trade_facts.py:2
+main:packages/analyzer/python/src/analyzer/tunables.py:8
+main:packages/analyzer/python/src/analyzer/week_line.py:2
+exit: 0
+

@@ -19,4 +19,5 @@ def test_each_module_imports_with_only_league_and_facts(name):
 def test_the_rule_prompts_sit_in_the_package():
     from analyzer import RULE_PROMPTS
 
-    assert sorted(path.name for path in RULE_PROMPTS.glob("*.md")) == ["analysis.md", "finder.md", "rubric.md"]
+    assert sorted(path.name for path in RULE_PROMPTS.glob("*.md")) == ["advisor.md", "finder_pick.md",
+                                                                      "finder_pick_repair.md"]

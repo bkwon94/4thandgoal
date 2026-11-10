@@ -1,0 +1,9 @@
+$ uv run --exact --package cornerstone cornerstone advisor-eval --client cpc --season 2026 --test-set <the test set, outside the repo> --out <scratchpad>/eval/out-6ba7   # at commit 6ba706cf
+# Trade 6, week 7, from trade-6.json. Asker behold the lamb; the test set names the other side NFC Least.
+# The depth facts of the sheet:
+10.depth.wr: For behold the lamb, the WRs in the top 36 go from 2 to 3.
+4.depth.wr: For Pukancun on 3, the WRs in the top 36 go from 4 to 3.
+10.depth.rb: For behold the lamb, the RBs in the top 36 go from 1 to 1.
+4.depth.rb: For Pukancun on 3, the RBs in the top 36 go from 2 to 2.
+
+# The rosters before and after the trade: see rosters.txt.

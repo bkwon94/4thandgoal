@@ -1,0 +1,8 @@
+Site: the cpc build with NEXT_PUBLIC_API_URL=http://localhost:8080, served at http://127.0.0.1:4173 (python3 -m http.server). agent-browser session e3.
+For each width 375, 768, 1280 and each theme light, dark (script: flow.sh):
+1. agent-browser set viewport <width> 900
+2. agent-browser set media <theme> reduced-motion
+3. Open /analyze/, set localStorage cpc.theme to <theme>, reload.
+4. Fill the passphrase "localtest", submit. Pick Your Team = Maye d'force B with U, Team Two = Return of T Mac.
+5. Your Team gets Bijan Robinson. Team Two gets Jahmyr Gibbs. Press "Grade the Trade".
+6. Wait for ol[aria-label="The Lean scale"]. Wait 300 ms. Take the full-page shot <width>-<theme>.png. No scroll pass and no long wait, so a rise that is still running would show.

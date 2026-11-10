@@ -1,0 +1,147 @@
+$ uv run --exact --package cornerstone cornerstone chart --client cpc --week 8
+# Setup before the command: the saved read of week 8 moved out of the cache, so only the PNG stays in place, as a hand-placed file.
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=13565
+Chart week 8, dated 2026-10-27
+Read 131 chart rows
+68.5  Jahmyr Gibbs  RB
+63.5  Jaxon Smith-Njigba  WR
+63.0  Kenneth Walker  RB
+62.5  Bijan Robinson  RB
+62.0  Puka Nacua  WR
+57.5  Ja'Marr Chase  WR
+56.0  Amon-Ra St. Brown  WR
+54.0  Christian McCaffrey  RB
+54.0  CeeDee Lamb  WR
+51.5  Jonathan Taylor  RB
+51.0  Malik Nabers  WR
+50.5  James Cook  RB
+46.5  Kyren Williams  RB
+46.0  Derrick Henry  RB
+44.0  Javonte Williams  RB
+43.5  Zay Flowers  WR
+42.5  Josh Allen  QB
+41.0  Brock Bowers  TE
+40.0  Ashton Jeanty  RB
+40.0  Drake London  WR
+39.0  Justin Jefferson  WR
+37.5  D'Andre Swift  RB
+35.5  Chris Olave  WR
+34.5  Trey McBride  TE
+33.5  Christian Watson  WR
+32.0  Chuba Hubbard  RB
+30.5  Bucky Irving  RB
+30.0  Jaylen Warren  RB
+29.5  Josh Jacobs  RB
+29.0  Nico Collins  WR
+29.0  Parker Washington  WR
+27.0  Bhayshul Tuten  RB
+27.0  Tee Higgins  WR
+26.5  Tetairoa McMillan  WR
+26.5  Matthew Golden  WR
+23.5  Chase Brown  RB
+23.5  George Pickens  WR
+22.5  Breece Hall  RB
+22.5  Garrett Wilson  WR
+22.0  A.J. Brown  WR
+21.5  Luther Burden  WR
+21.5  Drake Maye  QB
+21.0  DeVonta Smith  WR
+20.5  Quinshon Judkins  RB
+20.5  Joe Burrow  QB
+20.0  George Kittle  TE
+20.0  Lamar Jackson  QB
+19.5  Saquon Barkley  RB
+19.5  Mike Evans  WR
+19.5  Jameson Williams  WR
+18.5  Jalen Coker  WR
+18.0  Rashee Rice  WR
+17.5  Emeka Egbuka  WR
+17.0  Carnell Tate  WR
+16.5  Jeremiyah Love  RB
+16.5  Michael Wilson  WR
+16.5  Isaiah Likely  TE
+16.0  Rhamondre Stevenson  RB
+16.0  Ollie Gordon  RB
+15.0  D.J. Moore  WR
+15.0  Sam LaPorta  TE
+15.0  Brock Purdy  QB
+14.5  DK Metcalf  WR
+14.0  Cam Skattebo  RB
+14.0  Tyler Warren  TE
+13.5  Tony Pollard  RB
+13.0  Stefon Diggs  WR
+13.0  Colston Loveland  TE
+12.0  Aaron Jones  RB
+12.0  Omar Cooper Jr.  WR
+12.0  Kyle Monangai  RB
+11.5  Travis Etienne  RB
+11.5  Rome Odunze  WR
+11.5  Trevor Lawrence  QB
+11.5  Denzel Boston  WR
+11.0  Blake Corum  RB
+11.0  Jaylen Waddle  WR
+11.0  Ladd McConkey  WR
+11.0  Jordyn Tyson  WR
+10.5  Jared Goff  QB
+10.0  Jordan Mason  RB
+10.0  Tre Tucker  WR
+10.0  Caleb Williams  QB
+10.0  Omarion Hampton  RB
+10.0  KC Concepcion  WR
+10.0  Germie Bernard  WR
+9.5  Tucker Kraft  TE
+9.0  Woody Marks  RB
+9.0  Patrick Mahomes  QB
+8.5  Jakobi Meyers  WR
+8.5  Jayden Daniels  QB
+8.0  Zach Charbonnet  RB
+8.0  Jordan Addison  WR
+8.0  Jordan Love  QB
+7.5  Dak Prescott  QB
+7.5  Xavier Worthy  WR
+7.5  Travis Kelce  TE
+7.5  Matthew Stafford  QB
+7.0  Braelon Allen  RB
+7.0  Keenan Allen  WR
+7.0  Marvin Harrison Jr.  WR
+7.0  Devaughn Vele  WR
+6.5  Dalton Kincaid  TE
+6.0  RJ Harvey  RB
+6.0  Davante Adams  WR
+6.0  Josh Downs  WR
+5.5  Rachaad White  RB
+5.5  Dallas Goedert  TE
+5.5  Tyler Shough  QB
+5.0  Jonah Coleman  RB
+5.0  Wan'Dale Robinson  WR
+5.0  Harold Fannin  TE
+5.0  Malik Washington  WR
+4.5  Rico Dowdle  RB
+4.5  T.J. Hockenson  TE
+4.5  Kyle Pitts  TE
+4.5  Brenton Strange  TE
+4.0  J.K. Dobbins  RB
+4.0  Deebo Samuel  WR
+4.0  C.J. Stroud  QB
+3.5  TreVeyon Henderson  RB
+3.0  Bryce Young  QB
+2.5  Alvin Kamara  RB
+2.5  Khalil Shakir  WR
+2.5  Juwan Johnson  TE
+2.5  Makai Lemon  WR
+2.0  Hunter Henry  TE
+1.5  Keon Coleman  WR
+1.0  Kirk Cousins  QB
+0.5  Caleb Douglas  WR
+0.5  Chris Godwin  WR
+header week: pass
+trade values never rise: pass
+trade values are half points from 0 to 100: pass
+positions are RB, WR, TE, or QB: pass
+at least 100 rows: pass
+overlap rows agree: pass
+row count within 10 percent of the prior week: pass
+Matched 128 of 131 chart rows
+exit 0

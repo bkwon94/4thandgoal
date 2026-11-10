@@ -135,7 +135,7 @@ describe("the sheet", () => {
     expect(open.getByText("Yahoo Fantasy · Backs the board")).toBeTruthy();
     expect(open.getByText("ESPN · Disputes the board")).toBeTruthy();
     expect(open.getByText("$14")).toBeTruthy();
-    expect(open.getByText("$14 beats the top rival bid of $13")).toBeTruthy();
+    expect(open.getByText("$14 beats the top bid of another manager, $13")).toBeTruthy();
     // The last RB to win was Najee Harris himself, for $19 in week 4, by roster 3.
     expect(open.getByText("Last RB won")).toBeTruthy();
     expect(open.getByText("$19")).toBeTruthy();
@@ -336,7 +336,7 @@ describe("the ring and the sheet with a pick", () => {
     expect(open.getByText("Can outbid you")).toBeTruthy();
     // Lil Fridge has $72 and Kenny Gainwell's bid is $23. The outbid map holds 9 at "72".
     expect(open.getByText("9")).toBeTruthy();
-    expect(open.getByText("Rivals over $23")).toBeTruthy();
+    expect(open.getByText("Managers over $23")).toBeTruthy();
   });
 
   it("names the budget as the line when the viewer's budget is below the bid, and follows a new pick", () => {
@@ -347,7 +347,7 @@ describe("the ring and the sheet with a pick", () => {
     // Maye d'force B with U has $19, below the $23 bid. The map holds 10 at "19".
     expect(within(chip()!).getByText("you have $19")).toBeTruthy();
     expect(within(sheet()).getByText("10")).toBeTruthy();
-    expect(within(sheet()).getByText("Rivals over $19")).toBeTruthy();
+    expect(within(sheet()).getByText("Managers over $19")).toBeTruthy();
   });
 
   it("shows no outbid box with no pick", () => {

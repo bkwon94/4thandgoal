@@ -1,0 +1,5 @@
+$ git show main:packages/analyzer/python/src/analyzer/cache.py | grep -n "^DOCUMENT_VERSION"; git show manager-brain:packages/analyzer/python/src/analyzer/cache.py | grep -n "^DOCUMENT_VERSION"
+main (47b1dc6d):
+28:DOCUMENT_VERSION = 18
+manager-brain (26dbed1b):
+28:DOCUMENT_VERSION = 21

@@ -1,0 +1,16 @@
+$ uv run --exact --package cornerstone cornerstone advisor-eval --client cpc --season 2026 --test-set <the test set, outside the repo> --out <scratchpad>/eval/out-6ba7   # at commit 6ba706cf
+# Trade 12, week 8, from trade-12.json. Lil Fridge gives Derrick Henry (player id 3198).
+# Every fact of Derrick Henry on the sheet (id starts with 3198.):
+3198.ppg: Derrick Henry (RB, BAL) scored 16.8 points per game over 7 games before the trade. His Season rank is RB8, by total points this season. His Recent rank is RB26, by points per game over the last 4 weeks.
+3198.usage: Derrick Henry's snap share was 54 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.
+3198.targets: Derrick Henry's target share was 5 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.
+3198.redzone: Derrick Henry had 1 red-zone target and 34 red-zone carries this season before the trade.
+3198.injury: Derrick Henry has no injury status now.
+3198.nfl_team: Derrick Henry's NFL team, the Ravens, ranks 8th of 32 on offense: 8.8 expected points added per 100 plays over 7 games before the trade.
+3198.value: Derrick Henry is 14th on the chart of week 8, at 46.
+3198.history: In 2023, Derrick Henry played for TEN and scored half PPR points per game as follows: 13.71 in weeks 1 to 8 over 7 games; 12.82 in weeks 9 to 17 over 9 games; 17.7 in cold games over 1 game. In 2024, Derrick Henry played for BAL and scored half PPR points per game as follows: 21.4 in weeks 1 to 8 over 8 games; 15.82 in weeks 9 to 17 over 8 games; 18.57 in cold games over 3 games. In 2025, Derrick Henry played for BAL and scored half PPR points per game as follows: 12.84 in weeks 1 to 8 over 7 games; 18.83 in weeks 9 to 17 over 9 games; 21.58 in cold games over 5 games. A cold game is outdoors at 40 degrees F or below.
+
+# Every fact id of the sheet that ends in .history:
+3198.history
+12490.history
+6801.history

@@ -1,0 +1,23 @@
+$ CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_RESULT_CACHE_DIR=/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/5fa1045d-ebb4-4324-9db8-27e047c00271/scratchpad/e1/results1 CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe uv run --exact --package cpc-api python api_run.py 8091   # in apps/api of a detached checkout of 26dbed1b; api_run.py runs the real app and logs each sheet
+# Press 1, at 2026-11-09T23:14:58-0500: the trade of AT-16. Maye d'force B with U gives Jahmyr Gibbs (9221) for Bijan Robinson (9509).
+$ curl -s -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @p1.json http://127.0.0.1:8091/clients/cpc/analyze
+{"season":2026,"asker":9,"sides":[{"roster_id":9,"gives":[{"player_id":"9221","to":8}]},{"roster_id":8,"gives":[{"player_id":"9509","to":9}]}]}
+HTTP 200 in 22.293536s
+# The news lines of the log of press 1:
+2026-11-09 23:15:01,198 INFO analyzer.trade_news: News fetch of player 9221: 5 items
+2026-11-09 23:15:01,269 INFO analyzer.trade_news: News fetch of player 9509: 5 items
+2026-11-09 23:15:20,868 INFO analyzer.routes: Press of analyze for cpc: time=22.3s cost=$0.0551 claude_calls=1
+
+# Press 2, at 2026-11-09T23:15:27-0500: a different trade with Jahmyr Gibbs, for Alec Pierce (8142), in the same API process.
+$ curl -s -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @p2.json http://127.0.0.1:8091/clients/cpc/analyze
+{"season":2026,"asker":9,"sides":[{"roster_id":9,"gives":[{"player_id":"9221","to":8}]},{"roster_id":8,"gives":[{"player_id":"8142","to":9}]}]}
+HTTP 200 in 19.519488s
+# The news lines of the log of press 2:
+2026-11-09 23:15:29,190 INFO analyzer.trade_news: News of player 9221 from the cache
+2026-11-09 23:15:29,266 INFO analyzer.trade_news: News fetch of player 8142: 5 items
+2026-11-09 23:15:47,100 INFO analyzer.routes: Press of analyze for cpc: time=19.5s cost=$0.0543 claude_calls=1
+
+# Every news line of the whole log that names player 9221:
+2026-11-09 23:15:01,198 INFO analyzer.trade_news: News fetch of player 9221: 5 items
+2026-11-09 23:15:29,190 INFO analyzer.trade_news: News of player 9221 from the cache
+2026-11-09 23:16:04,844 INFO analyzer.trade_news: News of player 9221 from the cache

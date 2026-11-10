@@ -1,0 +1,6 @@
+$ uv run --exact --package cornerstone python news_numbers.py   # in apps/pipeline of a detached checkout of 6ba706cf
+now: 2026-11-10T15:36:33.096903+00:00
+NEWS.6813.1: Reported on 2026-11-09 by Rotoballer: The Denver Broncos enter their Week 10 bye at 7-2 with the NFL trade deadline set for 2 p.m. MT on Tuesday, Nov. 10. DNVR's Zac Stevens pointed to running back, tight end, and the offensive line as areas Denver could address. He floated Indianapolis Colts running back Jonathan Taylor and
+  numbers=['2026-11', '2026', '11', '09', '10', '7-2', '7', '2', '2', '10']
+NEWS.6813.2: Reported on 2026-11-09 by Rotoballer: According to ESPN's Jordan Raanan, it would be a surprise if the New York Giants traded for star running back Jonathan Taylor. Raanan notes that the interior defensive line is a higher priority for the Giants than the running back position. Over the weekend, it was reported that the Giants offered
+  numbers=['2026-11', '2026', '11', '09']

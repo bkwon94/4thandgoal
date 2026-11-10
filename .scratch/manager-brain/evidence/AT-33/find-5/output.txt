@@ -1,0 +1,201 @@
+$ curl -s -w '\nHTTP %{http_code} time=%{time_total}s\n' -X POST -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @request.json http://localhost:8081/clients/cpc/find
+
+Request (request.json):
+{"season": 2026, "asker": 9}
+
+
+HTTP 200 time=25.597324s
+Response:
+{
+    "season": 2026,
+    "trade_pair": {
+        "asker": {
+            "roster_id": 9,
+            "team": "Maye d'force B with U"
+        },
+        "partner": null
+    },
+    "trades": [
+        {
+            "offer_id": "9:11564-12:7547",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "11564",
+                            "name": "Drake Maye",
+                            "position": "QB",
+                            "nfl_team": "NE",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/11564.jpg",
+                            "season_rank": "QB4",
+                            "recent_rank": null,
+                            "to": 12
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "7547",
+                            "name": "Amon-Ra St. Brown",
+                            "position": "WR",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7547.jpg",
+                            "season_rank": "WR8",
+                            "recent_rank": null,
+                            "from": 12
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 12,
+                    "team": "Teehee",
+                    "gives": [
+                        {
+                            "player_id": "7547",
+                            "name": "Amon-Ra St. Brown",
+                            "position": "WR",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7547.jpg",
+                            "season_rank": "WR8",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "11564",
+                            "name": "Drake Maye",
+                            "position": "QB",
+                            "nfl_team": "NE",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/11564.jpg",
+                            "season_rank": "QB4",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": "You can spare a QB for a Lions WR who soaks up the targets.",
+            "bullets": [
+                {
+                    "text": "You still keep a QB in the top 24 after the trade, so Maye leaving costs you no starter.",
+                    "mark": "even",
+                    "fact_id": "9.depth.qb",
+                    "fact_text": "For Maye d'force B with U, the QBs in the top 24 go from 2 to 1."
+                },
+                {
+                    "text": "Amon-Ra St. Brown held a 36 percent target share over the last 2 weeks, flat from the 2 weeks before. That is steady work for your WR slot.",
+                    "mark": "for",
+                    "fact_id": "7547.targets",
+                    "fact_text": "Amon-Ra St. Brown's target share was 36 percent over the last 2 weeks before the trade, flat from the 2 weeks before that."
+                },
+                {
+                    "text": "Teehee gets the better player in Maye, and goes from 1 QB in the top 24 to 2. That gives the other manager a real reason to say yes.",
+                    "mark": "for",
+                    "fact_id": "12.measure.fit",
+                    "fact_text": "The roster fit measure for Teehee: You go from 1 QB in the top 24 to 2 and go from 4 WRs in the top 36 to 3, and your lineup scores less."
+                }
+            ],
+            "fact_lines": []
+        },
+        {
+            "offer_id": "9:11564-12:6801",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "11564",
+                            "name": "Drake Maye",
+                            "position": "QB",
+                            "nfl_team": "NE",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/11564.jpg",
+                            "season_rank": "QB4",
+                            "recent_rank": null,
+                            "to": 12
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "6801",
+                            "name": "Tee Higgins",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6801.jpg",
+                            "season_rank": "WR6",
+                            "recent_rank": null,
+                            "from": 12
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 12,
+                    "team": "Teehee",
+                    "gives": [
+                        {
+                            "player_id": "6801",
+                            "name": "Tee Higgins",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6801.jpg",
+                            "season_rank": "WR6",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "11564",
+                            "name": "Drake Maye",
+                            "position": "QB",
+                            "nfl_team": "NE",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/11564.jpg",
+                            "season_rank": "QB4",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": "Trade a QB you can spare for a WR on a hot offense, but it needs a push to get done.",
+            "bullets": [
+                {
+                    "text": "You go from 2 QBs in the top 24 to 1 and from 2 WRs in the top 36 to 3, and your lineup scores more.",
+                    "mark": "for",
+                    "fact_id": "9.measure.fit",
+                    "fact_text": "The roster fit measure for Maye d'force B with U: You go from 2 QBs in the top 24 to 1 and go from 2 WRs in the top 36 to 3, and your lineup scores more."
+                },
+                {
+                    "text": "Tee Higgins plays for the Bengals, who rank 4th of 32 on offense, so he should keep getting chances.",
+                    "mark": "for",
+                    "fact_id": "6801.nfl_team",
+                    "fact_text": "Tee Higgins's NFL team, the Bengals, ranks 4th of 32 on offense: 13.29 expected points added per 100 plays over 8 games before the trade."
+                },
+                {
+                    "text": "Teehee goes from 1 QB in the top 24 to 2, which helps, though its lineup scores less. The other manager may need a nudge.",
+                    "mark": "against",
+                    "fact_id": "12.depth.qb",
+                    "fact_text": "For Teehee, the QBs in the top 24 go from 1 to 2."
+                }
+            ],
+            "fact_lines": []
+        }
+    ],
+    "empty": null,
+    "as_of": {
+        "chart_week": null,
+        "stats_through": 9,
+        "completed_through": 9,
+        "rosters_fetched": "2026-11-10T10:49:11.185284-05:00",
+        "known_games": null,
+        "no_chart": true,
+        "no_chart_note": "This week's player values are not out yet."
+    },
+    "fallback": false,
+    "missing": [
+        "chart"
+    ],
+    "stale": []
+}

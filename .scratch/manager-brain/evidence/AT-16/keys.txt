@@ -1,0 +1,8 @@
+$ python3 (walk every key of response.json; count the Bullets of each side; look for the old keys)
+lean: Lean no
+case present: True
+fairness: {"state": "lopsided", "gives_more": 9, "sides": [{"roster_id": 9, "reason": "You get Bijan Robinson, a busy back whose share of the passing game is growing."}, {"roster_id": 8, "reason": "Return of T Mac gets Jahmyr Gibbs, the season's RB1 on a strong offense, for a playoff push."}]}
+side 9: 5 bullets; bullet keys: ['fact_id', 'fact_text', 'mark', 'text']
+side 8: 5 bullets; bullet keys: ['fact_id', 'fact_text', 'mark', 'text']
+all keys: ['as_of', 'asker', 'bullets', 'case', 'chart_week', 'completed_through', 'fact_id', 'fact_text', 'fairness', 'from', 'games', 'gets', 'gives', 'gives_more', 'headshot', 'in_progress', 'known_games', 'lean', 'mark', 'missing', 'name', 'nfl_team', 'no_chart', 'no_chart_note', 'pending', 'player_id', 'position', 'reason', 'recent_rank', 'roster_id', 'rosters_fetched', 'season_rank', 'sides', 'snaps', 'stale', 'state', 'stats_through', 'team', 'text', 'to', 'trade', 'usage', 'week', 'week_lines']
+keys that hold letter, factor, decision, or answer: []

@@ -155,8 +155,9 @@ export function postAnalyze(
   return postJson(target, "/analyze", analyzeResponseSchema, passphrase, body, signal);
 }
 
-/* The body of the find route: the season, the roster that asks, and the partner roster. */
-export type FindRequest = { season: number; asker: number; partner: number };
+/* The body of the find route: the season, the roster that asks, and the partner roster. With no partner, the search
+   runs over every other team. */
+export type FindRequest = { season: number; asker: number; partner?: number };
 
 /* The finder grades every small swap of the pair, so a cold call can be slow. The caller owns the AbortSignal, as with postAnalyze. */
 export function postFind(target: ApiTarget, passphrase: string, body: FindRequest, signal: AbortSignal): Promise<FindResponse> {

@@ -1,0 +1,21 @@
+# Taken at 5f7106bd, from the root of the Spec worktree.
+
+$ grep -rniE 'rubric|start letter|start_letter|breakdown|adjuster|factor row|factor_row|letter grade|letter_grade|side letter' packages/analyzer/site apps/site/src --exclude-dir=node_modules
+packages/analyzer/site/form/trade-finder.test.tsx:14:// A letter grade, such as B or C+, as a word of its own.
+packages/analyzer/site/form/trade-finder.test.tsx:147:  it("shows no letter grade on any card", async () => {
+packages/analyzer/site/form/analyze-result.tsx:3: * The trade finder reuses SwapCard and AsOfLine. No letter grade shows anywhere.
+packages/analyzer/site/form/analyze-result.test.tsx:160:  it("shows no letter grade anywhere in the result", () => {
+(exit 0)
+
+$ grep -rniw 'verdict' packages/analyzer/site apps/site/src --exclude-dir=node_modules
+apps/site/src/tracker-rule.test.ts:42: * An untracked draft ticket in one checkout does not change the verdict.
+(exit 0)
+
+$ git grep -n 'verdict-word' -- packages apps
+# git grep reads tracked files only. apps/site/out/ is a build output that git ignores.
+(exit 1)
+
+$ grep -rn 'lean-word' packages/analyzer/site --exclude-dir=node_modules
+packages/analyzer/site/form/analyze-result.tsx:286:        <motion.span className={cn("inline-block", LEAN_COLOR[lean])} {...stableId("lean-word")} {...rise(off, { duration: DURATION.decision })}>
+packages/analyzer/site/form/analyze-result.tsx:454:    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition. The attribute data-trade-answer keeps its name, because the eggs read it. The stable id is lean-word.
+(exit 0)

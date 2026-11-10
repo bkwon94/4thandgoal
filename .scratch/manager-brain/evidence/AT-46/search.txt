@@ -1,0 +1,31 @@
+$ grep -noE "(^|[^A-Za-z])[A-F][+-]?([^A-Za-z]|$)" finder-text.txt analyzer-text.txt   (a letter A to F alone, with an optional + or -)
+analyzer-text.txt:1: D'
+analyzer-text.txt:1: B 
+analyzer-text.txt:1: D'
+analyzer-text.txt:1: B 
+analyzer-text.txt:1: B 
+analyzer-text.txt:1: B 
+analyzer-text.txt:1: B 
+analyzer-text.txt:1: B 
+analyzer-text.txt:1: D'
+analyzer-text.txt:1: D'
+analyzer-text.txt:1: D'
+analyzer-text.txt:1: A 
+analyzer-text.txt:1: F 
+analyzer-text.txt:1: B 
+finder-text.txt:1: A 
+finder-text.txt:1: B 
+finder-text.txt:1: B 
+finder-text.txt:1: B 
+finder-text.txt:1: B 
+exit: 0
+
+$ grep -noiE "letter|grade|gpa" finder-text.txt analyzer-text.txt
+exit: 1
+
+Context of the matches (checked by hand):
+- "D'" and "B " come from the team name "Maye d'force B with U".
+- "A " in analyzer-text.txt comes from the sentence "A cold game is outdoor ..." in the as-of note.
+- "F " comes from the sentence "outdoors at 40 degrees F or below".
+- The "A " in finder-text.txt comes from the same "A cold game is outdoor ..." sentence.
+- Every other "B " is the team name.

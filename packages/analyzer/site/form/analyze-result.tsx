@@ -1,13 +1,15 @@
 /**
- * The analyzer result from one analyze document, in one column: the decision for the asker, the fairness line, the swap card, and a card per side.
- * The trade finder reuses SwapCard, FairnessBlock, and AsOfLine. No letter grade shows anywhere.
+ * The analyzer result from one analyze document, in one column: the Lean on its scale, the Case, the fairness line, the swap card, and one tab per side.
+ * The trade finder reuses SwapCard and AsOfLine. No letter grade shows anywhere.
  */
 "use client";
 
 import { motion } from "framer-motion";
-import type { ReactNode } from "react";
-import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, TradeSide, TradedPlayer } from "../lib/analyze-types";
+import { useId, useState, type ReactNode } from "react";
+import type { AnalyzeResponse, AsOf, ReadSide, Fairness, Lean, TradeSide, TradedPlayer } from "../lib/analyze-types";
 import { knownGamesSegments } from "../lib/known-games-segments";
+import { BulletRows } from "./bullet-rows";
+import { SideTabs } from "./side-tabs";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, rise } from "@cpc/design/lib/motion";
 import { Blurb } from "@cpc/design/parts/blurb";
@@ -17,19 +19,19 @@ import { Hero } from "@cpc/design/parts/hero";
 import { Headshot } from "@cpc/league/headshot";
 import { Label } from "@cpc/design/parts/label";
 import { cn } from "@cpc/design/lib/utils";
-import { openId, stableId, textId, TRADE_ANSWER, TRADE_KEY } from "@cpc/design/lib/stable-id";
+import { stableId, textId, TRADE_ANSWER, TRADE_KEY } from "@cpc/design/lib/stable-id";
 
 /* A trade side with the asker flag. The swap card and the fairness line need no more, so the finder cards reuse them with a side that has no read. */
 export type SwapSide = TradeSide & { mine: boolean };
 
 /* A trade side joined to its read, so each side reads from one object. */
-type Side = SwapSide & DecidedSide;
+type Side = SwapSide & ReadSide;
 
-/* Join the trade sides to the decided sides by roster id. The decision side goes first, so the decision and "Your Side" name the same team. */
+/* Join the trade sides to the read sides by roster id. The asker's side goes first, so the Lean and "Your Side" name the same team. */
 function joinSides(doc: AnalyzeResponse): Side[] {
   const sides = doc.trade.sides.flatMap((trade) => {
     const decided = doc.sides.find((s) => s.roster_id === trade.roster_id);
-    return decided ? [{ ...trade, ...decided, mine: trade.roster_id === doc.decision.for_roster }] : [];
+    return decided ? [{ ...trade, ...decided, mine: trade.roster_id === doc.trade.asker }] : [];
   });
   return sides.sort((a, b) => Number(b.mine) - Number(a.mine));
 }
@@ -163,100 +165,141 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
   );
 }
 
-/* The mark of a factor lean. The symbol is decorative, so a screen reader hears the word. */
-const MARKS = {
-  for: { symbol: "▲", color: "text-accent-ink" },
-  against: { symbol: "▼", color: "text-ink" },
-  even: { symbol: "–", color: "text-mute" },
-} as const;
-
-/* The page name of each factor. The document keeps the code name of the adjuster, and this map is the one place
-   that turns it into the word a manager reads. A name not in the map shows as sent. */
-const FACTOR_NAME: Record<string, string> = {
-  deal: "The deal",
-  "roster fit": "Roster",
-  standing: "Standing",
-  "trend and usage": "Usage",
-  injury: "Injury",
-  upside: "Upside",
-  superstar: "Superstar",
-  handcuff: "Handcuff",
-  schedule: "Schedule",
-  "expected gap": "Expected gap",
+/* The Lean word sits on the hero, so each color is one that the band holds in both themes. A yes leans in the accent, a no in the plain ink. */
+const LEAN_COLOR: Record<Lean, string> = {
+  "Send it": "text-accent-text",
+  "Lean yes": "text-accent-text",
+  "Gut call": "text-on-dark-2",
+  "Lean no": "text-on-dark",
+  Pass: "text-on-dark",
 };
 
-function Mark({ lean }: { lean: Factor["lean"] }) {
-  const mark = MARKS[lean];
+/* The egg hunt reads the answer of the result as yes, no, or not as is, so each Lean maps to one of the three. */
+const LEAN_ANSWER: Record<Lean, "yes" | "no" | "not_as_is"> = {
+  "Send it": "yes",
+  "Lean yes": "yes",
+  "Gut call": "not_as_is",
+  "Lean no": "no",
+  Pass: "no",
+};
+
+/* The five Leans from the no end to the yes end, so the lit step shows how strong the call is. */
+const SCALE: readonly Lean[] = ["Pass", "Lean no", "Gut call", "Lean yes", "Send it"];
+
+/* The 5-step scale under the Lean word. The lit step carries aria-current, so a screen reader hears which step the Lean is.
+   The scale sits on the hero, so each color is a hero role. The plate keeps the glow and the grid off the labels. */
+function LeanScale({ lean }: { lean: Lean }) {
   return (
-    <span className={cn("text-center font-black", mark.color)}>
-      <span aria-hidden="true">{mark.symbol}</span>
-      <span className="sr-only">{lean}</span>
-    </span>
+    <ol aria-label="The Lean scale" className="plate m-0 grid max-w-measure list-none grid-cols-5 gap-x-sp-1">
+      {SCALE.map((step) => {
+        const lit = step === lean;
+        return (
+          <li key={step} aria-current={lit ? "step" : undefined} className="flex flex-col gap-sp-1">
+            <span aria-hidden="true" className={cn("block h-sp-1 rounded-pill", lit ? "bg-accent" : "bg-rule-dark")} />
+            <span
+              className={cn(
+                "text-center text-label leading-tight font-bold tracking-caps uppercase",
+                lit ? "text-on-dark" : "text-on-dark-muted",
+              )}
+            >
+              {step}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
-/* The answer word sits on the hero, so each color is one that the band holds in both themes. */
-const ANSWER_WORD = {
-  yes: { word: "Yes", color: "text-accent-text" },
-  no: { word: "No", color: "text-on-dark" },
-  not_as_is: { word: "Not as is", color: "text-on-dark-2" },
-} as const;
+/* The Case under the scale. A phone clamps it to 3 lines, so the page stays short, and the button opens the rest.
+   From the tablet tier the Case shows in full and the button hides. The button goes once the Case is open, because
+   nothing is left to read. The plate sits on the wrapper, so the clamp clips the text and not the plate. */
+function CaseText({ readCase }: { readCase: string }) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  return (
+    <div className="flex flex-col items-start gap-sp-1">
+      <div className="plate max-w-measure">
+        <p
+          id={id}
+          className={cn("m-0 text-lead leading-body text-on-dark-2", !open && "max-tablet:line-clamp-3")}
+          {...textId("blurb", readCase)}
+        >
+          {readCase}
+        </p>
+      </div>
+      {!open && (
+        <button
+          type="button"
+          aria-expanded={false}
+          aria-controls={id}
+          onClick={() => setOpen(true)}
+          className="press plate min-h-touch cursor-pointer text-meta font-bold text-accent-text underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text tablet:hidden"
+        >
+          Read the full case
+        </button>
+      )}
+    </div>
+  );
+}
 
-/* The verdict fills the hero slots: the side as the eyebrow, the answer word as the title, and the reason as the meta.
-   Each chapter of the result opens with a level-two heading, so the title is level two. The answer word rises in once,
-   so the call lands with a beat. With motion off, it shows at rest at once. The no-values note and the fairness block
-   sit on a card in the feature, so their text keeps the colors of the card. So the hero starts at the eyebrow and ends
-   at the fairness block at every width (AT-9). The hero keeps the static grid: the fairness block already shows the
-   answer, so a scene would say it twice. A result with no note and no fairness block has no feature, and the hero ends
-   at the reason. The verdict has no stats and no action, so the hero shows no empty area. */
-function VerdictHero({
-  decision,
+/* The read fills the hero slots: the side as the eyebrow and the Lean word as the title. The feature holds the rest
+   in this order: the scale, the Case, then the fairness line. Each chapter of the result opens with a
+   level-two heading, so the title is level two. The Lean word rises in once, so the call lands with a beat. With
+   motion off, it shows at rest at once. The no-values note and the fairness block sit on a card under the Case, so
+   their text keeps the colors of the card. The read has no stats and no action, so the hero shows no empty area. */
+function ReadHero({
+  lean,
+  readCase,
   team,
   asOf,
   sides,
   fairness,
 }: {
-  decision: Decision;
+  lean: Lean;
+  readCase: string;
   team?: string;
   asOf: AsOf;
   sides: SwapSide[];
   fairness?: Fairness | null;
 }) {
   const off = useMotionOff();
-  const answer = ANSWER_WORD[decision.answer];
   const note = asOf.no_chart && asOf.no_chart_note;
   const card =
     note || fairness ? (
       <Card>
         <NoChartLine asOf={asOf} />
-        {/* The fairness line sits under the decision, so the decision stays the lead. The ticket asks the page to render a document with no block, as a guard, so it shows no line then. */}
+        {/* The ticket asks the page to render a document with no block, as a guard, so it shows no line then. */}
         {fairness && (
           <div className={note ? "mt-sp-4" : undefined}>
             <FairnessBlock sides={sides} fairness={fairness} />
           </div>
         )}
       </Card>
-    ) : undefined;
+    ) : null;
   return (
     <Hero
-      label="The Verdict"
+      label="The Read"
       level={2}
-      eyebrow={`Decision for ${team ?? "Your Side"}`}
+      eyebrow={`The read for ${team ?? "Your Side"}`}
       title={
-        <motion.span className={cn("inline-block", answer.color)} {...stableId("verdict-word")} {...rise(off, { duration: DURATION.decision })}>
-          {answer.word}
+        <motion.span className={cn("inline-block", LEAN_COLOR[lean])} {...stableId("lean-word")} {...rise(off, { duration: DURATION.decision })}>
+          {lean}
         </motion.span>
       }
-      meta={<span {...textId("blurb", decision.reason)}>{decision.reason}</span>}
-      feature={card}
+      feature={
+        <div className="flex flex-col gap-sp-4">
+          <LeanScale lean={lean} />
+          <CaseText readCase={readCase} />
+          {card}
+        </div>
+      }
     />
   );
 }
 
-/* The page words of the fairness states. The glossary says "Good for both" on the page, never "win-win".
-   Each state has a short meaning, because one word alone does not tell the reader what it means. */
+/* The page words of the fairness states. Each state has a short meaning, because one word alone does not tell the reader what it means. */
 const FAIRNESS_WORD = {
-  win_win: { word: "Good for both", color: "text-accent-ink", meaning: "Every side gets more than it gives." },
   fair: {
     word: "Fair",
     color: "text-mute",
@@ -265,20 +308,19 @@ const FAIRNESS_WORD = {
   lopsided: { word: "Lopsided", color: "text-ink", meaning: "It gives more than it gets." },
 } as const;
 
-/* The fairness line rises in like the decision word, so both read as one call. With motion off, it shows at rest at once. */
-export function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairness }) {
+/* The fairness line rises in like the Lean word, so both read as one call. With motion off, it shows at rest at once. */
+function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairness }) {
   const off = useMotionOff();
   const state = FAIRNESS_WORD[fairness.state];
   // A lopsided line names the side that gives more, so the reader knows who loses. The type says a lopsided block always has gives_more, and the pipeline sets it to a side of the trade.
-  // "Both" fits two sides only, so a win-win trade of three or more sides says "Good for all".
-  const word = fairness.state === "win_win" && sides.length > 2 ? "Good for all" : state.word;
+  const word = state.word;
   const line =
     fairness.state === "lopsided"
       ? `${word}: ${sides.find((s) => s.roster_id === fairness.gives_more)!.team} gives more.`
       : word;
   return (
     <div>
-      {/* The line is a pill next to its label, so the finder cards and the verdict read the fairness at a glance. */}
+      {/* The line is a pill next to its label, so the finder cards and the read show the fairness at a glance. */}
       <div className="mb-sp-2 flex flex-wrap items-center gap-sp-2">
         <span className="font-mono text-meta leading-tight font-bold tracking-wide text-mute uppercase">Fairness</span>
         {/* The pill is a short label, not prose, so it is a span at the row size. */}
@@ -321,12 +363,7 @@ function SidePlayers({ side }: { side: Side }) {
   );
 }
 
-/* The summary of the fold names the count of rows, so the reader knows what opens. */
-function foldSummary(rows: number): string {
-  return `How the grade adds up · ${rows} ${rows === 1 ? "row" : "rows"}`;
-}
-
-/* The box of the Week lines: one line for the trade week and one for the next week. It shows before a tap, because a contender reads it first. */
+/* The box of the Week lines: one line for the trade week and one for the next week. It shows before a tap, because a team in a playoff spot reads it first. */
 function WeekLines({ side }: { side: Side }) {
   return (
     // A region, not a section, because each section of the view is one chapter.
@@ -341,46 +378,17 @@ function WeekLines({ side }: { side: Side }) {
   );
 }
 
-/* One card per side: the players, then the bullets, then the Week lines, then the rows in a closed fold. The fold keeps the card short before a tap. */
+/* The panel of one side: the players, then the Bullets with their Marks, then the Week lines. The tab names the team. */
 function SideRead({ side }: { side: Side }) {
   return (
     <div>
-      <Label>
-        {side.team}
-        {side.mine && " · Your Side"}
-      </Label>
       <SidePlayers side={side} />
 
-      {side.bullets.length === 0 ? (
-        <p className="mt-sp-4 mb-0 text-lead text-mute">The analysis is unavailable, so the rows stand alone.</p>
-      ) : (
-        <ul className="mt-sp-4 mb-0 flex max-w-measure list-disc flex-col gap-sp-2 pl-sp-4 text-lead text-ink-2">
-          {side.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
-          ))}
-        </ul>
-      )}
+      <div className="mt-sp-4">
+        <BulletRows bullets={side.bullets} idBase={side.roster_id} />
+      </div>
 
       <WeekLines side={side} />
-
-      <details className="mt-sp-4" {...openId("fold", side.roster_id)}>
-        <summary className="cursor-pointer py-sp-2">
-          <Caps className="text-ink">{foldSummary(side.factors.length)}</Caps>
-        </summary>
-        <ul className="m-0 list-none border-y-2 border-ink p-0 text-meta leading-tight">
-          {side.factors.map((f) => (
-            <li
-              key={f.name}
-              {...stableId("factor", side.roster_id, f.name)}
-              className="grid grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)] gap-x-sp-1 border-b border-rule px-sp-1 py-sp-2 text-ink-2 last:border-b-0"
-            >
-              <Mark lean={f.lean} />
-              <Caps>{FACTOR_NAME[f.name] ?? f.name}</Caps>
-              <span className="col-start-2">{f.reason}</span>
-            </li>
-          ))}
-        </ul>
-      </details>
     </div>
   );
 }
@@ -438,25 +446,25 @@ export function tradeKey(doc: AnalyzeResponse): string {
 
 export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
   const sides = joinSides(doc);
-  const decisionTeam = sides.find((s) => s.roster_id === doc.decision.for_roster)?.team;
+  const askerTeam = sides.find((s) => s.roster_id === doc.trade.asker)?.team;
 
-  /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has five chapters.
+  /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has four chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
-    // The root carries the trade key and the answer of the decision, so the egg hunt reads them as a condition.
-    <div className="tablet:flex tablet:flex-col tablet:gap-card-gap" {...{ [TRADE_KEY]: tradeKey(doc), [TRADE_ANSWER]: doc.decision.answer }}>
-      <VerdictHero decision={doc.decision} team={decisionTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
+    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition. The attribute data-trade-answer keeps its name, because the eggs read it. The stable id is lean-word.
+    <div className="tablet:flex tablet:flex-col tablet:gap-card-gap" {...{ [TRADE_KEY]: tradeKey(doc), [TRADE_ANSWER]: LEAN_ANSWER[doc.lean] }}>
+      <ReadHero lean={doc.lean} readCase={doc.case} team={askerTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
 
       <Chapter>
         <Label heading>The Trade</Label>
         <SwapCard sides={sides} />
       </Chapter>
 
-      {sides.map((side) => (
-        <Chapter key={side.roster_id}>
-          <SideRead side={side} />
-        </Chapter>
-      ))}
+      {/* One tab per team under the swap card. joinSides puts the asker first, so the tab of the asker opens first. */}
+      <Chapter>
+        <Label heading>The Sides</Label>
+        <SideTabs label="The sides" tabs={sides.map((side) => ({ key: side.roster_id, label: side.team, panel: <SideRead side={side} /> }))} />
+      </Chapter>
 
       {/* The API returns no counters yet. The slot holds their place under the sides. */}
       <Chapter>

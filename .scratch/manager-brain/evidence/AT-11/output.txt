@@ -1,0 +1,36 @@
+$ CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_RESULT_CACHE_DIR=/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/5fa1045d-ebb4-4324-9db8-27e047c00271/scratchpad/e1/results1 CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe uv run --exact --package cpc-api python api_run.py 8091   # in apps/api of a detached checkout of 26dbed1b; api_run.py runs the real app and logs each sheet
+# DeMario Douglas (WR, NE, player id 9501) is on the roster of Return of T Mac.
+$ grep -i 'douglas' data/nfl/cache/charts/1QB0.5PPR4pt/week-09.json   # the saved read of the week 9 chart
+      "name": "Caleb Douglas",
+
+# The press of a trade with him, at 2026-11-09T23:16:49-0500:
+$ curl -s -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @p3.json http://127.0.0.1:8091/clients/cpc/analyze
+{"season":2026,"asker":8,"sides":[{"roster_id":8,"gives":[{"player_id":"9501","to":9}]},{"roster_id":9,"gives":[{"player_id":"11637","to":8}]}]}
+HTTP 200 in 23.518766s
+# The chart facts of its sheet:
+2026-11-09 23:16:51,188 INFO evidence: SHEET 9501.value: DeMario Douglas is not on the chart of week 9. | numbers=['9']
+2026-11-09 23:16:51,188 INFO evidence: SHEET 11637.value: Keon Coleman is not on the chart of week 9. | numbers=['9']
+
+# Find for Return of T Mac (roster 8) with no partner, at 2026-11-09T23:15:59-0500:
+$ curl -s -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @f1.json http://127.0.0.1:8091/clients/cpc/find
+{"season":2026,"asker":8}
+HTTP 200 in 22.925521s
+# The target step lines of the Finder log:
+2026-11-09 23:16:01,949 INFO analyzer.jev_waves: Jev wave 1 (partner filter): 11 requests, about 19040 tokens
+2026-11-09 23:16:02,955 INFO analyzer.jev_waves: Jev wave 2 (targets): 5 requests, about 15255 tokens
+2026-11-09 23:16:03,100 INFO analyzer.finder_search: Finder target questions with The Blue Tent: Chris Rodriguez Jr.=0.24, Rashee Rice=0.33, Bucky Irving=0.45, Brock Bowers=0.79, Devaughn Vele=0.43, Jordyn Tyson=0.10, Jadarian Price=0.17, Dallas Goedert=0.21, Christian Watson=0.67, Brock Purdy=0.18, Rome Odunze=0.31, Marvin Harrison Jr.=0.21, DJ Giddens=0.15, T.J. Hockenson=0.24, CeeDee Lamb=0.74, Jordan Love=0.38, Jaylen Warren=0.59, Jordan Mason=0.29, Tucker Kraft=0.30, DeMario Douglas=0.36, Bijan Robinson=0.82
+2026-11-09 23:16:03,101 INFO analyzer.finder_search: Finder target questions with All You Need Is Love: Tre Tucker=0.47, Dylan Sampson=0.21, Colston Loveland=0.22, Ashton Jeanty=0.36, Darius Cooper=0.25, Aaron Jones Sr.=0.29, Joe Burrow=0.36, Ja'Marr Chase=0.69, Wan'Dale Robinson=0.38, Chris Olave=0.59, Brenton Strange=0.17, Zach Charbonnet=0.18, Jordan Addison=0.28, Rome Odunze=0.33, Marvin Harrison Jr.=0.17, DJ Giddens=0.15, T.J. Hockenson=0.83, CeeDee Lamb=0.69, Jordan Love=0.18, Jaylen Warren=0.63, Jordan Mason=0.27, Tucker Kraft=0.76, DeMario Douglas=0.37, Bijan Robinson=0.84
+2026-11-09 23:16:03,101 INFO analyzer.finder_search: Finder target questions with Lil Fridge: Caleb Williams=0.10, Travis Kelce=0.73, Stefon Diggs=0.55, Derrick Henry=0.37, Christian McCaffrey=0.57, Courtland Sutton=0.32, Jakobi Meyers=0.40, J.K. Dobbins=0.26, Tyler Allgeier=0.26, Khalil Shakir=0.41, Bryce Young=0.11, Michael Mayer=0.18, Jaxon Smith-Njigba=0.74, Rome Odunze=0.40, Marvin Harrison Jr.=0.20, DJ Giddens=0.10, T.J. Hockenson=0.33, CeeDee Lamb=0.75, Jordan Love=0.56, Jaylen Warren=0.25, Jordan Mason=0.15, Tucker Kraft=0.34, DeMario Douglas=0.48, Bijan Robinson=0.50
+2026-11-09 23:16:03,101 INFO analyzer.finder_search: Finder target questions with London Cooking: Michael Wilson=0.57, Jayden Daniels=0.11, Woody Marks=0.24, Denzel Boston=0.48, Matthew Stafford=0.13, George Kittle=0.77, Mike Gesicki=0.33, DK Metcalf=0.37, Nico Collins=0.52, Javonte Williams=0.34, Chuba Hubbard=0.32, Drake London=0.59, James Cook III=0.41, Rome Odunze=0.31, Marvin Harrison Jr.=0.18, DJ Giddens=0.10, T.J. Hockenson=0.25, CeeDee Lamb=0.79, Jordan Love=0.61, Jaylen Warren=0.28, Jordan Mason=0.15, Tucker Kraft=0.25, DeMario Douglas=0.31, Bijan Robinson=0.59
+2026-11-09 23:16:03,101 INFO analyzer.finder_search: Finder target questions with Maye d'force B with U: Drake Maye=0.17, Keon Coleman=0.38, Jalen Coker=0.35, Tyler Shough=0.09, Emmett Johnson=0.25, Jonah Coleman=0.29, Kaelon Black=0.19, Alvin Kamara=0.28, D'Andre Swift=0.35, Justin Jefferson=0.59, Jaylen Waddle=0.41, Isaiah Likely=0.60, Jahmyr Gibbs=0.60, Rome Odunze=0.44, Marvin Harrison Jr.=0.30, DJ Giddens=0.11, T.J. Hockenson=0.30, CeeDee Lamb=0.83, Jordan Love=0.56, Jaylen Warren=0.28, Jordan Mason=0.19, Tucker Kraft=0.22, DeMario Douglas=0.57, Bijan Robinson=0.42
+2026-11-09 23:16:03,962 INFO analyzer.jev_waves: Jev wave 3 (shortlist): 5 requests, about 13376 tokens
+
+# The target lines that name DeMario Douglas:
+Finder target questions with The Blue Tent: ... DeMario Douglas=0.36 ...
+Finder target questions with All You Need Is Love: ... DeMario Douglas=0.37 ...
+Finder target questions with Lil Fridge: ... DeMario Douglas=0.48 ...
+Finder target questions with London Cooking: ... DeMario Douglas=0.31 ...
+Finder target questions with Maye d'force B with U: ... DeMario Douglas=0.57 ...
+
+# The Press line of the find:
+2026-11-09 23:16:22,801 INFO analyzer.routes: Press of find for cpc: time=22.9s cost=$0.0813 claude_calls=1

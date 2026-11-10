@@ -49,7 +49,7 @@ def _claims(transactions: list[RawTransaction], positions: dict[str, str | None]
     ]
 
 
-class Rival(NamedTuple):
+class Bidder(NamedTuple):
     """One roster of the league as a bidder: its team name, its budget left, and its healthy players by position."""
     roster_id: int
     team: str
@@ -58,8 +58,8 @@ class Rival(NamedTuple):
 
 
 class ExpectedBid(NamedTuple):
-    """The bid the model expects from one rival on one player."""
-    rival: Rival
+    """The bid the model expects from one manager on one player."""
+    bidder: Bidder
     need: bool
     amount: float
 
@@ -67,40 +67,40 @@ class ExpectedBid(NamedTuple):
 def price_players(
     players: list[WaiverPlayer], raw: RawWeek, claims: list[WaiverClaim], week: int,
 ) -> list[WaiverPlayer]:
-    """Each player of `players` with his price after week `week`. A rival is every roster, the viewer's too."""
-    rivals = _rivals(raw)
-    teams = {r.roster_id: r.team for r in rivals}
+    """Each player of `players` with his price after week `week`. A bidder is every roster, the viewer's too."""
+    bidders = _bidders(raw)
+    teams = {r.roster_id: r.team for r in bidders}
     # Only the dedicated slots count. A FLEX slot takes any of several positions, so no one position needs it.
     slots = Counter(raw.league.roster_positions)
     return [
-        p.model_copy(update={"price": _price(p, rivals, slots[p.position], week,
+        p.model_copy(update={"price": _price(p, bidders, slots[p.position], week,
                                              _last_like(p.position, claims, raw.players, teams))})
         for p in players
     ]
 
 
-def _price(player: WaiverPlayer, rivals: list[Rival], slots: int, week: int, last_like: LastLike | None) -> WaiverPrice:
-    top = max((_expected_bid(r, player, slots) for r in rivals), key=lambda b: b.amount)
+def _price(player: WaiverPlayer, bidders: list[Bidder], slots: int, week: int, last_like: LastLike | None) -> WaiverPrice:
+    top = max((_expected_bid(r, player, slots) for r in bidders), key=lambda b: b.amount)
     # The last like him is the most recent win at the position. Only a win in weeks N-2 to N sets the floor.
     past = last_like.bid if last_like is not None and last_like.week > week - FLOOR_WEEKS else None
-    ceiling = max(r.budget_left for r in rivals)
+    ceiling = max(r.budget_left for r in bidders)
     # The smallest whole dollar above the top expected bid, and above the recent win at the position.
     floor = max(math.floor(top.amount), past if past is not None else 0) + 1
     bid = min(floor, ceiling)
     n = Nums()
-    text = (f"Bid ${n(bid)} to win {player.name}. The top rival bid is about ${n(top.amount)}, "
-            f"from {top.rival.team} with ${n(top.rival.budget_left)} left")
+    text = (f"Bid ${n(bid)} to win {player.name}. The top bid of another manager is about ${n(top.amount)}, "
+            f"from {top.bidder.team} with ${n(top.bidder.budget_left)} left")
     text += f" and a need at {player.position}." if top.need else "."
     if past is not None:
         text += f" The last winning {player.position} claim in the last {n(FLOOR_WEEKS)} weeks is ${n(past)}."
     if bid < floor:
-        text += f" No rival has more than ${n(ceiling)} left."
-    return WaiverPrice(bid=bid, fact=fact(f"waiver_price_{player.player_id}", text, n, [top.rival.team], [player.name]),
-                       last_like=last_like, outbid=_outbid(bid, [r.budget_left for r in rivals]))
+        text += f" No other manager has more than ${n(ceiling)} left."
+    return WaiverPrice(bid=bid, fact=fact(f"waiver_price_{player.player_id}", text, n, [top.bidder.team], [player.name]),
+                       last_like=last_like, outbid=_outbid(bid, [r.budget_left for r in bidders]))
 
 
 def _outbid(bid: int, budgets: list[int]) -> dict[int, int]:
-    """Per budget level, the count of rivals with more budget left than a viewer at that level can bid.
+    """Per budget level, the count of managers with more budget left than a viewer at that level can bid.
 
     A viewer can bid the bid to win, or his whole budget left when it is less. A viewer with more than the bid
     is in the count of budgets above the bid, so his own roster comes off.
@@ -123,11 +123,11 @@ def _last_like(
                     roster_id=last.roster_id, team=teams.get(last.roster_id, ""), week=last.week, bid=last.bid)
 
 
-def _expected_bid(rival: Rival, player: WaiverPlayer, slots: int) -> ExpectedBid:
-    need = rival.healthy[player.position] < slots
+def _expected_bid(bidder: Bidder, player: WaiverPlayer, slots: int) -> ExpectedBid:
+    need = bidder.healthy[player.position] < slots
     share = NEED_SHARE["need" if need else "covered"]
     # The share and the board score are each at most 1, so the bid never exceeds the budget left.
-    return ExpectedBid(rival=rival, need=need, amount=rival.budget_left * share * player.board_score)
+    return ExpectedBid(bidder=bidder, need=need, amount=bidder.budget_left * share * player.board_score)
 
 
 def budget_left(raw: RawWeek, roster: RawRoster) -> int:
@@ -135,13 +135,13 @@ def budget_left(raw: RawWeek, roster: RawRoster) -> int:
     return raw.league.settings.waiver_budget - roster.settings.waiver_budget_used
 
 
-def _rivals(raw: RawWeek) -> list[Rival]:
+def _bidders(raw: RawWeek) -> list[Bidder]:
     users = {u.user_id: u for u in raw.users}
-    rivals = []
+    bidders = []
     for roster in sorted(raw.rosters, key=lambda r: r.roster_id):
         # A roster with no players has None in rosters.json.
         entries = [raw.players.get(pid) or {} for pid in roster.players or []]
         healthy = Counter(e.get("position") for e in entries if e.get("injury_status") not in OUT_STATUSES)
-        rivals.append(Rival(roster_id=roster.roster_id, team=team_name(users[roster.owner_id]),
+        bidders.append(Bidder(roster_id=roster.roster_id, team=team_name(users[roster.owner_id]),
                             budget_left=budget_left(raw, roster), healthy=healthy))
-    return rivals
+    return bidders

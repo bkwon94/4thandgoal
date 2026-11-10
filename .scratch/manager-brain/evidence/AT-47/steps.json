@@ -1,0 +1,71 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[type=submit]"
+    },
+    {
+      "wait": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "button[aria-label=\"Pick Your Team\"]"
+    },
+    {
+      "wait": "ul[aria-label=\"Teams\"] button:has-text(\"Maye d'force B with U\")"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Maye d'force B with U\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "button:has-text(\"Find a Trade\")"
+    },
+    {
+      "wait": "article[aria-label=\"Trade 1\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "scroll": "ul[aria-label=\"Teams in the trade\"]"
+    },
+    {
+      "shot": "card"
+    },
+    {
+      "click": "article[aria-label=\"Trade 1\"] li button"
+    },
+    {
+      "wait": 900
+    },
+    {
+      "scroll": "ul[aria-label=\"Teams in the trade\"]"
+    },
+    {
+      "shot": "card-tap"
+    },
+    {
+      "click": "article[aria-label=\"Trade 1\"] button:has-text(\"See the Full Result\")"
+    },
+    {
+      "wait": "ol[aria-label=\"The Lean scale\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "shot": "read"
+    }
+  ]
+}

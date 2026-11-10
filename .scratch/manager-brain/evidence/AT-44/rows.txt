@@ -1,0 +1,31 @@
+        - group "FOR"
+          - StaticText "FOR"
+          - list
+            - listitem [level=1]
+              - button "for Gibbs's Lions rank 6th of 32 on offense, so he gets plenty of chances." [expanded=false, ref=e19]
+                - StaticText "for"
+                - StaticText "Gibbs's Lions rank 6th of 32 on offense, so he gets plenty of chances."
+            - listitem [level=1]
+              - button "for Gibbs has 43 red-zone carries this season, a steady path to touchdowns." [expanded=false, ref=e20]
+                - StaticText "for"
+                - StaticText "Gibbs has 43 red-zone carries this season, a steady path to touchdowns."
+            - listitem [level=1]
+              - button "for The team sits outside a playoff spot but still in the race, and this trade adds points now." [expanded=false, ref=e21]
+                - StaticText "for"
+                - StaticText "The team sits outside a playoff spot but still in the race, and this trade adds points now."
+        - group "AGAINST"
+          - StaticText "AGAINST"
+          - list
+            - listitem [level=1]
+              - button "against Gibbs's snap share was 73 percent over the last 2 weeks, down from before." [expanded=false, ref=e22]
+                - StaticText "against"
+                - StaticText "Gibbs's snap share was 73 percent over the last 2 weeks, down from before."
+        - group "EVEN"
+          - StaticText "EVEN"
+          - list
+            - listitem [level=1]
+              - button "even Gibbs faces MIN (28th most points to RBs), NYG (20th), and CHI (30th) in weeks 15 to 17, a mixed run." [expanded=false, ref=e23]
+                - StaticText "even"
+                - StaticText "Gibbs faces MIN (28th most points to RBs), NYG (20th), and CHI (30th) in weeks 15 to 17, a mixed run."
+        - region "This week and next" [ref=e18]
+          - StaticText "THIS WEEK AND NEXT"
