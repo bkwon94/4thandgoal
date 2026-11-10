@@ -6,6 +6,7 @@ import hashlib
 import json
 import logging
 from collections.abc import AsyncIterator
+from dataclasses import dataclass
 from typing import Annotated, Any
 
 import anyio
@@ -47,6 +48,8 @@ from cornerstone_api.personal_wording import (
     topic_prompt,
 )
 from league.jev_port import JevError
+from league.snapshot import Snapshot
+from managers.grade import ManagerGrade, Starter
 
 logger = logging.getLogger(__name__)
 
@@ -91,12 +94,45 @@ def _served(request: Request) -> Any:
 Served = Annotated[Any, Depends(_served)]
 
 
-def answer_key(topic: str, own: bool, facts: PersonalFacts) -> str:
-    """The key of an Answer: the facts it read, whom it addresses, and the wording and the model that wrote it. A waiver
-    claim or a trade changes the facts, so the key changes and Claude writes a fresh Answer."""
-    body = {"topic": topic, "own": own, "slice": facts.slice, "block": facts.block, "instructions": INSTRUCTIONS,
-            "ask": TOPIC_ASKS[topic], "model": MODEL, "effort": EFFORT}
+def answer_key(topic: str, own: bool, facts: PersonalFacts, roster: list[str]) -> str:
+    """The key of an Answer: the facts it read, the roster of its team, whom it addresses, and the wording and the
+    model that wrote it. A waiver claim or a trade changes the roster, so the key changes and Claude writes a fresh
+    Answer. The roster is in the key, because a bench add can leave the slice the same and still change the read."""
+    body = {"topic": topic, "own": own, "slice": facts.slice, "block": facts.block, "roster": sorted(roster),
+            "instructions": INSTRUCTIONS, "ask": TOPIC_ASKS[topic], "model": MODEL, "effort": EFFORT}
     return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
+
+
+@dataclass(frozen=True)
+class Live:
+    """The live league of one request: the snapshot, and the roster grade and the starters of each roster now."""
+
+    snapshot: Snapshot
+    grades: dict[int, ManagerGrade]
+    starters: dict[int, list[Starter]]
+
+    def facts(self, topic: PersonalTopic, subject: int) -> PersonalFacts:
+        """The facts of `topic` for the team of `subject`. Waiver targets read the published waiver list."""
+        snapshot = self.snapshot
+        board = (published_waiver(snapshot.client.folder, snapshot.season, snapshot.week)
+                 if topic == "waiver_targets" else None)
+        return topic_facts(topic, snapshot, subject, self.grades, self.starters, board)
+
+    def key(self, topic: PersonalTopic, roster_id: int, subject: int) -> tuple[PersonalFacts, str]:
+        """The facts and the key of the Answer of `topic` about `subject`, for the manager of `roster_id`."""
+        facts = self.facts(topic, subject)
+        return facts, answer_key(topic, subject == roster_id, facts, self.snapshot.rosters[subject])
+
+
+async def load_live(served: Any, season: int) -> Live:
+    """The live league for the client of `served`. Raises HTTPException 503 when the facts do not load."""
+    try:
+        snapshot = await anyio.to_thread.run_sync(served.sources.snapshot, season)
+        grades, starters = await anyio.to_thread.run_sync(live_grades, snapshot)
+    except ValueError as error:
+        logger.warning("The facts of a personal Topic did not load (%s)", error)
+        raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
+    return Live(snapshot, grades, starters)
 
 
 def _usage_line(topic: str, attempts: list[_Attempt], outcome: str) -> str:
@@ -192,20 +228,13 @@ async def answer_stream(facts: PersonalFacts, key: str, text: AsyncIterator[Base
 async def personal(body: PersonalRequest, asker: ClientAsker, served: Served, request: Request) -> StreamingResponse:
     """The stream of one personal Topic for the team of the body. The facts come from the live snapshot, so the
     Answer follows each waiver claim and trade."""
-    try:
-        snapshot = await anyio.to_thread.run_sync(served.sources.snapshot, asker.season)
-        grades, starters = await anyio.to_thread.run_sync(live_grades, snapshot)
-    except ValueError as error:
-        logger.warning("The facts of a personal Topic did not load (%s)", error)
-        raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
+    live = await load_live(served, asker.season)
+    snapshot = live.snapshot
     subject = body.roster_id if body.team is None else body.team
     if body.roster_id not in snapshot.rosters or subject not in snapshot.rosters:
         raise HTTPException(status_code=422, detail="Pick your team again.")
-    board = (published_waiver(snapshot.client.folder, asker.season, snapshot.week)
-             if body.topic == "waiver_targets" else None)
-    facts = topic_facts(body.topic, snapshot, subject, grades, starters, board)
+    facts, key = live.key(body.topic, body.roster_id, subject)
     own = subject == body.roster_id
-    key = answer_key(body.topic, own, facts)
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
     kept = await anyio.to_thread.run_sync(store.get, key)
     if kept is not None:

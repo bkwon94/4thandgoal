@@ -46,10 +46,12 @@ export function dayOrder(day: number): string[] {
   return [...leads, ...TOPICS.map((topic) => topic.key).filter((key) => !leads.includes(key))];
 }
 
-/* The first 3 Topics of the day that have a fact, past the Topics that the manager opened at the same fact.
-   A Topic with no fact yet, such as a live Topic before the API serves it, never shows as a Suggestion. */
-export function pickSuggestions(day: number, facts: Record<string, string>, opened: Record<string, string>): string[] {
-  return dayOrder(day)
+/* The first 3 Topics that have a fact, past the Topics that the manager opened at the same fact. The urgent Topics
+   lead, most urgent first, then the order of the day. Jev judges what is urgent on the API, and this rule only places
+   it. A Topic with no fact yet, such as a live Topic before the API serves it, never shows as a Suggestion. The API
+   picks the head start with the same rule, in suggestions.py. */
+export function pickSuggestions(day: number, facts: Record<string, string>, opened: Record<string, string>, urgent: string[] = []): string[] {
+  return [...urgent, ...dayOrder(day).filter((key) => !urgent.includes(key))]
     .filter((key) => key in facts && opened[key] !== facts[key])
     .slice(0, SUGGESTION_COUNT);
 }

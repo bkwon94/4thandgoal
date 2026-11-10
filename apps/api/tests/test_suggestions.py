@@ -1,0 +1,195 @@
+"""
+Tests for the Suggestions of Your team, the head start of the top personal Suggestion, and the check of kept Answers.
+They run at the route seam with FakeJev, a function model of Pydantic AI, and the recorded week 6 Sleeper data.
+"""
+import dataclasses
+import json
+import logging
+import shutil
+from pathlib import Path
+
+import test_api
+from fakes import FakeJev
+from fastapi.testclient import TestClient
+from test_api import HEADERS
+from test_personal_topics import LIL_FRIDGE, Checks, Writer, _api, _ask, _chunks, _text
+
+from league.jev_port import JevError, NoulQuestion
+from league.provider.sleeper import load_raw
+
+repo = test_api.repo
+settings = test_api.settings
+sources = test_api.sources
+
+SUGGESTIONS = "/clients/cpc/suggestions"
+CURRENT = "/clients/cpc/personal/current"
+# The order of Wednesday on the site: the waivers lead, then the weak spots (topics.ts).
+WEDNESDAY = ["waiver_targets", "weak_spots", "power_rankings", "week_recap", "playoff_race", "last_matchup",
+             "next_matchup", "your_season", "leaders_trades", "stack_up", "sell_high", "trade_ideas", "trade_check"]
+# The order of Tuesday on the site: the recap leads.
+TUESDAY = ["week_recap", "last_matchup", "power_rankings", "playoff_race", "next_matchup", "your_season",
+           "leaders_trades", "waiver_targets", "stack_up", "weak_spots", "sell_high", "trade_ideas", "trade_check"]
+# The real Topics file of the latest published week of cpc.
+PUBLISHED_TOPICS = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "published" / "2026" / "week-08" / "topics.json"
+
+
+def _publish_topics(settings) -> dict:
+    folder = settings.repo / "published" / "2026" / "week-06"
+    folder.mkdir(parents=True, exist_ok=True)
+    shutil.copy(PUBLISHED_TOPICS, folder / "topics.json")
+    return json.loads(PUBLISHED_TOPICS.read_text())
+
+
+class Lifts:
+    """The Jev answers of the lift Nouls by Topic, and a pass of each claim check."""
+
+    def __init__(self, urgent: dict[str, float] | None = None):
+        self.urgent = urgent or {}
+
+    def answer(self, key: str, question: NoulQuestion, state: dict) -> float:
+        if key.startswith("lift_"):
+            return self.urgent.get(key.removeprefix("lift_"), 0.1)
+        return 0.95
+
+
+def _suggest(api: TestClient, order: list[str] = WEDNESDAY, opened: dict | None = None, roster_id: int = LIL_FRIDGE):
+    return api.post(SUGGESTIONS, json={"roster_id": roster_id, "order": order, "opened": opened or {}}, headers=HEADERS)
+
+
+def test_a_lift_above_the_cutoff_puts_its_topic_first_above_the_order_of_the_day(settings, sources):
+    # AT-6: Jev reads the playoff race of Lil Fridge as urgent, so it leads Wednesday, above the waivers.
+    _publish_topics(settings)
+    writer = Writer()
+    jev = FakeJev(answer=Lifts({"playoff_race": 0.85}).answer)
+    api = _api(settings, sources, jev, writer)
+    body = _suggest(api).json()
+    assert body["picks"][0] == "playoff_race"
+    assert body["urgent"] == ["playoff_race"]
+    assert body["picks"][1:] == ["waiver_targets", "weak_spots"]
+    # One Noul per Topic with a fact, each over the same fact that its Suggestion shows.
+    assert set(body["lifts"]) == set(body["facts"])
+    [request] = [r for r in jev.requests if any(k.startswith("lift_") for k in r.questions)]
+    assert request.state["topics"]["playoff_race"]["fact"] == body["facts"]["playoff_race"] == "86% playoff odds"
+    assert body["jev"]["nouls"]["lift_playoff_race"] == 0.85
+
+
+def test_an_unsure_lift_is_no_lift_and_the_order_of_the_day_holds(settings, sources):
+    # The cutoff is the hard rule of the spec: 0.7 reads as unsure, so the Topic stays in its place.
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts({"playoff_race": 0.7}).answer), Writer())
+    body = _suggest(api, order=TUESDAY).json()
+    assert body["urgent"] == []
+    assert body["picks"] == ["week_recap", "last_matchup", "power_rankings"]
+
+
+def test_the_api_serves_the_live_facts_of_the_personal_topics_and_skips_each_opened_topic(settings, sources):
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    first = _suggest(api).json()
+    assert {"weak_spots", "stack_up", "waiver_targets"} <= set(first["facts"])
+    # A Topic opened at the same fact drops off. A trade Topic has no fact from code, so it never shows.
+    opened = {"waiver_targets": first["facts"]["waiver_targets"]}
+    body = _suggest(api, opened=opened).json()
+    assert body["picks"] == ["weak_spots", "power_rankings", "week_recap"]
+    assert not {"sell_high", "trade_ideas", "trade_check"} & set(body["facts"])
+
+
+def test_the_head_start_builds_the_top_personal_suggestion_on_open_and_the_tap_gets_it_kept(settings, sources,
+                                                                                          caplog):
+    # AT-8: the top Suggestion of Wednesday is waiver targets, a personal Topic, so it builds on open. The tap then
+    # gets the kept Answer at once with no Claude call.
+    _publish_topics(settings)
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), writer)
+    order = ["weak_spots", *(key for key in WEDNESDAY if key != "weak_spots")]
+    with caplog.at_level(logging.INFO, logger="cornerstone_api"):
+        body = _suggest(api, order=order).json()
+    assert body["picks"][0] == "weak_spots" and body["head_start"] == "weak_spots"
+    assert writer.calls == 1
+    assert "head start builds the personal Topic weak_spots on open" in caplog.text
+    caps, now = api.app.state.askers["cpc"].caps, api.app.state.askers["cpc"].clock()
+    # The head start costs the league and counts toward no team.
+    assert caps.month_usd(now) > 0 and caps.answers_today(LIL_FRIDGE, now) == 0
+    with caplog.at_level(logging.INFO, logger="cornerstone_api"):
+        tap = _chunks(_ask(api, "weak_spots"))
+    assert writer.calls == 1
+    assert "came from the store" in caplog.text
+    assert _text(tap) and [c["data"]["state"] for c in tap if c["type"] == "data-check"] == ["checked"]
+    # A second open finds the kept Answer, so it builds nothing.
+    _suggest(api, order=order)
+    assert writer.calls == 1
+
+
+def test_a_league_topic_at_the_top_builds_nothing_on_open(settings, sources):
+    _publish_topics(settings)
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), writer)
+    body = _suggest(api, order=TUESDAY).json()
+    assert body["head_start"] is None
+    assert writer.calls == 0
+
+
+def test_past_the_league_cap_the_head_start_builds_nothing(settings, sources):
+    _publish_topics(settings)
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), writer)
+    caps, now = api.app.state.askers["cpc"].caps, api.app.state.askers["cpc"].clock()
+    caps.record(None, 25.00, now, counts=False)
+    body = _suggest(api).json()
+    assert body["picks"][0] == "waiver_targets" and body["head_start"] is None
+    assert writer.calls == 0
+
+
+def test_a_failed_lift_call_is_an_error_never_a_no(settings, sources):
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(error=JevError("down")), Writer())
+    assert _suggest(api).status_code == 503
+
+
+def test_an_unknown_topic_in_the_order_is_422(settings, sources):
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    assert _suggest(api, order=["week_recap", "write_me_a_poem"]).status_code == 422
+    assert _suggest(api, roster_id=99).status_code == 422
+
+
+def test_the_suggestions_need_the_passphrase(settings, sources):
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    assert api.post(SUGGESTIONS, json={"roster_id": LIL_FRIDGE, "order": WEDNESDAY}).status_code == 401
+
+
+def _key(chunks: list[dict]) -> str:
+    [key] = [c["data"]["key"] for c in chunks if c["type"] == "data-key"]
+    return key
+
+
+def test_the_key_check_reads_a_kept_answer_as_current_until_the_roster_changes(settings, sources, fixture_raw_dir,
+                                                                               tmp_path):
+    # AT-34: the weak spots Answer of Lil Fridge is current. Then the roster gains one player, so it is stale, with the
+    # time that the API kept it.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    key = _key(_chunks(_ask(api, "weak_spots")))
+    item = {"topic": "weak_spots", "roster_id": LIL_FRIDGE, "team": None, "key": key}
+    [now] = api.post(CURRENT, json={"answers": [item]}, headers=HEADERS).json()["answers"]
+    assert now["key"] == key and now["current"] is True
+    raw = tmp_path / "raw-after-an-add"
+    shutil.copytree(fixture_raw_dir, raw)
+    rosters = json.loads((raw / "rosters.json").read_text())
+    mine = next(roster for roster in rosters if roster["roster_id"] == LIL_FRIDGE)
+    other = next(roster for roster in rosters if roster["roster_id"] != LIL_FRIDGE)
+    mine["players"] = [*mine["players"], other["players"][0]]
+    (raw / "rosters.json").write_text(json.dumps(rosters))
+    changed = dataclasses.replace(sources, fetch_sleeper=lambda league_id: (load_raw(raw), test_api.FETCHED))
+    api = _api(settings, changed, FakeJev(answer=Checks([True]).answer), writer)
+    [stale] = api.post(CURRENT, json={"answers": [item]}, headers=HEADERS).json()["answers"]
+    assert stale["key"] == key and stale["current"] is False
+    assert stale["kept_at"] is not None and stale["kept_at"].startswith("2026-")
+    # The check costs nothing: no Claude call and no Jev call.
+    assert writer.calls == 1
+
+
+def test_the_key_check_needs_the_passphrase_and_a_known_team(settings, sources):
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), Writer())
+    item = {"topic": "weak_spots", "roster_id": LIL_FRIDGE, "team": None, "key": "x"}
+    assert api.post(CURRENT, json={"answers": [item]}).status_code == 401
+    assert api.post(CURRENT, json={"answers": [{**item, "roster_id": 99}]}, headers=HEADERS).status_code == 422
