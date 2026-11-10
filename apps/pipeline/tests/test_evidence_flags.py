@@ -245,6 +245,32 @@ def test_a_text_state_over_the_limit_sends_the_text_files_that_fit_in_the_order_
     assert capsys.readouterr().out.strip().splitlines()[-1].endswith(", 1 cut")
 
 
+def _asks_only_at_1(tmp_path, number: str, acceptance_title: str, evidence_title: str) -> None:
+    """Run the command on AT-1 and a second test with the given titles. Only AT-1 gets a request."""
+    acceptance = ACCEPTANCE + f"\nAT-{number}: {acceptance_title}\nApp: pipeline\n"
+    evidence = (EVIDENCE.split("## AT-2")[0]
+                + f"## AT-{number}: {evidence_title}\n\nFiles: `evidence/AT-1/output.txt`\nObservation: It holds.\n")
+    _scratch(tmp_path, acceptance=acceptance, evidence=evidence)
+    jev = FakeJev(yes=0.95)
+
+    code = cli.main(["evidence-flags", "demo", "--root", str(tmp_path)], jev=jev)
+
+    assert code == 0
+    assert [request.state["test"]["id"] for request in jev.requests] == ["AT-1"]
+
+
+def test_a_test_with_retired_at_the_end_of_its_acceptance_title_gets_no_request(tmp_path):
+    _asks_only_at_1(tmp_path, "3", "A clock window holds, Retired", "A clock window holds")
+
+
+def test_a_test_with_retired_at_the_end_of_its_evidence_title_gets_no_request(tmp_path):
+    _asks_only_at_1(tmp_path, "3", "A clock window holds", "A clock window holds, Retired")
+
+
+def test_a_skipped_test_gets_no_request(tmp_path):
+    _asks_only_at_1(tmp_path, "3", "Skipped: a clock window holds", "Skipped: a clock window holds")
+
+
 def test_a_test_in_two_halves_gets_one_request_with_the_files_and_observation_of_both(tmp_path, capsys):
     folder = _scratch(tmp_path, evidence=EVIDENCE.replace("## AT-1: A clock window holds\n", (
         "## AT-1 (pipeline half): A clock window holds\n")).replace("## AT-2:", (

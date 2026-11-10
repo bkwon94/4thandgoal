@@ -35,7 +35,8 @@ PIXELS_PER_TOKEN = 380
 BYTES_PER_TOKEN = 3
 # A whole round has about 40 tests, and four requests at one time keep it to about a minute.
 WORKERS = 4
-NO_REQUEST_TITLE = re.compile(r"^(Retired|Skipped)\b", re.IGNORECASE)
+# A title with the word Retired anywhere, or a title that starts with Skipped, gets no request.
+NO_REQUEST_TITLE = re.compile(r"\bRetired\b|^Skipped\b", re.IGNORECASE)
 
 
 @dataclass
@@ -120,9 +121,13 @@ def evidence_entries(text: str) -> dict[str, Evidence]:
     return entries
 
 
-def gets_request(entry: Evidence) -> bool:
-    """A test at `Files: none`, a skipped test, and a retired test get no request."""
-    return bool(entry.files) and not NO_REQUEST_TITLE.match(entry.title)
+def gets_request(entry: Evidence, accepted: dict[str, str] | None = None) -> bool:
+    """A test at `Files: none`, a skipped test, and a retired test get no request.
+
+    The title of the test in EVIDENCE.md and its title in ACCEPTANCE.md both count.
+    """
+    titles = (entry.title, (accepted or {}).get("title", ""))
+    return bool(entry.files) and not any(NO_REQUEST_TITLE.search(title) for title in titles)
 
 
 def tiles(data: bytes) -> list[JevImage]:
@@ -273,7 +278,7 @@ def run_evidence_flags(root: Path, slug: str, test_ids: list[str], jev: Jev,
     for missing in [each for each in test_ids if each not in entries]:
         echo(f"{missing} has no entry in EVIDENCE.md, so it gets no request.")
     chosen = [entries[each] for each in (test_ids or list(entries)) if each in entries]
-    asked = [entry for entry in chosen if gets_request(entry)]
+    asked = [entry for entry in chosen if gets_request(entry, accepted.get(entry.id, {}))]
     questions = in_flow()
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
         results = list(pool.map(
