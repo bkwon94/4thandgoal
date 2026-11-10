@@ -86,7 +86,7 @@ export const fairnessSchema = z
   })
   .and(
     z.union([
-      z.object({ state: z.enum(["win_win", "fair"]), gives_more: z.null() }),
+      z.object({ state: z.literal("fair"), gives_more: z.null() }),
       z.object({ state: z.literal("lopsided"), gives_more: z.number() }),
     ]),
   );

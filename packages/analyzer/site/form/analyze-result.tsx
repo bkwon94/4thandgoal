@@ -298,10 +298,8 @@ function ReadHero({
   );
 }
 
-/* The page words of the fairness states. The glossary says "Good for both" on the page, never "win-win".
-   Each state has a short meaning, because one word alone does not tell the reader what it means. */
+/* The page words of the fairness states. Each state has a short meaning, because one word alone does not tell the reader what it means. */
 const FAIRNESS_WORD = {
-  win_win: { word: "Good for both", color: "text-accent-ink", meaning: "Every side gets more than it gives." },
   fair: {
     word: "Fair",
     color: "text-mute",
@@ -315,8 +313,7 @@ function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairn
   const off = useMotionOff();
   const state = FAIRNESS_WORD[fairness.state];
   // A lopsided line names the side that gives more, so the reader knows who loses. The type says a lopsided block always has gives_more, and the pipeline sets it to a side of the trade.
-  // "Both" fits two sides only, so a win-win trade of three or more sides says "Good for all".
-  const word = fairness.state === "win_win" && sides.length > 2 ? "Good for all" : state.word;
+  const word = state.word;
   const line =
     fairness.state === "lopsided"
       ? `${word}: ${sides.find((s) => s.roster_id === fairness.gives_more)!.team} gives more.`
