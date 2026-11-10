@@ -5,7 +5,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { forwardRef } from "react";
+import { type ReactNode, forwardRef } from "react";
 import { ArrowRightIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
@@ -32,8 +32,20 @@ export const AnswerCard = forwardRef<
 });
 
 /* The data block, the text, and the link of one Answer. The newest Answer shows it on a card that settles in. An
-   opened fold shows it flat, with no card and no settle, so a reread opens calm (decision 08). */
-export function AnswerBody({ answer, avatars, flat = false }: { answer: DoorAnswer; avatars: Record<number, string | null>; flat?: boolean }) {
+   opened fold shows it flat, with no card and no settle, so a reread opens calm (decision 08). A live Answer puts its
+   streamed text in `children`, under the data block and above the link. */
+export function AnswerBody({
+  answer,
+  avatars,
+  flat = false,
+  children,
+}: {
+  // The body reads only the parts of an Answer that it shows, so a personal Answer from the API fits it too.
+  answer: Pick<DoorAnswer, "stats" | "rows" | "text" | "href">;
+  avatars: Record<number, string | null>;
+  flat?: boolean;
+  children?: ReactNode;
+}) {
   const off = useMotionOff();
   return (
     /* The data block settles from a soft blur at 0.98 (decision 07). With motion off, it only fades in. */
@@ -71,6 +83,7 @@ export function AnswerBody({ answer, avatars, flat = false }: { answer: DoorAnsw
           ))}
         </motion.div>
       )}
+      {children}
       {answer.href !== null && (
         <motion.a
           href={answer.href}

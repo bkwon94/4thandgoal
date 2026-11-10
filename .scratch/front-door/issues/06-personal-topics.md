@@ -10,7 +10,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-18, AT-29.
 
 **Status:** ready-for-agent
 
-- [ ] A tap on weak spots shows the data block alone, then the text under it (AT-18).
-- [ ] A second ask with the same facts returns the kept Answer with no Claude call (AT-29).
-- [ ] Each personal Topic uses the facts that exist now, with no new formula.
-- [ ] Waiver targets links to the waiver page of the week when the client publishes it, and has no link when it does not.
+- [x] A tap on weak spots shows the data block alone, then the text under it (AT-18).
+- [x] A second ask with the same facts returns the kept Answer with no Claude call (AT-29).
+- [x] Each personal Topic uses the facts that exist now, with no new formula.
+- [x] Waiver targets links to the waiver page of the week when the client publishes it, and has no link when it does not.

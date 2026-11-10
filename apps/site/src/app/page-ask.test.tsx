@@ -148,11 +148,15 @@ describe("the ask box of Lil Fridge", () => {
     await articleWith("who am i playing sunday", "behold the lamb");
   });
 
-  it("says a live Topic opens soon, when the route picks one that this build cannot answer", async () => {
-    answerWith(route({ route: "topic", topic: "weak_spots" }));
+  it("opens a personal Topic live on the API, when the route picks one", async () => {
+    answerWith(route({ route: "topic", topic: "weak_spots", team: 6 }));
     render(<HomePage />);
-    await ask("what position do i need help at");
-    await articleWith("what position do i need help at", "Weak spots opens here soon.");
+    await ask("where is bo girds weak");
+    // The personal Topic streams from its own route, for the team that the question names.
+    await waitFor(() => expect(fetchStub.mock.calls.some(([url]) => String(url).endsWith("/personal"))).toBe(true));
+    const [, init] = fetchStub.mock.calls.find(([url]) => String(url).endsWith("/personal"))!;
+    expect(JSON.parse(init.body)).toMatchObject({ topic: "weak_spots", roster_id: 3, team: 6 });
+    await articleWith("where is bo girds weak", "did not go through");
   });
 
   it("never names an internal tool or the commissioner in the copy of a route", async () => {

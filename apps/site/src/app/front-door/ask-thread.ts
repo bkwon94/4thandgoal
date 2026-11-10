@@ -6,12 +6,15 @@ import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AskError, type AskAnswer } from "./ask-api";
 import type { TradeAnswer } from "./trade-api";
 import type { FreeResult } from "./free-stream";
+import { type PersonalResult, type PersonalTopic, isPersonal } from "./personal-stream";
 import { TOPICS } from "./topics";
 
 /* One item of the Thread. A topic item shows the league Answer of `team`, with the typed question or the Topic name as
    its bubble. A note is one calm line, with an optional Topic chip of `team` (null for Your team) and an optional retry.
-   A cap item holds the calm line of a cap, from the API, with the closest Topics. A trade item holds the steps of a trade Topic while it works, then its whole Answer. A free answer streams while its
-   result is null, and keeps its checked result once the stream ends. */
+   A cap item holds the calm line of a cap, from the API, with the closest Topics. A trade item holds the steps of a
+   trade Topic while it works, then its whole Answer. A free answer streams while its result is null, and keeps its
+   checked result once the stream ends. A personal Topic of `team` streams the same way from the API, with its data
+   block first. */
 export type ThreadItem =
   | { kind: "topic"; key: string; team: number; question: string | null }
   | { kind: "pending"; question: string }
@@ -20,7 +23,8 @@ export type ThreadItem =
   | { kind: "cap"; question: string; line: string; closest: string[] }
   | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean }
   | { kind: "trade"; mode: TradeMode; question: string; steps: string[]; answer: TradeAnswer | null }
-  | { kind: "free"; question: string; result: FreeResult | null };
+  | { kind: "free"; question: string; result: FreeResult | null }
+  | { kind: "personal"; key: PersonalTopic; team: number; question: string | null; result: PersonalResult | null };
 
 /* The trade Topics, by the key of the Topic, and the route of the API that answers each one. */
 export type TradeMode = "check" | "ideas" | "sell";
@@ -49,6 +53,8 @@ export function itemOfRoute(
     case "topic": {
       const team = route.team ?? yourTeam;
       const key = route.topic ?? "";
+      // A personal Topic builds live on the API, for the team that the question names.
+      if (isPersonal(key)) return { kind: "personal", key, team, question, result: null };
       const ready = (answers[team] ?? []).some((answer) => answer.topic === key);
       return ready
         ? { kind: "topic", key, team, question }

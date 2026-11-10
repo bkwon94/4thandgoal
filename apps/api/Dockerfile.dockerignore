@@ -1,10 +1,13 @@
 # The files that go into the Cornerstone API image. The build context is the repo root, so the list starts empty.
-# The image keeps the workspace files, the lock file, the pyproject of the pipeline, the league, facts, analyzer, and
-# eggs packages, the API, the deploy script, the values of each client, and the tracked data of each client and the NFL.
+# The image keeps the workspace files, the lock file, the pyproject of the pipeline, the league, facts, analyzer, eggs,
+# and managers packages, the API, the deploy script, the values of each client, and the tracked data of each client and
+# the NFL.
 # The published pages and the assets of each client are for the site, so the image leaves them out.
 # The one exception is the published rankings of each season. The team facts of the analyzer read the playoff odds
 # from them, so without them every team fact on Fly says that no odds are on file. Each push to main, the weekly
 # publish too, runs Check and then redeploys the API, so the odds in the image stay fresh.
+# The waiver file of each published week comes back too, because the waiver targets Topic fits its list to the
+# weak spots of a team.
 # The last matching line wins, so the line with "!" after the exclusion of the published folder puts the file back.
 # Docker reads this file because it sits beside apps/api/Dockerfile.
 *
@@ -20,6 +23,8 @@
 !packages/analyzer/python/src
 !packages/eggs/python/pyproject.toml
 !packages/eggs/python/src
+!packages/managers/python/pyproject.toml
+!packages/managers/python/src
 !clients
 !data/nfl
 !apps/api/pyproject.toml
@@ -28,6 +33,7 @@
 data/nfl/cache
 clients/*/published
 !clients/*/published/*/rankings.json
+!clients/*/published/*/week-*/waiver.json
 clients/*/assets
 **/__pycache__
 **/.venv

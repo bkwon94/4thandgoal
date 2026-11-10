@@ -35,7 +35,7 @@ function StreamText({ text, live }: { text: string; live: boolean }) {
 
 /* A line of work in flight. A band of the ink sweeps the mute text on a linear loop of 2 s, as the shimmer text of
    transitions-dev. With motion off, the line holds still in the mute ink. */
-function Shimmer({ children }: { children: string }) {
+export function Shimmer({ children }: { children: string }) {
   const off = useMotionOff();
   if (off) return <span className="text-mute">{children}</span>;
   return (
@@ -103,7 +103,7 @@ function CheckMark({ state, live }: { state: CheckState; live: boolean }) {
 
 /* The body of a free answer: the steps, the text, and the check. A failed check fades the first text out, and the
    rewrite streams under the fixing line. */
-function FreeBody({ view, live }: { view: FreeView; live: boolean }) {
+export function FreeBody({ view, live }: { view: FreeView; live: boolean }) {
   const off = useMotionOff();
   const fixing = view.second !== null;
   return (
