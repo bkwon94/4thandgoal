@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-37, AT-38, AT-39, AT-40.
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] At 25 Answers today, Lil Fridge sees "That's 25 questions today. Ask again tomorrow." with no Claude call (AT-37).
 - [x] CPC at $25.00 sees the league line, and NorCal at $0 still gets a free answer (AT-38).
