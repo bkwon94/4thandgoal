@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-18, AT-29.
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A tap on weak spots shows the data block alone, then the text under it (AT-18).
 - [x] A second ask with the same facts returns the kept Answer with no Claude call (AT-29).
