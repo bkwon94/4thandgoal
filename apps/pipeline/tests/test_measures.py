@@ -14,6 +14,7 @@ from conftest import save_chart_read, strip_trend_numbers, with_carries, with_fr
 from cpc import cpc_client, four_week
 
 from analyzer.measures import (
+    CONSOLIDATION,
     EXPECTED,
     HANDCUFF,
     INJURY,
@@ -29,6 +30,7 @@ from analyzer.measures import (
     team_race,
     trade_handcuffs,
 )
+from analyzer.team_facts import team_facts
 from analyzer.trade import (
     ProposedTrade,
     TradeInputError,
@@ -1222,9 +1224,35 @@ def test_a_team_out_of_the_race_reads_that_it_gives_the_highest_value_player_for
 def test_the_measures_read_in_order(snap):
     for side in _reads(_trade(10, [SAQUON], 5, [COOK]), snap):
         assert list(side) == [
-            ROSTER_FIT, STANDING, TREND, INJURY, UPSIDE, SUPERSTAR, HANDCUFF, SCHEDULE]
+            ROSTER_FIT, STANDING, TREND, INJURY, UPSIDE, SUPERSTAR, HANDCUFF, SCHEDULE, CONSOLIDATION]
         assert list(side) == ["roster fit", "standing", "trend and usage", "injury", "upside", "superstar",
-                              "handcuff", "schedule"]
+                              "handcuff", "schedule", "consolidation"]
+
+
+def test_the_consolidation_measure_reads_a_side_that_gets_fewer_players_and_one_that_gets_more(snap):
+    # Roster 4 gives Collins 46.5 for Kincaid 31.5 and Wilson 27.5, so roster 12 gets one player, the top one.
+    more, fewer = _reads(_trade(4, [COLLINS], 12, [KINCAID, WILSON]), snap)
+    assert fewer[CONSOLIDATION].reason == (
+        "It gets fewer players than it gives, so its points sit in fewer players and it frees roster room. "
+        "It gets the top player in the trade.")
+    assert more[CONSOLIDATION].reason == (
+        "It gets more players than it gives, so its points spread over more players and it needs roster room. "
+        "It gives the top player in the trade.")
+    assert not fewer[CONSOLIDATION].silent and not more[CONSOLIDATION].silent
+
+
+def test_the_consolidation_measure_is_silent_when_each_side_gets_as_many_players_as_it_gives(snap):
+    for side in _reads(_trade(4, [COLLINS], 12, [KINCAID]), snap):
+        assert side[CONSOLIDATION].silent
+        assert side[CONSOLIDATION].reason == "It gets as many players as it gives."
+
+
+def test_the_consolidation_measure_writes_a_fact_and_moves_nothing(snap):
+    trade = _trade(4, [COLLINS], 12, [KINCAID, WILSON])
+    facts = team_facts(trade, snap)
+    assert facts["12.measure.consolidation"].text.startswith("The consolidation measure for ")
+    assert "4.measure.consolidation" in facts
+    assert "12.measure.consolidation" not in team_facts(_trade(4, [COLLINS], 12, [KINCAID]), snap)
 
 
 # The week 6 Josh Jacobs trade: roster 11 got Jacobs and Devaughn Vele from roster 12

@@ -1,6 +1,6 @@
 """
 The Measures of the trade fact sheet: roster fit, standing, trend and usage, injury, upside, superstar, handcuff, schedule,
-and expected gap. Each writes its read of one side as one fact and moves nothing. It also holds what they read of one side.
+consolidation, and expected gap. Each writes its read of one side as one fact and moves nothing. It also holds what they read of one side.
 """
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ if TYPE_CHECKING:
     from analyzer.trade import ProposedTrade
 
 # The Measures run in this order: roster fit, standing, trend and usage, injury, upside, superstar, handcuff, schedule,
-# and expected gap when its tunable is on.
+# consolidation, and expected gap when its tunable is on.
 
 
 class MeasureRead(BaseModel):
@@ -288,6 +288,7 @@ SUPERSTAR = "superstar"
 HANDCUFF = "handcuff"
 SCHEDULE = "schedule"
 EXPECTED = "expected gap"
+CONSOLIDATION = "consolidation"
 
 # The schedule Measure says this when the schedule map is None.
 NO_SCHEDULES = "The schedule sources are not available."
@@ -1082,6 +1083,25 @@ def _league_points(snapshot: Snapshot, player_id: str) -> dict[int, float]:
             if (past.stats.get(player_id) or {}).get("gp", 0) > 0}
 
 
+def _consolidation(snapshot: Snapshot, side: Side) -> MeasureRead:
+    """Consolidation: a side that gets fewer players than it gives, or more. GLOSSARY.md, "Consolidation".
+
+    One great player can be worth more than two good ones, because a lineup has only so many slots. So the reason
+    says which way the side goes and whether it gets or gives the top player in the trade, and the Advisor weighs it.
+    """
+    if len(side.gets) == len(side.gives):
+        return MeasureRead(name=CONSOLIDATION, reason="It gets as many players as it gives.", silent=True)
+    if len(side.gets) < len(side.gives):
+        reason = "It gets fewer players than it gives, so its points sit in fewer players and it frees roster room."
+    else:
+        reason = "It gets more players than it gives, so its points spread over more players and it needs roster room."
+    if side.gets_highest_value:
+        reason += " It gets the top player in the trade."
+    elif side.gives_highest_value:
+        reason += " It gives the top player in the trade."
+    return MeasureRead(name=CONSOLIDATION, reason=reason)
+
+
 def _mean_gap(gaps: list[Decimal]) -> Decimal | None:
     return sum(gaps, Decimal(0)) / len(gaps) if gaps else None
 
@@ -1144,7 +1164,7 @@ def _expected_gap(snapshot: Snapshot, side: Side) -> MeasureRead:
 
 def measures(expected_on: bool) -> tuple[Callable[[Snapshot, Side], MeasureRead], ...]:
     """The Measures in order. The expected gap comes last, and only when `expected_on` is True."""
-    return ((_fit, _standing, _trend, _injury, _upside, _superstar, _handcuff, _schedule)
+    return ((_fit, _standing, _trend, _injury, _upside, _superstar, _handcuff, _schedule, _consolidation)
             + ((_expected_gap,) if expected_on else ()))
 
 
@@ -1153,7 +1173,8 @@ MEASURES: tuple[Callable[[Snapshot, Side], MeasureRead], ...] = measures(EXPECTE
 
 # The short id of each Measure, the last part of its fact id, such as 10.measure.trend.
 MEASURE_IDS = {ROSTER_FIT: "fit", STANDING: "standing", TREND: "trend", INJURY: "injury", UPSIDE: "upside",
-               SUPERSTAR: "superstar", HANDCUFF: "handcuff", SCHEDULE: "schedule", EXPECTED: "expected"}
+               SUPERSTAR: "superstar", HANDCUFF: "handcuff", SCHEDULE: "schedule", CONSOLIDATION: "consolidation",
+               EXPECTED: "expected"}
 
 
 def _names_in(text: str, snapshot: Snapshot) -> list[str]:
