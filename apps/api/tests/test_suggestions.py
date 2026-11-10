@@ -5,16 +5,19 @@ They run at the route seam with FakeJev, a function model of Pydantic AI, and th
 import dataclasses
 import json
 import logging
+import re
 import shutil
 from pathlib import Path
 
 import test_api
 from fakes import FakeJev
 from fastapi.testclient import TestClient
-from test_api import HEADERS
+from test_api import HEADERS, _here
 from test_personal_topics import LIL_FRIDGE, Checks, Writer, _api, _ask, _chunks, _text
 
-from league.jev_port import JevError, NoulQuestion
+from analyzer.sell_facts import sheet_players
+from cornerstone_api.suggestion_wording import SELL_CHOICE
+from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.provider.sleeper import load_raw
 
 repo = test_api.repo
@@ -87,11 +90,106 @@ def test_the_api_serves_the_live_facts_of_the_personal_topics_and_skips_each_ope
     api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
     first = _suggest(api).json()
     assert {"weak_spots", "stack_up", "waiver_targets"} <= set(first["facts"])
-    # A Topic opened at the same fact drops off. A trade Topic has no fact from code, so it never shows.
+    # A Topic opened at the same fact drops off.
     opened = {"waiver_targets": first["facts"]["waiver_targets"]}
     body = _suggest(api, opened=opened).json()
     assert body["picks"] == ["weak_spots", "power_rankings", "week_recap"]
-    assert not {"sell_high", "trade_ideas", "trade_check"} & set(body["facts"])
+
+
+def _sure_on(name: str | None):
+    """A Choice of sell high that puts 0.9 on the option of `name`, or spreads its weight when `name` is None."""
+
+    def choose(key: str, question: ChoiceQuestion, state: dict) -> dict[str, float]:
+        if name is None:
+            return {option: 1 / len(question.options) for option in question.options}
+        return {option: (0.9 if state["players"][option]["name"] == name else 0.1 / (len(question.options) - 1))
+                for option in question.options}
+
+    return choose
+
+
+def _sell_request(jev: FakeJev):
+    [request] = [r for r in jev.requests if SELL_CHOICE in r.questions]
+    return request
+
+
+def test_trade_ideas_has_the_weakest_slot_of_weak_spots_as_its_fact(settings, sources):
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    facts = _suggest(api).json()["facts"]
+    # The same slot and rank that weak spots reads, so the two facts never disagree.
+    position, rank = facts["weak_spots"].split(" ranks ")
+    assert facts["trade_ideas"] == f"Offers for your {position}, {rank}"
+
+
+def test_the_trade_check_has_no_weekly_fact_so_it_never_shows_as_a_suggestion(settings, sources):
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts({"trade_check": 0.99}).answer), Writer())
+    body = _suggest(api).json()
+    assert "trade_check" not in body["facts"] and "trade_check" not in body["picks"]
+
+
+def test_sell_high_asks_one_choice_over_the_players_of_your_team_with_their_facts_side_by_side(settings, sources):
+    _publish_topics(settings)
+    jev = FakeJev(answer=Lifts().answer, choose=_sure_on(None))
+    api = _api(settings, sources, jev, Writer())
+    _suggest(api)
+    request = _sell_request(jev)
+    snapshot = _here(sources, settings).snapshot(2026)
+    names = {snapshot.players[pid].name for pid in sheet_players(snapshot, LIL_FRIDGE)}
+    players = request.state["players"]
+    assert {player["name"] for player in players.values()} == names
+    assert set(request.questions[SELL_CHOICE].options) == set(players)
+    # Each player carries his facts of the sell sheet: the trend and the schedule among them.
+    for player in players.values():
+        assert any("points per game, against" in text for text in player["facts"])
+        assert any("schedule ahead" in text for text in player["facts"])
+
+
+def test_a_sure_sell_high_pick_names_the_player_with_his_recent_run_and_his_season(settings, sources):
+    _publish_topics(settings)
+    snapshot = _here(sources, settings).snapshot(2026)
+    name = snapshot.players[sheet_players(snapshot, LIL_FRIDGE)[0]].name
+    jev = FakeJev(answer=Lifts().answer, choose=_sure_on(name))
+    api = _api(settings, sources, jev, Writer())
+    fact = _suggest(api).json()["facts"]["sell_high"]
+    match = re.fullmatch(rf"{re.escape(name)}: (\d+\.\d) a game over 4 weeks, (\d+\.\d) for the season", fact)
+    assert match is not None, fact
+    # The numbers are the numbers of his trend fact, which Jev read.
+    [player] = [p for p in _sell_request(jev).state["players"].values() if p["name"] == name]
+    [trend] = [text for text in player["facts"] if "points per game, against" in text]
+    assert f"scored {match[1]} points per game, against {match[2]} over the season" in trend
+
+
+def test_an_unsure_sell_high_pick_gives_no_fact_and_no_suggestion(settings, sources):
+    # The cutoff is the hard rule: with no option above 0.7, sell high has no fact this time.
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts({"sell_high": 0.99}).answer, choose=_sure_on(None)), Writer())
+    body = _suggest(api).json()
+    assert "sell_high" not in body["facts"] and "sell_high" not in body["lifts"]
+    assert "sell_high" not in body["picks"]
+
+
+def test_a_lift_of_a_trade_topic_puts_it_first_with_the_same_cutoff(settings, sources):
+    _publish_topics(settings)
+    snapshot = _here(sources, settings).snapshot(2026)
+    name = snapshot.players[sheet_players(snapshot, LIL_FRIDGE)[0]].name
+    jev = FakeJev(answer=Lifts({"sell_high": 0.9, "trade_ideas": 0.8}).answer, choose=_sure_on(name))
+    body = _suggest(_api(settings, sources, jev, Writer())).json()
+    assert body["urgent"] == ["sell_high", "trade_ideas"]
+    assert body["picks"][:2] == ["sell_high", "trade_ideas"]
+    [lift] = [r for r in jev.requests if any(k.startswith("lift_") for k in r.questions)]
+    assert lift.state["topics"]["sell_high"]["fact"] == body["facts"]["sell_high"]
+
+
+def test_a_failed_sell_high_choice_is_an_error_never_a_no(settings, sources):
+    _publish_topics(settings)
+
+    def choose(key: str, question: ChoiceQuestion, state: dict) -> dict[str, float]:
+        raise JevError("down")
+
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer, choose=choose), Writer())
+    assert _suggest(api).status_code == 503
 
 
 def test_the_head_start_builds_the_top_personal_suggestion_on_open_and_the_tap_gets_it_kept(settings, sources,

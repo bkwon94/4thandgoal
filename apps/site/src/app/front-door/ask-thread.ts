@@ -29,7 +29,7 @@ export type ThreadItem =
 /* The trade Topics, by the key of the Topic, and the route of the API that answers each one. */
 export type TradeMode = "check" | "ideas" | "sell";
 export const TRADE_TOPICS: Record<string, TradeMode> = { trade_check: "check", trade_ideas: "ideas", sell_high: "sell" };
-/* The line of each trade Topic in "More". A trade Topic has no weekly fact, so its line says what it does. */
+/* The line of each trade Topic in "More". A fact of the API takes its place when the API serves one. */
 export const TRADE_LINES: Record<string, string> = {
   trade_check: "Name a trade, get the read",
   trade_ideas: "Offers for your weak spots",

@@ -7,6 +7,8 @@ import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFixtureSite } from "@/fixtures/sites";
+import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
+import { dayOrder } from "./front-door/topics";
 import HomePage from "./page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
@@ -25,6 +27,9 @@ const fixture = (...parts: string[]) => readFileSync(join(__dirname, "..", "fixt
 // The Suggestions of Lil Fridge on Wednesday of week 9 from a live run with the real Jev: power rankings and the week
 // recap lift above 0.7.
 const SUGGESTIONS = JSON.parse(fixture("suggestions", "lil-fridge-wednesday.json"));
+// The Suggestions of Lil Fridge on Thursday of week 10 from a live run with the real Jev: trade ideas has the weakest
+// slot of weak spots as its fact. The sell high pick of Jev was under 0.7, so sell high has no fact.
+const THURSDAY = JSON.parse(fixture("suggestions", "lil-fridge-thursday.json"));
 // The key check of a live run: the key of the kept weak spots Answer of ticket 06 is stale, and the fresh key is current.
 const CURRENT = JSON.parse(fixture("suggestions", "current-lil-fridge.json")) as { answers: { key: string; current: boolean; kept_at: string | null }[] };
 const callsTo = (path: string) => fetchStub.mock.calls.filter(([url]) => String(url).endsWith(path));
@@ -48,6 +53,12 @@ function keptWeakSpots() {
 
 function keepThread(entries: unknown[]) {
   localStorage.setItem("cpc.thread", JSON.stringify({ [String(LIL_FRIDGE)]: { week: 8, entries } }));
+}
+
+/* The clock of a test: 2026-11-12 is a Thursday. */
+function onThursday() {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date("2026-11-12T12:00:00"));
 }
 
 /* The clock of a test: 2026-11-11 is a Wednesday. */
@@ -126,6 +137,32 @@ describe("the Suggestions that the API serves", () => {
     fireEvent.click(screen.getByRole("button", { name: "Waiver targets: 19 free agents on the list" }));
     await waitFor(() => expect(localStorage.getItem("cpc.opened-topics") ?? "").toContain("19 free agents on the list"));
     await waitFor(async () => expect((await suggestionChips()).map((chip) => chip.getAttribute("aria-label"))).not.toContain("Waiver targets: 19 free agents on the list"));
+  });
+});
+
+describe("the trade Topics as Suggestions", () => {
+  it("show trade ideas with its fact, and a tap runs the Topic and drops the chip", async () => {
+    onThursday();
+    const sse = ideasStream.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
+    fetchStub.mockImplementation(async (url: string) => {
+      const path = String(url);
+      if (path.endsWith("/suggestions")) return Response.json(THURSDAY);
+      if (path.endsWith("/trade-ideas")) return new Response(sse, { headers: { "Content-Type": "text/event-stream" } });
+      return new Response("", { status: 404 });
+    });
+    render(<HomePage />);
+    const chip = "Trade ideas: Offers for your QB, 7th of 12";
+    await waitFor(async () => expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(chip));
+    fireEvent.click(screen.getByRole("button", { name: chip }));
+    // The tap runs the Topic as "More" does: the trade ideas route with Your team and no partner.
+    await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
+    expect(JSON.parse(String(callsTo("/trade-ideas")[0][1]?.body))).toEqual({ roster_id: LIL_FRIDGE, partner: null });
+    await screen.findByRole("region", { name: "Trade ideas" });
+    await waitFor(async () => expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).not.toContain(chip));
+  });
+
+  it("never lead a day with the trade check, which has no weekly fact", () => {
+    for (const day of [0, 1, 2, 3, 4, 5, 6]) expect(dayOrder(day).slice(0, 5)).not.toContain("trade_check");
   });
 });
 

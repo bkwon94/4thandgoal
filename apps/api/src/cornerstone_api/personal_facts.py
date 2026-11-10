@@ -141,6 +141,12 @@ def _slot_rows(snapshot: Snapshot, grade: ManagerGrade, starters: list[Starter],
     return rows
 
 
+def trade_ideas_fact(snapshot: Snapshot, roster_id: int, grades: dict[int, ManagerGrade]) -> str:
+    """The fact of the trade ideas Suggestion: the weakest slot of the team, from the same slot ranks as weak spots."""
+    worst = _worst(grades[roster_id])[0]
+    return f"Offers for your {worst.position}, {_of(worst.rank, len(snapshot.rosters))}"
+
+
 def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades: dict[int, ManagerGrade],
                 starters: dict[int, list[Starter]], board: dict | None) -> PersonalFacts:
     """The slice and the data block of `topic` for the team of `roster_id`."""

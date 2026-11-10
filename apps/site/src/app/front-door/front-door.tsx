@@ -197,11 +197,14 @@ export function FrontDoor({
         return;
       }
       const passphrase = getPassphrase();
-      if (!passphrase) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
-      // A tapped Topic has no closest Topics of its own, so a cap line offers the Suggestions of the day, which cost
-      // nothing and never hold a trade Topic. Sell high speaks to the manager of the roster as "you", so it always
-      // reads Your team.
-      else void runTrade(nextId.current++, name, mode === "sell" ? { mode, roster_id: team.id } : { mode, roster_id: team.id, partner }, passphrase, picks, true);
+      if (!passphrase) return void put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
+      // A trade Topic of Your team drops off the Suggestions until the API serves a new fact for it.
+      if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
+      // A tapped Topic has no closest Topics of its own, so a cap line offers the Suggestions of the day. A trade
+      // Topic past the cap stops at the same cap, so the cap line leaves each one out. Sell high speaks to the manager
+      // of the roster as "you", so it always reads Your team.
+      const closest = picks.filter((pick) => !TRADE_TOPICS[pick]);
+      void runTrade(nextId.current++, name, mode === "sell" ? { mode, roster_id: team.id } : { mode, roster_id: team.id, partner }, passphrase, closest, true);
       return;
     }
     // A personal Topic builds live on the API, so it needs the passphrase as a typed question does.
