@@ -160,6 +160,22 @@ _Avoid_: Manager cards, roster table, team list
 The group of a team in the chips of the Index list: In, Bubble, or Out. In is clinched or odds of 75% or more. Bubble is odds of 25% to under 75%. Out is eliminated or odds under 25%, so the group Out is wider than the term Out of the pipeline.
 _Avoid_: Tier, bracket, playoff status
 
+**Topic**:
+One thing the front door can answer, such as the recap, your roster, the playoff race, waiver targets, or trade ideas. Jev routes each question to a Topic.
+_Avoid_: Intent, category, feature, skill
+
+**Answer**:
+What the front door shows for one question: a short form of the chapters of a Topic, a short Claude answer, or an honest miss. An Answer of a Topic links to its page.
+_Avoid_: Card (a card is a plain surface), reply, response, result
+
+**Suggestion**:
+A Topic that the front door offers for Your team before the manager asks, such as "Week 9 in 3 lines".
+_Avoid_: Recommendation, prompt, nudge, tip
+
+**Thread**:
+The list of the questions of a manager and their Answers on the front door.
+_Avoid_: Chat, conversation, feed, history
+
 ### The code
 
 **Part**:

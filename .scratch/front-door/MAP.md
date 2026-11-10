@@ -1,0 +1,52 @@
+# Front door: map
+
+App: site, pipeline, and api.
+Spec branch: `front-door`.
+
+## DESTINATION
+
+One spec makes `/` an open, personal front door. A manager picks a team, sees Suggestions for that team, asks in an ask box, and gets each Answer in a Thread. The pages stay as the long form.
+
+The goal: managers use the site because it is easy and about their own team. Now many managers skip the menu and the long reports.
+
+## DESIGN BAR
+
+Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive, and clear with no help. Brian, 2026-11-09.
+
+1. Search scrolltide for ideas before a layout prototype.
+2. Use `transitions-dev` for each transition, and `transitions-polish` for its tokens.
+3. Use `apple-design`, `animate`, `emil-design-eng`, and `make-interfaces-feel-better` for the motion and the detail.
+4. Use the Artifact design type for a visual design, when a design helps more than code.
+5. Run `critique` and `polish` on each prototype before Brian sees it.
+
+## DECISIONS SO FAR
+
+- The destination is the full revamp of the UI and the UX. The map holds the size. Brian, 2026-11-09, in the Stage 1 grill.
+- The direction is as close to a chat as we can get. A chat of only free text is not the first build. Brian, 2026-11-09.
+- `your-league` is scrapped. This map takes its ideas: Your team in the browser, the sheet that asks for it, and the live Finder. Brian, 2026-11-09.
+- The pages break into short Answers. Each Answer is a short form of chapters of a page, and it links to the page. No page goes away. Brian, 2026-11-09.
+- The first visit asks for Your team in a sheet, with no skip. Every Suggestion comes from Your team. Brian, 2026-11-09.
+- The weekly build makes the Answers for each team. Only the Topics that change during the week come live from the API, such as trade ideas. Brian, 2026-11-09.
+- Jev routes each question to a Topic. With no Topic, Jev asks "Can the facts of the week answer this?" A yes gets a short Claude answer that Jev checks. A no gets an honest miss, the 3 closest Topics, and a log entry. Brian, 2026-11-09.
+- The ask box uses the league passphrase, a cap for each team, and one cap for the league each month. Past the cap, only Jev routes and honest misses run. Brian, 2026-11-09.
+- The terms are Topic, Answer, Suggestion, and Thread. `GLOSSARY.md`.
+- `/` becomes the front door. The hero and the tool tiles go away. The menu stays with fewer links. Brian, 2026-11-09.
+
+## NOT YET SPECIFIED
+
+- Which Topics are in the first build, and which new facts do they need? `decisions/01-grill-the-first-topics.md`.
+- How is a Suggestion picked and put in order? `decisions/02-grill-how-suggestions-rank.md`.
+- What do the Jev questions cost live, and which TypeSafe rate limits apply? `decisions/03-research-jev-live-cost.md`.
+- What are the numbers of the caps? `decisions/04-grill-the-cap-numbers.md`.
+- Does the Thread stay across visits, and does it reset each week? `decisions/05-grill-the-thread-across-visits.md`.
+- Where is the border with `manager-brain`? `decisions/06-grill-the-manager-brain-border.md`.
+- What is the look and the motion system of the front door? `decisions/07-prototype-the-design-language.md`.
+- How does the front door look and move on a phone? `decisions/08-prototype-the-front-door.md`.
+- Does the Jev route pick the right Topic for real questions? `decisions/09-prototype-the-jev-route.md`.
+- Which links stay in the menu, and what does each Answer link to? `decisions/10-spec-the-menu-and-pages.md`.
+
+## OUT OF SCOPE
+
+- A login for each manager. Your team lives in the browser, and nothing private depends on it.
+- A chat of only free text with no Topics. Topics keep each Answer checked. The log of misses tells us when free text is worth its cost.
+- A change to the content of a weekly report. The page stays the long form.
