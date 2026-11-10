@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-8, AT-10, and AT-11.
 
 **Blocked by:** 01 and 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] The sheet of Omarion Hampton has a fact on the quality of his NFL team.
 - [x] With no chart for the week, `/analyze` returns a read, and the Case says the chart is missing.

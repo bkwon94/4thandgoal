@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-38, AT-39, AT-41, AT-
 
 **Blocked by:** 02
 
-**Status:** in-review
+**Status:** done
 
 - [ ] The hero shows the Lean word and the scale with that step lit, at 375, 768, and 1280 px in both themes.
 - [ ] At 375 px the Case shows 3 lines, and "Read the full case" opens the rest.
