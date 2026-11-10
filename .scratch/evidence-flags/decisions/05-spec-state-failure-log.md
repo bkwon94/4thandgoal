@@ -6,7 +6,7 @@ Map: `.scratch/evidence-flags/MAP.md`.
 
 **Blocked by:** 01, 02
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ Three small choices that the spec records. The first is the state that Jev reads
 
 ## Decision
 
-None yet.
+`cpc:to-spec` recorded the four choices in `PRD.md`, under Implementation Decisions: "The state that Jev reads", "The image type and the cut of a shot", and "The failure and the log". Claude wrote them on 2026-11-10 from tickets 01, 02, and 06, for Brian to approve with the spec.
