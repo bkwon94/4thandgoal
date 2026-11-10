@@ -4,6 +4,7 @@ Jev picks the sell high player and lifts a Topic when its fact is urgent. Code k
 """
 import json
 import logging
+from typing import cast, get_args
 
 import anyio
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
@@ -25,6 +26,7 @@ from cornerstone_api.suggestion_wording import (
     sell_questions,
     sell_state,
 )
+from cornerstone_api.trade_topics import TradeTopic, trade_key
 from cornerstone_api.trade_wording import option_keys
 from league.jev_port import Jev, JevError
 from league.paths import week_label
@@ -41,6 +43,8 @@ SUGGESTION_COUNT = 3
 PERSONAL: tuple[PersonalTopic, ...] = ("weak_spots", "stack_up", "waiver_targets")
 # The file of the weekly build with the Answers and the facts of the 7 league Topics of each team.
 TOPICS_FILE = "topics.json"
+# The trade Topics, whose key covers the rosters that the Answer read.
+TRADE_TOPICS: tuple[str, ...] = get_args(TradeTopic)
 # The Answers in one key check. A Thread of one week holds far fewer personal Answers.
 CHECK_MAX = 50
 
@@ -60,17 +64,18 @@ class SuggestionsRequest(BaseModel):
 
 
 class KeyItem(BaseModel):
-    """One personal Answer of the Thread: its Topic, the roster id of Your team, the team it is about or None for Your
-    team, and the key that the API kept it under."""
+    """One personal or trade Answer of the Thread: its Topic, the roster id of Your team, the team it is about or None
+    for Your team, and its key. The team of a trade Answer is its partner, or None for trade ideas with no partner and
+    for sell high."""
 
-    topic: PersonalTopic
+    topic: PersonalTopic | TradeTopic
     roster_id: int
     team: int | None = None
     key: str = Field(max_length=128)
 
 
 class CurrentRequest(BaseModel):
-    """The body of the key check: the personal Answers of the Thread, each with the key that the API kept it under."""
+    """The body of the key check: the personal and trade Answers of the Thread, each with its key."""
 
     answers: list[KeyItem] = Field(max_length=CHECK_MAX)
 
@@ -189,8 +194,9 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
 
 @router.post("/personal/current")
 async def current(body: CurrentRequest, asker: ClientAsker, served: ServedClient, request: Request) -> dict:
-    """Whether the key of each personal Answer of the Thread is still the key of its facts now. It costs nothing: no
-    Claude call and no Jev call. A stale Answer gets the time that the store kept it, for the stale line."""
+    """Whether the key of each Answer of the Thread is still the key of its data now. It costs nothing: no Claude call
+    and no Jev call. A stale personal Answer gets the time that the store kept it, for the stale line. The store keeps
+    no trade Answer, so the site keeps the time of its read from the stream."""
     live = await load_live(served, asker.season)
     rosters = live.snapshot.rosters
     if any(item.roster_id not in rosters or (item.team is not None and item.team not in rosters)
@@ -199,8 +205,11 @@ async def current(body: CurrentRequest, asker: ClientAsker, served: ServedClient
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
 
     def check(item: KeyItem) -> dict:
+        if item.topic in TRADE_TOPICS:
+            key = trade_key(cast(TradeTopic, item.topic), rosters, item.roster_id, item.team)
+            return {"key": item.key, "current": key == item.key, "kept_at": None}
         subject = item.roster_id if item.team is None else item.team
-        _, key = live.key(item.topic, item.roster_id, subject)
+        _, key = live.key(cast(PersonalTopic, item.topic), item.roster_id, subject)
         return {"key": item.key, "current": key == item.key, "kept_at": store.kept_at(item.key)}
 
     return {"answers": [await anyio.to_thread.run_sync(check, item) for item in body.answers]}

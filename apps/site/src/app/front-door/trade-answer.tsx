@@ -17,6 +17,7 @@ import { managerHref } from "@/lib/routes";
 import type { TradeMode } from "./ask-thread";
 import { FAST, QUICK, SLOW, STAGGER, VERY_SLOW, fadeIn, riseIn } from "./motion";
 import { QuestionBubble } from "./miss-card";
+import { StaleLine } from "./personal-answer";
 import type { SellHigh, TradeAnswer, TradeForm } from "./trade-api";
 
 /* The Bullets that the check shows of Your side, and of each offer. The Trade page holds each one. */
@@ -354,28 +355,34 @@ function FormBody({ form, analyze }: { form: TradeForm; analyze: string }) {
 }
 
 /* One trade Answer of the Thread: the question, the steps while it works, then the whole Answer. The steps leave as the
-   Answer lands, on a quick fade, so the card takes their place. `analyze` is the path of the Trade page. */
+   Answer lands, on a quick fade, so the card takes their place. `analyze` is the path of the Trade page. A stale Answer,
+   whose rosters changed since its read, shows dimmed under the stale line and Refresh, as a stale personal Answer. */
 export const TradeCard = forwardRef<
   HTMLElement,
-  { question: string; mode: TradeMode; steps: string[]; answer: TradeAnswer | null; analyze: string }
->(function TradeCard({ question, mode, steps, answer, analyze }, ref) {
+  { question: string; mode: TradeMode; steps: string[]; answer: TradeAnswer | null; analyze: string; stale?: { line: string; onRefresh: () => void } | null }
+>(function TradeCard({ question, mode, steps, answer, analyze, stale = null }, ref) {
   return (
-    <article ref={ref} aria-label={question} aria-busy={answer === null} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
+    <article ref={ref} aria-label={question} aria-busy={answer === null} data-stale={stale ? "" : undefined} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={question} />
-      <AnimatePresence mode="wait" initial={false}>
-        {answer === null ? (
-          <motion.div key="steps" exit={{ opacity: 0, transition: fadeIn(QUICK) }}>
-            <Steps mode={mode} steps={steps} />
-          </motion.div>
-        ) : (
-          <motion.div key="answer">
-            {answer.kind === "check" && <CheckBody doc={answer.document} analyze={analyze} />}
-            {answer.kind === "ideas" && <IdeasBody doc={answer.document} analyze={analyze} />}
-            {answer.kind === "form" && <FormBody form={answer.form} analyze={analyze} />}
-            {answer.kind === "sell" && <SellBody doc={answer.document} />}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* The stale line comes before the read it warns about, so the manager sees it first. */}
+      {stale && <StaleLine line={stale.line} onRefresh={stale.onRefresh} />}
+      {/* The dim is an opacity change only, so reduced motion keeps it as is. */}
+      <div className={`flex flex-col transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${stale ? "opacity-60" : "opacity-100"}`}>
+        <AnimatePresence mode="wait" initial={false}>
+          {answer === null ? (
+            <motion.div key="steps" exit={{ opacity: 0, transition: fadeIn(QUICK) }}>
+              <Steps mode={mode} steps={steps} />
+            </motion.div>
+          ) : (
+            <motion.div key="answer">
+              {answer.kind === "check" && <CheckBody doc={answer.document} analyze={analyze} />}
+              {answer.kind === "ideas" && <IdeasBody doc={answer.document} analyze={analyze} />}
+              {answer.kind === "form" && <FormBody form={answer.form} analyze={analyze} />}
+              {answer.kind === "sell" && <SellBody doc={answer.document} />}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </article>
   );
 });

@@ -1,14 +1,16 @@
 """
 The trade Topics of the front door: the trade check calls the analyze press, trade ideas the find press, and sell high
-the sell high press. Each route streams a plain step for each stage of the Advisor, then the whole Answer.
+the sell high press. Each route streams a plain step for each stage of the Advisor, then its key and the whole Answer.
 """
 import contextvars
+import hashlib
 import json
 import logging
 import queue
 import threading
 from collections.abc import Callable, Iterator
 from dataclasses import asdict, dataclass
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
@@ -42,6 +44,31 @@ STREAM_HEADERS = {"x-vercel-ai-ui-message-stream": "v1", "Cache-Control": "no-ca
 
 # One part of the stream: its type, such as "data-step", and its data.
 Emit = Callable[[str, dict], None]
+
+TradeTopic = Literal["trade_check", "trade_ideas", "sell_high"]
+
+
+def trade_key(topic: TradeTopic, rosters: dict[int, list[str]], roster_id: int, partner: int | None) -> str:
+    """The key of a trade Answer: its Topic and each roster that it read. Sell high reads Your team. A trade check and
+    trade ideas with a partner read Your team and the partner. Trade ideas with no partner search each team, so they
+    read each roster. A waiver claim or a trade on one of those rosters changes the key, so the Answer reads as stale.
+    """
+    if topic == "sell_high":
+        read = [roster_id]
+    elif partner is not None:
+        read = [roster_id, partner]
+    else:
+        read = sorted(rosters)
+    body = {"topic": topic, "rosters": {str(each): sorted(rosters[each]) for each in read}}
+    return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
+
+
+def _send_key(asker: Asker, served: analyzer_routes.Served, emit: Emit, topic: TradeTopic, roster_id: int,
+              partner: int | None) -> None:
+    """Send the key of the Answer and the time of the read, before the whole Answer. The rosters come from Sleeper now,
+    as the key check reads them."""
+    rosters = served.sources.rosters_snapshot(asker.season).rosters
+    emit("data-key", {"key": trade_key(topic, rosters, roster_id, partner), "at": asker.clock().isoformat()})
 
 
 @dataclass(frozen=True)
@@ -213,6 +240,7 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
         document = capped_press(asker, body.roster_id, emit,
                                 lambda: analyzer_routes.analyze_trade(request, trade, served, step))
         if document is not None:
+            _send_key(asker, served, emit, "trade_check", body.roster_id, gets.roster_id)
             emit("data-answer", {"kind": "check", "document": document})
 
     return stream(work)
@@ -237,6 +265,7 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
         document = capped_press(asker, body.roster_id, emit,
                                 lambda: analyzer_routes.find_trades(request, pair, served, _step(emit)))
         if document is not None:
+            _send_key(asker, served, emit, "trade_ideas", body.roster_id, body.partner)
             emit("data-answer", {"kind": "ideas", "document": document})
 
     return stream(work)
@@ -259,6 +288,7 @@ def sell_high(request: Request, body: SellHighRequest, asker: ClientAsker, serve
                                 lambda: analyzer_routes.sell_high_press(request, asker.season, body.roster_id, served,
                                                                         _step(emit)))
         if document is not None:
+            _send_key(asker, served, emit, "sell_high", body.roster_id, None)
             emit("data-answer", {"kind": "sell", "document": document})
 
     return stream(work)

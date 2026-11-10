@@ -32,6 +32,10 @@ const SUGGESTIONS = JSON.parse(fixture("suggestions", "lil-fridge-wednesday.json
 const THURSDAY = JSON.parse(fixture("suggestions", "lil-fridge-thursday.json"));
 // The key check of a live run: the key of the kept weak spots Answer of ticket 06 is stale, and the fresh key is current.
 const CURRENT = JSON.parse(fixture("suggestions", "current-lil-fridge.json")) as { answers: { key: string; current: boolean; kept_at: string | null }[] };
+// A live sell high stream of the API with the key of the rosters it read, and the key check of a live run: that key is
+// current, and an old key, sent as a sell high key, is stale.
+const SELL_KEYED = JSON.parse(fixture("..", "app", "front-door", "fixtures", "sell-high-keyed-stream.json")) as { type: string; data?: { key?: string; at?: string } }[];
+const SELL_CURRENT = JSON.parse(fixture("suggestions", "current-sell-high.json")) as typeof CURRENT;
 const callsTo = (path: string) => fetchStub.mock.calls.filter(([url]) => String(url).endsWith(path));
 
 function sse(body: string): Response {
@@ -78,10 +82,11 @@ beforeEach(() => {
     if (path.endsWith("/suggestions")) return Response.json(SUGGESTIONS);
     if (path.endsWith("/personal/current")) {
       // The API answers each key that the site sends, as the live run answered it.
-      const { answers } = JSON.parse(String(init?.body)) as { answers: { key: string }[] };
-      return Response.json({ answers: answers.map(({ key }) => CURRENT.answers.find((answer) => answer.key === key) ?? { key, current: true, kept_at: null }) });
+      const { answers } = JSON.parse(String(init?.body)) as { answers: { topic: string; key: string }[] };
+      const known = (topic: string) => (topic === "sell_high" ? SELL_CURRENT : CURRENT).answers;
+      return Response.json({ answers: answers.map(({ topic, key }) => known(topic).find((answer) => answer.key === key) ?? { key, current: true, kept_at: null }) });
     }
-    if (path.endsWith("/personal")) return streams.shift()?.() ?? new Response("", { status: 500 });
+    if (path.endsWith("/personal") || path.endsWith("/sell-high")) return streams.shift()?.() ?? new Response("", { status: 500 });
     return new Response("", { status: 404 });
   });
   vi.stubGlobal("fetch", fetchStub);
@@ -209,5 +214,58 @@ describe("a stale personal Answer of the Thread", () => {
     // Only one Answer of weak spots stays in the Thread, with the fresh key.
     await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain(CURRENT.answers.find((answer) => answer.current)!.key));
     expect(screen.getAllByRole("article", { name: "Weak spots" })).toHaveLength(1);
+  });
+});
+
+/* The kept sell high Answer of Lil Fridge, from the live stream: its document, and the key and the time of its read. */
+function keptSell(read: { key: string; at: string } | undefined) {
+  const answer = SELL_KEYED.find((part) => part.type === "data-answer")!.data;
+  return { kind: "trade", mode: "sell", question: "Sell high or buy low", steps: [], answer, ...(read ? { read } : {}) };
+}
+
+const sellSse = () => SELL_KEYED.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
+const STALE_SELL = SELL_CURRENT.answers.find((answer) => !answer.current)!.key;
+const FRESH_SELL = SELL_CURRENT.answers.find((answer) => answer.current)!.key;
+
+describe("a stale trade Answer of the Thread", () => {
+  it("shows dimmed with the stale line and Refresh after its roster changed", async () => {
+    onWednesday();
+    keepThread([keptSell({ key: STALE_SELL, at: "2026-11-10T17:42:15-05:00" })]);
+    render(<HomePage />);
+    const answer = await screen.findByRole("article", { name: "Sell high or buy low" });
+    await waitFor(() => expect(answer.textContent).toContain("Your roster changed since Tuesday."));
+    expect(answer.hasAttribute("data-stale")).toBe(true);
+    expect(within(answer).getByRole("button", { name: "Refresh" })).toBeTruthy();
+    // The key check sends the key of the trade Answer with its Topic, and it costs no stream.
+    const [, init] = callsTo("/personal/current")[0];
+    expect(JSON.parse(String(init?.body)).answers).toEqual([{ topic: "sell_high", roster_id: LIL_FRIDGE, team: null, key: STALE_SELL }]);
+    expect(callsTo("/sell-high")).toHaveLength(0);
+  });
+
+  it("never dims a kept trade Answer with no key", async () => {
+    onWednesday();
+    keepThread([keptSell(undefined)]);
+    render(<HomePage />);
+    const answer = await screen.findByRole("article", { name: "Sell high or buy low" });
+    await waitFor(() => expect(callsTo("/suggestions")).toHaveLength(1));
+    expect(callsTo("/personal/current")).toHaveLength(0);
+    expect(answer.hasAttribute("data-stale")).toBe(false);
+    expect(answer.textContent).not.toContain("Your roster changed");
+  });
+
+  it("runs the Topic again in its place on Refresh, with the fresh key", async () => {
+    onWednesday();
+    keepThread([keptSell({ key: STALE_SELL, at: "2026-11-10T17:42:15-05:00" })]);
+    streams.push(() => sse(sellSse()));
+    render(<HomePage />);
+    const stale = await screen.findByRole("article", { name: "Sell high or buy low" });
+    fireEvent.click(await within(stale).findByRole("button", { name: "Refresh" }));
+    await waitFor(() => expect(callsTo("/sell-high")).toHaveLength(1));
+    expect(JSON.parse(String(callsTo("/sell-high")[0][1]?.body))).toEqual({ roster_id: LIL_FRIDGE });
+    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain(FRESH_SELL));
+    const fresh = screen.getByRole("article", { name: "Sell high or buy low" });
+    await waitFor(() => expect(fresh.hasAttribute("data-stale")).toBe(false));
+    expect(fresh.textContent).not.toContain("Your roster changed");
+    expect(screen.getAllByRole("article", { name: "Sell high or buy low" })).toHaveLength(1);
   });
 });

@@ -1,0 +1,94 @@
+[
+ {
+  "type": "start"
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Lined up your 14 players"
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Checked each number of the picks"
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Picked one player to sell"
+  }
+ },
+ {
+  "type": "data-key",
+  "data": {
+   "key": "a30965c99de04850507d3902639a040dc1be49a904fd4a8f3d48bce31d8dba0a",
+   "at": "2026-11-10T17:42:15.202671-05:00"
+  }
+ },
+ {
+  "type": "data-answer",
+  "data": {
+   "kind": "sell",
+   "document": {
+    "season": 2026,
+    "team": {
+     "roster_id": 3,
+     "team": "Lil Fridge"
+    },
+    "picks": [
+     {
+      "player": {
+       "player_id": "8132",
+       "name": "Tyler Allgeier",
+       "position": "RB",
+       "nfl_team": "ARI",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8132.jpg",
+       "season_rank": "RB22",
+       "recent_rank": null
+      },
+      "headline": "You should sell Tyler Allgeier now, while his hot month makes him look better than he is for your lineup.",
+      "bullets": [
+       {
+        "text": "Allgeier scored 12.7 points per game over the last four weeks, against 8.8 over the season, so another manager sees a hot back.",
+        "mark": "for",
+        "fact_id": "8132.trend",
+        "fact_text": "Over the last 4 weeks, Tyler Allgeier scored 12.7 points per game, against 8.8 over the season. His Recent rank is RB18 and his Season rank is RB22."
+       },
+       {
+        "text": "In your lineup he ranks only RB33 by lineup value, so he gives you less than his recent points suggest.",
+        "mark": "for",
+        "fact_id": "8132.lineup",
+        "fact_text": "Tyler Allgeier (RB, ARI) counts for 8.8 points per game in a lineup now. His position rank is RB33."
+       },
+       {
+        "text": "His schedule is soft, starting with the 29th most points to RBs in week 10, so the hot run could continue if you keep him.",
+        "mark": "against",
+        "fact_id": "8132.schedule",
+        "fact_text": "The schedule ahead of Tyler Allgeier: week 10 LAR at home, 29th most points to RBs; week 11 at KC, 27th most points to RBs; week 12 WAS at home, 26th most points to RBs; week 13 PHI at home, 18th most points to RBs."
+       }
+      ]
+     }
+    ],
+    "empty": null,
+    "as_of": {
+     "chart_week": null,
+     "stats_through": 9,
+     "completed_through": 9,
+     "rosters_fetched": "2026-11-10T17:41:45.374764-05:00",
+     "known_games": null,
+     "no_chart": true,
+     "no_chart_note": "This week's player values are not out yet."
+    },
+    "missing": [
+     "chart"
+    ],
+    "stale": []
+   }
+  }
+ },
+ {
+  "type": "finish"
+ }
+]

@@ -41,8 +41,8 @@ function PersonalBody({ block, view, live, href, avatars }: { block: PersonalBlo
 export const REFRESH_LABEL = "Refresh";
 
 /* The stale line above a dimmed Answer, and Refresh beside it. The line lands with a short rise, and with motion off
-   it only fades in. */
-function StaleLine({ line, onRefresh }: { line: string; onRefresh: () => void }) {
+   it only fades in. A stale trade Answer shows the same line. */
+export function StaleLine({ line, onRefresh }: { line: string; onRefresh: () => void }) {
   const off = useMotionOff();
   return (
     <motion.div className="flex flex-wrap items-center gap-x-sp-2 gap-y-sp-1 px-sp-1" {...riseIn(off)}>

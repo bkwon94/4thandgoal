@@ -14,7 +14,7 @@ import type { DoorAnswer, DoorTeam } from "@/lib/data/front-door-data";
 import { analyzeHref } from "@/lib/routes";
 import { type AskTarget, AskError, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
-import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, type ThreadItem, itemOfError, itemOfRoute } from "./ask-thread";
+import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem, itemOfError, itemOfRoute, tradePartner, tradeRequestOf } from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
 import { CapCard, MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
 import { GLIDE, riseIn } from "./motion";
@@ -25,10 +25,10 @@ import { Suggestions } from "./suggestions";
 import { TeamSheet } from "./team-sheet";
 import { type Entry, Thread, personalName } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
-import { type ServedSuggestions, checkCurrent, fetchSuggestions, staleLine } from "./suggestions-api";
+import { type KeyItem, type ServedSuggestions, checkCurrent, fetchSuggestions, staleLine } from "./suggestions-api";
 import { dayOrder, pickSuggestions, topicName } from "./topics";
 import { TradeCard } from "./trade-answer";
-import { type TradeRequest, streamTrade } from "./trade-api";
+import { type TradeRead, type TradeRequest, streamTrade } from "./trade-api";
 import { getYourTeam, setYourTeam } from "./your-team-store";
 
 /* The greeting changes with the hour, so the front door reads as a person and not a page. */
@@ -67,7 +67,8 @@ export function FrontDoor({
   // The live facts and the urgent Topics of Your team from the API, once it answers. Until then, and with no
   // passphrase, the Suggestions come from the facts of the weekly build alone.
   const [served, setServed] = useState<{ team: number; suggestions: ServedSuggestions } | null>(null);
-  // The kept personal Answers whose roster changed, by the key of each, with the time that the API kept it.
+  // The kept personal and trade Answers whose roster changed, by the key of each, with the time that the API kept it.
+  // The API keeps no trade Answer, so its time is null and the trade Answer gives the time of its own read.
   const [stale, setStale] = useState<Record<string, string | null>>({});
   const openedNow = useRef(opened);
   openedNow.current = opened;
@@ -111,13 +112,16 @@ export function FrontDoor({
     };
   }, [teamId, day, askTarget]);
 
-  // The site asks the API whether the key of each personal Answer of the Thread is still current. The check costs
-  // nothing. It runs again only when the set of kept Answers changes.
-  const kept = thread.flatMap((entry) =>
-    entry.kind === "personal" && entry.result && teamId != null
-      ? [{ topic: entry.key, roster_id: teamId, team: entry.team === teamId ? null : entry.team, key: entry.result.key }]
-      : [],
-  );
+  // The site asks the API whether the key of each personal and trade Answer of the Thread is still current. The check
+  // costs nothing. It runs again only when the set of kept Answers changes. A trade Answer with no key never checks.
+  const kept: KeyItem[] = thread.flatMap((entry): KeyItem[] => {
+    if (teamId == null) return [];
+    if (entry.kind === "personal" && entry.result)
+      return [{ topic: entry.key, roster_id: teamId, team: entry.team === teamId ? null : entry.team, key: entry.result.key }];
+    if (entry.kind === "trade" && entry.answer && entry.read)
+      return [{ topic: TRADE_TOPIC_OF[entry.mode] as KeyItem["topic"], roster_id: teamId, team: tradePartner(entry.answer), key: entry.read.key }];
+    return [];
+  });
   const keptNow = useRef(kept);
   keptNow.current = kept;
   const keptSignature = kept.map((item) => item.key).join("|");
@@ -165,14 +169,18 @@ export function FrontDoor({
      line, never an Answer. Past a cap, the cap line takes the place of the Answer, with `closest` as its Topics. */
   const runTrade = async (id: number, question: string, request: TradeRequest, passphrase: string, closest: string[], append = false) => {
     let steps: string[] = [];
+    let read: TradeRead | undefined;
     const show = (answer: Extract<ThreadItem, { kind: "trade" }>["answer"], first = false) =>
-      put(id, { kind: "trade", mode: request.mode, question, steps, answer }, first && append);
+      put(id, { kind: "trade", mode: request.mode, question, steps, answer, ...(read ? { read } : {}) }, first && append);
     show(null, true);
     try {
       await streamTrade(askTarget, passphrase, request, {
         onStep: (line) => {
           steps = [...steps, line];
           show(null);
+        },
+        onKey: (key) => {
+          read = key;
         },
         onAnswer: (answer) => show(answer),
         onCap: (line) => put(id, { kind: "cap", question, line, closest }),
@@ -353,8 +361,18 @@ export function FrontDoor({
                             }}
                           />
                         );
-                      case "trade":
-                        return <TradeCard ref={ref} question={entry.question} mode={entry.mode} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} />;
+                      case "trade": {
+                        const since = entry.read ? stale[entry.read.key] : undefined;
+                        const { answer } = entry;
+                        const passphrase = getPassphrase();
+                        // Refresh runs the Topic again in the same place. The rosters changed, so its key is new. A
+                        // stale trade Answer gives the time of its own read, because the API keeps no trade Answer.
+                        const refresh =
+                          since !== undefined && answer && entry.read && passphrase
+                            ? { line: staleLine(since ?? entry.read.at), onRefresh: () => void runTrade(entry.id, entry.question, tradeRequestOf({ ...entry, answer }, team.id), passphrase, picks.filter((pick) => !TRADE_TOPICS[pick])) }
+                            : null;
+                        return <TradeCard ref={ref} question={entry.question} mode={entry.mode} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} stale={refresh} />;
+                      }
                       case "miss":
                         return <MissCard ref={ref} question={entry.question} closest={entry.closest} onPick={(key) => open(key)} />;
                       case "cap":

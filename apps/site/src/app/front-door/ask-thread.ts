@@ -4,7 +4,7 @@
  */
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AskError, type AskAnswer } from "./ask-api";
-import type { TradeAnswer } from "./trade-api";
+import type { TradeAnswer, TradeRead, TradeRequest } from "./trade-api";
 import type { FreeResult } from "./free-stream";
 import { type PersonalResult, type PersonalTopic, isPersonal } from "./personal-stream";
 import { topicName } from "./topics";
@@ -12,7 +12,8 @@ import { topicName } from "./topics";
 /* One item of the Thread. A topic item shows the league Answer of `team`, with the typed question or the Topic name as
    its bubble. A note is one calm line, with an optional Topic chip of `team` (null for Your team) and an optional retry.
    A cap item holds the calm line of a cap, from the API, with the closest Topics. A trade item holds the steps of a
-   trade Topic while it works, then its whole Answer. A free answer streams while its result is null, and keeps its
+   trade Topic while it works, then its whole Answer with the key of the rosters it read. A trade Answer kept from before
+   the key has none, so it never reads as stale. A free answer streams while its result is null, and keeps its
    checked result once the stream ends. A personal Topic of `team` streams the same way from the API, with its data
    block first. */
 export type ThreadItem =
@@ -22,13 +23,37 @@ export type ThreadItem =
   | { kind: "miss"; question: string; closest: string[] }
   | { kind: "cap"; question: string; line: string; closest: string[] }
   | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean }
-  | { kind: "trade"; mode: TradeMode; question: string; steps: string[]; answer: TradeAnswer | null }
+  | { kind: "trade"; mode: TradeMode; question: string; steps: string[]; answer: TradeAnswer | null; read?: TradeRead }
   | { kind: "free"; question: string; result: FreeResult | null }
   | { kind: "personal"; key: PersonalTopic; team: number; question: string | null; result: PersonalResult | null };
 
 /* The trade Topics, by the key of the Topic, and the route of the API that answers each one. */
 export type TradeMode = "check" | "ideas" | "sell";
 export const TRADE_TOPICS: Record<string, TradeMode> = { trade_check: "check", trade_ideas: "ideas", sell_high: "sell" };
+/* The key of each trade Topic by its mode. */
+export const TRADE_TOPIC_OF: Record<TradeMode, string> = { check: "trade_check", ideas: "trade_ideas", sell: "sell_high" };
+
+/* The other team of a whole trade Answer: the partner of a trade check, the partner that trade ideas asked for, or
+   null for trade ideas over every team, sell high, and the form. */
+export function tradePartner(answer: TradeAnswer): number | null {
+  switch (answer.kind) {
+    case "check":
+      return answer.document.trade.sides.find((side) => side.roster_id !== answer.document.trade.asker)?.roster_id ?? null;
+    case "ideas":
+      return answer.document.trade_pair.partner?.roster_id ?? null;
+    case "sell":
+    case "form":
+      return null;
+  }
+}
+
+/* The request that runs a trade Answer again for Refresh: the same question, the same partner, or Your team. */
+export function tradeRequestOf(entry: { mode: TradeMode; question: string; answer: TradeAnswer }, rosterId: number): TradeRequest {
+  if (entry.mode === "check") return { mode: "check", question: entry.question, roster_id: rosterId };
+  if (entry.mode === "ideas") return { mode: "ideas", roster_id: rosterId, partner: tradePartner(entry.answer) };
+  return { mode: "sell", roster_id: rosterId };
+}
+
 /* The line of each trade Topic in "More". A fact of the API takes its place when the API serves one. */
 export const TRADE_LINES: Record<string, string> = {
   trade_check: "Name a trade, get the read",

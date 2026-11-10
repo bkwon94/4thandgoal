@@ -1,6 +1,6 @@
 /**
  * The client of the Suggestions route and of the key check of the API. The Suggestions bring the live fact of each
- * Topic and the Topics that are urgent for Your team. The key check says which kept personal Answers are stale.
+ * Topic and the Topics that are urgent for Your team. The key check says which kept personal and trade Answers are stale.
  */
 import { z } from "zod";
 import { type AskTarget, postClient, readBody } from "./ask-api";
@@ -14,8 +14,9 @@ export const suggestionsSchema = z.object({
 });
 export type ServedSuggestions = z.infer<typeof suggestionsSchema>;
 
-/* One personal Answer of the Thread, as the key check reads it. `team` is null for Your team. */
-export type KeyItem = { topic: (typeof PERSONAL_TOPICS)[number]; roster_id: number; team: number | null; key: string };
+/* One personal or trade Answer of the Thread, as the key check reads it. `team` is null for Your team. The team of a
+   trade Answer is its partner, or null when it read no partner. */
+export type KeyItem = { topic: (typeof PERSONAL_TOPICS)[number] | "trade_check" | "trade_ideas" | "sell_high"; roster_id: number; team: number | null; key: string };
 
 /* The answer of the key check for one Answer: whether its key is current, and when the API kept it. */
 export const currentSchema = z.object({
@@ -37,7 +38,7 @@ export function fetchSuggestions(
   return post(target, passphrase, "suggestions", body, suggestionsSchema);
 }
 
-/* Whether the key of each personal Answer is still the key of its facts now. The check costs nothing. */
+/* Whether the key of each Answer is still the key of its data now. The check costs nothing. */
 export async function checkCurrent(target: AskTarget, passphrase: string, answers: KeyItem[]): Promise<KeyState[]> {
   return (await post(target, passphrase, "personal/current", { answers }, currentSchema)).answers;
 }
