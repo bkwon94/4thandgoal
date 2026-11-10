@@ -16,10 +16,10 @@ After the evidence agent records each acceptance test, Jev reads the test and it
 - Jev takes PNG and JPEG images, 280 to 1568 px per side, with SDK 0.7.5. So the question about cut-off text in a screenshot is in scope, and the `Jev` port gets an image type. `decisions/01-research-jev-image-input.md`.
 
 - The replay found 7 evidence gaps in 12 past FAIL and BLOCKED results. Questions (a) and (b) catch 3 of the 4 gaps of their kinds. Question (c) asks only about the text that the Then line names. `decisions/02-research-replay-past-rounds.md`.
+- Question (d) checks each Observation sentence against the files. It catches 2 of 4 such gaps. Jev catches 5 of the 7 past gaps in all, and misses AT-50 and AT-47. `decisions/06-research-observation-question.md`.
 
 ## NOT YET SPECIFIED
 
-- Can a fourth question catch an Observation that claims more than the files show? `decisions/06-research-observation-question.md`.
 - What hit rate and what false-flag rate let Jev into the flow? `decisions/03-grill-replay-bar.md`, after ticket 06.
 - What does the evidence agent do on a flag, and what is the loop limit? `decisions/04-grill-agent-on-flag.md`.
 - What does Jev read, what happens when Jev is down or the key is missing, and what does the cost log line show? How does the caller cut a tall full-page shot into parts of 1568 px or less? `decisions/05-spec-state-failure-log.md`.
