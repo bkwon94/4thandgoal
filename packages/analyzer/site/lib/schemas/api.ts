@@ -59,14 +59,14 @@ export const bulletSchema = z.object({
   fact_text: z.string(),
 });
 
-/* The Week line of one side for one week, written by the code: the count of the players who play, the opponent, each bye, and each player who is out. It moves no letter. */
+/* The Week line of one side for one week, written by the code: the count of the players who play, the opponent, each bye, and each player who is out. It is a plain line of text that the page shows as is. */
 export const weekLineSchema = z.object({
   week: z.number(),
   text: z.string(),
 });
 
 /* The read of one side: 3 to 5 Bullets, then the Week lines of the trade week and the next week. */
-export const decidedSideSchema = z.object({
+export const readSideSchema = z.object({
   roster_id: z.number(),
   bullets: z.array(bulletSchema),
   week_lines: z.array(weekLineSchema),
@@ -86,7 +86,7 @@ export const fairnessSchema = z
   })
   .and(
     z.union([
-      z.object({ state: z.enum(["win_win", "fair"]), gives_more: z.null() }),
+      z.object({ state: z.literal("fair"), gives_more: z.null() }),
       z.object({ state: z.literal("lopsided"), gives_more: z.number() }),
     ]),
   );
@@ -125,7 +125,7 @@ export const analyzeResponseSchema = z.object({
   case: z.string(),
   // Optional, because the ticket asks the page to render a document with no block, as a guard. The page then shows no fairness line.
   fairness: fairnessSchema.optional(),
-  sides: z.array(decidedSideSchema),
+  sides: z.array(readSideSchema),
   as_of: asOfSchema,
   missing: z.array(z.string()),
   stale: z.array(z.string()),

@@ -110,13 +110,13 @@ class FairnessSide(BaseModel):
 
 
 class Fairness(BaseModel):
-    """Whether the trade is good for every side, fair, or lopsided, with one reason per side.
+    """Whether the trade is fair or lopsided, with one reason per side.
 
     It is for every side, not only the asker, so a manager knows if the other sides will take the trade.
     """
 
-    state: Literal["win_win", "fair", "lopsided"]
-    # None when no side gives more, so a win-win or a fair trade names no loser.
+    state: Literal["fair", "lopsided"]
+    # None when no side gives more, so a fair trade names no loser.
     gives_more: int | None
     # In the order of the trade's sides, so the block lines up with the sides of the document.
     sides: tuple[FairnessSide, ...]

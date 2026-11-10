@@ -151,7 +151,7 @@ Prototype 04 tested this design on 28 trades. Brian agreed with the Advisor on 2
 
 ### The Advisor call
 
-- One Claude call per analyzer press, and one per Finder press. The model and the effort are those of prototype 04.
+- One Claude call per analyzer press, and one per Finder press. The read of one trade runs on `claude-opus-5-5` at medium effort. The Finder pick runs on `claude-sonnet-5-5` at medium effort. Brian approved this split to hold the cost cap of $0.15 per press.
 - The output of one trade:
 
   ```
