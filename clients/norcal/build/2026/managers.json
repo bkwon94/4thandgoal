@@ -1,0 +1,4936 @@
+{
+  "schema_version": 1,
+  "season": 2026,
+  "through": 9,
+  "managers": [
+    {
+      "roster_id": 1,
+      "team": {
+        "name": "puurdygood",
+        "owner": "puurdygood",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/15d8afe3bd93111eed3ba87289274be3"
+      },
+      "wins": 6,
+      "losses": 3,
+      "points_for": 1121.3,
+      "moves": {
+        "adds": 2,
+        "drops": 2,
+        "trades": 0,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [
+              {
+                "player_id": "1166",
+                "name": "Kirk Cousins",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "6797",
+                "name": "Justin Herbert",
+                "position": "QB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [
+              {
+                "player_id": "4454",
+                "name": "Kendrick Bourne",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "13288",
+                "name": "Nicholas Singleton",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "1166",
+          "name": "Kirk Cousins",
+          "position": "QB",
+          "week": 5,
+          "points": 115.46,
+          "projection": 82.52,
+          "games": 5
+        },
+        {
+          "player_id": "4454",
+          "name": "Kendrick Bourne",
+          "position": "WR",
+          "week": 3,
+          "points": 33.7,
+          "projection": 36.18,
+          "games": 7
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "4034",
+          "name": "Christian McCaffrey",
+          "position": "RB",
+          "points": 166.7,
+          "games": 8,
+          "per_game": 20.8
+        },
+        {
+          "player_id": "8150",
+          "name": "Kyren Williams",
+          "position": "RB",
+          "points": 159.1,
+          "games": 9,
+          "per_game": 17.7
+        },
+        {
+          "player_id": "12526",
+          "name": "Tetairoa McMillan",
+          "position": "WR",
+          "points": 124.5,
+          "games": 8,
+          "per_game": 15.6
+        },
+        {
+          "player_id": "1166",
+          "name": "Kirk Cousins",
+          "position": "QB",
+          "points": 115.46,
+          "games": 5,
+          "per_game": 23.1
+        },
+        {
+          "player_id": "12506",
+          "name": "Harold Fannin Jr.",
+          "position": "TE",
+          "points": 102.3,
+          "games": 9,
+          "per_game": 11.4
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 113.96,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 2,
+          "points": 132.58,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 3,
+          "points": 127.94,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 4,
+          "points": 158.46,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 5,
+          "points": 110.72,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 6,
+          "points": 119.22,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 7,
+          "points": 102.2,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 8,
+          "points": 145.78,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 9,
+          "points": 110.44,
+          "median": null,
+          "won": true
+        }
+      ],
+      "bench": {
+        "total": 163.1,
+        "worst": {
+          "week": 4,
+          "points": 41.7,
+          "player_id": "7569",
+          "name": "Nico Collins"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 0,
+        "game_changer": 0,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "A",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 12,
+            "depth": "fine"
+          },
+          {
+            "position": "RB",
+            "rank": 2,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 1,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 9,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 3
+          },
+          {
+            "key": "production",
+            "rank": 9
+          },
+          {
+            "key": "trade_value",
+            "rank": 8
+          },
+          {
+            "key": "depth",
+            "rank": 4
+          }
+        ],
+        "read": "Strong at RB and WR. Soft at QB."
+      }
+    },
+    {
+      "roster_id": 2,
+      "team": {
+        "name": "VarsityBlue2",
+        "owner": "VarsityBlue2",
+        "avatar_url": null
+      },
+      "wins": 3,
+      "losses": 6,
+      "points_for": 1010.32,
+      "moves": {
+        "adds": 8,
+        "drops": 6,
+        "trades": 1,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [
+              {
+                "player_id": "11579",
+                "name": "Audric Estime",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "3286",
+                "name": "Demarcus Robinson",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11435",
+                "name": "Emanuel Wilson",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [
+              {
+                "player_id": "11647",
+                "name": "Kimani Vidal",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "2197",
+                "name": "Brandin Cooks",
+                "position": "WR"
+              },
+              {
+                "player_id": "8111",
+                "name": "Cade Otton",
+                "position": "TE"
+              }
+            ],
+            "trades": [
+              {
+                "with": [
+                  7
+                ],
+                "gave": [
+                  {
+                    "player_id": "6786",
+                    "name": "CeeDee Lamb",
+                    "position": "WR"
+                  }
+                ],
+                "got": [
+                  {
+                    "player_id": "11635",
+                    "name": "Ladd McConkey",
+                    "position": "WR"
+                  },
+                  {
+                    "player_id": "4866",
+                    "name": "Saquon Barkley",
+                    "position": "RB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "week": 7,
+            "adds": [
+              {
+                "player_id": "4993",
+                "name": "Mike Gesicki",
+                "position": "TE",
+                "kind": "waiver",
+                "bid": 11
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "6783",
+                "name": "Jerry Jeudy",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [
+              {
+                "player_id": "11435",
+                "name": "Emanuel Wilson",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "2197",
+                "name": "Brandin Cooks",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "8111",
+                "name": "Cade Otton",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12530",
+                "name": "Travis Hunter",
+                "position": "DB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [
+              {
+                "player_id": "11834",
+                "name": "Devaughn Vele",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 51
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12504",
+                "name": "Kaleb Johnson",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "11834",
+          "name": "Devaughn Vele",
+          "position": "WR",
+          "week": 2,
+          "points": 69.6,
+          "projection": 69.59,
+          "games": 8
+        },
+        {
+          "player_id": "11435",
+          "name": "Emanuel Wilson",
+          "position": "RB",
+          "week": 4,
+          "points": 63.9,
+          "projection": 52.01,
+          "games": 5
+        },
+        {
+          "player_id": "4993",
+          "name": "Mike Gesicki",
+          "position": "TE",
+          "week": 7,
+          "points": 20.7,
+          "projection": 18.01,
+          "games": 2
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "3294",
+          "name": "Dak Prescott",
+          "position": "QB",
+          "points": 160.14,
+          "games": 7,
+          "per_game": 22.9
+        },
+        {
+          "player_id": "6786",
+          "name": "CeeDee Lamb",
+          "position": "WR",
+          "points": 155.5,
+          "games": 7,
+          "per_game": 22.2
+        },
+        {
+          "player_id": "10859",
+          "name": "Sam LaPorta",
+          "position": "TE",
+          "points": 93.1,
+          "games": 8,
+          "per_game": 11.6
+        },
+        {
+          "player_id": "10236",
+          "name": "Dalton Kincaid",
+          "position": "TE",
+          "points": 84.9,
+          "games": 8,
+          "per_game": 10.6
+        },
+        {
+          "player_id": "2216",
+          "name": "Mike Evans",
+          "position": "WR",
+          "points": 64.0,
+          "games": 4,
+          "per_game": 16.0
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 118.2,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 2,
+          "points": 151.16,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 3,
+          "points": 79.54,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 4,
+          "points": 167.8,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 5,
+          "points": 96.94,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 6,
+          "points": 101.38,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 7,
+          "points": 107.0,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 8,
+          "points": 105.2,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 9,
+          "points": 83.1,
+          "median": null,
+          "won": false
+        }
+      ],
+      "bench": {
+        "total": 152.12,
+        "worst": {
+          "week": 5,
+          "points": 33.58,
+          "player_id": "421",
+          "name": "Matthew Stafford"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 0,
+        "game_changer": 0,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "D",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 11,
+            "depth": "fine"
+          },
+          {
+            "position": "RB",
+            "rank": 12,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 6,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 2,
+            "depth": "deep"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 9
+          },
+          {
+            "key": "production",
+            "rank": 12
+          },
+          {
+            "key": "trade_value",
+            "rank": 12
+          },
+          {
+            "key": "depth",
+            "rank": 1
+          }
+        ],
+        "read": "Strong at TE. Deep at TE. Soft at QB and RB."
+      }
+    },
+    {
+      "roster_id": 3,
+      "team": {
+        "name": "BobBuckstein",
+        "owner": "BobBuckstein",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/d55d1f7075eda01948318de4af616075"
+      },
+      "wins": 4,
+      "losses": 5,
+      "points_for": 1103.04,
+      "moves": {
+        "adds": 12,
+        "drops": 11,
+        "trades": 1,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [],
+            "drops": [
+              {
+                "player_id": "4993",
+                "name": "Mike Gesicki",
+                "position": "TE"
+              },
+              {
+                "player_id": "9754",
+                "name": "Quentin Johnston",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [
+              {
+                "player_id": "9754",
+                "name": "Quentin Johnston",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "4147",
+                "name": "Samaje Perine",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11603",
+                "name": "AJ Barner",
+                "position": "TE"
+              },
+              {
+                "player_id": "4177",
+                "name": "Mack Hollins",
+                "position": "WR"
+              }
+            ],
+            "trades": [
+              {
+                "with": [
+                  5
+                ],
+                "gave": [
+                  {
+                    "player_id": "12474",
+                    "name": "Woody Marks",
+                    "position": "RB"
+                  },
+                  {
+                    "player_id": "6770",
+                    "name": "Joe Burrow",
+                    "position": "QB"
+                  },
+                  {
+                    "player_id": "7525",
+                    "name": "DeVonta Smith",
+                    "position": "WR"
+                  }
+                ],
+                "got": [
+                  {
+                    "player_id": "11646",
+                    "name": "Jalen Coker",
+                    "position": "WR"
+                  },
+                  {
+                    "player_id": "4984",
+                    "name": "Josh Allen",
+                    "position": "QB"
+                  },
+                  {
+                    "player_id": "5967",
+                    "name": "Tony Pollard",
+                    "position": "RB"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "week": 5,
+            "adds": [
+              {
+                "player_id": "96",
+                "name": "Aaron Rodgers",
+                "position": "QB",
+                "kind": "waiver",
+                "bid": 11
+              },
+              {
+                "player_id": "13274",
+                "name": "Germie Bernard",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 33
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "9754",
+                "name": "Quentin Johnston",
+                "position": "WR"
+              },
+              {
+                "player_id": "3634",
+                "name": "Kalif Raymond",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [
+              {
+                "player_id": "9482",
+                "name": "Michael Mayer",
+                "position": "TE",
+                "kind": "waiver",
+                "bid": 10
+              },
+              {
+                "player_id": "4993",
+                "name": "Mike Gesicki",
+                "position": "TE",
+                "kind": "waiver",
+                "bid": 6
+              },
+              {
+                "player_id": "3634",
+                "name": "Kalif Raymond",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "7571",
+                "name": "Rashod Bateman",
+                "position": "WR"
+              },
+              {
+                "player_id": "12487",
+                "name": "Terrance Ferguson",
+                "position": "TE"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [
+              {
+                "player_id": "4177",
+                "name": "Mack Hollins",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "12487",
+                "name": "Terrance Ferguson",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "10218",
+                "name": "Xavier Hutchinson",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [
+              {
+                "player_id": "10218",
+                "name": "Xavier Hutchinson",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 1
+              },
+              {
+                "player_id": "7571",
+                "name": "Rashod Bateman",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 0
+              },
+              {
+                "player_id": "13301",
+                "name": "Antonio Williams",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 12
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11575",
+                "name": "Ray Davis",
+                "position": "RB"
+              },
+              {
+                "player_id": "13305",
+                "name": "Mike Washington Jr.",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "13301",
+          "name": "Antonio Williams",
+          "position": "WR",
+          "week": 2,
+          "points": 44.0,
+          "projection": 52.6,
+          "games": 8
+        },
+        {
+          "player_id": "96",
+          "name": "Aaron Rodgers",
+          "position": "QB",
+          "week": 5,
+          "points": 41.98,
+          "projection": 49.2,
+          "games": 4
+        },
+        {
+          "player_id": "13274",
+          "name": "Germie Bernard",
+          "position": "WR",
+          "week": 5,
+          "points": 39.4,
+          "projection": 31.36,
+          "games": 4
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "7547",
+          "name": "Amon-Ra St. Brown",
+          "position": "WR",
+          "points": 157.6,
+          "games": 8,
+          "per_game": 19.7
+        },
+        {
+          "player_id": "12527",
+          "name": "Ashton Jeanty",
+          "position": "RB",
+          "points": 139.3,
+          "games": 9,
+          "per_game": 15.5
+        },
+        {
+          "player_id": "12490",
+          "name": "Bhayshul Tuten",
+          "position": "RB",
+          "points": 127.2,
+          "games": 8,
+          "per_game": 15.9
+        },
+        {
+          "player_id": "6770",
+          "name": "Joe Burrow",
+          "position": "QB",
+          "points": 126.24,
+          "games": 5,
+          "per_game": 25.2
+        },
+        {
+          "player_id": "12517",
+          "name": "Colston Loveland",
+          "position": "TE",
+          "points": 76.2,
+          "games": 8,
+          "per_game": 9.5
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 111.46,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 2,
+          "points": 131.78,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 3,
+          "points": 99.78,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 4,
+          "points": 111.92,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 5,
+          "points": 87.9,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 6,
+          "points": 154.7,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 7,
+          "points": 154.28,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 8,
+          "points": 162.56,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 9,
+          "points": 88.66,
+          "median": null,
+          "won": false
+        }
+      ],
+      "bench": {
+        "total": 139.7,
+        "worst": {
+          "week": 2,
+          "points": 32.6,
+          "player_id": "7571",
+          "name": "Rashod Bateman"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 0,
+        "game_changer": 0,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "A",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 1,
+            "depth": "fine"
+          },
+          {
+            "position": "RB",
+            "rank": 1,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 8,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 11,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 2
+          },
+          {
+            "key": "production",
+            "rank": 7
+          },
+          {
+            "key": "trade_value",
+            "rank": 3
+          },
+          {
+            "key": "depth",
+            "rank": 6
+          }
+        ],
+        "read": "Strong at QB and RB. Soft at TE."
+      }
+    },
+    {
+      "roster_id": 4,
+      "team": {
+        "name": "The Mean Machine",
+        "owner": "ebashrr",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/aa3757d78d955308dd59f3e8f0279310"
+      },
+      "wins": 3,
+      "losses": 6,
+      "points_for": 987.92,
+      "moves": {
+        "adds": 7,
+        "drops": 5,
+        "trades": 0,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [
+              {
+                "player_id": "12499",
+                "name": "Elic Ayomanor",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "9486",
+                "name": "Dontayvion Wicks",
+                "position": "WR"
+              },
+              {
+                "player_id": "12509",
+                "name": "Tre' Harris",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [
+              {
+                "player_id": "8135",
+                "name": "Treylon Burks",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 5
+              },
+              {
+                "player_id": "12469",
+                "name": "Dylan Sampson",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 3
+              },
+              {
+                "player_id": "13150",
+                "name": "Darius Cooper",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "3634",
+                "name": "Kalif Raymond",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [
+              {
+                "player_id": "3634",
+                "name": "Kalif Raymond",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "5927",
+                "name": "Terry McLaurin",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [
+              {
+                "player_id": "12509",
+                "name": "Tre' Harris",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 5
+              }
+            ],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [
+              {
+                "player_id": "13294",
+                "name": "Makai Lemon",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 12
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12469",
+                "name": "Dylan Sampson",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "13294",
+          "name": "Makai Lemon",
+          "position": "WR",
+          "week": 1,
+          "points": 73.7,
+          "projection": 67.86,
+          "games": 9
+        },
+        {
+          "player_id": "12509",
+          "name": "Tre' Harris",
+          "position": "WR",
+          "week": 2,
+          "points": 32.5,
+          "projection": 31.3,
+          "games": 6
+        },
+        {
+          "player_id": "12469",
+          "name": "Dylan Sampson",
+          "position": "RB",
+          "week": 7,
+          "points": 20.7,
+          "projection": 15.08,
+          "games": 2
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "6801",
+          "name": "Tee Higgins",
+          "position": "WR",
+          "points": 159.8,
+          "games": 8,
+          "per_game": 20.0
+        },
+        {
+          "player_id": "6813",
+          "name": "Jonathan Taylor",
+          "position": "RB",
+          "points": 153.6,
+          "games": 9,
+          "per_game": 17.1
+        },
+        {
+          "player_id": "8183",
+          "name": "Brock Purdy",
+          "position": "QB",
+          "points": 128.56,
+          "games": 5,
+          "per_game": 25.7
+        },
+        {
+          "player_id": "8148",
+          "name": "Jameson Williams",
+          "position": "WR",
+          "points": 105.7,
+          "games": 8,
+          "per_game": 13.2
+        },
+        {
+          "player_id": "11564",
+          "name": "Drake Maye",
+          "position": "QB",
+          "points": 97.76,
+          "games": 4,
+          "per_game": 24.4
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 88.12,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 2,
+          "points": 101.82,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 3,
+          "points": 133.88,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 4,
+          "points": 121.62,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 5,
+          "points": 107.86,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 6,
+          "points": 86.86,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 7,
+          "points": 121.22,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 8,
+          "points": 121.76,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 9,
+          "points": 104.78,
+          "median": null,
+          "won": false
+        }
+      ],
+      "bench": {
+        "total": 250.44,
+        "worst": {
+          "week": 1,
+          "points": 42.98,
+          "player_id": "8183",
+          "name": "Brock Purdy"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 1,
+        "game_changer": 0,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "D",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 5,
+            "depth": "deep"
+          },
+          {
+            "position": "RB",
+            "rank": 6,
+            "depth": "thin"
+          },
+          {
+            "position": "WR",
+            "rank": 10,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 10,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 10
+          },
+          {
+            "key": "production",
+            "rank": 10
+          },
+          {
+            "key": "trade_value",
+            "rank": 10
+          },
+          {
+            "key": "depth",
+            "rank": 11
+          }
+        ],
+        "read": "Deep at QB. Soft at WR and TE. Thin at RB."
+      }
+    },
+    {
+      "roster_id": 5,
+      "team": {
+        "name": "Skol Daddy",
+        "owner": "CoachOpa",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cb4f8c1cd10932bd54300be0172da87"
+      },
+      "wins": 4,
+      "losses": 5,
+      "points_for": 1226.06,
+      "moves": {
+        "adds": 7,
+        "drops": 7,
+        "trades": 1,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [
+              {
+                "player_id": "12491",
+                "name": "Corey Kiner",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "9757",
+                "name": "Kendre Miller",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [
+              {
+                "player_id": "9757",
+                "name": "Kendre Miller",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 20
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12634",
+                "name": "Jordan Watkins",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [
+              {
+                "player_id": "12634",
+                "name": "Jordan Watkins",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11559",
+                "name": "Michael Penix Jr.",
+                "position": "QB"
+              },
+              {
+                "player_id": "11783",
+                "name": "Ryan Flournoy",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [
+              {
+                "player_id": "11559",
+                "name": "Michael Penix Jr.",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "12522",
+                "name": "Cam Ward",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11783",
+                "name": "Ryan Flournoy",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12522",
+                "name": "Cam Ward",
+                "position": "QB"
+              },
+              {
+                "player_id": "7049",
+                "name": "Jauan Jennings",
+                "position": "WR"
+              }
+            ],
+            "trades": [
+              {
+                "with": [
+                  3
+                ],
+                "gave": [
+                  {
+                    "player_id": "11646",
+                    "name": "Jalen Coker",
+                    "position": "WR"
+                  },
+                  {
+                    "player_id": "4984",
+                    "name": "Josh Allen",
+                    "position": "QB"
+                  },
+                  {
+                    "player_id": "5967",
+                    "name": "Tony Pollard",
+                    "position": "RB"
+                  }
+                ],
+                "got": [
+                  {
+                    "player_id": "12474",
+                    "name": "Woody Marks",
+                    "position": "RB"
+                  },
+                  {
+                    "player_id": "6770",
+                    "name": "Joe Burrow",
+                    "position": "QB"
+                  },
+                  {
+                    "player_id": "7525",
+                    "name": "DeVonta Smith",
+                    "position": "WR"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "week": 5,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [
+              {
+                "player_id": "7049",
+                "name": "Jauan Jennings",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "13294",
+                "name": "Makai Lemon",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "11559",
+          "name": "Michael Penix Jr.",
+          "position": "QB",
+          "week": 6,
+          "points": 29.1,
+          "projection": 14.62,
+          "games": 1
+        },
+        {
+          "player_id": "11783",
+          "name": "Ryan Flournoy",
+          "position": "WR",
+          "week": 6,
+          "points": 17.0,
+          "projection": 8.16,
+          "games": 1
+        },
+        {
+          "player_id": "12491",
+          "name": "Corey Kiner",
+          "position": "RB",
+          "week": 9,
+          "points": 11.5,
+          "projection": 6.58,
+          "games": 1
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "4984",
+          "name": "Josh Allen",
+          "position": "QB",
+          "points": 160.96,
+          "games": 5,
+          "per_game": 32.2
+        },
+        {
+          "player_id": "7564",
+          "name": "Ja'Marr Chase",
+          "position": "WR",
+          "points": 159.7,
+          "games": 8,
+          "per_game": 20.0
+        },
+        {
+          "player_id": "11604",
+          "name": "Brock Bowers",
+          "position": "TE",
+          "points": 146.0,
+          "games": 7,
+          "per_game": 20.9
+        },
+        {
+          "player_id": "8228",
+          "name": "Jaylen Warren",
+          "position": "RB",
+          "points": 140.8,
+          "games": 8,
+          "per_game": 17.6
+        },
+        {
+          "player_id": "6770",
+          "name": "Joe Burrow",
+          "position": "QB",
+          "points": 124.9,
+          "games": 3,
+          "per_game": 41.6
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 141.36,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 2,
+          "points": 133.12,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 3,
+          "points": 125.16,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 4,
+          "points": 103.52,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 5,
+          "points": 132.7,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 6,
+          "points": 126.2,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 7,
+          "points": 134.58,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 8,
+          "points": 193.18,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 9,
+          "points": 136.24,
+          "median": null,
+          "won": true
+        }
+      ],
+      "bench": {
+        "total": 132.8,
+        "worst": {
+          "week": 3,
+          "points": 38.2,
+          "player_id": "9756",
+          "name": "Jordan Addison"
+        }
+      },
+      "awards": {
+        "top_scorer": 1,
+        "mvb": 0,
+        "game_changer": 0,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "A",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 3,
+            "depth": "fine"
+          },
+          {
+            "position": "RB",
+            "rank": 10,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 4,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 1,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 4
+          },
+          {
+            "key": "production",
+            "rank": 2
+          },
+          {
+            "key": "trade_value",
+            "rank": 7
+          },
+          {
+            "key": "depth",
+            "rank": 3
+          }
+        ],
+        "read": "Strong at QB and TE. Soft at RB."
+      }
+    },
+    {
+      "roster_id": 6,
+      "team": {
+        "name": "Mitseeker5000",
+        "owner": "Mitseeker5000",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/bfe4e28b209d29183d480a411ce59ed1"
+      },
+      "wins": 6,
+      "losses": 3,
+      "points_for": 1251.74,
+      "moves": {
+        "adds": 2,
+        "drops": 1,
+        "trades": 0,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [
+              {
+                "player_id": "12498",
+                "name": "Mason Taylor",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [
+              {
+                "player_id": "6130",
+                "name": "Devin Singletary",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 8
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "7528",
+                "name": "Najee Harris",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "6130",
+          "name": "Devin Singletary",
+          "position": "RB",
+          "week": 1,
+          "points": 25.6,
+          "projection": 22.87,
+          "games": 8
+        },
+        {
+          "player_id": "12498",
+          "name": "Mason Taylor",
+          "position": "TE",
+          "week": 8,
+          "points": 7.0,
+          "projection": 15.65,
+          "games": 2
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "9493",
+          "name": "Puka Nacua",
+          "position": "WR",
+          "points": 173.6,
+          "games": 8,
+          "per_game": 21.7
+        },
+        {
+          "player_id": "7588",
+          "name": "Javonte Williams",
+          "position": "RB",
+          "points": 159.6,
+          "games": 9,
+          "per_game": 17.7
+        },
+        {
+          "player_id": "6790",
+          "name": "D'Andre Swift",
+          "position": "RB",
+          "points": 153.8,
+          "games": 9,
+          "per_game": 17.1
+        },
+        {
+          "player_id": "8144",
+          "name": "Chris Olave",
+          "position": "WR",
+          "points": 141.4,
+          "games": 8,
+          "per_game": 17.7
+        },
+        {
+          "player_id": "3163",
+          "name": "Jared Goff",
+          "position": "QB",
+          "points": 121.14,
+          "games": 6,
+          "per_game": 20.2
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 146.46,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 2,
+          "points": 152.94,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 3,
+          "points": 127.36,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 4,
+          "points": 149.18,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 5,
+          "points": 151.94,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 6,
+          "points": 140.9,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 7,
+          "points": 142.92,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 8,
+          "points": 118.64,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 9,
+          "points": 121.4,
+          "median": null,
+          "won": false
+        }
+      ],
+      "bench": {
+        "total": 127.14,
+        "worst": {
+          "week": 2,
+          "points": 30.34,
+          "player_id": "3163",
+          "name": "Jared Goff"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 0,
+        "game_changer": 1,
+        "underperformer": 1
+      },
+      "grade": {
+        "letter": "A",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 4,
+            "depth": "deep"
+          },
+          {
+            "position": "RB",
+            "rank": 7,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 3,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 8,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 6
+          },
+          {
+            "key": "production",
+            "rank": 1
+          },
+          {
+            "key": "trade_value",
+            "rank": 1
+          },
+          {
+            "key": "depth",
+            "rank": 2
+          }
+        ],
+        "read": "Strong at WR. Deep at QB."
+      }
+    },
+    {
+      "roster_id": 7,
+      "team": {
+        "name": "Bo Girds",
+        "owner": "bkwon",
+        "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg"
+      },
+      "wins": 4,
+      "losses": 5,
+      "points_for": 1138.74,
+      "moves": {
+        "adds": 31,
+        "drops": 27,
+        "trades": 1,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [
+              {
+                "player_id": "13421",
+                "name": "Eli Raridon",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "6803",
+                "name": "Brandon Aiyuk",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12530",
+                "name": "Travis Hunter",
+                "position": "DB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [
+              {
+                "player_id": "13413",
+                "name": "Cyrus Allen",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 0
+              },
+              {
+                "player_id": "4663",
+                "name": "Austin Ekeler",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "7561",
+                "name": "Elijah Mitchell",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "8161",
+                "name": "Malik Willis",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "9511",
+                "name": "Keaton Mitchell",
+                "position": "RB"
+              },
+              {
+                "player_id": "11563",
+                "name": "Bo Nix",
+                "position": "QB"
+              },
+              {
+                "player_id": "12536",
+                "name": "Jaylin Noel",
+                "position": "WR"
+              }
+            ],
+            "trades": [
+              {
+                "with": [
+                  2
+                ],
+                "gave": [
+                  {
+                    "player_id": "11635",
+                    "name": "Ladd McConkey",
+                    "position": "WR"
+                  },
+                  {
+                    "player_id": "4866",
+                    "name": "Saquon Barkley",
+                    "position": "RB"
+                  }
+                ],
+                "got": [
+                  {
+                    "player_id": "6786",
+                    "name": "CeeDee Lamb",
+                    "position": "WR"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "week": 7,
+            "adds": [
+              {
+                "player_id": "7523",
+                "name": "Trevor Lawrence",
+                "position": "QB",
+                "kind": "waiver",
+                "bid": 31
+              },
+              {
+                "player_id": "12536",
+                "name": "Jaylin Noel",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "12530",
+                "name": "Travis Hunter",
+                "position": "DB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11563",
+                "name": "Bo Nix",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "4950",
+                "name": "Christian Kirk",
+                "position": "WR"
+              },
+              {
+                "player_id": "9502",
+                "name": "Tank Dell",
+                "position": "WR"
+              },
+              {
+                "player_id": "8129",
+                "name": "Dameon Pierce",
+                "position": "RB"
+              },
+              {
+                "player_id": "9230",
+                "name": "Tanner McKee",
+                "position": "QB"
+              },
+              {
+                "player_id": "2306",
+                "name": "Jameis Winston",
+                "position": "QB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [
+              {
+                "player_id": "13424",
+                "name": "Seth McGowan",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 0
+              },
+              {
+                "player_id": "12487",
+                "name": "Terrance Ferguson",
+                "position": "TE",
+                "kind": "waiver",
+                "bid": 3
+              },
+              {
+                "player_id": "4950",
+                "name": "Christian Kirk",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "5995",
+                "name": "Justice Hill",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "9230",
+                "name": "Tanner McKee",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "13413",
+                "name": "Cyrus Allen",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "2306",
+                "name": "Jameis Winston",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "12542",
+                "name": "Efton Chism III",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11439",
+                "name": "Jaleel McLaughlin",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "13413",
+                "name": "Cyrus Allen",
+                "position": "WR"
+              },
+              {
+                "player_id": "6904",
+                "name": "Jalen Hurts",
+                "position": "QB"
+              },
+              {
+                "player_id": "5995",
+                "name": "Justice Hill",
+                "position": "RB"
+              },
+              {
+                "player_id": "8800",
+                "name": "Malik Davis",
+                "position": "RB"
+              },
+              {
+                "player_id": "11439",
+                "name": "Jaleel McLaughlin",
+                "position": "RB"
+              },
+              {
+                "player_id": "12542",
+                "name": "Efton Chism III",
+                "position": "WR"
+              },
+              {
+                "player_id": "3257",
+                "name": "Jacoby Brissett",
+                "position": "QB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [
+              {
+                "player_id": "8129",
+                "name": "Dameon Pierce",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 3
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11577",
+                "name": "Will Shipley",
+                "position": "RB"
+              },
+              {
+                "player_id": "13264",
+                "name": "Dohnte Meyers",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [
+              {
+                "player_id": "3257",
+                "name": "Jacoby Brissett",
+                "position": "QB",
+                "kind": "waiver",
+                "bid": 0
+              },
+              {
+                "player_id": "13264",
+                "name": "Dohnte Meyers",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 4
+              },
+              {
+                "player_id": "11577",
+                "name": "Will Shipley",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 24
+              },
+              {
+                "player_id": "3271",
+                "name": "Tyler Higbee",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11630",
+                "name": "Roman Wilson",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11563",
+                "name": "Bo Nix",
+                "position": "QB"
+              },
+              {
+                "player_id": "13285",
+                "name": "Malachi Fields",
+                "position": "WR"
+              },
+              {
+                "player_id": "12504",
+                "name": "Kaleb Johnson",
+                "position": "RB"
+              },
+              {
+                "player_id": "1339",
+                "name": "Zach Ertz",
+                "position": "TE"
+              },
+              {
+                "player_id": "13347",
+                "name": "Demond Claiborne",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [
+              {
+                "player_id": "1339",
+                "name": "Zach Ertz",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "12504",
+                "name": "Kaleb Johnson",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "9482",
+                "name": "Michael Mayer",
+                "position": "TE"
+              },
+              {
+                "player_id": "11581",
+                "name": "MarShawn Lloyd",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [
+              {
+                "player_id": "9482",
+                "name": "Michael Mayer",
+                "position": "TE",
+                "kind": "waiver",
+                "bid": 1
+              },
+              {
+                "player_id": "13347",
+                "name": "Demond Claiborne",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "13424",
+                "name": "Seth McGowan",
+                "position": "RB"
+              },
+              {
+                "player_id": "12487",
+                "name": "Terrance Ferguson",
+                "position": "TE"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [
+              {
+                "player_id": "13424",
+                "name": "Seth McGowan",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "8800",
+                "name": "Malik Davis",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "7523",
+          "name": "Trevor Lawrence",
+          "position": "QB",
+          "week": 7,
+          "points": 40.98,
+          "projection": 39.28,
+          "games": 3
+        },
+        {
+          "player_id": "3271",
+          "name": "Tyler Higbee",
+          "position": "TE",
+          "week": 4,
+          "points": 37.3,
+          "projection": 53.54,
+          "games": 6
+        },
+        {
+          "player_id": "3257",
+          "name": "Jacoby Brissett",
+          "position": "QB",
+          "week": 4,
+          "points": 32.28,
+          "projection": 18.16,
+          "games": 1
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "8151",
+          "name": "Kenneth Walker III",
+          "position": "RB",
+          "points": 196.4,
+          "games": 8,
+          "per_game": 24.5
+        },
+        {
+          "player_id": "12519",
+          "name": "Luther Burden III",
+          "position": "WR",
+          "points": 136.3,
+          "games": 9,
+          "per_game": 15.1
+        },
+        {
+          "player_id": "8131",
+          "name": "Isaiah Likely",
+          "position": "TE",
+          "points": 128.8,
+          "games": 8,
+          "per_game": 16.1
+        },
+        {
+          "player_id": "9997",
+          "name": "Zay Flowers",
+          "position": "WR",
+          "points": 127.5,
+          "games": 8,
+          "per_game": 15.9
+        },
+        {
+          "player_id": "9487",
+          "name": "Parker Washington",
+          "position": "WR",
+          "points": 109.6,
+          "games": 8,
+          "per_game": 13.7
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 179.22,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 2,
+          "points": 98.96,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 3,
+          "points": 108.62,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 4,
+          "points": 114.92,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 5,
+          "points": 146.08,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 6,
+          "points": 134.18,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 7,
+          "points": 119.28,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 8,
+          "points": 82.1,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 9,
+          "points": 155.38,
+          "median": null,
+          "won": true
+        }
+      ],
+      "bench": {
+        "total": 110.84,
+        "worst": {
+          "week": 4,
+          "points": 36.9,
+          "player_id": "11630",
+          "name": "Roman Wilson"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 0,
+        "game_changer": 0,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "A",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 2,
+            "depth": "deep"
+          },
+          {
+            "position": "RB",
+            "rank": 9,
+            "depth": "thin"
+          },
+          {
+            "position": "WR",
+            "rank": 2,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 4,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 5
+          },
+          {
+            "key": "production",
+            "rank": 3
+          },
+          {
+            "key": "trade_value",
+            "rank": 6
+          },
+          {
+            "key": "depth",
+            "rank": 10
+          }
+        ],
+        "read": "Strong at QB and WR. Deep at QB. Thin at RB."
+      }
+    },
+    {
+      "roster_id": 8,
+      "team": {
+        "name": "Hock Tua 💦",
+        "owner": "JuJuCase",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cd4f84783fdf0a7fbe4459ff905eff1"
+      },
+      "wins": 6,
+      "losses": 3,
+      "points_for": 1163.86,
+      "moves": {
+        "adds": 13,
+        "drops": 11,
+        "trades": 0,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [
+              {
+                "player_id": "8110",
+                "name": "Jake Ferguson",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11783",
+                "name": "Ryan Flournoy",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "8129",
+                "name": "Dameon Pierce",
+                "position": "RB"
+              },
+              {
+                "player_id": "11783",
+                "name": "Ryan Flournoy",
+                "position": "WR"
+              },
+              {
+                "player_id": "8110",
+                "name": "Jake Ferguson",
+                "position": "TE"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [
+              {
+                "player_id": "8129",
+                "name": "Dameon Pierce",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11783",
+                "name": "Ryan Flournoy",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11581",
+                "name": "MarShawn Lloyd",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [
+              {
+                "player_id": "13276",
+                "name": "Omar Cooper Jr.",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11647",
+                "name": "Kimani Vidal",
+                "position": "RB"
+              },
+              {
+                "player_id": "4147",
+                "name": "Samaje Perine",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [
+              {
+                "player_id": "11647",
+                "name": "Kimani Vidal",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 0
+              },
+              {
+                "player_id": "4147",
+                "name": "Samaje Perine",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 0
+              },
+              {
+                "player_id": "11563",
+                "name": "Bo Nix",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "96",
+                "name": "Aaron Rodgers",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11563",
+                "name": "Bo Nix",
+                "position": "QB"
+              },
+              {
+                "player_id": "96",
+                "name": "Aaron Rodgers",
+                "position": "QB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [
+              {
+                "player_id": "12495",
+                "name": "Ollie Gordon II",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 45
+              },
+              {
+                "player_id": "4035",
+                "name": "Alvin Kamara",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 5
+              },
+              {
+                "player_id": "11581",
+                "name": "MarShawn Lloyd",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "9504",
+                "name": "Kayshon Boutte",
+                "position": "WR"
+              },
+              {
+                "player_id": "11370",
+                "name": "Chris Brooks",
+                "position": "RB"
+              },
+              {
+                "player_id": "8180",
+                "name": "Jalen Nailor",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [
+              {
+                "player_id": "11370",
+                "name": "Chris Brooks",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 1
+              }
+            ],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "4035",
+          "name": "Alvin Kamara",
+          "position": "RB",
+          "week": 3,
+          "points": 66.5,
+          "projection": 58.68,
+          "games": 7
+        },
+        {
+          "player_id": "12495",
+          "name": "Ollie Gordon II",
+          "position": "RB",
+          "week": 3,
+          "points": 64.4,
+          "projection": 62.29,
+          "games": 6
+        },
+        {
+          "player_id": "13276",
+          "name": "Omar Cooper Jr.",
+          "position": "WR",
+          "week": 6,
+          "points": 58.6,
+          "projection": 39.32,
+          "games": 4
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "9509",
+          "name": "Bijan Robinson",
+          "position": "RB",
+          "points": 180.0,
+          "games": 9,
+          "per_game": 20.0
+        },
+        {
+          "player_id": "12501",
+          "name": "Matthew Golden",
+          "position": "WR",
+          "points": 163.9,
+          "games": 9,
+          "per_game": 18.2
+        },
+        {
+          "player_id": "8130",
+          "name": "Trey McBride",
+          "position": "TE",
+          "points": 162.8,
+          "games": 9,
+          "per_game": 18.1
+        },
+        {
+          "player_id": "11584",
+          "name": "Bucky Irving",
+          "position": "RB",
+          "points": 159.1,
+          "games": 9,
+          "per_game": 17.7
+        },
+        {
+          "player_id": "8137",
+          "name": "George Pickens",
+          "position": "WR",
+          "points": 104.3,
+          "games": 8,
+          "per_game": 13.0
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 138.06,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 2,
+          "points": 106.6,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 3,
+          "points": 151.64,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 4,
+          "points": 126.68,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 5,
+          "points": 152.02,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 6,
+          "points": 98.88,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 7,
+          "points": 148.3,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 8,
+          "points": 84.8,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 9,
+          "points": 156.88,
+          "median": null,
+          "won": true
+        }
+      ],
+      "bench": {
+        "total": 206.62,
+        "worst": {
+          "week": 8,
+          "points": 52.44,
+          "player_id": "4046",
+          "name": "Patrick Mahomes"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 0,
+        "game_changer": 0,
+        "underperformer": 1
+      },
+      "grade": {
+        "letter": "A",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 6,
+            "depth": "fine"
+          },
+          {
+            "position": "RB",
+            "rank": 5,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 9,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 7,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 7
+          },
+          {
+            "key": "production",
+            "rank": 4
+          },
+          {
+            "key": "trade_value",
+            "rank": 4
+          },
+          {
+            "key": "depth",
+            "rank": 5
+          }
+        ],
+        "read": "Middle of the league at every position."
+      }
+    },
+    {
+      "roster_id": 9,
+      "team": {
+        "name": "kaiedmonds",
+        "owner": "kaiedmonds",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/b3338675f635c2c1f42b469621d38ec6"
+      },
+      "wins": 5,
+      "losses": 4,
+      "points_for": 1138.92,
+      "moves": {
+        "adds": 12,
+        "drops": 9,
+        "trades": 0,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [
+              {
+                "player_id": "13285",
+                "name": "Malachi Fields",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "9502",
+                "name": "Tank Dell",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "4943",
+                "name": "Sam Darnold",
+                "position": "QB"
+              },
+              {
+                "player_id": "10235",
+                "name": "Roschon Johnson",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [
+              {
+                "player_id": "9754",
+                "name": "Quentin Johnston",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "8676",
+                "name": "Rashid Shaheed",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [
+              {
+                "player_id": "10235",
+                "name": "Roschon Johnson",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "3321",
+                "name": "Tyreek Hill",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [
+              {
+                "player_id": "11655",
+                "name": "Tyrone Tracy Jr.",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 11
+              },
+              {
+                "player_id": "7571",
+                "name": "Rashod Bateman",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12048",
+                "name": "George Holani",
+                "position": "RB"
+              },
+              {
+                "player_id": "11571",
+                "name": "Isaiah Davis",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [
+              {
+                "player_id": "12048",
+                "name": "George Holani",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11571",
+                "name": "Isaiah Davis",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12493",
+                "name": "Oronde Gadsden",
+                "position": "TE"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [
+              {
+                "player_id": "3321",
+                "name": "Tyreek Hill",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "4943",
+                "name": "Sam Darnold",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11618",
+                "name": "Jalen McMillan",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [],
+            "drops": [
+              {
+                "player_id": "13276",
+                "name": "Omar Cooper Jr.",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [
+              {
+                "player_id": "2505",
+                "name": "Darren Waller",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "1479",
+                "name": "Keenan Allen",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "4943",
+          "name": "Sam Darnold",
+          "position": "QB",
+          "week": 3,
+          "points": 120.8,
+          "projection": 96.29,
+          "games": 6
+        },
+        {
+          "player_id": "1479",
+          "name": "Keenan Allen",
+          "position": "WR",
+          "week": 1,
+          "points": 81.1,
+          "projection": 71.39,
+          "games": 9
+        },
+        {
+          "player_id": "2505",
+          "name": "Darren Waller",
+          "position": "TE",
+          "week": 1,
+          "points": 76.9,
+          "projection": 63.6,
+          "games": 9
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "8167",
+          "name": "Christian Watson",
+          "position": "WR",
+          "points": 176.9,
+          "games": 9,
+          "per_game": 19.7
+        },
+        {
+          "player_id": "8138",
+          "name": "James Cook III",
+          "position": "RB",
+          "points": 148.4,
+          "games": 8,
+          "per_game": 18.5
+        },
+        {
+          "player_id": "7594",
+          "name": "Chuba Hubbard",
+          "position": "RB",
+          "points": 146.6,
+          "games": 8,
+          "per_game": 18.3
+        },
+        {
+          "player_id": "11560",
+          "name": "Caleb Williams",
+          "position": "QB",
+          "points": 131.34,
+          "games": 6,
+          "per_game": 21.9
+        },
+        {
+          "player_id": "4217",
+          "name": "George Kittle",
+          "position": "TE",
+          "points": 114.3,
+          "games": 8,
+          "per_game": 14.3
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 174.46,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 2,
+          "points": 109.02,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 3,
+          "points": 152.06,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 4,
+          "points": 122.82,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 5,
+          "points": 115.2,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 6,
+          "points": 113.4,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 7,
+          "points": 91.52,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 8,
+          "points": 132.38,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 9,
+          "points": 128.06,
+          "median": null,
+          "won": false
+        }
+      ],
+      "bench": {
+        "total": 125.44,
+        "worst": {
+          "week": 9,
+          "points": 31.6,
+          "player_id": "2505",
+          "name": "Darren Waller"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 0,
+        "game_changer": 0,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "A",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 9,
+            "depth": "fine"
+          },
+          {
+            "position": "RB",
+            "rank": 4,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 7,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 3,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 1
+          },
+          {
+            "key": "production",
+            "rank": 5
+          },
+          {
+            "key": "trade_value",
+            "rank": 2
+          },
+          {
+            "key": "depth",
+            "rank": 8
+          }
+        ],
+        "read": "Strong at TE."
+      }
+    },
+    {
+      "roster_id": 10,
+      "team": {
+        "name": "Davlionman",
+        "owner": "Davlionman",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204"
+      },
+      "wins": 6,
+      "losses": 3,
+      "points_for": 1089.78,
+      "moves": {
+        "adds": 14,
+        "drops": 14,
+        "trades": 0,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [],
+            "drops": [
+              {
+                "player_id": "12718",
+                "name": "Konata Mumpfield",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [
+              {
+                "player_id": "4892",
+                "name": "Baker Mayfield",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "4892",
+                "name": "Baker Mayfield",
+                "position": "QB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [
+              {
+                "player_id": "1373",
+                "name": "Geno Smith",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "12718",
+                "name": "Konata Mumpfield",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "10235",
+                "name": "Roschon Johnson",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "1373",
+                "name": "Geno Smith",
+                "position": "QB"
+              },
+              {
+                "player_id": "10235",
+                "name": "Roschon Johnson",
+                "position": "RB"
+              },
+              {
+                "player_id": "12499",
+                "name": "Elic Ayomanor",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [
+              {
+                "player_id": "4663",
+                "name": "Austin Ekeler",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "12499",
+                "name": "Elic Ayomanor",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "9501",
+                "name": "DeMario Douglas",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "4663",
+                "name": "Austin Ekeler",
+                "position": "RB"
+              },
+              {
+                "player_id": "6804",
+                "name": "Jordan Love",
+                "position": "QB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [],
+            "drops": [
+              {
+                "player_id": "13414",
+                "name": "Kaelon Black",
+                "position": "RB"
+              },
+              {
+                "player_id": "10218",
+                "name": "Xavier Hutchinson",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [
+              {
+                "player_id": "12492",
+                "name": "Pat Bryant",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12492",
+                "name": "Pat Bryant",
+                "position": "WR"
+              },
+              {
+                "player_id": "4892",
+                "name": "Baker Mayfield",
+                "position": "QB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [
+              {
+                "player_id": "10218",
+                "name": "Xavier Hutchinson",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "7600",
+                "name": "Pat Freiermuth",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "9758",
+                "name": "C.J. Stroud",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11637",
+                "name": "Keon Coleman",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11783",
+                "name": "Ryan Flournoy",
+                "position": "WR"
+              },
+              {
+                "player_id": "4177",
+                "name": "Mack Hollins",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [
+              {
+                "player_id": "4177",
+                "name": "Mack Hollins",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [
+              {
+                "player_id": "11783",
+                "name": "Ryan Flournoy",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "8210",
+                "name": "Chig Okonkwo",
+                "position": "TE"
+              }
+            ],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "9758",
+          "name": "C.J. Stroud",
+          "position": "QB",
+          "week": 3,
+          "points": 160.56,
+          "projection": 99.52,
+          "games": 7
+        },
+        {
+          "player_id": "11637",
+          "name": "Keon Coleman",
+          "position": "WR",
+          "week": 3,
+          "points": 58.0,
+          "projection": 49.71,
+          "games": 7
+        },
+        {
+          "player_id": "9501",
+          "name": "DeMario Douglas",
+          "position": "WR",
+          "week": 6,
+          "points": 56.7,
+          "projection": 30.69,
+          "games": 4
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "9221",
+          "name": "Jahmyr Gibbs",
+          "position": "RB",
+          "points": 209.2,
+          "games": 8,
+          "per_game": 26.2
+        },
+        {
+          "player_id": "9758",
+          "name": "C.J. Stroud",
+          "position": "QB",
+          "points": 133.48,
+          "games": 5,
+          "per_game": 26.7
+        },
+        {
+          "player_id": "11632",
+          "name": "Malik Nabers",
+          "position": "WR",
+          "points": 129.8,
+          "games": 8,
+          "per_game": 16.2
+        },
+        {
+          "player_id": "8112",
+          "name": "Drake London",
+          "position": "WR",
+          "points": 121.6,
+          "games": 9,
+          "per_game": 13.5
+        },
+        {
+          "player_id": "11576",
+          "name": "Braelon Allen",
+          "position": "RB",
+          "points": 87.8,
+          "games": 6,
+          "per_game": 14.6
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 115.74,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 2,
+          "points": 67.58,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 3,
+          "points": 118.78,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 4,
+          "points": 131.28,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 5,
+          "points": 178.54,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 6,
+          "points": 106.08,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 7,
+          "points": 147.72,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 8,
+          "points": 106.6,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 9,
+          "points": 117.46,
+          "median": null,
+          "won": true
+        }
+      ],
+      "bench": {
+        "total": 170.36,
+        "worst": {
+          "week": 6,
+          "points": 33.7,
+          "player_id": "9501",
+          "name": "DeMario Douglas"
+        }
+      },
+      "awards": {
+        "top_scorer": 1,
+        "mvb": 0,
+        "game_changer": 1,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "B",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 8,
+            "depth": "fine"
+          },
+          {
+            "position": "RB",
+            "rank": 3,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 11,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 5,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 8
+          },
+          {
+            "key": "production",
+            "rank": 8
+          },
+          {
+            "key": "trade_value",
+            "rank": 5
+          },
+          {
+            "key": "depth",
+            "rank": 9
+          }
+        ],
+        "read": "Strong at RB. Soft at WR."
+      }
+    },
+    {
+      "roster_id": 11,
+      "team": {
+        "name": "Breece Mode",
+        "owner": "smiddyj7",
+        "avatar_url": "https://sleepercdn.com/uploads/0875d8e398f7d5dc3c03b363eb9518ff.jpg"
+      },
+      "wins": 5,
+      "losses": 4,
+      "points_for": 1171.6,
+      "moves": {
+        "adds": 22,
+        "drops": 22,
+        "trades": 0,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [],
+            "drops": [
+              {
+                "player_id": "4037",
+                "name": "Chris Godwin Jr.",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [
+              {
+                "player_id": "13305",
+                "name": "Mike Washington Jr.",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11603",
+                "name": "AJ Barner",
+                "position": "TE"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [
+              {
+                "player_id": "11603",
+                "name": "AJ Barner",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12469",
+                "name": "Dylan Sampson",
+                "position": "RB"
+              },
+              {
+                "player_id": "7523",
+                "name": "Trevor Lawrence",
+                "position": "QB"
+              },
+              {
+                "player_id": "13305",
+                "name": "Mike Washington Jr.",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [
+              {
+                "player_id": "13305",
+                "name": "Mike Washington Jr.",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 1
+              },
+              {
+                "player_id": "6804",
+                "name": "Jordan Love",
+                "position": "QB",
+                "kind": "waiver",
+                "bid": 10
+              },
+              {
+                "player_id": "8210",
+                "name": "Chig Okonkwo",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11439",
+                "name": "Jaleel McLaughlin",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 15
+              },
+              {
+                "player_id": "7528",
+                "name": "Najee Harris",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "10235",
+                "name": "Roschon Johnson",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11439",
+                "name": "Jaleel McLaughlin",
+                "position": "RB"
+              },
+              {
+                "player_id": "7528",
+                "name": "Najee Harris",
+                "position": "RB"
+              },
+              {
+                "player_id": "13305",
+                "name": "Mike Washington Jr.",
+                "position": "RB"
+              },
+              {
+                "player_id": "10235",
+                "name": "Roschon Johnson",
+                "position": "RB"
+              },
+              {
+                "player_id": "12541",
+                "name": "Dont'e Thornton Jr.",
+                "position": "WR"
+              },
+              {
+                "player_id": "5995",
+                "name": "Justice Hill",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [
+              {
+                "player_id": "13414",
+                "name": "Kaelon Black",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 10
+              },
+              {
+                "player_id": "12469",
+                "name": "Dylan Sampson",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 0
+              },
+              {
+                "player_id": "12541",
+                "name": "Dont'e Thornton Jr.",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "13317",
+                "name": "Ted Hurst III",
+                "position": "WR"
+              },
+              {
+                "player_id": "11643",
+                "name": "Jaylen Wright",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [
+              {
+                "player_id": "4018",
+                "name": "Joe Mixon",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "8207",
+                "name": "Tyler Goodson",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "13305",
+                "name": "Mike Washington Jr.",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "4018",
+                "name": "Joe Mixon",
+                "position": "RB"
+              },
+              {
+                "player_id": "8207",
+                "name": "Tyler Goodson",
+                "position": "RB"
+              },
+              {
+                "player_id": "9225",
+                "name": "Tank Bigsby",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [
+              {
+                "player_id": "11643",
+                "name": "Jaylen Wright",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 10
+              },
+              {
+                "player_id": "13288",
+                "name": "Nicholas Singleton",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 5
+              },
+              {
+                "player_id": "13317",
+                "name": "Ted Hurst III",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "11435",
+                "name": "Emanuel Wilson",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "13288",
+                "name": "Nicholas Singleton",
+                "position": "RB"
+              },
+              {
+                "player_id": "11435",
+                "name": "Emanuel Wilson",
+                "position": "RB"
+              },
+              {
+                "player_id": "12492",
+                "name": "Pat Bryant",
+                "position": "WR"
+              },
+              {
+                "player_id": "4035",
+                "name": "Alvin Kamara",
+                "position": "RB"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [
+              {
+                "player_id": "4035",
+                "name": "Alvin Kamara",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "12492",
+                "name": "Pat Bryant",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 10
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "9482",
+                "name": "Michael Mayer",
+                "position": "TE"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [
+              {
+                "player_id": "9482",
+                "name": "Michael Mayer",
+                "position": "TE",
+                "kind": "waiver",
+                "bid": 10
+              },
+              {
+                "player_id": "5995",
+                "name": "Justice Hill",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 0
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "11834",
+                "name": "Devaughn Vele",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "6804",
+          "name": "Jordan Love",
+          "position": "QB",
+          "week": 6,
+          "points": 92.66,
+          "projection": 53.87,
+          "games": 3
+        },
+        {
+          "player_id": "8210",
+          "name": "Chig Okonkwo",
+          "position": "TE",
+          "week": 6,
+          "points": 28.8,
+          "projection": 23.8,
+          "games": 4
+        },
+        {
+          "player_id": "5995",
+          "name": "Justice Hill",
+          "position": "RB",
+          "week": 1,
+          "points": 25.2,
+          "projection": 30.76,
+          "games": 5
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "9488",
+          "name": "Jaxon Smith-Njigba",
+          "position": "WR",
+          "points": 232.06,
+          "games": 9,
+          "per_game": 25.8
+        },
+        {
+          "player_id": "7523",
+          "name": "Trevor Lawrence",
+          "position": "QB",
+          "points": 146.2,
+          "games": 6,
+          "per_game": 24.4
+        },
+        {
+          "player_id": "3198",
+          "name": "Derrick Henry",
+          "position": "RB",
+          "points": 142.28,
+          "games": 9,
+          "per_game": 15.8
+        },
+        {
+          "player_id": "8146",
+          "name": "Garrett Wilson",
+          "position": "WR",
+          "points": 113.7,
+          "games": 8,
+          "per_game": 14.2
+        },
+        {
+          "player_id": "7611",
+          "name": "Rhamondre Stevenson",
+          "position": "RB",
+          "points": 113.7,
+          "games": 9,
+          "per_game": 12.6
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 168.1,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 2,
+          "points": 139.26,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 3,
+          "points": 158.94,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 4,
+          "points": 90.48,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 5,
+          "points": 150.64,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 6,
+          "points": 135.74,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 7,
+          "points": 112.16,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 8,
+          "points": 100.42,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 9,
+          "points": 115.86,
+          "median": null,
+          "won": true
+        }
+      ],
+      "bench": {
+        "total": 122.12,
+        "worst": {
+          "week": 7,
+          "points": 28.6,
+          "player_id": "10213",
+          "name": "Tre Tucker"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 0,
+        "game_changer": 0,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "C",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 10,
+            "depth": "fine"
+          },
+          {
+            "position": "RB",
+            "rank": 11,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 5,
+            "depth": "fine"
+          },
+          {
+            "position": "TE",
+            "rank": 6,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 11
+          },
+          {
+            "key": "production",
+            "rank": 6
+          },
+          {
+            "key": "trade_value",
+            "rank": 9
+          },
+          {
+            "key": "depth",
+            "rank": 7
+          }
+        ],
+        "read": "Soft at QB and RB."
+      }
+    },
+    {
+      "roster_id": 12,
+      "team": {
+        "name": "The Dart Side",
+        "owner": "rgomes7",
+        "avatar_url": "https://sleepercdn.com/uploads/fbe9820cc44d4c8f2b27551b41d72bea.jpg"
+      },
+      "wins": 2,
+      "losses": 7,
+      "points_for": 882.0,
+      "moves": {
+        "adds": 10,
+        "drops": 7,
+        "trades": 0,
+        "weeks": [
+          {
+            "week": 9,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 8,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 7,
+            "adds": [
+              {
+                "player_id": "8122",
+                "name": "Zonovan Knight",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "13317",
+                "name": "Ted Hurst III",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "9757",
+                "name": "Kendre Miller",
+                "position": "RB"
+              },
+              {
+                "player_id": "8119",
+                "name": "Jahan Dotson",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 6,
+            "adds": [
+              {
+                "player_id": "8119",
+                "name": "Jahan Dotson",
+                "position": "WR",
+                "kind": "waiver",
+                "bid": 1
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "13150",
+                "name": "Darius Cooper",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 5,
+            "adds": [
+              {
+                "player_id": "13150",
+                "name": "Darius Cooper",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12634",
+                "name": "Jordan Watkins",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 4,
+            "adds": [
+              {
+                "player_id": "4137",
+                "name": "James Conner",
+                "position": "RB",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "12634",
+                "name": "Jordan Watkins",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "12508",
+                "name": "Jaxson Dart",
+                "position": "QB"
+              },
+              {
+                "player_id": "13274",
+                "name": "Germie Bernard",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 3,
+            "adds": [
+              {
+                "player_id": "9757",
+                "name": "Kendre Miller",
+                "position": "RB",
+                "kind": "waiver",
+                "bid": 6
+              },
+              {
+                "player_id": "13330",
+                "name": "Kenyon Sadiq",
+                "position": "TE",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "13274",
+                "name": "Germie Bernard",
+                "position": "WR",
+                "kind": "free_agent",
+                "bid": null
+              },
+              {
+                "player_id": "9228",
+                "name": "Bryce Young",
+                "position": "QB",
+                "kind": "free_agent",
+                "bid": null
+              }
+            ],
+            "drops": [
+              {
+                "player_id": "13413",
+                "name": "Cyrus Allen",
+                "position": "WR"
+              }
+            ],
+            "trades": []
+          },
+          {
+            "week": 2,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          },
+          {
+            "week": 1,
+            "adds": [],
+            "drops": [],
+            "trades": []
+          }
+        ]
+      },
+      "best_adds": [
+        {
+          "player_id": "9228",
+          "name": "Bryce Young",
+          "position": "QB",
+          "week": 3,
+          "points": 116.06,
+          "projection": 106.05,
+          "games": 7
+        },
+        {
+          "player_id": "13330",
+          "name": "Kenyon Sadiq",
+          "position": "TE",
+          "week": 3,
+          "points": 39.7,
+          "projection": 46.73,
+          "games": 7
+        },
+        {
+          "player_id": "9757",
+          "name": "Kendre Miller",
+          "position": "RB",
+          "week": 3,
+          "points": 19.9,
+          "projection": 22.43,
+          "games": 3
+        }
+      ],
+      "top_performers": [
+        {
+          "player_id": "12545",
+          "name": "Tyler Shough",
+          "position": "QB",
+          "points": 124.06,
+          "games": 6,
+          "per_game": 20.7
+        },
+        {
+          "player_id": "10232",
+          "name": "Michael Wilson",
+          "position": "WR",
+          "points": 120.68,
+          "games": 9,
+          "per_game": 13.4
+        },
+        {
+          "player_id": "9224",
+          "name": "Chase Brown",
+          "position": "RB",
+          "points": 101.4,
+          "games": 8,
+          "per_game": 12.7
+        },
+        {
+          "player_id": "9484",
+          "name": "Tucker Kraft",
+          "position": "TE",
+          "points": 90.4,
+          "games": 9,
+          "per_game": 10.0
+        },
+        {
+          "player_id": "11620",
+          "name": "Rome Odunze",
+          "position": "WR",
+          "points": 88.8,
+          "games": 9,
+          "per_game": 9.9
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "points": 99.5,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 2,
+          "points": 88.8,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 3,
+          "points": 112.7,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 4,
+          "points": 116.54,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 5,
+          "points": 62.22,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 6,
+          "points": 108.06,
+          "median": null,
+          "won": true
+        },
+        {
+          "week": 7,
+          "points": 86.52,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 8,
+          "points": 116.46,
+          "median": null,
+          "won": false
+        },
+        {
+          "week": 9,
+          "points": 91.2,
+          "median": null,
+          "won": false
+        }
+      ],
+      "bench": {
+        "total": 176.84,
+        "worst": {
+          "week": 4,
+          "points": 31.32,
+          "player_id": "9228",
+          "name": "Bryce Young"
+        }
+      },
+      "awards": {
+        "top_scorer": 0,
+        "mvb": 1,
+        "game_changer": 0,
+        "underperformer": 0
+      },
+      "grade": {
+        "letter": "D",
+        "slots": [
+          {
+            "position": "QB",
+            "rank": 7,
+            "depth": "deep"
+          },
+          {
+            "position": "RB",
+            "rank": 8,
+            "depth": "fine"
+          },
+          {
+            "position": "WR",
+            "rank": 12,
+            "depth": "thin"
+          },
+          {
+            "position": "TE",
+            "rank": 12,
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 12
+          },
+          {
+            "key": "production",
+            "rank": 11
+          },
+          {
+            "key": "trade_value",
+            "rank": 11
+          },
+          {
+            "key": "depth",
+            "rank": 12
+          }
+        ],
+        "read": "Deep at QB. Soft at TE. Thin at WR."
+      }
+    }
+  ]
+}

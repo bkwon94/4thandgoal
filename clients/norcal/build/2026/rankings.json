@@ -1,0 +1,1965 @@
+{
+  "schema_version": 1,
+  "season": 2026,
+  "weeks": [
+    {
+      "week": 1,
+      "rows": [
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "wins": 1,
+          "losses": 0,
+          "rank": 1,
+          "movement": null,
+          "components": {
+            "standing": 1,
+            "form": 1,
+            "schedule_played": 7,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "wins": 1,
+          "losses": 0,
+          "rank": 2,
+          "movement": null,
+          "components": {
+            "standing": 2,
+            "form": 2,
+            "schedule_played": 8,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "wins": 1,
+          "losses": 0,
+          "rank": 3,
+          "movement": null,
+          "components": {
+            "standing": 3,
+            "form": 3,
+            "schedule_played": 9,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "wins": 1,
+          "losses": 0,
+          "rank": 4,
+          "movement": null,
+          "components": {
+            "standing": 4,
+            "form": 4,
+            "schedule_played": 10,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "wins": 1,
+          "losses": 0,
+          "rank": 5,
+          "movement": null,
+          "components": {
+            "standing": 5,
+            "form": 5,
+            "schedule_played": 11,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "wins": 1,
+          "losses": 0,
+          "rank": 6,
+          "movement": null,
+          "components": {
+            "standing": 6,
+            "form": 6,
+            "schedule_played": 12,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "wins": 0,
+          "losses": 1,
+          "rank": 7,
+          "movement": null,
+          "components": {
+            "standing": 7,
+            "form": 7,
+            "schedule_played": 3,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "wins": 0,
+          "losses": 1,
+          "rank": 8,
+          "movement": null,
+          "components": {
+            "standing": 8,
+            "form": 8,
+            "schedule_played": 4,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "wins": 0,
+          "losses": 1,
+          "rank": 9,
+          "movement": null,
+          "components": {
+            "standing": 9,
+            "form": 9,
+            "schedule_played": 5,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "wins": 0,
+          "losses": 1,
+          "rank": 10,
+          "movement": null,
+          "components": {
+            "standing": 10,
+            "form": 10,
+            "schedule_played": 6,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "wins": 0,
+          "losses": 1,
+          "rank": 11,
+          "movement": null,
+          "components": {
+            "standing": 11,
+            "form": 11,
+            "schedule_played": 1,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "wins": 0,
+          "losses": 1,
+          "rank": 12,
+          "movement": null,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 2,
+            "scoring": 12
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "rows": [
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "wins": 2,
+          "losses": 0,
+          "rank": 1,
+          "movement": 2,
+          "components": {
+            "standing": 1,
+            "form": 1,
+            "schedule_played": 2,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "wins": 2,
+          "losses": 0,
+          "rank": 2,
+          "movement": 4,
+          "components": {
+            "standing": 2,
+            "form": 2,
+            "schedule_played": 3,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "wins": 1,
+          "losses": 1,
+          "rank": 3,
+          "movement": 4,
+          "components": {
+            "standing": 3,
+            "form": 3,
+            "schedule_played": 6,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "wins": 1,
+          "losses": 1,
+          "rank": 4,
+          "movement": -2,
+          "components": {
+            "standing": 4,
+            "form": 6,
+            "schedule_played": 4,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "wins": 1,
+          "losses": 1,
+          "rank": 5,
+          "movement": 5,
+          "components": {
+            "standing": 8,
+            "form": 5,
+            "schedule_played": 1,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "wins": 1,
+          "losses": 1,
+          "rank": 6,
+          "movement": -2,
+          "components": {
+            "standing": 6,
+            "form": 7,
+            "schedule_played": 10,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "wins": 1,
+          "losses": 1,
+          "rank": 7,
+          "movement": -6,
+          "components": {
+            "standing": 5,
+            "form": 8,
+            "schedule_played": 9,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "wins": 1,
+          "losses": 1,
+          "rank": 8,
+          "movement": 1,
+          "components": {
+            "standing": 7,
+            "form": 4,
+            "schedule_played": 11,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "wins": 1,
+          "losses": 1,
+          "rank": 9,
+          "movement": 3,
+          "components": {
+            "standing": 9,
+            "form": 9,
+            "schedule_played": 12,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "wins": 0,
+          "losses": 2,
+          "rank": 10,
+          "movement": -2,
+          "components": {
+            "standing": 11,
+            "form": 11,
+            "schedule_played": 8,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "wins": 1,
+          "losses": 1,
+          "rank": 11,
+          "movement": -6,
+          "components": {
+            "standing": 10,
+            "form": 10,
+            "schedule_played": 7,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "wins": 0,
+          "losses": 2,
+          "rank": 12,
+          "movement": -1,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 5,
+            "scoring": 12
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "rows": [
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "wins": 3,
+          "losses": 0,
+          "rank": 1,
+          "movement": 0,
+          "components": {
+            "standing": 1,
+            "form": 1,
+            "schedule_played": 5,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "wins": 3,
+          "losses": 0,
+          "rank": 2,
+          "movement": 0,
+          "components": {
+            "standing": 2,
+            "form": 2,
+            "schedule_played": 6,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "wins": 2,
+          "losses": 1,
+          "rank": 3,
+          "movement": 1,
+          "components": {
+            "standing": 3,
+            "form": 3,
+            "schedule_played": 2,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "wins": 2,
+          "losses": 1,
+          "rank": 4,
+          "movement": 4,
+          "components": {
+            "standing": 4,
+            "form": 4,
+            "schedule_played": 9,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "wins": 1,
+          "losses": 2,
+          "rank": 5,
+          "movement": -2,
+          "components": {
+            "standing": 6,
+            "form": 6,
+            "schedule_played": 7,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "wins": 2,
+          "losses": 1,
+          "rank": 6,
+          "movement": 5,
+          "components": {
+            "standing": 5,
+            "form": 5,
+            "schedule_played": 11,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "wins": 1,
+          "losses": 2,
+          "rank": 7,
+          "movement": -2,
+          "components": {
+            "standing": 9,
+            "form": 11,
+            "schedule_played": 1,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "wins": 1,
+          "losses": 2,
+          "rank": 8,
+          "movement": -1,
+          "components": {
+            "standing": 7,
+            "form": 9,
+            "schedule_played": 12,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "wins": 1,
+          "losses": 2,
+          "rank": 9,
+          "movement": 3,
+          "components": {
+            "standing": 11,
+            "form": 7,
+            "schedule_played": 3,
+            "scoring": 12
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "wins": 1,
+          "losses": 2,
+          "rank": 10,
+          "movement": -4,
+          "components": {
+            "standing": 8,
+            "form": 10,
+            "schedule_played": 10,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "wins": 1,
+          "losses": 2,
+          "rank": 11,
+          "movement": -2,
+          "components": {
+            "standing": 10,
+            "form": 8,
+            "schedule_played": 8,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "wins": 0,
+          "losses": 3,
+          "rank": 12,
+          "movement": -2,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 4,
+            "scoring": 7
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "rows": [
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "wins": 4,
+          "losses": 0,
+          "rank": 1,
+          "movement": 1,
+          "components": {
+            "standing": 1,
+            "form": 1,
+            "schedule_played": 3,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "wins": 3,
+          "losses": 1,
+          "rank": 2,
+          "movement": 1,
+          "components": {
+            "standing": 2,
+            "form": 3,
+            "schedule_played": 1,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "wins": 3,
+          "losses": 1,
+          "rank": 3,
+          "movement": 1,
+          "components": {
+            "standing": 4,
+            "form": 2,
+            "schedule_played": 8,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "wins": 2,
+          "losses": 2,
+          "rank": 4,
+          "movement": 1,
+          "components": {
+            "standing": 5,
+            "form": 4,
+            "schedule_played": 4,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "wins": 3,
+          "losses": 1,
+          "rank": 5,
+          "movement": -4,
+          "components": {
+            "standing": 3,
+            "form": 7,
+            "schedule_played": 10,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "wins": 2,
+          "losses": 2,
+          "rank": 6,
+          "movement": 4,
+          "components": {
+            "standing": 6,
+            "form": 6,
+            "schedule_played": 12,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "wins": 2,
+          "losses": 2,
+          "rank": 7,
+          "movement": 4,
+          "components": {
+            "standing": 7,
+            "form": 5,
+            "schedule_played": 6,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "wins": 2,
+          "losses": 2,
+          "rank": 8,
+          "movement": -2,
+          "components": {
+            "standing": 8,
+            "form": 8,
+            "schedule_played": 11,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "wins": 1,
+          "losses": 3,
+          "rank": 9,
+          "movement": -2,
+          "components": {
+            "standing": 10,
+            "form": 10,
+            "schedule_played": 2,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "wins": 1,
+          "losses": 3,
+          "rank": 10,
+          "movement": -1,
+          "components": {
+            "standing": 11,
+            "form": 9,
+            "schedule_played": 7,
+            "scoring": 12
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "wins": 1,
+          "losses": 3,
+          "rank": 11,
+          "movement": -3,
+          "components": {
+            "standing": 9,
+            "form": 12,
+            "schedule_played": 9,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "wins": 0,
+          "losses": 4,
+          "rank": 12,
+          "movement": 0,
+          "components": {
+            "standing": 12,
+            "form": 11,
+            "schedule_played": 5,
+            "scoring": 8
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "rows": [
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "wins": 4,
+          "losses": 1,
+          "rank": 1,
+          "movement": 2,
+          "components": {
+            "standing": 1,
+            "form": 1,
+            "schedule_played": 3,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "wins": 4,
+          "losses": 1,
+          "rank": 2,
+          "movement": 0,
+          "components": {
+            "standing": 2,
+            "form": 2,
+            "schedule_played": 1,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "wins": 3,
+          "losses": 2,
+          "rank": 3,
+          "movement": 1,
+          "components": {
+            "standing": 4,
+            "form": 3,
+            "schedule_played": 5,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "wins": 3,
+          "losses": 2,
+          "rank": 4,
+          "movement": 4,
+          "components": {
+            "standing": 6,
+            "form": 4,
+            "schedule_played": 9,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "wins": 4,
+          "losses": 1,
+          "rank": 5,
+          "movement": -4,
+          "components": {
+            "standing": 3,
+            "form": 5,
+            "schedule_played": 12,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "wins": 3,
+          "losses": 2,
+          "rank": 6,
+          "movement": -1,
+          "components": {
+            "standing": 5,
+            "form": 9,
+            "schedule_played": 4,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "wins": 2,
+          "losses": 3,
+          "rank": 7,
+          "movement": 4,
+          "components": {
+            "standing": 7,
+            "form": 6,
+            "schedule_played": 11,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "wins": 1,
+          "losses": 4,
+          "rank": 8,
+          "movement": 4,
+          "components": {
+            "standing": 10,
+            "form": 7,
+            "schedule_played": 7,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "wins": 2,
+          "losses": 3,
+          "rank": 9,
+          "movement": -3,
+          "components": {
+            "standing": 8,
+            "form": 10,
+            "schedule_played": 10,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "wins": 2,
+          "losses": 3,
+          "rank": 10,
+          "movement": -3,
+          "components": {
+            "standing": 9,
+            "form": 8,
+            "schedule_played": 6,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "wins": 1,
+          "losses": 4,
+          "rank": 11,
+          "movement": -1,
+          "components": {
+            "standing": 12,
+            "form": 11,
+            "schedule_played": 8,
+            "scoring": 12
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "wins": 1,
+          "losses": 4,
+          "rank": 12,
+          "movement": -3,
+          "components": {
+            "standing": 11,
+            "form": 12,
+            "schedule_played": 2,
+            "scoring": 11
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "rows": [
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "wins": 4,
+          "losses": 2,
+          "rank": 1,
+          "movement": 2,
+          "components": {
+            "standing": 1,
+            "form": 1,
+            "schedule_played": 9,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "wins": 4,
+          "losses": 2,
+          "rank": 2,
+          "movement": 2,
+          "components": {
+            "standing": 6,
+            "form": 2,
+            "schedule_played": 6,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "wins": 4,
+          "losses": 2,
+          "rank": 3,
+          "movement": 3,
+          "components": {
+            "standing": 2,
+            "form": 5,
+            "schedule_played": 4,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "wins": 4,
+          "losses": 2,
+          "rank": 4,
+          "movement": -2,
+          "components": {
+            "standing": 3,
+            "form": 6,
+            "schedule_played": 1,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "wins": 2,
+          "losses": 4,
+          "rank": 5,
+          "movement": 3,
+          "components": {
+            "standing": 8,
+            "form": 3,
+            "schedule_played": 5,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "wins": 4,
+          "losses": 2,
+          "rank": 6,
+          "movement": -5,
+          "components": {
+            "standing": 4,
+            "form": 4,
+            "schedule_played": 10,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "wins": 2,
+          "losses": 4,
+          "rank": 7,
+          "movement": 5,
+          "components": {
+            "standing": 10,
+            "form": 7,
+            "schedule_played": 2,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "wins": 2,
+          "losses": 4,
+          "rank": 8,
+          "movement": -1,
+          "components": {
+            "standing": 7,
+            "form": 9,
+            "schedule_played": 11,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "wins": 4,
+          "losses": 2,
+          "rank": 9,
+          "movement": -4,
+          "components": {
+            "standing": 5,
+            "form": 10,
+            "schedule_played": 12,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "wins": 2,
+          "losses": 4,
+          "rank": 10,
+          "movement": 1,
+          "components": {
+            "standing": 12,
+            "form": 8,
+            "schedule_played": 3,
+            "scoring": 12
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "wins": 2,
+          "losses": 4,
+          "rank": 11,
+          "movement": -2,
+          "components": {
+            "standing": 9,
+            "form": 11,
+            "schedule_played": 7,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "wins": 2,
+          "losses": 4,
+          "rank": 12,
+          "movement": -2,
+          "components": {
+            "standing": 11,
+            "form": 12,
+            "schedule_played": 8,
+            "scoring": 11
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 7,
+      "rows": [
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "wins": 5,
+          "losses": 2,
+          "rank": 1,
+          "movement": 0,
+          "components": {
+            "standing": 1,
+            "form": 1,
+            "schedule_played": 3,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "wins": 5,
+          "losses": 2,
+          "rank": 2,
+          "movement": 0,
+          "components": {
+            "standing": 3,
+            "form": 2,
+            "schedule_played": 6,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "wins": 5,
+          "losses": 2,
+          "rank": 3,
+          "movement": 3,
+          "components": {
+            "standing": 2,
+            "form": 4,
+            "schedule_played": 1,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "wins": 3,
+          "losses": 4,
+          "rank": 4,
+          "movement": 3,
+          "components": {
+            "standing": 8,
+            "form": 3,
+            "schedule_played": 12,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "wins": 3,
+          "losses": 4,
+          "rank": 5,
+          "movement": 3,
+          "components": {
+            "standing": 7,
+            "form": 5,
+            "schedule_played": 7,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "wins": 4,
+          "losses": 3,
+          "rank": 6,
+          "movement": -3,
+          "components": {
+            "standing": 4,
+            "form": 7,
+            "schedule_played": 5,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "wins": 2,
+          "losses": 5,
+          "rank": 7,
+          "movement": -2,
+          "components": {
+            "standing": 10,
+            "form": 6,
+            "schedule_played": 10,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "wins": 4,
+          "losses": 3,
+          "rank": 8,
+          "movement": -4,
+          "components": {
+            "standing": 5,
+            "form": 9,
+            "schedule_played": 2,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "wins": 3,
+          "losses": 4,
+          "rank": 9,
+          "movement": 3,
+          "components": {
+            "standing": 9,
+            "form": 8,
+            "schedule_played": 9,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "wins": 4,
+          "losses": 3,
+          "rank": 10,
+          "movement": -1,
+          "components": {
+            "standing": 6,
+            "form": 11,
+            "schedule_played": 11,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "wins": 2,
+          "losses": 5,
+          "rank": 11,
+          "movement": -1,
+          "components": {
+            "standing": 12,
+            "form": 10,
+            "schedule_played": 4,
+            "scoring": 12
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "wins": 2,
+          "losses": 5,
+          "rank": 12,
+          "movement": -1,
+          "components": {
+            "standing": 11,
+            "form": 12,
+            "schedule_played": 8,
+            "scoring": 10
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "rows": [
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "wins": 6,
+          "losses": 2,
+          "rank": 1,
+          "movement": 0,
+          "components": {
+            "standing": 1,
+            "form": 2,
+            "schedule_played": 3,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "wins": 4,
+          "losses": 4,
+          "rank": 2,
+          "movement": 2,
+          "components": {
+            "standing": 7,
+            "form": 1,
+            "schedule_played": 2,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "wins": 3,
+          "losses": 5,
+          "rank": 3,
+          "movement": 4,
+          "components": {
+            "standing": 8,
+            "form": 3,
+            "schedule_played": 8,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "wins": 5,
+          "losses": 3,
+          "rank": 4,
+          "movement": 4,
+          "components": {
+            "standing": 3,
+            "form": 6,
+            "schedule_played": 1,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "wins": 5,
+          "losses": 3,
+          "rank": 5,
+          "movement": 5,
+          "components": {
+            "standing": 2,
+            "form": 4,
+            "schedule_played": 12,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "wins": 5,
+          "losses": 3,
+          "rank": 6,
+          "movement": -4,
+          "components": {
+            "standing": 5,
+            "form": 5,
+            "schedule_played": 7,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "wins": 5,
+          "losses": 3,
+          "rank": 7,
+          "movement": -4,
+          "components": {
+            "standing": 4,
+            "form": 10,
+            "schedule_played": 4,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "wins": 4,
+          "losses": 4,
+          "rank": 8,
+          "movement": -2,
+          "components": {
+            "standing": 6,
+            "form": 11,
+            "schedule_played": 6,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "wins": 3,
+          "losses": 5,
+          "rank": 9,
+          "movement": 3,
+          "components": {
+            "standing": 10,
+            "form": 7,
+            "schedule_played": 10,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "wins": 3,
+          "losses": 5,
+          "rank": 10,
+          "movement": -5,
+          "components": {
+            "standing": 9,
+            "form": 8,
+            "schedule_played": 11,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "wins": 3,
+          "losses": 5,
+          "rank": 11,
+          "movement": -2,
+          "components": {
+            "standing": 11,
+            "form": 9,
+            "schedule_played": 9,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "wins": 2,
+          "losses": 6,
+          "rank": 12,
+          "movement": -1,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 5,
+            "scoring": 12
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 9,
+      "rows": [
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "wins": 4,
+          "losses": 5,
+          "rank": 1,
+          "movement": 2,
+          "components": {
+            "standing": 7,
+            "form": 1,
+            "schedule_played": 5,
+            "scoring": 2
+          },
+          "blurb": [
+            {
+              "text": "Skol Daddy takes the top spot at 4-5, a losing record wearing a crown.",
+              "fact_ids": [
+                "PR.5",
+                "S.7"
+              ]
+            },
+            {
+              "text": "They jumped 2 places after a 48-point win.",
+              "fact_ids": [
+                "PR.5.why"
+              ]
+            },
+            {
+              "text": "Playoff odds sit near a coin flip at 46%, with a projection of 127 a week from here.",
+              "fact_ids": [
+                "ODDS.5",
+                "ODDS.5.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 46,
+            "bye": 6,
+            "seed": null,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "wins": 6,
+          "losses": 3,
+          "rank": 2,
+          "movement": 5,
+          "components": {
+            "standing": 2,
+            "form": 2,
+            "schedule_played": 1,
+            "scoring": 4
+          },
+          "blurb": [
+            {
+              "text": "Hock Tua 💦 rockets 5 places to 2nd.",
+              "fact_ids": [
+                "PR.8"
+              ]
+            },
+            {
+              "text": "The jump came after a 35-point win over the 1st-place team.",
+              "fact_ids": [
+                "PR.8.why"
+              ]
+            },
+            {
+              "text": "They took down the league leader, no small thing.",
+              "fact_ids": [
+                "PR.8.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 87,
+            "bye": 41,
+            "seed": 1,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "wins": 6,
+          "losses": 3,
+          "rank": 3,
+          "movement": -2,
+          "components": {
+            "standing": 1,
+            "form": 7,
+            "schedule_played": 3,
+            "scoring": 1
+          },
+          "blurb": [
+            {
+              "text": "Mitseeker5000 slides to 3rd despite owning the standings.",
+              "fact_ids": [
+                "PR.6",
+                "S.1"
+              ]
+            },
+            {
+              "text": "That 35-point loss dropped them 2 places.",
+              "fact_ids": [
+                "PR.6.why"
+              ]
+            },
+            {
+              "text": "Scoring is down to 127.65 a week lately.",
+              "fact_ids": [
+                "H.6.trend"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 92,
+            "bye": 50,
+            "seed": 1,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "wins": 6,
+          "losses": 3,
+          "rank": 4,
+          "movement": 1,
+          "components": {
+            "standing": 3,
+            "form": 3,
+            "schedule_played": 12,
+            "scoring": 5
+          },
+          "blurb": [
+            {
+              "text": "puurdygood rises to 4th on a 2-game win streak.",
+              "fact_ids": [
+                "PR.1",
+                "H.1.streak"
+              ]
+            },
+            {
+              "text": "They project 131 a week from here, above their season pace.",
+              "fact_ids": [
+                "ODDS.1.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 87,
+            "bye": 39,
+            "seed": 1,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "wins": 6,
+          "losses": 3,
+          "rank": 5,
+          "movement": 1,
+          "components": {
+            "standing": 4,
+            "form": 4,
+            "schedule_played": 11,
+            "scoring": 9
+          },
+          "blurb": [
+            {
+              "text": "Davlionman edges up to 5th with a 6-3 record.",
+              "fact_ids": [
+                "PR.10",
+                "S.4"
+              ]
+            },
+            {
+              "text": "The offense ranks just 9th in scoring, and the record keeps covering for it.",
+              "fact_ids": [
+                "PR.10"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 79,
+            "bye": 27,
+            "seed": 3,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "wins": 4,
+          "losses": 5,
+          "rank": 6,
+          "movement": 4,
+          "components": {
+            "standing": 8,
+            "form": 5,
+            "schedule_played": 10,
+            "scoring": 6
+          },
+          "blurb": [
+            {
+              "text": "Bo Girds jumps 4 places despite a 4-5 record.",
+              "fact_ids": [
+                "PR.7",
+                "S.8"
+              ]
+            },
+            {
+              "text": "The move came after a 27-point win over the 3rd-place team.",
+              "fact_ids": [
+                "PR.7.why"
+              ]
+            },
+            {
+              "text": "Playoff odds sit at 46%, with the easiest remaining schedule in the league ahead.",
+              "fact_ids": [
+                "ODDS.7",
+                "ODDS.7.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 46,
+            "bye": 6,
+            "seed": null,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "wins": 4,
+          "losses": 5,
+          "rank": 7,
+          "movement": -5,
+          "components": {
+            "standing": 9,
+            "form": 6,
+            "schedule_played": 4,
+            "scoring": 8
+          },
+          "blurb": [
+            {
+              "text": "BobBuckstein tumbles 5 places to 7th.",
+              "fact_ids": [
+                "PR.3"
+              ]
+            },
+            {
+              "text": "Losing by 48 will do that.",
+              "fact_ids": [
+                "PR.3.why"
+              ]
+            },
+            {
+              "text": "Playoff odds are 40%, and they project 137 a week from here.",
+              "fact_ids": [
+                "ODDS.3",
+                "ODDS.3.why"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 40,
+            "bye": 5,
+            "seed": null,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "wins": 5,
+          "losses": 4,
+          "rank": 8,
+          "movement": 0,
+          "components": {
+            "standing": 5,
+            "form": 8,
+            "schedule_played": 6,
+            "scoring": 3
+          },
+          "blurb": [
+            {
+              "text": "Breece Mode holds at 8th, level with the last playoff spot.",
+              "fact_ids": [
+                "PR.11",
+                "S.5"
+              ]
+            },
+            {
+              "text": "Scoring has sagged to 109.48 a week over the last 3 weeks.",
+              "fact_ids": [
+                "H.11.trend"
+              ]
+            },
+            {
+              "text": "The hardest remaining schedule awaits, with playoff odds at 49%.",
+              "fact_ids": [
+                "ODDS.11.why",
+                "ODDS.11"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 49,
+            "bye": 8,
+            "seed": null,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "wins": 5,
+          "losses": 4,
+          "rank": 9,
+          "movement": -5,
+          "components": {
+            "standing": 6,
+            "form": 9,
+            "schedule_played": 2,
+            "scoring": 7
+          },
+          "blurb": [
+            {
+              "text": "kaiedmonds crashes 5 places to 9th.",
+              "fact_ids": [
+                "PR.9"
+              ]
+            },
+            {
+              "text": "A 27-point loss dropped them to 6th in the standings.",
+              "fact_ids": [
+                "PR.9.why"
+              ]
+            },
+            {
+              "text": "They still hold the last playoff spot, somehow.",
+              "fact_ids": [
+                "S.6"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 68,
+            "bye": 17,
+            "seed": 6,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "wins": 3,
+          "losses": 6,
+          "rank": 10,
+          "movement": -1,
+          "components": {
+            "standing": 10,
+            "form": 11,
+            "schedule_played": 8,
+            "scoring": 10
+          },
+          "blurb": [
+            {
+              "text": "VarsityBlue2 slips to 10th with a 3-6 record.",
+              "fact_ids": [
+                "PR.2",
+                "S.10"
+              ]
+            },
+            {
+              "text": "The offense has gone quiet, down to 98.43 a week lately.",
+              "fact_ids": [
+                "H.2.trend"
+              ]
+            },
+            {
+              "text": "Playoff odds of 3% say the rest out loud.",
+              "fact_ids": [
+                "ODDS.2"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 3,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "wins": 3,
+          "losses": 6,
+          "rank": 11,
+          "movement": 0,
+          "components": {
+            "standing": 11,
+            "form": 10,
+            "schedule_played": 9,
+            "scoring": 11
+          },
+          "blurb": [
+            {
+              "text": "The Mean Machine stays 11th on a 2-game losing streak.",
+              "fact_ids": [
+                "PR.4",
+                "H.4.streak"
+              ]
+            },
+            {
+              "text": "Mean on paper, not much of a machine on the field.",
+              "fact_ids": [
+                "PR.4",
+                "S.11"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 2,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "wins": 2,
+          "losses": 7,
+          "rank": 12,
+          "movement": 0,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 7,
+            "scoring": 12
+          },
+          "blurb": [
+            {
+              "text": "The Dart Side holds last place, 0-3 over the last 3 weeks.",
+              "fact_ids": [
+                "PR.12"
+              ]
+            },
+            {
+              "text": "They have lost 3 straight and own playoff odds of 1%.",
+              "fact_ids": [
+                "H.12.streak",
+                "ODDS.12"
+              ]
+            },
+            {
+              "text": "Dark times indeed.",
+              "fact_ids": []
+            }
+          ],
+          "odds": {
+            "playoff": 1,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
+        }
+      ]
+    }
+  ]
+}
