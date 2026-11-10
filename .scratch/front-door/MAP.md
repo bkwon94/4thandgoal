@@ -40,11 +40,11 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - `/` becomes the front door. The hero and the tool tiles go away. The menu stays with fewer links. Brian, 2026-11-09.
 - The trade check and trade ideas call `/analyze` and `/find` of `manager-brain` as they are. This spec adds `/sell-high` to the Advisor with Sonnet 5.5. The Advisor does not stream: its stages show as steps, then the whole Answer. `cpc:implement` waits for the merge of `manager-brain`. `decisions/06-grill-the-manager-brain-border.md`.
 - The browser keeps one Thread per team for the fantasy week, and the Tuesday build empties it. A stale Answer shows dimmed with a Refresh. A Clear action empties the Thread. `decisions/05-grill-the-thread-across-visits.md`.
+- The Jev route picks the right Topic, the honest miss, the team, and abuse on 43 questions. When a Topic only half fits and the data can answer, the route gives a free answer with the top Topic as a Suggestion. About 35 of 40 hit. `decisions/09-prototype-the-jev-route.md`.
 - On a phone, the Thread is a chat scroll with the ask box at the bottom, and each older Answer folds to one line. Site copy never names Jev, the Advisor, or the Finder. `decisions/08-prototype-the-front-door.md`.
 
 ## NOT YET SPECIFIED
 
-- Does the Jev route pick the right Topic for real questions? `decisions/09-prototype-the-jev-route.md`.
 - Which links stay in the menu, and what does each Answer link to? `decisions/10-spec-the-menu-and-pages.md`.
 
 ## OUT OF SCOPE
