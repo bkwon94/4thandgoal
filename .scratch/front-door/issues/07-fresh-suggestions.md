@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-6, AT-8, AT-34, AT-35.
 
 **Blocked by:** 03, 06
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A lift Noul above 0.7 puts its Topic first (AT-6).
 - [x] The top personal Suggestion opens at once after 30 s, and the log shows the build on open (AT-8).
