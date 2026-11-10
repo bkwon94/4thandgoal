@@ -271,6 +271,15 @@ def test_a_skipped_test_gets_no_request(tmp_path):
     _asks_only_at_1(tmp_path, "3", "Skipped: a clock window holds", "Skipped: a clock window holds")
 
 
+def test_a_repeated_key_in_one_entry_joins_its_values_in_order_with_one_space():
+    text = ("## AT-1: A clock window holds\n\nFiles: `a.txt`\nObservation: The check answered no match.\n"
+            "Observation: The check inside the window matched.\n")
+
+    entry = evidence_flags.evidence_entries(text)["AT-1"]
+
+    assert entry.keys["observation"] == "The check answered no match. The check inside the window matched."
+
+
 def test_a_test_in_two_halves_gets_one_request_with_the_files_and_observation_of_both(tmp_path, capsys):
     folder = _scratch(tmp_path, evidence=EVIDENCE.replace("## AT-1: A clock window holds\n", (
         "## AT-1 (pipeline half): A clock window holds\n")).replace("## AT-2:", (

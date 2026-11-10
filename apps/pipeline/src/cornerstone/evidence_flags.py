@@ -94,6 +94,8 @@ def acceptance_tests(text: str) -> dict[str, dict[str, str]]:
 def evidence_entries(text: str) -> dict[str, Evidence]:
     """Each entry of EVIDENCE.md by its test id. A line with no key of its own goes on to the key above it.
 
+    A key that repeats in one entry joins its values in order with one space.
+
     A test of two apps can have one entry per half, such as `## AT-50 (pipeline half): ...` and `## AT-50 (site
     half)`. The halves make one entry: each key of a later half goes on a new line after the same key of the first.
     """
@@ -112,7 +114,12 @@ def evidence_entries(text: str) -> dict[str, Evidence]:
         elif current is not None and (named := re.match(r"^([A-Z][A-Za-z ]*): (.*)$", line)):
             key = named.group(1).lower()
             value = named.group(2).strip()
-            current.keys[key] = f"{current.keys[key]}\n{value}" if key in current.keys and key not in seen else value
+            if key in seen:
+                current.keys[key] += f" {value}"
+            elif key in current.keys:
+                current.keys[key] += f"\n{value}"
+            else:
+                current.keys[key] = value
             seen.add(key)
         elif current is not None and key is not None and line.strip():
             current.keys[key] += "\n" + line.strip()
