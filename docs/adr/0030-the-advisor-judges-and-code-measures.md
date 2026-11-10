@@ -1,7 +1,6 @@
 # The Advisor judges, and code measures
 
-Status: proposed. It becomes accepted when the spec `manager-brain` merges. Prototype 04 of that spec can
-still move work between Jev and Claude.
+Status: accepted. The spec `manager-brain` builds it. Prototype 04 of that spec set the work of Jev and of Claude.
 
 The analyzer and the finder graded a trade with a rubric. The chart ratio gave a start letter, and seven
 adjusters each moved it by one step. Brian found that the rules "sometimes work, but also often (more times

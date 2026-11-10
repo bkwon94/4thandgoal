@@ -477,7 +477,7 @@ _Avoid_: quota, rate limit (alone)
 
 **Measure**:
 One named computation that turns raw data into a fact of the trade fact sheet: roster fit, standing, trend and
-usage, injury history, handcuff, schedule, or expected gap. It moves nothing. The Advisor weighs its fact.
+usage, injury, upside, superstar, handcuff, schedule, or expected gap. It moves nothing. The Advisor weighs its fact.
 _Avoid_: adjuster, factor, criterion, rule
 
 **Lineup**:
@@ -517,7 +517,7 @@ _Avoid_: win-win on the page
 **Finder**:
 The search for trades the asker could send. It looks at every partner, or at one partner the asker picks. The
 partner filter runs first. For each partner that passes, Jev picks the targets on each side, code builds
-every one-for-one and two-for-one trade from the targets only, and Jev makes the shortlist. The Advisor then
+every one-for-one, two-for-one, and one-for-two trade from the targets only, and Jev makes the shortlist. The Advisor then
 picks up to three trades from the shortlist that are good for both, and writes why each one works. The trades share no player. A
 handcuff, a player out with no return week, and an unlisted player are never in a trade. The chart lists no
 kicker and no defense, so they are always unlisted.
@@ -541,9 +541,9 @@ _Avoid_: candidates, top trades
 
 **Finder document**:
 The answer of the find route that the site renders: the season, the two teams, the as-of stamps, and up to
-three trades. Each trade holds its two sides, its fairness block, and one reason that Claude writes. When the
-Claude call fails twice, each reason is empty, the fairness block stands, and the document flags the fallback.
-An empty list carries the line that no swap between these rosters is good for both.
+three trades. Each trade holds its offer id, its two sides, the headline, and the Bullets of the Advisor. When the
+Advisor fails twice, each trade of the shortlist has no headline and no Bullet, its fact lines hold plain facts, and
+the document flags the fallback. An empty list carries a plain line that says why no trade works.
 _Avoid_: finder result, suggestions
 
 **Inner word**:
