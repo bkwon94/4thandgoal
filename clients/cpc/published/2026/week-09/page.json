@@ -1,0 +1,1992 @@
+{
+  "schema_version": 2,
+  "season": 2026,
+  "week": 9,
+  "dates": "Nov 5 – Nov 9, 2026",
+  "publish_date": "Tue Nov 10, 2026",
+  "teams": {
+    "1": {
+      "roster_id": 1,
+      "name": "The Blue Tent",
+      "owner": "tjhong0104",
+      "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
+      "wins": 11,
+      "losses": 7,
+      "points_for": 1003.87
+    },
+    "2": {
+      "roster_id": 2,
+      "name": "All You Need Is Love",
+      "owner": "wsh5022",
+      "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+      "wins": 12,
+      "losses": 6,
+      "points_for": 956.56
+    },
+    "3": {
+      "roster_id": 3,
+      "name": "Lil Fridge",
+      "owner": "TeamJu",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+      "wins": 11,
+      "losses": 7,
+      "points_for": 1004.64
+    },
+    "4": {
+      "roster_id": 4,
+      "name": "NFC Least",
+      "owner": "justinjjoo",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+      "wins": 3,
+      "losses": 15,
+      "points_for": 787.76
+    },
+    "5": {
+      "roster_id": 5,
+      "name": "London Cooking",
+      "owner": "DumpsterFiresRUs",
+      "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+      "wins": 11,
+      "losses": 7,
+      "points_for": 1030.45
+    },
+    "6": {
+      "roster_id": 6,
+      "name": "Bo Girds",
+      "owner": "bkwon",
+      "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+      "wins": 11,
+      "losses": 7,
+      "points_for": 1035.69
+    },
+    "7": {
+      "roster_id": 7,
+      "name": "To Infinity and Bijan",
+      "owner": "bjpicard96",
+      "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+      "wins": 8,
+      "losses": 10,
+      "points_for": 852.17
+    },
+    "8": {
+      "roster_id": 8,
+      "name": "Return of T Mac",
+      "owner": "jkwak03",
+      "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+      "wins": 11,
+      "losses": 7,
+      "points_for": 975.58
+    },
+    "9": {
+      "roster_id": 9,
+      "name": "Maye d'force B with U",
+      "owner": "dkim475",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+      "wins": 10,
+      "losses": 8,
+      "points_for": 1008.36
+    },
+    "10": {
+      "roster_id": 10,
+      "name": "behold the lamb",
+      "owner": "steveekimm",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+      "wins": 6,
+      "losses": 12,
+      "points_for": 858.13
+    },
+    "11": {
+      "roster_id": 11,
+      "name": "Unsolicited Dak Picks",
+      "owner": "mkim120",
+      "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+      "wins": 6,
+      "losses": 12,
+      "points_for": 858.23
+    },
+    "12": {
+      "roster_id": 12,
+      "name": "Teehee",
+      "owner": "pdurkim",
+      "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
+      "wins": 8,
+      "losses": 10,
+      "points_for": 986.51
+    }
+  },
+  "pick": {
+    "reason": "Closest Finish",
+    "sides": [
+      {
+        "team": {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "owner": "DumpsterFiresRUs",
+          "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+          "wins": 11,
+          "losses": 7,
+          "points_for": 1030.45
+        },
+        "score": 111.46,
+        "top": {
+          "player_id": "7588",
+          "name": "Javonte Williams",
+          "position": "RB",
+          "nfl_team": "DAL",
+          "points": 20.4,
+          "projection": 16.98,
+          "season_avg": null,
+          "started": true,
+          "slot": "RB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "winner": true,
+        "loser": false
+      },
+      {
+        "team": {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "owner": "dkim475",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+          "wins": 10,
+          "losses": 8,
+          "points_for": 1008.36
+        },
+        "score": 106.71,
+        "top": {
+          "player_id": "11564",
+          "name": "Drake Maye",
+          "position": "QB",
+          "nfl_team": "NE",
+          "points": 21.26,
+          "projection": 20.77,
+          "season_avg": null,
+          "started": true,
+          "slot": "QB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "winner": false,
+        "loser": true
+      }
+    ]
+  },
+  "motw": {
+    "matchup_id": 2,
+    "winner": 5,
+    "loser": 9,
+    "score_w": 111.46,
+    "score_l": 106.71,
+    "margin": 4.75,
+    "top_scorer": {
+      "5": {
+        "player_id": "7588",
+        "name": "Javonte Williams",
+        "position": "RB",
+        "nfl_team": "DAL",
+        "points": 20.4,
+        "projection": 16.98,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      "9": {
+        "player_id": "11564",
+        "name": "Drake Maye",
+        "position": "QB",
+        "nfl_team": "NE",
+        "points": 21.26,
+        "projection": 20.77,
+        "season_avg": null,
+        "started": true,
+        "slot": "QB",
+        "injury_status": null,
+        "injury_body_part": null
+      }
+    },
+    "drivers": [
+      {
+        "player_id": "6790",
+        "name": "D'Andre Swift",
+        "position": "RB",
+        "nfl_team": "CHI",
+        "points": 3.1,
+        "projection": 17.91,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "SF",
+        "name": "San Francisco 49ers",
+        "position": "DEF",
+        "nfl_team": "SF",
+        "points": 20.05,
+        "projection": 7.1,
+        "season_avg": null,
+        "started": true,
+        "slot": "DEF",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "9221",
+        "name": "Jahmyr Gibbs",
+        "position": "RB",
+        "nfl_team": "DET",
+        "points": 13.4,
+        "projection": 23.04,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "6794",
+        "name": "Justin Jefferson",
+        "position": "WR",
+        "nfl_team": "MIN",
+        "points": 7.3,
+        "projection": 15.27,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "11646",
+        "name": "Jalen Coker",
+        "position": "WR",
+        "nfl_team": "CAR",
+        "points": 4.6,
+        "projection": 11.42,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "8112",
+        "name": "Drake London",
+        "position": "WR",
+        "nfl_team": "ATL",
+        "points": 9.3,
+        "projection": 15.55,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "4217",
+        "name": "George Kittle",
+        "position": "TE",
+        "nfl_team": "SF",
+        "points": 7.8,
+        "projection": 13.05,
+        "season_avg": null,
+        "started": true,
+        "slot": "TE",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "7594",
+        "name": "Chuba Hubbard",
+        "position": "RB",
+        "nfl_team": "CAR",
+        "points": 10.6,
+        "projection": 15.5,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "12474",
+        "name": "Woody Marks",
+        "position": "RB",
+        "nfl_team": "HOU",
+        "points": 7.9,
+        "projection": 12.67,
+        "season_avg": null,
+        "started": true,
+        "slot": "FLEX",
+        "injury_status": null,
+        "injury_body_part": null
+      }
+    ],
+    "swing": [
+      {
+        "player_id": "7588",
+        "name": "Javonte Williams",
+        "position": "RB",
+        "nfl_team": "DAL",
+        "points": 20.4,
+        "projection": 16.98,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "8138",
+        "name": "James Cook III",
+        "position": "RB",
+        "nfl_team": "BUF",
+        "points": 16.7,
+        "projection": 14.4,
+        "season_avg": null,
+        "started": true,
+        "slot": "FLEX",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "11566",
+        "name": "Jayden Daniels",
+        "position": "QB",
+        "nfl_team": "WAS",
+        "points": 14.56,
+        "projection": 18.6,
+        "season_avg": null,
+        "started": true,
+        "slot": "QB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "7569",
+        "name": "Nico Collins",
+        "position": "WR",
+        "nfl_team": "HOU",
+        "points": 13.5,
+        "projection": 14.57,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "SEA",
+        "name": "Seattle Seahawks",
+        "position": "DEF",
+        "nfl_team": "SEA",
+        "points": 10.7,
+        "projection": 8.57,
+        "season_avg": null,
+        "started": true,
+        "slot": "DEF",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "7594",
+        "name": "Chuba Hubbard",
+        "position": "RB",
+        "nfl_team": "CAR",
+        "points": 10.6,
+        "projection": 15.5,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "8112",
+        "name": "Drake London",
+        "position": "WR",
+        "nfl_team": "ATL",
+        "points": 9.3,
+        "projection": 15.55,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "12474",
+        "name": "Woody Marks",
+        "position": "RB",
+        "nfl_team": "HOU",
+        "points": 7.9,
+        "projection": 12.67,
+        "season_avg": null,
+        "started": true,
+        "slot": "FLEX",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "4217",
+        "name": "George Kittle",
+        "position": "TE",
+        "nfl_team": "SF",
+        "points": 7.8,
+        "projection": 13.05,
+        "season_avg": null,
+        "started": true,
+        "slot": "TE",
+        "injury_status": null,
+        "injury_body_part": null
+      }
+    ],
+    "bench_regret": [
+      [
+        {
+          "player_id": "13337",
+          "name": "Emmett Johnson",
+          "position": "RB",
+          "nfl_team": "KC",
+          "points": 9.4,
+          "projection": 5.6,
+          "season_avg": null,
+          "started": false,
+          "slot": null,
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        {
+          "player_id": "6790",
+          "name": "D'Andre Swift",
+          "position": "RB",
+          "nfl_team": "CHI",
+          "points": 3.1,
+          "projection": 17.91,
+          "season_avg": null,
+          "started": true,
+          "slot": "RB",
+          "injury_status": null,
+          "injury_body_part": null
+        }
+      ]
+    ],
+    "recent_moves": [
+      {
+        "player_id": "SF",
+        "roster_id": 9,
+        "kind": "waiver",
+        "week": 8,
+        "bid": 0
+      }
+    ]
+  },
+  "game_changer": {
+    "award": {
+      "key": "game_changer",
+      "line": {
+        "player_id": "12501",
+        "name": "Matthew Golden",
+        "position": "WR",
+        "nfl_team": "GB",
+        "points": 27.4,
+        "projection": 12.33,
+        "season_avg": null,
+        "started": true,
+        "slot": "FLEX",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      "roster_id": 6,
+      "matchup_id": 6,
+      "reason": "Matthew Golden scored 27.4 on a 12.33 projection, 15.07 over, in a 13.44-point win."
+    },
+    "team": "Bo Girds"
+  },
+  "awards": [
+    {
+      "title": "Top Scorer",
+      "missing": false,
+      "player": "Jordan Love",
+      "player_id": "6804",
+      "points": 36.18,
+      "team": "Return of T Mac",
+      "projection": null
+    },
+    {
+      "title": "MVB · Most Valuable Benchwarmer",
+      "missing": false,
+      "player": "C.J. Stroud",
+      "player_id": "9758",
+      "points": 36.36,
+      "team": "Unsolicited Dak Picks",
+      "projection": null
+    },
+    {
+      "title": "Underperformer",
+      "missing": false,
+      "player": "D'Andre Swift",
+      "player_id": "6790",
+      "points": 3.1,
+      "team": "Maye d'force B with U",
+      "projection": 17.91
+    },
+    {
+      "title": "Overachiever",
+      "missing": false,
+      "player": "Jordan Love",
+      "player_id": "6804",
+      "points": 36.18,
+      "team": "Return of T Mac",
+      "projection": 17.08
+    }
+  ],
+  "leaders": [
+    {
+      "position": "QB",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Jordan Love",
+          "player_id": "6804",
+          "nfl_team": "GB",
+          "points": 36.18,
+          "team": "Return of T Mac"
+        },
+        {
+          "rank": 2,
+          "player": "Joe Burrow",
+          "player_id": "6770",
+          "nfl_team": "CIN",
+          "points": 29.54,
+          "team": "All You Need Is Love"
+        },
+        {
+          "rank": 3,
+          "player": "Brock Purdy",
+          "player_id": "8183",
+          "nfl_team": "SF",
+          "points": 26.28,
+          "team": "The Blue Tent"
+        }
+      ]
+    },
+    {
+      "position": "RB",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Kenneth Walker III",
+          "player_id": "8151",
+          "nfl_team": "KC",
+          "points": 34.3,
+          "team": "Bo Girds"
+        },
+        {
+          "rank": 2,
+          "player": "Bucky Irving",
+          "player_id": "11584",
+          "nfl_team": "TB",
+          "points": 25.5,
+          "team": "The Blue Tent"
+        },
+        {
+          "rank": 3,
+          "player": "Bijan Robinson",
+          "player_id": "9509",
+          "nfl_team": "ATL",
+          "points": 22.7,
+          "team": "Return of T Mac"
+        }
+      ]
+    },
+    {
+      "position": "WR",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "CeeDee Lamb",
+          "player_id": "6786",
+          "nfl_team": "DAL",
+          "points": 28.5,
+          "team": "Return of T Mac"
+        },
+        {
+          "rank": 2,
+          "player": "Puka Nacua",
+          "player_id": "9493",
+          "nfl_team": "LAR",
+          "points": 28.0,
+          "team": "behold the lamb"
+        },
+        {
+          "rank": 3,
+          "player": "Matthew Golden",
+          "player_id": "12501",
+          "nfl_team": "GB",
+          "points": 27.4,
+          "team": "Bo Girds"
+        }
+      ]
+    },
+    {
+      "position": "TE",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Brock Bowers",
+          "player_id": "11604",
+          "nfl_team": "LV",
+          "points": 18.8,
+          "team": "The Blue Tent"
+        },
+        {
+          "rank": 2,
+          "player": "Travis Kelce",
+          "player_id": "1466",
+          "nfl_team": "KC",
+          "points": 15.3,
+          "team": "Lil Fridge"
+        },
+        {
+          "rank": 3,
+          "player": "Isaiah Likely",
+          "player_id": "8131",
+          "nfl_team": "NYG",
+          "points": 13.8,
+          "team": "Maye d'force B with U"
+        }
+      ]
+    },
+    {
+      "position": "DEF",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "San Francisco 49ers",
+          "player_id": "SF",
+          "nfl_team": "SF",
+          "points": 20.05,
+          "team": "Maye d'force B with U"
+        },
+        {
+          "rank": 2,
+          "player": "Houston Texans",
+          "player_id": "HOU",
+          "nfl_team": "HOU",
+          "points": 18.05,
+          "team": "Return of T Mac"
+        },
+        {
+          "rank": 3,
+          "player": "New York Giants",
+          "player_id": "NYG",
+          "nfl_team": "NYG",
+          "points": 16.4,
+          "team": "To Infinity and Bijan"
+        }
+      ]
+    }
+  ],
+  "trades": [
+    {
+      "sides": [
+        {
+          "team": {
+            "roster_id": 4,
+            "name": "NFC Least",
+            "owner": "justinjjoo",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+            "wins": 3,
+            "losses": 15,
+            "points_for": 787.76
+          },
+          "players": [
+            {
+              "name": "Tetairoa McMillan",
+              "headshot": "headshots/12526.png"
+            },
+            {
+              "name": "Makai Lemon",
+              "headshot": "headshots/13294.png"
+            },
+            {
+              "name": "Seth McGowan",
+              "headshot": "headshots/13424.png"
+            },
+            {
+              "name": "Chase Brown",
+              "headshot": "headshots/9224.png"
+            }
+          ],
+          "picks": []
+        },
+        {
+          "team": {
+            "roster_id": 8,
+            "name": "Return of T Mac",
+            "owner": "jkwak03",
+            "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+            "wins": 11,
+            "losses": 7,
+            "points_for": 975.58
+          },
+          "players": [
+            {
+              "name": "Rome Odunze",
+              "headshot": "headshots/11620.png"
+            },
+            {
+              "name": "CeeDee Lamb",
+              "headshot": "headshots/6786.png"
+            },
+            {
+              "name": "Jordan Mason",
+              "headshot": "headshots/8408.png"
+            }
+          ],
+          "picks": []
+        }
+      ]
+    },
+    {
+      "sides": [
+        {
+          "team": {
+            "roster_id": 5,
+            "name": "London Cooking",
+            "owner": "DumpsterFiresRUs",
+            "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+            "wins": 11,
+            "losses": 7,
+            "points_for": 1030.45
+          },
+          "players": [
+            {
+              "name": "Emeka Egbuka",
+              "headshot": "headshots/12514.png"
+            },
+            {
+              "name": "Josh Allen",
+              "headshot": "headshots/4984.png"
+            },
+            {
+              "name": "Puka Nacua",
+              "headshot": "headshots/9493.png"
+            }
+          ],
+          "picks": []
+        },
+        {
+          "team": {
+            "roster_id": 10,
+            "name": "behold the lamb",
+            "owner": "steveekimm",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+            "wins": 6,
+            "losses": 12,
+            "points_for": 858.13
+          },
+          "players": [
+            {
+              "name": "Jayden Daniels",
+              "headshot": "headshots/11566.png"
+            },
+            {
+              "name": "Nico Collins",
+              "headshot": "headshots/7569.png"
+            },
+            {
+              "name": "Javonte Williams",
+              "headshot": "headshots/7588.png"
+            },
+            {
+              "name": "Drake London",
+              "headshot": "headshots/8112.png"
+            }
+          ],
+          "picks": []
+        }
+      ]
+    }
+  ],
+  "matchups": [
+    {
+      "id": 1,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 3,
+            "name": "Lil Fridge",
+            "owner": "TeamJu",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+            "wins": 11,
+            "losses": 7,
+            "points_for": 1004.64
+          },
+          "score": 95.09,
+          "top": {
+            "player_id": "4034",
+            "name": "Christian McCaffrey",
+            "position": "RB",
+            "nfl_team": "SF",
+            "points": 21.7,
+            "projection": 20.51,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 10,
+            "name": "behold the lamb",
+            "owner": "steveekimm",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+            "wins": 6,
+            "losses": 12,
+            "points_for": 858.13
+          },
+          "score": 92.71,
+          "top": {
+            "player_id": "9493",
+            "name": "Puka Nacua",
+            "position": "WR",
+            "nfl_team": "LAR",
+            "points": 28.0,
+            "projection": 19.52,
+            "season_avg": null,
+            "started": true,
+            "slot": "WR",
+            "injury_status": "Questionable",
+            "injury_body_part": "Knee"
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "Lil Fridge trailed by 38.82 after the early Sunday games and still beat behold the lamb by 2.38. The recent adds went both ways: the Rams defense put up 13.95 for the losers, while Tyler Allgeier managed 5.6 for the winners. Both sides missed the median, Puka Nacua is now listed Questionable with a knee, and the losing side keeps losing with its playoff odds all but gone this week."
+    },
+    {
+      "id": 2,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 5,
+            "name": "London Cooking",
+            "owner": "DumpsterFiresRUs",
+            "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+            "wins": 11,
+            "losses": 7,
+            "points_for": 1030.45
+          },
+          "score": 111.46,
+          "top": {
+            "player_id": "7588",
+            "name": "Javonte Williams",
+            "position": "RB",
+            "nfl_team": "DAL",
+            "points": 20.4,
+            "projection": 16.98,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 9,
+            "name": "Maye d'force B with U",
+            "owner": "dkim475",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+            "wins": 10,
+            "losses": 8,
+            "points_for": 1008.36
+          },
+          "score": 106.71,
+          "top": {
+            "player_id": "11564",
+            "name": "Drake Maye",
+            "position": "QB",
+            "nfl_team": "NE",
+            "points": 21.26,
+            "projection": 20.77,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": true,
+      "recap": "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+    },
+    {
+      "id": 3,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 8,
+            "name": "Return of T Mac",
+            "owner": "jkwak03",
+            "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+            "wins": 11,
+            "losses": 7,
+            "points_for": 975.58
+          },
+          "score": 144.03,
+          "top": {
+            "player_id": "6804",
+            "name": "Jordan Love",
+            "position": "QB",
+            "nfl_team": "GB",
+            "points": 36.18,
+            "projection": 17.08,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 2,
+            "name": "All You Need Is Love",
+            "owner": "wsh5022",
+            "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+            "wins": 12,
+            "losses": 6,
+            "points_for": 956.56
+          },
+          "score": 106.39,
+          "top": {
+            "player_id": "6770",
+            "name": "Joe Burrow",
+            "position": "QB",
+            "nfl_team": "CIN",
+            "points": 29.54,
+            "projection": 20.93,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "All You Need Is Love lost to Return of T Mac in an upset, and the Love that mattered was Jordan Love, who put up 36.18 for the other side. A 24.44 lead after the early Sunday games vanished, with the recent add CeeDee Lamb posting 28.5 for the winners. The winners crossed into the playoff spots and kept their winning streak alive, while the losers still sit on top of the standings anyway."
+    },
+    {
+      "id": 4,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 1,
+            "name": "The Blue Tent",
+            "owner": "tjhong0104",
+            "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
+            "wins": 11,
+            "losses": 7,
+            "points_for": 1003.87
+          },
+          "score": 132.68,
+          "top": {
+            "player_id": "8167",
+            "name": "Christian Watson",
+            "position": "WR",
+            "nfl_team": "GB",
+            "points": 26.6,
+            "projection": 13.63,
+            "season_avg": null,
+            "started": true,
+            "slot": "WR",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 4,
+            "name": "NFC Least",
+            "owner": "justinjjoo",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+            "wins": 3,
+            "losses": 15,
+            "points_for": 787.76
+          },
+          "score": 86.79,
+          "top": {
+            "player_id": "1166",
+            "name": "Kirk Cousins",
+            "position": "QB",
+            "nfl_team": "LV",
+            "points": 14.64,
+            "projection": 17.27,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "NFC Least led by 46.45 after the early Sunday games and still lost by 45.89 to The Blue Tent. The trade pickups Tetairoa McMillan and Makai Lemon managed 13.6 and 9.1, and Xavier Worthy is now listed Out. The winners climbed a spot in the standings while the losers stayed dead last."
+    },
+    {
+      "id": 5,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 7,
+            "name": "To Infinity and Bijan",
+            "owner": "bjpicard96",
+            "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+            "wins": 8,
+            "losses": 10,
+            "points_for": 852.17
+          },
+          "score": 83.08,
+          "top": {
+            "player_id": "NYG",
+            "name": "New York Giants",
+            "position": "DEF",
+            "nfl_team": "NYG",
+            "points": 16.4,
+            "projection": 7.98,
+            "season_avg": null,
+            "started": true,
+            "slot": "DEF",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 11,
+            "name": "Unsolicited Dak Picks",
+            "owner": "mkim120",
+            "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+            "wins": 6,
+            "losses": 12,
+            "points_for": 858.23
+          },
+          "score": 64.65,
+          "top": {
+            "player_id": "3294",
+            "name": "Dak Prescott",
+            "position": "QB",
+            "nfl_team": "DAL",
+            "points": 19.5,
+            "projection": 19.67,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "To Infinity and Bijan beat Unsolicited Dak Picks in a battle of recent-add defenses, the New York Giants at 16.4 against the New Orleans Saints at 6.55, and both sides still missed the median. Rhamondre Stevenson, hurt in this game, and Josh Jacobs are now listed Out, while Patrick Mahomes and Ladd McConkey are now listed Questionable. Adonai Mitchell, a waiver add, scored 0 for the losers, whose playoff odds fell to 1% this week."
+    },
+    {
+      "id": 6,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 6,
+            "name": "Bo Girds",
+            "owner": "bkwon",
+            "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+            "wins": 11,
+            "losses": 7,
+            "points_for": 1035.69
+          },
+          "score": 114.07,
+          "top": {
+            "player_id": "8151",
+            "name": "Kenneth Walker III",
+            "position": "RB",
+            "nfl_team": "KC",
+            "points": 34.3,
+            "projection": 20.07,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 12,
+            "name": "Teehee",
+            "owner": "pdurkim",
+            "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
+            "wins": 8,
+            "losses": 10,
+            "points_for": 986.51
+          },
+          "score": 100.63,
+          "top": {
+            "player_id": "6801",
+            "name": "Tee Higgins",
+            "position": "WR",
+            "nfl_team": "CIN",
+            "points": 17.7,
+            "projection": 13.84,
+            "season_avg": null,
+            "started": true,
+            "slot": "WR",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "Bo Girds held the lead over Teehee from Thursday all the way to Monday, and Kenneth Walker III and Matthew Golden each outscored the margin on his own. The win snapped a 4-game losing streak, while the other side's playoff odds slid to about 49% this week. Malik Willis, the new pickup at quarterback, scored 4.82 and is now listed Questionable (Groin), as is Luther Burden III, who was hurt late in his game against Tampa Bay."
+    }
+  ],
+  "median": {
+    "value": 103.51,
+    "above": {
+      "team": {
+        "roster_id": 2,
+        "name": "All You Need Is Love",
+        "owner": "wsh5022",
+        "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+        "wins": 12,
+        "losses": 6,
+        "points_for": 956.56
+      },
+      "gap": 2.88
+    },
+    "below": {
+      "team": {
+        "roster_id": 12,
+        "name": "Teehee",
+        "owner": "pdurkim",
+        "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
+        "wins": 8,
+        "losses": 10,
+        "points_for": 986.51
+      },
+      "gap": -2.88
+    },
+    "bars": [
+      {
+        "team": {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "owner": "jkwak03",
+          "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+          "wins": 11,
+          "losses": 7,
+          "points_for": 975.58
+        },
+        "score": 144.03,
+        "above": true,
+        "pct": 100.0
+      },
+      {
+        "team": {
+          "roster_id": 1,
+          "name": "The Blue Tent",
+          "owner": "tjhong0104",
+          "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
+          "wins": 11,
+          "losses": 7,
+          "points_for": 1003.87
+        },
+        "score": 132.68,
+        "above": true,
+        "pct": 92.1
+      },
+      {
+        "team": {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "owner": "bkwon",
+          "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+          "wins": 11,
+          "losses": 7,
+          "points_for": 1035.69
+        },
+        "score": 114.07,
+        "above": true,
+        "pct": 79.2
+      },
+      {
+        "team": {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "owner": "DumpsterFiresRUs",
+          "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+          "wins": 11,
+          "losses": 7,
+          "points_for": 1030.45
+        },
+        "score": 111.46,
+        "above": true,
+        "pct": 77.4
+      },
+      {
+        "team": {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "owner": "dkim475",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+          "wins": 10,
+          "losses": 8,
+          "points_for": 1008.36
+        },
+        "score": 106.71,
+        "above": true,
+        "pct": 74.1
+      },
+      {
+        "team": {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "owner": "wsh5022",
+          "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+          "wins": 12,
+          "losses": 6,
+          "points_for": 956.56
+        },
+        "score": 106.39,
+        "above": true,
+        "pct": 73.9
+      },
+      {
+        "team": {
+          "roster_id": 12,
+          "name": "Teehee",
+          "owner": "pdurkim",
+          "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
+          "wins": 8,
+          "losses": 10,
+          "points_for": 986.51
+        },
+        "score": 100.63,
+        "above": false,
+        "pct": 69.9
+      },
+      {
+        "team": {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "owner": "TeamJu",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+          "wins": 11,
+          "losses": 7,
+          "points_for": 1004.64
+        },
+        "score": 95.09,
+        "above": false,
+        "pct": 66.0
+      },
+      {
+        "team": {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "owner": "steveekimm",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+          "wins": 6,
+          "losses": 12,
+          "points_for": 858.13
+        },
+        "score": 92.71,
+        "above": false,
+        "pct": 64.4
+      },
+      {
+        "team": {
+          "roster_id": 4,
+          "name": "NFC Least",
+          "owner": "justinjjoo",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+          "wins": 3,
+          "losses": 15,
+          "points_for": 787.76
+        },
+        "score": 86.79,
+        "above": false,
+        "pct": 60.3
+      },
+      {
+        "team": {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "owner": "bjpicard96",
+          "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+          "wins": 8,
+          "losses": 10,
+          "points_for": 852.17
+        },
+        "score": 83.08,
+        "above": false,
+        "pct": 57.7
+      },
+      {
+        "team": {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "owner": "mkim120",
+          "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+          "wins": 6,
+          "losses": 12,
+          "points_for": 858.23
+        },
+        "score": 64.65,
+        "above": false,
+        "pct": 44.9
+      }
+    ],
+    "line_pct": 71.9
+  },
+  "table": [
+    {
+      "standing": {
+        "rank": 1,
+        "roster_id": 2,
+        "wins": 12,
+        "losses": 6,
+        "points_for": 956.56,
+        "in_playoffs": true,
+        "games_from_cut": 1,
+        "schedule_strength": 0.33,
+        "strength_rank": 10
+      },
+      "team": {
+        "roster_id": 2,
+        "name": "All You Need Is Love",
+        "owner": "wsh5022",
+        "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+        "wins": 12,
+        "losses": 6,
+        "points_for": 956.56
+      }
+    },
+    {
+      "standing": {
+        "rank": 2,
+        "roster_id": 6,
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1035.69,
+        "in_playoffs": true,
+        "games_from_cut": 0,
+        "schedule_strength": 0.61,
+        "strength_rank": 2
+      },
+      "team": {
+        "roster_id": 6,
+        "name": "Bo Girds",
+        "owner": "bkwon",
+        "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1035.69
+      }
+    },
+    {
+      "standing": {
+        "rank": 3,
+        "roster_id": 5,
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1030.45,
+        "in_playoffs": true,
+        "games_from_cut": 0,
+        "schedule_strength": 0.61,
+        "strength_rank": 3
+      },
+      "team": {
+        "roster_id": 5,
+        "name": "London Cooking",
+        "owner": "DumpsterFiresRUs",
+        "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1030.45
+      }
+    },
+    {
+      "standing": {
+        "rank": 4,
+        "roster_id": 3,
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1004.64,
+        "in_playoffs": true,
+        "games_from_cut": 0,
+        "schedule_strength": 0.61,
+        "strength_rank": 4
+      },
+      "team": {
+        "roster_id": 3,
+        "name": "Lil Fridge",
+        "owner": "TeamJu",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1004.64
+      }
+    },
+    {
+      "standing": {
+        "rank": 5,
+        "roster_id": 1,
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1003.87,
+        "in_playoffs": true,
+        "games_from_cut": 0,
+        "schedule_strength": 0.61,
+        "strength_rank": 5
+      },
+      "team": {
+        "roster_id": 1,
+        "name": "The Blue Tent",
+        "owner": "tjhong0104",
+        "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1003.87
+      }
+    },
+    {
+      "standing": {
+        "rank": 6,
+        "roster_id": 8,
+        "wins": 11,
+        "losses": 7,
+        "points_for": 976.58,
+        "in_playoffs": true,
+        "games_from_cut": 0,
+        "schedule_strength": 0.44,
+        "strength_rank": 8
+      },
+      "team": {
+        "roster_id": 8,
+        "name": "Return of T Mac",
+        "owner": "jkwak03",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 975.58
+      }
+    },
+    {
+      "standing": {
+        "rank": 7,
+        "roster_id": 9,
+        "wins": 10,
+        "losses": 8,
+        "points_for": 1007.36,
+        "in_playoffs": false,
+        "games_from_cut": -1,
+        "schedule_strength": 0.17,
+        "strength_rank": 12
+      },
+      "team": {
+        "roster_id": 9,
+        "name": "Maye d'force B with U",
+        "owner": "dkim475",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+        "wins": 10,
+        "losses": 8,
+        "points_for": 1008.36
+      }
+    },
+    {
+      "standing": {
+        "rank": 8,
+        "roster_id": 12,
+        "wins": 8,
+        "losses": 10,
+        "points_for": 986.61,
+        "in_playoffs": false,
+        "games_from_cut": -3,
+        "schedule_strength": 0.33,
+        "strength_rank": 11
+      },
+      "team": {
+        "roster_id": 12,
+        "name": "Teehee",
+        "owner": "pdurkim",
+        "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
+        "wins": 8,
+        "losses": 10,
+        "points_for": 986.51
+      }
+    },
+    {
+      "standing": {
+        "rank": 9,
+        "roster_id": 7,
+        "wins": 8,
+        "losses": 10,
+        "points_for": 852.17,
+        "in_playoffs": false,
+        "games_from_cut": -3,
+        "schedule_strength": 0.61,
+        "strength_rank": 6
+      },
+      "team": {
+        "roster_id": 7,
+        "name": "To Infinity and Bijan",
+        "owner": "bjpicard96",
+        "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+        "wins": 8,
+        "losses": 10,
+        "points_for": 852.17
+      }
+    },
+    {
+      "standing": {
+        "rank": 10,
+        "roster_id": 11,
+        "wins": 6,
+        "losses": 12,
+        "points_for": 858.23,
+        "in_playoffs": false,
+        "games_from_cut": -5,
+        "schedule_strength": 0.44,
+        "strength_rank": 9
+      },
+      "team": {
+        "roster_id": 11,
+        "name": "Unsolicited Dak Picks",
+        "owner": "mkim120",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+        "wins": 6,
+        "losses": 12,
+        "points_for": 858.23
+      }
+    },
+    {
+      "standing": {
+        "rank": 11,
+        "roster_id": 10,
+        "wins": 6,
+        "losses": 12,
+        "points_for": 858.13,
+        "in_playoffs": false,
+        "games_from_cut": -5,
+        "schedule_strength": 0.67,
+        "strength_rank": 1
+      },
+      "team": {
+        "roster_id": 10,
+        "name": "behold the lamb",
+        "owner": "steveekimm",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+        "wins": 6,
+        "losses": 12,
+        "points_for": 858.13
+      }
+    },
+    {
+      "standing": {
+        "rank": 12,
+        "roster_id": 4,
+        "wins": 3,
+        "losses": 15,
+        "points_for": 787.76,
+        "in_playoffs": false,
+        "games_from_cut": -8,
+        "schedule_strength": 0.56,
+        "strength_rank": 7
+      },
+      "team": {
+        "roster_id": 4,
+        "name": "NFC Least",
+        "owner": "justinjjoo",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+        "wins": 3,
+        "losses": 15,
+        "points_for": 787.76
+      }
+    }
+  ],
+  "next": [
+    {
+      "a": {
+        "roster_id": 3,
+        "name": "Lil Fridge",
+        "owner": "TeamJu",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1004.64,
+        "byes": [
+          {
+            "player_id": "6806",
+            "name": "J.K. Dobbins",
+            "position": "RB",
+            "key": true
+          },
+          {
+            "player_id": "11560",
+            "name": "Caleb Williams",
+            "position": "QB",
+            "key": false
+          },
+          {
+            "player_id": "5045",
+            "name": "Courtland Sutton",
+            "position": "WR",
+            "key": false
+          },
+          {
+            "player_id": "DEN",
+            "name": "Denver Broncos",
+            "position": "DEF",
+            "key": false
+          }
+        ]
+      },
+      "b": {
+        "roster_id": 5,
+        "name": "London Cooking",
+        "owner": "DumpsterFiresRUs",
+        "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1030.45,
+        "byes": [
+          {
+            "player_id": "12514",
+            "name": "Emeka Egbuka",
+            "position": "WR",
+            "key": false
+          }
+        ]
+      },
+      "must_watch": true,
+      "reason": "Both sit near the cut, and lineups project 112.7 and 112.7 in a projected shootout"
+    },
+    {
+      "a": {
+        "roster_id": 2,
+        "name": "All You Need Is Love",
+        "owner": "wsh5022",
+        "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+        "wins": 12,
+        "losses": 6,
+        "points_for": 956.56,
+        "byes": [
+          {
+            "player_id": "12517",
+            "name": "Colston Loveland",
+            "position": "TE",
+            "key": true
+          }
+        ]
+      },
+      "b": {
+        "roster_id": 10,
+        "name": "behold the lamb",
+        "owner": "steveekimm",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+        "wins": 6,
+        "losses": 12,
+        "points_for": 858.13,
+        "byes": [
+          {
+            "player_id": "12534",
+            "name": "Kyle Monangai",
+            "position": "RB",
+            "key": false
+          }
+        ]
+      },
+      "must_watch": false,
+      "reason": null
+    },
+    {
+      "a": {
+        "roster_id": 4,
+        "name": "NFC Least",
+        "owner": "justinjjoo",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+        "wins": 3,
+        "losses": 15,
+        "points_for": 787.76,
+        "byes": [
+          {
+            "player_id": "4866",
+            "name": "Saquon Barkley",
+            "position": "RB",
+            "key": false
+          },
+          {
+            "player_id": "7525",
+            "name": "DeVonta Smith",
+            "position": "WR",
+            "key": false
+          },
+          {
+            "player_id": "13294",
+            "name": "Makai Lemon",
+            "position": "WR",
+            "key": false
+          }
+        ]
+      },
+      "b": {
+        "roster_id": 9,
+        "name": "Maye d'force B with U",
+        "owner": "dkim475",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+        "wins": 10,
+        "losses": 8,
+        "points_for": 1008.36,
+        "byes": [
+          {
+            "player_id": "6790",
+            "name": "D'Andre Swift",
+            "position": "RB",
+            "key": true
+          },
+          {
+            "player_id": "13345",
+            "name": "Jonah Coleman",
+            "position": "RB",
+            "key": false
+          },
+          {
+            "player_id": "7526",
+            "name": "Jaylen Waddle",
+            "position": "WR",
+            "key": false
+          }
+        ]
+      },
+      "must_watch": false,
+      "reason": null
+    },
+    {
+      "a": {
+        "roster_id": 7,
+        "name": "To Infinity and Bijan",
+        "owner": "bjpicard96",
+        "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+        "wins": 8,
+        "losses": 10,
+        "points_for": 852.17,
+        "byes": []
+      },
+      "b": {
+        "roster_id": 8,
+        "name": "Return of T Mac",
+        "owner": "jkwak03",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 975.58,
+        "byes": [
+          {
+            "player_id": "11620",
+            "name": "Rome Odunze",
+            "position": "WR",
+            "key": false
+          }
+        ]
+      },
+      "must_watch": true,
+      "reason": "Return of T Mac puts a 6-game win streak on the line and sits near the cut"
+    },
+    {
+      "a": {
+        "roster_id": 1,
+        "name": "The Blue Tent",
+        "owner": "tjhong0104",
+        "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1003.87,
+        "byes": [
+          {
+            "player_id": "11584",
+            "name": "Bucky Irving",
+            "position": "RB",
+            "key": true
+          },
+          {
+            "player_id": "5022",
+            "name": "Dallas Goedert",
+            "position": "TE",
+            "key": true
+          },
+          {
+            "player_id": "12489",
+            "name": "RJ Harvey",
+            "position": "RB",
+            "key": false
+          }
+        ]
+      },
+      "b": {
+        "roster_id": 6,
+        "name": "Bo Girds",
+        "owner": "bkwon",
+        "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+        "wins": 11,
+        "losses": 7,
+        "points_for": 1035.69,
+        "byes": []
+      },
+      "must_watch": false,
+      "reason": null
+    },
+    {
+      "a": {
+        "roster_id": 11,
+        "name": "Unsolicited Dak Picks",
+        "owner": "mkim120",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+        "wins": 6,
+        "losses": 12,
+        "points_for": 858.23,
+        "byes": []
+      },
+      "b": {
+        "roster_id": 12,
+        "name": "Teehee",
+        "owner": "pdurkim",
+        "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
+        "wins": 8,
+        "losses": 10,
+        "points_for": 986.51,
+        "byes": [
+          {
+            "player_id": "12519",
+            "name": "Luther Burden III",
+            "position": "WR",
+            "key": true
+          },
+          {
+            "player_id": "11563",
+            "name": "Bo Nix",
+            "position": "QB",
+            "key": false
+          },
+          {
+            "player_id": "7567",
+            "name": "Kenny Gainwell",
+            "position": "RB",
+            "key": false
+          },
+          {
+            "player_id": "CHI",
+            "name": "Chicago Bears",
+            "position": "DEF",
+            "key": false
+          }
+        ]
+      },
+      "must_watch": false,
+      "reason": null
+    }
+  ],
+  "blurbs": {
+    "motw": "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result.",
+    "game_changer": "Matthew Golden took the Game Changer nod, posting 27.4 on a 12.33 projection. Bo Girds beat Teehee 114.07 to 100.63, and without Golden, that is a loss. He won it outright, finishing 15.07 over projection in a game decided by 13.44. Every target thrown his way ended in a catch, plus a touchdown for good measure. That line ranked 3rd of 36 started receivers this week.",
+    "awards": "Jordan Love took both Top Scorer and Overachiever for Return of T Mac, posting 36.18 on a 17.08 projection. Unsolicited Dak Picks earned the MVB by leaving C.J. Stroud and his 36.36 on the bench. They lost 83.08 to 64.65 anyway. Brutal lineup call.",
+    "position_leaders": "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too.",
+    "recap_1": "Lil Fridge trailed by 38.82 after the early Sunday games and still beat behold the lamb by 2.38. The recent adds went both ways: the Rams defense put up 13.95 for the losers, while Tyler Allgeier managed 5.6 for the winners. Both sides missed the median, Puka Nacua is now listed Questionable with a knee, and the losing side keeps losing with its playoff odds all but gone this week.",
+    "recap_2": "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result.",
+    "recap_3": "All You Need Is Love lost to Return of T Mac in an upset, and the Love that mattered was Jordan Love, who put up 36.18 for the other side. A 24.44 lead after the early Sunday games vanished, with the recent add CeeDee Lamb posting 28.5 for the winners. The winners crossed into the playoff spots and kept their winning streak alive, while the losers still sit on top of the standings anyway.",
+    "recap_4": "NFC Least led by 46.45 after the early Sunday games and still lost by 45.89 to The Blue Tent. The trade pickups Tetairoa McMillan and Makai Lemon managed 13.6 and 9.1, and Xavier Worthy is now listed Out. The winners climbed a spot in the standings while the losers stayed dead last.",
+    "recap_5": "To Infinity and Bijan beat Unsolicited Dak Picks in a battle of recent-add defenses, the New York Giants at 16.4 against the New Orleans Saints at 6.55, and both sides still missed the median. Rhamondre Stevenson, hurt in this game, and Josh Jacobs are now listed Out, while Patrick Mahomes and Ladd McConkey are now listed Questionable. Adonai Mitchell, a waiver add, scored 0 for the losers, whose playoff odds fell to 1% this week.",
+    "recap_6": "Bo Girds held the lead over Teehee from Thursday all the way to Monday, and Kenneth Walker III and Matthew Golden each outscored the margin on his own. The win snapped a 4-game losing streak, while the other side's playoff odds slid to about 49% this week. Malik Willis, the new pickup at quarterback, scored 4.82 and is now listed Questionable (Groin), as is Luther Burden III, who was hurt late in his game against Tampa Bay.",
+    "median": "Return of T Mac lapped the 103.51 median by 40.52, a season high for this side. Unsolicited Dak Picks went the other way with a season low of 64.65, from a side already 5 games below the cut. All You Need Is Love cleared it by 2.88, and Teehee missed it by exactly that much. Brutal miss.",
+    "next_week": "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut.",
+    "rankings": "Return of T Mac takes the top spot after a 38-point win over the 1st-place team. That makes 6 straight wins for a team still clinging to the last playoff spot. The Blue Tent climbs to 2nd after a 46-point beating of the last-place team. They have won 3 straight, though the scoring has dipped to 106.29 a week lately. All You Need Is Love drops to 3rd after a 38-point loss. They still sit atop the standings at 12-6. Bo Girds moves up to 4th on a 13-point win. The scoring is sliding, though: 104.18 a week lately against a 115.08 season average. London Cooking rises to 5th on a 5-point win. Squeaker or not, they sit 3rd in the standings at 11-7. The kitchen has cooled off lately, though. Teehee tumbles to 6th after a 13-point loss. They have still averaged 127.62 a week over the last 3 weeks. With the easiest remaining schedule ahead, their playoff odds sit at a coin flip of 49%. Maye d'force B with U falls to 7th after a 5-point loss. They still rank 1st in scoring and sit outside the playoff spots anyway. Lil Fridge slips to 8th despite a 2-point win. They went 0-3 against the median over the last 3 weeks. The fridge is running cold. To Infinity and Bijan holds 9th for another week. They have won 2 straight but still sit 3 games below the cut. Playoff odds of 6% say the trip ends well short of infinity. Unsolicited Dak Picks stays parked at 10th. A 6-12 record and 2 straight losses, and nobody asked for either. NFC Least somehow moves up a spot to 11th after losing by 46. At 3-15, the name remains accurate. They also face the hardest remaining schedule. behold the lamb lands last after a 2-point loss. That is 3 straight losses. Nothing to behold in the win column over that stretch, head-to-head or against the median."
+  },
+  "avatars": {
+    "1": "avatars/1.jpg",
+    "2": "avatars/2.webp",
+    "3": "avatars/3.jpg",
+    "4": "avatars/4.jpg",
+    "5": "avatars/5.jpg",
+    "6": "avatars/6.jpg",
+    "7": "avatars/7.jpg",
+    "8": "avatars/8.webp",
+    "9": "avatars/9.jpg",
+    "10": "avatars/10.jpg",
+    "11": "avatars/11.webp",
+    "12": "avatars/12.jpg"
+  },
+  "headshots": {
+    "12501": "headshots/12501.png",
+    "6804": "headshots/6804.png",
+    "9758": "headshots/9758.png",
+    "6790": "headshots/6790.png",
+    "6770": "headshots/6770.png",
+    "8183": "headshots/8183.png",
+    "8151": "headshots/8151.png",
+    "11584": "headshots/11584.png",
+    "9509": "headshots/9509.png",
+    "6786": "headshots/6786.png",
+    "9493": "headshots/9493.png",
+    "11604": "headshots/11604.png",
+    "1466": "headshots/1466.png",
+    "8131": "headshots/8131.png",
+    "SF": "headshots/SF.png",
+    "HOU": "headshots/HOU.png",
+    "NYG": "headshots/NYG.png",
+    "11620": "headshots/11620.png",
+    "12526": "headshots/12526.png",
+    "13294": "headshots/13294.png",
+    "13424": "headshots/13424.png",
+    "8408": "headshots/8408.png",
+    "9224": "headshots/9224.png",
+    "11566": "headshots/11566.png",
+    "12514": "headshots/12514.png",
+    "4984": "headshots/4984.png",
+    "7569": "headshots/7569.png",
+    "7588": "headshots/7588.png",
+    "8112": "headshots/8112.png"
+  },
+  "summary": "Week 9 · Nov 5 – Nov 9, 2026 · London Cooking vs Maye d'force B with U"
+}
