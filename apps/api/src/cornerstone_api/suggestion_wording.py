@@ -1,9 +1,9 @@
 """
-All the wording of the lift of the Suggestions: the state of one Jev request over the fact of each Topic of one team,
-and one Noul per Topic that asks whether its fact makes it urgent. Code reads each Noul with the cutoffs of the route.
+All the Jev wording of the Suggestions: the lift, one Noul per Topic over its fact, and the sell high pick, one Choice
+over the players of Your team with their facts side by side. Code reads each answer with the cutoffs of the route.
 """
 from cornerstone_api.ask_wording import TOPICS
-from league.jev_port import NoulQuestion
+from league.jev_port import ChoiceQuestion, NoulQuestion
 
 # The name of each Topic as the site shows it on its Suggestion. Jev reads the Topic and its fact as one line.
 TOPIC_NAMES = {
@@ -48,9 +48,35 @@ def lift_questions(facts: dict[str, str]) -> dict[str, NoulQuestion]:
             instructions=f"Does the fact in `topics.{key}.fact` make the Topic {TOPIC_NAMES[key]} urgent for the "
                          "manager of `manager_team` to open before the next games?",
             yes="The fact shows something the manager should act on or look at now, such as playoff odds near the "
-                "line, a starting position that ranks near the bottom of the league, a hole in the lineup, or a big "
-                "drop in the rankings.",
+                "line, a starting position that ranks near the bottom of the league, a hole in the lineup, a big "
+                "drop in the rankings, or a player whose recent scoring runs far above his season.",
             no="The fact shows a normal week for the team, such as a rank in the middle of the league, a safe lead in "
                "the playoff race, a routine result, or a strength of the roster.")
         for key in facts
+    }
+
+
+# The key of the sell high Choice in its request.
+SELL_CHOICE = "sell_high_player"
+
+SELL_CONTEXT = ("A 12-team fantasy football league. The manager of one team wants to sell a player of the roster to "
+                "another manager while his price is up. Each player of the roster has his facts side by side: his "
+                "trade value, his lineup value, his injury, his points per game over the last weeks against the "
+                "season, and his schedule ahead.")
+
+
+def sell_state(team: str, week: int, players: dict[str, dict]) -> dict:
+    """The state of the sell high pick: the team, the next week, and each player by his option key, with his name and
+    the texts of his facts from the sell sheet."""
+    return {"context": SELL_CONTEXT, "manager_team": team, "next_week": week, "players": players}
+
+
+def sell_questions(options: dict[str, str]) -> dict[str, ChoiceQuestion]:
+    """One Choice over the players of the roster. `options` holds the line of each player by his option key. A
+    Choice always picks one, so code reads it only when its top option is above the cutoff."""
+    return {
+        SELL_CHOICE: ChoiceQuestion(
+            instructions="Which player of `manager_team` has a recent run that most outpaces his season, so that "
+                         "another manager would pay more for him now than his season is worth?",
+            options={key: f"{line}: the player in `players.{key}`" for key, line in options.items()}),
     }

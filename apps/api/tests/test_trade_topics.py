@@ -2,8 +2,10 @@
 Tests for the trade Topics of the front door, the trade check and trade ideas, at the route seam with FakeJev.
 The Advisor runs for real with the stub Claude calls of test_api, so the sheet, the guards, and the stages run.
 """
+import dataclasses
 import functools
 import json
+import shutil
 
 import pytest
 import test_api
@@ -21,6 +23,7 @@ from cornerstone_api.caps import TEAM_LINE
 from cornerstone_api.trade_wording import GETS_NAMED, GETS_PLAYER, GIVES_NAMED, GIVES_PLAYER
 from facts.writer import ClaudeWriter
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
+from league.provider.sleeper import load_raw
 
 # The fixtures of the analyzer tests: the repo with the week 6 history, its settings, and the recorded sources.
 repo = test_api.repo
@@ -67,8 +70,7 @@ def advisor():
     return StubAdvisor()
 
 
-@pytest.fixture
-def api(settings, sources, jev, advisor):
+def _api(settings, sources, jev, advisor) -> TestClient:
     news = NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
     app = create_app(
         settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
@@ -76,6 +78,11 @@ def api(settings, sources, jev, advisor):
         finder_search=functools.partial(search, jev=jev),
         finder_pick=functools.partial(pick_trades, news=news, jev=jev, call=StubPicker(), repair_call=StubRepair()))
     return TestClient(app)
+
+
+@pytest.fixture
+def api(settings, sources, jev, advisor):
+    return _api(settings, sources, jev, advisor)
 
 
 def _parts(response) -> list[dict]:
@@ -285,3 +292,70 @@ def test_past_the_league_cap_trade_ideas_give_the_league_line_and_no_claude_call
     [cap] = _of(parts, "data-cap")
     assert cap["cap"] == "league" and cap["line"].startswith("The league's question budget is used up")
     assert _of(parts, "data-answer") == []
+
+
+CURRENT = "/clients/cpc/personal/current"
+
+
+def dropped(sources, fixture_raw_dir, tmp_path, roster_id: int):
+    """The sources after the roster of `roster_id` drops its last player, as a waiver drop does. No other roster
+    changes."""
+    raw = tmp_path / f"raw-after-a-drop-{roster_id}"
+    shutil.copytree(fixture_raw_dir, raw)
+    rosters = json.loads((raw / "rosters.json").read_text())
+    roster = next(each for each in rosters if each["roster_id"] == roster_id)
+    roster["players"] = roster["players"][:-1]
+    (raw / "rosters.json").write_text(json.dumps(rosters))
+    return dataclasses.replace(sources, fetch_sleeper=lambda league_id: (load_raw(raw), test_api.FETCHED))
+
+
+def current(api, topic: str, key: str, team: int | None = None) -> bool:
+    item = {"topic": topic, "roster_id": LIL_FRIDGE, "team": team, "key": key}
+    [state] = api.post(CURRENT, json={"answers": [item]}, headers=HEADERS).json()["answers"]
+    assert state["key"] == key and state["kept_at"] is None
+    return state["current"]
+
+
+def test_a_trade_check_sends_the_key_of_the_rosters_it_read_before_its_answer(api):
+    parts = _parts(_check(api, SURE_TRADE))
+    kinds = [part["type"] for part in parts]
+    assert kinds.index("data-key") < kinds.index("data-answer")
+    [key] = _of(parts, "data-key")
+    assert key["at"].startswith("2026-")
+    assert current(api, "trade_check", key["key"], BO_GIRDS)
+
+
+def test_a_trade_check_goes_stale_when_a_roster_of_its_trade_changes_and_no_other(settings, sources, jev, advisor,
+                                                                                  fixture_raw_dir, tmp_path):
+    # Story 42: the trade check read Lil Fridge and Bo Girds, so only a change to one of them makes it stale.
+    [key] = _of(_parts(_check(_api(settings, sources, jev, advisor), SURE_TRADE)), "data-key")
+    other = _api(settings, dropped(sources, fixture_raw_dir, tmp_path, 1), jev, advisor)
+    assert current(other, "trade_check", key["key"], BO_GIRDS)
+    partner = _api(settings, dropped(sources, fixture_raw_dir, tmp_path, BO_GIRDS), jev, advisor)
+    assert not current(partner, "trade_check", key["key"], BO_GIRDS)
+    mine = _api(settings, dropped(sources, fixture_raw_dir, tmp_path, LIL_FRIDGE), jev, advisor)
+    assert not current(mine, "trade_check", key["key"], BO_GIRDS)
+
+
+def test_the_form_of_an_unsure_pick_sends_no_key(api):
+    assert _of(_parts(_check(api, VAGUE_TRADE)), "data-key") == []
+
+
+def test_trade_ideas_with_no_partner_read_each_roster_so_any_change_makes_them_stale(settings, sources, jev, advisor,
+                                                                                     fixture_raw_dir, tmp_path):
+    api = _api(settings, sources, jev, advisor)
+    [key] = _of(_parts(api.post(IDEAS, json={"roster_id": LIL_FRIDGE}, headers=HEADERS)), "data-key")
+    assert current(api, "trade_ideas", key["key"])
+    other = _api(settings, dropped(sources, fixture_raw_dir, tmp_path, 1), jev, advisor)
+    assert not current(other, "trade_ideas", key["key"])
+
+
+def test_trade_ideas_with_a_partner_read_only_the_two_rosters(settings, sources, jev, advisor, fixture_raw_dir,
+                                                              tmp_path):
+    api = _api(settings, sources, jev, advisor)
+    body = {"roster_id": LIL_FRIDGE, "partner": BO_GIRDS}
+    [key] = _of(_parts(api.post(IDEAS, json=body, headers=HEADERS)), "data-key")
+    other = _api(settings, dropped(sources, fixture_raw_dir, tmp_path, 1), jev, advisor)
+    assert current(other, "trade_ideas", key["key"], BO_GIRDS)
+    partner = _api(settings, dropped(sources, fixture_raw_dir, tmp_path, BO_GIRDS), jev, advisor)
+    assert not current(partner, "trade_ideas", key["key"], BO_GIRDS)

@@ -36,16 +36,28 @@ export const tradeAnswerSchema = z.discriminatedUnion("kind", [
 ]);
 export type TradeAnswer = z.infer<typeof tradeAnswerSchema>;
 
+/* The key of the rosters that a trade Answer read, and the time of the read. The key check of the API compares it with
+   the rosters now, so a trade or a claim on one of them makes the Answer stale. */
+export const tradeReadSchema = z.object({ key: z.string(), at: z.string() });
+export type TradeRead = z.infer<typeof tradeReadSchema>;
+
 /* One part of the stream that the site reads. The API sends more parts, such as the player picks, for the evidence. */
 const partSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("data-step"), data: z.object({ line: z.string() }) }),
+  z.object({ type: z.literal("data-key"), data: tradeReadSchema }),
   z.object({ type: z.literal("data-answer"), data: tradeAnswerSchema }),
   z.object({ type: z.literal("data-error"), data: z.object({ status: z.number(), line: z.string() }) }),
   z.object({ type: z.literal("data-cap"), data: z.object({ cap: z.enum(["team", "league"]), line: z.string() }) }),
 ]);
 
-/* What the stream gives the Thread, part by part. A cap gives its calm line in place of the Answer. */
-export type TradeEvents = { onStep: (line: string) => void; onAnswer: (answer: TradeAnswer) => void; onCap: (line: string) => void };
+/* What the stream gives the Thread, part by part. The key of the read comes before the Answer. A cap gives its calm
+   line in place of the Answer. */
+export type TradeEvents = {
+  onStep: (line: string) => void;
+  onKey: (read: TradeRead) => void;
+  onAnswer: (answer: TradeAnswer) => void;
+  onCap: (line: string) => void;
+};
 
 /* The body of each route: the typed question of a trade check, or the partner that a question of trade ideas names. */
 export type TradeRequest =
@@ -74,6 +86,7 @@ async function readParts(body: ReadableStream<Uint8Array>, events: TradeEvents):
       const part = partSchema.safeParse(JSON.parse(line.slice("data: ".length)));
       if (!part.success) continue;
       if (part.data.type === "data-step") events.onStep(part.data.data.line);
+      if (part.data.type === "data-key") events.onKey(part.data.data);
       if (part.data.type === "data-error") throw new AskError(part.data.data.status, part.data.data.line);
       if (part.data.type === "data-answer") {
         answered = true;

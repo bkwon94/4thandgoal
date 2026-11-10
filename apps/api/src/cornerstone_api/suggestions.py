@@ -1,9 +1,10 @@
 """
 The Suggestions of Your team, the head start of the top personal Suggestion, and the check of the keys of kept Answers.
-Jev lifts a Topic when its fact makes it urgent. Code keeps the hard rules: the cutoff, the order, and the pick of 3.
+Jev picks the sell high player and lifts a Topic when its fact is urgent. Code keeps the cutoffs, the order, the pick.
 """
 import json
 import logging
+from typing import cast, get_args
 
 import anyio
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
@@ -11,14 +12,26 @@ from pydantic import BaseModel, ConfigDict, Field
 from pydantic_ai.models import Model
 
 from analyzer.routes import ServedClient
+from analyzer.sell_facts import sell_sheet, sheet_players
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import YES, Asker, ClientAsker
 from cornerstone_api.ask_wording import TOPICS
-from cornerstone_api.personal_facts import PersonalTopic
+from cornerstone_api.personal_facts import PersonalTopic, trade_ideas_fact
 from cornerstone_api.personal_topics import Live, claude_answer, load_live
-from cornerstone_api.suggestion_wording import lift_key, lift_questions, lift_state
-from league.jev_port import JevError
+from cornerstone_api.suggestion_wording import (
+    SELL_CHOICE,
+    lift_key,
+    lift_questions,
+    lift_state,
+    sell_questions,
+    sell_state,
+)
+from cornerstone_api.trade_topics import TradeTopic, trade_key
+from cornerstone_api.trade_wording import option_keys
+from league.jev_port import Jev, JevError
 from league.paths import week_label
+from league.ranks import recent_points_per_game, season_points_per_game
+from league.tunables import LINEUP_WEEKS
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +43,8 @@ SUGGESTION_COUNT = 3
 PERSONAL: tuple[PersonalTopic, ...] = ("weak_spots", "stack_up", "waiver_targets")
 # The file of the weekly build with the Answers and the facts of the 7 league Topics of each team.
 TOPICS_FILE = "topics.json"
+# The trade Topics, whose key covers the rosters that the Answer read.
+TRADE_TOPICS: tuple[str, ...] = get_args(TradeTopic)
 # The Answers in one key check. A Thread of one week holds far fewer personal Answers.
 CHECK_MAX = 50
 
@@ -49,17 +64,18 @@ class SuggestionsRequest(BaseModel):
 
 
 class KeyItem(BaseModel):
-    """One personal Answer of the Thread: its Topic, the roster id of Your team, the team it is about or None for Your
-    team, and the key that the API kept it under."""
+    """One personal or trade Answer of the Thread: its Topic, the roster id of Your team, the team it is about or None
+    for Your team, and its key. The team of a trade Answer is its partner, or None for trade ideas with no partner and
+    for sell high."""
 
-    topic: PersonalTopic
+    topic: PersonalTopic | TradeTopic
     roster_id: int
     team: int | None = None
     key: str = Field(max_length=128)
 
 
 class CurrentRequest(BaseModel):
-    """The body of the key check: the personal Answers of the Thread, each with the key that the API kept it under."""
+    """The body of the key check: the personal and trade Answers of the Thread, each with its key."""
 
     answers: list[KeyItem] = Field(max_length=CHECK_MAX)
 
@@ -74,6 +90,39 @@ def league_facts(live: Live, roster_id: int) -> dict[str, str]:
             teams = json.loads(path.read_text(encoding="utf-8"))["teams"]
             return {answer["topic"]: answer["fact"] for answer in teams.get(str(roster_id), [])}
     return {}
+
+
+def _who(live: Live, pid: str) -> str:
+    player = live.snapshot.players[pid]
+    return f"{player.name} ({player.position}, {player.nfl_team})" if player.nfl_team else player.name
+
+
+def sell_high_fact(jev: Jev, live: Live, roster_id: int) -> tuple[str | None, dict[str, float]]:
+    """The fact of the sell high Suggestion: the player whose recent run Jev reads as most past his season, with his
+    points per game over the recent weeks and the season. Code gives the facts side by side and screens no player.
+    A pick at or below YES is unsure, so sell high has no fact this time. The probability of each option comes back
+    too, for the log of a run. A failed request raises JevError."""
+    snapshot = live.snapshot
+    players = sheet_players(snapshot, roster_id)
+    if not players:
+        return None, {}
+    sheet = sell_sheet(snapshot, roster_id)
+    keys = option_keys({pid: snapshot.players[pid].name for pid in players})
+    state = sell_state(snapshot.teams[roster_id].name, snapshot.week, {
+        keys[pid]: {"name": snapshot.players[pid].name,
+                    "facts": [fact.text for fact_id, fact in sheet.items() if fact_id.split(".")[0] == pid]}
+        for pid in players})
+    answers = jev.ask(state, sell_questions({keys[pid]: _who(live, pid) for pid in players}))
+    probabilities = answers.choices[SELL_CHOICE]
+    top = max(probabilities, key=lambda option: probabilities[option])
+    if probabilities[top] <= YES:
+        return None, probabilities
+    pid = next(pid for pid, key in keys.items() if key == top)
+    # The same rounding as the trend fact of the sell sheet, so the chip and the fact that Jev read say one number.
+    recent = float(round(recent_points_per_game(snapshot, pid), 1))
+    season = float(round(season_points_per_game(snapshot, pid), 1))
+    fact = f"{snapshot.players[pid].name}: {recent} a game over {LINEUP_WEEKS} weeks, {season} for the season"
+    return fact, probabilities
 
 
 def pick(order: list[str], urgent: list[str], facts: dict[str, str], opened: dict[str, str]) -> list[str]:
@@ -113,8 +162,13 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
     facts = await anyio.to_thread.run_sync(league_facts, live, body.roster_id)
     for topic in PERSONAL:
         facts[topic] = (await anyio.to_thread.run_sync(live.facts, topic, body.roster_id)).block["fact"]
+    # The trade check has no weekly fact, so it stays in "More" only.
+    facts["trade_ideas"] = trade_ideas_fact(live.snapshot, body.roster_id, live.grades)
     team = live.snapshot.teams[body.roster_id].name
     try:
+        sell, sell_choice = await anyio.to_thread.run_sync(sell_high_fact, asker.jev, live, body.roster_id)
+        if sell is not None:
+            facts["sell_high"] = sell
         answers = await anyio.to_thread.run_sync(asker.jev.ask, lift_state(team, live.snapshot.week, facts),
                                                  lift_questions(facts))
     except JevError as error:
@@ -135,13 +189,14 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
         store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
         tasks.add_task(head_start, asker, store, live, start, body.roster_id, request.app.state.personal_model)
     return {"picks": picks, "facts": facts, "lifts": lifts, "urgent": urgent, "head_start": start,
-            "jev": {"model": answers.model, "nouls": answers.nouls}}
+            "jev": {"model": answers.model, "nouls": answers.nouls, "choices": {SELL_CHOICE: sell_choice}}}
 
 
 @router.post("/personal/current")
 async def current(body: CurrentRequest, asker: ClientAsker, served: ServedClient, request: Request) -> dict:
-    """Whether the key of each personal Answer of the Thread is still the key of its facts now. It costs nothing: no
-    Claude call and no Jev call. A stale Answer gets the time that the store kept it, for the stale line."""
+    """Whether the key of each Answer of the Thread is still the key of its data now. It costs nothing: no Claude call
+    and no Jev call. A stale personal Answer gets the time that the store kept it, for the stale line. The store keeps
+    no trade Answer, so the site keeps the time of its read from the stream."""
     live = await load_live(served, asker.season)
     rosters = live.snapshot.rosters
     if any(item.roster_id not in rosters or (item.team is not None and item.team not in rosters)
@@ -150,8 +205,11 @@ async def current(body: CurrentRequest, asker: ClientAsker, served: ServedClient
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
 
     def check(item: KeyItem) -> dict:
+        if item.topic in TRADE_TOPICS:
+            key = trade_key(cast(TradeTopic, item.topic), rosters, item.roster_id, item.team)
+            return {"key": item.key, "current": key == item.key, "kept_at": None}
         subject = item.roster_id if item.team is None else item.team
-        _, key = live.key(item.topic, item.roster_id, subject)
+        _, key = live.key(cast(PersonalTopic, item.topic), item.roster_id, subject)
         return {"key": item.key, "current": key == item.key, "kept_at": store.kept_at(item.key)}
 
     return {"answers": [await anyio.to_thread.run_sync(check, item) for item in body.answers]}

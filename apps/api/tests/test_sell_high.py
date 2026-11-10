@@ -11,6 +11,7 @@ import test_api
 from fakes import NEWS_RECORDED, FakeJev, recorded_news
 from fastapi.testclient import TestClient
 from test_api import CLIENT, HEADERS, _cpc, _here
+from test_trade_topics import current, dropped
 
 from analyzer.sell_high import SellHighOut, pick_sells
 from analyzer.trade_news import NewsFeed
@@ -250,3 +251,16 @@ def test_past_the_team_cap_sell_high_gives_the_cap_line_and_no_claude_call(api, 
     assert cap["cap"] == "team" and cap["line"] == "That's 25 questions today. Ask again tomorrow."
     assert [part for part in parts if part.get("type") == "data-answer"] == []
     assert seller.calls == []
+
+
+def test_sell_high_sends_the_key_of_your_roster_and_goes_stale_when_it_changes(settings, sources, jev, seller,
+                                                                               fixture_raw_dir, tmp_path):
+    # Story 42: sell high read only the roster of Your team.
+    parts = _parts(_sell(_app(settings, sources, jev, seller)))
+    kinds = [part["type"] for part in parts]
+    assert kinds.index("data-key") < kinds.index("data-answer")
+    [key] = _of(parts, "data-key")
+    other = _app(settings, dropped(sources, fixture_raw_dir, tmp_path, 1), jev, seller)
+    assert current(other, "sell_high", key["key"])
+    mine = _app(settings, dropped(sources, fixture_raw_dir, tmp_path, LIL_FRIDGE), jev, seller)
+    assert not current(mine, "sell_high", key["key"])
