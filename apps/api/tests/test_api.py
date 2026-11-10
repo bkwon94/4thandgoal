@@ -27,7 +27,7 @@ from fastapi.testclient import TestClient
 from analyzer.adjusters import INJURY, ROSTER_FIT, SCHEDULE, TREND
 from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import ResultCache, cache_key, finder_cache_key
-from analyzer.finder_pick import NO_OFFER, FinderPickOut, pick_trades
+from analyzer.finder_pick import NO_OFFER, SAME_FACT, FinderPickOut, pick_trades
 from analyzer.finder_search import search
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.rubric import ProposedTrade
@@ -1419,8 +1419,8 @@ def passing_pick(user: str, **changes) -> dict:
     offers = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)[:3]
     bullets = [{"text": "The trade lands in the middle of the season.", "mark": "for", "fact_id": "trade.week"},
                {"text": "The other manager gets help where he needs it.", "mark": "for", "fact_id": "trade.week"}]
-    out = {"picks": [{"offer_id": offer, "headline": HEADLINE, "bullets": bullets} for offer in offers],
-           "none_line": None}
+    out = {"picks": [{"offer_id": offer, "lean": "Lean yes", "headline": HEADLINE, "bullets": bullets}
+                     for offer in offers], "none_line": None}
     return out | changes
 
 
@@ -1663,7 +1663,7 @@ def _news_pick(user):
     out = passing_pick(user)
     offer, fid = next((offer, fid) for offer, ids in _offers_in(user).items() for fid in ids if fid.startswith("NEWS."))
     bullets = out["picks"][0]["bullets"]
-    out["picks"] = [{"offer_id": offer, "headline": HEADLINE,
+    out["picks"] = [{"offer_id": offer, "lean": "Lean yes", "headline": HEADLINE,
                      "bullets": [bullets[0] | {"fact_id": fid}, *bullets[1:]]}]
     return out
 
@@ -1681,6 +1681,9 @@ def _news_pick(user):
     (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"headline": "Send it for 12 points."}]},
      "pick 1 headline: number 12 is not in the cited facts"),
     (lambda user: {"picks": [], "none_line": None}, "a response with no pick needs a none_line"),
+    # A pick that the Advisor would read as Lean no alone is no pick, so the analyzer and the Finder agree.
+    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"lean": "Lean no"}]},
+     "pick 1: its Lean is Lean no; pick only an offer you would read as Send it, Lean yes, or Gut call"),
 ])
 def test_a_pick_that_fails_a_guard_retries_once_and_the_second_pick_stands(settings, sources, builder, failure):
     picker = StubPicker(builder, passing_pick)
@@ -1777,6 +1780,18 @@ def test_the_pick_reads_news_only_of_the_shortlist_players_and_asks_jev_no_new_q
     # The sheet holds the Jev answers of the shortlist, so no request asks the accept question of one trade.
     assert all(fids.count("JEV.fair") == 1 for fids in offers.values())
     assert not any(key.startswith("accept.") for request in jev.requests for key in request.questions)
+
+
+def test_the_pick_message_gives_each_fact_text_once(settings, sources):
+    picker = StubPicker()
+    _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS)
+    user = picker.calls[0][1]
+    full = [line for line in user.splitlines() if line.startswith("- ") and not line.endswith(SAME_FACT)]
+    assert len(full) == len(set(full))
+    # A fact that an earlier offer gave in full keeps its id on the later offer, so a Bullet there may cite it.
+    repeated = [line for line in user.splitlines() if line.endswith(SAME_FACT)]
+    assert repeated
+    assert all(f"- {line[2:].split(': ', 1)[0]}: " in user.split(line)[0] for line in repeated)
 
 
 def test_the_pick_prompt_holds_the_playbook_and_the_pick_rules(settings, sources):

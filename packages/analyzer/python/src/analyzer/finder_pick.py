@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from analyzer.advisor import (
     Bullet,
+    Lean,
     ReadBullet,
     TextGuard,
     inner_word_failures,
@@ -29,12 +30,18 @@ MAX_PICKS = 3
 MIN_BULLETS, MAX_BULLETS = 2, 3
 # The line of a press whose search kept no offer. No Claude call runs, so code writes it.
 NO_OFFER = "The search found no trade that works for both teams."
+# The Leans of a trade that the asker sends. A pick reads as one of them, so the analyzer read of a pick agrees.
+SEND_LEANS = ("Send it", "Lean yes", "Gut call")
+# The text of a fact that an earlier offer of the message gave in full. The id stays, so a Bullet may cite it.
+SAME_FACT = "(the same text as in an earlier offer)"
 
 
 class PickOut(BaseModel):
-    """One pick as the Advisor gives it: the offer id of the shortlist, a headline, and 2 to 3 Bullets."""
+    """One pick as the Advisor gives it: the offer id of the shortlist, the Lean of the trade if the asker graded it
+    alone, a headline, and 2 to 3 Bullets. The Lean stays out of the document, because the card shows no Lean."""
 
     offer_id: str
+    lean: Lean
     headline: str
     bullets: list[Bullet]
 
@@ -80,9 +87,15 @@ def build_pick_prompt(shortlist: Shortlist, snapshot: Snapshot, sheets: dict[str
                       feedback: str | None) -> tuple[str, str]:
     """The system prompt and the user message of the pick call: each offer with its sides and its own facts."""
     lines = [f"The asker: roster {shortlist.asker}, {snapshot.teams[shortlist.asker].name}.", ""]
+    # One player or one team sits on many offers, so a fact text that an earlier offer gave is not sent again. This
+    # keeps the message, and the cost and the time of the call, near those of one read.
+    given: set[tuple[str, str]] = set()
     for offer in shortlist.shortlist:
-        lines += [f"Offer {offer.offer_id}", *side_lines(offer.trade, snapshot), "Facts:",
-                  *(f"- {fid}: {f.text}" for fid, f in sheets[offer.offer_id].items()), ""]
+        lines += [f"Offer {offer.offer_id}", *side_lines(offer.trade, snapshot), "Facts:"]
+        for fid, f in sheets[offer.offer_id].items():
+            lines.append(f"- {fid}: {SAME_FACT if (fid, f.text) in given else f.text}")
+            given.add((fid, f.text))
+        lines.append("")
     if feedback is not None:
         lines += ["Feedback from the last attempt:", feedback, "Give the whole response again."]
     return system_prompt(snapshot, PROMPT_FILE), "\n".join(lines).rstrip()
@@ -107,6 +120,9 @@ def check_picks(out: FinderPickOut, shortlist: Shortlist, snapshot: Snapshot,
         if pick.offer_id in seen:
             failures.append(f"{label}: offer {pick.offer_id} is picked twice")
         seen.add(pick.offer_id)
+        if pick.lean not in SEND_LEANS:
+            failures.append(f"{label}: its Lean is {pick.lean}; pick only an offer you would read as "
+                            f"{', '.join(SEND_LEANS[:-1])}, or {SEND_LEANS[-1]}")
         sheet = sheets[pick.offer_id]
         guard = TextGuard(offers[pick.offer_id].trade, snapshot, sheet)
         if not MIN_BULLETS <= len(pick.bullets) <= MAX_BULLETS:
