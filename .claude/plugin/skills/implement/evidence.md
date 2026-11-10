@@ -109,7 +109,7 @@ An Evidence flag is advice from Jev about a test. It is never a Test verdict, an
 3. The command writes `.scratch/<slug>/FLAGS.md`. Each entry has the heading `## AT-<n>, question (<key>)`, then `Question:`, `Probability:`, `Reason:`, and `Action: open`. With `--root`, it writes the file in the Spec worktree.
 4. The command logs `Evidence flags: <tests> tests, <flags> flags, <errors> errors, <tokens> input tokens`. A missing key or a Jev error gives no flag and exit 0. Go on.
 
-Set the `Action` of each entry to one of three values. Warning: an entry at `open` blocks the evidence commit, so no entry stays `open`.
+Set the `Action` of each entry to one of three values. Set the action of each entry before the evidence commit. No entry stays `open`.
 
 - **An evidence gap.** The files do not show the Then line. Change `steps.json` or the command, record that test again, and set `Action: recorded again`.
 - **A product defect.** The product is wrong. Hand it to the orchestrator as a fix group before the Judge runs. Record the test again after the fix merges. Set `Action: fix group`.
