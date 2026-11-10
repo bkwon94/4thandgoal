@@ -5,13 +5,11 @@
       "roster_id": 2,
       "team": "All You Need Is Love"
     },
-    "partner": {
-      "roster_id": 3,
-      "team": "Lil Fridge"
-    }
+    "partner": null
   },
   "trades": [
     {
+      "offer_id": "2:10213+12517-10:10235",
       "sides": [
         {
           "roster_id": 2,
@@ -23,43 +21,47 @@
               "position": "WR",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
-              "season_rank": "WR30",
-              "recent_rank": null
+              "season_rank": "WR16",
+              "recent_rank": "WR29",
+              "to": 10
             },
             {
-              "player_id": "8126",
-              "name": "Wan'Dale Robinson",
-              "position": "WR",
-              "nfl_team": "TEN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/8126.jpg",
-              "season_rank": "WR32",
-              "recent_rank": null
+              "player_id": "12517",
+              "name": "Colston Loveland",
+              "position": "TE",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12517.jpg",
+              "season_rank": "TE26",
+              "recent_rank": null,
+              "to": 10
             }
           ],
           "gets": [
             {
-              "player_id": "2306",
-              "name": "Jameis Winston",
-              "position": "QB",
-              "nfl_team": "NYG",
-              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
-              "season_rank": "QB21",
-              "recent_rank": null
+              "player_id": "10235",
+              "name": "Roschon Johnson",
+              "position": "RB",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/10235.jpg",
+              "season_rank": "RB50",
+              "recent_rank": null,
+              "from": 10
             }
           ]
         },
         {
-          "roster_id": 3,
-          "team": "Lil Fridge",
+          "roster_id": 10,
+          "team": "behold the lamb",
           "gives": [
             {
-              "player_id": "2306",
-              "name": "Jameis Winston",
-              "position": "QB",
-              "nfl_team": "NYG",
-              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
-              "season_rank": "QB21",
-              "recent_rank": null
+              "player_id": "10235",
+              "name": "Roschon Johnson",
+              "position": "RB",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/10235.jpg",
+              "season_rank": "RB50",
+              "recent_rank": null,
+              "to": 2
             }
           ],
           "gets": [
@@ -69,210 +71,269 @@
               "position": "WR",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
-              "season_rank": "WR30",
-              "recent_rank": null
+              "season_rank": "WR16",
+              "recent_rank": "WR29",
+              "from": 2
             },
             {
-              "player_id": "8126",
-              "name": "Wan'Dale Robinson",
-              "position": "WR",
-              "nfl_team": "TEN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/8126.jpg",
-              "season_rank": "WR32",
-              "recent_rank": null
+              "player_id": "12517",
+              "name": "Colston Loveland",
+              "position": "TE",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12517.jpg",
+              "season_rank": "TE26",
+              "recent_rank": null,
+              "from": 2
             }
           ]
         }
       ],
-      "fairness": {
-        "state": "win_win",
-        "gives_more": null,
-        "sides": [
-          {
-            "roster_id": 2,
-            "reason": "You keep 2 QBs in the top 24, and you get the better player."
-          },
-          {
-            "roster_id": 3,
-            "reason": "You keep 4 RBs in the top 36 and keep 3 WRs in the top 36, and your lineup scores more."
-          }
-        ]
-      },
-      "reason": "All You Need Is Love gets Jameis Winston, the best player in the trade, with no loss to its lineup, and Lil Fridge gets Tre Tucker and Wan'Dale Robinson into its best lineup."
+      "headline": "Roschon Johnson for Tre Tucker helps both lineups.",
+      "bullets": [
+        {
+          "text": "Roschon Johnson gives your lineup a steady weekly starter.",
+          "mark": "for",
+          "fact_id": "10235.ppg",
+          "fact_text": "Roschon Johnson (RB, CHI) scored 3.8 points per game over 6 games before the trade. His Season rank is RB50, by total points this season."
+        },
+        {
+          "text": "The other manager gets Tre Tucker, who fills a spot he needs.",
+          "mark": "for",
+          "fact_id": "10213.ppg",
+          "fact_text": "Tre Tucker (WR, LV) scored 11.1 points per game over 6 games before the trade. His Season rank is WR16, by total points this season. His Recent rank is WR29, by points per game over the last 4 weeks."
+        },
+        {
+          "text": "The swap leaves both rosters with the same count of players.",
+          "mark": "even",
+          "fact_id": "trade.week",
+          "fact_text": "The trade is in week 6 of the 2026 season. Player stats run through the known games of week 6. The record runs through week 5."
+        }
+      ],
+      "fact_lines": []
     },
     {
+      "offer_id": "2:10213+12517-10:12514",
       "sides": [
         {
           "roster_id": 2,
           "team": "All You Need Is Love",
           "gives": [
             {
-              "player_id": "12527",
-              "name": "Ashton Jeanty",
-              "position": "RB",
+              "player_id": "10213",
+              "name": "Tre Tucker",
+              "position": "WR",
               "nfl_team": "LV",
-              "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg",
-              "season_rank": "RB13",
-              "recent_rank": null
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "season_rank": "WR16",
+              "recent_rank": "WR29",
+              "to": 10
+            },
+            {
+              "player_id": "12517",
+              "name": "Colston Loveland",
+              "position": "TE",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12517.jpg",
+              "season_rank": "TE26",
+              "recent_rank": null,
+              "to": 10
             }
           ],
           "gets": [
             {
-              "player_id": "11560",
-              "name": "Caleb Williams",
-              "position": "QB",
-              "nfl_team": "CHI",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
-              "season_rank": "QB23",
-              "recent_rank": null
-            },
-            {
-              "player_id": "5947",
-              "name": "Jakobi Meyers",
+              "player_id": "12514",
+              "name": "Emeka Egbuka",
               "position": "WR",
-              "nfl_team": "JAX",
-              "headshot": "https://sleepercdn.com/content/nfl/players/5947.jpg",
-              "season_rank": "WR37",
-              "recent_rank": null
+              "nfl_team": "TB",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12514.jpg",
+              "season_rank": "WR24",
+              "recent_rank": null,
+              "from": 10
             }
           ]
         },
         {
-          "roster_id": 3,
-          "team": "Lil Fridge",
+          "roster_id": 10,
+          "team": "behold the lamb",
           "gives": [
             {
-              "player_id": "11560",
-              "name": "Caleb Williams",
-              "position": "QB",
-              "nfl_team": "CHI",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
-              "season_rank": "QB23",
-              "recent_rank": null
-            },
-            {
-              "player_id": "5947",
-              "name": "Jakobi Meyers",
+              "player_id": "12514",
+              "name": "Emeka Egbuka",
               "position": "WR",
-              "nfl_team": "JAX",
-              "headshot": "https://sleepercdn.com/content/nfl/players/5947.jpg",
-              "season_rank": "WR37",
-              "recent_rank": null
+              "nfl_team": "TB",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12514.jpg",
+              "season_rank": "WR24",
+              "recent_rank": null,
+              "to": 2
             }
           ],
           "gets": [
             {
-              "player_id": "12527",
-              "name": "Ashton Jeanty",
-              "position": "RB",
+              "player_id": "10213",
+              "name": "Tre Tucker",
+              "position": "WR",
               "nfl_team": "LV",
-              "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg",
-              "season_rank": "RB13",
-              "recent_rank": null
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "season_rank": "WR16",
+              "recent_rank": "WR29",
+              "from": 2
+            },
+            {
+              "player_id": "12517",
+              "name": "Colston Loveland",
+              "position": "TE",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12517.jpg",
+              "season_rank": "TE26",
+              "recent_rank": null,
+              "from": 2
             }
           ]
         }
       ],
-      "fairness": {
-        "state": "win_win",
-        "gives_more": null,
-        "sides": [
-          {
-            "roster_id": 2,
-            "reason": "Meyers plays 83% of the snaps, sees 15% of the targets, and averages 7.3 air yards per target; Jeanty plays 61% of the snaps (down), takes 68% of the carries, and sees 23% of the targets."
-          },
-          {
-            "roster_id": 3,
-            "reason": "You keep 4 RBs in the top 36 and keep 3 WRs in the top 36, and your lineup scores more."
-          }
-        ]
-      },
-      "reason": "All You Need Is Love moves Ashton Jeanty as his snap share falls for Caleb Williams and Jakobi Meyers, and Lil Fridge gets Jeanty into its best lineup."
+      "headline": "Emeka Egbuka for Tre Tucker helps both lineups.",
+      "bullets": [
+        {
+          "text": "Emeka Egbuka gives your lineup a steady weekly starter.",
+          "mark": "for",
+          "fact_id": "12514.ppg",
+          "fact_text": "Emeka Egbuka (WR, TB) scored 9.5 points per game over 6 games before the trade. His Season rank is WR24, by total points this season."
+        },
+        {
+          "text": "The other manager gets Tre Tucker, who fills a spot he needs.",
+          "mark": "for",
+          "fact_id": "10213.ppg",
+          "fact_text": "Tre Tucker (WR, LV) scored 11.1 points per game over 6 games before the trade. His Season rank is WR16, by total points this season. His Recent rank is WR29, by points per game over the last 4 weeks."
+        },
+        {
+          "text": "The swap leaves both rosters with the same count of players.",
+          "mark": "even",
+          "fact_id": "trade.week",
+          "fact_text": "The trade is in week 6 of the 2026 season. Player stats run through the known games of week 6. The record runs through week 5."
+        }
+      ],
+      "fact_lines": []
     },
     {
+      "offer_id": "2:10213+12517-10:13274",
       "sides": [
         {
           "roster_id": 2,
           "team": "All You Need Is Love",
           "gives": [
             {
-              "player_id": "6770",
-              "name": "Joe Burrow",
-              "position": "QB",
-              "nfl_team": "CIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg",
-              "season_rank": "QB4",
-              "recent_rank": null
+              "player_id": "10213",
+              "name": "Tre Tucker",
+              "position": "WR",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "season_rank": "WR16",
+              "recent_rank": "WR29",
+              "to": 10
+            },
+            {
+              "player_id": "12517",
+              "name": "Colston Loveland",
+              "position": "TE",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12517.jpg",
+              "season_rank": "TE26",
+              "recent_rank": null,
+              "to": 10
             }
           ],
           "gets": [
             {
-              "player_id": "9228",
-              "name": "Bryce Young",
-              "position": "QB",
-              "nfl_team": "CAR",
-              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg",
-              "season_rank": "QB10",
-              "recent_rank": null
+              "player_id": "13274",
+              "name": "Germie Bernard",
+              "position": "WR",
+              "nfl_team": "PIT",
+              "headshot": "https://sleepercdn.com/content/nfl/players/13274.jpg",
+              "season_rank": "WR45",
+              "recent_rank": null,
+              "from": 10
             }
           ]
         },
         {
-          "roster_id": 3,
-          "team": "Lil Fridge",
+          "roster_id": 10,
+          "team": "behold the lamb",
           "gives": [
             {
-              "player_id": "9228",
-              "name": "Bryce Young",
-              "position": "QB",
-              "nfl_team": "CAR",
-              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg",
-              "season_rank": "QB10",
-              "recent_rank": null
+              "player_id": "13274",
+              "name": "Germie Bernard",
+              "position": "WR",
+              "nfl_team": "PIT",
+              "headshot": "https://sleepercdn.com/content/nfl/players/13274.jpg",
+              "season_rank": "WR45",
+              "recent_rank": null,
+              "to": 2
             }
           ],
           "gets": [
             {
-              "player_id": "6770",
-              "name": "Joe Burrow",
-              "position": "QB",
-              "nfl_team": "CIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg",
-              "season_rank": "QB4",
-              "recent_rank": null
+              "player_id": "10213",
+              "name": "Tre Tucker",
+              "position": "WR",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "season_rank": "WR16",
+              "recent_rank": "WR29",
+              "from": 2
+            },
+            {
+              "player_id": "12517",
+              "name": "Colston Loveland",
+              "position": "TE",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12517.jpg",
+              "season_rank": "TE26",
+              "recent_rank": null,
+              "from": 2
             }
           ]
         }
       ],
-      "fairness": {
-        "state": "win_win",
-        "gives_more": null,
-        "sides": [
-          {
-            "roster_id": 2,
-            "reason": "Young plays 100% of the snaps (up)."
-          },
-          {
-            "roster_id": 3,
-            "reason": "You keep 2 QBs in the top 24, and you get the better player."
-          }
-        ]
-      },
-      "reason": "All You Need Is Love gets Bryce Young as his snap share rises, and Lil Fridge gets Joe Burrow, the best player in the trade, with no loss to its lineup."
+      "headline": "Germie Bernard for Tre Tucker helps both lineups.",
+      "bullets": [
+        {
+          "text": "Germie Bernard gives your lineup a steady weekly starter.",
+          "mark": "for",
+          "fact_id": "13274.ppg",
+          "fact_text": "Germie Bernard (WR, PIT) scored 6.9 points per game over 6 games before the trade. His Season rank is WR45, by total points this season."
+        },
+        {
+          "text": "The other manager gets Tre Tucker, who fills a spot he needs.",
+          "mark": "for",
+          "fact_id": "10213.ppg",
+          "fact_text": "Tre Tucker (WR, LV) scored 11.1 points per game over 6 games before the trade. His Season rank is WR16, by total points this season. His Recent rank is WR29, by points per game over the last 4 weeks."
+        },
+        {
+          "text": "The swap leaves both rosters with the same count of players.",
+          "mark": "even",
+          "fact_id": "trade.week",
+          "fact_text": "The trade is in week 6 of the 2026 season. Player stats run through the known games of week 6. The record runs through week 5."
+        }
+      ],
+      "fact_lines": []
     }
   ],
   "empty": null,
   "as_of": {
     "chart_week": 6,
-    "stats_through": 5,
+    "stats_through": 6,
     "completed_through": 5,
     "rosters_fetched": "2026-10-19T09:30:00-04:00",
     "known_games": {
       "week": 6,
-      "games": 0,
+      "games": 14,
       "in_progress": 0,
-      "pending": {}
-    }
+      "pending": {
+        "usage": 8
+      }
+    },
+    "no_chart": false,
+    "no_chart_note": null
   },
   "fallback": false,
   "missing": [

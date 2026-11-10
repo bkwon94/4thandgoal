@@ -1,11 +1,12 @@
 /**
- * The trade finder: the partner picker, the "Find a Trade" button, and up to three cards of trades that are good for both.
- * It posts the pair to the find route. A card hands its trade to the trade form, which grades it through the analyze route.
+ * The trade finder: the optional partner picker, the "Find a Trade" button, and up to three cards of the Advisor picks.
+ * It posts the asker, and the partner when one is picked, to the find route. A card hands its trade to the trade form.
  */
 "use client";
 
 import { useState } from "react";
-import { AsOfLine, FairnessBlock, NoChartLine, SwapCard, type SwapSide } from "./analyze-result";
+import { AsOfLine, NoChartLine, SwapCard, type SwapSide } from "./analyze-result";
+import { BulletRows } from "./bullet-rows";
 import { Card } from "@cpc/design/parts/card";
 import { ErrorLine } from "@cpc/design/parts/error-line";
 import { Sweep } from "./sweep";
@@ -15,7 +16,7 @@ import { useRequest } from "./use-request";
 import type { FindResponse, FinderTrade } from "../lib/analyze-types";
 import { ApiError, type ApiTarget, postFind, toErrorLine, type Team } from "../lib/api";
 
-// The finder grades every small swap of the pair and makes one Claude call, so it waits as long as a cold grade.
+// The finder asks Jev in waves and makes one Claude call, so it waits as long as a cold grade.
 const TIMEOUT_MS = 60_000;
 
 type FindState =
@@ -48,7 +49,8 @@ function swapSides(trade: FinderTrade, asker: number): SwapSide[] {
   return sides.sort((a, b) => Number(b.mine) - Number(a.mine));
 }
 
-/* One finder trade: its place, the swap card, the fairness line, and the reason. A null reason shows the fairness line alone. */
+/* One finder trade: its place, the headline, the swap card, then the Bullet rows of the analyzer.
+   After a fallback the trade has no headline and no Bullet, so the card lists its plain fact lines. */
 function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; locked: boolean }) {
   const sides = swapSides(trade, asker);
   return (
@@ -56,9 +58,16 @@ function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: Fin
       <h3 className="m-0 font-mono text-meta leading-tight font-bold tracking-wide text-accent-ink uppercase">
         Trade {index + 1} of {count}
       </h3>
+      {trade.headline !== null && <p className="m-0 text-lead font-bold text-ink">{trade.headline}</p>}
       <SwapCard sides={sides} />
-      <FairnessBlock sides={sides} fairness={trade.fairness} />
-      {trade.reason !== null && <p className="m-0 text-lead text-ink-2">{trade.reason}</p>}
+      {trade.bullets.length > 0 && <BulletRows bullets={trade.bullets} idBase={`pick-${index + 1}`} />}
+      {trade.fact_lines.length > 0 && (
+        <ul aria-label="Facts" className="m-0 flex max-w-measure list-none flex-col gap-sp-2 p-0 text-meta text-ink-2">
+          {trade.fact_lines.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      )}
       <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" disabled={locked} onClick={onOpen}>
         See the Full Result
       </Button>
@@ -73,9 +82,12 @@ function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (tra
     <div>
       {/* The pipeline writes the empty line, so the page shows it word for word. */}
       {doc.empty !== null && <p className="m-0 py-sp-5 text-lead font-bold">{doc.empty}</p>}
+      {doc.fallback && doc.trades.length > 0 && (
+        <p className="m-0 pt-sp-5 text-lead text-ink-2">The picks did not come through. These are the trades the search kept, with their facts.</p>
+      )}
       {doc.trades.map((trade, i) => (
         <FinderCard
-          key={trade.sides.flatMap((s) => s.gives.map((p) => p.player_id)).join("-")}
+          key={trade.offer_id}
           trade={trade}
           asker={asker}
           index={i}
@@ -102,15 +114,14 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
   const partners = teams.filter((team) => team.roster_id !== asker);
   const finding = find.status === "finding";
 
-  // A new partner makes the old cards stale, so a change clears them.
-  function pickPartner(rosterId: number) {
+  // A new partner, or no partner, makes the old cards stale, so a change clears them.
+  function pickPartner(rosterId: number | null) {
     request.drop();
     setPartner(rosterId);
     setFind({ status: "idle" });
   }
 
   async function submit() {
-    if (partner === null) return;
     const run = request.start();
     const { controller } = run;
     let timedOut = false;
@@ -120,7 +131,9 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
     }, TIMEOUT_MS);
     setFind({ status: "finding" });
     try {
-      const doc = await postFind(target, passphrase, { season: target.season, asker, partner }, controller.signal);
+      // With no partner, the body has no partner key, so the search runs over every other team.
+      const body = partner === null ? { season: target.season, asker } : { season: target.season, asker, partner };
+      const doc = await postFind(target, passphrase, body, controller.signal);
       if (run.isCurrent()) setFind({ status: "done", doc });
     } catch (error) {
       // An abort from unmount must not set state on a gone component.
@@ -140,12 +153,22 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
           <h2 id="find-trade" className="m-0 text-stat leading-stat font-black uppercase">
             Find a Trade
           </h2>
-          <p className="m-0 text-lead text-ink-2">Pick a partner. The search finds up to 3 trades good for both.</p>
+          <p className="m-0 text-lead text-ink-2">Pick a partner, or search every team. The search finds up to 3 trades.</p>
         </div>
         <TeamPicker label="Trade Partner" teams={partners} value={partner} disabledId={null} onChange={pickPartner} locked={locked || finding} />
+        {partner !== null && (
+          <Button
+            variant="ghost"
+            className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold"
+            disabled={locked || finding}
+            onClick={() => pickPartner(null)}
+          >
+            Search Every Team
+          </Button>
+        )}
         <Button
           className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold"
-          disabled={partner === null || finding || locked}
+          disabled={finding || locked}
           aria-busy={finding || undefined}
           onClick={submit}
         >

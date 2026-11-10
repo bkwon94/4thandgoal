@@ -131,12 +131,16 @@ export const analyzeResponseSchema = z.object({
   stale: z.array(z.string()),
 });
 
-/* One trade of the finder. The sides share the analyze document's side shape, so the site renders a side one way.
-   reason is null when the Claude call failed twice. The fairness line then stands alone. */
+/* One trade of the finder. The sides share the analyze document's side shape, and the Bullets share its Bullet shape,
+   so the site renders a side and a row one way. A pick has a headline and 2 to 3 Bullets, and no fact line.
+   After a fallback, the headline is null, no Bullet stands, and fact_lines holds plain facts of the offer. */
 export const finderTradeSchema = z.object({
+  // The id of the offer on the shortlist, such as "2:10213-10:10235". The card keys on it.
+  offer_id: z.string(),
   sides: z.array(tradeSideSchema),
-  fairness: fairnessSchema,
-  reason: z.string().nullable(),
+  headline: z.string().nullable(),
+  bullets: z.array(bulletSchema),
+  fact_lines: z.array(z.string()),
 });
 
 /* The finder document that the site API returns from POST /find. It follows the fixture at .scratch/site-react/fixtures/find-response.json. */
@@ -144,14 +148,15 @@ export const findResponseSchema = z.object({
   season: z.number(),
   trade_pair: z.object({
     asker: z.object({ roster_id: z.number(), team: z.string() }),
-    partner: z.object({ roster_id: z.number(), team: z.string() }),
+    // Null for a find with no partner. Each trade then names its own partner in its sides.
+    partner: z.object({ roster_id: z.number(), team: z.string() }).nullable(),
   }),
-  // Up to three trades, best first. The three share no player.
+  // Up to three picks, best first. After a fallback, every offer of the shortlist, in its order.
   trades: z.array(finderTradeSchema),
-  // The line for an empty list, or null when the list has a trade. The page shows it as the pipeline writes it.
+  // The plain line for an empty list, or null when the list has a trade. The page shows it as the pipeline writes it.
   empty: z.string().nullable(),
   as_of: asOfSchema,
-  // True when the reason call failed, so every reason is null.
+  // True when the pick call failed twice, so the trades are the shortlist with fact lines and no headline.
   fallback: z.boolean(),
   missing: z.array(z.string()),
   stale: z.array(z.string()),

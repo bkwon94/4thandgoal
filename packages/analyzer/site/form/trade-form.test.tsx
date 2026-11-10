@@ -729,13 +729,16 @@ describe("TradeForm with three or four sides", () => {
   });
 });
 
-/* The finder cards hand their trade to the form. The fixture finder pair is roster 2 and roster 3, so these tests render those teams. */
+/* The finder cards hand their trade to the form. Each fixture finder trade is between roster 2 and one partner, so these tests render those teams. */
 describe("TradeForm with the finder", () => {
   afterEach(() => {
     finderOn = false;
   });
 
   const [first] = findJson.trades;
+  // The partner of every fixture trade, as a pattern of its team name.
+  const partnerName = first.sides[1].team;
+  const partnerRow = new RegExp(partnerName);
   const pairTeams: Team[] = [
     ...first.sides.map((side) => ({
       roster_id: side.roster_id,
@@ -776,7 +779,7 @@ describe("TradeForm with the finder", () => {
 
   it("hides the finder once the trade has a third side, and shows it again at two", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
-    await pickTeam("Team Two", "Lil Fridge");
+    await pickTeam("Team Two", partnerName);
     await addTeam("Third Wheel");
     expect(screen.queryByRole("group", { name: "Trade Partner" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Remove Team Three" }));
@@ -793,7 +796,7 @@ describe("TradeForm with the finder", () => {
   async function openCard(finderDoc: unknown, index: number) {
     await pickTeam("Your Team", "All You Need Is Love");
     answer(200, finderDoc);
-    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: /Lil Fridge/ }));
+    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: partnerRow }));
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     const cards = await screen.findAllByRole("article");
     answer(200, fixtureJson);
@@ -804,15 +807,16 @@ describe("TradeForm with the finder", () => {
   it("resets the partner and the cards when my team changes", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
     answer(200, findJson);
-    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: /Lil Fridge/ }));
+    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: partnerRow }));
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     await screen.findAllByRole("article");
 
-    await pickTeam("Your Team", "Lil Fridge");
+    await pickTeam("Your Team", partnerName);
     expect(screen.queryAllByRole("article")).toHaveLength(0);
     const partners = within(screen.getByRole("group", { name: "Trade Partner" })).getAllByRole("radio") as HTMLInputElement[];
     expect(partners.every((p) => !p.checked)).toBe(true);
-    expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(true);
+    // With no partner, the search runs over every other team, so Find stays on.
+    expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false);
   });
 
   it("scrolls the result into view after a card opens its full result", async () => {
@@ -834,7 +838,7 @@ describe("TradeForm with the finder", () => {
     Element.prototype.scrollIntoView = vi.fn();
     await pickTeam("Your Team", "All You Need Is Love");
     answer(200, findJson);
-    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: /Lil Fridge/ }));
+    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: partnerRow }));
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     const cards = await screen.findAllByRole("article");
     expect(cards).toHaveLength(3);
@@ -845,18 +849,19 @@ describe("TradeForm with the finder", () => {
 
     const [url, init] = fetchStub.mock.calls[1];
     expect(url).toBe("https://api.example.test/clients/cpc/analyze");
+    const [mine, theirs] = findJson.trades[1].sides;
     expect(JSON.parse(init.body)).toEqual({
       season: 2026,
       asker: 2,
       sides: [
-        { roster_id: 2, gives: [{ player_id: "12527", to: 3 }] },
-        { roster_id: 3, gives: [{ player_id: "11560", to: 2 }, { player_id: "5947", to: 2 }] },
+        { roster_id: 2, gives: mine.gives.map((p) => ({ player_id: p.player_id, to: theirs.roster_id })) },
+        { roster_id: theirs.roster_id, gives: theirs.gives.map((p) => ({ player_id: p.player_id, to: 2 })) },
       ],
     });
     // The form shows the trade of the card, so the picks match the result.
     edit();
-    expect(slot("Team Two").getAttribute("aria-label")).toContain("Lil Fridge");
-    expect(within(card("Team Two")).getByRole("button", { name: "Remove Ashton Jeanty" })).toBeTruthy();
-    expect(within(card("Your Team")).getByRole("button", { name: "Remove Caleb Williams" })).toBeTruthy();
+    expect(slot("Team Two").getAttribute("aria-label")).toContain(partnerName);
+    expect(within(card("Team Two")).getByRole("button", { name: `Remove ${mine.gives[0].name}` })).toBeTruthy();
+    expect(within(card("Your Team")).getByRole("button", { name: `Remove ${theirs.gives[0].name}` })).toBeTruthy();
   });
 });

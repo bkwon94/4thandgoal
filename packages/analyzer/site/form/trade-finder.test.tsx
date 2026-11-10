@@ -1,5 +1,5 @@
 /**
- * Tests for the trade finder: the partner picker, the find post, the cards from the fixture finder document, and each error state.
+ * Tests for the trade finder: the optional partner, the find post, the pick cards from the fixture finder document, and each error state.
  * fetch is a test stub, and each test reads the screen.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
@@ -10,9 +10,11 @@ import type { Team } from "../lib/api";
 import { TradeFinder } from "./trade-finder";
 
 const fixture = fixtureJson as FindResponse;
-const EMPTY_LINE = "No swap between these rosters is good for both.";
+const EMPTY_LINE = "The search found no trade that works for both teams.";
+// A letter grade, such as B or C+, as a word of its own.
+const LETTER = /(?:^|\s)[A-F][+-]?(?=[\s.,]|$)/;
 
-/* Twelve teams, as in the league. The fixture asker is roster 2 and the fixture partner is roster 3. */
+/* Twelve teams, as in the league. The fixture asker is roster 2, and the fixture find has no partner. */
 const TEAMS: Team[] = Array.from({ length: 12 }, (_, i) => ({
   roster_id: i + 1,
   team: i === 1 ? "All You Need Is Love" : i === 2 ? "Lil Fridge" : `Team ${i + 1}`,
@@ -34,9 +36,14 @@ const picker = () => screen.getByRole("group", { name: "Trade Partner" });
 const findButton = () => screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement;
 const cards = () => screen.queryAllByRole("article");
 
-/* Picks the fixture partner and taps "Find a Trade". */
-function find() {
+/* Picks a partner and taps "Find a Trade". */
+function findWithPartner() {
   fireEvent.click(within(picker()).getByRole("radio", { name: /Lil Fridge/ }));
+  fireEvent.click(findButton());
+}
+
+/* Taps "Find a Trade" with no partner, as the fixture find does. */
+function find() {
   fireEvent.click(findButton());
 }
 
@@ -77,13 +84,13 @@ describe("TradeFinder", () => {
     expect(within(picker()).queryByRole("radio", { name: /All You Need Is Love/ })).toBeNull();
   });
 
-  it("keeps the find button off until a partner is picked", () => {
-    expect(findButton().disabled).toBe(true);
+  it("keeps the find button on with no partner picked", () => {
+    expect(findButton().disabled).toBe(false);
     fireEvent.click(within(picker()).getByRole("radio", { name: /Lil Fridge/ }));
     expect(findButton().disabled).toBe(false);
   });
 
-  it("posts the season, the asker, and the partner to the find route with the passphrase", async () => {
+  it("posts the season and the asker with no partner to the find route with the passphrase", async () => {
     answer(200, fixture);
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
@@ -91,24 +98,62 @@ describe("TradeFinder", () => {
     expect(url).toBe("https://api.example.test/clients/cpc/find");
     expect(init.method).toBe("POST");
     expect(init.headers["X-League-Passphrase"]).toBe("localtest");
-    expect(JSON.parse(init.body)).toEqual({ season: 2026, asker: 2, partner: 3 });
+    expect(JSON.parse(init.body)).toEqual({ season: 2026, asker: 2 });
   });
 
-  it("renders three cards with the two sides, the fairness line, and the reason", async () => {
+  it("posts the picked partner, and Search Every Team clears it", async () => {
+    answer(200, fixture);
+    findWithPartner();
+    await waitFor(() => expect(cards()).toHaveLength(3));
+    expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual({ season: 2026, asker: 2, partner: 3 });
+    fireEvent.click(screen.getByRole("button", { name: "Search Every Team" }));
+    expect(cards()).toHaveLength(0);
+    answer(200, fixture);
+    fireEvent.click(findButton());
+    await waitFor(() => expect(cards()).toHaveLength(3));
+    expect(JSON.parse(fetchStub.mock.calls[1][1].body)).toEqual({ season: 2026, asker: 2 });
+  });
+
+  it("renders three cards with the headline, the two sides, and the Bullet rows with their Marks", async () => {
     answer(200, fixture);
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
-    const first = cards()[0];
-    expect(first.textContent).toContain("Jameis Winston");
-    expect(first.textContent).toContain("Tre Tucker");
-    expect(first.textContent).toContain("Wan'Dale Robinson");
-    expect(first.textContent).toContain("Good for both");
-    expect(first.textContent).toContain(fixture.trades[0].reason);
+    cards().forEach((card, i) => {
+      const trade = fixture.trades[i];
+      expect(within(card).getByText(trade.headline!)).toBeTruthy();
+      for (const side of trade.sides) for (const player of side.gives) expect(card.textContent).toContain(player.name);
+      const rows = within(card).getAllByRole("button", { expanded: false });
+      expect(rows).toHaveLength(trade.bullets.length);
+      trade.bullets.forEach((bullet, n) => {
+        expect(rows[n].textContent).toContain(bullet.text);
+        // The glyph is decorative, so a screen reader hears the Mark as a word.
+        expect(rows[n].textContent).toContain(bullet.mark);
+      });
+    });
+  });
+
+  it("opens the fact of a Bullet row on a tap", async () => {
+    answer(200, fixture);
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(3));
+    const bullet = fixture.trades[0].bullets[0];
+    const row = within(cards()[0]).getByRole("button", { name: new RegExp(bullet.text) });
+    fireEvent.click(row);
+    expect(row.getAttribute("aria-expanded")).toBe("true");
+    const fact = document.getElementById(row.getAttribute("aria-controls")!) as HTMLElement;
+    expect(fact.textContent).toBe(bullet.fact_text);
+  });
+
+  it("shows no letter grade on any card", async () => {
+    answer(200, fixture);
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(3));
+    for (const card of cards()) expect(card.textContent).not.toMatch(LETTER);
   });
 
   it("shows the finder as one card with its title, the copy, the partner row, and the button", async () => {
     const finder = screen.getByRole("region", { name: "Find a Trade" });
-    expect(within(finder).getByText("Pick a partner. The search finds up to 3 trades good for both.")).toBeTruthy();
+    expect(within(finder).getByText("Pick a partner, or search every team. The search finds up to 3 trades.")).toBeTruthy();
     expect(within(finder).getByRole("group", { name: "Trade Partner" })).toBeTruthy();
     expect(within(finder).getByRole("button", { name: "Find a Trade" })).toBeTruthy();
     fireEvent.click(within(picker()).getByRole("radio", { name: /Lil Fridge/ }));
@@ -118,7 +163,7 @@ describe("TradeFinder", () => {
     expect(within(finder).getByRole("button", { name: "Change trade partner" })).toBeTruthy();
   });
 
-  it("names each result card by its place, with the fairness pill and See the Full Result", async () => {
+  it("names each result card by its place, with See the Full Result", async () => {
     answer(200, fixture);
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
@@ -127,7 +172,6 @@ describe("TradeFinder", () => {
       "Trade 2 of 3",
       "Trade 3 of 3",
     ]);
-    expect(within(cards()[0]).getByText("Good for both")).toBeTruthy();
     expect(within(cards()[0]).getByRole("button", { name: "See the Full Result" })).toBeTruthy();
   });
 
@@ -141,18 +185,23 @@ describe("TradeFinder", () => {
     });
   });
 
-  it("shows the fairness line alone when the reason is null", async () => {
-    const reasons = fixture.trades.map((t) => t.reason!);
-    answer(200, { ...fixture, fallback: true, trades: fixture.trades.map((t) => ({ ...t, reason: null })) });
+  it("shows the fact lines of each shortlist offer after a fallback, with no headline and no row", async () => {
+    const lines = ["Tre Tucker (WR, LV) scored 11.1 points per game over 6 games before the trade.", "Second line."];
+    const trades = fixture.trades.map((t) => ({ ...t, headline: null, bullets: [], fact_lines: lines }));
+    answer(200, { ...fixture, fallback: true, trades });
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
+    expect(screen.getByText("The picks did not come through. These are the trades the search kept, with their facts.")).toBeTruthy();
     cards().forEach((card, i) => {
-      expect(card.textContent).toContain("Good for both");
-      expect(card.textContent).not.toContain(reasons[i]);
+      expect(card.textContent).not.toContain(fixture.trades[i].headline);
+      expect(within(card).queryAllByRole("button", { expanded: false })).toHaveLength(0);
+      const facts = within(card).getByRole("list", { name: "Facts" });
+      expect(within(facts).getAllByRole("listitem").map((item) => item.textContent)).toEqual(lines);
+      expect(within(card).getByRole("button", { name: "See the Full Result" })).toBeTruthy();
     });
   });
 
-  it("shows the empty line when no swap is good for both", async () => {
+  it("shows the empty line when no trade works", async () => {
     answer(200, { ...fixture, trades: [], empty: EMPTY_LINE });
     find();
     expect(await screen.findByText(EMPTY_LINE)).toBeTruthy();
@@ -162,7 +211,9 @@ describe("TradeFinder", () => {
   it("shows the as-of line as on the analyze result", async () => {
     answer(200, fixture);
     find();
-    expect(await screen.findByText(/^Stats through week 5 · rosters fetched$/)).toBeTruthy();
+    // The fixture find ran with 14 known games of week 6, so the line names them as on the analyze result.
+    const asOf = await screen.findByText(/^Stats through/);
+    expect(asOf.textContent).toMatch(/^Stats through week 5, plus 14 week 6 games · Usage pending for 8 games · rosters fetched /);
   });
 
   it("shows the wait line on a 429", async () => {
