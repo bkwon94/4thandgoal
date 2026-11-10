@@ -13,14 +13,14 @@ After the evidence agent records each acceptance test, Jev reads the test and it
 - The Jev call is a `cornerstone evidence-flags` subcommand in the pipeline CLI. It reuses `JEV`, `FakeJev`, and the shape of `advisor_eval`. The root `scripts/` stay standard-library only. Brian left the choice to Claude on 2026-11-10.
 - The term is Evidence flag, in `GLOSSARY.md`. "Check", "screen", and "verdict" already have other meanings.
 - The text questions are in scope: each fact that the test names, and a test of motion with only still shots as evidence.
+- Jev takes PNG and JPEG images, 280 to 1568 px per side, with SDK 0.7.5. So the question about cut-off text in a screenshot is in scope, and the `Jev` port gets an image type. `decisions/01-research-jev-image-input.md`.
 
 ## NOT YET SPECIFIED
 
-- Does TypeSafe Jev take images, and with what limits? `decisions/01-research-jev-image-input.md`.
 - Which past labels count as a real evidence gap, and how well does Jev flag them in a replay? `decisions/02-research-replay-past-rounds.md`.
 - What hit rate and what false-flag rate let Jev into the flow? `decisions/03-grill-replay-bar.md`.
 - What does the evidence agent do on a flag, and what is the loop limit? `decisions/04-grill-agent-on-flag.md`.
-- What does Jev read, what happens when Jev is down or the key is missing, and what does the cost log line show? `decisions/05-spec-state-failure-log.md`.
+- What does Jev read, what happens when Jev is down or the key is missing, and what does the cost log line show? How does the caller cut a tall full-page shot into parts of 1568 px or less? `decisions/05-spec-state-failure-log.md`.
 
 ## OUT OF SCOPE
 
