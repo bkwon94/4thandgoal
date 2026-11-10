@@ -25,11 +25,11 @@ REQUEST_LIMIT = 32 * 1024 * 1024
 REQUEST_MARGIN = 256 * 1024
 PART_FRAMING = 1024
 # Jev 1.14 takes 32k tokens for the state plus one question, and 64k for the state plus all questions
-# (https://docs.typesafe.ai/go/models.md, "Context length"). A live probe on 2026-11-10 agrees: a state of six plain
+# (https://docs.typesafe.ai/go/models.md, "Context length"). A live probe agrees: a state of six plain
 # 1280 x 1568 tiles passed at 31,442 input tokens, and seven tiles gave `400 max_tokens_exceeded`. The budget of the
 # state sits about 4,000 tokens under 32k. The margin covers the longest question and the error of the estimate.
 TOKEN_BUDGET = 28_000
-# A calibration run of decision ticket 02 measured about one input token per 350 to 390 px of an image, and the probe
+# A calibration run measured about one input token per 350 to 390 px of an image, and the probe
 # above measured 387 px. Text costs about one token per 4 bytes, and 3 bytes a token keeps the estimate on the safe side.
 PIXELS_PER_TOKEN = 380
 BYTES_PER_TOKEN = 3

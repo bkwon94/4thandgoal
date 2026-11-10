@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from league.jev_port import NoulQuestion
 
 # The bar of a question on the eval run: it catches at least half of the past gaps of its kind, and it flags 10% or
-# fewer of the PASS tests. The in-flow mark of each question follows that run, and only a later ticket changes a cut.
+# fewer of the PASS tests. The in-flow mark of each question follows that run. A cut changes only after a new eval run.
 BAR_HIT_RATE = 0.5
 BAR_FALSE_FLAG_RATE = 0.10
 
@@ -161,7 +161,7 @@ def _cut_text_flag(answers: dict[str, float], state: dict) -> tuple[float, str]:
     return answers[key], f"The shot `{path}` may show the text of the Then line cut off or too big for its space."
 
 
-# The eval run of ticket 04 found no past gap of the kind cut-text, only the defect of easter-eggs AT-41. With no gap
+# The eval run found no past gap of the kind cut-text, only the defect of easter-eggs AT-41. With no gap
 # of its kind, the eval cannot show that (c) meets the bar, so it stays out of the flow.
 CUT_TEXT = Question(key="c", name="cut-off text", kind="cut-text", cut=0.9, in_flow=False, nouls=_cut_text_nouls,
                     flag=_cut_text_flag)
