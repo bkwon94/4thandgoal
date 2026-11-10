@@ -9,8 +9,9 @@ from cpc import cpc_client, four_week
 from fakes import FakeJev
 
 from analyzer.trade import ProposedTrade, TradeSide
-from analyzer.trade_jev import trade_jev_facts
+from analyzer.trade_jev import trade_jev_facts, weak_starting_slots
 from league.jev_port import JevError
+from league.league_settings import LeagueSettings
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot
 
@@ -75,3 +76,18 @@ def test_a_three_side_trade_asks_the_need_and_the_accept_of_each_other_side(snap
     assert set(jev.requests[0].questions) == {"fair", "need.4", "need.12", "need.1", "accept.12", "accept.1"}
     assert set(jev.requests[0].state["teams"]) == {"asker", "partner_1", "partner_2"}
     assert "JEV.accept.1" in facts
+
+
+def _with_team_count(snap, team_count: int):
+    """The snapshot in a league of `team_count` teams. The settings build again, so the lines follow the count."""
+    settings = LeagueSettings(**{**snap.client.settings.model_dump(), "team_count": team_count})
+    return snap.model_copy(update={"client": snap.client.model_copy(update={"settings": settings})})
+
+
+def test_the_weak_starting_slots_follow_the_team_count_and_the_lines_of_the_client(snap):
+    # Roster 2 starts Aaron Jones at RB13 and RB21 at RB2, WR31 at FLEX1, and Brenton Strange at TE16.
+    slots = {line.partition(":")[0] for line in weak_starting_slots(snap, 2)}
+    assert slots == {"RB1", "TE"}
+    # In a league of 10 teams, RB2 is weak past RB20, and a WR at FLEX is weak past the WR line of 30.
+    slots = {line.partition(":")[0] for line in weak_starting_slots(_with_team_count(snap, 10), 2)}
+    assert slots == {"RB1", "RB2", "TE", "FLEX1"}

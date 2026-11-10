@@ -9,6 +9,7 @@ from analyzer.trade import ProposedTrade
 from analyzer.trade_facts import shown_ranks
 from facts.tokens import Nums, fact
 from league.jev_port import Jev, JevError, NoulQuestion
+from league.league_settings import LeagueSettings
 from league.lineup import FLEX_SLOTS, lineup_slots
 from league.models import Fact
 from league.snapshot import Snapshot
@@ -29,10 +30,9 @@ ACCEPT = {
     "yes": "The manager of {other}, who looks a lot at recent points, sees the trade as good for his team.",
     "no": "The manager of {other} sees the trade as a loss for his team."}
 
-# A starter is weak past this rank at his position: 12 teams start one QB, two RBs, two WRs, one TE, and two FLEX
-# spots. A numbered slot such as RB2 reads 12 times its number, and a FLEX slot reads the top 36.
-TEAM_SLOT_RANK = 12
-FLEX_RANK = 36
+# The positions a trade may hold. A kicker and a defense are never in a Finder offer (a hard rule), and no question
+# of a trade reads their slots.
+TRADE_POSITIONS = ("QB", "RB", "WR", "TE")
 # The TypeSafe default thresholds of a Noul: above 0.7 reads as yes, below 0.3 as no, and the band between as unsure.
 YES_AT, NO_AT = 0.7, 0.3
 FACT_PREFIX = "JEV."
@@ -50,11 +50,16 @@ def _player(snapshot: Snapshot, pid: str) -> str:
     return f"{player.name} ({player.position}, {player.nfl_team or 'no team'}{rank})"
 
 
-def _weak_limit(slot_name: str, roster_slot: str) -> int:
+def _weak_limit(settings: LeagueSettings, slot_name: str, roster_slot: str, position: str) -> int:
+    """The last rank a starter of the slot may hold before he is weak, from the size and the lines of the league.
+
+    A numbered slot such as RB2 reads the team count times its number, so each team starts one player of each tier.
+    A FLEX slot reads the line of the position of its player. GLOSSARY.md, "The line".
+    """
     if roster_slot in FLEX_SLOTS:
-        return FLEX_RANK
+        return settings.lines[position]
     number = re.search(r"\d+$", slot_name)
-    return TEAM_SLOT_RANK * (int(number.group()) if number else 1)
+    return settings.team_count * (int(number.group()) if number else 1)
 
 
 def weak_starting_slots(snapshot: Snapshot, roster_id: int) -> list[str]:
@@ -64,12 +69,14 @@ def weak_starting_slots(snapshot: Snapshot, roster_id: int) -> list[str]:
     """
     weak = []
     for slot in lineup_slots(snapshot.rosters[roster_id], snapshot):
-        if slot.roster_slot not in FLEX_SLOTS and slot.roster_slot not in ("QB", "RB", "WR", "TE"):
+        if slot.roster_slot not in FLEX_SLOTS and slot.roster_slot not in TRADE_POSITIONS:
             continue
         if slot.player is None:
             weak.append(f"{slot.name}: empty")
-        elif slot.rank is None or slot.rank > _weak_limit(slot.name, slot.roster_slot):
-            player = snapshot.players[slot.player]
+            continue
+        player = snapshot.players[slot.player]
+        if slot.rank is None or slot.rank > _weak_limit(snapshot.client.settings, slot.name, slot.roster_slot,
+                                                        player.position):
             rank = f"{player.position}{slot.rank}" if slot.rank is not None else "no rank"
             weak.append(f"{slot.name}: {player.name} ({rank})")
     return weak

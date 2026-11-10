@@ -11,7 +11,7 @@ from analyzer.jev_waves import JevWaves, WaveRequest
 from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_facts import shown_ranks
-from analyzer.trade_jev import YES_AT, trade_jev_questions, weak_starting_slots
+from analyzer.trade_jev import TRADE_POSITIONS, YES_AT, trade_jev_questions, weak_starting_slots
 from league.jev_port import Jev, NoulQuestion
 from league.lineup import above_the_line, lineup_slots
 from league.ranks import OUT_STATUSES
@@ -19,8 +19,7 @@ from league.snapshot import Snapshot
 
 log = logging.getLogger(__name__)
 
-# The positions a Finder offer may hold. A kicker and a defense are never in an offer (a hard rule).
-TRADE_POSITIONS = ("QB", "RB", "WR", "TE")
+# A Finder offer holds only the TRADE_POSITIONS of trade_jev.py. A kicker and a defense are never in an offer.
 
 # The four questions of the partner filter, from the glossary entry "Partner filter". Each asks one judgment, and
 # the state holds the depth that code counts, because Jev does not count reliably.
