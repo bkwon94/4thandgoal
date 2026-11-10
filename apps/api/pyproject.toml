@@ -16,6 +16,9 @@ dependencies = [
     "fastapi>=0.158.0",
     "httpx>=0.28.1",
     "pydantic>=2.14.1",
+    # The exact pin pairs with ai 7.0.159 and @ai-sdk/react 4.0.163 of the site. VercelAIAdapter speaks the stream of
+    # AI SDK v7 at sdk_version=7, and its docs give no minimum version, so a change of either side moves both pins.
+    "pydantic-ai-slim[anthropic,ui]==2.66.0",
     "uvicorn>=0.54.0",
 ]
 
