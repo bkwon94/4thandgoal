@@ -36,10 +36,12 @@ export class AskError extends Error {
   }
 }
 
-export async function askRoute(target: AskTarget, passphrase: string, body: AskQuestion): Promise<AskAnswer> {
+/* Send one POST to `path` under /clients/<slug>/ of the API, with the league passphrase. A call that never reaches the
+   API throws an AskError of status 0. A failed status throws its AskError, with the wait of the Retry-After header. */
+export async function postClient(target: AskTarget, passphrase: string, path: string, body: unknown): Promise<Response> {
   let response: Response;
   try {
-    response = await fetch(`${target.url}/clients/${encodeURIComponent(target.client)}/ask`, {
+    response = await fetch(`${target.url}/clients/${encodeURIComponent(target.client)}/${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-League-Passphrase": passphrase },
       body: JSON.stringify(body),
@@ -47,11 +49,23 @@ export async function askRoute(target: AskTarget, passphrase: string, body: AskQ
   } catch {
     throw new AskError(0, "The question did not reach the site.");
   }
-  if (!response.ok) {
-    const seconds = Number(response.headers.get("Retry-After"));
-    throw new AskError(response.status, response.statusText, Number.isFinite(seconds) && seconds > 0 ? seconds : undefined);
-  }
-  const parsed = askAnswerSchema.safeParse(await response.json());
+  if (!response.ok) throw statusError(response);
+  return response;
+}
+
+/* The AskError of a failed status. A 429 carries its wait in seconds when the Retry-After header gives one. */
+export function statusError(response: Response): AskError {
+  const seconds = Number(response.headers.get("Retry-After"));
+  return new AskError(response.status, response.statusText, Number.isFinite(seconds) && seconds > 0 ? seconds : undefined);
+}
+
+/* The JSON body of a response, read with its schema. A body that the schema rejects throws an AskError of status 502. */
+export async function readBody<T>(response: Response, schema: z.ZodType<T>): Promise<T> {
+  const parsed = schema.safeParse(await response.json());
   if (!parsed.success) throw new AskError(502, "The API sent an answer the site cannot read.");
   return parsed.data;
+}
+
+export async function askRoute(target: AskTarget, passphrase: string, body: AskQuestion): Promise<AskAnswer> {
+  return readBody(await postClient(target, passphrase, "ask", body), askAnswerSchema);
 }
