@@ -36,11 +36,11 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - The front door takes the structure and the motion of variant C in the brand of variant A. The look of C becomes the dark theme, with a light theme beside it. `decisions/07-prototype-the-design-language.md`.
 - A free answer gets tools over this season and the nflverse game logs. Pydantic AI runs them on the API and streams through `VercelAIAdapter` to `useChat`. Jev checks each claim against the tool results, with at most 4 tool calls. `decisions/12-grill-free-answer-width.md`.
 - The API keeps each Answer under a key of the facts it read. The top Suggestion builds on open. The data block shows first, the text streams with visible tool steps, and Jev checks at the end, with one retry. `decisions/11-grill-live-answer-speed.md`.
+- Each team gets 25 Claude Answers a day, and each league gets $25 a month. Past a cap, only what costs nothing runs. Every Claude answer uses Sonnet 5.5, and the route picks the model by a table. `decisions/04-grill-the-cap-numbers.md`.
 - `/` becomes the front door. The hero and the tool tiles go away. The menu stays with fewer links. Brian, 2026-11-09.
 
 ## NOT YET SPECIFIED
 
-- What are the numbers of the caps? `decisions/04-grill-the-cap-numbers.md`.
 - Does the Thread stay across visits, and does it reset each week? `decisions/05-grill-the-thread-across-visits.md`.
 - Where is the border with `manager-brain`? `decisions/06-grill-the-manager-brain-border.md`.
 - How does the front door look and move on a phone? `decisions/08-prototype-the-front-door.md`.
@@ -50,6 +50,7 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 ## OUT OF SCOPE
 
 - Past seasons of the league in a free answer. It needs a new fetch and store. A later spec adds it if managers ask about history.
+- A split that sends simple lookups to Haiku 5.5 after a Jev question. Brian chose Sonnet 5.5 for all answers. A later spec tests the split if the cost grows.
 - A live news source. It adds a vendor and a cost, and its facts have no ground truth for the Jev check.
 
 - A login for each manager. Your team lives in the browser, and nothing private depends on it.
