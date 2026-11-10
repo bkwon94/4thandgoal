@@ -21,7 +21,7 @@ The analyzer and the Finder advise as a league-mate does. Code builds a fact she
 
 For one trade, the manager sees a Lean (Send it, Lean yes, Gut call, Lean no, or Pass) on a 5-step scale, a Case that leads with its condition, and a fairness line. Under it, one tab per team holds 3 to 5 Bullets in For, Against, and Even bands. Each Bullet rests on one fact, and a tap shows that fact. No letter shows anywhere.
 
-For the Finder, the manager presses Find with no partner. Jev filters the partners, picks the targets on each side, and makes a shortlist from offers that code builds. The Advisor picks up to three trades and gives each a headline and 2 to 3 Bullets: why you send it, and why he says yes. With no good match, the Finder says so in plain words.
+For the Finder, the manager presses Find with no partner. Jev filters the partners, picks the targets on each side, and makes a shortlist from offers that code builds. The Advisor picks up to three trades and gives each a headline and 2 to 4 Bullets: why you send it, and why he says yes. With no good match, the Finder says so in plain words.
 
 Prototype 04 tested this design on 28 trades. Brian agreed with the Advisor on 20 of 24 trades. A press costs about 11 cents and takes about 20 s.
 
@@ -70,7 +70,7 @@ Prototype 04 tested this design on 28 trades. Brian agreed with the Advisor on 2
 36. As a manager, I want the Finder to pick the players a manager would want on each side, not a code screen on points, so that a backup about to start still counts.
 37. As a manager, I want the Finder to build 1-for-1, 2-for-1, and 1-for-2 offers only, so that the picks stay simple.
 38. As a manager, I want no kicker, no defense, no player out with no return week, and no handcuff in an offer, so that every pick is a legal and real trade.
-39. As a manager, I want up to three picks, each with a headline and 2 to 3 Bullets, so that I know why I send it and why he says yes.
+39. As a manager, I want up to three picks, each with a headline and 2 to 4 Bullets, so that I know why I send it and why he says yes.
 40. As a manager, I want the Finder Bullets to use the same rows, Marks, and tap as the analyzer, so that both pages read the same.
 41. As a manager, I want "See the full result" on a pick to grade it in the analyzer, so that I get the full read of that trade.
 42. As a manager, I want the analyzer and the Finder never to disagree on one trade, so that I trust both.
@@ -164,7 +164,7 @@ Prototype 04 tested this design on 28 trades. Brian agreed with the Advisor on 2
   ```
 
   This shape came from prototype 04. A trade of 3 or more sides has one Bullet list per side.
-- The output of one Finder press: up to 3 picks, each `{ offer_id, headline, bullets }` with 2 to 3 Bullets, or a `none_line` in plain words when no offer is good.
+- The output of one Finder press: up to 3 picks, each `{ offer_id, headline, bullets }` with 2 to 4 Bullets, or a `none_line` in plain words when no offer is good.
 - The prompt rules: advise the asker in the voice of the client. Lead the Case with its condition. Name the risk and the upside. Back claims with data, but do not list stats. Say when a split rests on few games. A news fact is a report: name the source or say "reported", and never state a trade or a role change as done. Never write "rival". Never name the commissioner.
 - Fairness is set by the Advisor. The fairness block of the document keeps one reason per side.
 

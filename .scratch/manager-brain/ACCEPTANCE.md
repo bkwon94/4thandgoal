@@ -213,7 +213,7 @@ App: pipeline
 Stories: 33, 35, 39
 Given: the local API with the current cpc rosters.
 When: POST `/find` for Maye d'force B with U with no partner.
-Then: the log shows the partner filter on all 11 other teams. The document has 1 to 3 picks, each with a headline and 2 to 3 Bullets, or a plain empty line.
+Then: the log shows the partner filter on all 11 other teams. The document has 1 to 3 picks, each with a headline and 2 to 4 Bullets, or a plain empty line.
 Evidence: the request, the response, and the log.
 
 AT-27: Find with one partner keeps to that partner
@@ -381,7 +381,7 @@ App: site
 Stories: 39, 40, 41
 Given: the local site and API, after Find for Maye d'force B with U with no partner.
 When: read a card, then tap "See the full result".
-Then: the card shows a headline, the swap, and 2 to 3 Bullet rows with the same Marks and tap as the analyzer. The tap opens the analyzer read of that trade.
+Then: the card shows a headline, the swap, and 2 to 4 Bullet rows with the same Marks and tap as the analyzer. The tap opens the analyzer read of that trade.
 Evidence: screenshots of the card and of the read at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-48: Find works with no partner picked
@@ -512,3 +512,4 @@ Out of scope "Suggested counters": no test. Reason: no ticket of this spec touch
 ## Revisions
 
 - 2026-11-10, AT-50, by Brian: the search for "Brian" is for the name of the commissioner. An NFL player whose name holds "Brian", such as Brian Robinson, does not count. Reason: the live reads name Brian Robinson as a trade player, and the rule of story 59 is about the commissioner.
+- 2026-11-10, AT-26 and AT-47, by Brian: a Finder pick holds 2 to 4 Bullets, not 2 to 3. Reason: the API does not enforce an array count, so a pick with a 4th Bullet made the guard retry, and the retry put the Finder press over the time and cost limits of AT-33. The PRD (story 39 and the press output) and ticket 10 say the same.

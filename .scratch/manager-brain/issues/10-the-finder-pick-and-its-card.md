@@ -4,13 +4,13 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-26, AT-30, AT-31, AT-
 
 **App:** both
 
-**What to build:** A Finder press ends in picks a manager can trust. Code builds a sheet for each shortlist offer, with news only for those players. The Advisor picks up to 3, each with a headline and 2 to 3 Bullets: why you send it, and why he says yes. With no good offer, it gives a plain line. After two failed calls, the document holds the Jev shortlist with plain fact lines and the fallback flag. The finder document carries the headline and the Bullets in the shape of the analyze document. The card shows the headline, the swap, and the Bullet rows of ticket 04 with the same Marks and tap. Find works with no partner picked. "See the full result" grades the pick in the analyzer.
+**What to build:** A Finder press ends in picks a manager can trust. Code builds a sheet for each shortlist offer, with news only for those players. The Advisor picks up to 3, each with a headline and 2 to 4 Bullets: why you send it, and why he says yes. With no good offer, it gives a plain line. After two failed calls, the document holds the Jev shortlist with plain fact lines and the fallback flag. The finder document carries the headline and the Bullets in the shape of the analyze document. The card shows the headline, the swap, and the Bullet rows of ticket 04 with the same Marks and tap. Find works with no partner picked. "See the full result" grades the pick in the analyzer.
 
 **Blocked by:** 04 and 09
 
 **Status:** in-review
 
-- [x] A Find for Maye d'force B with U with no partner returns 1 to 3 picks, each with a headline and 2 to 3 Bullets.
+- [x] A Find for Maye d'force B with U with no partner returns 1 to 3 picks, each with a headline and 2 to 4 Bullets.
 - [x] With Return of T Mac as the partner, no pick sends Jahmyr Gibbs for Bijan Robinson.
 - [x] Each pick of the press, sent to `/analyze`, reads Send it, Lean yes, or Gut call.
 - [x] With an Anthropic key that is not valid, the document holds the shortlist with fact lines and the fallback flag true.

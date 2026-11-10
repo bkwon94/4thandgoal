@@ -555,7 +555,7 @@ _Avoid_: banned word (alone)
 
 **Bullets**:
 The 3 to 5 sentences that the Advisor writes for one side, one claim each, each with a mark. Each claim rests on
-a fact of the trade fact sheet. A finder trade gets 2 or 3 bullets. The fallback has none.
+a fact of the trade fact sheet. A finder trade gets 2 to 4 bullets. The fallback has none.
 _Avoid_: analysis paragraph, factor, row
 
 **Mark**:
