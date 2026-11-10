@@ -1,17 +1,24 @@
 /**
- * Tests for the home page. Most render the page with the real public/ data of cpc and read what a reader sees.
- * The NorCal test copies the published files of norcal, and the registry tests build a temp public/ folder from week 6.
+ * Tests for the home page. Most render the page with the fixed copy of the public/ data of cpc and read what a reader sees.
+ * The NorCal test copies the fixed copy of the published files of norcal, and the registry tests build a temp public/ folder from week 6.
  */
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
 import { week8 } from "@cpc/week/fixtures/week-page";
 import { season } from "@/lib/config";
 import HomePage from "./page";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 /* The temp public/ folders that homeOver made, so each test removes its own folder. */
 const roots: string[] = [];
@@ -187,10 +194,10 @@ async function homeOver(rankings?: unknown, managers = false) {
   return homeAt(root);
 }
 
-/* A temp public/ folder with the published files of one client, as its client build copies them. */
-async function homeOfClient(slug: string, skip: string[] = []) {
+/* A temp public/ folder with the fixed copy of the published files of one client, as its client build copies them. */
+async function homeOfClient(slug: FixtureClient, skip: string[] = []) {
   const root = tempRoot();
-  cpSync(join(process.cwd(), "..", "..", "clients", slug, "published"), join(root, "public"), {
+  cpSync(fixturePublished(slug), join(root, "public"), {
     recursive: true,
     filter: (source) => !skip.includes(basename(source)),
   });
@@ -198,7 +205,7 @@ async function homeOfClient(slug: string, skip: string[] = []) {
 }
 
 /* The files of a client with no report, so the tests of the plain home page hold whether or not it has published one. */
-const homeWithoutReport = (slug: string) => homeOfClient(slug, ["midseason.json", "sim.json"]);
+const homeWithoutReport = (slug: FixtureClient) => homeOfClient(slug, ["midseason.json", "sim.json"]);
 const homeOfCpcWithoutReport = () => homeWithoutReport("cpc");
 
 function tempRoot(): string {

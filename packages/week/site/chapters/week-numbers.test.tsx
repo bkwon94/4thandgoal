@@ -5,7 +5,7 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { week8 } from "../fixtures/week-page";
-import cpcManagers from "../../../../clients/cpc/published/2026/managers.json";
+import cpcManagers from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/managers.json";
 import { WeekNumbers } from "./week-numbers";
 import { weekTrends } from "./week-trends";
 

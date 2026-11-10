@@ -7,6 +7,7 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
 
@@ -74,8 +75,8 @@ describe("RankingsPage", () => {
   });
 
   it("shows All You Need Is Love at 11-5, up 4, in the hero of CPC week 8", async () => {
-    // The published rankings file of CPC, as the build copies it into public/.
-    const cpc = JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026/rankings.json"), "utf8"));
+    // The fixed copy of the published rankings file of CPC, as the build copies it into public/.
+    const cpc = JSON.parse(readFileSync(fixturePublished("cpc", "2026", "rankings.json"), "utf8"));
     const RankingsPage = await pageOver(cpc);
     render(<RankingsPage />);
     const hero = within(screen.getByRole("region", { name: "Rank 1" }));
@@ -132,9 +133,9 @@ describe("RankingsPage", () => {
   });
 });
 
-/* The published rankings file of CPC, as the build copies it into public/. */
+/* The fixed copy of the published rankings file of CPC, as the build copies it into public/. */
 function cpcRankings() {
-  return JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026/rankings.json"), "utf8"));
+  return JSON.parse(readFileSync(fixturePublished("cpc", "2026", "rankings.json"), "utf8"));
 }
 
 /* The head of the card of The Blue Tent: the toggle whose name holds the team name. */

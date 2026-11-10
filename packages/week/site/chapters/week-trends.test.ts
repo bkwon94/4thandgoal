@@ -3,9 +3,9 @@
  * They read the real managers files of CPC, which has a published median, and of NorCal, which has none.
  */
 import { describe, expect, it } from "vitest";
-import cpcJson from "../../../../clients/cpc/published/2026/managers.json";
-import norcalJson from "../../../../clients/norcal/published/2026/managers.json";
-import norcalWeek8Json from "../../../../clients/norcal/published/2026/week-08/page.json";
+import cpcJson from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/managers.json";
+import norcalJson from "../../../../apps/site/src/fixtures/sites/norcal/public/2026/managers.json";
+import norcalWeek8Json from "../../../../apps/site/src/fixtures/sites/norcal/public/2026/week-08/page.json";
 import { weekPageSchema } from "../schema/week";
 import { medianOf, trendText, weekTrends } from "./week-trends";
 

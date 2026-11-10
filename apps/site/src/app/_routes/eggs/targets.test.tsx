@@ -4,9 +4,9 @@
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { EggCheck } from "@cpc/eggs/lib/api";
+import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { listenForEggs, SELECT_SETTLE_MS, TAP_GAP_MS } from "@cpc/eggs/listener/listener";
 import midseasonFixture from "@cpc/midseason/fixtures/midseason.json";
 import { sim as simFixture } from "@cpc/sim/fixtures/sim";
@@ -18,6 +18,12 @@ import { analyzeResponse } from "@cpc/analyzer/lib/fixtures/api";
 import type { AnalyzeResponse } from "@cpc/analyzer/lib/analyze-types";
 import NotFound from "../../not-found";
 import { publicOver, removePublics } from "../midseason/temp-public";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 /* jsdom has no matchMedia and no IntersectionObserver. Framer Motion and Reveal read them. */
 vi.stubGlobal(
@@ -87,7 +93,7 @@ function expectUnique(list: string[]) {
   expect(list.filter((id, index) => list.indexOf(id) !== index)).toEqual([]);
 }
 
-const WEEK_8 = JSON.parse(readFileSync(join(process.cwd(), "public", "2026", "week-08", "page.json"), "utf8"));
+const WEEK_8 = JSON.parse(readFileSync(fixturePublished("cpc", "2026", "week-08", "page.json"), "utf8"));
 
 describe("the targets of the week page", () => {
   async function renderWeek8() {
@@ -233,7 +239,7 @@ describe("the targets of the sim replay", () => {
   });
 });
 
-const MANAGERS = JSON.parse(readFileSync(join(process.cwd(), "public", "2026", "managers.json"), "utf8"));
+const MANAGERS = JSON.parse(readFileSync(fixturePublished("cpc", "2026", "managers.json"), "utf8"));
 
 describe("the targets of a manager page", () => {
   it("gives each result chip, odds tile, roster row, move row, and best add row a stable id", async () => {

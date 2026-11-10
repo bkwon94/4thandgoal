@@ -1,14 +1,21 @@
 /**
  * Tests for the shell props: the menu items of client.toml become the destinations of the menu, in order.
- * One test reads the real generated client values of cpc and the real published weeks.
+ * One test reads the real generated client values of cpc and the fixed copy of the published weeks.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { createElement, type ReactElement } from "react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { readFixtureSite } from "@/fixtures/sites";
 import { TopBand } from "@cpc/design/shell/top-band";
 import type { MenuLinks } from "@/lib/client-values";
 import { BandPart } from "./_routes/eggs/band";
 import { shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 /* The menu links of a client that takes each package, as the registry gives them. */
 const LINKS: MenuLinks = {
