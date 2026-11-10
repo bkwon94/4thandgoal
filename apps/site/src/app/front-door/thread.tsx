@@ -10,7 +10,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AnswerBody, AnswerCard } from "./answer-card";
-import { QUICK, SMOOTH, fadeIn } from "./motion";
+import { QUICK, SMOOTH, fadeIn, morphId } from "./motion";
 import type { ThreadItem } from "./ask-thread";
 import { TOPICS } from "./topics";
 
@@ -57,7 +57,7 @@ export function Thread({
         return last ? (
           // The newest Answer sits a step below the folds, so the open card reads apart from the list above it.
           <div key={entry.id} className={index > 0 ? "pt-sp-6" : ""}>
-            <AnswerCard ref={newest} name={name} answer={answer} avatars={avatars} />
+            <AnswerCard ref={newest} name={name} answer={answer} avatars={avatars} morph={entry.question === null ? morphId(entry.key) : undefined} />
           </div>
         ) : (
           <Fold

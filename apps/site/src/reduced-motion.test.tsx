@@ -4,7 +4,7 @@
  * jsdom ignores opacity, so this test proves the text is present. The browser capture 12-week-off-390.png proves no motion.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { apiTarget, analyzeResponse as fixtureJson } from "@cpc/analyzer/lib/fixtures/api";
 import HomePage from "@/app/page";
 import WeekPage from "@/app/_routes/week/page";
@@ -322,6 +322,26 @@ describe("Reduced motion on the static pages", () => {
     }
     // Reduced motion keeps the fade, so the row ends at full opacity.
     await waitFor(() => expect(row.parentElement!.style.opacity).toBe("1"));
+  });
+
+  it("keeps only the fades when a tapped Suggestion opens its Answer: no glide, blur, or spring (AT-46 of front-door)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    onTestFinished(() => localStorage.clear());
+    render(<HomePage />);
+    const chip = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole("button")[1];
+    const name = chip.getAttribute("aria-label")!.split(":")[0];
+    fireEvent.click(chip);
+    const answer = await screen.findByRole("article", { name });
+    const bubble = within(answer).getByText(name, { selector: "p" });
+    const ask = screen.getByRole("form", { name: "Ask" });
+    for (const part of [bubble, ask]) {
+      for (let box: HTMLElement | null = part; box; box = box.parentElement) {
+        expect(box.style.transform).not.toMatch(/translate|scale/);
+        expect(box.style.filter).not.toMatch(/blur/);
+      }
+    }
+    // The fade of the bubble ends at full opacity.
+    await waitFor(() => expect(bubble.style.opacity).toBe("1"));
   });
 });
 

@@ -88,7 +88,7 @@ function Settle({ children, label }: { children: ReactNode; label: string }) {
   return (
     <motion.section
       aria-label={label}
-      className="flex flex-col gap-sp-4 rounded-card border border-rule bg-card p-sp-4"
+      className="door-sheen flex flex-col gap-sp-4 rounded-card border border-door-hair bg-card p-sp-4"
       initial={off ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: "blur(6px)" }}
       animate={off ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={fadeIn(SLOW, 0.04)}

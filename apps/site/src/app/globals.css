@@ -234,6 +234,17 @@
     --shadow-sheet: 0 -8px 40px -12px rgb(0 0 0 / 0.35);
     --shadow-ask: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.18);
 
+    /* The look of the front door. Light keeps the surfaces of the brand. The .dark block below gives the "Night" look of
+       decision 07: a glass ask box over the page, hairlines of the ink, and the team name in the accent ink. Each value
+       mixes the roles of the brand, so each client keeps its own surfaces and accent in both themes (AT-45). */
+    --color-door-glass: color-mix(in srgb, var(--color-card) 82%, transparent);
+    --color-door-hair: var(--color-rule);
+    --color-door-focus: var(--color-ink);
+    --color-door-name: var(--color-ink);
+    /* The halo of the send button, as the Send Halo of scrolltide: the accent, which grows with the question. */
+    --color-door-halo: color-mix(in srgb, var(--color-accent) 50%, transparent);
+    --color-door-halo-ring: color-mix(in srgb, var(--color-accent) 22%, transparent);
+
     /* The red halo of a headshot in the waiver drift field. It sets each face apart from the black card, as the hero glow does. */
     --shadow-orb: 0 0 24px var(--color-accent-glow);
 
@@ -331,10 +342,24 @@
     --primary: var(--color-ink);
     --primary-foreground: var(--color-page);
 
+    /* The "Night" look of the front door (decision 07). The glass lets the Answers show through as they scroll under the
+       ask box, and a hairline of the ink gives each surface its edge without a grey line. */
+    --color-door-glass: color-mix(in srgb, var(--color-card) 72%, transparent);
+    --color-door-hair: color-mix(in srgb, var(--color-ink) 10%, transparent);
+    --color-door-focus: color-mix(in srgb, var(--color-accent) 55%, var(--color-door-hair));
+    --color-door-name: var(--color-accent-ink);
+    /* A top edge of light on the ask box and the cards, and a deep shadow under the ask box, so it floats over the page. */
+    --door-lift: inset 0 1px 0 color-mix(in srgb, var(--color-ink) 6%, transparent), 0 24px 60px -24px rgb(0 0 0 / 0.9);
+    --door-sheen: inset 0 1px 0 color-mix(in srgb, var(--color-ink) 4%, transparent);
+
     color-scheme: dark;
 }
 /* Component values: the chapter rule width and the press transition. */
 :root {
+    /* The lift of the ask box and the sheen of a card on the front door. The .dark block re-points both for the "Night" look. */
+    --door-lift: var(--shadow-ask);
+    --door-sheen: 0 0 #0000;
+
     /* The chapter rule under each section, as a border width. */
     --chap-rule: 6px;
 
@@ -1437,6 +1462,49 @@ html:not([data-hydrated]) [data-draw] {
 [data-eggs] a[data-stable-id],
 [data-eggs] img[data-stable-id] {
     -webkit-touch-callout: default;
+}
+
+/* The lift of the ask box and the sheen of a card of the front door. They read a variable, so the .dark block can
+   re-point them. A Tailwind shadow would inline its value and miss the dark theme. */
+@utility door-lift {
+    box-shadow: var(--door-lift);
+}
+@utility door-sheen {
+    box-shadow: var(--door-sheen);
+}
+/* The glass of the ask box: the page blurs under it as the Answers scroll. A reader who asks for less transparency
+   gets the solid card. */
+@utility door-glass {
+    background-color: var(--color-door-glass);
+    backdrop-filter: blur(20px) saturate(140%);
+    @media (prefers-reduced-transparency: reduce) {
+        background-color: var(--color-card);
+        backdrop-filter: none;
+    }
+}
+/* The Send Halo: a ring and a glow of the accent that grow with --halo, from 0 for an empty field to 1 for a full one.
+   It grows on --duration-fast and --ease-smooth-out. Under reduced motion it steps, with no grow. */
+@utility send-halo {
+    box-shadow:
+        0 0 0 calc(var(--halo, 0) * 5px) var(--color-door-halo-ring),
+        0 0 calc(var(--halo, 0) * 22px) var(--color-door-halo);
+    transition:
+        box-shadow 250ms cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 150ms ease-out,
+        color 150ms ease-out,
+        var(--press);
+    /* The press of the look, here because this utility owns the transition of the button. */
+    &:active {
+        transform: scale(0.98);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        transition:
+            background-color 150ms ease-out,
+            color 150ms ease-out;
+        &:active {
+            transform: none;
+        }
+    }
 }
 
 /* The free answer of the front door: each new word sharpens from a blur of 6 px as it streams (decision 07, AT-44),

@@ -35,7 +35,7 @@ export function Surface({ children }: { children: ReactNode }) {
   const off = useMotionOff();
   return (
     <motion.div
-      className="flex flex-col gap-sp-3 rounded-card border border-rule bg-card p-sp-4"
+      className="door-sheen flex flex-col gap-sp-3 rounded-card border border-door-hair bg-card p-sp-4"
       initial={off ? { opacity: 0 } : { opacity: 0, y: 6, filter: "blur(3px)" }}
       animate={off ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={fadeIn(SLOW, 0.08)}

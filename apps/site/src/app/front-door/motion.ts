@@ -10,6 +10,20 @@ export const SMOOTH = [0.22, 1, 0.36, 1] as const;
 /* The sheet follows a thumb, so it gets a hair of bounce: damping about 0.85, as a drawer of iOS. */
 export const SHEET_SPRING: Transition = { type: "spring", bounce: 0.12, duration: 0.45 };
 
+/* The one shared layout spring of the front door: the ask box glides from the center to the bottom on it, and a tapped
+   Suggestion morphs into its question on it. Critically damped, as a reposition of apple-design. */
+export const GLIDE: Transition = { type: "spring", bounce: 0, duration: 0.45 };
+
+/* "More" springs open from its pill with a hair of bounce, as the Morph Navbar of scrolltide. Only the open springs: a
+   close never bounces, so it gets out of the way. */
+export const MORE_SPRING: Transition = { type: "spring", bounce: 0.15, duration: 0.4 };
+
+/* The layoutId that a Suggestion chip and the question of its Answer share, so the chip morphs into the question. */
+export const morphId = (key: string) => `suggestion-${key}`;
+
+/* The halo of the send button, from 0 for an empty field to 1 at 24 letters: about one short question. */
+export const haloOf = (question: string) => Math.min(1, question.trim().length / 24);
+
 /* The tokens in seconds: --duration-stagger, --duration-quick, --duration-fast, --duration-slow, --duration-very-slow. */
 export const STAGGER = 0.04;
 export const QUICK = 0.15;

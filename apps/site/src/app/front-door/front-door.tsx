@@ -17,7 +17,7 @@ import { AskBox } from "./ask-box";
 import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, type ThreadItem, itemOfError, itemOfRoute } from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
 import { MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
-import { riseIn } from "./motion";
+import { GLIDE, riseIn } from "./motion";
 import { getOpened, markOpened } from "./opened-store";
 import { Suggestions } from "./suggestions";
 import { TeamSheet } from "./team-sheet";
@@ -27,10 +27,6 @@ import { TOPICS, pickSuggestions } from "./topics";
 import { TradeCard } from "./trade-answer";
 import { type TradeRequest, streamTrade } from "./trade-api";
 import { getYourTeam, setYourTeam } from "./your-team-store";
-
-/* The ask box and the chips glide from the center of the empty Thread to the bottom on the first Answer, on one
-   critically damped spring, as a reposition of apple-design. */
-const COMPOSER_GLIDE = { type: "spring", bounce: 0, duration: 0.45 } as const;
 
 /* The greeting changes with the hour, so the front door reads as a person and not a page. */
 function greeting(hour: number): string {
@@ -238,7 +234,7 @@ export function FrontDoor({
                   {hour !== null ? `${greeting(hour)} · ` : ""}Week {week}
                 </span>
                 <h1 className="m-0 text-score leading-tight font-bold tracking-tight tablet:text-headline">
-                  <span className="text-mute">Ask about</span> <span>{team.name}</span>
+                  <span className="text-mute">Ask about</span> <span className="text-door-name">{team.name}</span>
                 </h1>
               </motion.div>
             ) : (
@@ -324,8 +320,12 @@ export function FrontDoor({
               </div>
             )}
             <motion.div
-              layout={!off}
-              transition={COMPOSER_GLIDE}
+              // The ask box and the chips glide from the center of the empty Thread to the bottom on the first Answer,
+              // in one move on the shared layout spring. With motion off, the dock jumps to its place, and only the
+              // fades of its parts run. Only the position animates: the dock changes its height when "More" opens, and a
+              // size animation would stretch the ask box and the chips on the way.
+              layout={off ? false : "position"}
+              transition={{ layout: GLIDE }}
               className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter bg-page/90 px-gutter pt-sp-3 pb-sp-3 backdrop-blur-md desktop:bottom-0"}`}
             >
               {!missed && (picks.length > 0 || moreOpen) ? (

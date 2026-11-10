@@ -10,22 +10,26 @@ import { ArrowRightIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import type { TopicRow } from "@/lib/data/topics-schema";
-import { SLOW, VERY_SLOW, fadeIn, riseIn } from "./motion";
+import { FAST, GLIDE, SLOW, VERY_SLOW, fadeIn, riseIn } from "./motion";
 
-export const AnswerCard = forwardRef<HTMLElement, { name: string; answer: DoorAnswer; avatars: Record<number, string | null> }>(
-  function AnswerCard({ name, answer, avatars }, ref) {
+export const AnswerCard = forwardRef<
+  HTMLElement,
+  { name: string; answer: DoorAnswer; avatars: Record<number, string | null>; morph?: string }
+>(function AnswerCard({ name, answer, avatars, morph }, ref) {
     const off = useMotionOff();
+    // A tapped Suggestion shares its id with the question, so the chip morphs into the question on the shared layout
+    // spring. The question then only fades, because the morph is its move. With motion off it only fades in.
+    const shared = morph && !off ? { layoutId: morph, initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { layout: GLIDE, opacity: fadeIn(FAST) } } : riseIn(off);
     return (
       <article ref={ref} aria-label={name} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
         {/* The tap reads as the manager's question, on the right as in a chat. */}
-        <motion.p className="m-0 max-w-[85%] self-end rounded-hero rounded-br-letter bg-ink px-sp-4 py-sp-2 text-body leading-tight font-semibold text-card" {...riseIn(off)}>
+        <motion.p className="m-0 max-w-[85%] self-end rounded-hero rounded-br-letter bg-ink px-sp-4 py-sp-2 text-body leading-tight font-semibold text-card" {...shared}>
           {name}
         </motion.p>
         <AnswerBody answer={answer} avatars={avatars} />
       </article>
     );
-  },
-);
+});
 
 /* The data block, the text, and the link of one Answer. The newest Answer shows it on a card that settles in. An
    opened fold shows it flat, with no card and no settle, so a reread opens calm (decision 08). */
@@ -34,7 +38,7 @@ export function AnswerBody({ answer, avatars, flat = false }: { answer: DoorAnsw
   return (
     /* The data block settles from a soft blur at 0.98 (decision 07). With motion off, it only fades in. */
     <motion.div
-      className={flat ? "flex flex-col gap-sp-4 pt-sp-1 pb-sp-5" : "flex flex-col gap-sp-4 rounded-card border border-rule bg-card p-sp-4"}
+      className={flat ? "flex flex-col gap-sp-4 pt-sp-1 pb-sp-5" : "door-sheen flex flex-col gap-sp-4 rounded-card border border-door-hair bg-card p-sp-4"}
       initial={flat ? false : off ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: "blur(6px)" }}
       animate={off ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={fadeIn(SLOW, 0.08)}

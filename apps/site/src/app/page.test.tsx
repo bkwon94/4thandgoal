@@ -61,6 +61,22 @@ describe("the front door of cpc", () => {
     expect(send.disabled).toBe(false);
   });
 
+  it("grows the halo of the send button as the field fills, full at 24 letters (decision 07)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    const box = within(await screen.findByRole("region", { name: "Thread" })).getByRole("form", { name: "Ask" });
+    const field = within(box).getByRole("textbox", { name: "Ask a question" });
+    const halo = () => within(box).getByRole("button", { name: "Send" }).style.getPropertyValue("--halo");
+    expect(halo()).toBe("0");
+    fireEvent.change(field, { target: { value: "who is first" } });
+    expect(halo()).toBe("0.5");
+    fireEvent.change(field, { target: { value: "who am i playing on sunday night" } });
+    expect(halo()).toBe("1");
+    // Spaces are no question, so the halo stays off.
+    fireEvent.change(field, { target: { value: "   " } });
+    expect(halo()).toBe("0");
+  });
+
   it("opens the sheet again from the Thread, so a manager can change Your team", async () => {
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
