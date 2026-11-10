@@ -1,0 +1,6 @@
+$ grep -rniE "rival|brian" packages/analyzer/site clients/cpc/copy.toml clients/cpc/brand.toml clients/cpc/client.toml clients/norcal/copy.toml --exclude-dir=node_modules
+exit: 1
+
+$ grep -rniE "rival|brian" apps/site/src --exclude-dir=node_modules
+apps/site/src/app/globals.css:108:       (Brian, 2026-11-08), and 240px in the open middle of the two rows from the tablet tier up (decision 06). */
+exit: 0

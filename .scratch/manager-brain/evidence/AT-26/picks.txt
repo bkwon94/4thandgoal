@@ -1,0 +1,19 @@
+$ grep 'Partner filter of' log.txt; python3 (list each pick of response.json with its headline and its Bullets)
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with The Blue Tent: passed, partner_has=0.82, partner_spares=0.77, asker_has=0.94, asker_spares=0.80
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with All You Need Is Love: passed, partner_has=0.87, partner_spares=0.74, asker_has=0.89, asker_spares=0.76
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Lil Fridge: stopped, partner_has=0.82, partner_spares=0.75, asker_has=0.78, asker_spares=0.67
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with NFC Least: stopped, partner_has=0.70, partner_spares=0.63, asker_has=0.91, asker_spares=0.76
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with London Cooking: passed, partner_has=0.84, partner_spares=0.74, asker_has=0.81, asker_spares=0.73
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Bo Girds: stopped, partner_has=0.87, partner_spares=0.79, asker_has=0.15, asker_spares=0.38
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with To Infinity and Bijan: stopped, partner_has=0.69, partner_spares=0.44, asker_has=0.88, asker_spares=0.73
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Return of T Mac: passed, partner_has=0.82, partner_spares=0.80, asker_has=0.83, asker_spares=0.75
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with behold the lamb: stopped, partner_has=0.69, partner_spares=0.68, asker_has=0.83, asker_spares=0.31
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Unsolicited Dak Picks: stopped, partner_has=0.58, partner_spares=0.63, asker_has=0.89, asker_spares=0.70
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Teehee: passed, partner_has=0.86, partner_spares=0.76, asker_has=0.91, asker_spares=0.75
+
+fallback: False | empty: None | picks: 1
+9:6790-1:8167: Maye d'force B with U gives D'Andre Swift / The Blue Tent gives Christian Watson
+  headline: Watson is the better player right now and the swap keeps your RB group intact, so it's a gut call worth making.
+  bullet [for] Watson is WR3 on the season at 16.9 points per game, ahead of where Swift sits as a back, and you would be getting the stronger producer.  (8167.ppg)
+  bullet [for] Swift has faded in the second half of each of the last three seasons, so selling him before the stretch run makes sense.  (6790.history)
+  bullet [even] The Blue Tent gets RB help and its points stay about the same, so the other manager has a reason to say yes.  (1.measure.standing)

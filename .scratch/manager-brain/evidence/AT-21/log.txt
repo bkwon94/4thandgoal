@@ -1,0 +1,11 @@
+2026-11-09 23:07:59,122 INFO analyzer.trade_news: News fetch of player 9221: 5 items
+2026-11-09 23:07:59,167 INFO analyzer.trade_news: News fetch of player 9509: 5 items
+2026-11-09 23:07:59,296 INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+2026-11-09 23:07:59,296 INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 99ms (request req_01a1c3a42e12744089cc416f4b47b30c)
+2026-11-09 23:07:59,296 INFO analyzer.trade_jev: The Jev request of the trade: model=jev-1.14.0 input_tokens=825
+2026-11-09 23:07:59,406 INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 401 Unauthorized"
+2026-11-09 23:07:59,407 WARNING analyzer.advisor: advisor attempt 1 failed: Error code: # - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_#Cgtb#aHCq#JWsDYnhzr'}
+2026-11-09 23:07:59,482 INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 401 Unauthorized"
+2026-11-09 23:07:59,483 WARNING analyzer.advisor: advisor attempt 2 failed: Error code: # - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_#Cgtb#abJdqJfXQEH#WEcR'}
+2026-11-09 23:07:59,484 INFO analyzer.routes: Press of analyze for cpc: time=4.5s cost=$0.0000 claude_calls=0
+2026-11-09 23:07:59,484 INFO uvicorn.access: 127.0.0.1:52370 - "POST /clients/cpc/analyze HTTP/1.1" 503

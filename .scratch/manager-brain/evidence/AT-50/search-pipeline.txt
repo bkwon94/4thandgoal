@@ -1,0 +1,30 @@
+$ python3 -I copy_words.py <scratchpad>/eval/out-6ba7 <manager-brain-ev-api2>/data/nfl/cache/players.json   # the 28 reads of the eval at 6ba706cf; case-blind substrings, so "rivals" counts too
+trade 3: 13 texts, hits=0  player names removed: [('case', 'Brian Robinson'), ('gains 7', 'Brian Robinson'), ('bullet 7.4', 'Brian Robinson')]
+trade 4: 13 texts, hits=0 
+trade 5: 13 texts, hits=0 
+trade 6: 13 texts, hits=0 
+trade 9: 13 texts, hits=0  player names removed: [('bullet 8.5', 'Brian Robinson')]
+trade 11: 13 texts, hits=0  player names removed: [('bullet 9.4', 'Brian Robinson Jr.')]
+trade 12: 13 texts, hits=0 
+trade 13: 13 texts, hits=0 
+trade 14: 13 texts, hits=0 
+trade 15: 13 texts, hits=0 
+trade 16: 13 texts, hits=0 
+trade 17: 13 texts, hits=0 
+trade 18: 13 texts, hits=0 
+trade 19: 13 texts, hits=0  player names removed: [('bullet 11.2', 'Brian Robinson Jr.')]
+trade 20: 12 texts, hits=0 
+trade 21: 13 texts, hits=0 
+trade 22: 12 texts, hits=0 
+trade 23: 13 texts, hits=0 
+trade 24: 13 texts, hits=0 
+trade 25: 13 texts, hits=0 
+trade 26: 12 texts, hits=0 
+trade 27: 13 texts, hits=0 
+trade 28: 13 texts, hits=0 
+trade 29: 13 texts, hits=0 
+trade 30: 13 texts, hits=0 
+trade 31: 13 texts, hits=0 
+trade 32: 13 texts, hits=0 
+trade 33: 12 texts, hits=0 
+TOTAL reads=28 texts=360 raw_brian=6 hits_after_player_names=0

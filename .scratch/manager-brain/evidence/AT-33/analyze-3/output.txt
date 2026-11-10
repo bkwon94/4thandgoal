@@ -1,0 +1,192 @@
+$ curl -s -w '\nHTTP %{http_code} time=%{time_total}s\n' -X POST -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @request.json http://localhost:8081/clients/cpc/analyze
+
+Request (request.json):
+{"season": 2026, "asker": 9, "sides": [{"roster_id": 9, "gives": [{"player_id": "9221", "to": 8}]}, {"roster_id": 8, "gives": [{"player_id": "9509", "to": 9}]}]}
+
+
+HTTP 200 time=25.674552s
+Response:
+{
+    "trade": {
+        "asker": 9,
+        "sides": [
+            {
+                "roster_id": 9,
+                "team": "Maye d'force B with U",
+                "gives": [
+                    {
+                        "player_id": "9221",
+                        "name": "Jahmyr Gibbs",
+                        "position": "RB",
+                        "nfl_team": "DET",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                        "season_rank": "RB1",
+                        "recent_rank": null,
+                        "to": 8
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "9509",
+                        "name": "Bijan Robinson",
+                        "position": "RB",
+                        "nfl_team": "ATL",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9509.jpg",
+                        "season_rank": "RB3",
+                        "recent_rank": "RB17",
+                        "from": 8
+                    }
+                ]
+            },
+            {
+                "roster_id": 8,
+                "team": "Return of T Mac",
+                "gives": [
+                    {
+                        "player_id": "9509",
+                        "name": "Bijan Robinson",
+                        "position": "RB",
+                        "nfl_team": "ATL",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9509.jpg",
+                        "season_rank": "RB3",
+                        "recent_rank": "RB17",
+                        "to": 9
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "9221",
+                        "name": "Jahmyr Gibbs",
+                        "position": "RB",
+                        "nfl_team": "DET",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                        "season_rank": "RB1",
+                        "recent_rank": null,
+                        "from": 9
+                    }
+                ]
+            }
+        ]
+    },
+    "lean": "Lean no",
+    "case": "If you believe Bijan's growing role in the passing game will outrun a weak Falcons offense, you can talk yourself into this, but I'd keep Gibbs. Gibbs is the RB1 on the season, and the Detroit offense gives him more chances to score every week. Bijan's usage is climbing, with his target share up to 16 percent, and he has a history of strong second halves, so the upside is real. The risk is that he has been just the RB17 over the last four weeks on an Atlanta offense that is one of the worst in the league, and he has a bye the week after this deal. The chart for this week is missing, so this comes down to your gut and the facts on the sheet. You are in a playoff spot and need points now, so I'd pass on swapping the better back for the slumping one.",
+    "fairness": {
+        "state": "lopsided",
+        "gives_more": 9,
+        "sides": [
+            {
+                "roster_id": 9,
+                "reason": "You get Bijan Robinson, a workhorse back whose role in the passing game is growing."
+            },
+            {
+                "roster_id": 8,
+                "reason": "Return of T Mac gets Gibbs, the top scoring back on a strong Lions offense."
+            }
+        ]
+    },
+    "sides": [
+        {
+            "roster_id": 9,
+            "bullets": [
+                {
+                    "text": "Bijan's target share was 16 percent over the last two weeks, up from before.",
+                    "mark": "for",
+                    "fact_id": "9509.targets",
+                    "fact_text": "Bijan Robinson's target share was 16 percent over the last 2 weeks before the trade, up from the 2 weeks before that."
+                },
+                {
+                    "text": "Bijan played 82 percent of the snaps lately, a steady, full workload.",
+                    "mark": "for",
+                    "fact_id": "9509.usage",
+                    "fact_text": "Bijan Robinson's snap share was 82 percent over the last 2 weeks before the trade, flat from the 2 weeks before that."
+                },
+                {
+                    "text": "You give up Gibbs, the RB1 on the season at 24 points per game.",
+                    "mark": "against",
+                    "fact_id": "9221.ppg",
+                    "fact_text": "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season."
+                },
+                {
+                    "text": "Bijan has been only the RB17 by points per game over the last 4 weeks.",
+                    "mark": "against",
+                    "fact_id": "9509.ppg",
+                    "fact_text": "Bijan Robinson (RB, ATL) scored 17.9 points per game over 9 games before the trade. His Season rank is RB3, by total points this season. His Recent rank is RB17, by points per game over the last 4 weeks."
+                },
+                {
+                    "text": "The Falcons rank 27th of 32 on offense, so Bijan is not a safe start.",
+                    "mark": "against",
+                    "fact_id": "9509.nfl_team",
+                    "fact_text": "Bijan Robinson's NFL team, the Falcons, ranks 27th of 32 on offense: -7.24 expected points added per 100 plays over 9 games before the trade."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 10,
+                    "text": "Week 10: RBs in the top 36 who play stay at 2. Robinson plays KC at home, 27th most points to RBs. Coleman and Swift have a bye."
+                },
+                {
+                    "week": 11,
+                    "text": "Week 11: RBs in the top 36 who play go from 4 to 3. Robinson has a bye."
+                }
+            ]
+        },
+        {
+            "roster_id": 8,
+            "bullets": [
+                {
+                    "text": "Gibbs scores 24 points per game and is the RB1 on the season.",
+                    "mark": "for",
+                    "fact_id": "9221.ppg",
+                    "fact_text": "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season."
+                },
+                {
+                    "text": "The Lions rank 7th of 32 on offense, so Gibbs gets plenty of chances.",
+                    "mark": "for",
+                    "fact_id": "9221.nfl_team",
+                    "fact_text": "Jahmyr Gibbs's NFL team, the Lions, ranks 7th of 32 on offense: 9.38 expected points added per 100 plays over 8 games before the trade."
+                },
+                {
+                    "text": "In 2025 Gibbs scored 20.29 per game in weeks 9 to 17 over 9 games, up from the first half.",
+                    "mark": "for",
+                    "fact_id": "9221.history",
+                    "fact_text": "In 2023, Jahmyr Gibbs played for DET and scored half PPR points per game as follows: 13.73 in weeks 1 to 8 over 6 games; 15.59 in weeks 9 to 17 over 8 games; 15.7 in cold games over 1 game. In 2024, Jahmyr Gibbs played for DET and scored half PPR points per game as follows: 18 in weeks 1 to 8 over 7 games; 18.6 in weeks 9 to 17 over 9 games; 23.4 in cold games over 1 game. In 2025, Jahmyr Gibbs played for DET and scored half PPR points per game as follows: 18.14 in weeks 1 to 8 over 7 games; 20.29 in weeks 9 to 17 over 9 games; 18.8 in cold games over 1 game. A cold game is outdoors at 40 degrees F or below."
+                },
+                {
+                    "text": "Return of T Mac keeps 2 RBs in the top 36, and its lineup scores more.",
+                    "mark": "for",
+                    "fact_id": "8.measure.fit",
+                    "fact_text": "The roster fit measure for Return of T Mac: You keep 2 RBs in the top 36, and your lineup scores more."
+                },
+                {
+                    "text": "Gibbs's snap share slipped to 73 percent over the last two weeks.",
+                    "mark": "against",
+                    "fact_id": "9221.usage",
+                    "fact_text": "Jahmyr Gibbs's snap share was 73 percent over the last 2 weeks before the trade, down from the 2 weeks before that."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 10,
+                    "text": "Week 10: RBs in the top 36 who play stay at 2. Gibbs plays NE at home, 28th most points to RBs."
+                },
+                {
+                    "week": 11,
+                    "text": "Week 11: RBs in the top 36 who play go from 1 to 2. Gibbs plays TB at home, 32nd most points to RBs."
+                }
+            ]
+        }
+    ],
+    "as_of": {
+        "chart_week": null,
+        "stats_through": 9,
+        "completed_through": 9,
+        "rosters_fetched": "2026-11-10T10:48:44.282056-05:00",
+        "known_games": null,
+        "no_chart": true,
+        "no_chart_note": "This week's player values are not out yet."
+    },
+    "missing": [
+        "chart"
+    ],
+    "stale": []
+}

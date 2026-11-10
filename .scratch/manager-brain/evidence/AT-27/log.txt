@@ -1,0 +1,59 @@
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     analyzer.jev_waves: Jev wave 1 (partner filter): 1 requests, about 1784 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 67ms (request req_01a1c617e3e17935807fb603e409eb5f)
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with The Blue Tent: passed, partner_has=0.82, partner_spares=0.77, asker_has=0.93, asker_spares=0.78
+INFO:     analyzer.jev_waves: Jev wave 2 (targets): 1 requests, about 3096 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 84ms (request req_01a1c617e7d379df8aa1e7d8650f3ca7)
+INFO:     analyzer.finder_search: Finder target questions with The Blue Tent: Chris Rodriguez Jr.=0.14, Rashee Rice=0.30, Bucky Irving=0.35, Brock Bowers=0.54, Devaughn Vele=0.44, Jordyn Tyson=0.13, Jadarian Price=0.09, Dallas Goedert=0.12, Christian Watson=0.75, Brock Purdy=0.29, Drake Maye=0.31, Keon Coleman=0.19, Jalen Coker=0.24, Tyler Shough=0.12, Emmett Johnson=0.22, Jonah Coleman=0.37, Kaelon Black=0.15, Alvin Kamara=0.58, D'Andre Swift=0.71, Justin Jefferson=0.73, Jaylen Waddle=0.30, Isaiah Likely=0.38, Jahmyr Gibbs=0.82
+INFO:     analyzer.finder_search: Finder targets with The Blue Tent: the asker gives ['Jahmyr Gibbs', 'Justin Jefferson', "D'Andre Swift"]; the partner gives ['Christian Watson']
+INFO:     analyzer.finder_search: Finder offers of Maye d'force B with U: 6
+INFO:     analyzer.finder_search: Finder offer 9:9221-1:8167: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6794-1:8167: Maye d'force B with U gives Justin Jefferson (WR, MIN); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6790-1:8167: Maye d'force B with U gives D'Andre Swift (RB, CHI); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-1:8167: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Justin Jefferson (WR, MIN); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6790+9221-1:8167: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and D'Andre Swift (RB, CHI); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6790+6794-1:8167: Maye d'force B with U gives Justin Jefferson (WR, MIN) and D'Andre Swift (RB, CHI); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 1 requests, about 2923 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 95ms (request req_01a1c617ebb87bd3b0a2060be947aad1)
+INFO:     analyzer.finder_search: Finder shortlist 9:9221-1:8167: score=0.289 fair=0.42 needs={9: 0.83, 1: 0.83}
+INFO:     analyzer.finder_search: Finder shortlist 9:6790-1:8167: score=0.286 fair=0.42 needs={9: 0.84, 1: 0.81}
+INFO:     analyzer.finder_search: Finder shortlist 9:6790+9221-1:8167: score=0.118 fair=0.16 needs={9: 0.85, 1: 0.87}
+INFO:     analyzer.finder_search: Finder shortlist 9:6790+6794-1:8167: score=0.115 fair=0.18 needs={9: 0.83, 1: 0.77}
+INFO:     analyzer.finder_search: Finder shortlist 9:6794+9221-1:8167: score=0.072 fair=0.16 needs={9: 0.86, 1: 0.52}
+INFO:     analyzer.finder_search: Finder shortlist 9:6794-1:8167: score=0.057 fair=0.34 needs={9: 0.84, 1: 0.2}
+INFO:     analyzer.trade_news: News of player 9221 from the cache
+INFO:     analyzer.trade_news: News of player 8167 from the cache
+INFO:     analyzer.trade_news: News of player 6790 from the cache
+INFO:     analyzer.trade_news: News of player 8167 from the cache
+INFO:     analyzer.trade_news: News of player 9221 from the cache
+INFO:     analyzer.trade_news: News of player 6790 from the cache
+INFO:     analyzer.trade_news: News of player 8167 from the cache
+INFO:     analyzer.trade_news: News of player 6794 from the cache
+INFO:     analyzer.trade_news: News of player 6790 from the cache
+INFO:     analyzer.trade_news: News of player 8167 from the cache
+INFO:     analyzer.trade_news: News of player 9221 from the cache
+INFO:     analyzer.trade_news: News of player 6794 from the cache
+INFO:     analyzer.trade_news: News of player 8167 from the cache
+INFO:     analyzer.trade_news: News of player 6794 from the cache
+INFO:     analyzer.trade_news: News of player 8167 from the cache
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3030 input_tokens=16391
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 54ms (request req_01a1c61824a07840aeec563f77efabe0)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=1018 faithful.9.1=0.06 no faithful.9.2=0.44 unsure faithful.9.3=0.07 no faithful.9.4=0.61 unsure
+INFO:     analyzer.routes: Press of find for cpc: time=18.6s cost=$0.0495 claude_calls=1
+INFO:     127.0.0.1:64329 - "POST /clients/cpc/find HTTP/1.1" 200 OK

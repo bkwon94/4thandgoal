@@ -1,0 +1,18 @@
+$ uv run --exact --package cornerstone cornerstone advisor-eval --client cpc --season 2026 --test-set <the test set, outside the repo> --out <scratchpad>/eval/out-6ba7   # at commit 6ba706cf
+# Trade 24, week 8, from trade-24.json. NFC Least gets Omarion Hampton (player id 12507).
+# Every fact of Omarion Hampton on the sheet (id starts with 12507.):
+12507.ppg: Omarion Hampton (RB, LAC) scored 8.8 points per game over 6 games before the trade. His Season rank is RB31, by total points this season. His Recent rank is RB44, by points per game over the last 4 weeks.
+12507.usage: Omarion Hampton's snap share was 40 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.
+12507.targets: Omarion Hampton's target share was 9 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.
+12507.redzone: Omarion Hampton had 0 red-zone targets and 12 red-zone carries this season before the trade.
+12507.injury: Omarion Hampton has no injury status now.
+12507.nfl_team: Omarion Hampton's NFL team, the Chargers, ranks 32nd of 32 on offense: -20.16 expected points added per 100 plays over 6 games before the trade.
+12507.value: Omarion Hampton is 81st on the chart of week 8, at 10.
+12507.history: In 2025, Omarion Hampton played for LAC and scored half PPR points per game as follows: 13.4 in weeks 1 to 8 over 5 games; 13.18 in weeks 9 to 17 over 4 games; no cold game. A cold game is outdoors at 40 degrees F or below.
+
+# Every fact id of the sheet that ends in .nfl_team:
+4866.nfl_team
+12507.nfl_team
+# Every fact id of all 28 sheets that ends in .nfl_team or .history:
+history
+nfl_team

@@ -1,0 +1,24 @@
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     analyzer.trade_news: News of player 9221 from the cache
+INFO:     analyzer.trade_news: News of player 9509 from the cache
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 124ms (request req_01a1c626eef37e1ca8a8e83808cb0d49)
+INFO:     analyzer.trade_jev: The Jev request of the trade: model=jev-1.14.0 input_tokens=808
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: AdvisorOut call: cache_creation_input_tokens=0 cache_read_input_tokens=2926 input_tokens=3313
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 97ms (request req_01a1c6273a907216b350732dfd8bfb45)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=2263 faithful.9.1=0.71 yes faithful.9.2=0.43 unsure faithful.9.3=0.68 unsure faithful.9.4=0.48 unsure faithful.9.5=0.79 yes faithful.8.1=0.09 no faithful.8.2=0.85 yes faithful.8.3=0.97 yes faithful.8.4=0.68 unsure faithful.8.5=0.88 yes
+INFO:     analyzer.routes: Press of analyze for cpc: time=22.3s cost=$0.0524 claude_calls=1
+INFO:     127.0.0.1:52775 - "POST /clients/cpc/analyze HTTP/1.1" 200 OK

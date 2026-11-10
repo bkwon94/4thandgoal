@@ -1,0 +1,60 @@
+$ python3 -I check_reads.py <scratchpad>/eval/out-6ba7 <manager-brain-ev-api2>/data/nfl/cache/players.json   # the eval at 6ba706cf
+# A name miss is a full name or a last name that is not in the text of a cited fact. A tag says if the player is in the trade, from the player ids of the sheet.
+trade 3: lean=Send it bullets=10 cited ids on sheet=10/10 misses=2
+    bullet 6.1: name Patrick Mahomes is not in its cited facts (in the trade)
+    bullet 6.1: name Mahomes (Patrick Mahomes) is not in its cited facts (in the trade)
+trade 4: lean=Lean no bullets=10 cited ids on sheet=10/10 misses=3
+    bullet 5.1: name Collins (Nico Collins) is not in its cited facts (in the trade)
+    bullet 5.3: name Mason (Jordan Mason) is not in its cited facts (in the trade)
+    case: name DeVonta Smith is not in its cited facts (in the trade)
+trade 5: lean=Pass bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 4.5: name Collins (Nico Collins) is not in its cited facts (in the trade)
+trade 6: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 4.5: name Nacua (Puka Nacua) is not in its cited facts (in the trade)
+trade 9: lean=Lean no bullets=10 cited ids on sheet=10/10 misses=0
+trade 11: lean=Pass bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 8.3: name Gibbs (Jahmyr Gibbs) is not in its cited facts (in the trade)
+trade 12: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=1
+    case: name Higgins (Tee Higgins) is not in its cited facts (in the trade)
+trade 13: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 2.4: name Lamb (CeeDee Lamb) is not in its cited facts (in the trade)
+trade 14: lean=Lean no bullets=10 cited ids on sheet=10/10 misses=0
+trade 15: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 3.5: name Smith-Njigba (Jaxon Smith-Njigba) is not in its cited facts (in the trade)
+trade 16: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=2
+    bullet 5.2: name Williams (Javonte Williams) is not in its cited facts (in the trade)
+    bullet 5.3: name Kittle (George Kittle) is not in its cited facts (in the trade)
+trade 17: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=0
+trade 18: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 12.2: name Brown (Amon-Ra St. Brown) is not in its cited facts (in the trade)
+trade 19: lean=Send it bullets=10 cited ids on sheet=10/10 misses=0
+trade 20: lean=Lean yes bullets=9 cited ids on sheet=9/9 misses=2
+    bullet 3.1: name Marks (Woody Marks) is not in its cited facts (in the trade)
+    bullet 3.5: name Marks (Woody Marks) is not in its cited facts (in the trade)
+trade 21: lean=Send it bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 4.3: name Worthy (Xavier Worthy) is not in its cited facts (in the trade)
+trade 22: lean=Pass bullets=9 cited ids on sheet=9/9 misses=1
+    bullet 2.1: name Worthy (Xavier Worthy) is not in its cited facts (in the trade)
+trade 23: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=2
+    bullet 3.2: name Dobbins (J.K. Dobbins) is not in its cited facts (in the trade)
+    bullet 3.2: name Shakir (Khalil Shakir) is not in its cited facts (in the trade)
+trade 24: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=3
+    bullet 4.2: name Hampton (Omarion Hampton) is not in its cited facts (in the trade)
+    bullet 4.4: name Hampton (Omarion Hampton) is not in its cited facts (in the trade)
+    bullet 12.1: name Hampton (Omarion Hampton) is not in its cited facts (in the trade)
+trade 25: lean=Send it bullets=10 cited ids on sheet=10/10 misses=0
+trade 26: lean=Pass bullets=9 cited ids on sheet=9/9 misses=1
+    bullet 9.5: name Jackson (Lamar Jackson) is not in its cited facts (in the trade)
+trade 27: lean=Lean no bullets=10 cited ids on sheet=10/10 misses=2
+    bullet 12.4: name Metcalf (DK Metcalf) is not in its cited facts (in the trade)
+    bullet 5.4: name LaPorta (Sam LaPorta) is not in its cited facts (in the trade)
+trade 28: lean=Pass bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 3.5: name Waddle (Jaylen Waddle) is not in its cited facts (in the trade)
+trade 29: lean=Pass bullets=10 cited ids on sheet=10/10 misses=0
+trade 30: lean=Lean no bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 11.4: name Bowers (Brock Bowers) is not in its cited facts (in the trade)
+trade 31: lean=Pass bullets=10 cited ids on sheet=10/10 misses=0
+trade 32: lean=Lean yes bullets=10 cited ids on sheet=10/10 misses=1
+    bullet 12.5: name Sadiq (Kenyon Sadiq) is not in its cited facts (in the trade)
+trade 33: lean=Send it bullets=9 cited ids on sheet=9/9 misses=0
+TOTAL {"reads": 28, "bullets": 276, "id_miss": 0, "num_miss": 0, "name_miss": 2, "last_miss": 27, "in the trade": 29}

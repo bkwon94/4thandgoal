@@ -1,0 +1,40 @@
+$ stat -f '%Sm %z %N' data/nfl/cache/nflverse/*   # before the API start
+2026-11-09T22:57:11 2642033 data/nfl/cache/nflverse/db_playerids.csv
+2026-11-09T22:57:11 14788691 data/nfl/cache/nflverse/depth_charts_2026.csv.gz
+2026-11-09T22:57:11 2303033 data/nfl/cache/nflverse/ep_weekly_2026.csv
+2026-11-09T22:57:11 3495493 data/nfl/cache/nflverse/ftn_charting_2026.csv
+2026-11-09T22:57:11 2188881 data/nfl/cache/nflverse/games.csv
+2026-11-09T22:57:11 60279 data/nfl/cache/nflverse/injuries_2026.csv.gz
+2026-11-09T22:57:11 8313317 data/nfl/cache/nflverse/play_by_play_2026.csv.gz
+2026-11-09T22:57:11 1013299 data/nfl/cache/nflverse/snap_counts_2026.csv
+2026-11-09T22:57:11 604205 data/nfl/cache/nflverse/stats_player_week_2026.csv.gz
+
+$ stat -f '%Sm %z %N' data/nfl/cache/nflverse/*   # after the presses
+2026-11-09T22:57:11 2642033 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/db_playerids.csv
+2026-11-09T22:57:11 14788691 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/depth_charts_2026.csv.gz
+2026-11-09T22:57:11 2303033 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/ep_weekly_2026.csv
+2026-11-09T22:57:11 3495493 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/ftn_charting_2026.csv
+2026-11-09T22:57:11 2188881 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/games.csv
+2026-11-09T22:57:11 60279 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/injuries_2026.csv.gz
+2026-11-09T22:57:11 8313317 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/play_by_play_2026.csv.gz
+2026-11-09T22:57:11 1013299 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/snap_counts_2026.csv
+2026-11-09T23:14:22 1237909 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/stats_player_week_2023.csv.gz
+2026-11-09T23:14:22 1244175 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/stats_player_week_2024.csv.gz
+2026-11-09T23:14:22 1262421 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/stats_player_week_2025.csv.gz
+2026-11-09T22:57:11 604205 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/stats_player_week_2026.csv.gz
+2026-11-09T23:14:21 37112 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/data/nfl/cache/nflverse/stats_team_week_2026.csv.gz
+
+$ stat -f '%Sm %z %N' data/nfl/cache/nflverse/*   # after the eval at 6ba706cf
+2026-11-09T22:57:11 2642033 data/nfl/cache/nflverse/db_playerids.csv
+2026-11-09T22:57:11 14788691 data/nfl/cache/nflverse/depth_charts_2026.csv.gz
+2026-11-09T22:57:11 2303033 data/nfl/cache/nflverse/ep_weekly_2026.csv
+2026-11-09T22:57:11 3495493 data/nfl/cache/nflverse/ftn_charting_2026.csv
+2026-11-09T22:57:11 2188881 data/nfl/cache/nflverse/games.csv
+2026-11-09T22:57:11 60279 data/nfl/cache/nflverse/injuries_2026.csv.gz
+2026-11-09T22:57:11 8313317 data/nfl/cache/nflverse/play_by_play_2026.csv.gz
+2026-11-09T22:57:11 1013299 data/nfl/cache/nflverse/snap_counts_2026.csv
+2026-11-09T23:14:22 1237909 data/nfl/cache/nflverse/stats_player_week_2023.csv.gz
+2026-11-09T23:14:22 1244175 data/nfl/cache/nflverse/stats_player_week_2024.csv.gz
+2026-11-09T23:14:22 1262421 data/nfl/cache/nflverse/stats_player_week_2025.csv.gz
+2026-11-09T22:57:11 604205 data/nfl/cache/nflverse/stats_player_week_2026.csv.gz
+2026-11-09T23:14:21 37112 data/nfl/cache/nflverse/stats_team_week_2026.csv.gz

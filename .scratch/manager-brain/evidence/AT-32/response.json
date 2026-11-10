@@ -1,0 +1,184 @@
+{
+    "trade": {
+        "asker": 9,
+        "sides": [
+            {
+                "roster_id": 9,
+                "team": "Maye d'force B with U",
+                "gives": [
+                    {
+                        "player_id": "6790",
+                        "name": "D'Andre Swift",
+                        "position": "RB",
+                        "nfl_team": "CHI",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                        "season_rank": "RB8",
+                        "recent_rank": null,
+                        "to": 1
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "8167",
+                        "name": "Christian Watson",
+                        "position": "WR",
+                        "nfl_team": "GB",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                        "season_rank": "WR3",
+                        "recent_rank": null,
+                        "from": 1
+                    }
+                ]
+            },
+            {
+                "roster_id": 1,
+                "team": "The Blue Tent",
+                "gives": [
+                    {
+                        "player_id": "8167",
+                        "name": "Christian Watson",
+                        "position": "WR",
+                        "nfl_team": "GB",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                        "season_rank": "WR3",
+                        "recent_rank": null,
+                        "to": 9
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "6790",
+                        "name": "D'Andre Swift",
+                        "position": "RB",
+                        "nfl_team": "CHI",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                        "season_rank": "RB8",
+                        "recent_rank": null,
+                        "from": 9
+                    }
+                ]
+            }
+        ]
+    },
+    "lean": "Lean yes",
+    "case": "If you believe a WR3 who keeps drawing more targets matters more than an RB who has faded late in past seasons, this is worth sending. The chart is missing this week, so this call rests on the sheet and your gut. You still keep three RBs in the top 36, so you are not giving up your last reliable back. The risk is that RBs are scarce in this format, and Watson's hot game will make him look pricier than he is. The upside is that Swift's own splits show him cooling in the second half, while Watson's role is growing. Lean in and send it, since The Blue Tent likely says yes and your starting group gets stronger.",
+    "fairness": {
+        "state": "fair",
+        "gives_more": null,
+        "sides": [
+            {
+                "roster_id": 9,
+                "reason": "You get a top WR who is drawing more of the targets as the season goes on."
+            },
+            {
+                "roster_id": 1,
+                "reason": "The Blue Tent gets a busy starting RB in a format where backs are scarce."
+            }
+        ]
+    },
+    "sides": [
+        {
+            "roster_id": 9,
+            "bullets": [
+                {
+                    "text": "Watson is the WR3 by total points, at 16.9 points per game.",
+                    "mark": "for",
+                    "fact_id": "8167.ppg",
+                    "fact_text": "Christian Watson (WR, GB) scored 16.9 points per game over 9 games before the trade. His Season rank is WR3, by total points this season."
+                },
+                {
+                    "text": "Watson's target share climbed to 27 percent over the last 2 weeks.",
+                    "mark": "for",
+                    "fact_id": "8167.targets",
+                    "fact_text": "Christian Watson's target share was 27 percent over the last 2 weeks before the trade, up from the 2 weeks before that."
+                },
+                {
+                    "text": "In 2025 Swift fell from 14.66 points per game in weeks 1 to 8 to 12.96 in weeks 9 to 17, so you sell before a usual fade.",
+                    "mark": "for",
+                    "fact_id": "6790.history",
+                    "fact_text": "In 2023, D'Andre Swift played for PHI and scored half PPR points per game as follows: 13.33 in weeks 1 to 8 over 8 games; 9.15 in weeks 9 to 17 over 8 games; no cold game. In 2024, D'Andre Swift played for CHI and scored half PPR points per game as follows: 14.31 in weeks 1 to 8 over 7 games; 8.98 in weeks 9 to 17 over 9 games; 9.65 in cold games over 2 games. In 2025, D'Andre Swift played for CHI and scored half PPR points per game as follows: 14.66 in weeks 1 to 8 over 7 games; 12.96 in weeks 9 to 17 over 8 games; 11.48 in cold games over 5 games. A cold game is outdoors at 40 degrees F or below."
+                },
+                {
+                    "text": "Your RBs in the top 36 drop from 4 to 3, which still leaves you covered.",
+                    "mark": "against",
+                    "fact_id": "9.depth.rb",
+                    "fact_text": "For Maye d'force B with U, the RBs in the top 36 go from 4 to 3."
+                },
+                {
+                    "text": "Your starters at RB1, RB2, WR1, and WR2 ranked 24 or better go from 3 to 4.",
+                    "mark": "for",
+                    "fact_id": "9.strength",
+                    "fact_text": "For Maye d'force B with U, the starters at RB1, RB2, WR1, and WR2 with a position rank of 24 or better go from 3 to 4."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 10,
+                    "text": "Week 10: RBs in the top 36 who play stay at 2. WRs in the top 36 who play go from 2 to 3. Watson plays MIN at home, 30th most points to WRs. Jonah Coleman and Waddle have a bye. Stribling is on IR."
+                },
+                {
+                    "week": 11,
+                    "text": "Week 11: RBs in the top 36 who play go from 4 to 3. WRs in the top 36 who play stay at 2. Watson has a bye. Stribling is on IR."
+                }
+            ]
+        },
+        {
+            "roster_id": 1,
+            "bullets": [
+                {
+                    "text": "Their RBs in the top 36 go from 2 to 3.",
+                    "mark": "for",
+                    "fact_id": "1.depth.rb",
+                    "fact_text": "For The Blue Tent, the RBs in the top 36 go from 2 to 3."
+                },
+                {
+                    "text": "Swift's snap share rose to 79 percent over the last 2 weeks.",
+                    "mark": "for",
+                    "fact_id": "6790.usage",
+                    "fact_text": "D'Andre Swift's snap share was 79 percent over the last 2 weeks before the trade, up from the 2 weeks before that."
+                },
+                {
+                    "text": "In week 11 Swift plays NO at home, the defense that gives up the most points to RBs.",
+                    "mark": "for",
+                    "fact_id": "1.week_line",
+                    "fact_text": "Week 10: RBs in the top 36 who play stay at 0. WRs in the top 36 who play go from 3 to 2. Irving, Harvey and Swift have a bye. Harvey, Adams and Etienne are on IR. Evans was listed Out last week. Week 11: RBs in the top 36 who play go from 1 to 2. WRs in the top 36 who play stay at 3. Swift plays NO at home, the most points to RBs. Price and Adams have a bye. Harvey, Adams and Etienne are on IR."
+                },
+                {
+                    "text": "Losing Watson leaves WR2 short with Davante Adams out, and the best free agent is Tank Dell, WR19.",
+                    "mark": "against",
+                    "fact_id": "1.hole.wr2",
+                    "fact_text": "For The Blue Tent, the trade leaves WR2 short: Davante Adams is out with no return week on file. Christian Watson held WR1 before the trade. The best free agent at WR is Tank Dell, WR19."
+                },
+                {
+                    "text": "Per Rotowire, Swift ran 12 times for just 31 yards last week.",
+                    "mark": "against",
+                    "fact_id": "NEWS.6790.2",
+                    "fact_text": "Reported on 2026-11-09 by Rotowire: Swift rushed 12 times for 31 yards and didn't catch his lone target in Sunday's 27-24 win over the Buccaneers."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 10,
+                    "text": "Week 10: RBs in the top 36 who play stay at 0. WRs in the top 36 who play go from 3 to 2. Irving, Harvey and Swift have a bye. Harvey, Adams and Etienne are on IR. Evans was listed Out last week."
+                },
+                {
+                    "week": 11,
+                    "text": "Week 11: RBs in the top 36 who play go from 1 to 2. WRs in the top 36 who play stay at 3. Swift plays NO at home, the most points to RBs. Price and Adams have a bye. Harvey, Adams and Etienne are on IR."
+                }
+            ]
+        }
+    ],
+    "as_of": {
+        "chart_week": null,
+        "stats_through": 9,
+        "completed_through": 9,
+        "rosters_fetched": "2026-11-10T10:34:21.482652-05:00",
+        "known_games": null,
+        "no_chart": true,
+        "no_chart_note": "This week's player values are not out yet."
+    },
+    "missing": [
+        "chart"
+    ],
+    "stale": []
+}

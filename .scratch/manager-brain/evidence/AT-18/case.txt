@@ -1,0 +1,4 @@
+$ python3 (read the case of evidence/AT-16/response.json and split off its first sentence)
+Case: If you believe Bijan's growing role in the passing game will outrun a weak Falcons offense, this can work, but I'd lean against it. Gibbs is the season's RB1 at 24 points a game, and he's on a Lions offense that ranks 6th. Bijan's target share is climbing and he has finished strong before, with 21.2 points a game over the second half of 2025. The risk is that the Falcons offense ranks 29th, and your lineup scores less right when you're sitting in a playoff spot. A team in the race should firm up, not pay full price for a back who is worth less on the chart today. Hold Gibbs unless the other manager adds something.
+First sentence: If you believe Bijan's growing role in the passing game will outrun a weak Falcons offense, this can work, but I'd lean against it.
+Holds "if": True | Holds "as long as": False

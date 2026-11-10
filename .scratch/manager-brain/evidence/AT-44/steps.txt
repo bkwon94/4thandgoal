@@ -1,0 +1,7 @@
+Site built with CLIENT_ROOT of a copy of cpc with finder on, NEXT_PUBLIC_API_URL=http://localhost:8080, served at http://127.0.0.1:4173 (python3 -m http.server).
+agent-browser session e3, viewport 1280 x 900.
+1. Open /analyze/, fill the passphrase "localtest", submit.
+2. Pick Your Team = Maye d'force B with U, Team Two = Return of T Mac.
+3. Your Team gets Bijan Robinson, Team Two gets Jahmyr Gibbs. Press "Grade the Trade". Wait for the Lean scale.
+4. Tap the tab "Return of T Mac" (this tab has For, Against, and Even Bullets).
+5. agent-browser snapshot > snapshot-full.txt. rows.txt holds lines 94-124 of it: the For, Against, and Even bands.

@@ -1,0 +1,34 @@
+$ uv run --exact --package cornerstone cornerstone advisor-eval --client cpc --season 2026 --test-set <the test set, outside the repo> --out <scratchpad>/eval/out-6ba7   # at commit 6ba706cf
+# Trade 6, week 7, from trade-6.json. Omar Cooper Jr. is player id 13276.
+# Every fact of Omar Cooper Jr. on the sheet (id starts with 13276.):
+13276.ppg: Omar Cooper Jr. (WR, NYJ) scored 11.4 points per game over 2 games before the trade. His Season rank is WR83, by total points this season. His Recent rank is WR3, by points per game over the last 4 weeks.
+13276.usage: Omar Cooper Jr.'s snap share was 43 percent over 2 games before the trade.
+13276.targets: Omar Cooper Jr.'s target share was 15 percent over 2 games before the trade.
+13276.redzone: Omar Cooper Jr. had 1 red-zone target and 0 red-zone carries this season before the trade.
+13276.injury: Omar Cooper Jr. has no injury status now. He was on the NFL injury report in 2 weeks this season before the trade.
+13276.nfl_team: Omar Cooper Jr.'s NFL team, the Jets, ranks 18th of 32 on offense: -3.55 expected points added per 100 plays over 6 games before the trade.
+13276.value: Omar Cooper Jr. is 126th on the chart of week 7, at 1.5.
+
+# Every fact id of the sheet that ends in .history:
+4866.history
+6786.history
+9493.history
+
+# The read:
+Lean: Lean yes
+Case: If you believe Puka Nacua's growing role matters more than CeeDee Lamb's name, this is worth sending. Saquon Barkley sits at RB55 this season, so you aren't giving up a back who has been carrying your lineup, and your RB depth stays the same. The risk is that you give more on paper, because Barkley is worth more than Omar Cooper Jr., and Cooper has only played two games. The upside is that Nacua's target share has climbed to 36 percent while Lamb's work is slipping. You sit outside a playoff spot and need points now, so I'd push this through rather than wait on Barkley to bounce back.
+Side roster 10:
+  [for] Nacua's target share rose to 36 percent over the last 2 weeks, so his role is growing.  (cites 9493.targets)
+  [for] Barkley is RB55 by season points at 5 points per game over 4 games, so losing him costs little right now.  (cites 4866.ppg)
+  [even] You keep your 1 RB in the top 36, so the trade does not thin out your backfield.  (cites 10.depth.rb)
+  [against] Barkley is worth more than Cooper, so you give up more on paper.  (cites 4866.value)
+  [even] Cooper is WR3 by recent points, but that rests on only 2 games, so the sample is thin.  (cites 13276.ppg)
+Side roster 4:
+  [for] Lamb scores 17.9 points per game and is WR2 by season points.  (cites 6786.ppg)
+  [against] Barkley plays for an Eagles offense that ranks 30th of 32, so he is not a safe start.  (cites 4866.nfl_team)
+  [against] The trade leaves WR2 short with DeVonta Smith out, and the best free agent WR is Tyquan Thornton, WR30.  (cites 4.hole.wr2)
+  [against] Lamb's snap share dipped to 75 percent over the last 2 weeks, down from before.  (cites 6786.usage)
+  [against] Out of the race, this team should want the better player for the rest of the season, but it gives up Nacua.  (cites 4.measure.standing)
+
+# The Case and the Bullets that name a past season (2010 to 2025, 'last season', or 'past season'):
+(none)

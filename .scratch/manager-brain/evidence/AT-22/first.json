@@ -1,0 +1,190 @@
+{
+    "trade": {
+        "asker": 9,
+        "sides": [
+            {
+                "roster_id": 9,
+                "team": "Maye d'force B with U",
+                "gives": [
+                    {
+                        "player_id": "9221",
+                        "name": "Jahmyr Gibbs",
+                        "position": "RB",
+                        "nfl_team": "DET",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                        "season_rank": "RB1",
+                        "recent_rank": null,
+                        "to": 8
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "9509",
+                        "name": "Bijan Robinson",
+                        "position": "RB",
+                        "nfl_team": "ATL",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9509.jpg",
+                        "season_rank": "RB3",
+                        "recent_rank": "RB16",
+                        "from": 8
+                    }
+                ]
+            },
+            {
+                "roster_id": 8,
+                "team": "Return of T Mac",
+                "gives": [
+                    {
+                        "player_id": "9509",
+                        "name": "Bijan Robinson",
+                        "position": "RB",
+                        "nfl_team": "ATL",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9509.jpg",
+                        "season_rank": "RB3",
+                        "recent_rank": "RB16",
+                        "to": 9
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "9221",
+                        "name": "Jahmyr Gibbs",
+                        "position": "RB",
+                        "nfl_team": "DET",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                        "season_rank": "RB1",
+                        "recent_rank": null,
+                        "from": 9
+                    }
+                ]
+            }
+        ]
+    },
+    "lean": "Lean no",
+    "case": "If you believe Bijan Robinson's growing role matters more than Gibbs's scoring right now, you can talk yourself into this, but I'd lean against it. You're in a playoff spot, and a team in your spot firms up its lineup instead of giving up the RB1 for a back who has cooled off lately. The upside is real: Bijan is on the field more and is seeing more targets, while Gibbs's snaps have dipped. The risk is the Falcons offense, which ranks 29th of 32, and that limits how many chances he gets. Gibbs is also worth more than Bijan on the chart, so you'd be paying full price for a step down. Keep Gibbs unless the other manager adds something to even it out.",
+    "fairness": {
+        "state": "lopsided",
+        "gives_more": 9,
+        "sides": [
+            {
+                "roster_id": 9,
+                "reason": "Bijan Robinson, a back with a steady, growing role but on a weaker offense."
+            },
+            {
+                "roster_id": 8,
+                "reason": "Jahmyr Gibbs, the top-scoring RB this season, on a strong Lions offense."
+            }
+        ]
+    },
+    "sides": [
+        {
+            "roster_id": 9,
+            "bullets": [
+                {
+                    "text": "Bijan Robinson's snap share held at 82 percent over the last 2 weeks, flat from before.",
+                    "mark": "for",
+                    "fact_id": "9509.usage",
+                    "fact_text": "Bijan Robinson's snap share was 82 percent over the last 2 weeks before the trade, flat from the 2 weeks before that."
+                },
+                {
+                    "text": "His target share rose to 16 percent over the last 2 weeks, which helps in half PPR.",
+                    "mark": "for",
+                    "fact_id": "9509.targets",
+                    "fact_text": "Bijan Robinson's target share was 16 percent over the last 2 weeks before the trade, up from the 2 weeks before that."
+                },
+                {
+                    "text": "You give up Jahmyr Gibbs, who scores 24 points per game and is the RB1 by total points.",
+                    "mark": "against",
+                    "fact_id": "9221.ppg",
+                    "fact_text": "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season."
+                },
+                {
+                    "text": "The Falcons rank 29th of 32 on offense, so Bijan is not a safe start every week.",
+                    "mark": "against",
+                    "fact_id": "9509.nfl_team",
+                    "fact_text": "Bijan Robinson's NFL team, the Falcons, ranks 29th of 32 on offense: -9.39 expected points added per 100 plays over 8 games before the trade."
+                },
+                {
+                    "text": "Gibbs is worth more than Bijan on this week's chart.",
+                    "mark": "against",
+                    "fact_id": "9221.value",
+                    "fact_text": "Jahmyr Gibbs is 1st on the chart of week 9, at 68."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 9,
+                    "text": "Week 9: RBs in the top 36 who play stay at 4. Robinson plays CIN at home, 22nd most points to RBs."
+                },
+                {
+                    "week": 10,
+                    "text": "Week 10: RBs in the top 36 who play stay at 2. Robinson plays KC at home, 21st most points to RBs. Coleman and Swift have a bye."
+                }
+            ]
+        },
+        {
+            "roster_id": 8,
+            "bullets": [
+                {
+                    "text": "Gibbs scores 24 points per game and ranks RB1 by total points this season.",
+                    "mark": "for",
+                    "fact_id": "9221.ppg",
+                    "fact_text": "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season."
+                },
+                {
+                    "text": "The Lions rank 6th of 32 on offense, so Gibbs gets more chances to score.",
+                    "mark": "for",
+                    "fact_id": "9221.nfl_team",
+                    "fact_text": "Jahmyr Gibbs's NFL team, the Lions, ranks 6th of 32 on offense: 11.21 expected points added per 100 plays over 7 games before the trade."
+                },
+                {
+                    "text": "Gibbs faces MIN (28th most points to RBs), NYG (20th), and CHI (30th) in weeks 15 to 17.",
+                    "mark": "against",
+                    "fact_id": "8.measure.schedule",
+                    "fact_text": "The schedule measure for Return of T Mac: Gibbs faces MIN (28th most points to RBs), NYG (20th), and CHI (30th) in weeks 15 to 17."
+                },
+                {
+                    "text": "Gibbs's snap share fell to 73 percent over the last 2 weeks.",
+                    "mark": "against",
+                    "fact_id": "9221.usage",
+                    "fact_text": "Jahmyr Gibbs's snap share was 73 percent over the last 2 weeks before the trade, down from the 2 weeks before that."
+                },
+                {
+                    "text": "Your RBs in the top 36 stay at 2, so your depth does not change.",
+                    "mark": "even",
+                    "fact_id": "8.depth.rb",
+                    "fact_text": "For Return of T Mac, the RBs in the top 36 go from 2 to 2."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 9,
+                    "text": "Week 9: RBs in the top 36 who play stay at 1. Gibbs plays at MIA, 9th most points to RBs. Warren has a bye."
+                },
+                {
+                    "week": 10,
+                    "text": "Week 10: RBs in the top 36 who play stay at 2. Gibbs plays NE at home, 26th most points to RBs."
+                }
+            ]
+        }
+    ],
+    "as_of": {
+        "chart_week": 9,
+        "stats_through": 9,
+        "completed_through": 8,
+        "rosters_fetched": "2026-11-09T23:03:53.831251-05:00",
+        "known_games": {
+            "week": 9,
+            "games": 15,
+            "in_progress": 1,
+            "pending": {
+                "snaps": 1,
+                "usage": 2
+            }
+        },
+        "no_chart": false,
+        "no_chart_note": null
+    },
+    "missing": [],
+    "stale": []
+}

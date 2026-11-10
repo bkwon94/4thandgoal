@@ -1,0 +1,4 @@
+# Server a: a plain API on port 8081 from manager-brain-ev-api2 at 6ba706cf. No --log-config. Its start line:
+ CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:4173 CORNERSTONE_RESULT_CACHE_DIR=<scratchpad>/e2/cache-6ba7-a CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-api2 uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 8081
+
+# The app lines print through configure_logging of app_from_env. Each server started with a new, empty CORNERSTONE_RESULT_CACHE_DIR, so each first press of a request is cold.

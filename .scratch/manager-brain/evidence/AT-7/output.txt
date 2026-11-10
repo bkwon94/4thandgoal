@@ -1,0 +1,106 @@
+$ uv run --exact --package cornerstone cornerstone advisor-eval --client cpc --season 2026 --test-set <the test set, outside the repo> --out <scratchpad>/eval/out-6ba7   # at commit 6ba706cf, in the ev-pipe worktree
+# The eval wrote run.txt at 2026-11-10T10:35:35-0500. Its summary prints "Time: 237 s.", so the run started about 10:31.
+# Each past-season file came into this cache one time: the start of the local API at 26dbed1b downloaded each one on 2026-11-09 at 23:14:21 to 23:14:22 (log lines below).
+2026-11-09 23:14:21,892 INFO league.past_seasons: Downloading the past season file of 2023
+2026-11-09 23:14:22,178 INFO league.past_seasons: Downloading the past season file of 2024
+2026-11-09 23:14:22,467 INFO league.past_seasons: Downloading the past season file of 2025
+
+$ grep -c . run.txt
+819
+$ grep -i -E 'past_season|Downloading|stats_player_week_202[345]|stats_team|github|nflverse' run.txt
+exit 1
+
+$ stat -f '%Sm %z %N' data/nfl/cache/nflverse/stats_*   # after the eval at 6ba706cf
+2026-11-09T23:14:22 1237909 data/nfl/cache/nflverse/stats_player_week_2023.csv.gz
+2026-11-09T23:14:22 1244175 data/nfl/cache/nflverse/stats_player_week_2024.csv.gz
+2026-11-09T23:14:22 1262421 data/nfl/cache/nflverse/stats_player_week_2025.csv.gz
+2026-11-09T22:57:11 604205 data/nfl/cache/nflverse/stats_player_week_2026.csv.gz
+2026-11-09T23:14:21 37112 data/nfl/cache/nflverse/stats_team_week_2026.csv.gz
+
+# The sheets of the eval that hold a .history fact:
+28 of 28 sheets hold a .history fact
+
+# The earlier press evidence at 26dbed1b, reused: one analyze press of the AT-16 trade after the API start. The log of the press has no download.
+# The press, at 2026-11-09T23:14:58-0500:
+$ curl -s -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @p1.json http://127.0.0.1:8091/clients/cpc/analyze
+{"season":2026,"asker":9,"sides":[{"roster_id":9,"gives":[{"player_id":"9221","to":8}]},{"roster_id":8,"gives":[{"player_id":"9509","to":9}]}]}
+HTTP 200 in 22.293536s
+
+# The full log of the press (log lines 50 to 123):
+2026-11-09 23:14:58,621 INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+2026-11-09 23:14:58,636 INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+2026-11-09 23:14:58,654 INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+2026-11-09 23:14:58,686 INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+2026-11-09 23:14:58,703 INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+2026-11-09 23:14:58,720 INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+2026-11-09 23:14:58,736 INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+2026-11-09 23:14:58,762 INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+2026-11-09 23:14:58,788 INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+2026-11-09 23:14:58,970 INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+2026-11-09 23:14:59,342 INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+2026-11-09 23:14:59,397 INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+2026-11-09 23:14:59,437 INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/12?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+2026-11-09 23:14:59,474 INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/13?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+2026-11-09 23:14:59,507 INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/14?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+2026-11-09 23:15:01,198 INFO httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/9221/news "HTTP/1.1 200 OK"
+2026-11-09 23:15:01,198 INFO analyzer.trade_news: News fetch of player 9221: 5 items
+2026-11-09 23:15:01,269 INFO httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/9509/news "HTTP/1.1 200 OK"
+2026-11-09 23:15:01,269 INFO analyzer.trade_news: News fetch of player 9509: 5 items
+2026-11-09 23:15:01,375 INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+2026-11-09 23:15:01,375 INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 75ms (request req_01a1c3aa9ee17d42bd3d7a9a42a0ce67)
+2026-11-09 23:15:01,376 INFO analyzer.trade_jev: The Jev request of the trade: model=jev-1.14.0 input_tokens=825
+2026-11-09 23:15:01,376 INFO evidence: SHEET of the press: week 9, chart week 9, 44 facts
+2026-11-09 23:15:01,376 INFO evidence: SHEET trade.week: The trade is in week 9 of the 2026 season. Player stats run through the known games of week 9. The record runs through week 8. | numbers=['9', '2026', '9', '8']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9221.ppg: Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season. | numbers=['24', '8', '1']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9221.usage: Jahmyr Gibbs's snap share was 73 percent over the last 2 weeks before the trade, down from the 2 weeks before that. | numbers=['73', '2', '2']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9221.targets: Jahmyr Gibbs's target share was 10 percent over the last 2 weeks before the trade, down from the 2 weeks before that. | numbers=['10', '2', '2']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9221.redzone: Jahmyr Gibbs had 7 red-zone targets and 43 red-zone carries this season before the trade. | numbers=['7', '43']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9221.injury: Jahmyr Gibbs has no injury status now. | numbers=[]
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9509.ppg: Bijan Robinson (RB, ATL) scored 17.9 points per game over 9 games before the trade. His Season rank is RB3, by total points this season. His Recent rank is RB16, by points per game over the last 4 weeks. | numbers=['17.9', '9', '3', '16', '4']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9509.usage: Bijan Robinson's snap share was 82 percent over the last 2 weeks before the trade, flat from the 2 weeks before that. | numbers=['82', '2', '2']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9509.targets: Bijan Robinson's target share was 16 percent over the last 2 weeks before the trade, up from the 2 weeks before that. | numbers=['16', '2', '2']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9509.redzone: Bijan Robinson had 2 red-zone targets and 29 red-zone carries this season before the trade. | numbers=['2', '29']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9509.injury: Bijan Robinson has no injury status now. | numbers=[]
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9221.nfl_team: Jahmyr Gibbs's NFL team, the Lions, ranks 6th of 32 on offense: 11.21 expected points added per 100 plays over 7 games before the trade. | numbers=['6', '32', '11.21', '100', '7']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9509.nfl_team: Bijan Robinson's NFL team, the Falcons, ranks 29th of 32 on offense: -9.39 expected points added per 100 plays over 8 games before the trade. | numbers=['29', '32', '-9.39', '100', '8']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9221.value: Jahmyr Gibbs is 1st on the chart of week 9, at 68. | numbers=['1', '9', '68']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9509.value: Bijan Robinson is 5th on the chart of week 9, at 60.5. | numbers=['5', '9', '60.5']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9.need: Maye d'force B with U has 6 RB after the trade and 0 open roster spots. | numbers=['6', '0']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.need: Return of T Mac has 4 RB after the trade and 0 open roster spots. | numbers=['4', '0']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9.week_line: Week 9: RBs in the top 36 who play stay at 4. Robinson plays CIN at home, 22nd most points to RBs. Week 10: RBs in the top 36 who play stay at 2. Robinson plays KC at home, 21st most points to RBs. Coleman and Swift have a bye. | numbers=['9', '36', '4', '22', '10', '36', '2', '21']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.week_line: Week 9: RBs in the top 36 who play stay at 1. Gibbs plays at MIA, 9th most points to RBs. Warren has a bye. Week 10: RBs in the top 36 who play stay at 2. Gibbs plays NE at home, 26th most points to RBs. | numbers=['9', '36', '1', '9', '10', '36', '2', '26']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9.team: Maye d'force B with U was 9-7, 5th of 12, before the trade. Its race group is In, with 77% playoff odds after week 8. | numbers=['9', '7', '9-7', '5', '12', '77', '8']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.team: Return of T Mac was 9-7, 7th of 12, before the trade. Its race group is Bubble, with 42% playoff odds after week 8. | numbers=['9', '7', '9-7', '7', '12', '42', '8']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9.depth.rb: For Maye d'force B with U, the RBs in the top 36 go from 4 to 4. | numbers=['36', '4', '4']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.depth.rb: For Return of T Mac, the RBs in the top 36 go from 2 to 2. | numbers=['36', '2', '2']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.bye: For Return of T Mac, Jaylen Warren, Carnell Tate and Pittsburgh Steelers start after the trade and have a bye in week 9, the trade week. | numbers=['9']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9.measure.fit: The roster fit measure for Maye d'force B with U: You keep 4 RBs in the top 36, and your lineup scores less. | numbers=['4', '36']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9.measure.standing: The standing measure for Maye d'force B with U: In a playoff spot, so you need points now, and this trade gives some up. | numbers=[]
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9.measure.trend: The trend and usage measure for Maye d'force B with U: Robinson plays 82% of the snaps, takes 73% of the carries, and sees 16% of the targets (up); Gibbs plays 73% of the snaps (down), takes 64% of the carries, and sees 10% of the targets (down). | numbers=['82', '73', '16', '73', '64', '10']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9.measure.superstar: The superstar measure for Maye d'force B with U: Bijan Robinson is a superstar, a top 8 player this week. | numbers=['8']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9.measure.schedule: The schedule measure for Maye d'force B with U: Robinson has his bye in week 11 and faces WAS (27th most points to RBs), TB (31st), and NO (1st) in weeks 15 to 17. | numbers=['11', '27', '31', '1', '15', '17']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.measure.fit: The roster fit measure for Return of T Mac: You keep 2 RBs in the top 36, and your lineup scores more. | numbers=['2', '36']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.measure.standing: The standing measure for Return of T Mac: Outside a playoff spot but still in the race, so you need points now, and this trade adds some. | numbers=[]
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.measure.trend: The trend and usage measure for Return of T Mac: Gibbs plays 73% of the snaps (down), takes 64% of the carries, and sees 10% of the targets (down); Robinson plays 82% of the snaps, takes 73% of the carries, and sees 16% of the targets (up). | numbers=['73', '64', '10', '82', '73', '16']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.measure.superstar: The superstar measure for Return of T Mac: Jahmyr Gibbs is a superstar, a top 8 player this week. | numbers=['8']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 8.measure.schedule: The schedule measure for Return of T Mac: Gibbs faces MIN (28th most points to RBs), NYG (20th), and CHI (30th) in weeks 15 to 17. | numbers=['28', '20', '30', '15', '17']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9221.history: In 2023, Jahmyr Gibbs played for DET and scored half PPR points per game as follows: 13.73 in weeks 1 to 8 over 6 games; 15.59 in weeks 9 to 17 over 8 games; 15.7 in cold games over 1 game. In 2024, Jahmyr Gibbs played for DET and scored half PPR points per game as follows: 18 in weeks 1 to 8 over 7 games; 18.6 in weeks 9 to 17 over 9 games; 23.4 in cold games over 1 game. In 2025, Jahmyr Gibbs played for DET and scored half PPR points per game as follows: 18.14 in weeks 1 to 8 over 7 games; 20.29 in weeks 9 to 17 over 9 games; 18.8 in cold games over 1 game. A cold game is outdoors at 40 degrees F or below. | numbers=['1', '8', '9', '17', '2023', '13.73', '6', '15.59', '8', '15.7', '1', '2024', '18', '7', '18.6', '9', '23.4', '1', '2025', '18.14', '7', '20.29', '9', '18.8', '1', '40']
+2026-11-09 23:15:01,376 INFO evidence: SHEET 9509.history: In 2023, Bijan Robinson played for ATL and scored half PPR points per game as follows: 11.81 in weeks 1 to 8 over 8 games; 12.53 in weeks 9 to 17 over 8 games; 10.1 in cold games over 1 game. In 2024, Bijan Robinson played for ATL and scored half PPR points per game as follows: 15.56 in weeks 1 to 8 over 8 games; 19.55 in weeks 9 to 17 over 8 games; no cold game. In 2025, Bijan Robinson played for ATL and scored half PPR points per game as follows: 19.24 in weeks 1 to 8 over 7 games; 21.2 in weeks 9 to 17 over 9 games; no cold game. A cold game is outdoors at 40 degrees F or below. | numbers=['1', '8', '9', '17', '2023', '11.81', '8', '12.53', '8', '10.1', '1', '2024', '15.56', '8', '19.55', '8', '2025', '19.24', '7', '21.2', '9', '40']
+2026-11-09 23:15:01,376 INFO evidence: SHEET NEWS.9221.1: Reported on 2026-11-08 by FantasyPros: Jahmyr Gibbs carried the ball 20 times for 74 yards and one touchdown while failing to catch his lone target in the Lions' 19-9 Week 9 win over the Dolphins. | numbers=['2026-11', '2026', '11', '08', '20', '74', '19-9', '19', '9', '9']
+2026-11-09 23:15:01,376 INFO evidence: SHEET NEWS.9221.2: Reported on 2026-11-08 by Rotowire: Gibbs rushed 20 times for 74 yards and a touchdown and failed to bring in his only target in the Lions' 19-9 win over the Dolphins on Sunday. | numbers=['2026-11', '2026', '11', '08', '20', '74', '19-9', '19', '9']
+2026-11-09 23:15:01,376 INFO evidence: SHEET NEWS.9509.1: Reported on 2026-11-08 by FantasyPros: Bijan Robinson rushed for 100 yards and a touchdown on 19 carries in a 34-17 loss to the Flacons. He caught 6-of-7 targets for 47 yards. | numbers=['2026-11', '2026', '11', '08', '100', '19', '34-17', '34', '17', '6', '-7', '7', '47']
+2026-11-09 23:15:01,376 INFO evidence: SHEET NEWS.9509.2: Reported on 2026-11-08 by Rotowire: Robinson carried the ball 19 times for 100 yards and a touchdown and caught six of seven targets for 47 yards in Sunday's 34-17 loss to the Bengals. | numbers=['2026-11', '2026', '11', '08', '19', '100', '47', '34-17', '34', '17']
+2026-11-09 23:15:01,376 INFO evidence: SHEET JEV.fair: A quick yes or no read of a small model on "Is this trade close to fair for both teams: Maye d'force B with U gives Jahmyr Gibbs and Return of T Mac gives Bijan Robinson?": unsure. | numbers=[]
+2026-11-09 23:15:01,376 INFO evidence: SHEET JEV.need.9: A quick yes or no read of a small model on "Does Maye d'force B with U fill a starting need in this trade, where it gets Bijan Robinson?": unsure. | numbers=[]
+2026-11-09 23:15:01,376 INFO evidence: SHEET JEV.need.8: A quick yes or no read of a small model on "Does Return of T Mac fill a starting need in this trade, where it gets Jahmyr Gibbs?": unsure. | numbers=[]
+2026-11-09 23:15:01,376 INFO evidence: SHEET JEV.accept.8: A quick yes or no read of a small model on "Would the manager of Return of T Mac accept this trade?": yes. | numbers=[]
+2026-11-09 23:15:20,745 INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-11-09 23:15:20,768 INFO facts.writer: AdvisorOut call: cache_creation_input_tokens=0 cache_read_input_tokens=2926 input_tokens=3363
+2026-11-09 23:15:20,854 INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+2026-11-09 23:15:20,854 INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 76ms (request req_01a1c3aaeae078c8afff63b5b9984d59)
+2026-11-09 23:15:20,854 INFO analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=2300 faithful.9.1=0.6 unsure faithful.9.2=0.9 yes faithful.9.3=0.57 unsure faithful.9.4=0.24 no faithful.9.5=0.96 yes rumor.9.5=0.04 no faithful.8.1=0.18 no faithful.8.2=0.57 unsure faithful.8.3=0.86 yes faithful.8.4=0.87 yes faithful.8.5=0.78 yes
+2026-11-09 23:15:20,868 INFO analyzer.routes: Press of analyze for cpc: time=22.3s cost=$0.0551 claude_calls=1
+INFO:     127.0.0.1:54954 - "POST /clients/cpc/analyze HTTP/1.1" 200 OK
+
+# Lines of the press log that name a past season file or a download (a grep of lines 50 to 123):
+(none)

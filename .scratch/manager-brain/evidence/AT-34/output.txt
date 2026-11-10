@@ -1,0 +1,83 @@
+$ uv run --exact --package cornerstone cornerstone advisor-eval --client cpc --season 2026 --test-set <the test set, outside the repo> --out <scratchpad>/eval/out-6ba7   # at commit 6ba706cf
+# The printed summary of the run (run.txt), with the log lines left out:
+28 trades: 28 reads, 0 errors.
+Leans: Send it 5, Lean yes 11, Lean no 5, Pass 7.
+trade 3: Send it
+trade 4: Lean no
+trade 5: Pass
+trade 6: Lean yes
+trade 9: Lean no
+trade 11: Pass
+trade 12: Lean yes
+trade 13: Lean yes
+trade 14: Lean no
+trade 15: Lean yes
+trade 16: Lean yes
+trade 17: Lean yes
+trade 18: Lean yes
+trade 19: Send it
+trade 20: Lean yes
+trade 21: Send it
+trade 22: Pass
+trade 23: Lean yes
+trade 24: Lean yes
+trade 25: Send it
+trade 26: Pass
+trade 27: Lean no
+trade 28: Pass
+trade 29: Pass
+trade 30: Lean no
+trade 31: Pass
+trade 32: Lean yes
+trade 33: Send it
+finder 1: 0 picks, $0.07, 13 s.
+finder 2: 1 pick, $0.07, 19 s.
+finder 3: 0 picks, $0.08, 17 s.
+Checks: 0 failed after the retry, 0 forbidden words.
+News: week 8 reads the live feed, and 2 Bullets cite a NEWS fact.
+Cost: $2.17 (Claude $2.16, Jev $0.010) over 32 Claude calls.
+Time: 237 s.
+
+# The retry lines of the log:
+WARNING analyzer.advisor: advisor attempt 1 failed: case: number # is not in the cited facts
+
+# Per trade, from trade-<id>.json: the Lean, the length of the Case, the Bullets per side, the check failures, the error.
+trade | lean | case chars | bullets per side | check_failures | error
+3 | Send it | 741 | 5,5 | 0 | None
+4 | Lean no | 615 | 5,5 | 0 | None
+5 | Pass | 635 | 5,5 | 0 | None
+6 | Lean yes | 591 | 5,5 | 0 | None
+9 | Lean no | 622 | 5,5 | 0 | None
+11 | Pass | 568 | 5,5 | 0 | None
+12 | Lean yes | 614 | 5,5 | 0 | None
+13 | Lean yes | 640 | 5,5 | 0 | None
+14 | Lean no | 635 | 5,5 | 0 | None
+15 | Lean yes | 660 | 5,5 | 0 | None
+16 | Lean yes | 672 | 5,5 | 0 | None
+17 | Lean yes | 649 | 5,5 | 0 | None
+18 | Lean yes | 601 | 5,5 | 0 | None
+19 | Send it | 629 | 5,5 | 0 | None
+20 | Lean yes | 588 | 5,4 | 0 | None
+21 | Send it | 540 | 5,5 | 0 | None
+22 | Pass | 589 | 5,4 | 0 | None
+23 | Lean yes | 580 | 5,5 | 0 | None
+24 | Lean yes | 600 | 5,5 | 0 | None
+25 | Send it | 711 | 5,5 | 0 | None
+26 | Pass | 599 | 5,4 | 0 | None
+27 | Lean no | 660 | 5,5 | 0 | None
+28 | Pass | 617 | 5,5 | 0 | None
+29 | Pass | 661 | 5,5 | 0 | None
+30 | Lean no | 602 | 5,5 | 0 | None
+31 | Pass | 625 | 5,5 | 0 | None
+32 | Lean yes | 489 | 5,5 | 0 | None
+33 | Send it | 594 | 5,4 | 0 | None
+
+Trades: 28. Reads with a Lean: 28. Gut call: 0.
+
+# The count of each Lean step of the scale, from the 28 trade files:
+Send it: 5
+Lean yes: 11
+Gut call: 0
+Lean no: 5
+Pass: 7
+Steps with at least one Lean: 4 of 5.

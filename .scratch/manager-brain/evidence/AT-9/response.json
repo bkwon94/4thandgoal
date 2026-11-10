@@ -1,0 +1,190 @@
+{
+ "trade": {
+  "asker": 9,
+  "sides": [
+   {
+    "roster_id": 9,
+    "team": "Maye d'force B with U",
+    "gives": [
+     {
+      "player_id": "9221",
+      "name": "Jahmyr Gibbs",
+      "position": "RB",
+      "nfl_team": "DET",
+      "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+      "season_rank": "RB1",
+      "recent_rank": null,
+      "to": 8
+     }
+    ],
+    "gets": [
+     {
+      "player_id": "8142",
+      "name": "Alec Pierce",
+      "position": "WR",
+      "nfl_team": "IND",
+      "headshot": "https://sleepercdn.com/content/nfl/players/8142.jpg",
+      "season_rank": "WR135",
+      "recent_rank": null,
+      "from": 8
+     }
+    ]
+   },
+   {
+    "roster_id": 8,
+    "team": "Return of T Mac",
+    "gives": [
+     {
+      "player_id": "8142",
+      "name": "Alec Pierce",
+      "position": "WR",
+      "nfl_team": "IND",
+      "headshot": "https://sleepercdn.com/content/nfl/players/8142.jpg",
+      "season_rank": "WR135",
+      "recent_rank": null,
+      "to": 9
+     }
+    ],
+    "gets": [
+     {
+      "player_id": "9221",
+      "name": "Jahmyr Gibbs",
+      "position": "RB",
+      "nfl_team": "DET",
+      "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+      "season_rank": "RB1",
+      "recent_rank": null,
+      "from": 9
+     }
+    ]
+   }
+  ]
+ },
+ "lean": "Pass",
+ "case": "If you only want Pierce as a stash for a deep playoff run, this still doesn't come close to paying off, so pass. Gibbs is the RB1 this season and is worth far more than Pierce, who sits on IR with no return week on file. Your RBs in the top 36 would drop from 4 to 3, and you're in a playoff spot where you need points now, not a long-shot hope. The only upside is that Pierce has tended to finish seasons a little stronger, but his coach reportedly can't put a timetable on his heel. Keep Gibbs and let Return of T Mac find another way to make its push.",
+ "fairness": {
+  "state": "lopsided",
+  "gives_more": 9,
+  "sides": [
+   {
+    "roster_id": 9,
+    "reason": "Alec Pierce, a receiver on IR, as a stash for later in the season."
+   },
+   {
+    "roster_id": 8,
+    "reason": "Jahmyr Gibbs, a top 8 player this week, for a playoff push."
+   }
+  ]
+ },
+ "sides": [
+  {
+   "roster_id": 9,
+   "bullets": [
+    {
+     "text": "You'd give up Gibbs, the RB1 this season at 24 points per game.",
+     "mark": "against",
+     "fact_id": "9221.ppg",
+     "fact_text": "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season."
+    },
+    {
+     "text": "Pierce is on IR with no return week on file.",
+     "mark": "against",
+     "fact_id": "8142.injury",
+     "fact_text": "Alec Pierce is listed IR now, with no return week on file. He was on the NFL injury report in 1 week this season before the trade."
+    },
+    {
+     "text": "Your RBs in the top 36 go from 4 to 3.",
+     "mark": "against",
+     "fact_id": "9.depth.rb",
+     "fact_text": "For Maye d'force B with U, the RBs in the top 36 go from 4 to 3."
+    },
+    {
+     "text": "Per Rotowire, the Colts coach can't put a timetable on Pierce's return.",
+     "mark": "against",
+     "fact_id": "NEWS.8142.2",
+     "fact_text": "Reported on 2026-11-04 by Rotowire: When asked Wednesday when Pierce (heel) might be able to return to practice, Colts head coach Shane Steichen noted that he \"can't put a timetable on it right now,\" Kevin Bowen of 107.5 The Fan Indianapolis reports."
+    },
+    {
+     "text": "If Pierce gets back, he faces TEN, the most points to WRs, in weeks 15 to 17.",
+     "mark": "for",
+     "fact_id": "9.measure.schedule",
+     "fact_text": "The schedule measure for Maye d'force B with U: Pierce has his bye in week 13 and faces TEN (the most points to WRs), CIN (13th), and CLE (20th) in weeks 15 to 17."
+    }
+   ],
+   "week_lines": [
+    {
+     "week": 9,
+     "text": "Week 9: RBs in the top 36 who play go from 4 to 3. WRs in the top 36 who play stay at 2. Stribling and Pierce are on IR."
+    },
+    {
+     "week": 10,
+     "text": "Week 10: RBs in the top 36 who play go from 2 to 1. WRs in the top 36 who play stay at 2. Jonah Coleman, Swift and Waddle have a bye. Stribling and Pierce are on IR."
+    }
+   ]
+  },
+  {
+   "roster_id": 8,
+   "bullets": [
+    {
+     "text": "Gibbs is a superstar, a top 8 player this week.",
+     "mark": "for",
+     "fact_id": "8.measure.superstar",
+     "fact_text": "The superstar measure for Return of T Mac: Jahmyr Gibbs is a superstar, a top 8 player this week."
+    },
+    {
+     "text": "Its RBs in the top 36 go from 2 to 3.",
+     "mark": "for",
+     "fact_id": "8.depth.rb",
+     "fact_text": "For Return of T Mac, the RBs in the top 36 go from 2 to 3."
+    },
+    {
+     "text": "On the bubble with 42% playoff odds, it needs points now and this adds them.",
+     "mark": "for",
+     "fact_id": "8.team",
+     "fact_text": "Return of T Mac was 9-7, 7th of 12, before the trade. Its race group is Bubble, with 42% playoff odds after week 8."
+    },
+    {
+     "text": "The Lions rank 6th of 32 on offense, so Gibbs gets plenty of chances.",
+     "mark": "for",
+     "fact_id": "9221.nfl_team",
+     "fact_text": "Jahmyr Gibbs's NFL team, the Lions, ranks 6th of 32 on offense: 11.21 expected points added per 100 plays over 7 games before the trade."
+    },
+    {
+     "text": "Gibbs's target share dipped to 10 percent over the last 2 weeks.",
+     "mark": "even",
+     "fact_id": "9221.targets",
+     "fact_text": "Jahmyr Gibbs's target share was 10 percent over the last 2 weeks before the trade, down from the 2 weeks before that."
+    }
+   ],
+   "week_lines": [
+    {
+     "week": 9,
+     "text": "Week 9: RBs in the top 36 who play go from 1 to 2. WRs in the top 36 who play stay at 2. Gibbs plays at MIA, 9th most points to RBs. Tate and Warren have a bye. Tate is listed Out. Douglas steps up."
+    },
+    {
+     "week": 10,
+     "text": "Week 10: RBs in the top 36 who play go from 2 to 3. WRs in the top 36 who play stay at 3. Gibbs plays NE at home, 26th most points to RBs. Odunze has a bye."
+    }
+   ]
+  }
+ ],
+ "as_of": {
+  "chart_week": 9,
+  "stats_through": 9,
+  "completed_through": 8,
+  "rosters_fetched": "2026-11-09T23:15:27.646114-05:00",
+  "known_games": {
+   "week": 9,
+   "games": 15,
+   "in_progress": 1,
+   "pending": {
+    "snaps": 1,
+    "usage": 2
+   }
+  },
+  "no_chart": false,
+  "no_chart_note": null
+ },
+ "missing": [],
+ "stale": []
+}

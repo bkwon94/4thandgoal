@@ -1,0 +1,9 @@
+$ uv run --exact --package cornerstone cornerstone advisor-eval --client cpc --season 2026 --test-set <the test set, outside the repo> --out <scratchpad>/eval/out-6ba7   # at commit 6ba706cf
+# Every Bullet of the 28 reads that cites a NEWS. fact, from trade-<id>.json:
+trade 21, roster 2, NEWS.11624.2
+  Bullet: Per Rotowire, Worthy is day-to-day with a hamstring.
+  Fact: Reported on 2026-11-09 by Rotowire: Coach Andy Reid said Monday that Worthy (hamstring) is considered day-to-day in advance of Sunday's game against the Falcons, Matt McMullen of the Chiefs' official site reports.
+trade 30, roster 11, NEWS.7543.1
+  Bullet: Per Rotowire, the Saints haven't opened Etienne's practice window from his hamstring injury.
+  Fact: Reported on 2026-11-04 by Rotowire: Head coach Kellen Moore said Wednesday that the Saints haven't opened Etienne's (hamstring) practice window just yet, Jeff Nowak of WWL Louisiana reports.
+Bullets that cite a NEWS. fact: 2.

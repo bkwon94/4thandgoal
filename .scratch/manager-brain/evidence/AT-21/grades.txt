@@ -1,0 +1,7 @@
+$ cat $CORNERSTONE_RESULT_CACHE_DIR/cpc/grade-counts.json   # before and after the press
+before: {"counts": {"127.0.0.1": 6}, "day": "2026-11-09"}
+after: {"counts": {"127.0.0.1": 6}, "day": "2026-11-09"}
+
+# The server started with ANTHROPIC_API_KEY=sk-ant-not-a-valid-key. Its start line:
+ANTHROPIC_API_KEY=sk-ant-not-a-valid-key CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_RESULT_CACHE_DIR=<scratchpad>/e2/cachebad CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-api2 uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 8081 --log-config <scratchpad>/e2/logconfig.json
+# The grade-counts.json of the fresh cache folder is a copy of the one of the earlier valid-key server, so the count before is 6.

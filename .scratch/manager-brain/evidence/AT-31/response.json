@@ -1,0 +1,29 @@
+{
+    "season": 2026,
+    "trade_pair": {
+        "asker": {
+            "roster_id": 9,
+            "team": "Maye d'force B with U"
+        },
+        "partner": {
+            "roster_id": 8,
+            "team": "Return of T Mac"
+        }
+    },
+    "trades": [],
+    "empty": "No offer on the list both helps your lineup and gives the other manager a reason to say yes.}",
+    "as_of": {
+        "chart_week": null,
+        "stats_through": 9,
+        "completed_through": 9,
+        "rosters_fetched": "2026-11-10T10:33:54.782641-05:00",
+        "known_games": null,
+        "no_chart": true,
+        "no_chart_note": "This week's player values are not out yet."
+    },
+    "fallback": false,
+    "missing": [
+        "chart"
+    ],
+    "stale": []
+}

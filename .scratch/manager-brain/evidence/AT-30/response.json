@@ -1,0 +1,739 @@
+{
+    "season": 2026,
+    "trade_pair": {
+        "asker": {
+            "roster_id": 9,
+            "team": "Maye d'force B with U"
+        },
+        "partner": null
+    },
+    "trades": [
+        {
+            "offer_id": "9:9221-2:7564",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "9221",
+                            "name": "Jahmyr Gibbs",
+                            "position": "RB",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                            "season_rank": "RB1",
+                            "recent_rank": null,
+                            "to": 2
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "7564",
+                            "name": "Ja'Marr Chase",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                            "season_rank": "WR7",
+                            "recent_rank": null,
+                            "from": 2
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "gives": [
+                        {
+                            "player_id": "7564",
+                            "name": "Ja'Marr Chase",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                            "season_rank": "WR7",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "9221",
+                            "name": "Jahmyr Gibbs",
+                            "position": "RB",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                            "season_rank": "RB1",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season.",
+                "Ja'Marr Chase (WR, CIN) scored 16.7 points per game over 8 games before the trade. His Season rank is WR7, by total points this season."
+            ]
+        },
+        {
+            "offer_id": "9:6790-1:8167",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "to": 1
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8167",
+                            "name": "Christian Watson",
+                            "position": "WR",
+                            "nfl_team": "GB",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                            "season_rank": "WR3",
+                            "recent_rank": null,
+                            "from": 1
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 1,
+                    "team": "The Blue Tent",
+                    "gives": [
+                        {
+                            "player_id": "8167",
+                            "name": "Christian Watson",
+                            "position": "WR",
+                            "nfl_team": "GB",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                            "season_rank": "WR3",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "D'Andre Swift (RB, CHI) scored 15.8 points per game over 9 games before the trade. His Season rank is RB8, by total points this season.",
+                "Christian Watson (WR, GB) scored 16.9 points per game over 9 games before the trade. His Season rank is WR3, by total points this season."
+            ]
+        },
+        {
+            "offer_id": "9:6794-5:9493",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "6794",
+                            "name": "Justin Jefferson",
+                            "position": "WR",
+                            "nfl_team": "MIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6794.jpg",
+                            "season_rank": "WR24",
+                            "recent_rank": "WR43",
+                            "to": 5
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "9493",
+                            "name": "Puka Nacua",
+                            "position": "WR",
+                            "nfl_team": "LAR",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9493.jpg",
+                            "season_rank": "WR4",
+                            "recent_rank": null,
+                            "from": 5
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 5,
+                    "team": "London Cooking",
+                    "gives": [
+                        {
+                            "player_id": "9493",
+                            "name": "Puka Nacua",
+                            "position": "WR",
+                            "nfl_team": "LAR",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9493.jpg",
+                            "season_rank": "WR4",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "6794",
+                            "name": "Justin Jefferson",
+                            "position": "WR",
+                            "nfl_team": "MIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6794.jpg",
+                            "season_rank": "WR24",
+                            "recent_rank": "WR43",
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "Justin Jefferson (WR, MIN) scored 11.2 points per game over 7 games before the trade. His Season rank is WR24, by total points this season. His Recent rank is WR43, by points per game over the last 4 weeks.",
+                "Puka Nacua (WR, LAR) scored 19.8 points per game over 7 games before the trade. His Season rank is WR4, by total points this season."
+            ]
+        },
+        {
+            "offer_id": "9:9221-1:8167",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "9221",
+                            "name": "Jahmyr Gibbs",
+                            "position": "RB",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                            "season_rank": "RB1",
+                            "recent_rank": null,
+                            "to": 1
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8167",
+                            "name": "Christian Watson",
+                            "position": "WR",
+                            "nfl_team": "GB",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                            "season_rank": "WR3",
+                            "recent_rank": null,
+                            "from": 1
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 1,
+                    "team": "The Blue Tent",
+                    "gives": [
+                        {
+                            "player_id": "8167",
+                            "name": "Christian Watson",
+                            "position": "WR",
+                            "nfl_team": "GB",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                            "season_rank": "WR3",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "9221",
+                            "name": "Jahmyr Gibbs",
+                            "position": "RB",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                            "season_rank": "RB1",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season.",
+                "Christian Watson (WR, GB) scored 16.9 points per game over 9 games before the trade. His Season rank is WR3, by total points this season."
+            ]
+        },
+        {
+            "offer_id": "9:6794-2:7564",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "6794",
+                            "name": "Justin Jefferson",
+                            "position": "WR",
+                            "nfl_team": "MIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6794.jpg",
+                            "season_rank": "WR24",
+                            "recent_rank": "WR43",
+                            "to": 2
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "7564",
+                            "name": "Ja'Marr Chase",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                            "season_rank": "WR7",
+                            "recent_rank": null,
+                            "from": 2
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "gives": [
+                        {
+                            "player_id": "7564",
+                            "name": "Ja'Marr Chase",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                            "season_rank": "WR7",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "6794",
+                            "name": "Justin Jefferson",
+                            "position": "WR",
+                            "nfl_team": "MIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6794.jpg",
+                            "season_rank": "WR24",
+                            "recent_rank": "WR43",
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "Justin Jefferson (WR, MIN) scored 11.2 points per game over 7 games before the trade. His Season rank is WR24, by total points this season. His Recent rank is WR43, by points per game over the last 4 weeks.",
+                "Ja'Marr Chase (WR, CIN) scored 16.7 points per game over 8 games before the trade. His Season rank is WR7, by total points this season."
+            ]
+        },
+        {
+            "offer_id": "9:8131-2:8144",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "8131",
+                            "name": "Isaiah Likely",
+                            "position": "TE",
+                            "nfl_team": "NYG",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8131.jpg",
+                            "season_rank": "TE3",
+                            "recent_rank": null,
+                            "to": 2
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR21",
+                            "from": 2
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "gives": [
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR21",
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8131",
+                            "name": "Isaiah Likely",
+                            "position": "TE",
+                            "nfl_team": "NYG",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8131.jpg",
+                            "season_rank": "TE3",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "Isaiah Likely (TE, NYG) scored 13.1 points per game over 8 games before the trade. His Season rank is TE3, by total points this season.",
+                "Chris Olave (WR, NO) scored 14.2 points per game over 8 games before the trade. His Season rank is WR9, by total points this season. His Recent rank is WR21, by points per game over the last 4 weeks."
+            ]
+        },
+        {
+            "offer_id": "9:9221-2:7564+8144",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "9221",
+                            "name": "Jahmyr Gibbs",
+                            "position": "RB",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                            "season_rank": "RB1",
+                            "recent_rank": null,
+                            "to": 2
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "7564",
+                            "name": "Ja'Marr Chase",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                            "season_rank": "WR7",
+                            "recent_rank": null,
+                            "from": 2
+                        },
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR21",
+                            "from": 2
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "gives": [
+                        {
+                            "player_id": "7564",
+                            "name": "Ja'Marr Chase",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                            "season_rank": "WR7",
+                            "recent_rank": null,
+                            "to": 9
+                        },
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR21",
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "9221",
+                            "name": "Jahmyr Gibbs",
+                            "position": "RB",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                            "season_rank": "RB1",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season.",
+                "Ja'Marr Chase (WR, CIN) scored 16.7 points per game over 8 games before the trade. His Season rank is WR7, by total points this season.",
+                "Chris Olave (WR, NO) scored 14.2 points per game over 8 games before the trade. His Season rank is WR9, by total points this season. His Recent rank is WR21, by points per game over the last 4 weeks."
+            ]
+        },
+        {
+            "offer_id": "9:6790+8131-2:7564",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "8131",
+                            "name": "Isaiah Likely",
+                            "position": "TE",
+                            "nfl_team": "NYG",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8131.jpg",
+                            "season_rank": "TE3",
+                            "recent_rank": null,
+                            "to": 2
+                        },
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "to": 2
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "7564",
+                            "name": "Ja'Marr Chase",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                            "season_rank": "WR7",
+                            "recent_rank": null,
+                            "from": 2
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "gives": [
+                        {
+                            "player_id": "7564",
+                            "name": "Ja'Marr Chase",
+                            "position": "WR",
+                            "nfl_team": "CIN",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+                            "season_rank": "WR7",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8131",
+                            "name": "Isaiah Likely",
+                            "position": "TE",
+                            "nfl_team": "NYG",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8131.jpg",
+                            "season_rank": "TE3",
+                            "recent_rank": null,
+                            "from": 9
+                        },
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "Isaiah Likely (TE, NYG) scored 13.1 points per game over 8 games before the trade. His Season rank is TE3, by total points this season.",
+                "D'Andre Swift (RB, CHI) scored 15.8 points per game over 9 games before the trade. His Season rank is RB8, by total points this season.",
+                "Ja'Marr Chase (WR, CIN) scored 16.7 points per game over 8 games before the trade. His Season rank is WR7, by total points this season."
+            ]
+        },
+        {
+            "offer_id": "9:6790-2:8144",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "to": 2
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR21",
+                            "from": 2
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "gives": [
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR21",
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "D'Andre Swift (RB, CHI) scored 15.8 points per game over 9 games before the trade. His Season rank is RB8, by total points this season.",
+                "Chris Olave (WR, NO) scored 14.2 points per game over 8 games before the trade. His Season rank is WR9, by total points this season. His Recent rank is WR21, by points per game over the last 4 weeks."
+            ]
+        },
+        {
+            "offer_id": "9:9221-2:8144",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "9221",
+                            "name": "Jahmyr Gibbs",
+                            "position": "RB",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                            "season_rank": "RB1",
+                            "recent_rank": null,
+                            "to": 2
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR21",
+                            "from": 2
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "gives": [
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR21",
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "9221",
+                            "name": "Jahmyr Gibbs",
+                            "position": "RB",
+                            "nfl_team": "DET",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                            "season_rank": "RB1",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": null,
+            "bullets": [],
+            "fact_lines": [
+                "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season.",
+                "Chris Olave (WR, NO) scored 14.2 points per game over 8 games before the trade. His Season rank is WR9, by total points this season. His Recent rank is WR21, by points per game over the last 4 weeks."
+            ]
+        }
+    ],
+    "empty": null,
+    "as_of": {
+        "chart_week": null,
+        "stats_through": 9,
+        "completed_through": 9,
+        "rosters_fetched": "2026-11-10T10:36:14.853654-05:00",
+        "known_games": null,
+        "no_chart": true,
+        "no_chart_note": "This week's player values are not out yet."
+    },
+    "fallback": true,
+    "missing": [
+        "chart"
+    ],
+    "stale": []
+}
