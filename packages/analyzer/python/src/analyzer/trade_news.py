@@ -16,7 +16,7 @@ from league.snapshot import Snapshot
 log = logging.getLogger(__name__)
 
 FACT_PREFIX = "NEWS."
-# The trade deadline rumor lives for days, so the sheet reads only the newest items of the last week (decision 08).
+# The trade deadline rumor lives for days, so the sheet reads only the newest items of the last week.
 NEWS_PER_PLAYER = 2
 NEWS_MAX_AGE = timedelta(days=7)
 NEWS_MAX_CHARS = 300

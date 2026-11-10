@@ -25,8 +25,8 @@ TRADE_POSITIONS = ("QB", "RB", "WR", "TE")
 # The four questions of the partner filter, from the glossary entry "Partner filter". Each asks one judgment, and
 # the state holds the depth that code counts, because Jev does not count reliably.
 PARTNER_FILTER = {
-    # The "has" wording that names the weak starters won a live probe on 4 pairs on 2026-11-09: about 0.85 against
-    # about 0.6 for "a player at a weak starting slot", which Jev read as unsure.
+    # The "has" wording that names the weak starters won a live probe on 4 pairs: about 0.85 against about 0.6 for
+    # "a player at a weak starting slot", which Jev read as unsure.
     "partner_has": {
         "text": "Would a player of {partner} start over one of the weak starters of {asker} in "
                 "`teams.asker.weak_starting_slots`?",
@@ -54,7 +54,7 @@ PARTNER_FILTER = {
         "no": "Each player of {asker} who fits a weak slot of {partner} is a starter with no one above the line behind "
               "him."},
 }
-# The target question of prototype 04 (decision 04 notes): one Noul per player of the other side.
+# The target question, the one the prototype of the Finder tested: one Noul per player of the other side.
 TARGET = {
     "text": "Would {team} want {player} from {owner}?",
     "yes": "{name} would start for {team} or fill a weak spot on its roster.",

@@ -14,10 +14,10 @@ from league.jev_port import Jev, JevError, JevResponse, NoulQuestion
 
 log = logging.getLogger(__name__)
 
-# The limits that Brian read on the TypeSafe dashboard: 80 requests per second and 100,000 tokens per second.
+# The limits of the TypeSafe account, from its dashboard: 80 requests per second and 100,000 tokens per second.
 REQUESTS_PER_SECOND = 80
 TOKENS_PER_SECOND = 100_000
-# A token is about 4 characters of the JSON (decision 03 notes). The plan counts 3, so a wave keeps some headroom.
+# A token is about 4 characters of the JSON. The count uses 3, so a wave keeps some headroom.
 CHARS_PER_TOKEN = 3
 WAVE_SECONDS = 1.0
 

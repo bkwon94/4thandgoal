@@ -68,7 +68,7 @@ class AdvisorSide(BaseModel):
 
 
 class AdvisorOut(BaseModel):
-    """The structured output of the Advisor call. The shape came from prototype 04."""
+    """The structured output of the Advisor call, in the shape that the prototype of the Advisor tested."""
 
     lean: Lean
     case: str
@@ -196,8 +196,8 @@ class TextGuard:
             allowed |= set(self.facts[fid].players) | set(self.facts[fid].teams)
         failures += [f"{label}: the name {name} is not in the trade or in a cited fact" for name in found
                      if name not in allowed and not any(name in other for other in found if other != name)]
-        # The check reads digits only, as prototype 04 did. A count in words, such as "two starters for one", reads
-        # the trade itself, and the playbook speaks of "two good ones".
+        # The check reads digits only, as the prototype of the Advisor did. A count in words, such as "two starters
+        # for one", reads the trade itself, and the playbook speaks of "two good ones".
         numbers = {normalize_number(n) for fid in cited if not fid.endswith(VALUE_SUFFIX)
                    for n in self.facts[fid].numbers}
         failures += [f"{label}: number {token} is not in the cited facts"

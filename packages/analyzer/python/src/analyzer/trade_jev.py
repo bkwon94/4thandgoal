@@ -15,7 +15,7 @@ from league.snapshot import Snapshot
 
 log = logging.getLogger(__name__)
 
-# The wording "a" of the fairness and the need questions won the probe of prototype 04 (decision 04 notes).
+# This wording of the fairness and the need questions won a live probe against other wordings of the same questions.
 FAIR = {
     "text": "Is this trade close to fair for {who}: {gives}?",
     "yes": "Each team gives about as much as it gets, by points, rank, and trade value.",
