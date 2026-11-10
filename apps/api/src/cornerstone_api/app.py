@@ -33,6 +33,7 @@ from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import ask as ask_routes
 from cornerstone_api import refresh as refresh_routes
+from cornerstone_api import trade_topics
 from cornerstone_api.miss_log import MissLog
 from cornerstone_api.settings import Settings, ask_dir, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
 from cornerstone_api.sources import Sources
@@ -262,6 +263,7 @@ def create_app(
     # The ask route is new, so only the clients paths serve it. It needs the passphrase, so only managers of the league
     # spend the budget.
     app.include_router(ask_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
+    app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
 
     # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
     # commissioner key. The check and the board each have their own limit of each address, and each other group keeps

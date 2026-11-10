@@ -20,6 +20,7 @@ from analyzer.errors import season_in_progress
 from analyzer.finder_pick import FinderPicks
 from analyzer.finder_search import Shortlist
 from analyzer.ratelimit import GradeLimiter, request_address
+from analyzer.stage import Stage
 from analyzer.trade import ProposedTrade, TradeInputError, check_trade
 from analyzer.trade_facts import shown_ranks
 from analyzer.week_line import week_lines
@@ -41,17 +42,19 @@ GRADE_LIMIT_DETAIL = {
 
 
 # The read of the Advisor: a proposed trade and its snapshot in, the read out. It raises AdvisorFailed after two
-# failed calls.
-Analyzer = Callable[[ProposedTrade, Snapshot], TradeRead]
+# failed calls. A press of the front door adds the keyword `stage`, so the type takes any arguments.
+Analyzer = Callable[..., TradeRead]
 # The plain error of a failed read. A failed read never counts as a grade, so the error says so.
 ADVISOR_ERROR = ("The read of this trade did not come through. Try again in a minute. "
                  "This try does not count toward your grades.")
 # The Finder pick of the Advisor: the shortlist and the snapshot in, the picks out. It sits on the app state with the
-# real Claude call and the real news feed, so a test swaps in a pick with a stub call.
-FinderPicker = Callable[[Shortlist, Snapshot], FinderPicks]
+# real Claude call and the real news feed, so a test swaps in a pick with a stub call. A press of the front door adds
+# the keyword `stage`, as with the Analyzer.
+FinderPicker = Callable[..., FinderPicks]
 # The Finder search: the asker, the picked partner or None for every other team, and the snapshot in, the shortlist
-# out. It sits on the app state with the real Jev, so a test swaps in FakeJev or a search of its own.
-FinderSearch = Callable[[int, int | None, Snapshot], Shortlist]
+# out. It sits on the app state with the real Jev, so a test swaps in FakeJev or a search of its own. A press of the
+# front door adds the keyword `stage`, as with the Analyzer.
+FinderSearch = Callable[..., Shortlist]
 
 
 class SnapshotSource(Protocol):
@@ -227,11 +230,19 @@ def _press_log(route: str, served: Served) -> Iterator[None]:
 @router.post("/analyze")
 def analyze(request: Request, trade: ProposedTrade, served: ServedClient) -> dict:
     """Read the proposed trade on the live snapshot and return the read document, or a 503 after a failed read."""
+    return analyze_trade(request, trade, served)
+
+
+def analyze_trade(request: Request, trade: ProposedTrade, served: Served, stage: Stage | None = None) -> dict:
+    """The analyze press of the route, for the route and for the trade check of the front door.
+
+    With `stage`, the Advisor gets it and sends a plain line at each stage. With none, the press is as it always was.
+    """
     with _press_log("analyze", served):
-        return _analyze(request, trade, served)
+        return _analyze(request, trade, served, stage)
 
 
-def _analyze(request: Request, trade: ProposedTrade, served: Served) -> dict:
+def _analyze(request: Request, trade: ProposedTrade, served: Served, stage: Stage | None) -> dict:
     snapshot = _snapshot(served, trade.season)
     try:
         check_trade(trade, snapshot)
@@ -248,7 +259,9 @@ def _analyze(request: Request, trade: ProposedTrade, served: Served) -> dict:
     # The count comes after the cache, because a cached repeat makes no Claude call and costs nothing.
     _count_grade(request, served)
     try:
-        read = request.app.state.analyzer(trade, snapshot)
+        # The stage goes only to a press that asks for it, so the Advisor of the route keeps its call as it is.
+        read = (request.app.state.analyzer(trade, snapshot) if stage is None
+                else request.app.state.analyzer(trade, snapshot, stage=stage))
     except AdvisorFailed:
         # A failed read costs the manager nothing, and nothing is stored, so the next press calls the Advisor again.
         served.grade_limiter.release(request_address(request))
@@ -327,11 +340,20 @@ def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
 
     The Jev search makes the shortlist, and the Advisor picks up to 3 trades of it, each with a headline and Bullets.
     """
+    return find_trades(request, pair, served)
+
+
+def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None) -> dict:
+    """The find press of the route, for the route and for the trade ideas of the front door.
+
+    With `stage`, the search and the pick get it and send a plain line at each stage. With none, the press is as it
+    always was.
+    """
     with _press_log("find", served):
-        return _find(request, pair, served)
+        return _find(request, pair, served, stage)
 
 
-def _find(request: Request, pair: FindRequest, served: Served) -> dict:
+def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
@@ -350,8 +372,12 @@ def _find(request: Request, pair: FindRequest, served: Served) -> dict:
         return cached
     # The count comes after the cache, because a cached repeat runs no finder and makes no Claude call.
     _count_grade(request, served)
-    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot)
-    picks = request.app.state.finder_pick(shortlist, snapshot)
+    if stage is None:
+        shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot)
+        picks = request.app.state.finder_pick(shortlist, snapshot)
+    else:
+        shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, stage=stage)
+        picks = request.app.state.finder_pick(shortlist, snapshot, stage=stage)
     document = finder_document(pair, snapshot, picks)
     # A fallback is not stored, so the next request of the same pair tries the Claude call again.
     if not picks.fallback:

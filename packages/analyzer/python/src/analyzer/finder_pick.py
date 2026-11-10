@@ -23,6 +23,7 @@ from analyzer.advisor import (
 )
 from analyzer.finder_search import Shortlist, ShortlistOffer
 from analyzer.read_jev_check import log_read_jev_checks
+from analyzer.stage import Stage, quiet
 from analyzer.trade_jev import jev_answer_facts, trade_jev_questions
 from analyzer.trade_news import NewsFeed
 from facts.writer import (
@@ -250,12 +251,14 @@ def _fact_lines(offer: ShortlistOffer, sheet: dict[str, Fact]) -> list[str]:
 
 
 def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev: Jev,
-                call: ClaudeCall = finder_pick_call, repair_call: ClaudeCall = finder_repair_call) -> FinderPicks:
+                call: ClaudeCall = finder_pick_call, repair_call: ClaudeCall = finder_repair_call,
+                stage: Stage = quiet) -> FinderPicks:
     """The picks of the Advisor from the shortlist. An empty shortlist makes no call and gives the NO_OFFER line.
 
     A failure of the whole response retries the pick call once with the failures as feedback. A pick that fails its
     own guards gets one repair call on its own sheet, and a pick that fails again drops. When no pick stands, after
     two failed calls or after the repairs, each shortlist offer stands with its fact lines and the fallback flag.
+    `stage` gets one plain line when the picks stand. The default drops it.
     """
     if not shortlist.shortlist:
         return FinderPicks(picks=[], none_line=NO_OFFER, fallback=False)
@@ -276,6 +279,7 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     # and no failure ever blocks a pick.
     for pick in stand:
         log_read_jev_checks([_PickSide(roster_id=shortlist.asker, bullets=pick.bullets)], sheets[pick.offer_id], jev)
+    stage(f"Picked the best {len(stand)}" if len(stand) > 1 else "Picked the best one")
     offers = {offer.offer_id: offer for offer in shortlist.shortlist}
     picks = [FinderPick(offer=offers[pick.offer_id], headline=pick.headline, fact_lines=[],
                         bullets=read_bullets(pick.bullets, sheets[pick.offer_id])) for pick in stand]

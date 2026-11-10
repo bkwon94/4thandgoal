@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from analyzer.jev_waves import JevWaves, WaveRequest
 from analyzer.measures import is_handcuff, trade_handcuffs
+from analyzer.stage import Stage, quiet
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_facts import shown_ranks
 from analyzer.trade_jev import TRADE_POSITIONS, YES_AT, trade_jev_questions, weak_starting_slots
@@ -230,7 +231,8 @@ def _log_target_questions(snapshot: Snapshot, partner: int, keys: list[str], nou
              ", failed request" if nouls is None else "", asked)
 
 
-def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves: JevWaves | None = None) -> Shortlist:
+def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves: JevWaves | None = None,
+           stage: Stage = quiet) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
     1. The partner filter: four Jev questions per partner. Only a partner with four yes answers goes on.
@@ -239,6 +241,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     4. The shortlist: Jev asks the fair and the need questions of each offer. The SHORTLIST_KEEP offers with the
        highest product stay.
     A failed Jev request drops what it would judge, and it logs. It never reads as a no and never stops the press.
+    `stage` gets one plain line after the partner filter, the offers, and the shortlist. The default drops them.
     """
     waves = waves or JevWaves(jev)
     partners = [partner] if partner is not None else sorted(rid for rid in snapshot.rosters if rid != asker)
@@ -257,6 +260,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
                  "passed" if passed else "failed request" if response is None else "stopped",
                  ", ".join(f"{key}={p:.2f}" for key, p in answers.items()))
     passing = [read.roster_id for read in reads if read.passed]
+    stage(f"Checked {len(partners)} teams for a fit" if len(partners) > 1 else "Checked the other team for a fit")
 
     target_questions = {rid: _target_questions(snapshot, asker, rid) for rid in passing}
     rated = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid), target_questions[rid])
@@ -276,6 +280,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
         offers_by_partner[rid] = build_offers(asker, rid, sides["asker"], sides["partner"], snapshot)
     offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
     log.info("Finder offers of %s: %d", snapshot.teams[asker].name, len(offers))
+    stage(f"Built {len(offers)} offers" if len(offers) != 1 else "Built one offer")
     for trade in offers:
         _log_offer(snapshot, trade)
 
@@ -295,6 +300,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
                 score *= p
             rated_offers.append(ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=fair, needs=needs,
                                                score=score))
+    stage(f"Weighed {len(rated_offers)} offers" if len(rated_offers) != 1 else "Weighed one offer")
     shortlist = sorted(rated_offers, key=lambda offer: (-offer.score, offer.offer_id))[:SHORTLIST_KEEP]
     for offer in shortlist:
         log.info("Finder shortlist %s: score=%.3f fair=%.2f needs=%s", offer.offer_id, offer.score, offer.fair,

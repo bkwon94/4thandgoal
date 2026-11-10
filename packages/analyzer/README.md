@@ -14,7 +14,7 @@
 ## Ports
 
 - `SnapshotSource` in `routes.py`: the live snapshots of one client. The API app gives its `Sources`, and a test gives fixture-backed ones.
-- `Analyzer` and `FinderPicker` in `routes.py`: the Advisor calls of the grade and of the Finder pick. A test gives a stub call. The Advisor takes the Jev port of `league`, and a test gives `FakeJev`. `FinderSearch` in `routes.py` is the Finder search with the real Jev, and a test gives a search with `FakeJev`.
+- `Analyzer` and `FinderPicker` in `routes.py`: the Advisor calls of the grade and of the Finder pick. Each takes an optional `Stage` of `stage.py`, a plain line per stage for the front door. A test gives a stub call. The Advisor takes the Jev port of `league`, and a test gives `FakeJev`. `FinderSearch` in `routes.py` is the Finder search with the real Jev, and a test gives a search with `FakeJev`.
 
 ## Does not do
 
