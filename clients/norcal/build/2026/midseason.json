@@ -1,0 +1,5223 @@
+{
+  "schema_version": 1,
+  "season": 2026,
+  "week": 8,
+  "takeover_end_week": 8,
+  "opener": {
+    "title": "The Title Race",
+    "facts": {
+      "leaders": [
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "title_odds": 26.2
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "title_odds": 14.0
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "title_odds": 13.6
+        }
+      ],
+      "record_leader": {
+        "roster_id": 6,
+        "name": "Mitseeker5000",
+        "wins": 6,
+        "losses": 2,
+        "ties": 0,
+        "title_odds": 26.2,
+        "title_rank": 1
+      }
+    },
+    "blurb": {
+      "chapter": "opener",
+      "sentences": [
+        {
+          "text": "Mitseeker5000 sits 6-2 atop the standings with 26.2% title odds, top in the league.",
+          "fact_ids": [
+            "OP.record",
+            "OP.6.title"
+          ],
+          "roster_id": null
+        },
+        {
+          "text": "It made 2 moves, the fewest in the league.",
+          "fact_ids": [
+            "AW.set-and-forget"
+          ],
+          "roster_id": null
+        },
+        {
+          "text": "Effort is apparently optional.",
+          "fact_ids": [],
+          "roster_id": null
+        },
+        {
+          "text": "The chasers, kaiedmonds and puurdygood, trail at 14% and 13.6% title odds.",
+          "fact_ids": [
+            "OP.9.title",
+            "OP.1.title"
+          ],
+          "roster_id": null
+        }
+      ],
+      "attempt": 2,
+      "fallback": false
+    }
+  },
+  "acts": [
+    {
+      "key": "how-we-got-here",
+      "title": "How We Got Here",
+      "chapters": [
+        {
+          "key": "state",
+          "title": "The State of the League",
+          "facts": {
+            "teams": [
+              {
+                "roster_id": 6,
+                "name": "Mitseeker5000",
+                "rank": 1,
+                "wins": 6,
+                "losses": 2,
+                "ties": 0,
+                "points_for": 1130.34,
+                "points_against": 1063.3,
+                "streak": {
+                  "kind": "W",
+                  "length": 5
+                },
+                "playoff_odds": 97
+              },
+              {
+                "roster_id": 1,
+                "name": "puurdygood",
+                "rank": 2,
+                "wins": 5,
+                "losses": 3,
+                "ties": 0,
+                "points_for": 1010.86,
+                "points_against": 978.84,
+                "streak": {
+                  "kind": "W",
+                  "length": 1
+                },
+                "playoff_odds": 81
+              },
+              {
+                "roster_id": 9,
+                "name": "kaiedmonds",
+                "rank": 3,
+                "wins": 5,
+                "losses": 3,
+                "ties": 0,
+                "points_for": 1010.86,
+                "points_against": 980.3,
+                "streak": {
+                  "kind": "W",
+                  "length": 1
+                },
+                "playoff_odds": 82
+              },
+              {
+                "roster_id": 8,
+                "name": "Hock Tua 💦",
+                "rank": 4,
+                "wins": 5,
+                "losses": 3,
+                "ties": 0,
+                "points_for": 1006.98,
+                "points_against": 1006.76,
+                "streak": {
+                  "kind": "L",
+                  "length": 1
+                },
+                "playoff_odds": 77
+              },
+              {
+                "roster_id": 10,
+                "name": "Davlionman",
+                "rank": 5,
+                "wins": 5,
+                "losses": 3,
+                "ties": 0,
+                "points_for": 972.32,
+                "points_against": 991.78,
+                "streak": {
+                  "kind": "L",
+                  "length": 1
+                },
+                "playoff_odds": 69
+              },
+              {
+                "roster_id": 11,
+                "name": "Breece Mode",
+                "rank": 6,
+                "wins": 4,
+                "losses": 4,
+                "ties": 0,
+                "points_for": 1055.74,
+                "points_against": 1012.4,
+                "streak": {
+                  "kind": "L",
+                  "length": 2
+                },
+                "playoff_odds": 50
+              },
+              {
+                "roster_id": 3,
+                "name": "BobBuckstein",
+                "rank": 7,
+                "wins": 4,
+                "losses": 4,
+                "ties": 0,
+                "points_for": 1014.38,
+                "points_against": 904.24,
+                "streak": {
+                  "kind": "W",
+                  "length": 3
+                },
+                "playoff_odds": 58
+              },
+              {
+                "roster_id": 5,
+                "name": "Skol Daddy",
+                "rank": 8,
+                "wins": 3,
+                "losses": 5,
+                "ties": 0,
+                "points_for": 1089.82,
+                "points_against": 1044.74,
+                "streak": {
+                  "kind": "W",
+                  "length": 1
+                },
+                "playoff_odds": 31
+              },
+              {
+                "roster_id": 7,
+                "name": "Bo Girds",
+                "rank": 9,
+                "wins": 3,
+                "losses": 5,
+                "ties": 0,
+                "points_for": 983.36,
+                "points_against": 959.48,
+                "streak": {
+                  "kind": "L",
+                  "length": 1
+                },
+                "playoff_odds": 36
+              },
+              {
+                "roster_id": 2,
+                "name": "VarsityBlue2",
+                "rank": 10,
+                "wins": 3,
+                "losses": 5,
+                "ties": 0,
+                "points_for": 927.22,
+                "points_against": 951.46,
+                "streak": {
+                  "kind": "W",
+                  "length": 1
+                },
+                "playoff_odds": 10
+              },
+              {
+                "roster_id": 4,
+                "name": "The Mean Machine",
+                "rank": 11,
+                "wins": 3,
+                "losses": 5,
+                "ties": 0,
+                "points_for": 883.14,
+                "points_against": 993.38,
+                "streak": {
+                  "kind": "L",
+                  "length": 1
+                },
+                "playoff_odds": 8
+              },
+              {
+                "roster_id": 12,
+                "name": "The Dart Side",
+                "rank": 12,
+                "wins": 2,
+                "losses": 6,
+                "ties": 0,
+                "points_for": 790.8,
+                "points_against": 989.14,
+                "streak": {
+                  "kind": "L",
+                  "length": 2
+                },
+                "playoff_odds": 1
+              }
+            ]
+          },
+          "blurb": {
+            "chapter": "state",
+            "sentences": [
+              {
+                "text": "Mitseeker5000 leads the league at 6-2, with 5 straight head-to-head wins.",
+                "fact_ids": [
+                  "ST.6.record",
+                  "ST.6.streak"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "It made 2 moves, the fewest in the league.",
+                "fact_ids": [
+                  "AW.set-and-forget"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Effort is optional.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "The Dart Side is 2-6 with 1% playoff odds.",
+                "fact_ids": [
+                  "ST.12.record",
+                  "ST.12.odds"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Start the eulogy.",
+                "fact_ids": [],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          }
+        },
+        {
+          "key": "arcs",
+          "title": "Arcs",
+          "facts": {
+            "teams": [
+              {
+                "roster_id": 6,
+                "name": "Mitseeker5000",
+                "arcs": [
+                  {
+                    "kind": "Heater",
+                    "swing": 0.63,
+                    "start": null,
+                    "now": null,
+                    "win_streak": 5,
+                    "loss_streak": null,
+                    "schedule_luck": null
+                  }
+                ]
+              },
+              {
+                "roster_id": 1,
+                "name": "puurdygood",
+                "arcs": [
+                  {
+                    "kind": "Roller coaster",
+                    "swing": 0.88,
+                    "start": null,
+                    "now": null,
+                    "win_streak": 4,
+                    "loss_streak": 3,
+                    "schedule_luck": null
+                  },
+                  {
+                    "kind": "Collapse",
+                    "swing": 0.75,
+                    "start": {
+                      "first_week": 1,
+                      "last_week": 4,
+                      "wins": 4,
+                      "losses": 0,
+                      "ties": 0
+                    },
+                    "now": {
+                      "first_week": 5,
+                      "last_week": 8,
+                      "wins": 1,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    "win_streak": null,
+                    "loss_streak": null,
+                    "schedule_luck": null
+                  }
+                ]
+              },
+              {
+                "roster_id": 9,
+                "name": "kaiedmonds",
+                "arcs": []
+              },
+              {
+                "roster_id": 8,
+                "name": "Hock Tua 💦",
+                "arcs": []
+              },
+              {
+                "roster_id": 10,
+                "name": "Davlionman",
+                "arcs": []
+              },
+              {
+                "roster_id": 11,
+                "name": "Breece Mode",
+                "arcs": [
+                  {
+                    "kind": "Collapse",
+                    "swing": 0.5,
+                    "start": {
+                      "first_week": 1,
+                      "last_week": 4,
+                      "wins": 3,
+                      "losses": 1,
+                      "ties": 0
+                    },
+                    "now": {
+                      "first_week": 5,
+                      "last_week": 8,
+                      "wins": 1,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    "win_streak": null,
+                    "loss_streak": null,
+                    "schedule_luck": null
+                  }
+                ]
+              },
+              {
+                "roster_id": 3,
+                "name": "BobBuckstein",
+                "arcs": [
+                  {
+                    "kind": "Roller coaster",
+                    "swing": 0.75,
+                    "start": null,
+                    "now": null,
+                    "win_streak": 3,
+                    "loss_streak": 3,
+                    "schedule_luck": null
+                  },
+                  {
+                    "kind": "Turnaround",
+                    "swing": 0.5,
+                    "start": {
+                      "first_week": 1,
+                      "last_week": 4,
+                      "wins": 1,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    "now": {
+                      "first_week": 5,
+                      "last_week": 8,
+                      "wins": 3,
+                      "losses": 1,
+                      "ties": 0
+                    },
+                    "win_streak": null,
+                    "loss_streak": null,
+                    "schedule_luck": null
+                  }
+                ]
+              },
+              {
+                "roster_id": 5,
+                "name": "Skol Daddy",
+                "arcs": [
+                  {
+                    "kind": "Turnaround",
+                    "swing": 0.75,
+                    "start": {
+                      "first_week": 1,
+                      "last_week": 4,
+                      "wins": 0,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    "now": {
+                      "first_week": 5,
+                      "last_week": 8,
+                      "wins": 3,
+                      "losses": 1,
+                      "ties": 0
+                    },
+                    "win_streak": null,
+                    "loss_streak": null,
+                    "schedule_luck": null
+                  },
+                  {
+                    "kind": "Snakebit",
+                    "swing": 0.22,
+                    "start": null,
+                    "now": null,
+                    "win_streak": null,
+                    "loss_streak": null,
+                    "schedule_luck": -1.73
+                  }
+                ]
+              },
+              {
+                "roster_id": 7,
+                "name": "Bo Girds",
+                "arcs": []
+              },
+              {
+                "roster_id": 2,
+                "name": "VarsityBlue2",
+                "arcs": []
+              },
+              {
+                "roster_id": 4,
+                "name": "The Mean Machine",
+                "arcs": []
+              },
+              {
+                "roster_id": 12,
+                "name": "The Dart Side",
+                "arcs": [
+                  {
+                    "kind": "Never got going",
+                    "swing": 0.75,
+                    "start": {
+                      "first_week": 1,
+                      "last_week": 4,
+                      "wins": 1,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    "now": {
+                      "first_week": 5,
+                      "last_week": 8,
+                      "wins": 1,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    "win_streak": null,
+                    "loss_streak": null,
+                    "schedule_luck": null
+                  }
+                ]
+              }
+            ]
+          },
+          "blurb": {
+            "chapter": "arcs",
+            "sentences": [
+              {
+                "text": "puurdygood opened 4-0, then face-planted to 1-3 over the last four.",
+                "fact_ids": [
+                  "ARC.1.collapse"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Mitseeker5000 has 5 straight head-to-head wins, and the streak is still alive.",
+                "fact_ids": [
+                  "ARC.6.heater"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "The Dart Side went 1-3 in the first four weeks, then 1-3 again.",
+                "fact_ids": [
+                  "ARC.12.never-got-going"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Consistency, technically.",
+                "fact_ids": [],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          }
+        },
+        {
+          "key": "luck",
+          "title": "Schedule Luck",
+          "facts": {
+            "teams": [
+              {
+                "roster_id": 10,
+                "name": "Davlionman",
+                "head_to_head_wins": 5.0,
+                "all_play_wins": 3.91,
+                "schedule_luck": 1.09,
+                "points_against": 991.78,
+                "points_against_rank": 6,
+                "close_wins": 1,
+                "close_losses": 0,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 1,
+                "name": "puurdygood",
+                "head_to_head_wins": 5.0,
+                "all_play_wins": 4.36,
+                "schedule_luck": 0.64,
+                "points_against": 978.84,
+                "points_against_rank": 9,
+                "close_wins": 1,
+                "close_losses": 0,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 8,
+                "name": "Hock Tua 💦",
+                "head_to_head_wins": 5.0,
+                "all_play_wins": 4.36,
+                "schedule_luck": 0.64,
+                "points_against": 1006.76,
+                "points_against_rank": 4,
+                "close_wins": 0,
+                "close_losses": 0,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 9,
+                "name": "kaiedmonds",
+                "head_to_head_wins": 5.0,
+                "all_play_wins": 4.55,
+                "schedule_luck": 0.45,
+                "points_against": 980.3,
+                "points_against_rank": 8,
+                "close_wins": 0,
+                "close_losses": 0,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 12,
+                "name": "The Dart Side",
+                "head_to_head_wins": 2.0,
+                "all_play_wins": 1.64,
+                "schedule_luck": 0.36,
+                "points_against": 989.14,
+                "points_against_rank": 7,
+                "close_wins": 1,
+                "close_losses": 1,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 4,
+                "name": "The Mean Machine",
+                "head_to_head_wins": 3.0,
+                "all_play_wins": 2.91,
+                "schedule_luck": 0.09,
+                "points_against": 993.38,
+                "points_against_rank": 5,
+                "close_wins": 0,
+                "close_losses": 0,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 3,
+                "name": "BobBuckstein",
+                "head_to_head_wins": 4.0,
+                "all_play_wins": 4.0,
+                "schedule_luck": 0.0,
+                "points_against": 904.24,
+                "points_against_rank": 12,
+                "close_wins": 0,
+                "close_losses": 0,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 6,
+                "name": "Mitseeker5000",
+                "head_to_head_wins": 6.0,
+                "all_play_wins": 6.09,
+                "schedule_luck": -0.09,
+                "points_against": 1063.3,
+                "points_against_rank": 1,
+                "close_wins": 2,
+                "close_losses": 0,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 2,
+                "name": "VarsityBlue2",
+                "head_to_head_wins": 3.0,
+                "all_play_wins": 3.27,
+                "schedule_luck": -0.27,
+                "points_against": 951.46,
+                "points_against_rank": 11,
+                "close_wins": 0,
+                "close_losses": 2,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 7,
+                "name": "Bo Girds",
+                "head_to_head_wins": 3.0,
+                "all_play_wins": 3.45,
+                "schedule_luck": -0.45,
+                "points_against": 959.48,
+                "points_against_rank": 10,
+                "close_wins": 0,
+                "close_losses": 1,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 11,
+                "name": "Breece Mode",
+                "head_to_head_wins": 4.0,
+                "all_play_wins": 4.73,
+                "schedule_luck": -0.73,
+                "points_against": 1012.4,
+                "points_against_rank": 3,
+                "close_wins": 0,
+                "close_losses": 0,
+                "close_ties": 0
+              },
+              {
+                "roster_id": 5,
+                "name": "Skol Daddy",
+                "head_to_head_wins": 3.0,
+                "all_play_wins": 4.73,
+                "schedule_luck": -1.73,
+                "points_against": 1044.74,
+                "points_against_rank": 2,
+                "close_wins": 0,
+                "close_losses": 1,
+                "close_ties": 0
+              }
+            ],
+            "swap": {
+              "rows": [
+                {
+                  "roster_id": 6,
+                  "name": "Mitseeker5000",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 7,
+                      "losses": 1,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 8,
+                      "losses": 0,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 8,
+                      "losses": 0,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 7,
+                      "losses": 1,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 1,
+                  "name": "puurdygood",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 9,
+                  "name": "kaiedmonds",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 8,
+                  "name": "Hock Tua 💦",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 10,
+                  "name": "Davlionman",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 1,
+                      "losses": 7,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 11,
+                  "name": "Breece Mode",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 7,
+                      "losses": 1,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 3,
+                  "name": "BobBuckstein",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 5,
+                  "name": "Skol Daddy",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 6,
+                      "losses": 2,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 7,
+                  "name": "Bo Girds",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 1,
+                      "losses": 7,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 2,
+                  "name": "VarsityBlue2",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 5,
+                      "losses": 3,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 4,
+                  "name": "The Mean Machine",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 4,
+                      "losses": 4,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    }
+                  ]
+                },
+                {
+                  "roster_id": 12,
+                  "name": "The Dart Side",
+                  "cells": [
+                    {
+                      "schedule_of": 6,
+                      "wins": 0,
+                      "losses": 8,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 1,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 9,
+                      "wins": 1,
+                      "losses": 7,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 8,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 10,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 11,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 3,
+                      "wins": 1,
+                      "losses": 7,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 5,
+                      "wins": 1,
+                      "losses": 7,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 7,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 2,
+                      "wins": 3,
+                      "losses": 5,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 4,
+                      "wins": 1,
+                      "losses": 7,
+                      "ties": 0
+                    },
+                    {
+                      "schedule_of": 12,
+                      "wins": 2,
+                      "losses": 6,
+                      "ties": 0
+                    }
+                  ]
+                }
+              ],
+              "best_missed": [
+                {
+                  "roster_id": 6,
+                  "schedule_of": 3,
+                  "wins": 8,
+                  "losses": 0,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 1,
+                  "schedule_of": 10,
+                  "wins": 6,
+                  "losses": 2,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 9,
+                  "schedule_of": 8,
+                  "wins": 6,
+                  "losses": 2,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 8,
+                  "schedule_of": 1,
+                  "wins": 6,
+                  "losses": 2,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 10,
+                  "schedule_of": 2,
+                  "wins": 6,
+                  "losses": 2,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 11,
+                  "schedule_of": 3,
+                  "wins": 7,
+                  "losses": 1,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 3,
+                  "schedule_of": 1,
+                  "wins": 5,
+                  "losses": 3,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 5,
+                  "schedule_of": 9,
+                  "wins": 6,
+                  "losses": 2,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 7,
+                  "schedule_of": 9,
+                  "wins": 4,
+                  "losses": 4,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 2,
+                  "schedule_of": 3,
+                  "wins": 5,
+                  "losses": 3,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 4,
+                  "schedule_of": 1,
+                  "wins": 4,
+                  "losses": 4,
+                  "ties": 0
+                },
+                {
+                  "roster_id": 12,
+                  "schedule_of": 8,
+                  "wins": 3,
+                  "losses": 5,
+                  "ties": 0
+                }
+              ],
+              "most_better": {
+                "roster_id": 11,
+                "count": 7,
+                "place": 2
+              },
+              "biggest_miss": {
+                "roster_id": 11,
+                "schedule_of": 3,
+                "gain": 3.0,
+                "place": 1
+              },
+              "best_and_worst": [
+                {
+                  "roster_id": 10,
+                  "name": "Davlionman",
+                  "real": {
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0,
+                    "schedules": [
+                      2
+                    ],
+                    "change": 1.0
+                  },
+                  "worst": {
+                    "wins": 1,
+                    "losses": 7,
+                    "ties": 0,
+                    "schedules": [
+                      5
+                    ],
+                    "change": -4.0
+                  }
+                },
+                {
+                  "roster_id": 6,
+                  "name": "Mitseeker5000",
+                  "real": {
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 8,
+                    "losses": 0,
+                    "ties": 0,
+                    "schedules": [
+                      3,
+                      7
+                    ],
+                    "change": 2.0
+                  },
+                  "worst": {
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0,
+                    "schedules": [
+                      5
+                    ],
+                    "change": -2.0
+                  }
+                },
+                {
+                  "roster_id": 8,
+                  "name": "Hock Tua 💦",
+                  "real": {
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0,
+                    "schedules": [
+                      1,
+                      4
+                    ],
+                    "change": 1.0
+                  },
+                  "worst": {
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0,
+                    "schedules": [
+                      6
+                    ],
+                    "change": -3.0
+                  }
+                },
+                {
+                  "roster_id": 11,
+                  "name": "Breece Mode",
+                  "real": {
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 7,
+                    "losses": 1,
+                    "ties": 0,
+                    "schedules": [
+                      3
+                    ],
+                    "change": 3.0
+                  },
+                  "worst": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      1
+                    ],
+                    "change": -1.0
+                  }
+                },
+                {
+                  "roster_id": 1,
+                  "name": "puurdygood",
+                  "real": {
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0,
+                    "schedules": [
+                      10
+                    ],
+                    "change": 1.0
+                  },
+                  "worst": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      6,
+                      8
+                    ],
+                    "change": -2.0
+                  }
+                },
+                {
+                  "roster_id": 9,
+                  "name": "kaiedmonds",
+                  "real": {
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0,
+                    "schedules": [
+                      8
+                    ],
+                    "change": 1.0
+                  },
+                  "worst": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      5
+                    ],
+                    "change": -2.0
+                  }
+                },
+                {
+                  "roster_id": 5,
+                  "name": "Skol Daddy",
+                  "real": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0,
+                    "schedules": [
+                      9,
+                      10,
+                      3,
+                      12
+                    ],
+                    "change": 3.0
+                  },
+                  "worst": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      6,
+                      1
+                    ],
+                    "change": 0.0
+                  }
+                },
+                {
+                  "roster_id": 7,
+                  "name": "Bo Girds",
+                  "real": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0,
+                    "schedules": [
+                      9,
+                      8,
+                      10,
+                      11,
+                      3,
+                      2,
+                      4
+                    ],
+                    "change": 1.0
+                  },
+                  "worst": {
+                    "wins": 1,
+                    "losses": 7,
+                    "ties": 0,
+                    "schedules": [
+                      1
+                    ],
+                    "change": -2.0
+                  }
+                },
+                {
+                  "roster_id": 2,
+                  "name": "VarsityBlue2",
+                  "real": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0,
+                    "schedules": [
+                      3
+                    ],
+                    "change": 2.0
+                  },
+                  "worst": {
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0,
+                    "schedules": [
+                      6,
+                      9,
+                      8
+                    ],
+                    "change": -1.0
+                  }
+                },
+                {
+                  "roster_id": 12,
+                  "name": "The Dart Side",
+                  "real": {
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      8,
+                      2
+                    ],
+                    "change": 1.0
+                  },
+                  "worst": {
+                    "wins": 0,
+                    "losses": 8,
+                    "ties": 0,
+                    "schedules": [
+                      6
+                    ],
+                    "change": -2.0
+                  }
+                },
+                {
+                  "roster_id": 3,
+                  "name": "BobBuckstein",
+                  "real": {
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0,
+                    "schedules": [
+                      1,
+                      9
+                    ],
+                    "change": 1.0
+                  },
+                  "worst": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0,
+                    "schedules": [
+                      6,
+                      7
+                    ],
+                    "change": -1.0
+                  }
+                },
+                {
+                  "roster_id": 4,
+                  "name": "The Mean Machine",
+                  "real": {
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  "best": {
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0,
+                    "schedules": [
+                      1,
+                      3,
+                      7
+                    ],
+                    "change": 1.0
+                  },
+                  "worst": {
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0,
+                    "schedules": [
+                      6,
+                      8,
+                      10,
+                      11
+                    ],
+                    "change": -1.0
+                  }
+                }
+              ]
+            },
+            "example": {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "week": 5,
+              "score": 178.54,
+              "outscored": 11.0,
+              "others": 11,
+              "week_wins": 1.0,
+              "season_outscored": 43.0,
+              "season_games": 88,
+              "all_play_wins": 3.91,
+              "head_to_head_wins": 5.0,
+              "schedule_luck": 1.09
+            },
+            "weeks": 8,
+            "median_games": 0
+          },
+          "blurb": {
+            "chapter": "luck",
+            "sentences": [
+              {
+                "text": "Breece Mode would be 7-1 on BobBuckstein's schedule, not 4-4.",
+                "fact_ids": [
+                  "SW.11.best",
+                  "SW.biggest"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "It would do better with 7 other schedules, the 2nd most in the league.",
+                "fact_ids": [
+                  "SW.most",
+                  "CO.luck.most_better"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Wrong calendar, every single week.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "Davlionman banked 5 head-to-head wins on scores worth 3.91.",
+                "fact_ids": [
+                  "SL.10.wins"
+                ],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          }
+        },
+        {
+          "key": "top10",
+          "title": "Position Top 10",
+          "facts": {
+            "positions": [
+              {
+                "position": "QB",
+                "players": [
+                  {
+                    "rank": 1,
+                    "player_id": "6770",
+                    "name": "Joe Burrow",
+                    "position": "QB",
+                    "nfl_team": "CIN",
+                    "points": 215.6,
+                    "games": 7,
+                    "points_per_game": 30.8,
+                    "roster_id": 5,
+                    "manager": "Skol Daddy",
+                    "tag": null
+                  },
+                  {
+                    "rank": 2,
+                    "player_id": "4984",
+                    "name": "Josh Allen",
+                    "position": "QB",
+                    "nfl_team": "BUF",
+                    "points": 214.82,
+                    "games": 7,
+                    "points_per_game": 30.69,
+                    "roster_id": 3,
+                    "manager": "BobBuckstein",
+                    "tag": null
+                  },
+                  {
+                    "rank": 3,
+                    "player_id": "1166",
+                    "name": "Kirk Cousins",
+                    "position": "QB",
+                    "nfl_team": "LV",
+                    "points": 202.66,
+                    "games": 8,
+                    "points_per_game": 25.33,
+                    "roster_id": 1,
+                    "manager": "puurdygood",
+                    "tag": null
+                  },
+                  {
+                    "rank": 4,
+                    "player_id": "11564",
+                    "name": "Drake Maye",
+                    "position": "QB",
+                    "nfl_team": "NE",
+                    "points": 198.92,
+                    "games": 8,
+                    "points_per_game": 24.87,
+                    "roster_id": 4,
+                    "manager": "The Mean Machine",
+                    "tag": null
+                  },
+                  {
+                    "rank": 5,
+                    "player_id": "6804",
+                    "name": "Jordan Love",
+                    "position": "QB",
+                    "nfl_team": "GB",
+                    "points": 186.84,
+                    "games": 8,
+                    "points_per_game": 23.36,
+                    "roster_id": 11,
+                    "manager": "Breece Mode",
+                    "tag": null
+                  },
+                  {
+                    "rank": 6,
+                    "player_id": "3294",
+                    "name": "Dak Prescott",
+                    "position": "QB",
+                    "nfl_team": "DAL",
+                    "points": 180.94,
+                    "games": 8,
+                    "points_per_game": 22.62,
+                    "roster_id": 2,
+                    "manager": "VarsityBlue2",
+                    "tag": null
+                  },
+                  {
+                    "rank": 7,
+                    "player_id": "8183",
+                    "name": "Brock Purdy",
+                    "position": "QB",
+                    "nfl_team": "SF",
+                    "points": 180.02,
+                    "games": 7,
+                    "points_per_game": 25.72,
+                    "roster_id": 4,
+                    "manager": "The Mean Machine",
+                    "tag": null
+                  },
+                  {
+                    "rank": 8,
+                    "player_id": "3163",
+                    "name": "Jared Goff",
+                    "position": "QB",
+                    "nfl_team": "DET",
+                    "points": 173.06,
+                    "games": 7,
+                    "points_per_game": 24.72,
+                    "roster_id": 6,
+                    "manager": "Mitseeker5000",
+                    "tag": null
+                  },
+                  {
+                    "rank": 9,
+                    "player_id": "7523",
+                    "name": "Trevor Lawrence",
+                    "position": "QB",
+                    "nfl_team": "JAX",
+                    "points": 171.6,
+                    "games": 7,
+                    "points_per_game": 24.51,
+                    "roster_id": 7,
+                    "manager": "Bo Girds",
+                    "tag": null
+                  },
+                  {
+                    "rank": 10,
+                    "player_id": "421",
+                    "name": "Matthew Stafford",
+                    "position": "QB",
+                    "nfl_team": "LAR",
+                    "points": 169.64,
+                    "games": 8,
+                    "points_per_game": 21.21,
+                    "roster_id": 2,
+                    "manager": "VarsityBlue2",
+                    "tag": null
+                  }
+                ]
+              },
+              {
+                "position": "RB",
+                "players": [
+                  {
+                    "rank": 1,
+                    "player_id": "9221",
+                    "name": "Jahmyr Gibbs",
+                    "position": "RB",
+                    "nfl_team": "DET",
+                    "points": 195.8,
+                    "games": 7,
+                    "points_per_game": 27.97,
+                    "roster_id": 10,
+                    "manager": "Davlionman",
+                    "tag": null
+                  },
+                  {
+                    "rank": 2,
+                    "player_id": "8151",
+                    "name": "Kenneth Walker III",
+                    "position": "RB",
+                    "nfl_team": "KC",
+                    "points": 160.1,
+                    "games": 7,
+                    "points_per_game": 22.87,
+                    "roster_id": 7,
+                    "manager": "Bo Girds",
+                    "tag": null
+                  },
+                  {
+                    "rank": 3,
+                    "player_id": "9509",
+                    "name": "Bijan Robinson",
+                    "position": "RB",
+                    "nfl_team": "ATL",
+                    "points": 153.3,
+                    "games": 8,
+                    "points_per_game": 19.16,
+                    "roster_id": 8,
+                    "manager": "Hock Tua 💦",
+                    "tag": null
+                  },
+                  {
+                    "rank": 4,
+                    "player_id": "6790",
+                    "name": "D'Andre Swift",
+                    "position": "RB",
+                    "nfl_team": "CHI",
+                    "points": 150.7,
+                    "games": 8,
+                    "points_per_game": 18.84,
+                    "roster_id": 6,
+                    "manager": "Mitseeker5000",
+                    "tag": null
+                  },
+                  {
+                    "rank": 5,
+                    "player_id": "8150",
+                    "name": "Kyren Williams",
+                    "position": "RB",
+                    "nfl_team": "LAR",
+                    "points": 150.0,
+                    "games": 8,
+                    "points_per_game": 18.75,
+                    "roster_id": 1,
+                    "manager": "puurdygood",
+                    "tag": null
+                  },
+                  {
+                    "rank": 6,
+                    "player_id": "6813",
+                    "name": "Jonathan Taylor",
+                    "position": "RB",
+                    "nfl_team": "IND",
+                    "points": 144.2,
+                    "games": 8,
+                    "points_per_game": 18.03,
+                    "roster_id": 4,
+                    "manager": "The Mean Machine",
+                    "tag": null
+                  },
+                  {
+                    "rank": 7,
+                    "player_id": "4034",
+                    "name": "Christian McCaffrey",
+                    "position": "RB",
+                    "nfl_team": "SF",
+                    "points": 144.0,
+                    "games": 7,
+                    "points_per_game": 20.57,
+                    "roster_id": 1,
+                    "manager": "puurdygood",
+                    "tag": null
+                  },
+                  {
+                    "rank": 8,
+                    "player_id": "8228",
+                    "name": "Jaylen Warren",
+                    "position": "RB",
+                    "nfl_team": "PIT",
+                    "points": 140.8,
+                    "games": 8,
+                    "points_per_game": 17.6,
+                    "roster_id": 5,
+                    "manager": "Skol Daddy",
+                    "tag": null
+                  },
+                  {
+                    "rank": 9,
+                    "player_id": "7588",
+                    "name": "Javonte Williams",
+                    "position": "RB",
+                    "nfl_team": "DAL",
+                    "points": 137.2,
+                    "games": 8,
+                    "points_per_game": 17.15,
+                    "roster_id": 6,
+                    "manager": "Mitseeker5000",
+                    "tag": null
+                  },
+                  {
+                    "rank": 10,
+                    "player_id": "3198",
+                    "name": "Derrick Henry",
+                    "position": "RB",
+                    "nfl_team": "BAL",
+                    "points": 136.7,
+                    "games": 8,
+                    "points_per_game": 17.09,
+                    "roster_id": 11,
+                    "manager": "Breece Mode",
+                    "tag": null
+                  }
+                ]
+              },
+              {
+                "position": "WR",
+                "players": [
+                  {
+                    "rank": 1,
+                    "player_id": "9488",
+                    "name": "Jaxon Smith-Njigba",
+                    "position": "WR",
+                    "nfl_team": "SEA",
+                    "points": 219.96,
+                    "games": 8,
+                    "points_per_game": 27.5,
+                    "roster_id": 11,
+                    "manager": "Breece Mode",
+                    "tag": null
+                  },
+                  {
+                    "rank": 2,
+                    "player_id": "6786",
+                    "name": "CeeDee Lamb",
+                    "position": "WR",
+                    "nfl_team": "DAL",
+                    "points": 168.3,
+                    "games": 8,
+                    "points_per_game": 21.04,
+                    "roster_id": 7,
+                    "manager": "Bo Girds",
+                    "tag": null
+                  },
+                  {
+                    "rank": 3,
+                    "player_id": "8167",
+                    "name": "Christian Watson",
+                    "position": "WR",
+                    "nfl_team": "GB",
+                    "points": 146.8,
+                    "games": 8,
+                    "points_per_game": 18.35,
+                    "roster_id": 9,
+                    "manager": "kaiedmonds",
+                    "tag": null
+                  },
+                  {
+                    "rank": 4,
+                    "player_id": "7547",
+                    "name": "Amon-Ra St. Brown",
+                    "position": "WR",
+                    "nfl_team": "DET",
+                    "points": 141.0,
+                    "games": 7,
+                    "points_per_game": 20.14,
+                    "roster_id": 3,
+                    "manager": "BobBuckstein",
+                    "tag": null
+                  },
+                  {
+                    "rank": 5,
+                    "player_id": "6801",
+                    "name": "Tee Higgins",
+                    "position": "WR",
+                    "nfl_team": "CIN",
+                    "points": 139.6,
+                    "games": 7,
+                    "points_per_game": 19.94,
+                    "roster_id": 4,
+                    "manager": "The Mean Machine",
+                    "tag": null
+                  },
+                  {
+                    "rank": 6,
+                    "player_id": "9493",
+                    "name": "Puka Nacua",
+                    "position": "WR",
+                    "nfl_team": "LAR",
+                    "points": 138.6,
+                    "games": 6,
+                    "points_per_game": 23.1,
+                    "roster_id": 6,
+                    "manager": "Mitseeker5000",
+                    "tag": null
+                  },
+                  {
+                    "rank": 7,
+                    "player_id": "12501",
+                    "name": "Matthew Golden",
+                    "position": "WR",
+                    "nfl_team": "GB",
+                    "points": 131.5,
+                    "games": 8,
+                    "points_per_game": 16.44,
+                    "roster_id": 8,
+                    "manager": "Hock Tua 💦",
+                    "tag": null
+                  },
+                  {
+                    "rank": 8,
+                    "player_id": "7564",
+                    "name": "Ja'Marr Chase",
+                    "position": "WR",
+                    "nfl_team": "CIN",
+                    "points": 128.2,
+                    "games": 7,
+                    "points_per_game": 18.31,
+                    "roster_id": 5,
+                    "manager": "Skol Daddy",
+                    "tag": null
+                  },
+                  {
+                    "rank": 9,
+                    "player_id": "8144",
+                    "name": "Chris Olave",
+                    "position": "WR",
+                    "nfl_team": "NO",
+                    "points": 124.6,
+                    "games": 7,
+                    "points_per_game": 17.8,
+                    "roster_id": 6,
+                    "manager": "Mitseeker5000",
+                    "tag": null
+                  },
+                  {
+                    "rank": 10,
+                    "player_id": "9997",
+                    "name": "Zay Flowers",
+                    "position": "WR",
+                    "nfl_team": "BAL",
+                    "points": 122.2,
+                    "games": 7,
+                    "points_per_game": 17.46,
+                    "roster_id": 7,
+                    "manager": "Bo Girds",
+                    "tag": null
+                  }
+                ]
+              },
+              {
+                "position": "TE",
+                "players": [
+                  {
+                    "rank": 1,
+                    "player_id": "8130",
+                    "name": "Trey McBride",
+                    "position": "TE",
+                    "nfl_team": "ARI",
+                    "points": 150.4,
+                    "games": 8,
+                    "points_per_game": 18.8,
+                    "roster_id": 8,
+                    "manager": "Hock Tua 💦",
+                    "tag": null
+                  },
+                  {
+                    "rank": 2,
+                    "player_id": "11604",
+                    "name": "Brock Bowers",
+                    "position": "TE",
+                    "nfl_team": "LV",
+                    "points": 123.7,
+                    "games": 6,
+                    "points_per_game": 20.62,
+                    "roster_id": 5,
+                    "manager": "Skol Daddy",
+                    "tag": null
+                  },
+                  {
+                    "rank": 3,
+                    "player_id": "8131",
+                    "name": "Isaiah Likely",
+                    "position": "TE",
+                    "nfl_team": "NYG",
+                    "points": 112.5,
+                    "games": 7,
+                    "points_per_game": 16.07,
+                    "roster_id": 7,
+                    "manager": "Bo Girds",
+                    "tag": null
+                  },
+                  {
+                    "rank": 4,
+                    "player_id": "4217",
+                    "name": "George Kittle",
+                    "position": "TE",
+                    "nfl_team": "SF",
+                    "points": 104.5,
+                    "games": 7,
+                    "points_per_game": 14.93,
+                    "roster_id": 9,
+                    "manager": "kaiedmonds",
+                    "tag": null
+                  },
+                  {
+                    "rank": 5,
+                    "player_id": "12506",
+                    "name": "Harold Fannin Jr.",
+                    "position": "TE",
+                    "nfl_team": "CLE",
+                    "points": 90.1,
+                    "games": 8,
+                    "points_per_game": 11.26,
+                    "roster_id": 1,
+                    "manager": "puurdygood",
+                    "tag": null
+                  },
+                  {
+                    "rank": 6,
+                    "player_id": "9484",
+                    "name": "Tucker Kraft",
+                    "position": "TE",
+                    "nfl_team": "GB",
+                    "points": 88.5,
+                    "games": 8,
+                    "points_per_game": 11.06,
+                    "roster_id": 12,
+                    "manager": "The Dart Side",
+                    "tag": null
+                  },
+                  {
+                    "rank": 7,
+                    "player_id": "10859",
+                    "name": "Sam LaPorta",
+                    "position": "TE",
+                    "nfl_team": "DET",
+                    "points": 85.9,
+                    "games": 7,
+                    "points_per_game": 12.27,
+                    "roster_id": 2,
+                    "manager": "VarsityBlue2",
+                    "tag": null
+                  },
+                  {
+                    "rank": 8,
+                    "player_id": "1466",
+                    "name": "Travis Kelce",
+                    "position": "TE",
+                    "nfl_team": "KC",
+                    "points": 82.0,
+                    "games": 7,
+                    "points_per_game": 11.71,
+                    "roster_id": 6,
+                    "manager": "Mitseeker5000",
+                    "tag": null
+                  },
+                  {
+                    "rank": 9,
+                    "player_id": "10236",
+                    "name": "Dalton Kincaid",
+                    "position": "TE",
+                    "nfl_team": "BUF",
+                    "points": 79.1,
+                    "games": 7,
+                    "points_per_game": 11.3,
+                    "roster_id": 2,
+                    "manager": "VarsityBlue2",
+                    "tag": null
+                  },
+                  {
+                    "rank": 10,
+                    "player_id": "7600",
+                    "name": "Pat Freiermuth",
+                    "position": "TE",
+                    "nfl_team": "PIT",
+                    "points": 79.0,
+                    "games": 8,
+                    "points_per_game": 9.88,
+                    "roster_id": 10,
+                    "manager": "Davlionman",
+                    "tag": null
+                  }
+                ]
+              }
+            ]
+          },
+          "blurb": {
+            "chapter": "top10",
+            "sentences": [
+              {
+                "text": "Bo Girds owns Kenneth Walker III, CeeDee Lamb and Isaiah Likely, all top 3 at their spots.",
+                "fact_ids": [
+                  "TOP.RB.2",
+                  "TOP.WR.2",
+                  "TOP.TE.3"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "And the record is 3-5.",
+                "fact_ids": [
+                  "ST.7.record"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Somehow.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "Skol Daddy rosters Joe Burrow, the QB #1, and also sits at 3-5.",
+                "fact_ids": [
+                  "TOP.QB.1",
+                  "ST.5.record"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Hoarding, not winning.",
+                "fact_ids": [],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          }
+        }
+      ]
+    },
+    {
+      "key": "the-moves",
+      "title": "The Moves",
+      "chapters": [
+        {
+          "key": "draft",
+          "title": "Draft Steals and Busts",
+          "facts": {
+            "draft_type": "snake",
+            "steals": [
+              {
+                "player_id": "10213",
+                "name": "Tre Tucker",
+                "position": "WR",
+                "roster_id": 11,
+                "team": "Breece Mode",
+                "cost": 139,
+                "cost_rank": 60,
+                "points": 99.8,
+                "points_rank": 20,
+                "swing": 40,
+                "tag": null
+              },
+              {
+                "player_id": "13346",
+                "name": "Denzel Boston",
+                "position": "WR",
+                "roster_id": 1,
+                "team": "puurdygood",
+                "cost": 140,
+                "cost_rank": 61,
+                "points": 86.9,
+                "points_rank": 23,
+                "swing": 38,
+                "tag": null
+              },
+              {
+                "player_id": "11576",
+                "name": "Braelon Allen",
+                "position": "RB",
+                "roster_id": 10,
+                "team": "Davlionman",
+                "cost": 145,
+                "cost_rank": 55,
+                "points": 99.6,
+                "points_rank": 17,
+                "swing": 38,
+                "tag": null
+              },
+              {
+                "player_id": "12501",
+                "name": "Matthew Golden",
+                "position": "WR",
+                "roster_id": 8,
+                "team": "Hock Tua 💦",
+                "cost": 98,
+                "cost_rank": 44,
+                "points": 131.5,
+                "points_rank": 7,
+                "swing": 37,
+                "tag": null
+              },
+              {
+                "player_id": "8167",
+                "name": "Christian Watson",
+                "position": "WR",
+                "roster_id": 9,
+                "team": "kaiedmonds",
+                "cost": 64,
+                "cost_rank": 30,
+                "points": 146.8,
+                "points_rank": 3,
+                "swing": 27,
+                "tag": null
+              }
+            ],
+            "busts": [
+              {
+                "player_id": "5859",
+                "name": "A.J. Brown",
+                "position": "WR",
+                "roster_id": 4,
+                "team": "The Mean Machine",
+                "cost": 17,
+                "cost_rank": 7,
+                "points": 19.1,
+                "points_rank": 65,
+                "swing": -58,
+                "tag": "just bad"
+              },
+              {
+                "player_id": "9226",
+                "name": "De'Von Achane",
+                "position": "RB",
+                "roster_id": 2,
+                "team": "VarsityBlue2",
+                "cost": 14,
+                "cost_rank": 9,
+                "points": 24.6,
+                "points_rank": 50,
+                "swing": -41,
+                "tag": "hurt"
+              },
+              {
+                "player_id": "11628",
+                "name": "Marvin Harrison",
+                "position": "WR",
+                "roster_id": 10,
+                "team": "Davlionman",
+                "cost": 49,
+                "cost_rank": 22,
+                "points": 33.5,
+                "points_rank": 60,
+                "swing": -38,
+                "tag": "just bad"
+              },
+              {
+                "player_id": "11635",
+                "name": "Ladd McConkey",
+                "position": "WR",
+                "roster_id": 7,
+                "team": "Bo Girds",
+                "cost": 36,
+                "cost_rank": 16,
+                "points": 51.6,
+                "points_rank": 49,
+                "swing": -33,
+                "tag": "just bad"
+              },
+              {
+                "player_id": "10229",
+                "name": "Rashee Rice",
+                "position": "WR",
+                "roster_id": 9,
+                "team": "kaiedmonds",
+                "cost": 33,
+                "cost_rank": 14,
+                "points": 56.3,
+                "points_rank": 44,
+                "swing": -30,
+                "tag": "hurt"
+              }
+            ],
+            "letdowns": [
+              {
+                "player_id": "12507",
+                "name": "Omarion Hampton",
+                "position": "RB",
+                "roster_id": 12,
+                "team": "The Dart Side",
+                "cost": 10,
+                "cost_rank": 6,
+                "points": 62.2,
+                "points_rank": 28,
+                "swing": -22,
+                "tag": null,
+                "price_rank": 10,
+                "last_top_week": 2
+              }
+            ]
+          },
+          "blurb": {
+            "chapter": "draft",
+            "sentences": [
+              {
+                "text": "The Mean Machine drafted A.J. Brown and got 19.1 points, 65th among drafted receivers.",
+                "fact_ids": [
+                  "DV.bust.5859",
+                  "DV.bust.5859.points",
+                  "CO.draft.bust"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "The official bust tag says just bad.",
+                "fact_ids": [
+                  "DV.bust.5859.tag"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Davlionman drafted Braelon Allen and banked 99.6 points, 17th among drafted backs.",
+                "fact_ids": [
+                  "DV.steal.11576",
+                  "DV.steal.11576.points",
+                  "CO.draft.steal"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Somebody actually read the board.",
+                "fact_ids": [],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          }
+        },
+        {
+          "key": "waivers",
+          "title": "Waiver Hits and Misses",
+          "facts": {
+            "hits": [
+              {
+                "player_id": "11435",
+                "player": "Emanuel Wilson",
+                "position": "RB",
+                "roster_id": 2,
+                "team": "VarsityBlue2",
+                "week": 4,
+                "bid": 0,
+                "starts": 5,
+                "points": 63.9,
+                "points_over_line": 36.1,
+                "swung_wins": 0,
+                "played": true
+              },
+              {
+                "player_id": "12495",
+                "player": "Ollie Gordon II",
+                "position": "RB",
+                "roster_id": 8,
+                "team": "Hock Tua 💦",
+                "week": 3,
+                "bid": 45,
+                "starts": 3,
+                "points": 39.0,
+                "points_over_line": 22.0,
+                "swung_wins": 1,
+                "played": true
+              },
+              {
+                "player_id": "13274",
+                "player": "Germie Bernard",
+                "position": "WR",
+                "roster_id": 3,
+                "team": "BobBuckstein",
+                "week": 5,
+                "bid": 33,
+                "starts": 3,
+                "points": 39.4,
+                "points_over_line": 16.0,
+                "swung_wins": 0,
+                "played": true
+              },
+              {
+                "player_id": "1479",
+                "player": "Keenan Allen",
+                "position": "WR",
+                "roster_id": 9,
+                "team": "kaiedmonds",
+                "week": 1,
+                "bid": 0,
+                "starts": 4,
+                "points": 45.5,
+                "points_over_line": 13.5,
+                "swung_wins": 1,
+                "played": true
+              },
+              {
+                "player_id": "4993",
+                "player": "Mike Gesicki",
+                "position": "TE",
+                "roster_id": 2,
+                "team": "VarsityBlue2",
+                "week": 7,
+                "bid": 11,
+                "starts": 1,
+                "points": 17.6,
+                "points_over_line": 11.0,
+                "swung_wins": 0,
+                "played": true
+              }
+            ],
+            "misses": [
+              {
+                "player_id": "7523",
+                "player": "Trevor Lawrence",
+                "position": "QB",
+                "roster_id": 7,
+                "team": "Bo Girds",
+                "week": 7,
+                "bid": 31,
+                "starts": 1,
+                "points": 25.4,
+                "points_over_line": 17.42,
+                "swung_wins": 0,
+                "played": true
+              },
+              {
+                "player_id": "11577",
+                "player": "Will Shipley",
+                "position": "RB",
+                "roster_id": 7,
+                "team": "Bo Girds",
+                "week": 4,
+                "bid": 24,
+                "starts": 1,
+                "points": 8.3,
+                "points_over_line": 3.4,
+                "swung_wins": 0,
+                "played": true
+              },
+              {
+                "player_id": "9757",
+                "player": "Kendre Miller",
+                "position": "RB",
+                "roster_id": 5,
+                "team": "Skol Daddy",
+                "week": 8,
+                "bid": 20,
+                "starts": 0,
+                "points": 0.0,
+                "points_over_line": 0.0,
+                "swung_wins": 0,
+                "played": true
+              },
+              {
+                "player_id": "11439",
+                "player": "Jaleel McLaughlin",
+                "position": "RB",
+                "roster_id": 11,
+                "team": "Breece Mode",
+                "week": 6,
+                "bid": 15,
+                "starts": 0,
+                "points": 0.0,
+                "points_over_line": 0.0,
+                "swung_wins": 0,
+                "played": true
+              },
+              {
+                "player_id": "13301",
+                "player": "Antonio Williams",
+                "position": "WR",
+                "roster_id": 3,
+                "team": "BobBuckstein",
+                "week": 2,
+                "bid": 12,
+                "starts": 1,
+                "points": 6.1,
+                "points_over_line": -2.5,
+                "swung_wins": 0,
+                "played": true
+              }
+            ],
+            "outbid": [
+              {
+                "player_id": "12495",
+                "player": "Ollie Gordon II",
+                "roster_id": 10,
+                "team": "Davlionman",
+                "bid": 30,
+                "winner_roster_id": 8,
+                "winner": "Hock Tua 💦",
+                "winner_bid": 45,
+                "margin": 15,
+                "winner_points_over_line": 22.0
+              },
+              {
+                "player_id": "12495",
+                "player": "Ollie Gordon II",
+                "roster_id": 1,
+                "team": "puurdygood",
+                "bid": 21,
+                "winner_roster_id": 8,
+                "winner": "Hock Tua 💦",
+                "winner_bid": 45,
+                "margin": 24,
+                "winner_points_over_line": 22.0
+              },
+              {
+                "player_id": "12495",
+                "player": "Ollie Gordon II",
+                "roster_id": 3,
+                "team": "BobBuckstein",
+                "bid": 20,
+                "winner_roster_id": 8,
+                "winner": "Hock Tua 💦",
+                "winner_bid": 45,
+                "margin": 25,
+                "winner_points_over_line": 22.0
+              }
+            ],
+            "streamers": [
+              {
+                "roster_id": 1,
+                "team": "puurdygood",
+                "players": 1,
+                "starts": 4,
+                "points": 97.82
+              },
+              {
+                "roster_id": 7,
+                "team": "Bo Girds",
+                "players": 4,
+                "starts": 4,
+                "points": 96.34
+              },
+              {
+                "roster_id": 10,
+                "team": "Davlionman",
+                "players": 2,
+                "starts": 5,
+                "points": 88.52
+              },
+              {
+                "roster_id": 9,
+                "team": "kaiedmonds",
+                "players": 1,
+                "starts": 3,
+                "points": 68.28
+              },
+              {
+                "roster_id": 11,
+                "team": "Breece Mode",
+                "players": 1,
+                "starts": 2,
+                "points": 50.48
+              },
+              {
+                "roster_id": 5,
+                "team": "Skol Daddy",
+                "players": 1,
+                "starts": 1,
+                "points": 29.1
+              },
+              {
+                "roster_id": 3,
+                "team": "BobBuckstein",
+                "players": 1,
+                "starts": 1,
+                "points": 15.08
+              },
+              {
+                "roster_id": 12,
+                "team": "The Dart Side",
+                "players": 1,
+                "starts": 1,
+                "points": 13.36
+              },
+              {
+                "roster_id": 8,
+                "team": "Hock Tua 💦",
+                "players": 1,
+                "starts": 1,
+                "points": 9.92
+              }
+            ]
+          },
+          "blurb": {
+            "chapter": "waivers",
+            "sentences": [
+              {
+                "text": "Bo Girds torched $31 on Trevor Lawrence for 1 start.",
+                "fact_ids": [
+                  "WV.miss.1",
+                  "WV.miss.1.value"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Then $24 more on Will Shipley, for 1 start.",
+                "fact_ids": [
+                  "WV.miss.2",
+                  "WV.miss.2.value"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Same receipt, new name.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "Hock Tua 💦 paid $45 for Ollie Gordon II and got 22 points over the line.",
+                "fact_ids": [
+                  "WV.hit.2",
+                  "WV.hit.2.value"
+                ],
+                "roster_id": null
+              }
+            ],
+            "attempt": 2,
+            "fallback": false
+          }
+        },
+        {
+          "key": "trades",
+          "title": "The Trade Report Card",
+          "facts": {
+            "trades": [
+              {
+                "transaction_id": "1417165900032876544",
+                "week": 6,
+                "weeks_since": 3,
+                "sides": [
+                  {
+                    "roster_id": 3,
+                    "team": "BobBuckstein",
+                    "got": [
+                      {
+                        "player_id": "11646",
+                        "player": "Jalen Coker",
+                        "position": "WR",
+                        "starts": 3,
+                        "points_over_line": 3.8,
+                        "hurt_on_arrival": false
+                      },
+                      {
+                        "player_id": "4984",
+                        "player": "Josh Allen",
+                        "position": "QB",
+                        "starts": 2,
+                        "points_over_line": 35.4,
+                        "hurt_on_arrival": false
+                      },
+                      {
+                        "player_id": "5967",
+                        "player": "Tony Pollard",
+                        "position": "RB",
+                        "starts": 3,
+                        "points_over_line": 56.0,
+                        "hurt_on_arrival": false
+                      }
+                    ],
+                    "net": 3.44,
+                    "since": {
+                      "wins": 3,
+                      "losses": 0,
+                      "ties": 0
+                    }
+                  },
+                  {
+                    "roster_id": 5,
+                    "team": "Skol Daddy",
+                    "got": [
+                      {
+                        "player_id": "12474",
+                        "player": "Woody Marks",
+                        "position": "RB",
+                        "starts": 2,
+                        "points_over_line": 7.7,
+                        "hurt_on_arrival": false
+                      },
+                      {
+                        "player_id": "6770",
+                        "player": "Joe Burrow",
+                        "position": "QB",
+                        "starts": 2,
+                        "points_over_line": 71.96,
+                        "hurt_on_arrival": false
+                      },
+                      {
+                        "player_id": "7525",
+                        "player": "DeVonta Smith",
+                        "position": "WR",
+                        "starts": 1,
+                        "points_over_line": 12.1,
+                        "hurt_on_arrival": false
+                      }
+                    ],
+                    "net": -3.44,
+                    "since": {
+                      "wins": 2,
+                      "losses": 1,
+                      "ties": 0
+                    }
+                  }
+                ],
+                "gap": 6.88,
+                "result": "Even",
+                "winner": null
+              },
+              {
+                "transaction_id": "1422023063041474560",
+                "week": 8,
+                "weeks_since": 1,
+                "sides": [
+                  {
+                    "roster_id": 2,
+                    "team": "VarsityBlue2",
+                    "got": [
+                      {
+                        "player_id": "11635",
+                        "player": "Ladd McConkey",
+                        "position": "WR",
+                        "starts": 1,
+                        "points_over_line": 4.3,
+                        "hurt_on_arrival": false
+                      },
+                      {
+                        "player_id": "4866",
+                        "player": "Saquon Barkley",
+                        "position": "RB",
+                        "starts": 1,
+                        "points_over_line": 7.1,
+                        "hurt_on_arrival": false
+                      }
+                    ],
+                    "net": 6.9,
+                    "since": {
+                      "wins": 1,
+                      "losses": 0,
+                      "ties": 0
+                    }
+                  },
+                  {
+                    "roster_id": 7,
+                    "team": "Bo Girds",
+                    "got": [
+                      {
+                        "player_id": "6786",
+                        "player": "CeeDee Lamb",
+                        "position": "WR",
+                        "starts": 1,
+                        "points_over_line": 4.5,
+                        "hurt_on_arrival": false
+                      }
+                    ],
+                    "net": -6.9,
+                    "since": {
+                      "wins": 0,
+                      "losses": 1,
+                      "ties": 0
+                    }
+                  }
+                ],
+                "gap": 13.8,
+                "result": "Too soon",
+                "winner": null
+              }
+            ]
+          },
+          "blurb": {
+            "chapter": "trades",
+            "sentences": [
+              {
+                "text": "Skol Daddy dumped Josh Allen for Joe Burrow in week 6, and the grade came back Even.",
+                "fact_ids": [
+                  "TR.1"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "BobBuckstein is 3-0 since.",
+                "fact_ids": [
+                  "TR.1.3.since"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Even, apparently.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "Bo Girds flipped Ladd McConkey and Saquon Barkley for CeeDee Lamb in week 8.",
+                "fact_ids": [
+                  "TR.2"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Grade: Too soon.",
+                "fact_ids": [
+                  "TR.2"
+                ],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          }
+        },
+        {
+          "key": "records",
+          "title": "The Record Book",
+          "facts": {
+            "high": {
+              "week": 8,
+              "roster_id": 5,
+              "team": "Skol Daddy",
+              "score": 193.18
+            },
+            "low": {
+              "week": 5,
+              "roster_id": 12,
+              "team": "The Dart Side",
+              "score": 62.22
+            },
+            "biggest_margin": {
+              "week": 8,
+              "winner_roster_id": 5,
+              "winner": "Skol Daddy",
+              "winner_score": 193.18,
+              "loser_roster_id": 10,
+              "loser": "Davlionman",
+              "loser_score": 106.6,
+              "margin": 86.58
+            },
+            "closest": {
+              "week": 2,
+              "winner_roster_id": 6,
+              "winner": "Mitseeker5000",
+              "winner_score": 152.94,
+              "loser_roster_id": 2,
+              "loser": "VarsityBlue2",
+              "loser_score": 151.16,
+              "margin": 1.78
+            },
+            "awards": [
+              {
+                "key": "mvp",
+                "title": "MVP",
+                "roster_id": 10,
+                "team": "Davlionman",
+                "value": 157.6,
+                "player": "Jahmyr Gibbs",
+                "player_id": "9221",
+                "week": null,
+                "in_record_book": false,
+                "fact": "Jahmyr Gibbs of Davlionman has 157.6 points over the line in his starts, the most of any QB, RB, WR, or TE.",
+                "short_fact": "157.6 points over the line in his starts."
+              },
+              {
+                "key": "streaming-king",
+                "title": "Streaming king",
+                "roster_id": 1,
+                "team": "puurdygood",
+                "value": 97.82,
+                "player": null,
+                "player_id": null,
+                "week": null,
+                "in_record_book": false,
+                "fact": "puurdygood started streamed QBs, kickers, and defenses 4 times for 97.82 points, the most in the league.",
+                "short_fact": "4 starts of streamed QBs, kickers, and defenses for 97.82 points."
+              },
+              {
+                "key": "bench-crime",
+                "title": "Bench crime of the year",
+                "roster_id": 4,
+                "team": "The Mean Machine",
+                "value": 42.98,
+                "player": null,
+                "player_id": null,
+                "week": 1,
+                "in_record_book": false,
+                "fact": "The Mean Machine left 42.98 points on the bench in its week 1 loss to puurdygood, the most in a loss that a better lineup would have won.",
+                "short_fact": "42.98 points on the bench in the week 1 loss to puurdygood."
+              },
+              {
+                "key": "heartbreak",
+                "title": "Heartbreak of the year",
+                "roster_id": 2,
+                "team": "VarsityBlue2",
+                "value": 1.78,
+                "player": null,
+                "player_id": null,
+                "week": 2,
+                "in_record_book": true,
+                "fact": "VarsityBlue2 lost to Mitseeker5000 by 1.78 in week 2, the closest head-to-head game of the season.",
+                "short_fact": "Lost to Mitseeker5000 by 1.78 in week 2."
+              },
+              {
+                "key": "beatdown",
+                "title": "Beatdown of the year",
+                "roster_id": 5,
+                "team": "Skol Daddy",
+                "value": 86.58,
+                "player": null,
+                "player_id": null,
+                "week": 8,
+                "in_record_book": true,
+                "fact": "Skol Daddy beat Davlionman by 86.58 in week 8, the biggest head-to-head margin of the season.",
+                "short_fact": "Beat Davlionman by 86.58 in week 8."
+              },
+              {
+                "key": "most-active",
+                "title": "Most active",
+                "roster_id": 7,
+                "team": "Bo Girds",
+                "value": 30.0,
+                "player": null,
+                "player_id": null,
+                "week": null,
+                "in_record_book": false,
+                "fact": "Bo Girds made 30 moves, adds and trades, the most in the league.",
+                "short_fact": "30 moves, adds and trades."
+              },
+              {
+                "key": "set-and-forget",
+                "title": "Set and forget",
+                "roster_id": 6,
+                "team": "Mitseeker5000",
+                "value": 2.0,
+                "player": null,
+                "player_id": null,
+                "week": null,
+                "in_record_book": false,
+                "fact": "Mitseeker5000 made 2 moves, the fewest in the league, and is 6-2.",
+                "short_fact": "2 moves and a 6-2 record."
+              }
+            ]
+          },
+          "blurb": {
+            "chapter": "records",
+            "sentences": [
+              {
+                "text": "The Mean Machine left 42.98 points on the bench in a week 1 loss, a winnable one.",
+                "fact_ids": [
+                  "AW.bench-crime"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Bold strategy.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "The Dart Side scored 62.22 in week 5, the season low.",
+                "fact_ids": [
+                  "RB.low"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Mitseeker5000 made 2 moves, the fewest, and is 6-2.",
+                "fact_ids": [
+                  "AW.set-and-forget"
+                ],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          }
+        },
+        {
+          "key": "quick-hits",
+          "title": "Quick Hits",
+          "chapters": [
+            {
+              "key": "lineup",
+              "title": "Lineup Choices",
+              "facts": {
+                "teams": [
+                  {
+                    "roster_id": 4,
+                    "name": "The Mean Machine",
+                    "rank": 1,
+                    "bench_points": 247.14,
+                    "lost_with_better": [
+                      {
+                        "week": 1,
+                        "opponent_roster_id": 1,
+                        "opponent": "puurdygood",
+                        "score": 88.12,
+                        "best": 131.1,
+                        "bench_points": 42.98,
+                        "margin": 25.84
+                      },
+                      {
+                        "week": 3,
+                        "opponent_roster_id": 8,
+                        "opponent": "Hock Tua 💦",
+                        "score": 133.88,
+                        "best": 162.78,
+                        "bench_points": 28.9,
+                        "margin": 17.76
+                      },
+                      {
+                        "week": 8,
+                        "opponent_roster_id": 9,
+                        "opponent": "kaiedmonds",
+                        "score": 121.76,
+                        "best": 162.06,
+                        "bench_points": 40.3,
+                        "margin": 10.62
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 8,
+                    "name": "Hock Tua 💦",
+                    "rank": 2,
+                    "bench_points": 194.02,
+                    "lost_with_better": [
+                      {
+                        "week": 6,
+                        "opponent_roster_id": 12,
+                        "opponent": "The Dart Side",
+                        "score": 98.88,
+                        "best": 131.28,
+                        "bench_points": 32.4,
+                        "margin": 9.18
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 10,
+                    "name": "Davlionman",
+                    "rank": 3,
+                    "bench_points": 166.16,
+                    "lost_with_better": [
+                      {
+                        "week": 4,
+                        "opponent_roster_id": 6,
+                        "opponent": "Mitseeker5000",
+                        "score": 131.28,
+                        "best": 156.88,
+                        "bench_points": 25.6,
+                        "margin": 17.9
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 12,
+                    "name": "The Dart Side",
+                    "rank": 4,
+                    "bench_points": 158.0,
+                    "lost_with_better": [
+                      {
+                        "week": 1,
+                        "opponent_roster_id": 10,
+                        "opponent": "Davlionman",
+                        "score": 99.5,
+                        "best": 121.5,
+                        "bench_points": 22.0,
+                        "margin": 16.24
+                      },
+                      {
+                        "week": 2,
+                        "opponent_roster_id": 4,
+                        "opponent": "The Mean Machine",
+                        "score": 88.8,
+                        "best": 114.08,
+                        "bench_points": 25.28,
+                        "margin": 13.02
+                      },
+                      {
+                        "week": 8,
+                        "opponent_roster_id": 6,
+                        "opponent": "Mitseeker5000",
+                        "score": 116.46,
+                        "best": 139.46,
+                        "bench_points": 23.0,
+                        "margin": 2.18
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 1,
+                    "name": "puurdygood",
+                    "rank": 5,
+                    "bench_points": 147.5,
+                    "lost_with_better": []
+                  },
+                  {
+                    "roster_id": 2,
+                    "name": "VarsityBlue2",
+                    "rank": 6,
+                    "bench_points": 145.42,
+                    "lost_with_better": [
+                      {
+                        "week": 2,
+                        "opponent_roster_id": 6,
+                        "opponent": "Mitseeker5000",
+                        "score": 151.16,
+                        "best": 167.86,
+                        "bench_points": 16.7,
+                        "margin": 1.78
+                      },
+                      {
+                        "week": 5,
+                        "opponent_roster_id": 9,
+                        "opponent": "kaiedmonds",
+                        "score": 96.94,
+                        "best": 130.52,
+                        "bench_points": 33.58,
+                        "margin": 18.26
+                      },
+                      {
+                        "week": 6,
+                        "opponent_roster_id": 10,
+                        "opponent": "Davlionman",
+                        "score": 101.38,
+                        "best": 118.48,
+                        "bench_points": 17.1,
+                        "margin": 4.7
+                      },
+                      {
+                        "week": 7,
+                        "opponent_roster_id": 4,
+                        "opponent": "The Mean Machine",
+                        "score": 107.0,
+                        "best": 134.68,
+                        "bench_points": 27.68,
+                        "margin": 14.22
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 5,
+                    "name": "Skol Daddy",
+                    "rank": 7,
+                    "bench_points": 125.4,
+                    "lost_with_better": [
+                      {
+                        "week": 2,
+                        "opponent_roster_id": 11,
+                        "opponent": "Breece Mode",
+                        "score": 133.12,
+                        "best": 140.82,
+                        "bench_points": 7.7,
+                        "margin": 6.14
+                      },
+                      {
+                        "week": 3,
+                        "opponent_roster_id": 1,
+                        "opponent": "puurdygood",
+                        "score": 125.16,
+                        "best": 163.36,
+                        "bench_points": 38.2,
+                        "margin": 2.78
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 3,
+                    "name": "BobBuckstein",
+                    "rank": 8,
+                    "bench_points": 120.9,
+                    "lost_with_better": [
+                      {
+                        "week": 1,
+                        "opponent_roster_id": 2,
+                        "opponent": "VarsityBlue2",
+                        "score": 111.46,
+                        "best": 121.76,
+                        "bench_points": 10.3,
+                        "margin": 6.74
+                      },
+                      {
+                        "week": 3,
+                        "opponent_roster_id": 10,
+                        "opponent": "Davlionman",
+                        "score": 99.78,
+                        "best": 125.08,
+                        "bench_points": 25.3,
+                        "margin": 19.0
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 11,
+                    "name": "Breece Mode",
+                    "rank": 9,
+                    "bench_points": 114.4,
+                    "lost_with_better": [
+                      {
+                        "week": 7,
+                        "opponent_roster_id": 7,
+                        "opponent": "Bo Girds",
+                        "score": 112.16,
+                        "best": 140.76,
+                        "bench_points": 28.6,
+                        "margin": 7.12
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 6,
+                    "name": "Mitseeker5000",
+                    "rank": 10,
+                    "bench_points": 108.78,
+                    "lost_with_better": []
+                  },
+                  {
+                    "roster_id": 7,
+                    "name": "Bo Girds",
+                    "rank": 11,
+                    "bench_points": 104.74,
+                    "lost_with_better": [
+                      {
+                        "week": 3,
+                        "opponent_roster_id": 12,
+                        "opponent": "The Dart Side",
+                        "score": 108.62,
+                        "best": 135.24,
+                        "bench_points": 26.62,
+                        "margin": 4.08
+                      },
+                      {
+                        "week": 4,
+                        "opponent_roster_id": 8,
+                        "opponent": "Hock Tua 💦",
+                        "score": 114.92,
+                        "best": 151.82,
+                        "bench_points": 36.9,
+                        "margin": 11.76
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 9,
+                    "name": "kaiedmonds",
+                    "rank": 12,
+                    "bench_points": 93.84,
+                    "lost_with_better": []
+                  }
+                ]
+              },
+              "blurb": {
+                "chapter": "lineup",
+                "sentences": [
+                  {
+                    "text": "The Mean Machine benched 247.14 points, league high.",
+                    "fact_ids": [
+                      "LC.4"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Week 1, 42.98 sat in a winnable loss.",
+                    "fact_ids": [
+                      "LC.4.1",
+                      "LC.4.1.bench"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Start the bench.",
+                    "fact_ids": [],
+                    "roster_id": null
+                  }
+                ],
+                "attempt": 2,
+                "fallback": false
+              }
+            },
+            {
+              "key": "injuries",
+              "title": "The Injury Toll",
+              "facts": {
+                "teams": [
+                  {
+                    "roster_id": 10,
+                    "name": "Davlionman",
+                    "rank": 1,
+                    "games": 13,
+                    "players": [
+                      {
+                        "player_id": "8142",
+                        "name": "Alec Pierce",
+                        "position": "WR",
+                        "games": 6,
+                        "weeks": [
+                          3,
+                          4,
+                          5,
+                          6,
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "4892",
+                        "name": "Baker Mayfield",
+                        "position": "QB",
+                        "games": 3,
+                        "weeks": [
+                          4,
+                          5,
+                          6
+                        ]
+                      },
+                      {
+                        "player_id": "5022",
+                        "name": "Dallas Goedert",
+                        "position": "TE",
+                        "games": 2,
+                        "weeks": [
+                          3,
+                          4
+                        ]
+                      },
+                      {
+                        "player_id": "12533",
+                        "name": "Jacory Croskey-Merritt",
+                        "position": "RB",
+                        "games": 2,
+                        "weeks": [
+                          6,
+                          8
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 2,
+                    "name": "VarsityBlue2",
+                    "rank": 2,
+                    "games": 11,
+                    "players": [
+                      {
+                        "player_id": "10222",
+                        "name": "Jayden Reed",
+                        "position": "WR",
+                        "games": 6,
+                        "weeks": [
+                          3,
+                          4,
+                          5,
+                          6,
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "9226",
+                        "name": "De'Von Achane",
+                        "position": "RB",
+                        "games": 4,
+                        "weeks": [
+                          4,
+                          5,
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "12489",
+                        "name": "RJ Harvey",
+                        "position": "RB",
+                        "games": 1,
+                        "weeks": [
+                          8
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 9,
+                    "name": "kaiedmonds",
+                    "rank": 3,
+                    "games": 10,
+                    "players": [
+                      {
+                        "player_id": "13286",
+                        "name": "Jadarian Price",
+                        "position": "RB",
+                        "games": 4,
+                        "weeks": [
+                          4,
+                          5,
+                          6,
+                          7
+                        ]
+                      },
+                      {
+                        "player_id": "11560",
+                        "name": "Caleb Williams",
+                        "position": "QB",
+                        "games": 3,
+                        "weeks": [
+                          3,
+                          4,
+                          5
+                        ]
+                      },
+                      {
+                        "player_id": "10229",
+                        "name": "Rashee Rice",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          6,
+                          7
+                        ]
+                      },
+                      {
+                        "player_id": "6794",
+                        "name": "Justin Jefferson",
+                        "position": "WR",
+                        "games": 1,
+                        "weeks": [
+                          4
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 6,
+                    "name": "Mitseeker5000",
+                    "rank": 4,
+                    "games": 9,
+                    "players": [
+                      {
+                        "player_id": "7021",
+                        "name": "Rico Dowdle",
+                        "position": "RB",
+                        "games": 3,
+                        "weeks": [
+                          3,
+                          4,
+                          5
+                        ]
+                      },
+                      {
+                        "player_id": "2133",
+                        "name": "Davante Adams",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "11566",
+                        "name": "Jayden Daniels",
+                        "position": "QB",
+                        "games": 2,
+                        "weeks": [
+                          3,
+                          4
+                        ]
+                      },
+                      {
+                        "player_id": "13279",
+                        "name": "Carnell Tate",
+                        "position": "WR",
+                        "games": 1,
+                        "weeks": [
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "2449",
+                        "name": "Stefon Diggs",
+                        "position": "WR",
+                        "games": 1,
+                        "weeks": [
+                          5
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 4,
+                    "name": "The Mean Machine",
+                    "rank": 5,
+                    "games": 8,
+                    "players": [
+                      {
+                        "player_id": "6819",
+                        "name": "Michael Pittman Jr.",
+                        "position": "WR",
+                        "games": 4,
+                        "weeks": [
+                          5,
+                          6,
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "9486",
+                        "name": "Dontayvion Wicks",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "13287",
+                        "name": "Jeremiyah Love",
+                        "position": "RB",
+                        "games": 2,
+                        "weeks": [
+                          6,
+                          7
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 11,
+                    "name": "Breece Mode",
+                    "rank": 6,
+                    "games": 7,
+                    "players": [
+                      {
+                        "player_id": "8155",
+                        "name": "Breece Hall",
+                        "position": "RB",
+                        "games": 5,
+                        "weeks": [
+                          4,
+                          5,
+                          6,
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "12518",
+                        "name": "Tyler Warren",
+                        "position": "TE",
+                        "games": 2,
+                        "weeks": [
+                          6,
+                          7
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 7,
+                    "name": "Bo Girds",
+                    "rank": 7,
+                    "games": 5,
+                    "players": [
+                      {
+                        "player_id": "6904",
+                        "name": "Jalen Hurts",
+                        "position": "QB",
+                        "games": 3,
+                        "weeks": [
+                          6,
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "4866",
+                        "name": "Saquon Barkley",
+                        "position": "RB",
+                        "games": 2,
+                        "weeks": [
+                          5,
+                          6
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 8,
+                    "name": "Hock Tua 💦",
+                    "rank": 8,
+                    "games": 5,
+                    "players": [
+                      {
+                        "player_id": "4881",
+                        "name": "Lamar Jackson",
+                        "position": "QB",
+                        "games": 3,
+                        "weeks": [
+                          5,
+                          6,
+                          7
+                        ]
+                      },
+                      {
+                        "player_id": "5872",
+                        "name": "Deebo Samuel Sr.",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          6,
+                          7
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 12,
+                    "name": "The Dart Side",
+                    "rank": 9,
+                    "games": 4,
+                    "players": [
+                      {
+                        "player_id": "12514",
+                        "name": "Emeka Egbuka",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "8121",
+                        "name": "Romeo Doubs",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          7,
+                          8
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 3,
+                    "name": "BobBuckstein",
+                    "rank": 10,
+                    "games": 3,
+                    "players": [
+                      {
+                        "player_id": "7525",
+                        "name": "DeVonta Smith",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          4,
+                          5
+                        ]
+                      },
+                      {
+                        "player_id": "9754",
+                        "name": "Quentin Johnston",
+                        "position": "WR",
+                        "games": 1,
+                        "weeks": [
+                          5
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 5,
+                    "name": "Skol Daddy",
+                    "rank": 11,
+                    "games": 2,
+                    "players": [
+                      {
+                        "player_id": "5892",
+                        "name": "David Montgomery",
+                        "position": "RB",
+                        "games": 2,
+                        "weeks": [
+                          6,
+                          7
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 1,
+                    "name": "puurdygood",
+                    "rank": 12,
+                    "games": 0,
+                    "players": []
+                  }
+                ]
+              },
+              "blurb": {
+                "chapter": "injuries",
+                "sentences": [
+                  {
+                    "text": "kaiedmonds lost 10 starter games to injury, 3rd in the league.",
+                    "fact_ids": [
+                      "IT.9",
+                      "CO.injuries.toll"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Jadarian Price missed 4.",
+                    "fact_ids": [
+                      "IT.9.top"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Still 5-3.",
+                    "fact_ids": [
+                      "ST.9.record"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Excuses denied.",
+                    "fact_ids": [],
+                    "roster_id": null
+                  }
+                ],
+                "attempt": 1,
+                "fallback": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "what-comes-next",
+      "title": "What Comes Next",
+      "chapters": [
+        {
+          "key": "look-ahead",
+          "title": "The Look Ahead",
+          "facts": {
+            "teams": [
+              {
+                "roster_id": 1,
+                "name": "puurdygood",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 2,
+                    "name": "VarsityBlue2",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 9,
+                    "name": "kaiedmonds",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 10,
+                    "name": "Davlionman",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 4,
+                    "name": "The Mean Machine",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 7,
+                    "name": "Bo Girds",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 5,
+                    "name": "Skol Daddy",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.46
+              },
+              {
+                "roster_id": 10,
+                "name": "Davlionman",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 4,
+                    "name": "The Mean Machine",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 7,
+                    "name": "Bo Girds",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 1,
+                    "name": "puurdygood",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 12,
+                    "name": "The Dart Side",
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 8,
+                    "name": "Hock Tua 💦",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 3,
+                    "name": "BobBuckstein",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.46
+              },
+              {
+                "roster_id": 11,
+                "name": "Breece Mode",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 12,
+                    "name": "The Dart Side",
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 8,
+                    "name": "Hock Tua 💦",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 3,
+                    "name": "BobBuckstein",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 6,
+                    "name": "Mitseeker5000",
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 5,
+                    "name": "Skol Daddy",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 2,
+                    "name": "VarsityBlue2",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.48
+              },
+              {
+                "roster_id": 7,
+                "name": "Bo Girds",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 9,
+                    "name": "kaiedmonds",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 10,
+                    "name": "Davlionman",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 4,
+                    "name": "The Mean Machine",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 5,
+                    "name": "Skol Daddy",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 1,
+                    "name": "puurdygood",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 12,
+                    "name": "The Dart Side",
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.48
+              },
+              {
+                "roster_id": 4,
+                "name": "The Mean Machine",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 10,
+                    "name": "Davlionman",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 5,
+                    "name": "Skol Daddy",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 7,
+                    "name": "Bo Girds",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 1,
+                    "name": "puurdygood",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 12,
+                    "name": "The Dart Side",
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 8,
+                    "name": "Hock Tua 💦",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.48
+              },
+              {
+                "roster_id": 12,
+                "name": "The Dart Side",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 11,
+                    "name": "Breece Mode",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 2,
+                    "name": "VarsityBlue2",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 9,
+                    "name": "kaiedmonds",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 10,
+                    "name": "Davlionman",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 4,
+                    "name": "The Mean Machine",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 7,
+                    "name": "Bo Girds",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.48
+              },
+              {
+                "roster_id": 6,
+                "name": "Mitseeker5000",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 8,
+                    "name": "Hock Tua 💦",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 3,
+                    "name": "BobBuckstein",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 5,
+                    "name": "Skol Daddy",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 11,
+                    "name": "Breece Mode",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 2,
+                    "name": "VarsityBlue2",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 9,
+                    "name": "kaiedmonds",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.5
+              },
+              {
+                "roster_id": 9,
+                "name": "kaiedmonds",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 7,
+                    "name": "Bo Girds",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 1,
+                    "name": "puurdygood",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 12,
+                    "name": "The Dart Side",
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 8,
+                    "name": "Hock Tua 💦",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 3,
+                    "name": "BobBuckstein",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 6,
+                    "name": "Mitseeker5000",
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.52
+              },
+              {
+                "roster_id": 5,
+                "name": "Skol Daddy",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 3,
+                    "name": "BobBuckstein",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 4,
+                    "name": "The Mean Machine",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 6,
+                    "name": "Mitseeker5000",
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 7,
+                    "name": "Bo Girds",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 11,
+                    "name": "Breece Mode",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 1,
+                    "name": "puurdygood",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.52
+              },
+              {
+                "roster_id": 8,
+                "name": "Hock Tua 💦",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 6,
+                    "name": "Mitseeker5000",
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 11,
+                    "name": "Breece Mode",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 2,
+                    "name": "VarsityBlue2",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 9,
+                    "name": "kaiedmonds",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 10,
+                    "name": "Davlionman",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 4,
+                    "name": "The Mean Machine",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.54
+              },
+              {
+                "roster_id": 3,
+                "name": "BobBuckstein",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 5,
+                    "name": "Skol Daddy",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 6,
+                    "name": "Mitseeker5000",
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 11,
+                    "name": "Breece Mode",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 2,
+                    "name": "VarsityBlue2",
+                    "wins": 3,
+                    "losses": 5,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 9,
+                    "name": "kaiedmonds",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 10,
+                    "name": "Davlionman",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.54
+              },
+              {
+                "roster_id": 2,
+                "name": "VarsityBlue2",
+                "games": [
+                  {
+                    "week": 9,
+                    "opponent": 1,
+                    "name": "puurdygood",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 10,
+                    "opponent": 12,
+                    "name": "The Dart Side",
+                    "wins": 2,
+                    "losses": 6,
+                    "ties": 0
+                  },
+                  {
+                    "week": 11,
+                    "opponent": 8,
+                    "name": "Hock Tua 💦",
+                    "wins": 5,
+                    "losses": 3,
+                    "ties": 0
+                  },
+                  {
+                    "week": 12,
+                    "opponent": 3,
+                    "name": "BobBuckstein",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  },
+                  {
+                    "week": 13,
+                    "opponent": 6,
+                    "name": "Mitseeker5000",
+                    "wins": 6,
+                    "losses": 2,
+                    "ties": 0
+                  },
+                  {
+                    "week": 14,
+                    "opponent": 11,
+                    "name": "Breece Mode",
+                    "wins": 4,
+                    "losses": 4,
+                    "ties": 0
+                  }
+                ],
+                "opponents_rate": 0.54
+              }
+            ],
+            "softest": 1,
+            "hardest": 8
+          },
+          "blurb": {
+            "chapter": "look-ahead",
+            "sentences": [
+              {
+                "text": "puurdygood and Davlionman draw the softest road ahead, at a 0.46 win rate.",
+                "fact_ids": [
+                  "LA.1.rate",
+                  "LA.10.rate"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "The Dart Side ties for the 3rd softest slate, with 1% playoff odds.",
+                "fact_ids": [
+                  "LA.12.rate",
+                  "ST.12.odds"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Too late to matter.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "VarsityBlue2, Hock Tua 💦 and BobBuckstein get the hardest.",
+                "fact_ids": [
+                  "LA.2.rate",
+                  "LA.8.rate",
+                  "LA.3.rate"
+                ],
+                "roster_id": null
+              }
+            ],
+            "attempt": 2,
+            "fallback": false
+          }
+        }
+      ]
+    }
+  ],
+  "tile": {
+    "label": "Title favorite",
+    "value": "26.2%",
+    "note": "Mitseeker5000"
+  },
+  "headlines": [
+    {
+      "kind": "arc",
+      "key": "arc.heater",
+      "chapter": "arcs",
+      "roster_id": 6,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.roller-coaster",
+      "chapter": "arcs",
+      "roster_id": 1,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.collapse",
+      "chapter": "arcs",
+      "roster_id": 1,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.collapse",
+      "chapter": "arcs",
+      "roster_id": 11,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.roller-coaster",
+      "chapter": "arcs",
+      "roster_id": 3,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.turnaround",
+      "chapter": "arcs",
+      "roster_id": 3,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.turnaround",
+      "chapter": "arcs",
+      "roster_id": 5,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.snakebit",
+      "chapter": "arcs",
+      "roster_id": 5,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.never-got-going",
+      "chapter": "arcs",
+      "roster_id": 12,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.mvp",
+      "chapter": "records",
+      "roster_id": 10,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.streaming-king",
+      "chapter": "records",
+      "roster_id": 1,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.bench-crime",
+      "chapter": "records",
+      "roster_id": 4,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.heartbreak",
+      "chapter": "records",
+      "roster_id": 2,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.beatdown",
+      "chapter": "records",
+      "roster_id": 5,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.most-active",
+      "chapter": "records",
+      "roster_id": 7,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.set-and-forget",
+      "chapter": "records",
+      "roster_id": 6,
+      "place": 1
+    },
+    {
+      "kind": "callout",
+      "key": "luck.most_better",
+      "chapter": "luck",
+      "roster_id": 11,
+      "place": 2
+    },
+    {
+      "kind": "callout",
+      "key": "luck.biggest_miss",
+      "chapter": "luck",
+      "roster_id": 11,
+      "place": 1
+    },
+    {
+      "kind": "callout",
+      "key": "injuries.toll",
+      "chapter": "injuries",
+      "roster_id": 9,
+      "place": 3
+    },
+    {
+      "kind": "callout",
+      "key": "draft.steal",
+      "chapter": "draft",
+      "roster_id": 10,
+      "place": 3
+    },
+    {
+      "kind": "callout",
+      "key": "draft.bust",
+      "chapter": "draft",
+      "roster_id": 4,
+      "place": 1
+    },
+    {
+      "kind": "callout",
+      "key": "waivers.hit",
+      "chapter": "waivers",
+      "roster_id": 8,
+      "place": 2
+    },
+    {
+      "kind": "callout",
+      "key": "waivers.miss",
+      "chapter": "waivers",
+      "roster_id": 7,
+      "place": 1
+    },
+    {
+      "kind": "callout",
+      "key": "lineup.bench",
+      "chapter": "lineup",
+      "roster_id": 4,
+      "place": 1
+    }
+  ]
+}

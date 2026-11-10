@@ -1,13 +1,20 @@
 /**
- * Tests for the front door at /. Each test renders the page with the real published data of a client and reads what
- * a manager sees: the sheet that asks for Your team on the first visit, then the empty Thread with the ask box.
+ * Tests for the front door at /. Each test renders the page with the fixed copy of the published data of a client and
+ * reads what a manager sees: the sheet that asks for Your team on the first visit, then the empty Thread with the ask box.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
+import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./page";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 /* The temp public/ folders that homeOfClient made, so each test removes its own folder. */
 const roots: string[] = [];
@@ -227,12 +234,12 @@ describe("the front door of NorCal", () => {
   });
 });
 
-/* A temp public/ folder with the published files of one client, as its client build copies them. With nextWeek, it
-   also holds a later latest week. */
-async function homeOfClient(slug: string, { nextWeek = false }: { nextWeek?: boolean } = {}) {
+/* A temp public/ folder with the fixed copy of the published files of one client, as its client build copies them. With
+   nextWeek, it also holds a later latest week. */
+async function homeOfClient(slug: FixtureClient, { nextWeek = false }: { nextWeek?: boolean } = {}) {
   const root = mkdtempSync(join(tmpdir(), "home-page-"));
   roots.push(root);
-  cpSync(join(process.cwd(), "..", "..", "clients", slug, "published"), join(root, "public"), { recursive: true });
+  cpSync(fixturePublished(slug), join(root, "public"), { recursive: true });
   // The next week of a test is a rebuild that publishes week 9: the files of week 8 under the number 9.
   if (nextWeek) {
     const next = join(root, "public", "2026", "week-09");

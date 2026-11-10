@@ -8,6 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
+import { type FixtureClient, fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { managers as fixture } from "@cpc/managers/fixtures/managers";
 import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
@@ -30,14 +31,11 @@ async function routeOver(managers?: unknown) {
   return import("./page");
 }
 
-/* The published folder of a client, read before a test swaps the working folder. */
-const CLIENTS = join(process.cwd(), "..", "..", "clients");
-
-/* A temp public/ folder with the published JSON files of one client, as its client build copies them.
+/* A temp public/ folder with the fixed copy of the published JSON files of one client, as its client build copies them.
    The images stay out, because the route reads only the JSON files and the copy stays fast. */
-async function routeOfClient(slug: string) {
+async function routeOfClient(slug: FixtureClient) {
   const root = mkdtempSync(join(tmpdir(), "managers-index-"));
-  cpSync(join(CLIENTS, slug, "published"), join(root, "public"), {
+  cpSync(fixturePublished(slug), join(root, "public"), {
     recursive: true,
     filter: (source) => statSync(source).isDirectory() || source.endsWith(".json"),
   });
@@ -47,7 +45,7 @@ async function routeOfClient(slug: string) {
 }
 
 /* Renders the managers index of one client and gives the rows of the ledger and the chips of the race. */
-async function indexOfClient(slug: string) {
+async function indexOfClient(slug: FixtureClient) {
   const { default: ManagersPage } = await routeOfClient(slug);
   render(await ManagersPage({ params: Promise.resolve({ season: "2026" }) }));
   const main = within(screen.getByRole("main"));

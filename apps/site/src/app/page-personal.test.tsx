@@ -1,5 +1,5 @@
 /**
- * Tests for the personal Topics of the front door at /. Each test renders the page with the real published data of cpc,
+ * Tests for the personal Topics of the front door at /. Each test renders the page with the fixed copy of the published data of cpc,
  * and the personal route plays a stream that the API recorded in a live run with the real Jev and the real Claude.
  */
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync } from "node:fs";
@@ -7,18 +7,25 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { FIXING_LINE } from "./front-door/free-answer";
 import { MISS_LEAD } from "./front-door/miss-card";
 import { READING_LINE } from "./front-door/personal-answer";
 import HomePage from "./page";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 const PASSPHRASE = "cornerstone-test";
 const LIL_FRIDGE = 3;
 const fetchStub = vi.fn();
 const streams: (() => Response)[] = [];
 
-// The tests run in apps/site, as the other tests that read a file do.
-const recorded = (name: string) => readFileSync(join(process.cwd(), "src", "fixtures", "personal-answer", `${name}.sse`), "utf8");
+// The path comes from this file and not from the working folder, because the tests point the working folder at the fixed copy.
+const recorded = (name: string) => readFileSync(join(__dirname, "..", "fixtures", "personal-answer", `${name}.sse`), "utf8");
 const personalCalls = () => fetchStub.mock.calls.filter(([url]) => String(url).endsWith("/personal"));
 
 function sse(body: ReadableStream<Uint8Array> | string): Response {
@@ -193,10 +200,10 @@ describe("the personal Topics of Lil Fridge", () => {
 });
 
 describe("the links of the personal Topics", () => {
-  /* A temp public/ folder with the latest week of cpc and its managers file, but no waiver file. */
+  /* A temp public/ folder with the latest week of the fixed copy of cpc and its managers file, but no waiver file. */
   async function dataWithoutWaiver() {
     const root = mkdtempSync(join(tmpdir(), "front-door-personal-"));
-    const from = join(process.cwd(), "public", "2026");
+    const from = fixturePublished("cpc", "2026");
     mkdirSync(join(root, "public", "2026", "week-08"), { recursive: true });
     for (const file of ["page.json", "topics.json"]) copyFileSync(join(from, "week-08", file), join(root, "public", "2026", "week-08", file));
     copyFileSync(join(from, "managers.json"), join(root, "public", "2026", "managers.json"));

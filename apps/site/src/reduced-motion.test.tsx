@@ -4,7 +4,7 @@
  * jsdom ignores opacity, so this test proves the text is present. The browser capture 12-week-off-390.png proves no motion.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { apiTarget, analyzeResponse as fixtureJson } from "@cpc/analyzer/lib/fixtures/api";
 import HomePage from "@/app/page";
 import WeekPage from "@/app/_routes/week/page";
@@ -25,6 +25,13 @@ import { WarChest } from "@cpc/waiver/war-chest";
 import { TeamPicker } from "@cpc/analyzer/form/team-picker";
 import { week6, week8 } from "@cpc/week/fixtures/week-page";
 import { AllMatchups } from "@cpc/week/chapters/all-matchups";
+import { readFixtureSite } from "@/fixtures/sites";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 vi.stubGlobal(
   "matchMedia",

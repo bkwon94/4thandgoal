@@ -1,20 +1,27 @@
 /**
  * Tests for the Suggestions that the API serves at /, and for the stale personal Answers of the Thread. Each test renders
- * the page with the real published data of cpc, and the API plays responses that it gave in a live run.
+ * the page with the fixed copy of the published data of cpc, and the API plays responses that it gave in a live run.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./page";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 const PASSPHRASE = "cornerstone-test";
 const LIL_FRIDGE = 3;
 const fetchStub = vi.fn();
 const streams: (() => Response)[] = [];
 
-// The tests run in apps/site, as the other tests that read a file do.
-const fixture = (...parts: string[]) => readFileSync(join(process.cwd(), "src", "fixtures", ...parts), "utf8");
+// The path comes from this file and not from the working folder, because the tests point the working folder at the fixed copy.
+const fixture = (...parts: string[]) => readFileSync(join(__dirname, "..", "fixtures", ...parts), "utf8");
 // The Suggestions of Lil Fridge on Wednesday of week 9 from a live run with the real Jev: power rankings and the week
 // recap lift above 0.7.
 const SUGGESTIONS = JSON.parse(fixture("suggestions", "lil-fridge-wednesday.json"));

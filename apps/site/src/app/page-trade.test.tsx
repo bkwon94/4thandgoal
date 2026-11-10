@@ -1,14 +1,21 @@
 /**
  * Tests for the trade Topics of the front door at /: the trade check, trade ideas, and sell high. Each test renders the
- * page with the real published data of cpc. fetch is a test stub that sends the streams of real live runs of the API.
+ * page with the fixed copy of the published data of cpc. fetch is a test stub that sends the streams of real live runs of the API.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { readFixtureSite } from "@/fixtures/sites";
 import checkStream from "./front-door/fixtures/trade-check-stream.json";
 import formStream from "./front-door/fixtures/trade-form-stream.json";
 import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
 import sellStream from "./front-door/fixtures/sell-high-stream.json";
 import HomePage from "./page";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 const PASSPHRASE = "cornerstone-test";
 const SURE = "is Courtland Sutton for Kenneth Walker fair";

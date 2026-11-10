@@ -1,14 +1,21 @@
 /**
- * Tests for the week page. They render the page with the real public/ data and read what a reader sees.
+ * Tests for the week page. They render the page with the fixed copy of the public/ data and read what a reader sees.
  * The week 7 JSON is the fixture, so these tests break if the publish layout changes.
  */
 import { act, cleanup, render, screen, within } from "@testing-library/react";
 import { copyFileSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import WeekPage from "./page";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 /* The hero and the eight chapters in the order of the spec (decision 05): the id each one sets and the words of its heading.
    The hero holds the level 1 heading of the page, and each chapter opens with a level 2 heading. */
@@ -325,7 +332,7 @@ describe("WeekPage week footer", () => {
 
 /* A temp public/ folder with weeks 5, 6, and 7, so week 6 has a week on each side. Weeks 6 and 7 are the real pages.
    Week 5 is only what the footer reads, because the test never renders it. Week 7 is the last week in that folder,
-   so the footer test of the empty right slot reads it and not the real tree, which gains a week on each publish.
+   so the footer test of the empty right slot reads it and not the fixed tree, which ends at week 8.
    Returns the week page read from that folder. */
 async function publicWithWeeks() {
   const root = mkdtempSync(join(tmpdir(), "week-page-"));
@@ -334,7 +341,7 @@ async function publicWithWeeks() {
   for (const week of ["week-05", "week-06", "week-07"]) mkdirSync(join(season, week), { recursive: true });
   writeFileSync(join(season, "week-05", "page.json"), weekPageJson({ week: 5, dates: "Oct 8 – Oct 12, 2026" }));
   for (const week of ["week-06", "week-07"]) {
-    copyFileSync(join(process.cwd(), "..", "..", "clients", "cpc", "published", "2026", week, "page.json"), join(season, week, "page.json"));
+    copyFileSync(fixturePublished("cpc", "2026", week, "page.json"), join(season, week, "page.json"));
   }
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.

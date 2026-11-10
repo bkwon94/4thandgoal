@@ -116,6 +116,37 @@ def test_context_missing_award_is_flagged(fixture_raw_dir):
     assert [t["missing"] for t in ctx["awards"]] == [False, False, True, False]
 
 
+def _pick_blurbs(b, motw_fallback, recap_fallback):
+    blurbs = _blurbs(b)
+    recap_key = f"recap_{b.data.pick.matchup_id}"
+    for key, fallback in (("motw", motw_fallback), (recap_key, recap_fallback)):
+        blurbs[key] = blurbs[key].model_copy(update={
+            "fallback": fallback,
+            "sentences": [Sentence(text=f"{key} fallback={fallback}.", fact_ids=[])],
+        })
+    return blurbs, recap_key
+
+
+def test_a_motw_fallback_takes_the_passed_recap_of_the_same_game(fixture_raw_dir):
+    b = _bundle(fixture_raw_dir)
+    blurbs, recap_key = _pick_blurbs(b, motw_fallback=True, recap_fallback=False)
+    ctx = build_context(b, blurbs, {}, {})
+    assert ctx["blurbs"]["motw"] == f"{recap_key} fallback=False."
+    assert blurbs["motw"].fallback is True
+
+
+def test_a_motw_fallback_keeps_its_text_when_the_recap_is_a_fallback_too(fixture_raw_dir):
+    b = _bundle(fixture_raw_dir)
+    blurbs, _ = _pick_blurbs(b, motw_fallback=True, recap_fallback=True)
+    assert build_context(b, blurbs, {}, {})["blurbs"]["motw"] == "motw fallback=True."
+
+
+def test_a_motw_that_passed_keeps_its_own_text(fixture_raw_dir):
+    b = _bundle(fixture_raw_dir)
+    blurbs, _ = _pick_blurbs(b, motw_fallback=False, recap_fallback=False)
+    assert build_context(b, blurbs, {}, {})["blurbs"]["motw"] == "motw fallback=False."
+
+
 def test_summary_names_the_pick(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     summary = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))["summary"]

@@ -1,22 +1,29 @@
 /**
- * Tests for the free answer of the front door at /. Each test renders the page with the real published data of cpc,
+ * Tests for the free answer of the front door at /. Each test renders the page with the fixed copy of the published data of cpc,
  * and the free route plays a stream that the API recorded in a live run with the real Jev and the real Claude.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { readFixtureSite } from "@/fixtures/sites";
 import { MISS_LEAD } from "./front-door/miss-card";
 import { FIXING_LINE } from "./front-door/free-answer";
 import HomePage from "./page";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 const PASSPHRASE = "cornerstone-test";
 const fetchStub = vi.fn();
 const routes: unknown[] = [];
 const streams: (() => Response)[] = [];
 
-// The tests run in apps/site, as the other tests that read a file do.
-const recorded = (name: string) => readFileSync(join(process.cwd(), "src", "fixtures", "free-answer", `${name}.sse`), "utf8");
+// The path comes from this file and not from the working folder, because the tests point the working folder at the fixed copy.
+const recorded = (name: string) => readFileSync(join(__dirname, "..", "fixtures", "free-answer", `${name}.sse`), "utf8");
 const freeCalls = () => fetchStub.mock.calls.filter(([url]) => String(url).endsWith("/ask/free"));
 
 function sse(body: ReadableStream<Uint8Array> | string): Response {

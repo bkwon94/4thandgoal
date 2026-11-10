@@ -13,6 +13,8 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    // Agents run the suite in many worktrees at once. A cap of 2 keeps each run off most of the laptop's cores. CI keeps the default.
+    maxWorkers: process.env.CI ? undefined : 2,
     // The packages sit outside the app, so the run takes the repo root as its dir and names each glob from there.
     dir: "../..",
     include: [
