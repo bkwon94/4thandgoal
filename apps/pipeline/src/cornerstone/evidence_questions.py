@@ -78,8 +78,8 @@ FACTS = Question(key="a", name="the facts", kind="fact", cut=0.7, in_flow=True, 
                  flag=_fact_flag)
 
 # Question (b): code first looks for a video or timed frames among the files, and then asks nothing. Jev judges only
-# whether the Then line asks for motion and whether a text log holds animation values, because a draft that asked
-# Jev whether the files record change over time read any timed log line, such as a request time, as motion.
+# whether the Then line asks for motion and whether a text log holds animation values. A question about change over
+# time in the files reads any timed log line, such as a request time, as motion.
 ASKS_MOTION = "Does the Then line of `test` describe something that moves or animates on the screen over time?"
 ASKS_MOTION_YES = (
     "The Then line names a change a person sees as it happens, such as a pulse, a spring, a crack, a slide, or a fade in."
@@ -129,9 +129,9 @@ def _motion_flag(answers: dict[str, float], state: dict) -> tuple[float, str]:
 MOTION = Question(key="b", name="motion", kind="motion", cut=0.7, in_flow=True, nouls=_motion_nouls,
                   flag=_motion_flag)
 
-# Question (c): one Noul per shot, scoped to the text that the Then line names. A draft that asked about any text of
-# the page was mostly right about the image, but it flagged a design ellipsis or a fixed bar over text that the test
-# does not name, and the Judge does not fail a test for that.
+# Question (c): one Noul per shot, scoped to the text that the Then line names. A question about any text of the page
+# flags a design ellipsis or a fixed bar over text that the test does not name, and the Judge does not fail a test
+# for that.
 THEN_TEXT_CUT = (
     "In the screenshot `evidence.screenshots[\"{path}\"]`, is the text that the Then line of `test` names "
     "cut off or too big for its space?"
@@ -167,8 +167,8 @@ CUT_TEXT = Question(key="c", name="cut-off text", kind="cut-text", cut=0.9, in_f
                     flag=_cut_text_flag)
 
 # Question (d): two Nouls per sentence of the Observation. The first asks if the files show it. The second asks if it
-# reports a result that the Then line asks for, because a draft with the first Noul alone flagged true but harmless
-# gaps, such as a note on a first run or a commit.
+# reports a result that the Then line asks for. The first Noul alone flags true but harmless gaps, such as a note on
+# a first run or a commit.
 OBS_SHOWN = "Do the files in `evidence` show this statement of `agent_observation`: \"{sentence}\"?"
 OBS_SHOWN_YES = (
     "A text file or a screenshot holds the statement with the same values, "
