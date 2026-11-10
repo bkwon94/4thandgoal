@@ -156,6 +156,21 @@ describe("the personal Topics of Lil Fridge", () => {
     expect(chips.map((chip) => chip.textContent)).toEqual(["How you stack up", "Waiver targets", "Trade ideas"]);
   });
 
+  it("shows the cap line with the closest Topics past the team cap, and hides the chips (AT-37)", async () => {
+    // The stream of a live run with 25 Answers of Lil Fridge seeded in the store: no Claude call, and the cap line.
+    streams.push(() => sse(recorded("stack-up-cap")));
+    render(<HomePage />);
+    await tapInMore("How you stack up");
+    const cap = await articleWith("How you stack up", "That's 25 questions today.");
+    expect(cap.textContent).toContain("Ask again tomorrow.");
+    expect(cap.textContent).not.toContain("Checked");
+    const chips = within(within(cap).getByRole("group", { name: "Closest Topics" })).getAllByRole("button");
+    expect(chips.map((chip) => chip.textContent)).toEqual(["Weak spots", "Power rankings", "Your season"]);
+    expect(screen.queryByRole("group", { name: "Suggestions" })).toBeNull();
+    // The cap item stays in the Thread, so a reload shows the line again with no new stream.
+    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("questions today"));
+  });
+
   it("links waiver targets to the waiver page of the week that the client publishes", async () => {
     streams.push(() => sse(recorded("waiver-targets")));
     render(<HomePage />);

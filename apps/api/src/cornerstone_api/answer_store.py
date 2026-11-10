@@ -51,3 +51,9 @@ class AnswerStore:
         with self._connect() as db:
             db.execute("INSERT OR REPLACE INTO answers (key, topic, roster_id, answer, kept_at) VALUES (?, ?, ?, ?, ?)",
                        (key, topic, roster_id, json.dumps(answer), now.isoformat()))
+
+    def kept_at(self, key: str) -> str | None:
+        """The ISO time when the store kept the Answer of `key`, or None when no Answer has that key."""
+        with self._connect() as db:
+            row = db.execute("SELECT kept_at FROM answers WHERE key = ?", (key,)).fetchone()
+        return None if row is None else str(row["kept_at"])

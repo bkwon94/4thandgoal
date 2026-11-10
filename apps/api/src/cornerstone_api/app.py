@@ -34,7 +34,7 @@ from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import ask as ask_routes
 from cornerstone_api import free_answer as free_routes
-from cornerstone_api import personal_topics, trade_topics
+from cornerstone_api import personal_topics, suggestions, trade_topics
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.caps import Caps
@@ -283,6 +283,7 @@ def create_app(
     app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(free_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(personal_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
+    app.include_router(suggestions.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
 
     # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
     # commissioner key. The check and the board each have their own limit of each address, and each other group keeps

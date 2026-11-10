@@ -25,7 +25,8 @@ import { Suggestions } from "./suggestions";
 import { TeamSheet } from "./team-sheet";
 import { type Entry, Thread } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
-import { TOPICS, pickSuggestions } from "./topics";
+import { type ServedSuggestions, checkCurrent, fetchSuggestions, staleLine } from "./suggestions-api";
+import { TOPICS, dayOrder, pickSuggestions } from "./topics";
 import { TradeCard } from "./trade-answer";
 import { type TradeRequest, streamTrade } from "./trade-api";
 import { getYourTeam, setYourTeam } from "./your-team-store";
@@ -63,6 +64,13 @@ export function FrontDoor({
   const [teamId, setTeamId] = useState<number | null | undefined>(undefined);
   const [picking, setPicking] = useState(false);
   const [hour, setHour] = useState<number | null>(null);
+  // The live facts and the urgent Topics of Your team from the API, once it answers. Until then, and with no
+  // passphrase, the Suggestions come from the facts of the weekly build alone.
+  const [served, setServed] = useState<{ team: number; suggestions: ServedSuggestions } | null>(null);
+  // The kept personal Answers whose roster changed, by the key of each, with the time that the API kept it.
+  const [stale, setStale] = useState<Record<string, string | null>>({});
+  const openedNow = useRef(opened);
+  openedNow.current = opened;
   // A kept entry gets a fresh id on load, so a reply of the API never lands on an entry of an earlier visit.
   const load = (id: number): Entry[] => getThread(id, week).map((item) => ({ ...item, id: nextId.current++ }));
 
@@ -88,6 +96,46 @@ export function FrontDoor({
     if (teamId != null) saveThread(teamId, week, thread);
   }, [thread, teamId, week]);
 
+  // On open, the API serves the Suggestions of Your team: the live fact of each personal Topic and the Topics that are
+  // urgent. It also builds the Answer of the top Suggestion when it is a personal Topic, so the first tap shows it at
+  // once. One call per team and day, so a tap never asks again. A failed call keeps the Suggestions of the build.
+  useEffect(() => {
+    const passphrase = getPassphrase();
+    if (teamId == null || day === null || !passphrase) return;
+    let live = true;
+    fetchSuggestions(askTarget, passphrase, { roster_id: teamId, order: dayOrder(day), opened: openedNow.current })
+      .then((suggestions) => live && setServed({ team: teamId, suggestions }))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [teamId, day, askTarget]);
+
+  // The site asks the API whether the key of each personal Answer of the Thread is still current. The check costs
+  // nothing. It runs again only when the set of kept Answers changes.
+  const kept = thread.flatMap((entry) =>
+    entry.kind === "personal" && entry.result && teamId != null
+      ? [{ topic: entry.key, roster_id: teamId, team: entry.team === teamId ? null : entry.team, key: entry.result.key }]
+      : [],
+  );
+  const keptNow = useRef(kept);
+  keptNow.current = kept;
+  const keptSignature = kept.map((item) => item.key).join("|");
+  useEffect(() => {
+    const passphrase = getPassphrase();
+    if (teamId == null || !passphrase || keptSignature === "") return;
+    let live = true;
+    checkCurrent(askTarget, passphrase, keptNow.current)
+      .then((states) => {
+        if (!live) return;
+        setStale(Object.fromEntries(states.filter((state) => !state.current).map((state) => [state.key, state.kept_at])));
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [teamId, keptSignature, askTarget]);
+
   // A new Answer scrolls to its top, so the manager reads it from the question down.
   useEffect(() => {
     if (thread.length > 0) newest.current?.scrollIntoView?.({ behavior: off ? "auto" : "smooth", block: "start" });
@@ -96,8 +144,9 @@ export function FrontDoor({
   const team = teams.find((candidate) => candidate.id === teamId) ?? null;
   const sheetOpen = teamId === null || picking;
   const mine = team ? (answers[team.id] ?? []) : [];
-  const facts = Object.fromEntries(mine.map((answer) => [answer.topic, answer.fact]));
-  const picks = day === null ? [] : pickSuggestions(day, facts, opened);
+  const servedNow = served && team && served.team === team.id ? served.suggestions : null;
+  const facts = { ...Object.fromEntries(mine.map((answer) => [answer.topic, answer.fact])), ...servedNow?.facts };
+  const picks = day === null ? [] : pickSuggestions(day, facts, opened, servedNow?.urgent ?? []);
   const avatars = Object.fromEntries(teams.map((candidate) => [candidate.id, candidate.avatar]));
   const empty = thread.length === 0;
   // A miss and a cap line show their 3 closest Topics, so the chips of the dock hide and the Topics show only once
@@ -160,7 +209,11 @@ export function FrontDoor({
       setMoreOpen(false);
       const name = TOPICS.find((topic) => topic.key === key)?.name ?? key;
       if (!getPassphrase()) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
-      else put(nextId.current++, { kind: "personal", key, team: owner, question: null, result: null }, true);
+      else {
+        // A personal Topic of Your team drops off the Suggestions until the API serves a new fact for it.
+        if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
+        put(nextId.current++, { kind: "personal", key, team: owner, question: null, result: null }, true);
+      }
       return;
     }
     const answer = (answers[owner] ?? []).find((candidate) => candidate.topic === key);
@@ -333,8 +386,15 @@ export function FrontDoor({
                           href: personalHrefs[entry.team]?.[entry.key] ?? null,
                           avatars,
                         };
+                        const since = entry.result ? stale[entry.result.key] : undefined;
                         return entry.result ? (
-                          <PersonalAnswerCard ref={ref} result={entry.result} {...shared} />
+                          <PersonalAnswerCard
+                            ref={ref}
+                            result={entry.result}
+                            // Refresh streams a fresh Answer in the same place. The roster changed, so its key is new.
+                            stale={since !== undefined ? { line: staleLine(since), onRefresh: () => put(entry.id, { ...entry, result: null }) } : null}
+                            {...shared}
+                          />
                         ) : (
                           <PersonalAnswerLive
                             ref={ref}
@@ -343,6 +403,8 @@ export function FrontDoor({
                             body={{ topic: entry.key, roster_id: team.id, team: entry.team === team.id ? null : entry.team }}
                             onDone={(result) => put(entry.id, { ...entry, result })}
                             onMiss={(closest) => put(entry.id, { kind: "miss", question: shared.name, closest })}
+                            // Past a cap, the API writes the line and sends the closest Topics of this Topic.
+                            onCap={(cap) => put(entry.id, { kind: "cap", question: shared.name, line: cap.line, closest: cap.closest })}
                             // A retry sends the name of the Topic through the route, which opens the same Topic again.
                             onError={() => put(entry.id, { kind: "note", question: shared.name, line: RETRY_LINE, topic: null, team: null, retry: true })}
                             {...shared}

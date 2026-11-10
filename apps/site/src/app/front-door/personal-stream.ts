@@ -30,8 +30,12 @@ export const personalBlockSchema = z.object({
 });
 export type PersonalBlock = z.infer<typeof personalBlockSchema>;
 
-/* What the stream shows so far: the view of the free answer, plus the data block and the key of the Answer. */
-export type PersonalView = FreeView & { block: PersonalBlock | null; key: string | null };
+/* The calm line of a cap from the API, with the closest Topics. Past a cap, the API makes no Claude call. */
+export type PersonalCap = { line: string; closest: string[] };
+
+/* What the stream shows so far: the view of the free answer, plus the data block, the key of the Answer, and the cap
+   line in place of the text. */
+export type PersonalView = FreeView & { block: PersonalBlock | null; key: string | null; cap: PersonalCap | null };
 
 /* The checked Answer that the browser keeps: the data block, the text, and the key that the API kept it under. */
 export const personalResultSchema = z.object({ block: personalBlockSchema, text: z.string(), key: z.string() });
@@ -40,6 +44,7 @@ export type PersonalResult = z.infer<typeof personalResultSchema>;
 export function personalViewOf(message: UIMessage | undefined): PersonalView {
   let block: PersonalBlock | null = null;
   let key: string | null = null;
+  let cap: PersonalCap | null = null;
   for (const part of message?.parts ?? []) {
     if (part.type === "data-block") {
       const parsed = personalBlockSchema.safeParse((part as { data: unknown }).data);
@@ -47,7 +52,10 @@ export function personalViewOf(message: UIMessage | undefined): PersonalView {
     } else if (part.type === "data-key") {
       const data = (part as { data: { key?: unknown } }).data;
       if (typeof data?.key === "string") key = data.key;
+    } else if (part.type === "data-cap") {
+      const data = (part as { data: { line?: unknown; closest?: unknown } }).data;
+      if (typeof data?.line === "string" && Array.isArray(data.closest)) cap = { line: data.line, closest: data.closest.map(String) };
     }
   }
-  return { ...viewOf(message), block, key };
+  return { ...viewOf(message), block, key, cap };
 }

@@ -301,3 +301,68 @@ def test_no_step_line_or_block_line_names_an_inner_tool(settings, sources):
     for topic in ("weak_spots", "stack_up", "waiver_targets"):
         block = json.dumps(_block(_chunks(_ask(api, topic)))).lower()
         assert not any(name in block for name in INNER_NAMES)
+
+
+def _caps(api: TestClient):
+    asker = api.app.state.askers["cpc"]
+    return asker.caps, asker.clock()
+
+
+def test_past_the_team_cap_a_personal_topic_makes_no_claude_call_and_gives_the_cap_line(settings, sources):
+    # AT-37 for a personal Topic: the store holds 25 Answers of Lil Fridge today, so no Claude call runs. The block
+    # from code still shows, and the cap line comes with 3 closest Topics, as for the other Topics.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    caps, now = _caps(api)
+    for _ in range(25):
+        caps.record(LIL_FRIDGE, 0.01, now, counts=True)
+    chunks = _chunks(_ask(api, "weak_spots"))
+    assert writer.calls == 0
+    [cap] = [c["data"] for c in chunks if c["type"] == "data-cap"]
+    assert cap["cap"] == "team" and cap["line"] == "That's 25 questions today. Ask again tomorrow."
+    assert cap["closest"] == ["stack_up", "waiver_targets", "trade_ideas"]
+    assert not any(c["type"] == "text-delta" for c in chunks)
+    assert not any(c["type"] == "data-check" for c in chunks)
+    assert caps.answers_today(LIL_FRIDGE, now) == 25
+
+
+def test_a_kept_answer_still_comes_back_past_the_cap(settings, sources):
+    # Story 48: a kept Answer costs nothing, so it works past a cap and records nothing.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    first = _text(_chunks(_ask(api, "weak_spots")))
+    caps, now = _caps(api)
+    caps.record(None, 25.00, now, counts=False)
+    spent = caps.month_usd(now)
+    again = _chunks(_ask(api, "weak_spots"))
+    assert _text(again) == first
+    assert not any(c["type"] == "data-cap" for c in again)
+    assert caps.month_usd(now) == spent and caps.answers_today(LIL_FRIDGE, now) == 1
+
+
+def test_one_checked_answer_counts_once_and_costs_the_league(settings, sources):
+    # Decision 04: a checked Claude Answer is one Answer of the team, and its cost goes to the league month.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([False, True]).answer), writer)
+    _chunks(_ask(api, "weak_spots"))
+    caps, now = _caps(api)
+    assert writer.calls == 2
+    assert caps.answers_today(LIL_FRIDGE, now) == 1
+    assert caps.month_usd(now) > 0
+
+
+def test_an_honest_miss_and_an_error_cost_the_league_but_do_not_count(settings, sources):
+    class DownJev(FakeJev):
+        def ask(self, state, questions):
+            raise JevError("down")
+
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([False, False]).answer), writer)
+    _chunks(_ask(api, "weak_spots"))
+    caps, now = _caps(api)
+    after_miss = caps.month_usd(now)
+    assert after_miss > 0 and caps.answers_today(LIL_FRIDGE, now) == 0
+    down = _api(settings, sources, DownJev(), writer)
+    _chunks(_ask(down, "stack_up"))
+    caps, now = _caps(down)
+    assert caps.month_usd(now) > after_miss and caps.answers_today(LIL_FRIDGE, now) == 0
