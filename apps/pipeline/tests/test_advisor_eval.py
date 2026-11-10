@@ -2,8 +2,10 @@
 Tests for the live eval of the Advisor: the test set, the trade of each entry as of its week, the saved reads, the
 Finder presses, and the summary. They feed the week 6 fixtures to the eval with a stub Advisor, a stub Finder pick, and
 FakeJev, so no test calls Claude or TypeSafe. The news feed is the recorded feed or no feed, so no test calls Sleeper.
+The nflverse download answers from the fixtures or fails, so no test calls nflverse.
 The test set of the tests names the teams of the fixtures through the snapshot, so no test file holds a team name.
 """
+import csv
 import json
 import re
 import shutil
@@ -11,6 +13,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pytest
 from cpc import cli_root, cpc_client, four_week
 from fakes import FakeJev, FakeWriter, no_news, recorded_news
@@ -36,6 +39,7 @@ from cornerstone.advisor_eval import (
 )
 from facts.writer import FINDER_PICK_MODEL, MODEL, call_cost
 from league.jev_port import JevError
+from league.paths import nfl_dir, nflverse_cache_dir
 from league.provider.sleeper import load_raw
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot
@@ -49,6 +53,16 @@ COLLINS, KINCAID, WILSON = "7569", "10236", "8146"
 def no_live_news(monkeypatch):
     """The eval reads the live Sleeper feed by default. A test gives it a recorded feed, or this one with no item."""
     monkeypatch.setattr(advisor_eval, "live_news_feed", lambda: NewsFeed(fetch=no_news))
+
+
+def no_network(url: str) -> bytes:
+    raise httpx.ConnectError(f"no network in a test: {url}")
+
+
+@pytest.fixture(autouse=True)
+def no_nflverse_download(monkeypatch):
+    """The command downloads the past season files and the team stats file. A test gives a fetch, or this one fails."""
+    monkeypatch.setattr(cli, "http_get", no_network)
 
 
 @pytest.fixture
@@ -481,3 +495,76 @@ def test_the_command_names_a_week_with_no_saved_raw_data(
                      str(tmp_path / "out")], writer=FakeWriter(), jev=FakeJev())
     assert code == 2
     assert "week 9" in capsys.readouterr().out
+
+
+PAST = Path(__file__).parent / "fixtures" / "nflverse_past"
+COLLINS_GSIS = "00-0036554"
+
+
+def _fresh_cache(repo: Path, fixture_nflverse_dir: Path) -> Path:
+    """The nflverse cache of the repo with the week files of the build and no past season file and no team stats file.
+
+    The id map gets a row for Collins, so his past season rows match him, as the full id map of a real cache does.
+    The schedules file holds the games of both fixtures with every column of the past slice, as a real one does.
+    """
+    cache = nflverse_cache_dir(nfl_dir(repo))
+    shutil.copytree(fixture_nflverse_dir, cache)
+    (cache / "stats_team_week_2026.csv.gz").unlink()
+    with (PAST / "games.csv").open(newline="") as past, (fixture_nflverse_dir / "games.csv").open(newline="") as now:
+        past_rows, now_rows = csv.DictReader(past), list(csv.DictReader(now))
+        columns = list(past_rows.fieldnames or [])
+        rows = [*past_rows, *now_rows]
+    with (cache / "games.csv").open("w", newline="") as f:
+        writer = csv.DictWriter(f, columns, restval="")
+        writer.writeheader()
+        writer.writerows(rows)
+    ids = cache / "db_playerids.csv"
+    fields = ids.read_text().splitlines()[0].split(",")
+    row = {"gsis_id": COLLINS_GSIS, "sleeper_id": COLLINS, "name": "Nico Collins", "merge_name": "nico collins",
+           "position": "WR", "team": "HOU"}
+    with ids.open("a") as f:
+        f.write(",".join(row.get(field, "NA") for field in fields) + "\n")
+    return cache
+
+
+def _serve_fixtures(fixture_nflverse_dir: Path, asked: list[str]):
+    """A download that answers from the past season slice and the week fixtures, and keeps each URL it was asked for."""
+    def fetch(url: str) -> bytes:
+        asked.append(url)
+        name = url.rsplit("/", 1)[-1]
+        return ((PAST / name) if (PAST / name).exists() else (fixture_nflverse_dir / name)).read_bytes()
+    return fetch
+
+
+def test_the_command_downloads_the_sources_of_a_press_so_the_sheet_has_history_and_nfl_team_facts(
+        snap, tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    repo = _eval_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    _fresh_cache(repo, fixture_nflverse_dir)
+    asked: list[str] = []
+    monkeypatch.setattr(cli, "http_get", _serve_fixtures(fixture_nflverse_dir, asked))
+    writer = FakeWriter([AdvisorOut.model_validate(good_out({})), AdvisorOut.model_validate(good_out({}))])
+
+    code = cli.main(_eval_args(snap, tmp_path, tmp_path / "out"), writer=writer, jev=FakeJev())
+
+    assert code == 0
+    sheet = read_file(tmp_path / "out", 1)["sheet"]
+    assert f"{COLLINS}.history" in sheet
+    assert any(fid.endswith(".nfl_team") for fid in sheet)
+    assert sorted(url.rsplit("/", 1)[-1] for url in asked) == [
+        "stats_player_week_2023.csv.gz", "stats_player_week_2024.csv.gz", "stats_player_week_2025.csv.gz",
+        "stats_team_week_2026.csv.gz"]
+
+
+def test_a_failed_download_gives_no_history_or_nfl_team_fact_and_a_printed_line(
+        snap, tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    repo = _eval_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    _fresh_cache(repo, fixture_nflverse_dir)
+    writer = FakeWriter([AdvisorOut.model_validate(good_out({})), AdvisorOut.model_validate(good_out({}))])
+
+    code = cli.main(_eval_args(snap, tmp_path, tmp_path / "out"), writer=writer, jev=FakeJev())
+
+    assert code == 0
+    sheet = read_file(tmp_path / "out", 1)["sheet"]
+    assert not any(fid.endswith((".history", ".nfl_team")) for fid in sheet)
+    text = capsys.readouterr().out
+    assert "past season file of 2023" in text and "team stats file of 2026" in text

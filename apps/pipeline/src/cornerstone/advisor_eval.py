@@ -29,8 +29,12 @@ from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_news import FACT_PREFIX as NEWS_PREFIX
 from analyzer.trade_news import NewsFeed
 from facts.writer import FINDER_PICK_MODEL, MODEL, ClaudeCall, ClaudeWriter, call_cost, finder_pick_call
+from league.client import Client
 from league.jev_port import Jev, JevResponse, NoulQuestion
+from league.nflverse import STATS_TEAM_URL, cache_path, download
 from league.numbers import plural
+from league.past_seasons import fetch_past_seasons, past_seasons, past_stats_path
+from league.paths import nflverse_cache_dir
 from league.provider.raw import RawTransaction
 from league.snapshot import Snapshot
 
@@ -49,6 +53,22 @@ NO_NEWS = NewsFeed(fetch=lambda _player_id: [])
 def live_news_feed() -> NewsFeed:
     """The real Sleeper news feed, for the trades of the current week and the Finder askers."""
     return NewsFeed()
+
+
+def fetch_press_sources(client: Client, season: int, fetch: Callable[[str], bytes]) -> list[str]:
+    """Download the past season files and the team stats file of `season`, as a press does before it reads.
+
+    A press gets them in refresh_sources, so without this step a fresh cache gives an eval sheet with no history fact
+    and no NFL team fact. The download keeps a file that is on disk and fresh, as the press does. A failed source
+    gives no such fact, and the function returns one line for it, so the command prints it.
+    """
+    cache = nflverse_cache_dir(client.nfl_dir)
+    fetch_past_seasons(cache, season, fetch)
+    lines = [f"The past season file of {past} did not download, so no sheet has a history fact from {past}."
+             for past in past_seasons(season) if not past_stats_path(cache, past).exists()]
+    if download(STATS_TEAM_URL.format(season=season), cache_path(cache, STATS_TEAM_URL, season), fetch=fetch) is None:
+        lines.append(f"The team stats file of {season} did not download, so no sheet has an NFL team fact.")
+    return lines
 
 
 class TradeNotFound(Exception):

@@ -13,7 +13,7 @@ from pathlib import Path
 
 import httpx
 
-from cornerstone.advisor_eval import Meter, load_test_set, run_eval, summary_lines
+from cornerstone.advisor_eval import Meter, fetch_press_sources, load_test_set, run_eval, summary_lines
 from cornerstone.egg_draft import run_egg_draft
 from cornerstone.egg_drop import drop_after_publish, drop_from_env
 from cornerstone.pipeline import (
@@ -39,6 +39,7 @@ from league.client import CLIENT_FILE, Client, ClientError, check_schema_files, 
 from league.jev import JEV
 from league.jev_port import Jev
 from league.models import ChartValues, week_lines
+from league.nflverse import http_get
 from league.parse import parse_trades, parse_week
 from league.paths import history_root, nfl_dir, nflverse_cache_dir, provider_cache_dir, raw_dir
 from league.provider.base import Provider
@@ -181,15 +182,19 @@ def _out_is_safe(out: Path, root: Path) -> bool:
 
 def run_advisor_eval(
         args: argparse.Namespace, client: Client, writer: Writer | None, jev: Jev | None, root: Path,
+        fetch: Callable[[str], bytes],
 ) -> int:
     """Read the trades of the test set as of their weeks, save each sheet and read, and print the summary.
 
+    Before the reads, `fetch` downloads the sources that a press downloads, so the sheet is the sheet of a press.
     The exit code is 1 when a trade has no read, and 2 when the output folder is in the repo and not ignored.
     """
     if not _out_is_safe(args.out, root):
         print(f"{args.out} is in the repo and git does not ignore it. The output names league managers, "
               "so use a folder outside the repo or a folder in .gitignore.")
         return 2
+    for line in fetch_press_sources(client, args.season, fetch):
+        print(line)
     meter = Meter()
     # The writer of the run counts each response, so the summary has the real cost. A test passes its own writer.
     writer = writer or ClaudeWriter(on_usage=meter.add_claude)
@@ -334,7 +339,8 @@ def main(
             return 0
         if args.command == "advisor-eval":
             # The eval reads the week of each trade of its test set, so it skips resolve_week too.
-            return run_advisor_eval(args, load(args.season), writer, jev, root)
+            # The download is read at call time, so a test swaps http_get of this module and makes no network call.
+            return run_advisor_eval(args, load(args.season), writer, jev, root, http_get)
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week, fetch_state)
         client = load(season)
