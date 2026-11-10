@@ -71,7 +71,7 @@ def test_the_bid_history_holds_every_waiver_claim_of_the_season_with_its_bid_and
     ]
 
 
-def test_a_rival_with_a_need_at_the_position_raises_the_price_more_than_one_without():
+def test_a_manager_with_a_need_at_the_position_raises_the_price_more_than_one_without():
     # Team 1 has $40 left and one of its two RBs is out. At a board score of 0.75 it bids 35% of $40 times
     # 0.75, $10.50. The bid to win is $11.
     needy = _league([(40, [None, "Out"]), (60, [None, None]), (20, [None, None])])
@@ -111,9 +111,9 @@ def test_only_the_most_recent_win_of_the_last_3_weeks_sets_the_floor():
     assert _bid(raw, "RB", [_claim("RB", 25, week=4), _claim("RB", 10, week=5)]) == 11
 
 
-def test_the_price_never_exceeds_the_highest_rival_budget_left_and_is_a_whole_dollar():
+def test_the_price_never_exceeds_the_highest_budget_left_of_another_manager_and_is_a_whole_dollar():
     raw = _league([(40, [None, "Out"]), (60, [None, None]), (20, [None, None])])
-    # A $70 RB win sets the floor at $71, but no rival has more than $60 left.
+    # A $70 RB win sets the floor at $71, but no other manager has more than $60 left.
     bid = _bid(raw, "RB", [_claim("RB", 70)])
     assert bid == 60
     assert isinstance(bid, int)
@@ -147,9 +147,9 @@ def test_every_number_in_the_price_fact_text_is_in_its_numbers():
     raw = _league([(41, [None, "IR"]), (60, [None, None]), (20, [None, None])])
     # The fact names the need, the past win, and the cap, so every part of the text is in play.
     price = price_players([_free_agent("900", "RB")], raw, [_claim("RB", 70)], 6)[0].price
-    assert price.fact.text == ("Bid $60 to win Player 900. The top rival bid is about $10.76, from Team 1 with $41 left"
+    assert price.fact.text == ("Bid $60 to win Player 900. The top bid of another manager is about $10.76, from Team 1 with $41 left"
                                " and a need at RB. The last winning RB claim in the last 3 weeks is $70."
-                               " No rival has more than $60 left.")
+                               " No other manager has more than $60 left.")
     # The digits of the names in this hand-built league are names, not numbers.
     text = price.fact.text.replace("Player 900", "").replace("Team 1", "")
     assert set(NUMBER_TOKEN.findall(text)) == set(price.fact.numbers)
@@ -166,7 +166,7 @@ def test_the_board_prices_best_adds_with_the_outbid_count_per_budget_level(fixtu
     price = next(p.price for p in best if p.player_id == "80001")
     assert price.bid == 41
     assert sorted(price.outbid) == [9, 19, 25, 51, 58, 61, 65, 67, 69, 72, 82, 90]
-    # A viewer at $51 can bid the $41: 9 rosters have more than $41, his own among them, so 8 rivals can outbid him.
+    # A viewer at $51 can bid the $41: 9 rosters have more than $41, his own among them, so 8 other managers can outbid him.
     assert price.outbid[51] == 8
     # A viewer at $9 can bid only $9: the 11 other rosters have more than $9.
     assert price.outbid[9] == 11

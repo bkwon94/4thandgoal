@@ -64,7 +64,7 @@
           "bid": 23,
           "fact": {
             "id": "waiver.7567.price",
-            "text": "$23 beats the top rival bid of $22",
+            "text": "$23 beats the top bid of another manager, $22",
             "numbers": [
               "23",
               "22"
@@ -178,7 +178,7 @@
           "bid": 14,
           "fact": {
             "id": "waiver.7528.price",
-            "text": "$14 beats the top rival bid of $13",
+            "text": "$14 beats the top bid of another manager, $13",
             "numbers": [
               "14",
               "13"
@@ -292,7 +292,7 @@
           "bid": 8,
           "fact": {
             "id": "waiver.5012.price",
-            "text": "$8 beats the top rival bid of $7",
+            "text": "$8 beats the top bid of another manager, $7",
             "numbers": [
               "8",
               "7"
@@ -406,7 +406,7 @@
           "bid": 6,
           "fact": {
             "id": "waiver.11579.price",
-            "text": "$6 beats the top rival bid of $5",
+            "text": "$6 beats the top bid of another manager, $5",
             "numbers": [
               "6",
               "5"
@@ -520,7 +520,7 @@
           "bid": 4,
           "fact": {
             "id": "waiver.4037.price",
-            "text": "$4 beats the top rival bid of $3",
+            "text": "$4 beats the top bid of another manager, $3",
             "numbers": [
               "4",
               "3"
@@ -627,7 +627,7 @@
           "bid": 3,
           "fact": {
             "id": "waiver.5045.price",
-            "text": "$3 beats the top rival bid of $2",
+            "text": "$3 beats the top bid of another manager, $2",
             "numbers": [
               "3",
               "2"
@@ -734,7 +734,7 @@
           "bid": 2,
           "fact": {
             "id": "waiver.9482.price",
-            "text": "$2 beats the top rival bid of $1",
+            "text": "$2 beats the top bid of another manager, $1",
             "numbers": [
               "2",
               "1"
@@ -848,7 +848,7 @@
           "bid": 1,
           "fact": {
             "id": "waiver.4663.price",
-            "text": "$1 beats the top rival bid of $0",
+            "text": "$1 beats the top bid of another manager, $0",
             "numbers": [
               "1",
               "0"
@@ -964,7 +964,7 @@
           "bid": 23,
           "fact": {
             "id": "waiver.7567.price",
-            "text": "$23 beats the top rival bid of $22",
+            "text": "$23 beats the top bid of another manager, $22",
             "numbers": [
               "23",
               "22"
@@ -1078,7 +1078,7 @@
           "bid": 3,
           "fact": {
             "id": "waiver.5045.price",
-            "text": "$3 beats the top rival bid of $2",
+            "text": "$3 beats the top bid of another manager, $2",
             "numbers": [
               "3",
               "2"
@@ -1185,7 +1185,7 @@
           "bid": 2,
           "fact": {
             "id": "waiver.9482.price",
-            "text": "$2 beats the top rival bid of $1",
+            "text": "$2 beats the top bid of another manager, $1",
             "numbers": [
               "2",
               "1"
@@ -1299,7 +1299,7 @@
           "bid": 6,
           "fact": {
             "id": "waiver.11579.price",
-            "text": "$6 beats the top rival bid of $5",
+            "text": "$6 beats the top bid of another manager, $5",
             "numbers": [
               "6",
               "5"
@@ -1413,7 +1413,7 @@
           "bid": 14,
           "fact": {
             "id": "waiver.7528.price",
-            "text": "$14 beats the top rival bid of $13",
+            "text": "$14 beats the top bid of another manager, $13",
             "numbers": [
               "14",
               "13"
@@ -1527,7 +1527,7 @@
           "bid": 4,
           "fact": {
             "id": "waiver.4037.price",
-            "text": "$4 beats the top rival bid of $3",
+            "text": "$4 beats the top bid of another manager, $3",
             "numbers": [
               "4",
               "3"
@@ -1634,7 +1634,7 @@
           "bid": 8,
           "fact": {
             "id": "waiver.5012.price",
-            "text": "$8 beats the top rival bid of $7",
+            "text": "$8 beats the top bid of another manager, $7",
             "numbers": [
               "8",
               "7"
@@ -1750,7 +1750,7 @@
           "bid": 2,
           "fact": {
             "id": "waiver.9482.price",
-            "text": "$2 beats the top rival bid of $1",
+            "text": "$2 beats the top bid of another manager, $1",
             "numbers": [
               "2",
               "1"
@@ -1864,7 +1864,7 @@
           "bid": 4,
           "fact": {
             "id": "waiver.4037.price",
-            "text": "$4 beats the top rival bid of $3",
+            "text": "$4 beats the top bid of another manager, $3",
             "numbers": [
               "4",
               "3"
@@ -1971,7 +1971,7 @@
           "bid": 1,
           "fact": {
             "id": "waiver.4663.price",
-            "text": "$1 beats the top rival bid of $0",
+            "text": "$1 beats the top bid of another manager, $0",
             "numbers": [
               "1",
               "0"
@@ -2087,7 +2087,7 @@
           "bid": 8,
           "fact": {
             "id": "waiver.5012.price",
-            "text": "$8 beats the top rival bid of $7",
+            "text": "$8 beats the top bid of another manager, $7",
             "numbers": [
               "8",
               "7"
@@ -2201,7 +2201,7 @@
           "bid": 6,
           "fact": {
             "id": "waiver.11579.price",
-            "text": "$6 beats the top rival bid of $5",
+            "text": "$6 beats the top bid of another manager, $5",
             "numbers": [
               "6",
               "5"

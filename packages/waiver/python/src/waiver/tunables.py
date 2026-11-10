@@ -18,8 +18,8 @@ BUCKET_POSITIONS = ("QB", "RB", "WR", "TE")
 # The count of latest weeks the usage trend reads. The trend is the change from the first of these weeks
 # to the last, so 2 compares last week with the week before.
 USAGE_WEEKS = 2
-# The share of his budget left that the model expects a rival to bid on a player with a board score of 1.
-# "need" is for a rival with fewer healthy starters at the position than the lineup needs, "covered" for any other.
+# The share of his budget left that the model expects a manager to bid on a player with a board score of 1.
+# "need" is for a manager with fewer healthy starters at the position than the lineup needs, "covered" for any other.
 NEED_SHARE = {"need": 0.35, "covered": 0.12}
 # The count of weeks, N-2 to N, whose most recent winning claim at a position sets the price floor. One old
 # big win, such as $41 for an RB in week 3, must not set the price of every RB all season.
