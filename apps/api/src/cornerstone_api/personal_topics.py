@@ -32,7 +32,6 @@ from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import Asker, ClientAsker
 from cornerstone_api.caps import CapHit
 from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data
-from cornerstone_api.free_answer import MODEL
 from cornerstone_api.personal_facts import (
     PersonalFacts,
     PersonalTopic,
@@ -47,6 +46,7 @@ from cornerstone_api.personal_wording import (
     rewrite_prompt,
     topic_prompt,
 )
+from facts.writer import route_model
 from league.snapshot import Snapshot
 from managers.grade import ManagerGrade, Starter
 
@@ -54,8 +54,10 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# A personal Topic runs Sonnet 5.5 at medium effort (spec, "The Answers and the stream").
-EFFORT = "medium"
+# The route table maps a personal Topic to its model and its effort (spec, "The Answers and the stream").
+ROUTE = route_model("personal_topic")
+# The model of the agent, in the form of Pydantic AI. The key of each Answer names it.
+MODEL = f"anthropic:{ROUTE.model}"
 # A short Answer needs few tokens, but a cut Answer is worse than a long one, so the cap leaves room for the thinking.
 MAX_TOKENS = 16000
 # The closest Topics of the honest miss of each personal Topic, after a second failed check.
@@ -69,7 +71,7 @@ AGENT = Agent(
     MODEL,
     name="personal_topic",
     instructions=INSTRUCTIONS,
-    model_settings=AnthropicModelSettings(anthropic_effort=EFFORT, max_tokens=MAX_TOKENS),
+    model_settings=AnthropicModelSettings(anthropic_effort=ROUTE.effort, max_tokens=MAX_TOKENS),
     capabilities=[Caching()],
     defer_model_check=True,
 )
@@ -91,7 +93,7 @@ def answer_key(topic: str, own: bool, facts: PersonalFacts, roster: list[str]) -
     model that wrote it. A waiver claim or a trade changes the roster, so the key changes and Claude writes a fresh
     Answer. The roster is in the key, because a bench add can leave the slice the same and still change the read."""
     body = {"topic": topic, "own": own, "slice": facts.slice, "block": facts.block, "roster": sorted(roster),
-            "instructions": INSTRUCTIONS, "ask": TOPIC_ASKS[topic], "model": MODEL, "effort": EFFORT}
+            "instructions": INSTRUCTIONS, "ask": TOPIC_ASKS[topic], "model": MODEL, "effort": ROUTE.effort}
     return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
 
 

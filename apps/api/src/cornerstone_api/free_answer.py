@@ -23,6 +23,7 @@ from cornerstone_api import free_tools
 from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Route, route_question
 from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data
 from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt, run_instructions
+from facts.writer import route_model
 from league.jev_port import JevError
 from league.live import fetch_live_week
 from league.paths import history_root
@@ -31,9 +32,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# Every Claude answer of the front door uses Sonnet 5.5. A free answer runs at low effort (decision 04 and the spec).
-MODEL = "anthropic:claude-sonnet-5-5"
-EFFORT = "low"
+# The route table maps the free answer to its model and its effort (decision 04 and the spec).
+ROUTE = route_model("free_answer")
 # The hard cap of the spec. It holds an answer to about 10 to 20 s and under about $0.15 (decision 12).
 TOOL_CALLS_MAX = 4
 # A short answer needs few tokens, but a cut answer is worse than a long one, so the cap leaves room for the thinking.
@@ -54,11 +54,11 @@ class FreeDeps:
 
 
 AGENT = Agent(
-    MODEL,
+    f"anthropic:{ROUTE.model}",
     name="free_answer",
     deps_type=FreeDeps,
     instructions=INSTRUCTIONS,
-    model_settings=AnthropicModelSettings(anthropic_effort=EFFORT, max_tokens=MAX_TOKENS),
+    model_settings=AnthropicModelSettings(anthropic_effort=ROUTE.effort, max_tokens=MAX_TOKENS),
     capabilities=[Caching()],
     defer_model_check=True,
 )
