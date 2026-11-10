@@ -2,12 +2,17 @@
  * The Thread of each team in local storage: the entries that the manager opened this fantasy week, oldest first.
  * The week of the latest build keys each Thread, so the Tuesday build starts an empty one (decision 05).
  */
+import type { ThreadItem } from "./ask-thread";
+
 // Its own key, so the Thread never mixes with Your team or the opened Topics.
 export const THREAD_KEY = "cpc.thread";
 
-/* One entry of the Thread. A Topic entry names its Topic, and its Answer reads from the published week.
-   The kind leaves room for the Answers of the ask box. */
-export type ThreadEntry = { kind: "topic"; topic: string };
+/* One entry of the Thread that the browser keeps. A Topic entry names its Topic and its team, and its Answer reads
+   from the published week. A miss and a note keep their lines. A question in flight and the passphrase card stay out,
+   because they mean nothing after a reload. */
+export type ThreadEntry = Extract<ThreadItem, { kind: "topic" | "miss" | "note" }>;
+
+const KEPT = new Set(["topic", "miss", "note"]);
 
 type Threads = Record<string, { week: number; entries: ThreadEntry[] }>;
 
@@ -33,13 +38,13 @@ function writeAll(all: Threads): void {
 export function getThread(teamId: number, week: number): ThreadEntry[] {
   const entry = readAll()[String(teamId)];
   if (!entry || entry.week !== week || !Array.isArray(entry.entries)) return [];
-  return entry.entries.filter((item) => item && item.kind === "topic" && typeof item.topic === "string");
+  return entry.entries.filter((item) => item && typeof item === "object" && KEPT.has(item.kind));
 }
 
-export function appendToThread(teamId: number, week: number, item: ThreadEntry): ThreadEntry[] {
-  const entries = [...getThread(teamId, week), item];
+/* Keep the Thread of one team for this week. Only the kinds that mean something after a reload stay. */
+export function saveThread(teamId: number, week: number, items: ThreadItem[]): void {
+  const entries = items.filter((item): item is ThreadEntry => KEPT.has(item.kind));
   writeAll({ ...readAll(), [String(teamId)]: { week, entries } });
-  return entries;
 }
 
 /* Clear empties the Thread of this week for one team. The Threads of the other teams stay. */

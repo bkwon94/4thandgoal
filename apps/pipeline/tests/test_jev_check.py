@@ -17,7 +17,7 @@ from cornerstone.pipeline import read_verify, run_build
 from cornerstone.sheet import read_bundle
 from facts.writer import RefusalError, load_prompt, with_terms
 from league.jev import TypeSafeJev
-from league.jev_port import JevError, NoulQuestion
+from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.models import Sentence, Verdict, VerifyOut
 from league.paths import week_dir
 from week.median import median_terms
@@ -260,3 +260,14 @@ def test_only_the_adapter_in_the_league_package_imports_the_sdk():
             if any(name.split(".")[0] == "typesafe_sdk" for name in names):
                 importers.append(path.relative_to(repo).as_posix())
     assert importers == ["packages/league/python/src/league/jev.py"]
+
+
+@pytest.mark.live
+def test_the_adapter_answers_one_choice_and_one_noul_in_one_live_request():
+    # A live test: it calls TypeSafe with TYPESAFE_API_KEY. The route of the front door asks a Choice and Nouls together.
+    color = ChoiceQuestion(instructions="Which color does `sky` give the sky?",
+                           options={"blue": "The sky is blue.", "gray": "The sky is gray."})
+    clear = NoulQuestion(instructions="Does `sky` say the sky is clear?", yes="It says clear.", no="It says cloudy.")
+    answers = TypeSafeJev().ask({"sky": "The sky is blue and clear today."}, {"color": color, "clear": clear})
+    assert max(answers.choices["color"], key=answers.choices["color"].get) == "blue"
+    assert set(answers.nouls) == {"clear"}

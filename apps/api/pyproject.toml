@@ -56,7 +56,8 @@ known-first-party = ["analyzer", "cornerstone_api", "eggs", "facts", "league"]
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 [tool.pyright]
 typeCheckingMode = "basic"
-include = ["src/cornerstone_api/app.py", "src/cornerstone_api/refresh.py"]
+include = ["src/cornerstone_api/app.py", "src/cornerstone_api/refresh.py", "src/cornerstone_api/ask.py",
+           "src/cornerstone_api/ask_wording.py", "src/cornerstone_api/miss_log.py"]
 
 [tool.uv.build-backend]
 module-name = "cornerstone_api"

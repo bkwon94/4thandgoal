@@ -5,29 +5,35 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { type ReactNode, type RefObject, useEffect, useRef, useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AnswerBody, AnswerCard } from "./answer-card";
 import { QUICK, SMOOTH, fadeIn } from "./motion";
-import type { ThreadEntry } from "./thread-store";
+import type { ThreadItem } from "./ask-thread";
 import { TOPICS } from "./topics";
 
 /* A fold grows and shrinks its height on --duration-fast and --ease-smooth-out, and its content sharpens from
    --blur-small, as the accordion of transitions-dev. The close is the same length, so a quick second tap never jumps. */
 const FOLD = { duration: 0.25, ease: SMOOTH } as const;
 
+/* One item of the Thread with its id, so a reply of the API lands in the place of its question. */
+export type Entry = ThreadItem & { id: number };
+
 export function Thread({
   entries,
   answers,
   avatars,
   newest,
+  renderOther,
 }: {
-  entries: ThreadEntry[];
-  answers: DoorAnswer[];
+  entries: Entry[];
+  answers: Record<number, DoorAnswer[]>;
   avatars: Record<number, string | null>;
   newest: RefObject<HTMLElement | null>;
+  // A miss, a note, a question in flight, or the passphrase card has no fold. The front door renders it as its card.
+  renderOther: (entry: Exclude<Entry, { kind: "topic" }>, ref: RefObject<HTMLElement | null> | undefined) => ReactNode;
 }) {
   // One fold opens at a time, by its place in the Thread. The open fold holds the length of the Thread at the tap, so
   // a new Answer folds each older one again.
@@ -36,17 +42,26 @@ export function Thread({
   return (
     <div className="flex flex-col">
       {entries.map((entry, index) => {
-        const answer = answers.find((candidate) => candidate.topic === entry.topic);
+        const last = index === entries.length - 1;
+        if (entry.kind !== "topic") {
+          return (
+            <div key={entry.id} className={last && index > 0 ? "pt-sp-6" : ""}>
+              {renderOther(entry, last ? newest : undefined)}
+            </div>
+          );
+        }
+        const answer = (answers[entry.team] ?? []).find((candidate) => candidate.topic === entry.key);
         if (!answer) return null;
-        const name = TOPICS.find((topic) => topic.key === entry.topic)?.name ?? entry.topic;
-        return index === entries.length - 1 ? (
+        // A typed question shows as its own bubble. A tapped Topic shows its name.
+        const name = entry.question ?? TOPICS.find((topic) => topic.key === entry.key)?.name ?? entry.key;
+        return last ? (
           // The newest Answer sits a step below the folds, so the open card reads apart from the list above it.
-          <div key={index} className={index > 0 ? "pt-sp-6" : ""}>
+          <div key={entry.id} className={index > 0 ? "pt-sp-6" : ""}>
             <AnswerCard ref={newest} name={name} answer={answer} avatars={avatars} />
           </div>
         ) : (
           <Fold
-            key={index}
+            key={entry.id}
             name={name}
             answer={answer}
             avatars={avatars}
