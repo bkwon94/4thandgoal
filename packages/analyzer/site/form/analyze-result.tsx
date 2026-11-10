@@ -244,7 +244,7 @@ function CaseText({ readCase }: { readCase: string }) {
 }
 
 /* The read fills the hero slots: the side as the eyebrow and the Lean word as the title. The feature holds the rest
-   in the order of decision 05: the scale, the Case, then the fairness line. Each chapter of the result opens with a
+   in this order: the scale, the Case, then the fairness line. Each chapter of the result opens with a
    level-two heading, so the title is level two. The Lean word rises in once, so the call lands with a beat. With
    motion off, it shows at rest at once. The no-values note and the fairness block sit on a card under the Case, so
    their text keeps the colors of the card. The read has no stats and no action, so the hero shows no empty area. */
