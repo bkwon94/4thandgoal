@@ -9,4 +9,4 @@ Stage = Callable[[str], None]
 
 
 def quiet(line: str) -> None:
-    """The default callback: it drops the line, so a route with no stream keeps its behavior."""
+    """The default callback: it drops the line, because a route with no stream has no one to send it to."""

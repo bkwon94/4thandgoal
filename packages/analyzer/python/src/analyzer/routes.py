@@ -244,7 +244,8 @@ def analyze(request: Request, trade: ProposedTrade, served: ServedClient) -> dic
 def analyze_trade(request: Request, trade: ProposedTrade, served: Served, stage: Stage | None = None) -> dict:
     """The analyze press of the route, for the route and for the trade check of the front door.
 
-    With `stage`, the Advisor gets it and sends a plain line at each stage. With none, the press is as it always was.
+    With `stage`, the Advisor gets it and sends a plain line at each stage. With none, the Advisor gets no stage
+    keyword and sends no line, because the plain route streams no step.
     """
     with _press_log("analyze", served):
         return _analyze(request, trade, served, stage)
@@ -354,8 +355,8 @@ def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
 def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None) -> dict:
     """The find press of the route, for the route and for the trade ideas of the front door.
 
-    With `stage`, the search and the pick get it and send a plain line at each stage. With none, the press is as it
-    always was.
+    With `stage`, the search and the pick get it and send a plain line at each stage. With none, they get no stage
+    keyword and send no line, because the plain route streams no step.
     """
     with _press_log("find", served):
         return _find(request, pair, served, stage)
