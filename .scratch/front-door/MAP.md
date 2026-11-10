@@ -26,15 +26,15 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - `your-league` is scrapped. This map takes its ideas: Your team in the browser, the sheet that asks for it, and the live Finder. Brian, 2026-11-09.
 - The pages break into short Answers. Each Answer is a short form of chapters of a page, and it links to the page. No page goes away. Brian, 2026-11-09.
 - The first visit asks for Your team in a sheet, with no skip. Every Suggestion comes from Your team. Brian, 2026-11-09.
-- The weekly build makes the Answers for each team. Only the Topics that change during the week come live from the API, such as trade ideas. Brian, 2026-11-09.
+- The weekly build makes the Answers of the league Topics. The personal Topics, trade ideas, and the trade check are live from the API. Brian, 2026-11-09, changed by decision 01.
 - Jev routes each question to a Topic. With no Topic, Jev asks "Can the facts of the week answer this?" A yes gets a short Claude answer that Jev checks. A no gets an honest miss, the 3 closest Topics, and a log entry. Brian, 2026-11-09.
 - The ask box uses the league passphrase, a cap for each team, and one cap for the league each month. Past the cap, only Jev routes and honest misses run. Brian, 2026-11-09.
 - The terms are Topic, Answer, Suggestion, and Thread. `GLOSSARY.md`.
+- The first build has 13 Topics. The personal Topics use the Roster grade, the slot ranks, and facts side by side, with no new formula. The Advisor judges sell high. Only the personal Topics get new Claude text. `decisions/01-grill-the-first-topics.md`.
 - `/` becomes the front door. The hero and the tool tiles go away. The menu stays with fewer links. Brian, 2026-11-09.
 
 ## NOT YET SPECIFIED
 
-- Which Topics are in the first build, and which new facts do they need? `decisions/01-grill-the-first-topics.md`.
 - How is a Suggestion picked and put in order? `decisions/02-grill-how-suggestions-rank.md`.
 - What do the Jev questions cost live, and which TypeSafe rate limits apply? `decisions/03-research-jev-live-cost.md`.
 - What are the numbers of the caps? `decisions/04-grill-the-cap-numbers.md`.
@@ -43,6 +43,7 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - What is the look and the motion system of the front door? `decisions/07-prototype-the-design-language.md`.
 - How does the front door look and move on a phone? `decisions/08-prototype-the-front-door.md`.
 - Does the Jev route pick the right Topic for real questions? `decisions/09-prototype-the-jev-route.md`.
+- How does a live personal Answer stay fast and cheap? `decisions/11-grill-live-answer-speed.md`.
 - Which links stay in the menu, and what does each Answer link to? `decisions/10-spec-the-menu-and-pages.md`.
 
 ## OUT OF SCOPE
