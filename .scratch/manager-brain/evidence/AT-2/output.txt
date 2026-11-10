@@ -1,0 +1,16 @@
+$ make build CLIENT=cpc WEEK=5   # in apps/pipeline of a detached checkout of 26dbed1b
+# Started 2026-11-09T23:26:40-0500, ended 2026-11-09T23:39:33-0500.
+# Before the build: ls data/nfl/cache/charts/1QB0.5PPR4pt shows PNGs of weeks 6 to 9 only, so week 5 has no chart PNG.
+week-06.json week-06.png week-07.json week-07.png week-08.json week-08.png week-09.json week-09.png 
+
+# Every log line of the build that holds the word chart (grep -n -i chart):
+236:INFO cornerstone.pipeline: Week 5 has no chart, so the roster grade has no trade value.
+
+# The last lines of the build:
+/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe/clients/cpc/build/2026/week-05/page.json
+Site page after publish: https://cpc.4thandgoal.app/2026/week-05/
+exit 0
+
+# The Claude calls of the build, counted from the log: 28 ResearchOut, 19 WriterOut, 13 VerifyOut.
+$ git status --short   # in the ev-pipe worktree, after git restore and git clean of the build output
+(no output)

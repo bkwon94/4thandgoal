@@ -26,12 +26,14 @@ from league.nflverse import (
     INJURIES_URL,
     SCHEDULES_URL,
     STATS_PLAYER_URL,
+    STATS_TEAM_URL,
     cache_path,
     download,
     http_get,
     is_fresh,
 )
 from league.parse import parse_week
+from league.past_seasons import fetch_past_seasons
 from league.paths import history_root, history_week_dir, nflverse_cache_dir, returns_path
 from league.provider.raw import RawAheadWeek, RawWeek
 from league.provider.sleeper import fetch_past_week, fetch_projections_ahead
@@ -58,11 +60,12 @@ class ChartReader(Protocol):
 ProjectionsFetcher = Callable[[int, int, int, str], list[RawAheadWeek]]
 
 # The nflverse sources that the grade reads now, with the plain name the snapshot gives each one.
-# The injuries file, the expected points file, and the weekly player file are here because on Fly no weekly build
-# downloads them.
+# The injuries file, the expected points file, the weekly player file, and the team stats file are here because on Fly
+# no weekly build downloads them.
 REFRESHED_SOURCES = (
     ("schedules", SCHEDULES_URL), ("depth charts", DEPTH_CHARTS_URL), ("id map", FFIDS_URL),
     ("injuries", INJURIES_URL), ("expected points", FFOPPORTUNITY_URL), ("player weeks", STATS_PLAYER_URL),
+    ("team stats", STATS_TEAM_URL),
 )
 # The fast sources change on game days, so they refresh sooner than the others.
 FAST_SOURCES = ("injuries", "player weeks")
@@ -204,6 +207,7 @@ def refresh_sources(
         fetch_nflverse: Callable[[str], bytes] = http_get,
         fetch_history_week: PastLegFetcher = fetch_past_week,
         read_chart: ChartReader | None,
+        fetch_past: Callable[[str], bytes] | None = None,
         max_age_seconds: int = CACHE_MAX_AGE_SECONDS) -> RefreshResult:
     """Refresh the nflverse sources older than their max age, the history weeks not yet saved, and the trade chart.
 
@@ -212,11 +216,16 @@ def refresh_sources(
     The refresh route sets `max_age_seconds` to 0, because a late cron must still fetch a file 23 hours old.
     `read_chart` has no default, because the Claude read sits above this layer. With `read_chart` None, the run
     skips the chart. A client with no chart skips it too: the default of league is no chart, so each chart value is 0.
+    `fetch_past` downloads the past season player files that the cache lacks, and never downloads one twice. It has no
+    default, so a test of another source makes no call. The CLI and the API pass the real download.
     """
     # The trade week is the chart week of the trade window, not Sleeper's display_week.
     # On a Monday night they match. On the Tuesday after the cutoff, Sleeper still shows the week before.
     trade_week = window_week(week.season_start, now, client.tz)
     refreshed, stale = _refresh(nflverse_cache_dir(client.nfl_dir), season, fetch_nflverse, max_age_seconds)
+    if fetch_past is not None:
+        refreshed.extend(f"past season {past}"
+                         for past in fetch_past_seasons(nflverse_cache_dir(client.nfl_dir), season, fetch_past))
     # Past weeks never change, so the fetch gets only a week that is not saved.
     # A failure leaves a gap that the facts skip.
     # The inputs end at the week before the trade week. The raw data of this run gives its own week, so no fetch does.
@@ -262,6 +271,7 @@ def live_snapshot(
         fetch_nflverse: Callable[[str], bytes] = http_get,
         fetch_history_week: PastLegFetcher = fetch_past_week,
         read_chart: ChartReader | None,
+        fetch_past: Callable[[str], bytes] | None = None,
         fetch_projections: ProjectionsFetcher = fetch_projections_ahead,
         projections: ProjectionsCache = PROJECTIONS_CACHE) -> Snapshot:
     """The snapshot of the league now. Every fetch is a callable, with the real download as the default.
@@ -276,7 +286,8 @@ def live_snapshot(
     """
     raw, fetched, week = fetch_live_week(season, client, fetch_sleeper)
     result = refresh_sources(season, now, week, client=client, fetch_nflverse=fetch_nflverse,
-                              fetch_history_week=fetch_history_week, read_chart=read_chart)
+                              fetch_history_week=fetch_history_week, read_chart=read_chart,
+                              fetch_past=fetch_past)
     trade_week = result.trade_week
     stale = list(result.stale)
     root = history_root(client.folder, season)

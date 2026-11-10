@@ -1,11 +1,13 @@
 """
-The fact sheet of a proposed trade: per traded player the grade inputs and the trade value, per side the team, the
-need, and the roster fit reads. Every player stat ends at the known games and every record at week N-1.
+The fact sheet of a proposed trade: per traded player the stats and the trade value, per side the need and the
+roster fit reads. Every player stat ends at the known games and every record at week N-1.
 Each fact carries every number in its text.
 It reads the snapshot and a proposed trade, not the weekly bundle, so it is not a chapter.
 """
-from analyzer.adjusters import Side, hole_sentence, team_race, trade_handcuffs
-from analyzer.rubric import ProposedTrade, build_sides
+from analyzer.chart_facts import chart_facts
+from analyzer.measures import Side, hole_sentence, trade_handcuffs
+from analyzer.nfl_team_facts import nfl_team_facts
+from analyzer.trade import ProposedTrade, build_sides
 from analyzer.tunables import RECENT_RANK_GAP
 from analyzer.week_line import WeekLine, week_lines
 from facts.tokens import Nums, fact
@@ -16,12 +18,6 @@ from league.numbers import plural
 from league.ranks import RANKED_POSITIONS, recent_rank
 from league.snapshot import Snapshot
 from league.tunables import LINEUP_WEEKS
-
-_RACE_TEXT = {
-    "contender": "a contender in a playoff spot",
-    "seller": "a seller out of the playoff race",
-    "middle": "a middle team, neither in a playoff spot nor out of the race",
-}
 
 
 def shown_ranks(snapshot: Snapshot, pid: str) -> tuple[str | None, str | None]:
@@ -121,27 +117,6 @@ def _injury_fact(snapshot: Snapshot, pid: str) -> Fact:
     return fact(f"{pid}.injury", text, n, [], [player.name])
 
 
-def _trade_value_fact(snapshot: Snapshot, pid: str) -> Fact:
-    """The trade value of a traded player. The model reads it, and the number check keeps it out of the prose."""
-    n = Nums()
-    name = snapshot.players[pid].name
-    if pid in snapshot.chart.values:
-        text = f"{name}'s trade value is {n(snapshot.chart.values[pid])} in the week of the trade."
-    else:
-        text = f"{name} has no trade value in the week of the trade."
-    return fact(f"{pid}.value", text, n, [], [name])
-
-
-def _team_fact(snapshot: Snapshot, rid: int) -> Fact:
-    """The record, the rank, and the race of a roster before the trade."""
-    n = Nums()
-    team = snapshot.teams[rid].name
-    standing = next(s for s in snapshot.standings if s.roster_id == rid)
-    text = (f"{team} was {n.record(standing.wins, standing.losses)}, {n.ord(standing.rank)} of "
-            f"{n(len(snapshot.standings))}, before the trade: {_RACE_TEXT[team_race(snapshot, rid)]}.")
-    return fact(f"{rid}.team", text, n, [team], [])
-
-
 def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
     """The depth of a roster after the trade at each position the trade touches, and its open roster spots."""
     n = Nums()
@@ -225,7 +200,7 @@ def _hole_fact(snapshot: Snapshot, side: Side, slot: StartingSlot) -> Fact:
 
 
 def _week_line_fact(snapshot: Snapshot, rid: int, lines: list[WeekLine], players: list[str]) -> Fact:
-    """The Week lines of a side for the trade week and the next week, so the verdict and the bullets can name them.
+    """The Week lines of a side for the trade week and the next week, so the Case and the Bullets can name them.
     `players` are the names of the players the side gets, whose opponents the lines name.
 
     The code writes the text, and the fact records each number in it: the weeks, the counts, the top N, and the ranks.
@@ -250,10 +225,10 @@ def _week_fact(snapshot: Snapshot) -> Fact:
 
 def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact]:
     """The facts of a proposed trade by ID: per traded player the points per game, rank, usage, injury, and
-    trade value, and per side the team record and race, the roster need, the Week line, each
+    trade value, and per side the roster need, the Week line, each
     new hole with the best free agent at its position, the depth at each position whose count changes, and the
     strength when its count changes.
-    Every player stat ends at the known games, and the record and the race end at week N-1."""
+    Every player stat ends at the known games. The team facts of team_facts.py hold the record and the race group."""
     facts = [_week_fact(snapshot)]
     through = snapshot.as_of.stats_through
     for side in trade.sides:
@@ -266,17 +241,15 @@ def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact
             if position in ("QB", "RB", "WR", "TE"):
                 facts.append(_redzone_fact(snapshot, pid))
             facts.append(_injury_fact(snapshot, pid))
-            if snapshot.chart is not None:
-                facts.append(_trade_value_fact(snapshot, pid))
+    facts += [*nfl_team_facts(trade, snapshot), *chart_facts(trade, snapshot)]
     lines = week_lines(trade, snapshot)
     for side in trade.sides:
-        facts.append(_team_fact(snapshot, side.roster_id))
         facts.append(_need_fact(snapshot, trade, side.roster_id))
-    # The Week line facts follow the team facts, one for each side. The Week line moves no letter.
+    # The Week line facts follow the need facts, one for each side.
     for side in trade.sides:
         gets = [snapshot.players[pid].name for pid in trade.gets(side.roster_id)]
         facts.append(_week_line_fact(snapshot, side.roster_id, lines[side.roster_id], gets))
-    # The sides come from the grade's own call, so the hole facts name the slots the roster fit step reads.
+    # The sides come from build_sides, so the hole facts name the slots the roster fit Measure reads.
     # No fact names the slot a player takes: the best lineup is a measure of depth, not the lineup a manager sets.
     for graded in build_sides(trade, snapshot, trade_handcuffs(trade, snapshot)):
         facts += [_hole_fact(snapshot, graded, slot) for slot in graded.new_holes(snapshot)]

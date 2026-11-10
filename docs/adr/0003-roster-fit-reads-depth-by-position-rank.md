@@ -1,5 +1,7 @@
 # Roster fit reads depth by position rank
 
+Superseded in part by ADR 0030: roster fit stays as a Measure of depth, but it moves no letter.
+
 Roster fit read only the best lineup's points per game before and after a trade. A side could trade
 its two starting running backs for two receivers and lose nothing on paper, because the lineup total
 moved less than the threshold while the RB2 slot fell to a player no one would start. Brian asked for

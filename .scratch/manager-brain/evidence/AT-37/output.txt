@@ -1,0 +1,81 @@
+# At commit 6ba706cf of the Spec branch.
+$ grep -n "^Status:" docs/adr/0030-the-advisor-judges-and-code-measures.md
+3:Status: accepted. The spec `manager-brain` builds it. Prototype 04 of that spec set the work of Jev and of Claude.
+
+$ grep -n "The glossary drops" -A2 docs/adr/0030-the-advisor-judges-and-code-measures.md
+47:- The glossary drops Rubric, Start letter, Breakdown, Adjuster, Factor, Verdict, Decision, Answer,
+48-  Contender, Seller, and Middle team. It adds Advisor, Playbook, Lean, Case, Mark, Measure, Partner
+49-  filter, and Shortlist. Grade now means the whole read, with no letter.
+
+# A term of GLOSSARY.md is a bold name with a colon, such as **Lean**:. The search looks for each dropped term as a term.
+$ grep -n -i '^\*\*Rubrics\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Start letters\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Breakdowns\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Adjusters\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Factors\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Verdicts\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Decisions\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Answers\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Contenders\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Sellers\?\*\*:' GLOSSARY.md
+exit 1
+$ grep -n -i '^\*\*Middle teams\?\*\*:' GLOSSARY.md
+exit 1
+
+# Every place a dropped word shows in GLOSSARY.md at all, as a word in a sentence:
+$ grep -n -i -w -E 'rubric|start letter|breakdown|adjusters?|factors?|verdicts?|decisions?|answers?|contenders?|sellers?|middle team' GLOSSARY.md
+67:The side that asks for the grade. The decision is for the asker. On the form the asker is the first side, "Your Team".
+231:One request to the TypeSafe Jev model about one blurb, with all its questions. It returns one Jev answer per question.
+233:_Avoid_: Jev verdict (a Test verdict is the Judge's, and the analyzer gives a Lean)
+235:**Jev answer**:
+239:The facts check in two steps: the Jev check runs first, and the Claude check runs only when a Jev answer is not sure.
+461:_Avoid_: rubric, rules, criteria
+481:_Avoid_: adjuster, factor, criterion, rule
+499:A gut call is a real answer for a close trade, not a failure. The page leads with the lean. Use "lean" in code
+501:_Avoid_: verdict (that is the Workflow test verdict), decision, answer, recommendation
+506:_Avoid_: reason, verdict reason, summary
+526:depth, and only a partner with four yes answers goes on. With no partner left, the finder says so plainly.
+543:The answer of the find route that the site renders: the season, the two teams, the as-of stamps, and up to
+559:_Avoid_: analysis paragraph, factor, row
+563:_Avoid_: lean (that is the advice of the Advisor), factor lean, sign
+683:The first week of the season with no scores. A start or sit decision is always for the game week.
+687:Weeks 1 to N-1, for a decision in game week N. Every fact on the start or sit fact sheet ends there.
+690:The start or sit answer when the two players are too close to split: play either one. The other two answers
+1134:A part of a feature that is not yet specified. It stays on the map until a decision ticket clears it.
+1137:**Decision ticket**:
+1139:_Avoid_: ADR, decision log, design note
+1161:**Test verdict**:
+1162:The word PASS, FAIL, or BLOCKED that the Judge gives to one acceptance test. Only a test verdict counts toward a merge. A FAIL from Brian overrides it.
+1163:_Avoid_: Verdict (alone), lean (that is the advice of the analyzer), result, approval, sign-off, status
+1166:The subagent that reads only the acceptance tests and their evidence, and gives each test its Test verdict. It did not build the work.
+1170:The files and the observation that show what the finished work does for one acceptance test. It holds no Test verdict.
+exit 0
+
+# The terms that the ADR adds:
+$ grep -n '^\*\*Advisor\*\*:' GLOSSARY.md
+454:**Advisor**:
+$ grep -n '^\*\*Playbook\*\*:' GLOSSARY.md
+458:**Playbook**:
+$ grep -n '^\*\*Lean\*\*:' GLOSSARY.md
+497:**Lean**:
+$ grep -n '^\*\*Case\*\*:' GLOSSARY.md
+503:**Case**:
+$ grep -n '^\*\*Mark\*\*:' GLOSSARY.md
+561:**Mark**:
+$ grep -n '^\*\*Measure\*\*:' GLOSSARY.md
+478:**Measure**:
+$ grep -n '^\*\*Partner filter\*\*:' GLOSSARY.md
+522:**Partner filter**:
+$ grep -n '^\*\*Shortlist\*\*:' GLOSSARY.md
+538:**Shortlist**:
+$ grep -n '^\*\*Grade\*\*:' GLOSSARY.md
+468:**Grade**:

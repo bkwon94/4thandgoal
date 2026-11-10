@@ -2,6 +2,7 @@
 Tests for the trade value chart fetch, read, and match.
 They fake the fetch and the read, so no test uses the network or Claude.
 """
+import hashlib
 import io
 import json
 from datetime import date
@@ -345,7 +346,7 @@ def test_a_hand_placed_png_is_read_not_fetched(tmp_path):
     assert load_chart(tmp_path, SEASON_START, 6, _down, read=reader, chart=CHART) == (6, reader.result)
 
 
-def test_a_hand_placed_png_newer_than_the_saved_read_is_read_again(tmp_path):
+def test_a_newer_png_with_the_same_hash_is_not_read_again(tmp_path):
     import os
     charts = charts_dir(tmp_path, CHART)
     charts.mkdir(parents=True)
@@ -353,12 +354,27 @@ def test_a_hand_placed_png_newer_than_the_saved_read_is_read_again(tmp_path):
     png.write_bytes(_png(1500))
     first = _Reader(_padded((50.0, "A", "RB")))
     assert load_chart(tmp_path, SEASON_START, 6, _down, read=first, chart=CHART) == (6, first.result)
-    # A later PNG drop, by hand, must beat the saved read of the old image.
+    # A touch gives the PNG a newer file time. Its bytes, and so its hash, stay the same.
     os.utime(saved, (1_000_000, 1_000_000))
+    png.touch()
+    second = _Reader(None)
+    assert load_chart(tmp_path, SEASON_START, 6, _down, read=second, chart=CHART) == (6, first.result)
+    assert second.calls == 0
+
+
+def test_a_png_with_a_changed_hash_is_read_again(tmp_path):
+    charts = charts_dir(tmp_path, CHART)
+    charts.mkdir(parents=True)
+    png = charts / "week-06.png"
     png.write_bytes(_png(1500))
+    first = _Reader(_padded((50.0, "A", "RB")))
+    assert load_chart(tmp_path, SEASON_START, 6, _down, read=first, chart=CHART) == (6, first.result)
+    # A later PNG drop, by hand, with other bytes must beat the saved read of the old image.
+    png.write_bytes(_png(1501))
     second = _Reader(_padded((60.0, "A", "RB")))
     assert load_chart(tmp_path, SEASON_START, 6, _down, read=second, chart=CHART) == (6, second.result)
     assert second.calls == 1
+    assert json.loads((charts / "week-06.json").read_text())["png_sha256"] == hashlib.sha256(_png(1501)).hexdigest()
 
 
 def test_a_parsed_json_that_is_not_utf_8_is_read_again_from_the_image(tmp_path):

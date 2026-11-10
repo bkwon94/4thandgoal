@@ -1,0 +1,10 @@
+$ cmp first.json second.json && echo SAME
+SAME
+
+# The press log lines of the two presses of the trade of AT-16 on the API on port 8081:
+2026-11-09 23:04:20,780 INFO analyzer.routes: Press of analyze for cpc: time=27.0s cost=$0.0579 claude_calls=1
+2026-11-09 23:05:02,446 INFO analyzer.routes: Press of analyze for cpc: time=1.7s cost=$0.0000 claude_calls=0
+
+# The full log of the second press:
+2026-11-09 23:05:02,446 INFO analyzer.routes: Press of analyze for cpc: time=1.7s cost=$0.0000 claude_calls=0
+2026-11-09 23:05:02,446 INFO uvicorn.access: 127.0.0.1:51484 - "POST /clients/cpc/analyze HTTP/1.1" 200

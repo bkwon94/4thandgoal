@@ -3,6 +3,7 @@ Fetch the weekly trade value chart image, read it with Claude, and match its row
 The module caches the parsed read per chart and week, so the image read runs once.
 """
 import base64
+import hashlib
 import io
 import itertools
 import json
@@ -239,11 +240,33 @@ def _saved_read(path: Path) -> ChartRead | None:
         return None
 
 
-def _current_saved_read(nfl: Path, chart: str, week: int) -> ChartRead | None:
-    """The saved read of the week, unless a hand-placed PNG is newer than it. A newer PNG wins and is read again."""
-    json_path, png = chart_read(nfl, chart, week), chart_image(nfl, chart, week)
-    if png.exists() and json_path.exists() and png.stat().st_mtime > json_path.stat().st_mtime:
+def _png_hash(png: Path) -> str:
+    return hashlib.sha256(png.read_bytes()).hexdigest()
+
+
+def _saved_hash(path: Path) -> str | None:
+    """The hash of the PNG that the saved read at `path` came from, or None when the file holds none."""
+    try:
+        saved = json.loads(path.read_text(encoding="utf-8"))
+        return saved.get("png_sha256")
+    except (UnicodeDecodeError, ValueError, AttributeError):
         return None
+
+
+def _current_saved_read(nfl: Path, chart: str, week: int) -> ChartRead | None:
+    """The saved read of the week, unless the PNG in the cache is not the image that it read.
+
+    The hash of the PNG decides, not the file time: a touch or a copy keeps the read, and a changed file
+    reads again. A saved read with no hash falls back to the file times.
+    """
+    json_path, png = chart_read(nfl, chart, week), chart_image(nfl, chart, week)
+    if png.exists() and json_path.exists():
+        saved_hash = _saved_hash(json_path)
+        if saved_hash is not None:
+            if saved_hash != _png_hash(png):
+                return None
+        elif png.stat().st_mtime > json_path.stat().st_mtime:
+            return None
     return _saved_read(json_path)
 
 
@@ -312,7 +335,7 @@ def check_chart(nfl: Path, season_start: date, week: int, fetch: Callable[[str],
     guards = guard_results(parsed, chart_week, _prior_row_count(nfl, chart, chart_week))
     # On a failed guard the PNG stays for a hand check. No JSON is written, so the next run reads the image again.
     if fresh and all(guards.values()):
-        _write_json(chart_read(nfl, chart, chart_week), parsed)
+        _write_json(chart_read(nfl, chart, chart_week), parsed, png)
     return ChartCheck(chart_week, parsed, guards)
 
 
@@ -332,8 +355,10 @@ def load_chart(nfl: Path, season_start: date, week: int, fetch: Callable[[str], 
     return check.week, check.chart
 
 
-def _write_json(path: Path, parsed: ChartRead) -> None:
-    write_bytes_atomic(path, parsed.model_dump_json(indent=2).encode("utf-8"))
+def _write_json(path: Path, parsed: ChartRead, png: Path) -> None:
+    """Save the read with the hash of its PNG, so the cache can tell a changed image from a touched one."""
+    saved = {**parsed.model_dump(mode="json"), "png_sha256": _png_hash(png)}
+    write_bytes_atomic(path, json.dumps(saved, indent=2).encode("utf-8"))
 
 
 def chart_values(nfl: Path, season_start: date, week: int, lines: Iterable[PlayerLine],

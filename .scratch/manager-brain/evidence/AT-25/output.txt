@@ -1,0 +1,31 @@
+$ grep -E 'Jev wave|api.typesafe.ai|429|Press of' find/log.txt   # Find for Maye d'force B with U, no partner, server B
+INFO:     analyzer.jev_waves: Jev wave 1 (partner filter): 11 requests, about 19670 tokens
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 81ms (request req_01a1c3ccdd3b7b2b87893e03470d300b)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 102ms (request req_01a1c3ccdd5f75849d73fb6d062fa9e3)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 100ms (request req_01a1c3ccdd6e7855b52fc62e096ed779)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 122ms (request req_01a1c3ccdd807353834dd840d18c945b)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 150ms (request req_01a1c3ccdd907d36b63af3bc11b460a4)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 205ms (request req_01a1c3ccddbe73e0905d69c175c96c95)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 226ms (request req_01a1c3ccdded773bbd86d9d6bff35728)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 225ms (request req_01a1c3ccddd77104b70ea81484e830ed)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 235ms (request req_01a1c3ccddc77dc89f3b5ea240db9cdd)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 233ms (request req_01a1c3ccdda77fa1a501078af4753a47)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 273ms (request req_01a1c3ccde0970a082a4a1087a7f200d)
+INFO:     analyzer.jev_waves: Jev wave 2 (targets): 4 requests, about 12882 tokens
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 78ms (request req_01a1c3cce1307057904d3c7c0076e13d)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 85ms (request req_01a1c3cce12c7fa899cb486f0f80d50a)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 99ms (request req_01a1c3cce131717ea1c11cbab504f369)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 103ms (request req_01a1c3cce13578d98a03b59300ea0445)
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 4 requests, about 29117 tokens
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 79ms (request req_01a1c3cce51a71e7b8dc98ffb4b5761c)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 103ms (request req_01a1c3cce5367b448d3aff2d5aec7563)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 125ms (request req_01a1c3cce5217312a71aeaa1aa5e0376)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 167ms (request req_01a1c3cce5317633859e6cf719e385e8)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 108ms (request req_01a1c3cd829f70ae9c42aa286a8a0a59)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 61ms (request req_01a1c3cd82e1747faddd836a89765125)
+INFO:     analyzer.routes: Press of find for cpc: time=45.8s cost=$0.1615 claude_calls=2
+
+$ grep -oE 'api.typesafe.ai/v1/systemone "HTTP/1.1 [0-9]+' find/log.txt | sort | uniq -c
+  21 api.typesafe.ai/v1/systemone "HTTP/1.1 200
+$ grep -c 429 find/log.txt
+0

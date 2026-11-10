@@ -1,0 +1,199 @@
+{
+    "season": 2026,
+    "trade_pair": {
+        "asker": {
+            "roster_id": 9,
+            "team": "Maye d'force B with U"
+        },
+        "partner": null
+    },
+    "trades": [
+        {
+            "offer_id": "9:6790-2:8144",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "to": 2
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR23",
+                            "from": 2
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 2,
+                    "team": "All You Need Is Love",
+                    "gives": [
+                        {
+                            "player_id": "8144",
+                            "name": "Chris Olave",
+                            "position": "WR",
+                            "nfl_team": "NO",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8144.jpg",
+                            "season_rank": "WR9",
+                            "recent_rank": "WR23",
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": "Swift for Olave swaps a back with little receiving work for a WR whose usage is trending up, and the other manager gets the RB help it needs.",
+            "bullets": [
+                {
+                    "text": "Olave's target share is up over the last two weeks, which fits a receiver in line for more work.",
+                    "mark": "for",
+                    "fact_id": "8144.targets",
+                    "fact_text": "Chris Olave's target share was 31 percent over the last 2 weeks before the trade, up from the 2 weeks before that."
+                },
+                {
+                    "text": "Maye d'force B with U goes from 4 RBs in the top 36 to 3, so the backfield stays covered after sending Swift.",
+                    "mark": "even",
+                    "fact_id": "9.depth.rb",
+                    "fact_text": "For Maye d'force B with U, the RBs in the top 36 go from 4 to 3."
+                },
+                {
+                    "text": "All You Need Is Love goes from 2 RBs in the top 36 to 3, so the other manager has a real reason to say yes.",
+                    "mark": "for",
+                    "fact_id": "2.depth.rb",
+                    "fact_text": "For All You Need Is Love, the RBs in the top 36 go from 2 to 3."
+                }
+            ],
+            "fact_lines": []
+        },
+        {
+            "offer_id": "9:6790-1:8167",
+            "sides": [
+                {
+                    "roster_id": 9,
+                    "team": "Maye d'force B with U",
+                    "gives": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "to": 1
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "8167",
+                            "name": "Christian Watson",
+                            "position": "WR",
+                            "nfl_team": "GB",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                            "season_rank": "WR3",
+                            "recent_rank": null,
+                            "from": 1
+                        }
+                    ]
+                },
+                {
+                    "roster_id": 1,
+                    "team": "The Blue Tent",
+                    "gives": [
+                        {
+                            "player_id": "8167",
+                            "name": "Christian Watson",
+                            "position": "WR",
+                            "nfl_team": "GB",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/8167.jpg",
+                            "season_rank": "WR3",
+                            "recent_rank": null,
+                            "to": 9
+                        }
+                    ],
+                    "gets": [
+                        {
+                            "player_id": "6790",
+                            "name": "D'Andre Swift",
+                            "position": "RB",
+                            "nfl_team": "CHI",
+                            "headshot": "https://sleepercdn.com/content/nfl/players/6790.jpg",
+                            "season_rank": "RB8",
+                            "recent_rank": null,
+                            "from": 9
+                        }
+                    ]
+                }
+            ],
+            "headline": "Swift for Watson is a gut call: you get a WR producing at an elite pace, and The Blue Tent gets the RB help it needs.",
+            "bullets": [
+                {
+                    "text": "Watson is WR3 on the season by total points, so you are getting a top receiver for a back who is worth a bit more.",
+                    "mark": "for",
+                    "fact_id": "8167.ppg",
+                    "fact_text": "Christian Watson (WR, GB) scored 16.9 points per game over 9 games before the trade. His Season rank is WR3, by total points this season."
+                },
+                {
+                    "text": "The Packers rank 16th of 32 on offense, a middling spot, so Watson is not a lock every week.",
+                    "mark": "against",
+                    "fact_id": "8167.nfl_team",
+                    "fact_text": "Christian Watson's NFL team, the Packers, ranks 16th of 32 on offense: 0.86 expected points added per 100 plays over 8 games before the trade."
+                },
+                {
+                    "text": "The Blue Tent goes from 2 RBs in the top 36 to 3, which gives the other manager a clear reason to accept.",
+                    "mark": "for",
+                    "fact_id": "1.depth.rb",
+                    "fact_text": "For The Blue Tent, the RBs in the top 36 go from 2 to 3."
+                }
+            ],
+            "fact_lines": []
+        }
+    ],
+    "empty": null,
+    "as_of": {
+        "chart_week": 9,
+        "stats_through": 9,
+        "completed_through": 8,
+        "rosters_fetched": "2026-11-09T23:52:22.337421-05:00",
+        "known_games": {
+            "week": 9,
+            "games": 15,
+            "in_progress": 1,
+            "pending": {
+                "snaps": 1,
+                "usage": 2
+            }
+        },
+        "no_chart": false,
+        "no_chart_note": null
+    },
+    "fallback": false,
+    "missing": [],
+    "stale": []
+}

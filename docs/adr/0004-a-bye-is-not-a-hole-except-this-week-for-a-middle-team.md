@@ -1,5 +1,7 @@
 # A bye is not a hole, except this week for a middle team
 
+Superseded in part by ADR 0030: a bye in the trade week is a fact of the sheet for every side, and the Advisor weighs it with the race group.
+
 ADR 0003 made a starter's bye inside a 3-week window a hole when no bench player above the line covered
 him. On week 7 live data that flagged 13 uncovered byes across 12 rosters. The finder found 0 win-win
 trades where the old rule found 5. Brian ruled that a bye is something a team handles, not a reason to

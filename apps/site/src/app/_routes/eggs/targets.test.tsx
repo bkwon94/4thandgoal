@@ -266,12 +266,12 @@ describe("the targets of the rankings page", () => {
 });
 
 describe("the targets of the analyzer result", () => {
-  it("gives the verdict word, the swap card, and each factor row a stable id, and puts the trade key on its root", () => {
+  it("gives the Lean word, the swap card, and each Bullet row a stable id, and puts the trade key on its root", () => {
     const doc = analyzeResponse as AnalyzeResponse;
     const { container } = render(<AnalyzeResult doc={doc} />);
-    expect(ids()).toEqual(expect.arrayContaining(["verdict-word", "swap-card"]));
-    const factors = doc.sides.reduce((count, side) => count + side.factors.length, 0);
-    expect(idsOf("factor")).toHaveLength(factors);
+    expect(ids()).toEqual(expect.arrayContaining(["lean-word", "swap-card"]));
+    const bullets = doc.sides.reduce((count, side) => count + side.bullets.length, 0);
+    expect(idsOf("bullet")).toHaveLength(bullets);
     const root = container.firstElementChild!;
     const key = doc.trade.sides
       .map((side) => [side.roster_id, side.gives.map((player) => player.player_id).sort().join(",")] as const)
@@ -279,23 +279,24 @@ describe("the targets of the analyzer result", () => {
       .map(([roster, gives]) => `${roster}:${gives}`)
       .join("|");
     expect(root.getAttribute("data-trade-key")).toBe(key);
-    expect(root.getAttribute("data-trade-answer")).toBe(doc.decision.answer);
+    // The fixture leans yes, so the answer of the egg hunt is yes.
+    expect(root.getAttribute("data-trade-answer")).toBe("yes");
     expectUnique(ids());
   });
 
-  it("sends the two teams of the trade and the answer on a double-tap of the verdict word (AT-54)", () => {
+  it("sends the two teams of the trade and the answer on a double-tap of the Lean word (AT-54)", () => {
     const doc = analyzeResponse as AnalyzeResponse;
     render(<AnalyzeResult doc={doc} />);
     vi.useFakeTimers();
     listen("/analyzer/");
-    tap(target("verdict-word"));
-    tap(target("verdict-word"), TAP_GAP_MS + 1);
+    tap(target("lean-word"));
+    tap(target("lean-word"), TAP_GAP_MS + 1);
     const teams = doc.trade.sides.map((side) => side.roster_id).sort((a, b) => a - b);
     expect(sent).toEqual([
       expect.objectContaining({
-        target: "verdict-word",
+        target: "lean-word",
         action: "tap2",
-        conditions: expect.objectContaining({ trade_teams: teams, trade_answer: doc.decision.answer }),
+        conditions: expect.objectContaining({ trade_teams: teams, trade_answer: "yes" }),
       }),
     ]);
     expect(sent[0].conditions).not.toHaveProperty("trade");

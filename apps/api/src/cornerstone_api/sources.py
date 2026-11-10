@@ -40,6 +40,8 @@ class Sources:
     fetch_sleeper: SleeperFetcher
     fetch_nflverse: Callable[[str], bytes] = http_get
     fetch_history_week: PastLegFetcher = fetch_past_week
+    # The download of the past season files. None skips it, so a test of another source makes no call.
+    fetch_past: Callable[[str], bytes] | None = None
     # One shared partial is safe as the default, because it holds no state that a call changes.
     read_chart: ChartReader = partial(chart_values, read=claude_reader(parse_call))  # noqa: RUF009
 
@@ -49,6 +51,7 @@ class Sources:
             season, client=self.client, now=self.clock(),
             fetch_sleeper=self.fetch_sleeper, fetch_nflverse=self.fetch_nflverse,
             fetch_history_week=self.fetch_history_week, read_chart=self.read_chart,
+            fetch_past=self.fetch_past,
         )
 
     def rosters_snapshot(self, season: int) -> Snapshot:
@@ -80,5 +83,5 @@ class Sources:
         return refresh_sources(
             week.season, self.clock(), week, client=self.client,
             fetch_nflverse=self.fetch_nflverse, fetch_history_week=self.fetch_history_week,
-            read_chart=self.read_chart, max_age_seconds=max_age_seconds,
+            read_chart=self.read_chart, fetch_past=self.fetch_past, max_age_seconds=max_age_seconds,
         )

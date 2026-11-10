@@ -1,0 +1,9 @@
+# The start command of the API on port 8081, from the worktree manager-brain-ev-api2 at 26dbed1b. The log config sets the root logger to INFO, so the app log lines print.
+CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_RESULT_CACHE_DIR=<scratchpad>/e2/cache81 CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-api2 uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 8081 --log-config <scratchpad>/e2/logconfig.json
+
+# <scratchpad>/e2/logconfig.json:
+{"version": 1, "disable_existing_loggers": false,
+ "formatters": {"plain": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}},
+ "handlers": {"err": {"class": "logging.StreamHandler", "formatter": "plain", "stream": "ext://sys.stderr"}},
+ "root": {"level": "INFO", "handlers": ["err"]},
+ "loggers": {"httpx": {"level": "WARNING"}, "httpcore": {"level": "WARNING"}, "anthropic": {"level": "INFO"}}}

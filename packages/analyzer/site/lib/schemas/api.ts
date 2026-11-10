@@ -45,33 +45,31 @@ export const tradeSideSchema = z.object({
   gets: z.array(gotPlayerSchema),
 });
 
-/* The call for the asker's side. differs is true when the call goes against the chart. The reason then says why. */
-export const decisionSchema = z.object({
-  for_roster: z.number(),
-  answer: z.enum(["yes", "no", "not_as_is"]),
-  reason: z.string(),
-  differs: z.boolean(),
+/* The Lean of the Advisor for the asker, on a 5-step scale from Pass to Send it. */
+export const leanSchema = z.enum(["Send it", "Lean yes", "Gut call", "Lean no", "Pass"]);
+
+/* The Mark of a Bullet: for the side, against it, or even. */
+export const markSchema = z.enum(["for", "against", "even"]);
+
+/* One claim of the Advisor about one side, with its Mark and the fact it rests on. fact_text is the text of that fact, so a tap shows it. */
+export const bulletSchema = z.object({
+  text: z.string(),
+  mark: markSchema,
+  fact_id: z.string(),
+  fact_text: z.string(),
 });
 
-/* One factor leans for the side, against it, or neither way. The first factor of a side is the deal row. */
-export const factorSchema = z.object({
-  name: z.string(),
-  lean: z.enum(["for", "against", "even"]),
-  reason: z.string(),
-});
-
-/* The Week line of one side for one week, written by the code: the count of the players who play, the opponent, each bye, and each player who is out. It moves no letter. */
+/* The Week line of one side for one week, written by the code: the count of the players who play, the opponent, each bye, and each player who is out. It is a plain line of text that the page shows as is. */
 export const weekLineSchema = z.object({
   week: z.number(),
   text: z.string(),
 });
 
-/* The read of one side: 2 or 3 bullets, each one sentence, the Week lines of the trade week and the next week, and the factors. bullets is empty when the writer call failed, so the rows stand alone. */
-export const decidedSideSchema = z.object({
+/* The read of one side: 3 to 5 Bullets, then the Week lines of the trade week and the next week. */
+export const readSideSchema = z.object({
   roster_id: z.number(),
-  bullets: z.array(z.string()),
+  bullets: z.array(bulletSchema),
   week_lines: z.array(weekLineSchema),
-  factors: z.array(factorSchema),
 });
 
 /* One side of the fairness read: the roster id and the one reason for that side. */
@@ -88,7 +86,7 @@ export const fairnessSchema = z
   })
   .and(
     z.union([
-      z.object({ state: z.enum(["win_win", "fair"]), gives_more: z.null() }),
+      z.object({ state: z.literal("fair"), gives_more: z.null() }),
       z.object({ state: z.literal("lopsided"), gives_more: z.number() }),
     ]),
   );
@@ -122,23 +120,27 @@ export const analyzeResponseSchema = z.object({
     asker: z.number(),
     sides: z.array(tradeSideSchema),
   }),
-  decision: decisionSchema,
+  // The Lean of the Advisor for the asker, and the Case under it, which leads with its condition.
+  lean: leanSchema,
+  case: z.string(),
   // Optional, because the ticket asks the page to render a document with no block, as a guard. The page then shows no fairness line.
   fairness: fairnessSchema.optional(),
-  sides: z.array(decidedSideSchema),
+  sides: z.array(readSideSchema),
   as_of: asOfSchema,
-  // True when the writer call failed, so no side has bullets.
-  fallback: z.boolean(),
   missing: z.array(z.string()),
   stale: z.array(z.string()),
 });
 
-/* One trade of the finder. The sides share the analyze document's side shape, so the site renders a side one way.
-   reason is null when the Claude call failed twice. The fairness line then stands alone. */
+/* One trade of the finder. The sides share the analyze document's side shape, and the Bullets share its Bullet shape,
+   so the site renders a side and a row one way. A pick has a headline and 2 to 4 Bullets, and no fact line.
+   After a fallback, the headline is null, no Bullet stands, and fact_lines holds plain facts of the offer. */
 export const finderTradeSchema = z.object({
+  // The id of the offer on the shortlist, such as "2:10213-10:10235". The card keys on it.
+  offer_id: z.string(),
   sides: z.array(tradeSideSchema),
-  fairness: fairnessSchema,
-  reason: z.string().nullable(),
+  headline: z.string().nullable(),
+  bullets: z.array(bulletSchema),
+  fact_lines: z.array(z.string()),
 });
 
 /* The finder document that the site API returns from POST /find. It follows the fixture at .scratch/site-react/fixtures/find-response.json. */
@@ -146,14 +148,15 @@ export const findResponseSchema = z.object({
   season: z.number(),
   trade_pair: z.object({
     asker: z.object({ roster_id: z.number(), team: z.string() }),
-    partner: z.object({ roster_id: z.number(), team: z.string() }),
+    // Null for a find with no partner. Each trade then names its own partner in its sides.
+    partner: z.object({ roster_id: z.number(), team: z.string() }).nullable(),
   }),
-  // Up to three trades, best first. The three share no player.
+  // Up to three picks, best first. After a fallback, every offer of the shortlist, in its order.
   trades: z.array(finderTradeSchema),
-  // The line for an empty list, or null when the list has a trade. The page shows it as the pipeline writes it.
+  // The plain line for an empty list, or null when the list has a trade. The page shows it as the pipeline writes it.
   empty: z.string().nullable(),
   as_of: asOfSchema,
-  // True when the reason call failed, so every reason is null.
+  // True when the pick call failed twice, so the trades are the shortlist with fact lines and no headline.
   fallback: z.boolean(),
   missing: z.array(z.string()),
   stale: z.array(z.string()),

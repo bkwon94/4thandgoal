@@ -135,7 +135,7 @@ class StartingSlot(NamedTuple):
     roster_slot: str
     # His return after the trade week. None when he is not out after the trade week. A bye is never an absence.
     absence: Absence | None = None
-    # True when a middle team gets the player and he has his bye in the trade week. No cover cancels it.
+    # True when a team in the race gets the player and he has his bye in the trade week. No cover cancels it.
     bye_now: bool = False
 
     def is_hole(self, snapshot: Snapshot) -> bool:
@@ -143,7 +143,7 @@ class StartingSlot(NamedTuple):
 
         A hole holds no player or a player below the line for his own position. A starter due back after the trade
         week with no cover is a hole too. A K or DEF slot is never a hole. A player at a ranked position with
-        no rank is below the line, because he has no stat line to start on. A starter a middle team gets, who has his
+        no rank is below the line, because he has no stat line to start on. A starter a team in the race gets, who has his
         bye in the trade week, is a hole too.
         """
         if self.roster_slot not in FLEX_SLOTS and self.roster_slot not in RANKED_POSITIONS:
@@ -182,7 +182,7 @@ def _last_window_week(snapshot: Snapshot) -> int:
     return snapshot.week + RETURN_WINDOW_WEEKS
 
 
-def _above_the_line(snapshot: Snapshot, player_id: str) -> bool:
+def above_the_line(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player holds a position rank at or above the line of his position. K and DEF have no line."""
     line = snapshot.client.settings.lines.get(snapshot.players[player_id].position)
     rank = snapshot.position_rank(player_id)
@@ -212,7 +212,7 @@ def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Sna
     marked = []
     for slot in starting:
         # A slot with no player or a player below the line is a hole already. K and DEF have no line, so never a hole.
-        if slot.player is None or not _above_the_line(snapshot, slot.player):
+        if slot.player is None or not above_the_line(snapshot, slot.player):
             marked.append(slot)
             continue
         # The hole read and the lineup value read the same return week, so a player out with no return week counts
@@ -225,7 +225,7 @@ def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Sna
         cover = None if week > _last_window_week(snapshot) else next(
             (pid for pid in free
              if snapshot.players[pid].position in allowed
-             and _above_the_line(snapshot, pid)
+             and above_the_line(snapshot, pid)
              and not _out_now(snapshot, pid)), None)
         if cover is not None:
             free.remove(cover)

@@ -34,9 +34,9 @@ def test_a_client_prompts_folder_overrides_only_the_two_voice_files(tmp_path):
 def test_a_rule_prompt_comes_from_the_folder_of_the_package_that_owns_it(tmp_path):
     rules = tmp_path / "rules"
     rules.mkdir()
-    (rules / "rubric.md").write_text("The rubric of another package.\n", encoding="utf-8")
-    (tmp_path / "rubric.md").write_text("A client rubric.\n", encoding="utf-8")
-    assert load_prompt(tmp_path, "rubric.md", rules_dir=rules) == "The rubric of another package."
+    (rules / "advisor.md").write_text("The Advisor prompt of another package.\n", encoding="utf-8")
+    (tmp_path / "advisor.md").write_text("A client Advisor prompt.\n", encoding="utf-8")
+    assert load_prompt(tmp_path, "advisor.md", rules_dir=rules) == "The Advisor prompt of another package."
 
 
 def test_cpc_keeps_its_voice_in_its_client_folder():

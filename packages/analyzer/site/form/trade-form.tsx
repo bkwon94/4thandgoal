@@ -85,7 +85,7 @@ type TradeToGrade = { sides: Sides; season: number };
 type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
 
 /* The hero while the grade runs, in the hero slots: Live, the title, the line, and the loading state as the feature.
-   The bars and the sweep sit where the verdict lands. With motion off, the bars hold still. The verdict that replaces
+   The bars and the sweep sit where the read lands. With motion off, the bars hold still. The read that replaces
    it opens with a level-two heading, so this title is level two too. */
 function GradingHero() {
   const off = useMotionOff();
@@ -161,7 +161,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const twoSides = sides.length === 2;
   // The grade locks the form, so the result always matches the picks on the screen. A result or an error ends it.
   const grading = grade.status === "grading";
-  // The form folds to one line while the grade runs and under a result, so the hero and the verdict lead the page.
+  // The form folds to one line while the grade runs and under a result, so the hero and the read lead the page.
   const folded = grading || (grade.status === "done" && !editing);
   // With no teams yet, no slot and no picker has anything to show.
   const locked = grading || teams.length === 0;

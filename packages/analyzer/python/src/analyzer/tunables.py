@@ -1,45 +1,21 @@
 """
-The tunable table of the analyzer: every algorithm number of the trade analyzer rubric, the finder, and the grade limits.
-The rubric file in the prompts directory points here, so a number changes in one place. Each has a name and a reason.
+The tunable table of the analyzer: every algorithm number of the Measures and the grade limits.
+A number changes in one place. Each has a name and a reason.
 """
 from decimal import Decimal
 
-# Standing: a seller is more than this many weeks of results under the team in the last playoff spot. The analyzer reads
-# it. The gap counts weeks, not games: a week gives two results with the median game, else one, so the analyzer turns
+# Standing: a team out of the race is more than this many weeks of results under the team in the last playoff spot.
+# The standing Measure reads it. The gap counts weeks, not games: a week gives two results with the median game, else one, so the analyzer turns
 # it into wins with the League settings.
-SELLER_GAP_WEEKS = 1
+OUT_OF_RACE_WEEKS = 1
 
-# The numbers are Decimal, so a ratio at a lower bound, such as 22 over 20, lands in its band exactly.
-
-# Start letter bands on the ratio of trade value got over trade value gave. Each lower bound is inclusive.
-# The lowest ratio that starts a side at A.
-BAND_A = Decimal("1.25")
-# The lowest ratio that starts a side at B.
-BAND_B = Decimal("1.10")
-# The lowest ratio that starts a side at C.
-BAND_C = Decimal("0.90")
-# The lowest ratio that starts a side at D. A ratio below it starts the side at F.
-BAND_D = Decimal("0.75")
-
-# The bands from the top down. A ratio below the last bound starts at F.
-START_LETTER_BANDS: tuple[tuple[Decimal, str], ...] = ((BAND_A, "A"), (BAND_B, "B"), (BAND_C, "C"), (BAND_D, "D"))
-
-# The one-for-many margin. GLOSSARY.md, "Consolidation".
-# A side that gives one player for two or more, or two or more for one, divides the sum of the two or more by this.
-CONSOLIDATION_MARGIN = Decimal("1.25")
-# The uneven margin. GLOSSARY.md, "Consolidation".
-# Any other uneven count, two or more for a larger count such as 3-for-2 or 4-for-3, divides the sum of the side with
-# more players by this. The extra player fills a roster spot, so he counts at a discount, and a pile of depth does not
-# beat two better players on a plain sum. It is smaller than the one-for-many margin, which also pays for one great player.
-UNEVEN_MARGIN = Decimal("1.10")
-
-# Superstar: a side that gets a player in the top this many trade values of the week, over all positions, steps up.
+# Superstar: a player in the top this many trade values of the week, over all positions, is a superstar.
 # GLOSSARY.md, "Superstar". A tie at the edge shares the better rank, so every tied player is a superstar.
 # 8 is the top of a 12-team league's first round, so a superstar is a player who can win a week alone.
 SUPERSTAR_RANK = 8
 
 # Roster fit and standing compare a side's best lineup before and after the trade. The season points per game
-# of each player pick the best lineup of the grade. GLOSSARY.md, "Lineup value".
+# of each player pick the best lineup of the Measures. GLOSSARY.md, "Lineup value".
 # The change in the best lineup's total points per game that counts as a gain or a loss.
 # The value is a first guess, and the commissioner tunes it.
 FIT_THRESHOLD = Decimal("3.0")
@@ -59,7 +35,7 @@ STEP_UP_CHART_HOURS = 48
 # 0.7 times air yards share. The 8 counts only the target share part: 1.5 times a 5-point share swing is about 8.
 WOPR_SWING = 8
 
-# Injury: a player the side gets who is out now, or who was on the injury report in many weeks, is a step down.
+# Injury: a player the side gets who is out now, or who was on the injury report in many weeks, reads against it.
 # The count of weeks on the injury report, through the last completed week, that makes a player injury-prone.
 INJURY_WEEKS = 3
 # The near return reads RETURN_WINDOW_WEEKS of league/tunables.py, because the lineup reads it too.
@@ -70,36 +46,13 @@ INJURY_WEEKS = 3
 # The gate compares the exact share, so 24.6% stays a handcuff.
 HANDCUFF_CARRY_SHARE = 25
 
-# Schedule: byes left and the playoff opponents of the players it gets against the players it gives.
-# It never moves a letter.
-# The gap in the mean rank of the week 15 to 17 opponents, in points allowed to the position, that makes a lean.
-# Set this number by hand. The commissioner tunes it.
-SCHEDULE_RANK_GAP = 4
-
 # Expected gap: the league points of the players it gets and gives against their expected points over the window.
 # The mean gap, in points per game, at or past which a group counts, either way, for the gets and for the gives.
-# Gets under or gives over step a side up. Gets over or gives under step it down.
+# Gets under or gives over read for a side. Gets over or gives under read against it.
 # The value is a first guess, and the commissioner tunes it.
 EXPECTED_GAP = Decimal("3.0")
-# The expected gap adjuster is off until a real trade checks out, so no live breakdown shows an untried adjuster.
-EXPECTED_ADJUSTER_ON = False
-
-# The chart ratio picks the start letter. The sum of the adjuster steps clamps to this many steps either way,
-# so a side that starts at C never ends at A or F, and the chart weighs more than the adjusters.
-CLAMP_STEPS = 1
-
-# The verdict for the side that asked reads its final letter.
-# The lowest final letter that accepts outright.
-ACCEPT_AT_OR_ABOVE = "B"
-# The highest final letter that declines outright. A letter between the two bands accepts when the other side's
-# final letter is no better, and counters when it is better. The schedule lean can turn that middle result.
-DECLINE_AT_OR_BELOW = "D"
-
-# The fairness of a trade reads the final letter of both sides, so it says whether the other side will take it.
-# The lowest final letter of both sides that makes a win-win. At B a side gets more than it gives, so both win.
-WIN_WIN_AT_OR_ABOVE = "B"
-# The highest final letter of either side that makes a trade lopsided. At D a side gives more than it gets.
-LOPSIDED_AT_OR_BELOW = "D"
+# The expected gap Measure is off until a real trade checks out, so no live sheet holds an untried Measure.
+EXPECTED_MEASURE_ON = False
 
 # The analyze route: the count of grades one address per client may get in a fixed one-minute window.
 # Each grade that misses the result cache is a Claude call, so this caps the Claude bill from one browser.
@@ -107,7 +60,3 @@ GRADES_PER_MINUTE = 5
 # The analyze route: the count of grades one address per client may get in one calendar day in the league timezone.
 # It caps the Claude bill from one browser over a day, and the count lives on the volume so a deploy keeps it.
 GRADES_PER_DAY = 20
-
-# The finder: the count of win-win trades it returns at most for one pair of rosters.
-# A short list is one a manager reads, and three trades with no shared player each stand as a real choice.
-FINDER_TOP = 3

@@ -1,0 +1,138 @@
+- generic
+  - banner
+    - link "CORNERSTONE FANTASY FOOTBALL LEAGUE" [ref=e1]
+      - StaticText "CORNERSTONE FANTASY FOOTBALL LEAGUE"
+    - navigation "Site menu" [ref=e2]
+      - link "Home" [ref=e5]
+      - link "Week 8" [ref=e6]
+      - link "Power Rankings" [ref=e7]
+      - link "Managers" [ref=e8]
+      - link "Trade Analyzer" [ref=e9]
+    - group
+      - DisclosureTriangle "WK 08" [expanded=false]
+    - button "Switch to light theme" [ref=e3]
+  - main
+    - group "The trade"
+      - StaticText "FOR"
+      - StaticText "Jahmyr Gibbs"
+      - StaticText " for "
+      - StaticText "Bijan Robinson"
+      - button "Edit the trade" [ref=e10]
+        - StaticText "Edit"
+    - region "The Read" [ref=e4]
+      - StaticText "THE READ FOR MAYE D'FORCE B WITH U"
+      - heading "Lean no" [level=2, ref=e15]
+      - list "The Lean scale"
+        - listitem [level=1]
+          - StaticText "PASS"
+        - listitem [level=1]
+          - StaticText "LEAN NO"
+        - listitem [level=1]
+          - StaticText "GUT CALL"
+        - listitem [level=1]
+          - StaticText "LEAN YES"
+        - listitem [level=1]
+          - StaticText "SEND IT"
+      - paragraph
+        - StaticText "If you believe Bijan Robinson's growing role in the passing game will outweigh where the points sit today, you can talk yourself into this, but I'd hold Gibbs. Gibbs is the RB1 on the season, and he plays on a Lions offense that moves the ball and keeps giving him chances near the goal line. Robinson's Falcons rank 29th on offense, so he's not as safe a start as his name suggests. The upside is real: his snaps and targets are holding or climbing while Gibbs's have dipped lately, and history says Robinson tends to heat up in the second half. You're in a playoff spot, so this is the time to firm up your lineup, not to give up points on a usage bet, unless the other manager adds something to even it out."
+      - StaticText "FAIRNESS"
+      - StaticText "Lopsided: Maye d'force B with U gives more."
+      - paragraph
+        - StaticText "It gives more than it gets."
+      - list
+        - listitem [level=1]
+          - StaticText "MAYE D'FORCE B WITH U"
+          - paragraph
+            - StaticText "Maye d'force B with U gets Bijan Robinson, a star back whose role in the passing game is growing."
+        - listitem [level=1]
+          - StaticText "RETURN OF T MAC"
+          - paragraph
+            - StaticText "Return of T Mac gets the season's top-scoring back on a strong offense for its push into the playoffs."
+    - generic
+      - heading "THE TRADE" [level=2, ref=e11]
+      - StaticText "Maye d'force B with U"
+      - StaticText "YOU GET"
+      - list
+        - listitem [level=1]
+          - StaticText "Bijan Robinson"
+          - StaticText "RB"
+          - StaticText " · "
+          - StaticText "ATL"
+      - StaticText "FOR"
+      - StaticText "Return of T Mac"
+      - StaticText "GETS"
+      - list
+        - listitem [level=1]
+          - StaticText "Jahmyr Gibbs"
+          - StaticText "RB"
+          - StaticText " · "
+          - StaticText "DET"
+    - generic
+      - heading "THE SIDES" [level=2, ref=e12]
+      - tablist "The sides"
+        - tab "Maye d'force B with U" [ref=e16]
+          - StaticText "Maye d'force B with U"
+        - tab "Return of T Mac" [selected, ref=e17]
+          - StaticText "Return of T Mac"
+      - tabpanel "Return of T Mac" [ref=e13] focusable [tabindex]
+        - StaticText "GETS"
+        - list
+          - listitem [level=1]
+            - StaticText "Jahmyr Gibbs"
+            - StaticText "RB"
+            - StaticText " · "
+            - StaticText "DET"
+            - StaticText "Season rank RB1"
+        - StaticText "GIVES"
+        - list
+          - listitem [level=1]
+            - StaticText "Bijan Robinson"
+            - StaticText "RB"
+            - StaticText " · "
+            - StaticText "ATL"
+            - StaticText "Season rank RB3 · Recent rank RB16"
+        - group "FOR"
+          - StaticText "FOR"
+          - list
+            - listitem [level=1]
+              - button "for Gibbs's Lions rank 6th of 32 on offense, so he gets plenty of chances." [expanded=false, ref=e19]
+                - StaticText "for"
+                - StaticText "Gibbs's Lions rank 6th of 32 on offense, so he gets plenty of chances."
+            - listitem [level=1]
+              - button "for Gibbs has 43 red-zone carries this season, a steady path to touchdowns." [expanded=false, ref=e20]
+                - StaticText "for"
+                - StaticText "Gibbs has 43 red-zone carries this season, a steady path to touchdowns."
+            - listitem [level=1]
+              - button "for The team sits outside a playoff spot but still in the race, and this trade adds points now." [expanded=false, ref=e21]
+                - StaticText "for"
+                - StaticText "The team sits outside a playoff spot but still in the race, and this trade adds points now."
+        - group "AGAINST"
+          - StaticText "AGAINST"
+          - list
+            - listitem [level=1]
+              - button "against Gibbs's snap share was 73 percent over the last 2 weeks, down from before." [expanded=false, ref=e22]
+                - StaticText "against"
+                - StaticText "Gibbs's snap share was 73 percent over the last 2 weeks, down from before."
+        - group "EVEN"
+          - StaticText "EVEN"
+          - list
+            - listitem [level=1]
+              - button "even Gibbs faces MIN (28th most points to RBs), NYG (20th), and CHI (30th) in weeks 15 to 17, a mixed run." [expanded=false, ref=e23]
+                - StaticText "even"
+                - StaticText "Gibbs faces MIN (28th most points to RBs), NYG (20th), and CHI (30th) in weeks 15 to 17, a mixed run."
+        - region "This week and next" [ref=e18]
+          - StaticText "THIS WEEK AND NEXT"
+          - list
+            - listitem [level=1]
+              - StaticText "Week 9: RBs in the top 36 who play stay at 1. Gibbs plays at MIA, 9th most points to RBs. Warren has a bye."
+            - listitem [level=1]
+              - StaticText "Week 10: RBs in the top 36 who play stay at 2. Gibbs plays NE at home, 26th most points to RBs."
+    - generic
+      - heading "SUGGESTED COUNTERS" [level=2, ref=e14]
+      - paragraph
+        - StaticText "No counters yet."
+      - generic
+        - StaticText "Stats through week 8, plus 15 week 9 games, 1 in progress · Snaps pending for 1 game · Usage pending for 2 games · rosters fetched "
+        - time
+          - StaticText "Nov 9, 11:38 PM"
+  - alert

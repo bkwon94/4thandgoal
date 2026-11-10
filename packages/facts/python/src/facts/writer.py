@@ -4,9 +4,12 @@ The template blurb is the safe fallback when the writer fails twice.
 """
 import logging
 import re
-from collections.abc import Callable, Sequence
+import threading
+from collections.abc import Callable, Iterator, Sequence
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
-from typing import TypeVar
+from typing import NamedTuple, TypeVar
 
 import anthropic
 from pydantic import BaseModel, ValidationError
@@ -57,22 +60,96 @@ ANALYZER_CACHE_TTL = "1h"
 # The analyzer answers a waiting browser, so it trades some depth for a faster call.
 # The writer and the verifier keep the default, because the Tuesday build has no reader who waits.
 ANALYZER_EFFORT = "medium"
+# The Finder pick reads 10 offers in one call, about 28,000 input tokens, and a Finder press must end in 35 s and
+# cost $0.15 or less. On Opus one call cost about $0.13, so a retry of the pick went past the limit. Sonnet costs half
+# of Opus per token. The read of one trade stays on MODEL.
+FINDER_PICK_MODEL = "claude-sonnet-5-5"
+FINDER_PICK_EFFORT = "medium"
+# A repair call fixes the text of one failed pick on its one sheet, so it reads a small message and writes one pick.
+# A retry of the whole pick call doubled the time and the cost of a press, so a failed pick gets this small call
+# instead. Low effort keeps it short. It runs on FINDER_PICK_MODEL.
+FINDER_REPAIR_EFFORT = "low"
 
 log = logging.getLogger(__name__)
+
+
+class Price(NamedTuple):
+    """Dollars per million tokens of one model: input, output, cache read, and cache write."""
+
+    input: float
+    output: float
+    cache_read: float
+    cache_write: float
+
+
+# The prices of the pricing page of Anthropic. Opus 5.5 is $4 for input, $20 for output, and $0.20 for a cache read,
+# and Sonnet 5.5 costs half of Opus per token. The analyzer calls keep the one-hour cache, which writes at twice the
+# input price. A model that is not here counts at the price of MODEL, so a cost never reads low.
+PRICES = {MODEL: Price(4.0, 20.0, 0.20, 8.0), FINDER_PICK_MODEL: Price(2.0, 10.0, 0.10, 4.0)}
+
+
+def call_cost(model: str, usage: anthropic.types.Usage) -> float:
+    """The dollars of one Claude call, from the tokens of its usage."""
+    price = PRICES.get(model, PRICES[MODEL])
+
+    def tokens(name: str) -> int:
+        return getattr(usage, name, 0) or 0
+
+    return (tokens("input_tokens") * price.input + tokens("output_tokens") * price.output
+            + tokens("cache_read_input_tokens") * price.cache_read
+            + tokens("cache_creation_input_tokens") * price.cache_write) / 1_000_000
+
+
+class PressMeter:
+    """The Claude calls and the dollars of one press of the analyzer, so the log shows the cost of each press.
+
+    A lock guards the sums, because a call can come from a thread of the press.
+    """
+
+    def __init__(self) -> None:
+        self.calls = 0
+        self.usd = 0.0
+        self._lock = threading.Lock()
+
+    def add(self, model: str, usage: anthropic.types.Usage) -> None:
+        with self._lock:
+            self.calls += 1
+            self.usd += call_cost(model, usage)
+
+
+# The meter of the press that runs in this context. A call outside a press finds None and counts on no meter.
+_PRESS_METER: ContextVar[PressMeter | None] = ContextVar("press_meter", default=None)
+
+
+@contextmanager
+def metered_press() -> Iterator[PressMeter]:
+    """A meter that adds up each Claude call of WRITER or of any ClaudeWriter made in this context."""
+    meter = PressMeter()
+    token = _PRESS_METER.set(meter)
+    try:
+        yield meter
+    finally:
+        _PRESS_METER.reset(token)
 
 
 class ClaudeWriter:
     """The Claude implementation of the Writer port. Every Claude call in the tool goes through `parse`.
 
     A test passes a stub client to check the request shape. With no client, the writer makes one on its first call.
+    `on_usage` gets the usage of each response, so a run can add up its tokens and its cost.
     """
 
-    def __init__(self, client: anthropic.Anthropic | None = None):
+    def __init__(
+        self, client: anthropic.Anthropic | None = None,
+        on_usage: Callable[[anthropic.types.Usage], None] | None = None,
+    ):
         self._client = client
+        self._on_usage = on_usage
 
     def parse(
         self, content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
         cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
+        model: str | None = None,
     ) -> BaseModel:
         """The Claude call of `Writer.parse`. The docstring of the protocol in claude_port.py gives the arguments."""
         # One client per writer: it holds the connection pool. The first call makes it, so an import needs no API key.
@@ -90,8 +167,9 @@ class ClaudeWriter:
         # Only the research call searches the web, so every other call sends no tools.
         if tools is not None:
             extra["tools"] = tools
+        model = MODEL if model is None else model
         response = self._client.messages.parse(
-            model=MODEL,
+            model=model,
             max_tokens=16000,
             messages=[{"role": "user", "content": content}],
             output_format=output_model,
@@ -110,6 +188,10 @@ class ClaudeWriter:
                 usage.cache_read_input_tokens,
                 usage.input_tokens,
             )
+            if self._on_usage is not None:
+                self._on_usage(usage)
+            if (meter := _PRESS_METER.get()) is not None:
+                meter.add(model, usage)
         if response.stop_reason == "refusal":
             raise RefusalError(f"Claude refused the request for {output_model.__name__}.")
         if response.parsed_output is None:
@@ -124,13 +206,14 @@ WRITER = ClaudeWriter()
 def parse_call(
     content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
     cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
-    *, writer: Writer | None = None,
+    *, writer: Writer | None = None, model: str | None = None,
 ) -> BaseModel:
     """`Writer.parse` on `writer`, or on WRITER when `writer` is None. Every Claude call in the tool goes through here.
 
     The CLI passes its writer, and a test passes a fake.
     """
-    return (WRITER if writer is None else writer).parse(content, output_model, system, cache_ttl, effort, tools)
+    return (WRITER if writer is None else writer).parse(content, output_model, system, cache_ttl, effort, tools,
+                                                        model)
 
 
 def claude_call(system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None) -> BaseModel:
@@ -143,6 +226,26 @@ def analyzer_call(
     """The analyzer's Claude call. It is `claude_call` with the one-hour lifetime."""
     return parse_call(
         user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=ANALYZER_EFFORT, writer=writer
+    )
+
+
+def finder_pick_call(
+    system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None
+) -> BaseModel:
+    """The Claude call of the Finder pick. It is `analyzer_call` on FINDER_PICK_MODEL at FINDER_PICK_EFFORT."""
+    return parse_call(
+        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=FINDER_PICK_EFFORT, writer=writer,
+        model=FINDER_PICK_MODEL,
+    )
+
+
+def finder_repair_call(
+    system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None
+) -> BaseModel:
+    """The Claude call that repairs one failed Finder pick. It is `finder_pick_call` at FINDER_REPAIR_EFFORT."""
+    return parse_call(
+        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=FINDER_REPAIR_EFFORT, writer=writer,
+        model=FINDER_PICK_MODEL,
     )
 
 

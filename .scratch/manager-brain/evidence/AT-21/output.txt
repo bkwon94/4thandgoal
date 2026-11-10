@@ -1,0 +1,13 @@
+$ curl -s -w '\nHTTP %{http_code} time=%{time_total}s\n' -X POST -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @request.json http://localhost:8081/clients/cpc/analyze
+
+Request (request.json):
+{"season": 2026, "asker": 9, "sides": [{"roster_id": 9, "gives": [{"player_id": "9221", "to": 8}]}, {"roster_id": 8, "gives": [{"player_id": "9509", "to": 9}]}]}
+
+
+HTTP 503 time=4.472948s
+Response:
+{
+    "detail": {
+        "message": "The read of this trade did not come through. Try again in a minute. This try does not count toward your grades."
+    }
+}

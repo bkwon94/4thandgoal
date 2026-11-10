@@ -1,0 +1,21 @@
+$ CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_RESULT_CACHE_DIR=/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/5fa1045d-ebb4-4324-9db8-27e047c00271/scratchpad/e1/results1 CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-pipe uv run --exact --package cpc-api python api_run.py 8091   # in apps/api of a detached checkout of 26dbed1b; api_run.py runs the real app and logs each sheet
+# The press, at 2026-11-09T23:15:27-0500. Maye d'force B with U gives Jahmyr Gibbs to Return of T Mac for Alec Pierce.
+# Week 9 byes in games.csv of the cache: PIT and TEN.
+$ curl -s -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @p2.json http://127.0.0.1:8091/clients/cpc/analyze
+{"season":2026,"asker":9,"sides":[{"roster_id":9,"gives":[{"player_id":"9221","to":8}]},{"roster_id":8,"gives":[{"player_id":"8142","to":9}]}]}
+HTTP 200 in 19.519488s
+
+# The team facts of the sheet of the press (the log line of each fact whose id starts with the roster id):
+2026-11-09 23:15:29,332 INFO evidence: SHEET 9.need: Maye d'force B with U has 5 RB and 6 WR after the trade and 0 open roster spots. | numbers=['5', '6', '0']
+2026-11-09 23:15:29,332 INFO evidence: SHEET 8.need: Return of T Mac has 5 RB and 5 WR after the trade and 0 open roster spots. | numbers=['5', '5', '0']
+2026-11-09 23:15:29,332 INFO evidence: SHEET 9.hole.flex2: For Maye d'force B with U, the trade leaves FLEX2 short: Keon Coleman is WR52, game in progress. The best free agent at WR is Tank Dell, WR19. | numbers=['2', '52', '19']
+2026-11-09 23:15:29,332 INFO evidence: SHEET 9.depth.rb: For Maye d'force B with U, the RBs in the top 36 go from 4 to 3. | numbers=['36', '4', '3']
+2026-11-09 23:15:29,332 INFO evidence: SHEET 8.depth.rb: For Return of T Mac, the RBs in the top 36 go from 2 to 3. | numbers=['36', '2', '3']
+2026-11-09 23:15:29,332 INFO evidence: SHEET 9.team: Maye d'force B with U was 9-7, 5th of 12, before the trade. Its race group is In, with 77% playoff odds after week 8. | numbers=['9', '7', '9-7', '5', '12', '77', '8']
+2026-11-09 23:15:29,332 INFO evidence: SHEET 8.team: Return of T Mac was 9-7, 7th of 12, before the trade. Its race group is Bubble, with 42% playoff odds after week 8. | numbers=['9', '7', '9-7', '7', '12', '42', '8']
+2026-11-09 23:15:29,332 INFO evidence: SHEET 9.depth.wr: For Maye d'force B with U, the WRs in the top 36 go from 2 to 2. | numbers=['36', '2', '2']
+2026-11-09 23:15:29,332 INFO evidence: SHEET 8.depth.wr: For Return of T Mac, the WRs in the top 36 go from 3 to 3. | numbers=['36', '3', '3']
+2026-11-09 23:15:29,332 INFO evidence: SHEET 8.bye: For Return of T Mac, Carnell Tate, Pittsburgh Steelers and Jaylen Warren start after the trade and have a bye in week 9, the trade week. | numbers=['9']
+
+# Every bye fact of the sheet:
+2026-11-09 23:15:29,332 INFO evidence: SHEET 8.bye: For Return of T Mac, Carnell Tate, Pittsburgh Steelers and Jaylen Warren start after the trade and have a bye in week 9, the trade week. | numbers=['9']

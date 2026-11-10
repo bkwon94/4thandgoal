@@ -1,0 +1,24 @@
+# Server A: the shared API on port 8080 at b056a29f, started by plain 'make -C apps/api api-evidence'. Its start line, from api-evidence-b056.log:
+CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:4173 CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-api uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 8080
+
+# Server B: a plain API on port 8081, from the worktree manager-brain-ev-api2 at b056a29f. It runs the api-evidence command with port 8081 and a new CORNERSTONE_RESULT_CACHE_DIR, so the result cache is cold. Its start line:
+CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:4173 CORNERSTONE_RESULT_CACHE_DIR=<scratchpad>/e2/cache-b056 CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/manager-brain-ev-api2 uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 8081
+
+# Neither start line holds --log-config. The app lines print through configure_logging of app_from_env:
+$ git -C manager-brain-ev-api2 log -1 --oneline; grep -n 'def configure_logging' -A14 apps/api/src/cornerstone_api/app.py
+b056a29f Manager brain fix E-GLOSS: the Avoid line of Jev check names the Lean of the analyzer
+278:def configure_logging() -> None:
+279-    """Send each INFO line of the app to stderr, through one handler on the root logger.
+280-
+281-    uvicorn sets only its own loggers, so with no root handler each INFO line of the analyzer, such as the press line
+282-    and the Jev checks of the read, never reaches the Fly log. The uvicorn loggers keep their own handlers and do not
+283-    propagate, so the access log stays as it is and no line prints two times.
+284-    """
+285-    root = logging.getLogger()
+286-    root.setLevel(logging.INFO)
+287-    if any(handler.get_name() == LOG_HANDLER_NAME for handler in root.handlers):
+288-        return
+289-    handler = logging.StreamHandler(sys.stderr)
+290-    handler.set_name(LOG_HANDLER_NAME)
+291-    handler.setFormatter(logging.Formatter(LOG_FORMAT))
+292-    root.addHandler(handler)

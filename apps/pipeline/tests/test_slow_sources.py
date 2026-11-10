@@ -121,3 +121,15 @@ def test_load_slow_sources_without_the_weekly_player_file_or_the_id_map_gives_no
     (cache / "db_playerids.csv").unlink()
     without_id_map = load_slow_sources(cache, 2026, 6, fixture_history_root)
     assert without_id_map.wopr is None and without_id_map.missing == ["id_map", *NOT_IN_CACHE]
+
+
+def test_load_slow_sources_gives_the_team_offenses_through_the_week_before_the_trade_week(
+        fixture_nflverse_dir, fixture_history_root, tmp_path):
+    cache = _cache(fixture_nflverse_dir, tmp_path)
+    shutil.copy(fixture_nflverse_dir / "stats_team_week_2026.csv.gz", cache)
+    sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    assert sources.team_stats["BUF"].rank == 1 and sources.team_stats["BUF"].games == 5
+    # The file is an extra fact source, so its absence is no entry in `missing`.
+    assert sources.missing == NOT_IN_CACHE
+    (cache / "stats_team_week_2026.csv.gz").unlink()
+    assert load_slow_sources(cache, 2026, 6, fixture_history_root).team_stats is None

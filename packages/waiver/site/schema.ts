@@ -31,7 +31,7 @@ export const lastLikeSchema = z.object({
 });
 
 /* The bid to win of one pool player, a whole dollar, with the fact that holds its inputs.
-   The outbid map maps a budget level to the count of rivals that can bid more than that level. */
+   The outbid map maps a budget level to the count of managers that can bid more than that level. */
 export const waiverPriceSchema = z.object({
   bid: z.number(),
   fact: waiverFactSchema,

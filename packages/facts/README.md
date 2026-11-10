@@ -14,11 +14,11 @@
 
 - `ClaudeWriter` in `writer.py` implements the `Writer` port of `league/claude_port.py`. Every Claude call goes through `parse_call`.
 - `jev_check.py` and `verifier.py` take the `Jev` port of `league/jev_port.py`. Each Jev call goes through that port.
-- `load_prompt` takes `rules_dir`, so a package that owns a rule prompt, such as the analyzer rubric, reads it from its own folder.
+- `load_prompt` takes `rules_dir`, so a package that owns a rule prompt, such as the Advisor prompt of the analyzer, reads it from its own folder.
 
 ## Does not do
 
 - It imports no app and no core package, only `league`. `tests/test_layers.py` of the pipeline checks it.
 - It builds no chapter and no fact sheet. The week and the core packages build them with the fact tokens.
-- It holds no rule prompt of another package. `analysis.md`, `finder.md`, and `rubric.md` sit in `analyzer`, and `research.md` stays with the waiver board.
+- It holds no rule prompt of another package. `advisor.md` and `finder_pick.md` sit in `analyzer`, and `research.md` stays with the waiver board.
 - It writes no published file.

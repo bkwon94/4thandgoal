@@ -1,17 +1,17 @@
 """
 The Week line of each side of a grade, for the trade week and the next week: the count of its players who play, the
-opponent of each player it gets, each bye, each player who is out, and each player who steps up. The code writes it,
-and it never moves a letter.
+opponent of each player it gets, each bye, each player who is out, and each player who steps up. The code writes it
+as a plain fact for the page, and the Advisor makes the call.
 """
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel
 
-from analyzer.adjusters import _join, _short_names
-from analyzer.rubric import ProposedTrade
+from analyzer.measures import _join, _short_names
+from analyzer.trade import ProposedTrade
 from analyzer.tunables import STEP_UP_CHART_HOURS
-from league.lineup import _above_the_line
+from league.lineup import above_the_line
 from league.nflverse import SKILL_POSITIONS, ScheduledGame
 from league.points_allowed import most_points_text, opponent_rank
 from league.ranks import RANKED_POSITIONS, _back_in_a_known_game
@@ -37,7 +37,7 @@ class WeekLine(BaseModel):
 def week_lines(trade: ProposedTrade, snapshot: Snapshot) -> dict[int, list[WeekLine]]:
     """The Week lines of each side by roster id, one for the trade week and one for the next week.
 
-    A next week past the regular season has no line, because the letter already grades the rest of the season.
+    A next week past the regular season has no line, because a Week line covers the weeks of the regular season only.
     """
     weeks = [week for week in (snapshot.week, snapshot.week + 1)
              if week <= snapshot.client.settings.last_regular_week]
@@ -79,7 +79,7 @@ def _count_sentence(snapshot: Snapshot, position: str, before: list[str], after:
     """
     def count(roster: list[str]) -> int:
         return sum(1 for pid in roster if snapshot.players[pid].position == position
-                   and _above_the_line(snapshot, pid) and _plays(snapshot, pid, week)
+                   and above_the_line(snapshot, pid) and _plays(snapshot, pid, week)
                    and _out_reason(snapshot, snapshot.players[pid], week) is None)
 
     old, new = count(before), count(after)

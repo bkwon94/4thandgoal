@@ -273,7 +273,7 @@ def test_writer_has_no_trade_recap_rule(fixture_raw_dir):
     assert "Put at most two numbers in a sentence." in system and "Write every number as digits" in system
 
 
-def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True):
+def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True, on_usage=None):
     """A ClaudeWriter over a stub client, and the dict of the keyword arguments of its last request."""
     from facts.writer import ClaudeWriter
 
@@ -293,7 +293,7 @@ def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True)
                 "usage": usage if has_usage else None,
             })()
 
-    return ClaudeWriter(client=type("Client", (), {"messages": Messages()})()), sent
+    return ClaudeWriter(client=type("Client", (), {"messages": Messages()})(), on_usage=on_usage), sent
 
 
 def test_claude_call_sends_the_system_and_the_user_text_through_parse_call():
@@ -321,11 +321,11 @@ def test_parse_call_raises_on_a_refusal_and_on_no_parsed_output():
 
 
 def test_the_analyzer_call_alone_sets_the_one_hour_lifetime():
-    from analyzer.analysis import AnalysisOut
+    from analyzer.advisor import AdvisorOut
     from facts.writer import analyzer_call, claude_call
 
     writer, sent = _stub_writer()
-    analyzer_call("analyzer system", "user text", AnalysisOut, writer=writer)
+    analyzer_call("analyzer system", "user text", AdvisorOut, writer=writer)
     assert sent["system"] == [{
         "type": "text",
         "text": "analyzer system",
@@ -337,24 +337,57 @@ def test_the_analyzer_call_alone_sets_the_one_hour_lifetime():
 
 
 def test_the_analyzer_call_alone_runs_at_medium_effort():
-    from analyzer.analysis import AnalysisOut
+    from analyzer.advisor import AdvisorOut
     from facts.writer import analyzer_call, claude_call
 
     writer, sent = _stub_writer()
-    analyzer_call("analyzer system", "user text", AnalysisOut, writer=writer)
+    analyzer_call("analyzer system", "user text", AdvisorOut, writer=writer)
     assert sent["output_config"] == {"effort": "medium"}
     claude_call("writer system", "user text", WriterOut, writer=writer)
     assert sent["output_config"] == {"effort": "high"}
 
 
-# The API route calls `analyze` with no `call` argument, so this default is the API's lifetime.
-def test_analyze_uses_the_analyzer_call_by_default():
+def test_the_finder_pick_call_runs_on_sonnet_and_the_read_call_on_opus():
+    # The pick reads 10 offers in one call, so it must end in 35 s and cost $0.15 or less (AT-33). Sonnet costs half
+    # of Opus per token. The read of one trade keeps the Opus model and the medium effort of prototype 04.
+    from analyzer.advisor import AdvisorOut
+    from analyzer.finder_pick import FinderPickOut
+    from facts.writer import analyzer_call, finder_pick_call
+
+    writer, sent = _stub_writer()
+    finder_pick_call("finder system", "user text", FinderPickOut, writer=writer)
+    assert sent["model"] == "claude-sonnet-5-5"
+    assert sent["output_config"] == {"effort": "medium"}
+    assert sent["system"][0]["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
+    analyzer_call("analyzer system", "user text", AdvisorOut, writer=writer)
+    assert sent["model"] == "claude-opus-5-5"
+    assert sent["output_config"] == {"effort": "medium"}
+
+
+def test_the_finder_repair_call_runs_on_sonnet_at_low_effort():
+    # A repair fixes the text of one pick on one sheet, so it is a small call. Low effort keeps it short, so the
+    # repairs of a press stay within the time and the cost of AT-33.
+    from analyzer.finder_pick import PickOut
+    from facts.writer import finder_repair_call
+
+    writer, sent = _stub_writer()
+    finder_repair_call("repair system", "user text", PickOut, writer=writer)
+    assert sent["model"] == "claude-sonnet-5-5"
+    assert sent["output_config"] == {"effort": "low"}
+    assert sent["system"][0]["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
+
+
+# The API calls `read_trade` and `pick_trades` with no `call` argument, so these defaults are the API's calls.
+def test_the_advisor_read_uses_the_analyzer_call_and_the_finder_pick_its_own_call_by_default():
     import inspect
 
-    from analyzer.analysis import analyze
-    from facts.writer import analyzer_call
+    from analyzer.advisor import read_trade
+    from analyzer.finder_pick import pick_trades
+    from facts.writer import analyzer_call, finder_pick_call, finder_repair_call
 
-    assert inspect.signature(analyze).parameters["call"].default is analyzer_call
+    assert inspect.signature(read_trade).parameters["call"].default is analyzer_call
+    assert inspect.signature(pick_trades).parameters["call"].default is finder_pick_call
+    assert inspect.signature(pick_trades).parameters["repair_call"].default is finder_repair_call
 
 
 def test_parse_call_logs_the_kind_and_the_three_usage_counts(caplog):
@@ -380,6 +413,49 @@ def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(caplog):
     with caplog.at_level(logging.INFO, logger="facts.writer"):
         assert parse_call("user text", WriterOut, "system text", writer=writer) == "parsed"
     assert not any("call: cache_creation_input_tokens" in m for m in caplog.messages)
+
+
+def test_a_writer_hands_the_usage_of_each_call_to_its_usage_hook():
+    from facts.writer import parse_call
+
+    seen = []
+    writer, _ = _stub_writer(on_usage=seen.append)
+    parse_call("user text", WriterOut, "system text", writer=writer)
+    assert [usage.input_tokens for usage in seen] == [1]
+
+
+def test_a_writer_with_a_usage_hook_skips_it_when_the_response_has_no_usage():
+    from facts.writer import parse_call
+
+    seen = []
+    writer, _ = _stub_writer(has_usage=False, on_usage=seen.append)
+    parse_call("user text", WriterOut, "system text", writer=writer)
+    assert seen == []
+
+
+def test_a_metered_press_adds_up_the_calls_and_the_dollars_of_each_claude_call_inside_it():
+    from facts.writer import FINDER_PICK_MODEL, metered_press, parse_call
+
+    writer, _ = _stub_writer()
+    with metered_press() as meter:
+        parse_call("user text", WriterOut, "system text", writer=writer)
+        parse_call("user text", WriterOut, "system text", writer=writer, model=FINDER_PICK_MODEL)
+    # The stub usage reads 1 input token: $4 per million on Opus, $2 per million on Sonnet.
+    assert meter.calls == 2
+    assert meter.usd == pytest.approx(6 / 1_000_000)
+    # A call after the press counts on no meter.
+    parse_call("user text", WriterOut, "system text", writer=writer)
+    assert meter.calls == 2
+
+
+def test_a_call_outside_a_metered_press_counts_on_no_meter():
+    from facts.writer import metered_press, parse_call
+
+    writer, _ = _stub_writer()
+    parse_call("user text", WriterOut, "system text", writer=writer)
+    with metered_press() as meter:
+        pass
+    assert meter.calls == 0 and meter.usd == 0
 
 
 def test_tone_varies_the_opener_and_moves_upset_off_the_front(fixture_raw_dir):

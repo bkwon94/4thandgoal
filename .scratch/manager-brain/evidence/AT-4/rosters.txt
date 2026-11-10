@@ -1,0 +1,11 @@
+$ uv run --exact --package cornerstone python rosters.py   # in apps/pipeline of a detached checkout of 6ba706cf
+Trade 6, week 7. Roster note: None
+Lines of the client: RB 36, WR 36
+behold the lamb (roster 10) before, RB: 1 in the top 36: Quinshon Judkins (RB26), Dameon Pierce (RB38), Kyle Monangai (RB39), Jonathon Brooks (RB50), Saquon Barkley (RB56), Roschon Johnson (RB66)
+behold the lamb (roster 10) before, WR: 2 in the top 36: CeeDee Lamb (WR3), Emeka Egbuka (WR36), Keenan Allen (WR43), Deebo Samuel Sr. (WR44), Germie Bernard (WR63)
+behold the lamb (roster 10) after, RB: 1 in the top 36: Quinshon Judkins (RB26), Dameon Pierce (RB38), Kyle Monangai (RB39), Jonathon Brooks (RB50), Roschon Johnson (RB66)
+behold the lamb (roster 10) after, WR: 3 in the top 36: Puka Nacua (WR2), Omar Cooper Jr. (WR24), Emeka Egbuka (WR36), Keenan Allen (WR43), Deebo Samuel Sr. (WR44), Germie Bernard (WR63)
+Pukancun on 3 (roster 4) before, RB: 2 in the top 36: Jordan Mason (RB18), David Montgomery (RB22), Cam Skattebo (RB41), Jacory Croskey-Merritt (RB43)
+Pukancun on 3 (roster 4) before, WR: 4 in the top 36: Puka Nacua (WR2), Omar Cooper Jr. (WR24), DeVonta Smith (WR29), Jameson Williams (WR31), Xavier Worthy (WR50), Darius Cooper (WR58), Rome Odunze (WR66)
+Pukancun on 3 (roster 4) after, RB: 2 in the top 36: Jordan Mason (RB18), David Montgomery (RB22), Cam Skattebo (RB41), Jacory Croskey-Merritt (RB43), Saquon Barkley (RB56)
+Pukancun on 3 (roster 4) after, WR: 3 in the top 36: CeeDee Lamb (WR3), DeVonta Smith (WR29), Jameson Williams (WR31), Xavier Worthy (WR50), Darius Cooper (WR58), Rome Odunze (WR66)

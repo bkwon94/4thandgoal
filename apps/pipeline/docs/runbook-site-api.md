@@ -266,7 +266,7 @@ bytes on every call of one kind.
 
 | Call | Lifetime | Why |
 | --- | --- | --- |
-| Analyzer, in the API and in `cornerstone analyze` | 1 hour | Trade requests come minutes apart. |
+| Analyzer, in the API and in `cornerstone advisor-eval` | 1 hour | Trade requests come minutes apart. |
 | Writer and verifier, in the weekly build | 5 minutes, the default | The build runs its calls back to back. |
 
 The analyzer runs at medium effort, because a browser waits for it. The other calls run at high effort.

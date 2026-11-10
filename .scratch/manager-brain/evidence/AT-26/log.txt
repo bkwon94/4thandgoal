@@ -1,0 +1,223 @@
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     analyzer.jev_waves: Jev wave 1 (partner filter): 11 requests, about 19516 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 730ms (request req_01a1c61792d57a7796827359814bf57e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 854ms (request req_01a1c61795df7e4bb9d587e53fd11e42)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 865ms (request req_01a1c61795c97dd79b53361bd2ad8aba)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 884ms (request req_01a1c61795f3762a879a22d3f79e7921)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 888ms (request req_01a1c61796147fd5a2ad3b09e0e0dc9b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 894ms (request req_01a1c617962177caa9c321f21b482983)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 952ms (request req_01a1c617964774bd9b0d621f64139be0)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 968ms (request req_01a1c61796317a9192dfb261d2e251b2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 979ms (request req_01a1c61796767929b469ec91a2ce5736)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 981ms (request req_01a1c61796627206a82be01eeea19451)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 998ms (request req_01a1c6179651727a8c5369245a033689)
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with The Blue Tent: passed, partner_has=0.82, partner_spares=0.77, asker_has=0.94, asker_spares=0.80
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with All You Need Is Love: passed, partner_has=0.87, partner_spares=0.74, asker_has=0.89, asker_spares=0.76
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Lil Fridge: stopped, partner_has=0.82, partner_spares=0.75, asker_has=0.78, asker_spares=0.67
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with NFC Least: stopped, partner_has=0.70, partner_spares=0.63, asker_has=0.91, asker_spares=0.76
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with London Cooking: passed, partner_has=0.84, partner_spares=0.74, asker_has=0.81, asker_spares=0.73
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Bo Girds: stopped, partner_has=0.87, partner_spares=0.79, asker_has=0.15, asker_spares=0.38
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with To Infinity and Bijan: stopped, partner_has=0.69, partner_spares=0.44, asker_has=0.88, asker_spares=0.73
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Return of T Mac: passed, partner_has=0.82, partner_spares=0.80, asker_has=0.83, asker_spares=0.75
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with behold the lamb: stopped, partner_has=0.69, partner_spares=0.68, asker_has=0.83, asker_spares=0.31
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Unsolicited Dak Picks: stopped, partner_has=0.58, partner_spares=0.63, asker_has=0.89, asker_spares=0.70
+INFO:     analyzer.finder_search: Partner filter of Maye d'force B with U with Teehee: passed, partner_has=0.86, partner_spares=0.76, asker_has=0.91, asker_spares=0.75
+INFO:     analyzer.jev_waves: Jev wave 2 (targets): 5 requests, about 15830 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 79ms (request req_01a1c61797b879f5b1e317498c19c50e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 87ms (request req_01a1c61797b87c0494c76f9451047bc2)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 86ms (request req_01a1c61797bb707fb7a6c81391bebe2a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 104ms (request req_01a1c61797bf7f92aebf7af7234e8026)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 109ms (request req_01a1c61797b978369090b632be85110a)
+INFO:     analyzer.finder_search: Finder target questions with The Blue Tent: Chris Rodriguez Jr.=0.14, Rashee Rice=0.29, Bucky Irving=0.37, Brock Bowers=0.52, Devaughn Vele=0.43, Jordyn Tyson=0.12, Jadarian Price=0.10, Dallas Goedert=0.14, Christian Watson=0.74, Brock Purdy=0.29, Drake Maye=0.31, Keon Coleman=0.19, Jalen Coker=0.24, Tyler Shough=0.11, Emmett Johnson=0.24, Jonah Coleman=0.37, Kaelon Black=0.16, Alvin Kamara=0.56, D'Andre Swift=0.68, Justin Jefferson=0.72, Jaylen Waddle=0.27, Isaiah Likely=0.41, Jahmyr Gibbs=0.82
+INFO:     analyzer.finder_search: Finder targets with The Blue Tent: the asker gives ['Jahmyr Gibbs', 'Justin Jefferson', "D'Andre Swift"]; the partner gives ['Christian Watson']
+INFO:     analyzer.finder_search: Finder target questions with All You Need Is Love: Tre Tucker=0.53, Dylan Sampson=0.11, Colston Loveland=0.14, Ashton Jeanty=0.28, Aaron Jones Sr.=0.21, Joe Burrow=0.49, Ja'Marr Chase=0.74, Wan'Dale Robinson=0.34, Chris Olave=0.69, Brenton Strange=0.14, Zach Charbonnet=0.10, Jordan Addison=0.25, Drake Maye=0.18, Keon Coleman=0.19, Jalen Coker=0.22, Tyler Shough=0.10, Emmett Johnson=0.22, Jonah Coleman=0.32, Kaelon Black=0.14, Alvin Kamara=0.50, D'Andre Swift=0.61, Justin Jefferson=0.61, Jaylen Waddle=0.25, Isaiah Likely=0.85, Jahmyr Gibbs=0.81
+INFO:     analyzer.finder_search: Finder targets with All You Need Is Love: the asker gives ['Isaiah Likely', 'Jahmyr Gibbs', "D'Andre Swift", 'Justin Jefferson']; the partner gives ["Ja'Marr Chase", 'Chris Olave']
+INFO:     analyzer.finder_search: Finder target questions with London Cooking: Woody Marks=0.18, Emeka Egbuka=0.42, Denzel Boston=0.55, Matthew Stafford=0.18, George Kittle=0.44, Josh Allen=0.61, Mike Gesicki=0.16, DK Metcalf=0.41, Chuba Hubbard=0.26, James Cook III=0.33, Puka Nacua=0.77, Drake Maye=0.17, Keon Coleman=0.22, Jalen Coker=0.32, Tyler Shough=0.14, Emmett Johnson=0.14, Jonah Coleman=0.18, Kaelon Black=0.11, Alvin Kamara=0.33, D'Andre Swift=0.37, Justin Jefferson=0.71, Jaylen Waddle=0.30, Isaiah Likely=0.42, Jahmyr Gibbs=0.62
+INFO:     analyzer.finder_search: Finder targets with London Cooking: the asker gives ['Justin Jefferson', 'Jahmyr Gibbs']; the partner gives ['Puka Nacua', 'Josh Allen']
+INFO:     analyzer.finder_search: Finder target questions with Return of T Mac: Rome Odunze=0.44, Marvin Harrison Jr.=0.30, DJ Giddens=0.09, T.J. Hockenson=0.20, CeeDee Lamb=0.77, Jordan Love=0.31, Jaylen Warren=0.25, Jordan Mason=0.13, Tucker Kraft=0.24, DeMario Douglas=0.63, Bijan Robinson=0.37, Drake Maye=0.28, Keon Coleman=0.25, Jalen Coker=0.32, Tyler Shough=0.13, Emmett Johnson=0.15, Jonah Coleman=0.21, Kaelon Black=0.15, Alvin Kamara=0.34, D'Andre Swift=0.37, Justin Jefferson=0.62, Jaylen Waddle=0.31, Isaiah Likely=0.64, Jahmyr Gibbs=0.62
+INFO:     analyzer.finder_search: Finder targets with Return of T Mac: the asker gives ['Isaiah Likely', 'Justin Jefferson', 'Jahmyr Gibbs']; the partner gives ['CeeDee Lamb', 'DeMario Douglas']
+INFO:     analyzer.finder_search: Finder target questions with Teehee: Dalton Kincaid=0.17, Sam LaPorta=0.24, Bo Nix=0.14, Bhayshul Tuten=0.22, Omarion Hampton=0.18, Luther Burden III=0.67, DJ Moore=0.32, Tony Pollard=0.22, Tee Higgins=0.69, Trevor Lawrence=0.14, Amon-Ra St. Brown=0.71, Kenny Gainwell=0.15, Drake Maye=0.74, Keon Coleman=0.17, Jalen Coker=0.17, Tyler Shough=0.27, Emmett Johnson=0.18, Jonah Coleman=0.25, Kaelon Black=0.12, Alvin Kamara=0.42, D'Andre Swift=0.61, Justin Jefferson=0.65, Jaylen Waddle=0.20, Isaiah Likely=0.61, Jahmyr Gibbs=0.80
+INFO:     analyzer.finder_search: Finder targets with Teehee: the asker gives ['Jahmyr Gibbs', 'Drake Maye', 'Justin Jefferson', "D'Andre Swift"]; the partner gives ['Amon-Ra St. Brown', 'Tee Higgins', 'Luther Burden III']
+INFO:     analyzer.finder_search: Finder offers of Maye d'force B with U: 95
+INFO:     analyzer.finder_search: Finder offer 9:9221-1:8167: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6794-1:8167: Maye d'force B with U gives Justin Jefferson (WR, MIN); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6790-1:8167: Maye d'force B with U gives D'Andre Swift (RB, CHI); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-1:8167: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Justin Jefferson (WR, MIN); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6790+9221-1:8167: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and D'Andre Swift (RB, CHI); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:6790+6794-1:8167: Maye d'force B with U gives Justin Jefferson (WR, MIN) and D'Andre Swift (RB, CHI); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 9:8131-2:7564: Maye d'force B with U gives Isaiah Likely (TE, NYG); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:8131-2:8144: Maye d'force B with U gives Isaiah Likely (TE, NYG); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:9221-2:7564: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:9221-2:8144: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6790-2:7564: Maye d'force B with U gives D'Andre Swift (RB, CHI); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6790-2:8144: Maye d'force B with U gives D'Andre Swift (RB, CHI); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6794-2:7564: Maye d'force B with U gives Justin Jefferson (WR, MIN); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6794-2:8144: Maye d'force B with U gives Justin Jefferson (WR, MIN); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:8131+9221-2:7564: Maye d'force B with U gives Isaiah Likely (TE, NYG) and Jahmyr Gibbs (RB, DET); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:8131+9221-2:8144: Maye d'force B with U gives Isaiah Likely (TE, NYG) and Jahmyr Gibbs (RB, DET); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6790+8131-2:7564: Maye d'force B with U gives Isaiah Likely (TE, NYG) and D'Andre Swift (RB, CHI); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6790+8131-2:8144: Maye d'force B with U gives Isaiah Likely (TE, NYG) and D'Andre Swift (RB, CHI); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6794+8131-2:7564: Maye d'force B with U gives Isaiah Likely (TE, NYG) and Justin Jefferson (WR, MIN); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6794+8131-2:8144: Maye d'force B with U gives Isaiah Likely (TE, NYG) and Justin Jefferson (WR, MIN); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6790+9221-2:7564: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and D'Andre Swift (RB, CHI); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6790+9221-2:8144: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and D'Andre Swift (RB, CHI); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-2:7564: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Justin Jefferson (WR, MIN); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-2:8144: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Justin Jefferson (WR, MIN); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6790+6794-2:7564: Maye d'force B with U gives D'Andre Swift (RB, CHI) and Justin Jefferson (WR, MIN); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6790+6794-2:8144: Maye d'force B with U gives D'Andre Swift (RB, CHI) and Justin Jefferson (WR, MIN); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:8131-2:7564+8144: Maye d'force B with U gives Isaiah Likely (TE, NYG); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:9221-2:7564+8144: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6790-2:7564+8144: Maye d'force B with U gives D'Andre Swift (RB, CHI); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6794-2:7564+8144: Maye d'force B with U gives Justin Jefferson (WR, MIN); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 9:6794-5:9493: Maye d'force B with U gives Justin Jefferson (WR, MIN); London Cooking gives Puka Nacua (WR, LAR)
+INFO:     analyzer.finder_search: Finder offer 9:6794-5:4984: Maye d'force B with U gives Justin Jefferson (WR, MIN); London Cooking gives Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 9:9221-5:9493: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); London Cooking gives Puka Nacua (WR, LAR)
+INFO:     analyzer.finder_search: Finder offer 9:9221-5:4984: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); London Cooking gives Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-5:9493: Maye d'force B with U gives Justin Jefferson (WR, MIN) and Jahmyr Gibbs (RB, DET); London Cooking gives Puka Nacua (WR, LAR)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-5:4984: Maye d'force B with U gives Justin Jefferson (WR, MIN) and Jahmyr Gibbs (RB, DET); London Cooking gives Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 9:6794-5:4984+9493: Maye d'force B with U gives Justin Jefferson (WR, MIN); London Cooking gives Puka Nacua (WR, LAR) and Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 9:9221-5:4984+9493: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); London Cooking gives Puka Nacua (WR, LAR) and Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 9:8131-8:6786: Maye d'force B with U gives Isaiah Likely (TE, NYG); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 9:8131-8:9501: Maye d'force B with U gives Isaiah Likely (TE, NYG); Return of T Mac gives DeMario Douglas (WR, NE)
+INFO:     analyzer.finder_search: Finder offer 9:6794-8:6786: Maye d'force B with U gives Justin Jefferson (WR, MIN); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 9:6794-8:9501: Maye d'force B with U gives Justin Jefferson (WR, MIN); Return of T Mac gives DeMario Douglas (WR, NE)
+INFO:     analyzer.finder_search: Finder offer 9:9221-8:6786: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 9:9221-8:9501: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); Return of T Mac gives DeMario Douglas (WR, NE)
+INFO:     analyzer.finder_search: Finder offer 9:6794+8131-8:6786: Maye d'force B with U gives Isaiah Likely (TE, NYG) and Justin Jefferson (WR, MIN); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 9:6794+8131-8:9501: Maye d'force B with U gives Isaiah Likely (TE, NYG) and Justin Jefferson (WR, MIN); Return of T Mac gives DeMario Douglas (WR, NE)
+INFO:     analyzer.finder_search: Finder offer 9:8131+9221-8:6786: Maye d'force B with U gives Isaiah Likely (TE, NYG) and Jahmyr Gibbs (RB, DET); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 9:8131+9221-8:9501: Maye d'force B with U gives Isaiah Likely (TE, NYG) and Jahmyr Gibbs (RB, DET); Return of T Mac gives DeMario Douglas (WR, NE)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-8:6786: Maye d'force B with U gives Justin Jefferson (WR, MIN) and Jahmyr Gibbs (RB, DET); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-8:9501: Maye d'force B with U gives Justin Jefferson (WR, MIN) and Jahmyr Gibbs (RB, DET); Return of T Mac gives DeMario Douglas (WR, NE)
+INFO:     analyzer.finder_search: Finder offer 9:8131-8:6786+9501: Maye d'force B with U gives Isaiah Likely (TE, NYG); Return of T Mac gives CeeDee Lamb (WR, DAL) and DeMario Douglas (WR, NE)
+INFO:     analyzer.finder_search: Finder offer 9:6794-8:6786+9501: Maye d'force B with U gives Justin Jefferson (WR, MIN); Return of T Mac gives CeeDee Lamb (WR, DAL) and DeMario Douglas (WR, NE)
+INFO:     analyzer.finder_search: Finder offer 9:9221-8:6786+9501: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); Return of T Mac gives CeeDee Lamb (WR, DAL) and DeMario Douglas (WR, NE)
+INFO:     analyzer.finder_search: Finder offer 9:9221-12:7547: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:9221-12:6801: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:9221-12:12519: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:11564-12:7547: Maye d'force B with U gives Drake Maye (QB, NE); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:11564-12:6801: Maye d'force B with U gives Drake Maye (QB, NE); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:11564-12:12519: Maye d'force B with U gives Drake Maye (QB, NE); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:6794-12:7547: Maye d'force B with U gives Justin Jefferson (WR, MIN); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:6794-12:6801: Maye d'force B with U gives Justin Jefferson (WR, MIN); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6794-12:12519: Maye d'force B with U gives Justin Jefferson (WR, MIN); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:6790-12:7547: Maye d'force B with U gives D'Andre Swift (RB, CHI); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:6790-12:6801: Maye d'force B with U gives D'Andre Swift (RB, CHI); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6790-12:12519: Maye d'force B with U gives D'Andre Swift (RB, CHI); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:11564+9221-12:7547: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Drake Maye (QB, NE); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:11564+9221-12:6801: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Drake Maye (QB, NE); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:11564+9221-12:12519: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Drake Maye (QB, NE); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-12:7547: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Justin Jefferson (WR, MIN); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-12:6801: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Justin Jefferson (WR, MIN); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6794+9221-12:12519: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and Justin Jefferson (WR, MIN); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:6790+9221-12:7547: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and D'Andre Swift (RB, CHI); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:6790+9221-12:6801: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and D'Andre Swift (RB, CHI); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6790+9221-12:12519: Maye d'force B with U gives Jahmyr Gibbs (RB, DET) and D'Andre Swift (RB, CHI); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:11564+6794-12:7547: Maye d'force B with U gives Drake Maye (QB, NE) and Justin Jefferson (WR, MIN); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:11564+6794-12:6801: Maye d'force B with U gives Drake Maye (QB, NE) and Justin Jefferson (WR, MIN); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:11564+6794-12:12519: Maye d'force B with U gives Drake Maye (QB, NE) and Justin Jefferson (WR, MIN); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:11564+6790-12:7547: Maye d'force B with U gives Drake Maye (QB, NE) and D'Andre Swift (RB, CHI); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:11564+6790-12:6801: Maye d'force B with U gives Drake Maye (QB, NE) and D'Andre Swift (RB, CHI); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:11564+6790-12:12519: Maye d'force B with U gives Drake Maye (QB, NE) and D'Andre Swift (RB, CHI); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:6790+6794-12:7547: Maye d'force B with U gives Justin Jefferson (WR, MIN) and D'Andre Swift (RB, CHI); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 9:6790+6794-12:6801: Maye d'force B with U gives Justin Jefferson (WR, MIN) and D'Andre Swift (RB, CHI); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6790+6794-12:12519: Maye d'force B with U gives Justin Jefferson (WR, MIN) and D'Andre Swift (RB, CHI); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:9221-12:6801+7547: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); Teehee gives Amon-Ra St. Brown (WR, DET) and Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:9221-12:12519+7547: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); Teehee gives Amon-Ra St. Brown (WR, DET) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:9221-12:12519+6801: Maye d'force B with U gives Jahmyr Gibbs (RB, DET); Teehee gives Tee Higgins (WR, CIN) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:11564-12:6801+7547: Maye d'force B with U gives Drake Maye (QB, NE); Teehee gives Amon-Ra St. Brown (WR, DET) and Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:11564-12:12519+7547: Maye d'force B with U gives Drake Maye (QB, NE); Teehee gives Amon-Ra St. Brown (WR, DET) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:11564-12:12519+6801: Maye d'force B with U gives Drake Maye (QB, NE); Teehee gives Tee Higgins (WR, CIN) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:6794-12:6801+7547: Maye d'force B with U gives Justin Jefferson (WR, MIN); Teehee gives Amon-Ra St. Brown (WR, DET) and Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6794-12:12519+7547: Maye d'force B with U gives Justin Jefferson (WR, MIN); Teehee gives Amon-Ra St. Brown (WR, DET) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:6794-12:12519+6801: Maye d'force B with U gives Justin Jefferson (WR, MIN); Teehee gives Tee Higgins (WR, CIN) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:6790-12:6801+7547: Maye d'force B with U gives D'Andre Swift (RB, CHI); Teehee gives Amon-Ra St. Brown (WR, DET) and Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 9:6790-12:12519+7547: Maye d'force B with U gives D'Andre Swift (RB, CHI); Teehee gives Amon-Ra St. Brown (WR, DET) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 9:6790-12:12519+6801: Maye d'force B with U gives D'Andre Swift (RB, CHI); Teehee gives Tee Higgins (WR, CIN) and Luther Burden III (WR, CHI)
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 5 requests, about 32426 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 71ms (request req_01a1c6179ba07f2bbdb887d07fdd0eef)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 113ms (request req_01a1c6179bb376b4bc5b6d1735cbd0b6)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 123ms (request req_01a1c6179bb574748be311091b779725)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 130ms (request req_01a1c6179bad7eb8beba1834494cfb6a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 167ms (request req_01a1c6179bba7b46a970971eee5d7fb3)
+INFO:     analyzer.finder_search: Finder shortlist 9:9221-2:7564: score=0.314 fair=0.51 needs={9: 0.8, 2: 0.77}
+INFO:     analyzer.finder_search: Finder shortlist 9:6790-1:8167: score=0.289 fair=0.42 needs={9: 0.83, 1: 0.83}
+INFO:     analyzer.finder_search: Finder shortlist 9:9221-1:8167: score=0.286 fair=0.41 needs={9: 0.83, 1: 0.84}
+INFO:     analyzer.finder_search: Finder shortlist 9:6794-5:9493: score=0.253 fair=0.45 needs={9: 0.77, 5: 0.73}
+INFO:     analyzer.finder_search: Finder shortlist 9:9221-12:6801+7547: score=0.233 fair=0.50 needs={9: 0.79, 12: 0.59}
+INFO:     analyzer.finder_search: Finder shortlist 9:8131-2:8144: score=0.229 fair=0.38 needs={9: 0.7, 2: 0.86}
+INFO:     analyzer.finder_search: Finder shortlist 9:9221-12:12519+7547: score=0.227 fair=0.47 needs={9: 0.82, 12: 0.59}
+INFO:     analyzer.finder_search: Finder shortlist 9:6790-2:8144: score=0.220 fair=0.49 needs={9: 0.68, 2: 0.66}
+INFO:     analyzer.finder_search: Finder shortlist 9:6794-2:7564: score=0.210 fair=0.49 needs={9: 0.81, 2: 0.53}
+INFO:     analyzer.finder_search: Finder shortlist 9:9221-12:7547: score=0.205 fair=0.51 needs={9: 0.79, 12: 0.51}
+INFO:     analyzer.trade_news: News of player 9221 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/7564/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 7564: 5 items
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/6790/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 6790: 5 items
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/8167/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 8167: 5 items
+INFO:     analyzer.trade_news: News of player 9221 from the cache
+INFO:     analyzer.trade_news: News of player 8167 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/6794/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 6794: 5 items
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/9493/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 9493: 5 items
+INFO:     analyzer.trade_news: News of player 9221 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/7547/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 7547: 5 items
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/6801/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 6801: 5 items
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/8131/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 8131: 5 items
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/8144/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 8144: 5 items
+INFO:     analyzer.trade_news: News of player 9221 from the cache
+INFO:     analyzer.trade_news: News of player 7547 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/12519/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 12519: 5 items
+INFO:     analyzer.trade_news: News of player 6790 from the cache
+INFO:     analyzer.trade_news: News of player 8144 from the cache
+INFO:     analyzer.trade_news: News of player 6794 from the cache
+INFO:     analyzer.trade_news: News of player 7564 from the cache
+INFO:     analyzer.trade_news: News of player 9221 from the cache
+INFO:     analyzer.trade_news: News of player 7547 from the cache
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3030 input_tokens=28215
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 72ms (request req_01a1c617d6f37a189bbf19e1d7b9cec7)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=1020 faithful.9.1=0.03 no faithful.9.2=0.39 unsure faithful.9.3=0.04 no
+INFO:     analyzer.routes: Press of find for cpc: time=20.2s cost=$0.0739 claude_calls=1
+INFO:     127.0.0.1:64210 - "POST /clients/cpc/find HTTP/1.1" 200 OK

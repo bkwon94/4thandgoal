@@ -29,8 +29,14 @@ describe("API response schemas", () => {
   });
 
   it("rejects a lopsided fairness with no gives_more", () => {
-    const body = fixture("find-response.json") as { trades: { fairness: Record<string, unknown> }[] };
-    body.trades[0].fairness = { sides: [], state: "lopsided", gives_more: null };
+    const body = fixture("analyze-response.json") as { fairness: Record<string, unknown> };
+    body.fairness = { sides: [], state: "lopsided", gives_more: null };
+    expect(analyzeResponseSchema.safeParse(body).success).toBe(false);
+  });
+
+  it("rejects a finder Bullet with no fact text", () => {
+    const body = fixture("find-response.json") as { trades: { bullets: Record<string, unknown>[] }[] };
+    delete body.trades[0].bullets[0].fact_text;
     expect(findResponseSchema.safeParse(body).success).toBe(false);
   });
 

@@ -1,5 +1,5 @@
 """
-Player name helpers shared by the blurb verifier, the analysis checks, and the trade analyzer rubric.
+Player name helpers shared by the blurb verifier, the Advisor guards, and the Measures of the trade analyzer.
 It holds the list of name suffixes, the name particles, and the last name of a full name.
 """
 

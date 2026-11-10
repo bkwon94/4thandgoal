@@ -1,0 +1,7 @@
+API: a second local API from the worktree manager-brain-ev-api3 (commit 26dbed1b) on port 8082, with ANTHROPIC_API_KEY=sk-ant-invalid-key, the passphrase localtest, and the origin http://127.0.0.1:4173. It was stopped after the test.
+Site: CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8082 pnpm --dir apps/site build, served from apps/site/out at http://127.0.0.1:4173 (python3 -m http.server). agent-browser session e3.
+For each width 375, 768, 1280 and each theme light, dark (script: flow.sh):
+1. agent-browser set viewport <width> 900, then open /analyze/ and set localStorage cpc.theme to <theme>, then reload.
+2. Fill the passphrase "localtest", submit. Pick Your Team = Maye d'force B with U, Team Two = Return of T Mac.
+3. Your Team gets Bijan Robinson. Team Two gets Jahmyr Gibbs. Press "Grade the Trade".
+4. Wait for [role=group][aria-label="The grade failed"]. Take the full-page shot <width>-<theme>.png.

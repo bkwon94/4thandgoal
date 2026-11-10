@@ -1,0 +1,192 @@
+$ curl -s -w '\nHTTP %{http_code} time=%{time_total}s\n' -X POST -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' -d @request.json http://localhost:8081/clients/cpc/analyze
+
+Request (request.json):
+{"season": 2026, "asker": 9, "sides": [{"roster_id": 9, "gives": [{"player_id": "9221", "to": 8}]}, {"roster_id": 8, "gives": [{"player_id": "9509", "to": 9}]}]}
+
+
+HTTP 200 time=22.294972s
+Response:
+{
+    "trade": {
+        "asker": 9,
+        "sides": [
+            {
+                "roster_id": 9,
+                "team": "Maye d'force B with U",
+                "gives": [
+                    {
+                        "player_id": "9221",
+                        "name": "Jahmyr Gibbs",
+                        "position": "RB",
+                        "nfl_team": "DET",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                        "season_rank": "RB1",
+                        "recent_rank": null,
+                        "to": 8
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "9509",
+                        "name": "Bijan Robinson",
+                        "position": "RB",
+                        "nfl_team": "ATL",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9509.jpg",
+                        "season_rank": "RB3",
+                        "recent_rank": "RB17",
+                        "from": 8
+                    }
+                ]
+            },
+            {
+                "roster_id": 8,
+                "team": "Return of T Mac",
+                "gives": [
+                    {
+                        "player_id": "9509",
+                        "name": "Bijan Robinson",
+                        "position": "RB",
+                        "nfl_team": "ATL",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9509.jpg",
+                        "season_rank": "RB3",
+                        "recent_rank": "RB17",
+                        "to": 9
+                    }
+                ],
+                "gets": [
+                    {
+                        "player_id": "9221",
+                        "name": "Jahmyr Gibbs",
+                        "position": "RB",
+                        "nfl_team": "DET",
+                        "headshot": "https://sleepercdn.com/content/nfl/players/9221.jpg",
+                        "season_rank": "RB1",
+                        "recent_rank": null,
+                        "from": 9
+                    }
+                ]
+            }
+        ]
+    },
+    "lean": "Lean no",
+    "case": "If you believe Bijan's growing role in the passing game will beat what Gibbs is doing as the RB1, this swap is worth a look, but I'd hold. The chart for this week is missing, so this call rests on the sheet and your gut. The upside is real: Bijan's target share is climbing to 16 percent, and he has finished strong in the second half of past seasons. The risk is the offense around him, since the Falcons rank 27th of 32. He also has a bye in week 11, while you sit in a playoff spot and need points now. Gibbs plays for a much better offense, so I'd keep the RB1 unless the other manager adds something.",
+    "fairness": {
+        "state": "lopsided",
+        "gives_more": 9,
+        "sides": [
+            {
+                "roster_id": 9,
+                "reason": "Maye d'force B with U gets Bijan Robinson, a back whose passing-game role is rising."
+            },
+            {
+                "roster_id": 8,
+                "reason": "Return of T Mac gets Jahmyr Gibbs, the top back on a strong offense."
+            }
+        ]
+    },
+    "sides": [
+        {
+            "roster_id": 9,
+            "bullets": [
+                {
+                    "text": "You give up Gibbs, the RB1 this season at 24 points per game.",
+                    "mark": "against",
+                    "fact_id": "9221.ppg",
+                    "fact_text": "Jahmyr Gibbs (RB, DET) scored 24 points per game over 8 games before the trade. His Season rank is RB1, by total points this season."
+                },
+                {
+                    "text": "Bijan's target share is up to 16 percent over the last 2 weeks.",
+                    "mark": "for",
+                    "fact_id": "9509.targets",
+                    "fact_text": "Bijan Robinson's target share was 16 percent over the last 2 weeks before the trade, up from the 2 weeks before that."
+                },
+                {
+                    "text": "The Falcons rank 27th of 32 on offense, so Bijan is not a safe start.",
+                    "mark": "against",
+                    "fact_id": "9509.nfl_team",
+                    "fact_text": "Bijan Robinson's NFL team, the Falcons, ranks 27th of 32 on offense: -7.24 expected points added per 100 plays over 9 games before the trade."
+                },
+                {
+                    "text": "Robinson has a bye in Week 11, the week after you trade for him.",
+                    "mark": "against",
+                    "fact_id": "9.week_line",
+                    "fact_text": "Week 10: RBs in the top 36 who play stay at 2. Robinson plays KC at home, 27th most points to RBs. Coleman and Swift have a bye. Week 11: RBs in the top 36 who play go from 4 to 3. Robinson has a bye."
+                },
+                {
+                    "text": "In 2025 Bijan scored 21.2 per game in weeks 9 to 17 over 9 games, up from his early weeks.",
+                    "mark": "for",
+                    "fact_id": "9509.history",
+                    "fact_text": "In 2023, Bijan Robinson played for ATL and scored half PPR points per game as follows: 11.81 in weeks 1 to 8 over 8 games; 12.53 in weeks 9 to 17 over 8 games; 10.1 in cold games over 1 game. In 2024, Bijan Robinson played for ATL and scored half PPR points per game as follows: 15.56 in weeks 1 to 8 over 8 games; 19.55 in weeks 9 to 17 over 8 games; no cold game. In 2025, Bijan Robinson played for ATL and scored half PPR points per game as follows: 19.24 in weeks 1 to 8 over 7 games; 21.2 in weeks 9 to 17 over 9 games; no cold game. A cold game is outdoors at 40 degrees F or below."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 10,
+                    "text": "Week 10: RBs in the top 36 who play stay at 2. Robinson plays KC at home, 27th most points to RBs. Coleman and Swift have a bye."
+                },
+                {
+                    "week": 11,
+                    "text": "Week 11: RBs in the top 36 who play go from 4 to 3. Robinson has a bye."
+                }
+            ]
+        },
+        {
+            "roster_id": 8,
+            "bullets": [
+                {
+                    "text": "Gibbs plays for the Lions, who rank 7th of 32 on offense, so he gets more chances.",
+                    "mark": "for",
+                    "fact_id": "9221.nfl_team",
+                    "fact_text": "Jahmyr Gibbs's NFL team, the Lions, ranks 7th of 32 on offense: 9.38 expected points added per 100 plays over 8 games before the trade."
+                },
+                {
+                    "text": "Gibbs's snap share fell to 73 percent over the last 2 weeks.",
+                    "mark": "against",
+                    "fact_id": "9221.usage",
+                    "fact_text": "Jahmyr Gibbs's snap share was 73 percent over the last 2 weeks before the trade, down from the 2 weeks before that."
+                },
+                {
+                    "text": "You keep 2 RBs in the top 36, and your lineup scores more.",
+                    "mark": "for",
+                    "fact_id": "8.measure.fit",
+                    "fact_text": "The roster fit measure for Return of T Mac: You keep 2 RBs in the top 36, and your lineup scores more."
+                },
+                {
+                    "text": "Gibbs faces MIN (24th), NYG (23rd), and CHI (19th) in weeks 15 to 17, a soft playoff run.",
+                    "mark": "for",
+                    "fact_id": "8.measure.schedule",
+                    "fact_text": "The schedule measure for Return of T Mac: Gibbs faces MIN (24th most points to RBs), NYG (23rd), and CHI (19th) in weeks 15 to 17."
+                },
+                {
+                    "text": "A small model reads that this manager would accept the deal.",
+                    "mark": "for",
+                    "fact_id": "JEV.accept.8",
+                    "fact_text": "A quick yes or no read of a small model on \"Would the manager of Return of T Mac accept this trade?\": yes."
+                }
+            ],
+            "week_lines": [
+                {
+                    "week": 10,
+                    "text": "Week 10: RBs in the top 36 who play stay at 2. Gibbs plays NE at home, 28th most points to RBs."
+                },
+                {
+                    "week": 11,
+                    "text": "Week 11: RBs in the top 36 who play go from 1 to 2. Gibbs plays TB at home, 32nd most points to RBs."
+                }
+            ]
+        }
+    ],
+    "as_of": {
+        "chart_week": null,
+        "stats_through": 9,
+        "completed_through": 9,
+        "rosters_fetched": "2026-11-10T10:49:59.982218-05:00",
+        "known_games": null,
+        "no_chart": true,
+        "no_chart_note": "This week's player values are not out yet."
+    },
+    "missing": [
+        "chart"
+    ],
+    "stale": []
+}
