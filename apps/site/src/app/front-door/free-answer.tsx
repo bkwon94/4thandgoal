@@ -5,7 +5,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, type UIMessage } from "ai";
 import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef, useEffect, useMemo, useRef } from "react";
 import { CheckIcon } from "lucide-react";
@@ -14,6 +14,65 @@ import type { AskTarget } from "./ask-api";
 import { type CheckState, type FreeResult, type FreeView, shownText, viewOf } from "./free-stream";
 import { QuestionBubble, Surface, TopicChip } from "./miss-card";
 import { QUICK, SMOOTH, STAGGER, fadeIn } from "./motion";
+
+/* The stream of one live Answer of the API at `path` under /clients/<slug>/. It sends `text` once, and reads each
+   assistant message into a view with `read`. On the end it calls `settle` once with the view, or `onError` once on a
+   failed call. `settle` returns false when it has no end for the view, and a stream that then ends with no "Checked"
+   mark is an error, never a pass. */
+export function useAnswerStream<V extends FreeView>({
+  target,
+  passphrase,
+  path,
+  body,
+  text,
+  read,
+  settle,
+  onError,
+}: {
+  target: AskTarget;
+  passphrase: string;
+  path: string;
+  body: object;
+  text: string;
+  read: (message: UIMessage | undefined) => V;
+  settle: (view: V) => boolean;
+  onError: () => void;
+}): { view: V; busy: boolean } {
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: `${target.url}/clients/${encodeURIComponent(target.client)}/${path}`,
+        headers: { "X-League-Passphrase": passphrase },
+        // The API reads only these fields, so the prompt of Claude never comes from a message of the chat.
+        body,
+      }),
+    [target, passphrase, path, body],
+  );
+  const { messages, sendMessage, status, error } = useChat({ transport });
+  const sent = useRef(false);
+  const ended = useRef(false);
+  useEffect(() => {
+    // The strict mode of React mounts twice in development, and one question or tap makes one request.
+    if (sent.current) return;
+    sent.current = true;
+    void sendMessage({ text });
+  }, [sendMessage, text]);
+  const view = read(messages.findLast((message) => message.role === "assistant"));
+  useEffect(() => {
+    if (ended.current) return;
+    if (error || status === "error") {
+      ended.current = true;
+      onError();
+    } else if (status === "ready" && sent.current && settle(view)) {
+      ended.current = true;
+    } else if (status === "ready" && messages.length > 1 && view.check !== "checked") {
+      // A stream that ends with no check is an error, never a pass.
+      ended.current = true;
+      onError();
+    }
+  });
+  return { view, busy: status !== "ready" };
+}
 
 /* The line while Claude writes again after a failed check (decision 11). */
 export const FIXING_LINE = "Fixing a number…";
@@ -182,45 +241,30 @@ export const FreeAnswerLive = forwardRef<
     onError: () => void;
   }
 >(function FreeAnswerLive({ question, target, passphrase, body, teamName, onPick, onDone, onMiss, onError }, ref) {
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: `${target.url}/clients/${encodeURIComponent(target.client)}/ask/free`,
-        headers: { "X-League-Passphrase": passphrase },
-        // The API reads only these fields, so the prompt of Claude is the question and never a message of the chat.
-        body: { question, ...body },
-      }),
-    [target, passphrase, question, body],
-  );
-  const { messages, sendMessage, status, error } = useChat({ transport });
-  const sent = useRef(false);
-  const ended = useRef(false);
-  useEffect(() => {
-    // The strict mode of React mounts twice in development, and one question makes one request.
-    if (sent.current) return;
-    sent.current = true;
-    void sendMessage({ text: question });
-  }, [sendMessage, question]);
-  const view = viewOf(messages.findLast((message) => message.role === "assistant"));
-  useEffect(() => {
-    if (ended.current) return;
-    if (error || status === "error") {
-      ended.current = true;
-      onError();
-    } else if (status === "ready" && sent.current && view.check === "checked") {
-      ended.current = true;
-      onDone({ steps: view.steps.map((step) => step.line), text: shownText(view), suggestion: view.suggestion });
-    } else if (status === "ready" && view.closest) {
-      ended.current = true;
-      onMiss(view.closest);
-    } else if (status === "ready" && messages.length > 1 && view.check !== "checked") {
-      // A stream that ends with no check is an error, never a pass.
-      ended.current = true;
-      onError();
-    }
+  // The question goes in the body, so the prompt of Claude is the question.
+  const fields = useMemo(() => ({ question, ...body }), [question, body]);
+  const { view, busy } = useAnswerStream({
+    target,
+    passphrase,
+    path: "ask/free",
+    body: fields,
+    text: question,
+    read: viewOf,
+    settle: (ended) => {
+      if (ended.check === "checked") {
+        onDone({ steps: ended.steps.map((step) => step.line), text: shownText(ended), suggestion: ended.suggestion });
+        return true;
+      }
+      if (ended.closest) {
+        onMiss(ended.closest);
+        return true;
+      }
+      return false;
+    },
+    onError,
   });
   return (
-    <article ref={ref} aria-label={question} aria-busy={status !== "ready"} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+    <article ref={ref} aria-label={question} aria-busy={busy} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
       <QuestionBubble question={question} />
       <Surface>
         {view.steps.length === 0 && !view.first && (

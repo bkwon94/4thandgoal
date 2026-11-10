@@ -4,15 +4,13 @@
  */
 "use client";
 
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
 import { motion } from "framer-motion";
-import { forwardRef, useEffect, useMemo, useRef } from "react";
+import { forwardRef } from "react";
 import { RotateCwIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { AnswerBody } from "./answer-card";
 import type { AskTarget } from "./ask-api";
-import { FreeBody, Shimmer } from "./free-answer";
+import { FreeBody, Shimmer, useAnswerStream } from "./free-answer";
 import { shownText } from "./free-stream";
 import { QuestionBubble } from "./miss-card";
 import { riseIn } from "./motion";
@@ -108,48 +106,33 @@ export const PersonalAnswerLive = forwardRef<
     onError: () => void;
   }
 >(function PersonalAnswerLive({ name, href, avatars, target, passphrase, body, onDone, onMiss, onCap, onError }, ref) {
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: `${target.url}/clients/${encodeURIComponent(target.client)}/personal`,
-        headers: { "X-League-Passphrase": passphrase },
-        // The API reads only these fields, so the prompt of Claude comes from the facts and never from the chat.
-        body,
-      }),
-    [target, passphrase, body],
-  );
-  const { messages, sendMessage, status, error } = useChat({ transport });
-  const sent = useRef(false);
-  const ended = useRef(false);
-  useEffect(() => {
-    // The strict mode of React mounts twice in development, and one tap makes one request.
-    if (sent.current) return;
-    sent.current = true;
-    void sendMessage({ text: name });
-  }, [sendMessage, name]);
-  const view = personalViewOf(messages.findLast((message) => message.role === "assistant"));
-  useEffect(() => {
-    if (ended.current) return;
-    if (error || status === "error") {
-      ended.current = true;
-      onError();
-    } else if (status === "ready" && view.check === "checked" && view.block && view.key) {
-      ended.current = true;
-      onDone({ block: view.block, text: shownText(view), key: view.key });
-    } else if (status === "ready" && view.cap) {
-      ended.current = true;
-      onCap(view.cap);
-    } else if (status === "ready" && view.closest) {
-      ended.current = true;
-      onMiss(view.closest);
-    } else if (status === "ready" && messages.length > 1 && view.check !== "checked") {
-      // A stream that ends with no check is an error, never a pass.
-      ended.current = true;
-      onError();
-    }
+  // The API reads only the body, so the prompt of Claude comes from the facts.
+  const { view, busy } = useAnswerStream({
+    target,
+    passphrase,
+    path: "personal",
+    body,
+    text: name,
+    read: personalViewOf,
+    settle: (ended) => {
+      if (ended.check === "checked" && ended.block && ended.key) {
+        onDone({ block: ended.block, text: shownText(ended), key: ended.key });
+        return true;
+      }
+      if (ended.cap) {
+        onCap(ended.cap);
+        return true;
+      }
+      if (ended.closest) {
+        onMiss(ended.closest);
+        return true;
+      }
+      return false;
+    },
+    onError,
   });
   return (
-    <article ref={ref} aria-label={name} aria-busy={status !== "ready"} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
+    <article ref={ref} aria-label={name} aria-busy={busy} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={name} />
       {view.block ? (
         <PersonalBody block={view.block} view={view} live href={href} avatars={avatars} />
