@@ -134,7 +134,7 @@ Observation: The first sentence of the Case of AT-16 is "If you believe Bijan's 
 ## AT-19: Every number, name, and fact id comes from the sheet
 
 App: pipeline
-Then: each cited fact id is on its sheet, and each number and each player name in a Bullet or a Case is in a cited fact.
+Then: each cited fact id is on its sheet, and each number in a Bullet or a Case is in a cited fact. Each player name is in a cited fact or is a player of the trade itself.
 Files: `evidence/AT-19/output.txt`, `evidence/AT-19/check_reads.py`
 Observation: At 6ba706cf, over the 28 new eval reads, 276 of 276 cited fact ids are on their sheets. The strict check finds 0 numbers outside the cited facts. It finds 29 player names outside the text of a cited fact, 2 full and 27 last names, and each one names a player of the trade itself, such as "Patrick Mahomes" (trade 3).
 
@@ -338,8 +338,8 @@ Observation: The rendered text of the Finder cards and of the analyzer read has 
 
 App: site
 Then: the card shows a headline, the swap, and 2 to 4 Bullet rows with the same Marks and tap as the analyzer. The tap opens the analyzer read of that trade.
-Files: `evidence/AT-47/steps.json`, `evidence/AT-47/build-note.txt`, `evidence/AT-47/card-375-light.png`, `evidence/AT-47/card-375-dark.png`, `evidence/AT-47/card-768-light.png`, `evidence/AT-47/card-768-dark.png`, `evidence/AT-47/card-1280-light.png`, `evidence/AT-47/card-1280-dark.png`, `evidence/AT-47/read-375-light.png`, `evidence/AT-47/read-375-dark.png`, `evidence/AT-47/read-768-light.png`, `evidence/AT-47/read-768-dark.png`, `evidence/AT-47/read-1280-light.png`, `evidence/AT-47/read-1280-dark.png`
-Observation: At commit 6ba706cf, on a build with the Finder on (see `build-note.txt`), Find with no partner shows "Trade 1 of 1". The card has a headline, a swap card (Christian Watson for D'Andre Swift), 3 Bullet rows with ▲, ▲, and – Marks and a chevron, and a "See the Full Result" button. The headline is partly under the fixed "Grade the Trade" bar. The tap opens the analyzer read of that trade: "Lean yes", the 5-step scale, the Fairness card "Fair", and For, Against, and Even bands.
+Files: `evidence/AT-47/steps.json`, `evidence/AT-47/build-note.txt`, `evidence/AT-47/card-375-light.png`, `evidence/AT-47/card-375-dark.png`, `evidence/AT-47/card-768-light.png`, `evidence/AT-47/card-768-dark.png`, `evidence/AT-47/card-1280-light.png`, `evidence/AT-47/card-1280-dark.png`, `evidence/AT-47/card-tap-375-light.png`, `evidence/AT-47/card-tap-375-dark.png`, `evidence/AT-47/card-tap-768-light.png`, `evidence/AT-47/card-tap-768-dark.png`, `evidence/AT-47/card-tap-1280-light.png`, `evidence/AT-47/card-tap-1280-dark.png`, `evidence/AT-47/read-375-light.png`, `evidence/AT-47/read-375-dark.png`, `evidence/AT-47/read-768-light.png`, `evidence/AT-47/read-768-dark.png`, `evidence/AT-47/read-1280-light.png`, `evidence/AT-47/read-1280-dark.png`
+Observation: At commit cec76b5d, on a build with the Finder on (see `build-note.txt`), Find with no partner gives "Trade 1 of 1". Each `card-*` shot is scrolled to the top of the page, so the fixed bar sits over the partner list and the whole headline ("Swift for Watson turns a deep RB room into a hot top receiver ...") shows in clear view above the swap card (Christian Watson for D'Andre Swift) and 3 Bullet rows with ▲, ▲, and – Marks, with a chevron on each. Each `card-tap-*` shot shows the first Bullet row open, with its chevron flipped and its fact line ("For Maye d'force B with U, the RBs in the top 36 go from 4 to 3.") under the row. Each `read-*` shot shows the analyzer read that opens from "See the Full Result": "Lean yes", the scale, Fairness "Fair", and the For, Against, and Even bands.
 
 ## AT-48: Find works with no partner picked
 

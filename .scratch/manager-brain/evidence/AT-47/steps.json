@@ -38,7 +38,22 @@
       "wait": 1500
     },
     {
+      "scroll": "ul[aria-label=\"Teams in the trade\"]"
+    },
+    {
       "shot": "card"
+    },
+    {
+      "click": "article[aria-label=\"Trade 1\"] li button"
+    },
+    {
+      "wait": 900
+    },
+    {
+      "scroll": "ul[aria-label=\"Teams in the trade\"]"
+    },
+    {
+      "shot": "card-tap"
     },
     {
       "click": "article[aria-label=\"Trade 1\"] button:has-text(\"See the Full Result\")"
