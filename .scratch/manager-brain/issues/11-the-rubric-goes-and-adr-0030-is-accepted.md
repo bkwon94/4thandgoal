@@ -8,7 +8,7 @@ Spec: `.scratch/manager-brain/PRD.md`. Acceptance tests AT-33, AT-36, AT-37, AT-
 
 **Blocked by:** 03, 04, 05, 06, 07, 08, 09, and 10
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A search of the code and the copy finds no rubric, start letter, breakdown, adjuster step, verdict, factor row, or letter of a side.
 - [x] The log of a cold analyze press and a cold Finder press shows the time and the cost inside the limits.
