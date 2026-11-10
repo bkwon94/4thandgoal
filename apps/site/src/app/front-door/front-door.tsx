@@ -23,7 +23,7 @@ import { PERSONAL_LINES, isPersonal } from "./personal-stream";
 import { getOpened, markOpened } from "./opened-store";
 import { Suggestions } from "./suggestions";
 import { TeamSheet } from "./team-sheet";
-import { type Entry, Thread } from "./thread";
+import { type Entry, Thread, personalName } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
 import { type ServedSuggestions, checkCurrent, fetchSuggestions, staleLine } from "./suggestions-api";
 import { dayOrder, pickSuggestions, topicName } from "./topics";
@@ -333,6 +333,7 @@ export function FrontDoor({
                   answers={answers}
                   avatars={avatars}
                   newest={newest}
+                  teamName={(id) => (id !== team.id ? teams.find((other) => other.id === id)?.name : undefined)}
                   renderOther={(entry, ref) => {
                     switch (entry.kind) {
                       case "pending":
@@ -379,10 +380,9 @@ export function FrontDoor({
                       }
                       case "personal": {
                         // A tapped Topic shows its name, with the team after it when it is not Your team.
-                        const topic = topicName(entry.key);
                         const other = entry.team !== team.id ? teams.find((candidate) => candidate.id === entry.team)?.name : undefined;
                         const shared = {
-                          name: entry.question ?? (other ? `${topic}: ${other}` : topic),
+                          name: personalName(entry, other),
                           href: personalHrefs[entry.team]?.[entry.key] ?? null,
                           avatars,
                         };

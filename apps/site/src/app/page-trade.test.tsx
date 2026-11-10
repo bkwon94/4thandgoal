@@ -275,3 +275,36 @@ describe("sell high or buy low for Lil Fridge", () => {
     expect(JSON.stringify(sellStream).toLowerCase()).not.toMatch(/jev|advisor|finder|rival|brian/);
   });
 });
+
+describe("the fold of an older trade Answer", () => {
+  it("folds a settled trade check to its question and its Lean when a new question lands, and opens it on a tap", async () => {
+    routeTo("trade_check");
+    streamOf("/trade-check", checkStream);
+    render(<HomePage />);
+    await ask(SURE);
+    await screen.findByRole("region", { name: "Trade check" });
+    await openTopic("Week recap");
+    const [trade] = await screen.findAllByRole("article", { name: SURE });
+    const fold = await within(trade).findByRole("button", { name: `${SURE}: Send it` });
+    expect(fold.getAttribute("aria-expanded")).toBe("false");
+    await waitFor(() => expect(within(trade).queryByRole("region", { name: "Trade check" })).toBeNull());
+
+    fireEvent.click(fold);
+    expect(fold.getAttribute("aria-expanded")).toBe("true");
+    expect(await within(trade).findByRole("region", { name: "Trade check" })).toBeTruthy();
+    expect(within(trade).getByRole("link", { name: "Open it on the Trade page" })).toBeTruthy();
+  });
+
+  it("keeps a trade Answer in flight open, with its steps, under a newer question", async () => {
+    const stream = heldStream("/trade-ideas");
+    render(<HomePage />);
+    await openTopic("Trade ideas");
+    const article = await screen.findByRole("article", { name: "Trade ideas" });
+    await stream.send({ type: "start" });
+    await openTopic("Week recap");
+    await screen.findAllByRole("article", { name: "Week recap" });
+    expect(within(article).getByRole("status", { name: "Steps" })).toBeTruthy();
+    expect(within(article).queryByRole("button", { expanded: false })).toBeNull();
+    await stream.end();
+  });
+});
