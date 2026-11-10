@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-3, AT-30, AT-31, AT-32, 
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A change of Your team shows the Thread of that team, and a change back shows the first Thread (AT-3).
 - [x] A new Answer lands open at the bottom, and the older one folds to one line (AT-30).
