@@ -12,9 +12,9 @@ REPO = Path(__file__).resolve().parents[4]
 ROOTS = ("packages/analyzer/python/src", "packages/analyzer/site/form", "packages/analyzer/site/lib",
          "apps/pipeline/src/cornerstone", "apps/api/src")
 SUFFIXES = {".py", ".md", ".ts", ".tsx", ".json"}
-# The words of the old way. The stable id `verdict-word` is an egg hook, so it stays (ADR 0030 keeps the hooks).
+# The words of the old way.
 OLD_WORDS = re.compile(
-    r"rubric|start.letters?|final.letters?|side.letters?|\bLetters?\b|breakdowns?|adjusters?|verdict(?!-word)"
+    r"rubric|start.letters?|final.letters?|side.letters?|\bLetters?\b|breakdowns?|adjusters?|verdict"
     r"|\bfactors?\b|STEP_WORDS|contenders?|sellers?|middle.team", re.IGNORECASE)
 # The letter type of the old way had a capital, so only "Letter" with a capital counts. The plain word stays free.
 CASED = re.compile(r"\bLetters?\b")

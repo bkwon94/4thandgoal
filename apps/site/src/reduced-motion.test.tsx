@@ -89,7 +89,7 @@ afterAll(() => {
 describe("Reduced motion", () => {
   it("shows the Lean word at once", () => {
     render(<AnalyzeResult doc={fixtureJson as AnalyzeResponse} />);
-    expectAtRest(screen.getByRole("heading", { level: 2, name: "Lean yes" }).querySelector("[data-stable-id='verdict-word']") as HTMLElement);
+    expectAtRest(screen.getByRole("heading", { level: 2, name: "Lean yes" }).querySelector("[data-stable-id='lean-word']") as HTMLElement);
   });
 
   it("shows the Bullets of the open tab at once (AT-51)", () => {

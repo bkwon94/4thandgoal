@@ -283,7 +283,7 @@ function ReadHero({
       level={2}
       eyebrow={`The read for ${team ?? "Your Side"}`}
       title={
-        <motion.span className={cn("inline-block", LEAN_COLOR[lean])} {...stableId("verdict-word")} {...rise(off, { duration: DURATION.decision })}>
+        <motion.span className={cn("inline-block", LEAN_COLOR[lean])} {...stableId("lean-word")} {...rise(off, { duration: DURATION.decision })}>
           {lean}
         </motion.span>
       }
@@ -451,7 +451,7 @@ export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
   /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has four chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
-    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition. The attribute data-trade-answer and the stable id verdict-word keep their names, because the eggs read them.
+    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition. The attribute data-trade-answer keeps its name, because the eggs read it. The stable id is lean-word.
     <div className="tablet:flex tablet:flex-col tablet:gap-card-gap" {...{ [TRADE_KEY]: tradeKey(doc), [TRADE_ANSWER]: LEAN_ANSWER[doc.lean] }}>
       <ReadHero lean={doc.lean} readCase={doc.case} team={askerTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
 
