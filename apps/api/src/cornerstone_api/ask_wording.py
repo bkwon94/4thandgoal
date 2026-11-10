@@ -30,6 +30,20 @@ TOPICS = {
     "trade_check": "A check of one trade that the manager names: is it fair, and who wins it.",
 }
 
+# The Topics that cover one week. The state names that week in each, so a question about an older week reads as no fit.
+WEEK_TOPICS = {
+    "week_recap": "The recap of week {week}, the latest fantasy week, for the whole league: scores, results, standout "
+                  "games, and the weekly report. It covers no other week.",
+    "last_matchup": "A team's matchup of week {week}, the latest fantasy week: who it played, the score, and what "
+                    "decided it. It covers no other week.",
+}
+
+
+def topics(week: int) -> dict[str, str]:
+    """The 13 Topics as the state shows them, with the latest week in each Topic that covers one week."""
+    return {key: WEEK_TOPICS[key].format(week=week) if key in WEEK_TOPICS else text for key, text in TOPICS.items()}
+
+
 def about_topics(season: int, week: int) -> dict[str, str]:
     """Two facts that code knows about each Topic Answer. Without the first, "week 1 results" went to the week recap
     (decision 09). The number of the latest week moved it into the free answer in the prototype of this ticket."""
@@ -114,5 +128,5 @@ def route_questions(teams: list[str]) -> dict[str, NoulQuestion | ChoiceQuestion
 def route_state(question: str, teams: list[str], season: int, week: int) -> dict:
     """The state of one route request: the question, the Topics, the facts about them, the teams, and the data of
     `season`, whose latest week is `week`."""
-    return {"context": CONTEXT, "manager_question": question, "topics": TOPICS,
+    return {"context": CONTEXT, "manager_question": question, "topics": topics(week),
             "about_topics": about_topics(season, week), "teams_in_league": teams, "data_sources": data_sources(season)}

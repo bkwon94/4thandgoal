@@ -14,7 +14,8 @@ import type { DoorAnswer, DoorTeam } from "@/lib/data/front-door-data";
 import { analyzeHref } from "@/lib/routes";
 import { type AskTarget, AskError, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
-import { TRADE_LINES, TRADE_TOPICS, type ThreadItem, itemOfError, itemOfRoute } from "./ask-thread";
+import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, type ThreadItem, itemOfError, itemOfRoute } from "./ask-thread";
+import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
 import { MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
 import { riseIn } from "./motion";
 import { getOpened, markOpened } from "./opened-store";
@@ -283,6 +284,28 @@ export function FrontDoor({
                         return <TradeCard ref={ref} question={entry.question} mode={entry.mode} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} />;
                       case "miss":
                         return <MissCard ref={ref} question={entry.question} closest={entry.closest} onPick={(key) => open(key)} />;
+                      case "free": {
+                        // A chip of the team that the question names opens the Topic of that team.
+                        const shared = {
+                          question: entry.question,
+                          teamName: (id: number | null) => (id !== null && id !== team.id ? teams.find((other) => other.id === id)?.name : undefined),
+                          onPick: (key: string, id: number | null) => open(key, id),
+                        };
+                        return entry.result ? (
+                          <FreeAnswerCard ref={ref} result={entry.result} {...shared} />
+                        ) : (
+                          <FreeAnswerLive
+                            ref={ref}
+                            target={askTarget}
+                            passphrase={getPassphrase() ?? ""}
+                            body={{ roster_id: team.id, week }}
+                            onDone={(result) => put(entry.id, { kind: "free", question: entry.question, result })}
+                            onMiss={(closest) => put(entry.id, { kind: "miss", question: entry.question, closest })}
+                            onError={() => put(entry.id, { kind: "note", question: entry.question, line: RETRY_LINE, topic: null, team: null, retry: true })}
+                            {...shared}
+                          />
+                        );
+                      }
                       case "note":
                         return (
                           <NoteCard

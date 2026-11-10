@@ -1,0 +1,87 @@
+/**
+ * The free answer as the Thread reads it: the parts of the streamed message of useChat turned into the steps, the
+ * texts, the check, and the Suggestion or the honest miss. It holds the plain line of each step, and no tool name shows.
+ */
+import type { UIMessage } from "ai";
+
+/* One tool call as a step: its plain line, and whether its result is in. */
+export type FreeStep = { line: string; done: boolean };
+
+/* The check of the text: "checking" after the last word, "fixing" before the rewrite, then "checked" or "failed". */
+export type CheckState = "checking" | "fixing" | "checked" | "failed";
+
+/* What the stream shows so far. `first` is the text before a rewrite, and `second` the text of the rewrite. */
+export type FreeView = {
+  steps: FreeStep[];
+  first: string;
+  second: string | null;
+  check: CheckState | null;
+  suggestion: { topic: string; team: number | null } | null;
+  closest: string[] | null;
+};
+
+/* The final free answer that the browser keeps: the steps, the checked text, and the Suggestion of a half fit. */
+export type FreeResult = { steps: string[]; text: string; suggestion: { topic: string; team: number | null } | null };
+
+/* The plain line of one tool call, from its name and its input. A tool that this build does not know reads as the
+   league data, so no internal name ever shows (AT-19). */
+export function stepLine(tool: string, input: unknown): string {
+  const args = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
+  const week = typeof args.week === "number" ? args.week : null;
+  const named = (key: string) => (typeof args[key] === "string" ? (args[key] as string) : null);
+  switch (tool) {
+    case "standings":
+      return "Reading the standings";
+    case "week_results":
+      return week ? `Reading week ${week}` : "Reading the week";
+    case "week_moves":
+      return week ? `Reading the moves of week ${week}` : "Reading the moves of the week";
+    case "season_moves":
+      return "Reading every move of the season";
+    case "team_roster":
+      return named("team") ? `Reading the roster of ${named("team")}` : "Reading a roster";
+    case "player_log":
+      return named("player") ? `Reading the game log of ${named("player")}` : "Reading a game log";
+    default:
+      return "Reading the league data";
+  }
+}
+
+type Part = UIMessage["parts"][number];
+
+/* The tool name of a tool part: "tool-<name>" for a static tool, and `toolName` for a dynamic one. */
+function toolOf(part: Part): { name: string; input: unknown; done: boolean } | null {
+  if (part.type === "dynamic-tool") return { name: part.toolName, input: part.input, done: part.state === "output-available" || part.state === "output-error" };
+  if (!part.type.startsWith("tool-")) return null;
+  const tool = part as Part & { input?: unknown; state?: string };
+  return { name: part.type.slice("tool-".length), input: tool.input, done: tool.state === "output-available" || tool.state === "output-error" };
+}
+
+function dataOf<T>(part: Part, kind: string): T | null {
+  return part.type === `data-${kind}` ? ((part as { data: unknown }).data as T) : null;
+}
+
+/* The view of the assistant message of the stream. The data part "fix" splits the first text from the rewrite. */
+export function viewOf(message: UIMessage | undefined): FreeView {
+  const view: FreeView = { steps: [], first: "", second: null, check: null, suggestion: null, closest: null };
+  for (const part of message?.parts ?? []) {
+    const tool = toolOf(part);
+    if (tool) view.steps.push({ line: stepLine(tool.name, tool.input), done: tool.done });
+    else if (part.type === "text") {
+      if (view.second === null) view.first += part.text;
+      else view.second += part.text;
+    } else if (part.type === "data-fix") view.second = "";
+    else {
+      const check = dataOf<{ state: CheckState }>(part, "check");
+      if (check) view.check = check.state;
+      const suggestion = dataOf<{ topic: string; team: number | null }>(part, "suggestion");
+      if (suggestion) view.suggestion = suggestion;
+      const miss = dataOf<{ closest: string[] }>(part, "miss");
+      if (miss) view.closest = miss.closest;
+    }
+  }
+  return view;
+}
+
+/* The text that the manager reads now: the rewrite once it starts, else the first text. */
+export const shownText = (view: FreeView) => (view.second ?? view.first).trim();

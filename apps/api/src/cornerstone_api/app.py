@@ -32,6 +32,7 @@ from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
 from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import ask as ask_routes
+from cornerstone_api import free_answer as free_routes
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api import trade_topics
 from cornerstone_api.miss_log import MissLog
@@ -228,6 +229,8 @@ def create_app(
     # The ask route asks the real Jev by default, so a test injects FakeJev.
     app.state.askers = {client.slug: _asker(settings, client, app.state.served[client.slug], jev or JEV)
                         for client in clients}
+    # The free answer runs the model of its agent, Claude Sonnet 5.5. A test sets a test model of Pydantic AI here.
+    app.state.free_model = None
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
@@ -264,6 +267,7 @@ def create_app(
     # spend the budget.
     app.include_router(ask_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
+    app.include_router(free_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
 
     # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
     # commissioner key. The check and the board each have their own limit of each address, and each other group keeps

@@ -1,0 +1,168 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"reasoning-start","id":"e454816d-8be7-4ff9-ae7c-8931fd85e03b","providerMetadata":{"pydantic_ai":{"signature":"","provider_name":"anthropic"}}}
+
+data: {"type":"reasoning-end","id":"e454816d-8be7-4ff9-ae7c-8931fd85e03b","providerMetadata":{"pydantic_ai":{"signature":"CAQS7wcKEAgTGAI4AUIIdGhpbmtpbmcSDBpnXBVM5iLXMYLkWxoMEnbgeiMuOnpnOW+NIjDwwH8W1uDtasGu39R9KfVrrsndFnbuyYaHJYDoYE8+vG4z1/yua1HAFQ69CmhO5IkqjAe7/rqv3COFj78I6eI1VLxLcaeAh283aeJhjljXZCNHfzrOnu3lfd+ii9etgfHe0wlUD8sX2evOSjHXqUE/hta5qQpAhbb4vE3TDVIDDg0anzq6cT+nBEidoCH2/16BFL6BxTwfyDcMGMYcPZuBn4oNFpbXbJT33ctftJRlTtBE2qR74DY5NGdy5kdTMAsVbm6xakoOTaAGNfDsRNrRzGauZzyIcj4yXTaToDOBAZ/ZGc7ScA8MKFO1/vcy3or3BL4ObepQpodls6V8mYRwyRVmXbbUEve50amsp6kAXVw2NTrf+OllhS+ls7q6c33h2R9GbBx98djz/cf7DXCHYK0oh3Y3s9C2FXy+3DYUZmFzXRc08G5uyNDigF+vHGldZxGqel/keMChXhopaY1zExuuoDzthjYjXA0gOWtU+blu2jftSfef1sDuDZess7IVv0hcY6u4HGTQp98XKS0KCSRbQjm7ySUUi2B/b4UxANzSCZYOLYCmVtGkL3tTcy1DdGgd8awUq8Ye1t6XGOr3mlRNMgXz1+TyEK27ZEeZURGiG6TPPi252t+hVxZL1HUDwXMFyTSjdwbc4vvyWWNJBVKmUKb2E3FKwCHcj90ukaGXK5oldw3KnOo+U74ihLTwN5ZOufwh1xmVc4BUd16ZjZRa1ibVKME8jotXxnnNvfnk8VUsrH/j7MXjyuLBpYa0XcURzUS3zPFBR3hfzLndx2KdpSxM8wdIyvm5me8SZPGcghQ+kM7ELdO2WyP5trb+Jii/WXi5ulpKz69OcxEvnIzFKkmHCHWm3xzgMdf4zfYsZbiEMGOK2bLrPpelYkYNXfooyedhBFVEnNK6Aji5TSOiHMZBV4L5epQgC5Q3ilubCtCNZE7u6hiiPyNKaKhYDYXufbEvXj4DwXtVcMzzEN62jWGAdRpbpfQZ3Tm02EsrWSI9E2a8gYI6C5CBHbweoDiJ9woSG9KPpA7wjlnSBBuJD2M2zMabO/6tdn6Ku2Vacl1ejAT6I09i2F/S7f7krMMob1GbeD2o0MsCMWgic2/9oImRnO51YA/V3DI0fi0mTgBxd3qeujS8H3yj/TwqcmS30984Fd07C8wjkISRU0Cx3w18u6BxIHdlZuqIwrvWBeav0yy8xUUP9H0fathiZoJ1681o7KjlLRScOO32LyaABrb9IqQyJlYTLK7/Pcg4xzzy9rFp9NuDngIObxgB","provider_name":"anthropic"}}}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01TgmBMpNtu6u32LS9QNg2jR","toolName":"week_moves"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01TgmBMpNtu6u32LS9QNg2jR","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01TgmBMpNtu6u32LS9QNg2jR","inputTextDelta":"{\"week\""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01TgmBMpNtu6u32LS9QNg2jR","inputTextDelta":": 2}"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01VUyJ3Kf3drXGSKaYXne1Ef","toolName":"week_moves"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01VUyJ3Kf3drXGSKaYXne1Ef","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01VUyJ3Kf3drXGSKaYXne1Ef","inputTextDelta":"{\"week\""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01VUyJ3Kf3drXGSKaYXne1Ef","inputTextDelta":": 3}"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_0144nMfnB1KiDozS3nuuhRyR","toolName":"week_moves"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_0144nMfnB1KiDozS3nuuhRyR","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_0144nMfnB1KiDozS3nuuhRyR","inputTextDelta":"{\"week\""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_0144nMfnB1KiDozS3nuuhRyR","inputTextDelta":": 4}"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01Lo6wepizT89bFV6Sjpv2K4","toolName":"week_moves"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01Lo6wepizT89bFV6Sjpv2K4","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01Lo6wepizT89bFV6Sjpv2K4","inputTextDelta":"{\"week\""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01Lo6wepizT89bFV6Sjpv2K4","inputTextDelta":": 5}"}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01TgmBMpNtu6u32LS9QNg2jR","toolName":"week_moves","input":{"week":2}}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01VUyJ3Kf3drXGSKaYXne1Ef","toolName":"week_moves","input":{"week":3}}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_0144nMfnB1KiDozS3nuuhRyR","toolName":"week_moves","input":{"week":4}}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01Lo6wepizT89bFV6Sjpv2K4","toolName":"week_moves","input":{"week":5}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01TgmBMpNtu6u32LS9QNg2jR","output":{"week":2,"trades":[{"teams":["Bo Girds","To Infinity and Bijan"],"players_moved":[{"player":"Blake Corum","to":"Bo Girds","from":"To Infinity and Bijan"},{"player":"Rome Odunze","to":"Bo Girds","from":"To Infinity and Bijan"},{"player":"Marvin Harrison Jr.","to":"To Infinity and Bijan","from":"Bo Girds"},{"player":"KC Concepcion Jr.","to":"To Infinity and Bijan","from":"Bo Girds"},{"player":"Michael Pittman Jr.","to":"To Infinity and Bijan","from":"Bo Girds"},{"player":"Tyler Allgeier","to":"To Infinity and Bijan","from":"Bo Girds"}],"draft_picks":[]},{"teams":["Return of T Mac","Teehee"],"players_moved":[{"player":"MarShawn Lloyd","to":"Teehee","from":"Return of T Mac"},{"player":"Luther Burden III","to":"Teehee","from":"Return of T Mac"},{"player":"Tetairoa McMillan","to":"Return of T Mac","from":"Teehee"},{"player":"DJ Moore","to":"Return of T Mac","from":"Teehee"},{"player":"Josh Jacobs","to":"Teehee","from":"Return of T Mac"},{"player":"Terry McLaurin","to":"Return of T Mac","from":"Teehee"},{"player":"Tucker Kraft","to":"Return of T Mac","from":"Teehee"},{"player":"Parker Washington","to":"Teehee","from":"Return of T Mac"}],"draft_picks":[]},{"teams":["NFC Least","Return of T Mac"],"players_moved":[{"player":"MarShawn Lloyd","to":"Return of T Mac","from":"NFC Least"},{"player":"J.K. Dobbins","to":"NFC Least","from":"Return of T Mac"}],"draft_picks":[]}],"adds":[{"player":"Tre Tucker","team":"All You Need Is Love","kind":"waiver claim","faab_bid":8},{"player":"Oronde Gadsden","team":"NFC Least","kind":"waiver claim","faab_bid":8},{"player":"Jordan Love","team":"Return of T Mac","kind":"waiver claim","faab_bid":6},{"player":"Adonai Mitchell","team":"Return of T Mac","kind":"waiver claim","faab_bid":11},{"player":"Jared Goff","team":"Return of T Mac","kind":"waiver claim","faab_bid":31},{"player":"Terrance Ferguson","team":"Unsolicited Dak Picks","kind":"waiver claim","faab_bid":3},{"player":"Minnesota Vikings","team":"To Infinity and Bijan","kind":"waiver claim","faab_bid":3},{"player":"Kaleb Johnson","team":"Bo Girds","kind":"waiver claim","faab_bid":2},{"player":"Keon Coleman","team":"behold the lamb","kind":"waiver claim","faab_bid":2},{"player":"Emanuel Wilson","team":"behold the lamb","kind":"waiver claim","faab_bid":7},{"player":"Dalton Schultz","team":"The Blue Tent","kind":"waiver claim","faab_bid":3},{"player":"Buffalo Bills","team":"NFC Least","kind":"waiver claim","faab_bid":0},{"player":"Pittsburgh Steelers","team":"Unsolicited Dak Picks","kind":"waiver claim","faab_bid":0},{"player":"Cincinnati Bengals","team":"Bo Girds","kind":"waiver claim","faab_bid":0},{"player":"Bryce Young","team":"Lil Fridge","kind":"waiver claim","faab_bid":15},{"player":"Rashod Bateman","team":"NFC Least","kind":"free agent add"},{"player":"Kenyon Sadiq","team":"Return of T Mac","kind":"free agent add"},{"player":"Jonah Coleman","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Green Bay Packers","team":"Lil Fridge","kind":"free agent add"},{"player":"Alvin Kamara","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Patrick Mahomes","team":"Bo Girds","kind":"free agent add"},{"player":"Samaje Perine","team":"Unsolicited Dak Picks","kind":"free agent add"},{"player":"George Holani","team":"NFC Least","kind":"free agent add"},{"player":"Xavier Hutchinson","team":"behold the lamb","kind":"free agent add"},{"player":"Bryce Young","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Braelon Allen","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Denzel Boston","team":"London Cooking","kind":"free agent add"},{"player":"Green Bay Packers","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Mike Gesicki","team":"behold the lamb","kind":"free agent add"},{"player":"New England Patriots","team":"To Infinity and Bijan","kind":"free agent add"},{"player":"Baltimore Ravens","team":"All You Need Is Love","kind":"free agent add"}],"drops":[{"player":"Jalen Nailor","team":"All You Need Is Love"},{"player":"Jayden Reed","team":"NFC Least"},{"player":"Dallas Goedert","team":"Return of T Mac"},{"player":"Kenyon Sadiq","team":"Return of T Mac"},{"player":"Jaxson Dart","team":"Return of T Mac"},{"player":"Brenton Strange","team":"Unsolicited Dak Picks"},{"player":"New England Patriots","team":"To Infinity and Bijan"},{"player":"Alec Pierce","team":"To Infinity and Bijan"},{"player":"Courtland Sutton","team":"To Infinity and Bijan"},{"player":"Xavier Hutchinson","team":"behold the lamb"},{"player":"Michael Mayer","team":"The Blue Tent"},{"player":"Demarcus Robinson","team":"Unsolicited Dak Picks"},{"player":"Los Angeles Chargers","team":"NFC Least"},{"player":"Mike Gesicki","team":"behold the lamb"},{"player":"Kansas City Chiefs","team":"Unsolicited Dak Picks"},{"player":"Tampa Bay Buccaneers","team":"Bo Girds"},{"player":"Keenan Allen","team":"Lil Fridge"},{"player":"Chig Okonkwo","team":"NFC Least"},{"player":"Makai Lemon","team":"Return of T Mac"},{"player":"Rachaad White","team":"Maye d'force B with U"},{"player":"Minnesota Vikings","team":"Lil Fridge"},{"player":"Bryce Young","team":"Maye d'force B with U"},{"player":"Bo Nix","team":"Bo Girds"},{"player":"De'Zhaun Stribling","team":"Unsolicited Dak Picks"},{"player":"Jacob Saylors","team":"NFC Least"},{"player":"Keaton Mitchell","team":"behold the lamb"},{"player":"Braelon Allen","team":"Maye d'force B with U"},{"player":"Green Bay Packers","team":"Maye d'force B with U"},{"player":"Jonah Coleman","team":"behold the lamb"},{"player":"Tennessee Titans","team":"To Infinity and Bijan"},{"player":"Las Vegas Raiders","team":"All You Need Is Love"}]}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01Lo6wepizT89bFV6Sjpv2K4","output":{"week":5,"trades":[{"teams":["To Infinity and Bijan","Return of T Mac","Teehee"],"players_moved":[{"player":"Emanuel Wilson","to":"Teehee","from":"Return of T Mac"},{"player":"Devaughn Vele","to":"Teehee","from":"To Infinity and Bijan"},{"player":"Harold Fannin Jr.","to":"To Infinity and Bijan","from":"Return of T Mac"},{"player":"Carnell Tate","to":"Return of T Mac","from":"To Infinity and Bijan"},{"player":"DJ Moore","to":"Teehee","from":"Return of T Mac"},{"player":"Terry McLaurin","to":"To Infinity and Bijan","from":"Return of T Mac"},{"player":"Jaylen Warren","to":"Return of T Mac","from":"Teehee"}],"draft_picks":[]},{"teams":["All You Need Is Love","Bo Girds"],"players_moved":[{"player":"Malik Washington","to":"Bo Girds","from":"All You Need Is Love"},{"player":"Jordan Addison","to":"All You Need Is Love","from":"Bo Girds"}],"draft_picks":[]}],"adds":[{"player":"Brandin Cooks","team":"Bo Girds","kind":"waiver claim","faab_bid":1},{"player":"Brenton Strange","team":"All You Need Is Love","kind":"waiver claim","faab_bid":15},{"player":"San Francisco 49ers","team":"Maye d'force B with U","kind":"waiver claim","faab_bid":0},{"player":"Kimani Vidal","team":"Maye d'force B with U","kind":"waiver claim","faab_bid":1},{"player":"Efton Chism III","team":"To Infinity and Bijan","kind":"waiver claim","faab_bid":0},{"player":"New England Patriots","team":"Teehee","kind":"waiver claim","faab_bid":3},{"player":"Tyjae Spears","team":"Teehee","kind":"waiver claim","faab_bid":11},{"player":"Keenan Allen","team":"behold the lamb","kind":"waiver claim","faab_bid":6},{"player":"Dameon Pierce","team":"behold the lamb","kind":"waiver claim","faab_bid":12},{"player":"Germie Bernard","team":"behold the lamb","kind":"waiver claim","faab_bid":12},{"player":"Kansas City Chiefs","team":"NFC Least","kind":"waiver claim","faab_bid":8},{"player":"Los Angeles Rams","team":"Return of T Mac","kind":"waiver claim","faab_bid":0},{"player":"Brian Robinson Jr.","team":"Bo Girds","kind":"waiver claim","faab_bid":0},{"player":"Baltimore Ravens","team":"Unsolicited Dak Picks","kind":"waiver claim","faab_bid":0},{"player":"Rico Dowdle","team":"NFC Least","kind":"waiver claim","faab_bid":26},{"player":"Kendrick Bourne","team":"Return of T Mac","kind":"free agent add"},{"player":"Chris Bell","team":"Return of T Mac","kind":"free agent add"},{"player":"Courtland Sutton","team":"Return of T Mac","kind":"free agent add"},{"player":"Dallas Goedert","team":"The Blue Tent","kind":"free agent add"},{"player":"Mike Washington Jr.","team":"Bo Girds","kind":"waiver claim","faab_bid":5},{"player":"Roschon Johnson","team":"behold the lamb","kind":"free agent add"},{"player":"Antonio Williams","team":"Bo Girds","kind":"free agent add"},{"player":"Darius Cooper","team":"behold the lamb","kind":"free agent add"},{"player":"Washington Commanders","team":"behold the lamb","kind":"free agent add"},{"player":"Kenny Gainwell","team":"behold the lamb","kind":"free agent add"},{"player":"New York Jets","team":"Teehee","kind":"free agent add"},{"player":"Denver Broncos","team":"Lil Fridge","kind":"free agent add"},{"player":"MarShawn Lloyd","team":"NFC Least","kind":"free agent add"},{"player":"Los Angeles Chargers","team":"Unsolicited Dak Picks","kind":"free agent add"},{"player":"Jacoby Brissett","team":"Bo Girds","kind":"free agent add"},{"player":"Mike Washington Jr.","team":"Bo Girds","kind":"free agent add"},{"player":"Kirk Cousins","team":"To Infinity and Bijan","kind":"free agent add"},{"player":"Dohnte Meyers","team":"To Infinity and Bijan","kind":"free agent add"}],"drops":[{"player":"Antonio Williams","team":"Bo Girds"},{"player":"Mark Andrews","team":"All You Need Is Love"},{"player":"Houston Texans","team":"Maye d'force B with U"},{"player":"Roman Wilson","team":"Maye d'force B with U"},{"player":"Dohnte Meyers","team":"To Infinity and Bijan"},{"player":"Kirk Cousins","team":"To Infinity and Bijan"},{"player":"New York Jets","team":"Teehee"},{"player":"TreVeyon Henderson","team":"Teehee"},{"player":"Brian Thomas Jr.","team":"behold the lamb"},{"player":"Kenny Gainwell","team":"behold the lamb"},{"player":"Tre' Harris","team":"behold the lamb"},{"player":"Dallas Cowboys","team":"NFC Least"},{"player":"Courtland Sutton","team":"Return of T Mac"},{"player":"Will Shipley","team":"Bo Girds"},{"player":"Los Angeles Chargers","team":"Unsolicited Dak Picks"},{"player":"Brian Robinson Jr.","team":"Teehee"},{"player":"Khalil Shakir","team":"NFC Least"},{"player":"Rico Dowdle","team":"Teehee"},{"player":"Chris Bell","team":"Return of T Mac"},{"player":"Tyreek Hill","team":"The Blue Tent"},{"player":"Jacoby Brissett","team":"Bo Girds"},{"player":"Darius Cooper","team":"behold the lamb"},{"player":"Mike Washington Jr.","team":"Bo Girds"},{"player":"Austin Ekeler","team":"behold the lamb"},{"player":"Indianapolis Colts","team":"behold the lamb"},{"player":"Quentin Johnston","team":"behold the lamb"},{"player":"Los Angeles Rams","team":"Teehee"},{"player":"Green Bay Packers","team":"Lil Fridge"},{"player":"Devin Neal","team":"NFC Least"},{"player":"Las Vegas Raiders","team":"Unsolicited Dak Picks"},{"player":"Kaleb Johnson","team":"Bo Girds"},{"player":"Chris Bell","team":"Bo Girds"},{"player":"Michael Pittman Jr.","team":"To Infinity and Bijan"},{"player":"Mack Hollins","team":"To Infinity and Bijan"}]}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_0144nMfnB1KiDozS3nuuhRyR","output":{"week":4,"trades":[{"teams":["The Blue Tent","Lil Fridge"],"players_moved":[{"player":"Rashee Rice","to":"The Blue Tent","from":"Lil Fridge"},{"player":"Bucky Irving","to":"The Blue Tent","from":"Lil Fridge"},{"player":"Davante Adams","to":"The Blue Tent","from":"Lil Fridge"},{"player":"Stefon Diggs","to":"Lil Fridge","from":"The Blue Tent"},{"player":"Derrick Henry","to":"Lil Fridge","from":"The Blue Tent"}],"draft_picks":[]},{"teams":["NFC Least","behold the lamb"],"players_moved":[{"player":"Deebo Samuel Sr.","to":"behold the lamb","from":"NFC Least"},{"player":"Tony Pollard","to":"NFC Least","from":"behold the lamb"}],"draft_picks":[]},{"teams":["Lil Fridge","NFC Least"],"players_moved":[{"player":"Deebo Samuel Sr.","to":"NFC Least","from":"Lil Fridge"},{"player":"J.K. Dobbins","to":"Lil Fridge","from":"NFC Least"}],"draft_picks":[]},{"teams":["NFC Least","Bo Girds"],"players_moved":[{"player":"Rome Odunze","to":"NFC Least","from":"Bo Girds"},{"player":"Ladd McConkey","to":"NFC Least","from":"Bo Girds"},{"player":"Tyler Warren","to":"NFC Least","from":"Bo Girds"},{"player":"Trey McBride","to":"Bo Girds","from":"NFC Least"},{"player":"Jordan Addison","to":"Bo Girds","from":"NFC Least"}],"draft_picks":[]}],"adds":[{"player":"Will Shipley","team":"Bo Girds","kind":"waiver claim","faab_bid":21},{"player":"Jacksonville Jaguars","team":"All You Need Is Love","kind":"waiver claim","faab_bid":5},{"player":"Mike Gesicki","team":"London Cooking","kind":"waiver claim","faab_bid":10},{"player":"Pittsburgh Steelers","team":"Return of T Mac","kind":"waiver claim","faab_bid":0},{"player":"Tyler Allgeier","team":"Maye d'force B with U","kind":"waiver claim","faab_bid":20},{"player":"Roman Wilson","team":"Maye d'force B with U","kind":"waiver claim","faab_bid":6},{"player":"Keon Coleman","team":"Maye d'force B with U","kind":"waiver claim","faab_bid":5},{"player":"Cincinnati Bengals","team":"Bo Girds","kind":"waiver claim","faab_bid":4},{"player":"Indianapolis Colts","team":"behold the lamb","kind":"waiver claim","faab_bid":0},{"player":"Michael Mayer","team":"To Infinity and Bijan","kind":"waiver claim","faab_bid":17},{"player":"Joe Mixon","team":"To Infinity and Bijan","kind":"waiver claim","faab_bid":40},{"player":"Jameis Winston","team":"Lil Fridge","kind":"waiver claim","faab_bid":1},{"player":"T.J. Hockenson","team":"Lil Fridge","kind":"waiver claim","faab_bid":2},{"player":"Marvin Harrison Jr.","team":"To Infinity and Bijan","kind":"waiver claim","faab_bid":7},{"player":"Ted Hurst III","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Brycen Tremayne","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Jauan Jennings","team":"Lil Fridge","kind":"free agent add"},{"player":"Jauan Jennings","team":"The Blue Tent","kind":"free agent add"},{"player":"Las Vegas Raiders","team":"Unsolicited Dak Picks","kind":"free agent add"},{"player":"Austin Ekeler","team":"behold the lamb","kind":"free agent add"},{"player":"Emanuel Wilson","team":"Return of T Mac","kind":"free agent add"},{"player":"Denver Broncos","team":"Unsolicited Dak Picks","kind":"free agent add"},{"player":"Dallas Cowboys","team":"NFC Least","kind":"free agent add"},{"player":"Isaiah Davis","team":"To Infinity and Bijan","kind":"free agent add"},{"player":"Makai Lemon","team":"Bo Girds","kind":"waiver claim","faab_bid":0},{"player":"Mack Hollins","team":"To Infinity and Bijan","kind":"free agent add"},{"player":"Darren Waller","team":"Maye d'force B with U","kind":"waiver claim","faab_bid":0},{"player":"Isaiah Davis","team":"Bo Girds","kind":"free agent add"},{"player":"Tre' Harris","team":"behold the lamb","kind":"free agent add"},{"player":"Mike Washington Jr.","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Devin Neal","team":"NFC Least","kind":"free agent add"},{"player":"New Orleans Saints","team":"behold the lamb","kind":"free agent add"},{"player":"Buffalo Bills","team":"Return of T Mac","kind":"free agent add"},{"player":"C.J. Stroud","team":"NFC Least","kind":"free agent add"},{"player":"Kendre Miller","team":"All You Need Is Love","kind":"free agent add"},{"player":"Chicago Bears","team":"All You Need Is Love","kind":"free agent add"},{"player":"Chris Bell","team":"Bo Girds","kind":"free agent add"},{"player":"Tyler Higbee","team":"behold the lamb","kind":"free agent add"},{"player":"Konata Mumpfield","team":"behold the lamb","kind":"free agent add"},{"player":"Keenan Allen","team":"To Infinity and Bijan","kind":"free agent add"},{"player":"Courtland Sutton","team":"To Infinity and Bijan","kind":"waiver claim","faab_bid":0},{"player":"Bo Nix","team":"The Blue Tent","kind":"free agent add"},{"player":"Tyreek Hill","team":"The Blue Tent","kind":"free agent add"},{"player":"Cleveland Browns","team":"The Blue Tent","kind":"free agent add"}],"drops":[{"player":"Makai Lemon","team":"Bo Girds"},{"player":"Chicago Bears","team":"All You Need Is Love"},{"player":"Kyle Pitts Sr.","team":"London Cooking"},{"player":"Buffalo Bills","team":"Return of T Mac"},{"player":"Kyler Murray","team":"Maye d'force B with U"},{"player":"Ted Hurst III","team":"Maye d'force B with U"},{"player":"Darren Waller","team":"Maye d'force B with U"},{"player":"Baltimore Ravens","team":"Bo Girds"},{"player":"New Orleans Saints","team":"behold the lamb"},{"player":"Isaiah Davis","team":"To Infinity and Bijan"},{"player":"Keenan Allen","team":"To Infinity and Bijan"},{"player":"Tyjae Spears","team":"Lil Fridge"},{"player":"Jauan Jennings","team":"Lil Fridge"},{"player":"Courtland Sutton","team":"To Infinity and Bijan"},{"player":"Brycen Tremayne","team":"Maye d'force B with U"},{"player":"Ja'Kobi Lane","team":"Maye d'force B with U"},{"player":"Bo Nix","team":"The Blue Tent"},{"player":"Denver Broncos","team":"Unsolicited Dak Picks"},{"player":"Konata Mumpfield","team":"behold the lamb"},{"player":"Kenny Gainwell","team":"Return of T Mac"},{"player":"Terrance Ferguson","team":"Unsolicited Dak Picks"},{"player":"Jacksonville Jaguars","team":"Unsolicited Dak Picks"},{"player":"New York Giants","team":"NFC Least"},{"player":"Tyler Allgeier","team":"To Infinity and Bijan"},{"player":"Isaiah Davis","team":"Bo Girds"},{"player":"Marvin Harrison Jr.","team":"To Infinity and Bijan"},{"player":"Mike Washington Jr.","team":"Maye d'force B with U"},{"player":"Rashod Bateman","team":"NFC Least"},{"player":"Keon Coleman","team":"behold the lamb"},{"player":"Brandin Cooks","team":"Maye d'force B with U"},{"player":"George Holani","team":"NFC Least"},{"player":"Kansas City Chiefs","team":"behold the lamb"},{"player":"Adonai Mitchell","team":"Return of T Mac"},{"player":"Oronde Gadsden","team":"NFC Least"},{"player":"Carolina Panthers","team":"All You Need Is Love"},{"player":"Makai Lemon","team":"Bo Girds"},{"player":"Zach Ertz","team":"behold the lamb"},{"player":"Emanuel Wilson","team":"behold the lamb"},{"player":"Devin Singletary","team":"To Infinity and Bijan"},{"player":"Antonio Williams","team":"To Infinity and Bijan"},{"player":"Tank Bigsby","team":"The Blue Tent"},{"player":"Dalton Schultz","team":"The Blue Tent"},{"player":"San Francisco 49ers","team":"The Blue Tent"}]}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01VUyJ3Kf3drXGSKaYXne1Ef","output":{"week":3,"trades":[{"teams":["Bo Girds","Teehee"],"players_moved":[{"player":"Jacory Croskey-Merritt","to":"Teehee","from":"Bo Girds"},{"player":"Amon-Ra St. Brown","to":"Teehee","from":"Bo Girds"},{"player":"Kyren Williams","to":"Bo Girds","from":"Teehee"},{"player":"Parker Washington","to":"Bo Girds","from":"Teehee"}],"draft_picks":[]}],"adds":[{"player":"Keaton Mitchell","team":"Unsolicited Dak Picks","kind":"waiver claim","faab_bid":25},{"player":"Makai Lemon","team":"Bo Girds","kind":"waiver claim","faab_bid":0},{"player":"Braelon Allen","team":"Return of T Mac","kind":"waiver claim","faab_bid":41},{"player":"Kalif Raymond","team":"The Blue Tent","kind":"waiver claim","faab_bid":5},{"player":"Jaylen Wright","team":"The Blue Tent","kind":"waiver claim","faab_bid":23},{"player":"Kenyon Sadiq","team":"Teehee","kind":"waiver claim","faab_bid":21},{"player":"Baltimore Ravens","team":"Bo Girds","kind":"waiver claim","faab_bid":6},{"player":"Ollie Gordon II","team":"Unsolicited Dak Picks","kind":"waiver claim","faab_bid":40},{"player":"Sam Darnold","team":"Unsolicited Dak Picks","kind":"waiver claim","faab_bid":0},{"player":"Jacksonville Jaguars","team":"Unsolicited Dak Picks","kind":"waiver claim","faab_bid":0},{"player":"Brandin Cooks","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Eli Heidenreich","team":"Maye d'force B with U","kind":"free agent add"},{"player":"New York Giants","team":"NFC Least","kind":"free agent add"},{"player":"Keaton Mitchell","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Courtland Sutton","team":"Bo Girds","kind":"free agent add"},{"player":"Zach Ertz","team":"behold the lamb","kind":"free agent add"},{"player":"Makai Lemon","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Darren Waller","team":"Unsolicited Dak Picks","kind":"free agent add"},{"player":"Ted Hurst III","team":"Bo Girds","kind":"free agent add"},{"player":"Rachaad White","team":"Unsolicited Dak Picks","kind":"free agent add"},{"player":"Kansas City Chiefs","team":"behold the lamb","kind":"waiver claim","faab_bid":0},{"player":"Darren Waller","team":"Bo Girds","kind":"free agent add"},{"player":"Kyler Murray","team":"Maye d'force B with U","kind":"free agent add"},{"player":"Carolina Panthers","team":"All You Need Is Love","kind":"free agent add"}],"drops":[{"player":"Darren Waller","team":"Unsolicited Dak Picks"},{"player":"Courtland Sutton","team":"Bo Girds"},{"player":"Philadelphia Eagles","team":"Return of T Mac"},{"player":"Justin Herbert","team":"The Blue Tent"},{"player":"Ray Davis","team":"All You Need Is Love"},{"player":"De'Von Achane","team":"The Blue Tent"},{"player":"MarShawn Lloyd","team":"Teehee"},{"player":"Cincinnati Bengals","team":"Bo Girds"},{"player":"Rashid Shaheed","team":"Unsolicited Dak Picks"},{"player":"Baker Mayfield","team":"Unsolicited Dak Picks"},{"player":"Pittsburgh Steelers","team":"Unsolicited Dak Picks"},{"player":"Eli Heidenreich","team":"Maye d'force B with U"},{"player":"Keaton Mitchell","team":"Maye d'force B with U"},{"player":"Buffalo Bills","team":"NFC Least"},{"player":"Makai Lemon","team":"Maye d'force B with U"},{"player":"Ted Hurst III","team":"Bo Girds"},{"player":"Malachi Fields","team":"Maye d'force B with U"},{"player":"Samaje Perine","team":"Unsolicited Dak Picks"},{"player":"Darren Waller","team":"Bo Girds"},{"player":"Denver Broncos","team":"behold the lamb"},{"player":"Mike Washington Jr.","team":"Maye d'force B with U"},{"player":"Baltimore Ravens","team":"All You Need Is Love"}]}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":"Through the","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" weeks I","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" could check","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" (weeks 2 to","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" 5), the biggest F","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":"AAB bid was 41","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":",","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" from Return of T Mac","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" for Braelon Allen","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" in week 3. I","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" did","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":"n't look at weeks ","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":"1, 6,","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" 7 or 8, so","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" a big","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":"ger bid in","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" one","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" of those weeks would","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" not","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":" show up here","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-delta","delta":".","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"text-end","id":"3f3aaa74-752f-4eb7-8227-e39f4d8f4961"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"reasoning-start","id":"aee3ea06-0d39-4500-a561-22c724fbf7ab","providerMetadata":{"pydantic_ai":{"signature":"","provider_name":"anthropic"}}}
+
+data: {"type":"reasoning-end","id":"aee3ea06-0d39-4500-a561-22c724fbf7ab","providerMetadata":{"pydantic_ai":{"signature":"CAQS/QkKEAgTGAI4AUIIdGhpbmtpbmcSDGxX7/5aH9j7urr0FhoMd0G89GnWT2Otz9wGIjArvqUVw6w8OctWX1aWw61uYzJTYn4PlIIi7DbmHmA1Sp69Z/0nocEGY3FTVYRu66oqmgnjiwjyM8SPe1kWWB6/0x8rv19GY4yoHCR7jHzSXQb7pjsADM40P8kF4lKkAmEABauulyJzAcqt+yk0tKfJoXrb70XYIxeJXdEOUvMtYt7XCKTTEUqkCkann05T3K/XArpfrx3hiWC16AkL80BCZ3ThMP1SiwrU+5iK/kCAtC/6c3fELq33g7ScKG+kd0Oi2QxTsU/smdPqTDcckX0m9jrJsHYsuMqXvKnAslpy87rwzslCVg0/i2AdW4MsiaRQTFA+7t7INfPeZrRLj68HzhmhSEtwjG0tqW9td0V1fHr3BGfYqXh4Et4zAdQYnYCC5d7FO/EsWgGw690ZvdJE75prOADu3l9fWeHIY18pHCNDA7qWBSyZgpW/AIMDqqlfJ+oUZMwZ2luaqZiv9J4UNB5kWoK9dgxnwL0d/8Bxt/kD0GRV0DU2Xvs+AXJSp6XH2mnwVLAbXfXZm+jZ5c7/fuqL4Umxw/1SgKGWDF+epJU/r51XLaGplwfae5awqwYOEosGARTZI4KE6I8xFCl0N3bw3MxCQ6Wjvl9i+UB75Bl+kZTnFDhuPKIDtrETR6A2gnEeMDDfCtl7wEqzSIKda4JtcBx4W3WwCokGdsDd5kORXi+mdaZcfT8RhszYbI66zKtGbhpUzx+cXcdVSxwCqrB6dk+rA6c/NS/IXd7AUZWNX0AIpNLmAOnMljvilKYVcsZvqyveDNzmz/EWjzZSy1iHTHt6+CFCAb+szUvaVPeXBfJVNZHdWXIYW0kZd1wE0yyas5gsmMzdiouTlORBHaSKolW1eUXppbqd/tcw2oMbVVs+fprYiSOl89iTAiUgu7jY5XEYvzOsjkHpGD1in9i9YMpPDQpjGjVClRU5Fe4v0RIfGRsVlYXleRTkvNP3QTYsSEoTK0k8BAks542tevAUz2+gxgNNw4Rf8baXwV5csjNut6aAKCAJrQkr9TlnYTGzLOgvezeA4vqj4PtvANp3wQbbyYwiEb2TIjtz8z4ioQzSYSQrT5HFpiy4qpI6p3xVqnzoEFwwJjTzdbLqBZMvvUHUP9ggTGiwXM4iPkZbyX37ZMO3GIbWhKSShybSePyzqEikNJVs382/Pd8ZYUMTLidjVpV9i6AkYQ6pkifYuyVcAer30dQIQnDGG1LTESBIW3PjjDYqzzu5J5le3OfcCLEnC0YUa+RAraEQzGgU2TAgGfhonZ5q8Q73gfejHwx31vAhC75zF31QOLYDH1bbGpUp7QlBxbQLaDqdxdTbAKYpXKtiDS8UhgndNR4ufPewr5OCBFWGAjGC7dM81PqX9bawO8rQrgPTOYINcSj+kYnNrVmislqnwGnKm62AB9Jx1gZHlmof1NvcBLQ2FKFSEik2YVqyUDf3hG1svkl/UuVbM/EgS/2zuUqLoyWyGr7Gil+5vEE0a/4BkHsQ6Z5W1D5MeUZEBWWnCuj9Pe+h+6utnZB99T6AlwLPsWkjWzxpYRO7TVUNhcpE0K3UWLG2PfOMYxeq31JU9Z2dfMcKBjldsHbR3LhOACTXD/omQQV15Y0ZxOaGyvTPoUtdJ5ASCg5RMLM95rtRxhgB","provider_name":"anthropic"}}}
+
+data: {"type":"text-start","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":"In","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":" weeks 2 through","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":" 5, the most F","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":"AAB sp","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":"ent on one waiver pick","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":"up was 41, by","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":" Return of T Mac for","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":" Braelon Allen in","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":" week 3. I","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":" could not find the bids for we","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":"eks 1 ","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":"and 6 ","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":"through","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":" 8, so I can't say","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":" wh","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":"ether any of those was","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-delta","delta":" higher.","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"text-end","id":"773adc63-5b93-46f8-bdf6-50b46f91ea2c"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

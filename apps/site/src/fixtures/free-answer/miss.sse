@@ -1,0 +1,86 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_019a2HAzYg1ox4EArnHFSY7P","toolName":"standings"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_019a2HAzYg1ox4EArnHFSY7P","inputTextDelta":""}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_019a2HAzYg1ox4EArnHFSY7P","toolName":"standings","input":{}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_019a2HAzYg1ox4EArnHFSY7P","output":{"through_week":8,"how_records_count":"Each week is two games: the head-to-head game and a game against the league median score. So a record over 8 weeks has 16 games.","teams":[{"rank":1,"team":"All You Need Is Love","record":"11-5","head_to_head_record":"7-1","points_for":850.17,"points_against":787.92},{"rank":2,"team":"Lil Fridge","record":"10-6","head_to_head_record":"5-3","points_for":909.55,"points_against":797.91},{"rank":3,"team":"Bo Girds","record":"9-7","head_to_head_record":"3-5","points_for":921.62,"points_against":867.73},{"rank":4,"team":"London Cooking","record":"9-7","head_to_head_record":"4-4","points_for":918.99,"points_against":843.15},{"rank":5,"team":"Maye d'force B with U","record":"9-7","head_to_head_record":"5-3","points_for":900.65,"points_against":680.77},{"rank":6,"team":"The Blue Tent","record":"9-7","head_to_head_record":"4-4","points_for":871.19,"points_against":844.88},{"rank":7,"team":"Return of T Mac","record":"9-7","head_to_head_record":"5-3","points_for":832.55,"points_against":834.39},{"rank":8,"team":"Teehee","record":"8-8","head_to_head_record":"4-4","points_for":885.98,"points_against":821.78},{"rank":9,"team":"To Infinity and Bijan","record":"7-9","head_to_head_record":"3-5","points_for":769.09,"points_against":947.27},{"rank":10,"team":"Unsolicited Dak Picks","record":"6-10","head_to_head_record":"3-5","points_for":793.58,"points_against":917.23},{"rank":11,"team":"behold the lamb","record":"6-10","head_to_head_record":"3-5","points_for":765.42,"points_against":878.73},{"rank":12,"team":"NFC Least","record":"3-13","head_to_head_record":"2-6","points_for":700.97,"points_against":898.0}]}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":"Bo Girds has sc","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":"ored the most points this","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":" season, with","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":" 921.62 through","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":" week 8. London Coo","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":"king is next","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":" at 918.99,","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":" and your team, Lil","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":" Fridge, is third at ","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-delta","delta":"909.55.","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"text-end","id":"d7b8975f-f2a9-4ab1-ab47-5ab1d5d338b6"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"reasoning-start","id":"7d3200ac-5c16-46b5-af0b-9e437e4b252b","providerMetadata":{"pydantic_ai":{"signature":"","provider_name":"anthropic"}}}
+
+data: {"type":"reasoning-end","id":"7d3200ac-5c16-46b5-af0b-9e437e4b252b","providerMetadata":{"pydantic_ai":{"signature":"CAQSqwgKEAgTGAI4AUIIdGhpbmtpbmcSDI6bElfr7EW7IO0TyhoMFZahpQCgh9fbS/IbIjDW8CVb8gZ5gYFBu201+WHaGbA35dzh37xKmnHy/9sXDOtcPUtz8SPXbaN4odqdhCkqyAdBK67fMXKyAgn50nYGVDYG+S5zMzWD1ZmXgpaZA5LOQ8Cl1sTMsTsN5F2mNeeN+jbbdLmn+Y1oTE7FJretWk/b8FVfibH2czsh9fPvkbmn9ZCmLnXVvoL7I3a9ABCRErlv8bySeRT4W4NiISXISTvuKHe0DbJsRaq9/UMYt0ZjY+sLWQ3fYEMUiEKLu3ZaJeh6yxTzAldAQIrI+gwqpsGsFM3bI7gav340Xdj6HwBK6F1I+OGfW9VGSjGgyZpyHSQHCHWwtqhUI6Sz+BGb1tYa4bdeDsDe63ZKDgWovRQ0F6hY7soQkdFTNIJ2CdESlFXfcFI/bxBtE36brkTAoM9Q1AimhTc0goeMYzVOivfc+D8MvvCOvsxFvwNC1Jc4Dn4MWOS66oaMNk8Bad8HXlHhMPVNUbeoN55H8JbNquZU5wGY2N6hc18z2PQUXnXfe/x9D7QZc96sa+8mFK7SP9w/Hq5IS4YVBs0IXY+IZs9T0NwNPQqmTXiUjz7d+OD0j4z+4kUDFkQhDwuMpto6oiumN4gJxvS5Snpn07cnUI9RRNHEG5NKcEr31tNmsFNzWb6bospzEtXnuyCRwMqeGuPHNoeb9epr0bejtnBkHGtQCOXK7nm5fTPqNYMT94J7iNrWD8aPfwTdjgxwVoqpS3oAEjeDgH0o/pzMLT6HVYtKJ9jDZS145Mh43fj+WlnYkSAZjd7cKJa5n/rjdSKOFKpCUc0baHDtA2nata3eRVL8RZGZgWnkDYAPaxqt6cxijqtW+bQXJND44y/BH0cd75BkIdl8MQ+WrW/W9jXHrIZWZ9GoX5DVM98m48A5iCWbL11kd0hOlOFF//t/DSiepS83+ua8//lax0g0qM5XPD9rKhs3nJAWPpMAU3YuP4+TWOiE1KTIDsI2nOvk5afqElj16YR+WMI1WqabclxzdWsmZ+oKhS7ijXimGQeWoZcidNwamxVZb48lu3kK3CxdXTux8MO9ZP0zZky3waiRZNYKbzSUIcjwSp84xxXAEeewZeNfyrh6ydbYAbMw8W0Pz6cIysIpgfqx9AvHfLyCgyWJWPMuSdYtji74GF2xxn0FgOGvH72F/ww773erczKe9yfiGcKeU/15zzyMJqp/LX3quOeF6IKMPbjafbJ7mEovRhYKEuFYhsmk+TY/VwHOwsStrZL9UwGipTXBM71f/jN18vu9XUVlCW23KGxWLu0A0CISxIcog5a+GHtUXjjL9Y1hnjUOHD8dBm9w6E1FfaRewPkG7ov44xPJrzXeuIOzcRbYJoSseFqN6hgB","provider_name":"anthropic"}}}
+
+data: {"type":"text-start","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"text-delta","delta":"Bo","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"text-delta","delta":" Girds has scored the most","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"text-delta","delta":" points this season, with 921.","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"text-delta","delta":"62 through week 8. London","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"text-delta","delta":" Cooking is second with","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"text-delta","delta":" 918.99, and L","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"text-delta","delta":"il Fridge is third with","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"text-delta","delta":" 909.55.","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"text-end","id":"4183ba6f-e979-4b14-a7b9-ab40d8c64635"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"failed"}}
+
+data: {"type":"data-miss","data":{"closest":["your_season","playoff_race","power_rankings"]}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

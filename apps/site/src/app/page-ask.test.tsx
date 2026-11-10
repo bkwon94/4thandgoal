@@ -81,17 +81,6 @@ describe("the ask box of Lil Fridge", () => {
     expect(answer.textContent).not.toContain("10-6");
   });
 
-  it("shows the Topic of a half fit under the free answer line, for the team that the question names (AT-12)", async () => {
-    answerWith(route({ route: "free", team: 6, suggestion: "your_season" }));
-    render(<HomePage />);
-    await ask("how's Bo Girds doing");
-    const note = await articleWith("how's Bo Girds doing", "come soon");
-    const chip = within(note).getByRole("button", { name: /Your season.*Bo Girds/ });
-    fireEvent.click(chip);
-    const answer = await screen.findByRole("article", { name: "Your season" });
-    expect(answer.textContent).toContain("9-7");
-  });
-
   it.each(["is CeeDee Lamb playing sunday", "who won the league last year"])(
     "gives %s the honest miss with 3 Topics, and hides the chips of the dock (AT-13, AT-54)",
     async (question) => {

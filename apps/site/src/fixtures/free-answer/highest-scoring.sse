@@ -1,0 +1,48 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_0161vXxtWtqGd3HLKVJjjZoc","toolName":"standings"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_0161vXxtWtqGd3HLKVJjjZoc","inputTextDelta":""}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_0161vXxtWtqGd3HLKVJjjZoc","toolName":"standings","input":{}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_0161vXxtWtqGd3HLKVJjjZoc","output":{"through_week":8,"how_records_count":"Each week is two games: the head-to-head game and a game against the league median score. So a record over 8 weeks has 16 games.","teams":[{"rank":1,"team":"All You Need Is Love","record":"11-5","head_to_head_record":"7-1","points_for":850.17,"points_for_rank":7,"points_against":787.92},{"rank":2,"team":"Lil Fridge","record":"10-6","head_to_head_record":"5-3","points_for":909.55,"points_for_rank":3,"points_against":797.91},{"rank":3,"team":"Bo Girds","record":"9-7","head_to_head_record":"3-5","points_for":921.62,"points_for_rank":1,"points_against":867.73},{"rank":4,"team":"London Cooking","record":"9-7","head_to_head_record":"4-4","points_for":918.99,"points_for_rank":2,"points_against":843.15},{"rank":5,"team":"Maye d'force B with U","record":"9-7","head_to_head_record":"5-3","points_for":900.65,"points_for_rank":4,"points_against":680.77},{"rank":6,"team":"The Blue Tent","record":"9-7","head_to_head_record":"4-4","points_for":871.19,"points_for_rank":6,"points_against":844.88},{"rank":7,"team":"Return of T Mac","record":"9-7","head_to_head_record":"5-3","points_for":832.55,"points_for_rank":8,"points_against":834.39},{"rank":8,"team":"Teehee","record":"8-8","head_to_head_record":"4-4","points_for":885.98,"points_for_rank":5,"points_against":821.78},{"rank":9,"team":"To Infinity and Bijan","record":"7-9","head_to_head_record":"3-5","points_for":769.09,"points_for_rank":10,"points_against":947.27},{"rank":10,"team":"Unsolicited Dak Picks","record":"6-10","head_to_head_record":"3-5","points_for":793.58,"points_for_rank":9,"points_against":917.23},{"rank":11,"team":"behold the lamb","record":"6-10","head_to_head_record":"3-5","points_for":765.42,"points_for_rank":11,"points_against":878.73},{"rank":12,"team":"NFC Least","record":"3-13","head_to_head_record":"2-6","points_for":700.97,"points_for_rank":12,"points_against":898.0}]}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"text-delta","delta":"Bo Girds has sc","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"text-delta","delta":"ored the most points this season, with","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"text-delta","delta":" 921.62 through","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"text-delta","delta":" week 8. London Coo","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"text-delta","delta":"king is second at 918.99","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"text-delta","delta":", and your team,","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"text-delta","delta":" Lil Fridge, is","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"text-delta","delta":" third at 909.55.","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"text-end","id":"a2212465-0136-4781-99dc-617041b545ff"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"data-suggestion","data":{"topic":"your_season","team":null}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

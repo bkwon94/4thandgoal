@@ -1438,3 +1438,33 @@ html:not([data-hydrated]) [data-draw] {
 [data-eggs] img[data-stable-id] {
     -webkit-touch-callout: default;
 }
+
+/* The free answer of the front door: each new word sharpens from a blur of 6 px as it streams (decision 07, AT-44),
+   as the streaming text of transitions-dev on --duration-medium and --ease-smooth-out. Under reduced motion, a word
+   only fades in (AT-46). */
+.stream-word {
+    animation: stream-word 350ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes stream-word {
+    from {
+        opacity: 0;
+        filter: blur(6px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+@keyframes stream-word-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .stream-word {
+        animation-name: stream-word-fade;
+    }
+}
