@@ -3,8 +3,10 @@ The ask route of the front door: one Jev request per typed question, and the rou
 The app mounts the router at /clients/<slug>/ behind the passphrase. A miss writes one entry in the miss log.
 """
 import logging
+import threading
+import time
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Annotated, Literal
 
@@ -40,6 +42,8 @@ CLOSEST_COUNT = 3
 QUESTION_MAX = 300
 # The last week of a fantasy season that the site can show.
 WEEK_MAX = 18
+# How long the route of a free answer stays kept for its stream. The site calls the stream right after the route.
+FREE_ROUTE_SECONDS = 600
 
 RouteKind = Literal["topic", "free", "miss", "refuse"]
 # The kinds of the answer of the ask route: a route, or the calm line of a cap in place of a free answer.
@@ -108,9 +112,40 @@ def route_question(jev: Jev, question: str, teams: list[str], season: int, week:
                  suggestion=suggestion, jev=answers)
 
 
+class FreeRoutes:
+    """The free routes that the ask route gave, in memory, each for FREE_ROUTE_SECONDS. The free answer reads its route
+    here, so each typed question gets one Jev request, and only a question routed to a free answer reaches Claude.
+
+    The key is the roster id, the week, and the question text. A restart drops the map, so the manager asks again.
+    """
+
+    def __init__(self, seconds: float = FREE_ROUTE_SECONDS, now: Callable[[], float] = time.monotonic) -> None:
+        self.seconds = seconds
+        self.now = now
+        self._routes: dict[tuple[int, int, str], tuple[float, Route]] = {}
+        self._lock = threading.Lock()
+
+    def put(self, roster_id: int, week: int, question: str, route: Route) -> None:
+        """Keep the free route of `question`. Each route past its time limit leaves the map here, so the map stays
+        small."""
+        now = self.now()
+        with self._lock:
+            self._routes = {key: kept for key, kept in self._routes.items() if now - kept[0] < self.seconds}
+            self._routes[(roster_id, week, question)] = (now, route)
+
+    def get(self, roster_id: int, week: int, question: str) -> Route | None:
+        """The kept free route of `question`, or None when the ask route gave none in the time limit."""
+        with self._lock:
+            kept = self._routes.get((roster_id, week, question))
+        if kept is None or self.now() - kept[0] >= self.seconds:
+            return None
+        return kept[1]
+
+
 @dataclass
 class Asker:
-    """The ask route of one client: its season, its Jev, its miss log, its rosters, its clock, and its caps."""
+    """The ask route of one client: its season, its Jev, its miss log, its rosters, its clock, its caps, and the free
+    routes it gave. Each client has its own Asker, so the free routes of one client never reach another."""
 
     season: int
     jev: Jev
@@ -118,6 +153,7 @@ class Asker:
     rosters: Rosters
     clock: Callable[[], datetime]
     caps: Caps
+    free_routes: FreeRoutes = field(default_factory=FreeRoutes)
 
 
 def client_asker(request: Request) -> Asker:
@@ -154,6 +190,8 @@ def ask(body: AskRequest, asker: ClientAsker) -> dict:
         raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
     if route.kind == "miss":
         asker.misses.write(question, body.roster_id, rosters[body.roster_id], route.closest, asker.clock())
+    if route.kind == "free":
+        asker.free_routes.put(body.roster_id, body.week, question, route)
     kind: AskKind = route.kind
     line = None
     # A free answer is a Claude call, so past a cap the route gives the calm line with the closest Topics instead.

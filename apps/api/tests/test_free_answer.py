@@ -17,7 +17,9 @@ from fastapi.testclient import TestClient
 from pydantic_ai.messages import ModelMessage, ModelRequest, ToolReturnPart, UserPromptPart
 from pydantic_ai.models.function import AgentInfo, DeltaToolCall, DeltaToolCalls, FunctionModel
 
+from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.app import create_app
+from cornerstone_api.ask import FREE_ROUTE_SECONDS, FreeRoutes
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
@@ -32,6 +34,7 @@ NOW = datetime(2026, 11, 11, 12, 0, tzinfo=ET)
 PASSPHRASE = "cornerstone-test"
 PASS = {"X-League-Passphrase": PASSPHRASE}
 FREE = "/clients/cpc/ask/free"
+ASK = "/clients/cpc/ask"
 LIL_FRIDGE = 3
 BO_GIRDS = 6
 INTERNAL = ("Jev", "Advisor", "Finder")
@@ -146,6 +149,12 @@ def _text(chunks: list[dict]) -> str:
 
 
 def _ask(api: TestClient, question: str, roster_id: int = LIL_FRIDGE, **extra):
+    """The two calls of the site: the ask route first, then the stream of the free answer with the same body."""
+    api.post(ASK, json={"question": question, "roster_id": roster_id, "week": 8}, headers=PASS)
+    return _free(api, question, roster_id, **extra)
+
+
+def _free(api: TestClient, question: str, roster_id: int = LIL_FRIDGE, **extra):
     return api.post(FREE, json={"question": question, "roster_id": roster_id, "week": 8, **extra}, headers=PASS)
 
 
@@ -349,6 +358,9 @@ def test_a_question_about_the_whole_season_reads_the_moves_of_each_week_in_one_c
 def _output(api: TestClient, tool: str, args: dict) -> dict:
     script = Script(tool, args, lambda result, prompts: "The data holds it.")
     api.app.state.free_model = script.model()
+    # Each read asks the same question, so a fresh store keeps the answer of the last read from coming back kept.
+    folder = api.app.state.settings.ask_dir
+    api.app.state.kept["cpc"] = AnswerStore(folder / f"{tool}-{len(list(folder.iterdir()))}.sqlite")
     chunks = _chunks(_ask(api, "week 1 results"))
     [output] = [c["output"] for c in chunks if c["type"] == "tool-output-available"]
     return output
@@ -366,3 +378,92 @@ def test_a_roster_and_a_game_log_read_by_name_with_the_points_of_the_saved_weeks
     assert [week["week"] for week in log["weeks"]] == [1, 2, 3, 4, 5]
     assert log["season_points"] == top["season_points"] == round(sum(w.get("fantasy_points", 0) for w in log["weeks"]), 2)
     assert _output(api, "team_roster", {"team": "Nobody FC"})["error"] == "No team is named Nobody FC."
+
+
+def test_a_repeat_question_streams_the_kept_answer_with_no_claude_call_and_no_cost(repo, fixture_raw_dir):
+    # Decision 11: a free answer keys on the question text plus the data it read, so a repeat over the same data comes
+    # back at once from the store, with its check and its Suggestion, and no Claude call, no Jev check, and no cost.
+    checks = Checks([True])
+    script = Script("standings", {}, _leader)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=_choice), script.model())
+    first = _chunks(_ask(api, "highest scoring team this season"))
+    caps = api.app.state.askers["cpc"].caps
+    spent, answers = caps.month_usd(NOW), caps.answers_today(LIL_FRIDGE, NOW)
+    second = _chunks(_ask(api, "highest scoring team this season"))
+    assert len(script.requests) == 2  # the tool call and the text of the first answer only
+    assert len(checks.seen) == 1
+    assert _text(second) == _text(first)
+    assert [c["data"]["state"] for c in second if c["type"] == "data-check"] == ["checked"]
+    assert [c["data"] for c in second if c["type"] == "data-suggestion"] == [{"topic": "playoff_race", "team": None}]
+    assert not any(c["type"].startswith("tool-") for c in second)
+    assert (caps.month_usd(NOW), caps.answers_today(LIL_FRIDGE, NOW)) == (spent, answers)
+
+
+def test_a_changed_roster_changes_the_key_of_a_free_answer_and_claude_writes_a_fresh_one(repo, fixture_raw_dir,
+                                                                                       tmp_path):
+    # The answer read the roster of Bo Girds. A drop changes that read, so the kept answer of the old roster stays
+    # unused.
+    def write(result: dict, prompts: int) -> str:
+        return f"Bo Girds has {len(result['players'])} players."
+
+    script = Script("team_roster", {"team": "bo girds"}, write)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=Checks([True, True]).answer, choose=_choice), script.model())
+    first = _text(_chunks(_ask(api, "how's Bo Girds doing")))
+    raw = tmp_path / "raw-after-a-drop"
+    shutil.copytree(fixture_raw_dir, raw)
+    rosters = json.loads((raw / "rosters.json").read_text())
+    bo = next(roster for roster in rosters if roster["roster_id"] == BO_GIRDS)
+    bo["players"] = bo["players"][1:]
+    (raw / "rosters.json").write_text(json.dumps(rosters))
+    # A second app over the same store, as after a restart, reads the roster after the drop.
+    api = _api(repo, raw, FakeJev(answer=Checks([True, True]).answer, choose=_choice), script.model())
+    second = _text(_chunks(_ask(api, "how's Bo Girds doing")))
+    assert len(script.requests) == 4
+    assert first != second
+
+
+def test_an_honest_miss_keeps_nothing_so_a_repeat_asks_claude_again(repo, fixture_raw_dir):
+    script = Script("standings", {}, lambda result, prompts: "Bo Girds leads with 9999 points.")
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=Checks([False] * 6).answer, choose=_choice), script.model())
+    _ask(api, "highest scoring team this season")
+    _ask(api, "highest scoring team this season")
+    assert len([c for c in _chunks(_ask(api, "highest scoring team this season")) if c["type"] == "data-miss"]) == 1
+    assert len(script.requests) == 9
+
+
+def _routes(jev: FakeJev) -> list:
+    return [request for request in jev.requests if "tool_results" not in request.state]
+
+
+def test_the_free_answer_reads_the_route_of_the_ask_route_with_no_second_jev_request(repo, fixture_raw_dir):
+    # P9 of the spec: each typed question gets one Jev request, so the stream reads the kept route of /ask.
+    jev = FakeJev(answer=Checks([True]).answer, choose=_choice)
+    api = _api(repo, fixture_raw_dir, jev, Script("standings", {}, _leader).model())
+    chunks = _chunks(_ask(api, "highest scoring team this season"))
+    assert any(c["type"] == "data-suggestion" for c in chunks)
+    assert len(_routes(jev)) == 1
+
+
+def test_a_free_answer_with_no_route_from_the_ask_route_gets_409_and_no_jev_or_claude_call(repo, fixture_raw_dir):
+    # Only a question that the ask route sent to a free answer reaches Claude, whatever the client sends.
+    jev = FakeJev(answer=Checks([True]).answer, choose=_choice)
+    script = Script("standings", {}, _leader)
+    api = _api(repo, fixture_raw_dir, jev, script.model())
+    assert _free(api, "highest scoring team this season").status_code == 409
+    # A route of another team or another question is not the route of this body.
+    api.post(ASK, json={"question": "week 1 results", "roster_id": LIL_FRIDGE, "week": 8}, headers=PASS)
+    assert _free(api, "week 1 results", roster_id=BO_GIRDS).status_code == 409
+    assert _free(api, "highest scoring team this season").status_code == 409
+    assert len(_routes(jev)) == 1
+    assert script.requests == []
+
+
+def test_a_kept_free_route_ends_after_its_time_limit(repo, fixture_raw_dir):
+    clock = [0.0]
+    script = Script("standings", {}, _leader)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=Checks([True]).answer, choose=_choice), script.model())
+    api.app.state.askers["cpc"].free_routes = FreeRoutes(now=lambda: clock[0])
+    api.post(ASK, json={"question": "week 1 results", "roster_id": LIL_FRIDGE, "week": 8}, headers=PASS)
+    clock[0] = FREE_ROUTE_SECONDS
+    assert _free(api, "week 1 results").status_code == 409
+    assert script.requests == []

@@ -7,32 +7,28 @@ import json
 import logging
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
-from typing import Annotated, Any
+from typing import Any
 
 import anyio
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict
 from pydantic_ai import Agent
 from pydantic_ai.capabilities import Caching
-from pydantic_ai.messages import ModelMessage
 from pydantic_ai.models import Model
 from pydantic_ai.models.anthropic import AnthropicModelSettings
 from pydantic_ai.ui.vercel_ai.response_types import (
     BaseChunk,
     DoneChunk,
-    ErrorChunk,
     FinishChunk,
     StartChunk,
-    TextDeltaChunk,
-    TextEndChunk,
-    TextStartChunk,
 )
 
+from analyzer.routes import ServedClient
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import Asker, ClientAsker
-from cornerstone_api.caps import CapHit, sonnet_cost
-from cornerstone_api.free_answer import MODEL, STREAM_ERROR, _adapter, _Attempt, _data, _run, check
+from cornerstone_api.caps import CapHit
+from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data, kept_text
 from cornerstone_api.personal_facts import (
     PersonalFacts,
     PersonalTopic,
@@ -47,7 +43,7 @@ from cornerstone_api.personal_wording import (
     rewrite_prompt,
     topic_prompt,
 )
-from league.jev_port import JevError
+from facts.writer import route_model
 from league.snapshot import Snapshot
 from managers.grade import ManagerGrade, Starter
 
@@ -55,8 +51,10 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# A personal Topic runs Sonnet 5.5 at medium effort (spec, "The Answers and the stream").
-EFFORT = "medium"
+# The route table maps a personal Topic to its model and its effort (spec, "The Answers and the stream").
+ROUTE = route_model("personal_topic")
+# The model of the agent, in the form of Pydantic AI. The key of each Answer names it.
+MODEL = f"anthropic:{ROUTE.model}"
 # A short Answer needs few tokens, but a cut Answer is worse than a long one, so the cap leaves room for the thinking.
 MAX_TOKENS = 16000
 # The closest Topics of the honest miss of each personal Topic, after a second failed check.
@@ -70,7 +68,7 @@ AGENT = Agent(
     MODEL,
     name="personal_topic",
     instructions=INSTRUCTIONS,
-    model_settings=AnthropicModelSettings(anthropic_effort=EFFORT, max_tokens=MAX_TOKENS),
+    model_settings=AnthropicModelSettings(anthropic_effort=ROUTE.effort, max_tokens=MAX_TOKENS),
     capabilities=[Caching()],
     defer_model_check=True,
 )
@@ -87,19 +85,12 @@ class PersonalRequest(BaseModel):
     team: int | None = None
 
 
-def _served(request: Request) -> Any:
-    return request.app.state.served[request.path_params["slug"]]
-
-
-Served = Annotated[Any, Depends(_served)]
-
-
 def answer_key(topic: str, own: bool, facts: PersonalFacts, roster: list[str]) -> str:
     """The key of an Answer: the facts it read, the roster of its team, whom it addresses, and the wording and the
     model that wrote it. A waiver claim or a trade changes the roster, so the key changes and Claude writes a fresh
     Answer. The roster is in the key, because a bench add can leave the slice the same and still change the read."""
     body = {"topic": topic, "own": own, "slice": facts.slice, "block": facts.block, "roster": sorted(roster),
-            "instructions": INSTRUCTIONS, "ask": TOPIC_ASKS[topic], "model": MODEL, "effort": EFFORT}
+            "instructions": INSTRUCTIONS, "ask": TOPIC_ASKS[topic], "model": MODEL, "effort": ROUTE.effort}
     return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
 
 
@@ -135,15 +126,6 @@ async def load_live(served: Any, season: int) -> Live:
     return Live(snapshot, grades, starters)
 
 
-def _usage_line(topic: str, attempts: list[_Attempt], outcome: str) -> str:
-    usages = [a.result.usage for a in attempts if a.result is not None]
-    costs = [u.cost for u in usages if u.cost is not None]
-    cost = f"${float(sum(costs)):.4f}" if len(costs) == len(usages) and usages else "unknown"
-    return (f"The personal Topic {topic} ended as {outcome}, with {len(attempts)} texts, "
-            f"{sum(u.input_tokens for u in usages)} input tokens, {sum(u.output_tokens for u in usages)} output "
-            f"tokens, and a cost of {cost}")
-
-
 async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: PersonalFacts, key: str, own: bool,
                         your_team: str, model: Model | None, roster_id: int | None) -> AsyncIterator[BaseChunk]:
     """The one place where a personal Answer calls Claude: the first text, the Jev check of each sentence against the
@@ -154,70 +136,29 @@ async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: Per
     toward the team cap. The head start gives None, so it counts toward the league cap only (decision 04).
     """
     team = facts.slice["team"]
-    question = check_question(topic, team)
-    results = {"team_facts": facts.slice}
     instructions = f"The facts are the league data now, before the games of week {facts.slice['week']}."
-    attempts: list[_Attempt] = []
-    history: list[ModelMessage] = []
-    prompt = topic_prompt(topic, facts.slice, own)
-    outcome = "an error"
-    for number in (1, 2):
-        attempt = _Attempt()
-        attempts.append(attempt)
-        if number == 2:
-            # The site fades the first text out at this part, and the second text streams under "Fixing a number…".
-            yield _data("check", {"state": "fixing"}, id="check")
-            yield _data("fix", {})
-        async for chunk in _run(prompt, None, instructions, history, attempt, model, AGENT):
-            yield chunk
-        if attempt.errored:
-            break
-        yield _data("check", {"state": "checking"}, id="check")
-        try:
-            failed = await anyio.to_thread.run_sync(check, asker.jev, question, your_team, attempt.text, results)
-        except JevError as error:
-            # A failed Jev call is an error, never a "no" and never a pass.
-            logger.warning("The Jev check of a personal Topic failed (%s)", type(error).__name__)
-            yield ErrorChunk(error_text=STREAM_ERROR)
-            break
-        if not failed:
-            outcome = "checked"
-            yield _data("check", {"state": "checked"}, id="check")
-            await anyio.to_thread.run_sync(store.put, key, topic, facts.block["team"], {"text": attempt.text.strip()},
-                                           asker.clock())
-            break
-        if number == 2:
-            outcome = "an honest miss"
-            yield _data("check", {"state": "failed"}, id="check")
-            yield _data("miss", {"closest": CLOSEST[topic]})
-            break
-        history = attempt.messages
-        prompt = rewrite_prompt(failed)
-    logger.info(_usage_line(topic, attempts, outcome))
-    # Each run costs the league, whatever its end. An honest miss and an error do not count toward the team cap.
-    usd = sum(sonnet_cost(a.result.usage) for a in attempts if a.result is not None)
-    counts = roster_id is not None and outcome == "checked"
-    await anyio.to_thread.run_sync(lambda: asker.caps.record(roster_id, usd, asker.clock(), counts=counts))
-
-
-async def _kept(answer: dict) -> AsyncIterator[BaseChunk]:
-    """The text of a kept Answer at once, with its check, and no Claude call."""
-    yield TextStartChunk(id="kept")
-    yield TextDeltaChunk(id="kept", delta=answer["text"])
-    yield TextEndChunk(id="kept")
-    yield _data("check", {"state": "checked"}, id="check")
+    writer = Writer(label=f"personal Topic {topic}", agent=AGENT, prompt=topic_prompt(topic, facts.slice, own),
+                    deps=None, instructions=instructions, model=model, rewrite=rewrite_prompt)
+    checker = Checker(question=check_question(topic, team), your_team=your_team,
+                      results={"team_facts": facts.slice}, closest=CLOSEST[topic])
+    outcome = Outcome()
+    async for chunk in checked_answer(asker, writer, checker, roster_id, outcome):
+        yield chunk
+    if outcome.end == "checked":
+        await anyio.to_thread.run_sync(store.put, key, topic, facts.block["team"], {"text": outcome.text},
+                                       asker.clock())
 
 
 async def _capped(topic: str, hit: CapHit) -> AsyncIterator[BaseChunk]:
     """The calm line of a cap in place of the text, with the 3 closest Topics, and no Claude call."""
-    yield _data("cap", {"cap": hit.cap, "line": hit.line, "closest": CLOSEST[topic]})
+    yield data("cap", {"cap": hit.cap, "line": hit.line, "closest": CLOSEST[topic]})
 
 
 async def answer_stream(facts: PersonalFacts, key: str, text: AsyncIterator[BaseChunk]) -> AsyncIterator[BaseChunk]:
     """The whole stream of one personal Topic: the data block from code first, the key of the Answer, then the text."""
     yield StartChunk()
-    yield _data("block", facts.block)
-    yield _data("key", {"key": key})
+    yield data("block", facts.block)
+    yield data("key", {"key": key})
     async for chunk in text:
         yield chunk
     yield FinishChunk(finish_reason="stop")
@@ -225,7 +166,8 @@ async def answer_stream(facts: PersonalFacts, key: str, text: AsyncIterator[Base
 
 
 @router.post("/personal")
-async def personal(body: PersonalRequest, asker: ClientAsker, served: Served, request: Request) -> StreamingResponse:
+async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClient,
+                   request: Request) -> StreamingResponse:
     """The stream of one personal Topic for the team of the body. The facts come from the live snapshot, so the
     Answer follows each waiver claim and trade."""
     live = await load_live(served, asker.season)
@@ -239,7 +181,7 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: Served, re
     kept = await anyio.to_thread.run_sync(store.get, key)
     if kept is not None:
         logger.info("The personal Topic %s came from the store, with no Claude call", body.topic)
-        text = _kept(kept)
+        text = kept_text(kept["text"])
     elif (hit := await anyio.to_thread.run_sync(asker.caps.check, body.roster_id, asker.clock())) is not None:
         # Past a cap, everything that costs nothing still works: the data block from code, and the cap line.
         logger.info("The personal Topic %s stopped at the %s cap, with no Claude call", body.topic, hit.cap)
@@ -247,4 +189,4 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: Served, re
     else:
         text = claude_answer(asker, store, body.topic, facts, key, own, snapshot.teams[body.roster_id].name,
                              request.app.state.personal_model, body.roster_id)
-    return _adapter("", agent=AGENT).streaming_response(answer_stream(facts, key, text))
+    return adapter(AGENT, "").streaming_response(answer_stream(facts, key, text))

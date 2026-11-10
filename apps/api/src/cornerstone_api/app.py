@@ -238,7 +238,8 @@ def create_app(
                         for client in clients}
     # The free answer runs the model of its agent, Claude Sonnet 5.5. A test sets a test model of Pydantic AI here.
     app.state.free_model = None
-    # The kept Answers of the personal Topics of each client sit next to its miss log, on the volume on Fly.
+    # The kept Answers of the personal Topics and the kept free answers of each client sit next to its miss log, on the
+    # volume on Fly.
     app.state.kept = {client.slug: AnswerStore(ask_dir(settings) / f"{client.slug}-answers.sqlite") for client in clients}
     # A personal Topic runs the model of its agent, Claude Sonnet 5.5. A test sets a test model of Pydantic AI here.
     app.state.personal_model = None
@@ -277,8 +278,8 @@ def create_app(
     for prefix in (CLIENT_PREFIX, ""):
         app.include_router(analyzer_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
         app.include_router(refresh_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
-    # The ask route is new, so only the clients paths serve it. It needs the passphrase, so only managers of the league
-    # spend the budget.
+    # No page from before the clients paths calls the ask route, so only the clients paths serve it. It needs the
+    # passphrase, so only managers of the league spend the budget.
     app.include_router(ask_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(free_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])

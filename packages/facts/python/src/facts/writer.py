@@ -9,7 +9,7 @@ from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from contextvars import ContextVar
 from pathlib import Path
-from typing import NamedTuple, TypeVar
+from typing import Literal, NamedTuple, TypeVar
 
 import anthropic
 from pydantic import BaseModel, ValidationError
@@ -57,22 +57,57 @@ ANY_NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
 # runs its calls back to back.
 ANALYZER_CACHE_TTL = "1h"
 
-# The analyzer answers a waiting browser, so it trades some depth for a faster call.
+SONNET = "claude-sonnet-5-5"
+# The effort levels of the Claude API.
+Effort = Literal["low", "medium", "high", "xhigh", "max"]
+
+
+class RouteModel(NamedTuple):
+    """The Claude model and the effort of one route of the front door."""
+
+    model: str
+    effort: Effort
+
+
+# The table in code that maps each route of the front door to its model and its effort (spec of front-door, "The
+# Answers and the stream"). Each call site reads its row, so one place names the model of each route. A league Topic
+# and a miss make no Claude call. A judgment Topic runs the Advisor, so its row is the model of the Advisor call behind
+# it: the read of one trade for the trade check, the Finder pick for trade ideas, and the sell high pick.
+ROUTE_MODELS: dict[str, RouteModel | None] = {
+    "league_topic": None,
+    "miss": None,
+    # A personal Topic reads a small slice and a manager waits on it.
+    "personal_topic": RouteModel(SONNET, "medium"),
+    # A free answer is short and reads at most 4 tool results, so low effort keeps it to about 10 to 20 s.
+    "free_answer": RouteModel(SONNET, "low"),
+    "trade_check": RouteModel(MODEL, "medium"),
+    "trade_ideas": RouteModel(SONNET, "medium"),
+    "sell_high": RouteModel(SONNET, "medium"),
+}
+
+
+def route_model(route: str) -> RouteModel:
+    """The row of a route that calls Claude. A route with no row, or with no Claude call, is a bug, so it raises."""
+    row = ROUTE_MODELS[route]
+    if row is None:
+        raise ValueError(f"The route {route} makes no Claude call.")
+    return row
+
+
+# The analyzer answers a waiting browser, so it trades some depth for a faster call. The route table holds its row.
 # The writer and the verifier keep the default, because the Tuesday build has no reader who waits.
-ANALYZER_EFFORT = "medium"
+ANALYZER_MODEL, ANALYZER_EFFORT = route_model("trade_check")
 # The Finder pick reads 10 offers in one call, about 28,000 input tokens, and a Finder press must end in 35 s and
 # cost $0.15 or less. On Opus one call cost about $0.13, so a retry of the pick went past the limit. Sonnet costs half
-# of Opus per token. The read of one trade stays on MODEL.
-FINDER_PICK_MODEL = "claude-sonnet-5-5"
-FINDER_PICK_EFFORT = "medium"
+# of Opus per token. The read of one trade stays on Opus. The route table holds the row of trade ideas.
+FINDER_PICK_MODEL, FINDER_PICK_EFFORT = route_model("trade_ideas")
 # A repair call fixes the text of one failed pick on its one sheet, so it reads a small message and writes one pick.
 # A retry of the whole pick call doubled the time and the cost of a press, so a failed pick gets this small call
 # instead. Low effort keeps it short. It runs on FINDER_PICK_MODEL.
 FINDER_REPAIR_EFFORT = "low"
 # The sell high pick reads one roster side by side, a small sheet, and a manager waits on it, so it runs on Sonnet 5.5
-# at medium effort, as the Finder pick does (spec of front-door).
-SELL_HIGH_MODEL = "claude-sonnet-5-5"
-SELL_HIGH_EFFORT = "medium"
+# at medium effort, as the Finder pick does (spec of front-door). The route table holds its row.
+SELL_HIGH_MODEL, SELL_HIGH_EFFORT = route_model("sell_high")
 
 log = logging.getLogger(__name__)
 
@@ -231,9 +266,10 @@ def claude_call(system: str, user: str, output_model: type[BaseModel], *, writer
 def analyzer_call(
     system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None
 ) -> BaseModel:
-    """The analyzer's Claude call. It is `claude_call` with the one-hour lifetime."""
+    """The analyzer's Claude call. It is `claude_call` with the one-hour lifetime, on the row of the trade check."""
     return parse_call(
-        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=ANALYZER_EFFORT, writer=writer
+        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=ANALYZER_EFFORT, writer=writer,
+        model=ANALYZER_MODEL,
     )
 
 
