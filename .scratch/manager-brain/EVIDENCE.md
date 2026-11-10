@@ -262,7 +262,7 @@ Observation: Pipeline half, at 6ba706cf: the searches of `packages/analyzer/pyth
 App: site
 Then: no code or copy holds a rubric, a start letter, a breakdown, an adjuster step, a verdict, a factor row, or a letter of a side. Each old adjuster writes facts as a Measure.
 Files: `evidence/AT-36/search-site.txt`
-Observation: The search of `packages/analyzer/site` and `apps/site/src` finds no rubric, start letter, breakdown, adjuster, or factor row. The four hits are test names and one comment that say "no letter grade". The word "verdict" appears only as the stable id `verdict-word` in `analyze-result.tsx`, in the egg tests, and in a tracker-rule test comment.
+Observation: At 5f7106bd, the search of `packages/analyzer/site` and `apps/site/src` finds no rubric, start letter, breakdown, adjuster, or factor row. The four hits of the first search are a test comment, two test names, and one file comment, each of which says that no letter grade shows. The word "verdict" appears once, in `apps/site/src/tracker-rule.test.ts`, where it names the result of a workflow rule, not the analyzer or the Finder. `git grep` finds no `verdict-word` in a tracked file of `packages` or `apps`, and the Lean element has the stable id `lean-word`.
 
 ## AT-37: ADR 0030 is accepted
 

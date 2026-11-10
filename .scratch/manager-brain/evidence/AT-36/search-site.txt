@@ -1,23 +1,21 @@
+# Taken at 5f7106bd, from the root of the Spec worktree.
+
 $ grep -rniE 'rubric|start letter|start_letter|breakdown|adjuster|factor row|factor_row|letter grade|letter_grade|side letter' packages/analyzer/site apps/site/src --exclude-dir=node_modules
 packages/analyzer/site/form/trade-finder.test.tsx:14:// A letter grade, such as B or C+, as a word of its own.
 packages/analyzer/site/form/trade-finder.test.tsx:147:  it("shows no letter grade on any card", async () => {
 packages/analyzer/site/form/analyze-result.tsx:3: * The trade finder reuses SwapCard and AsOfLine. No letter grade shows anywhere.
 packages/analyzer/site/form/analyze-result.test.tsx:160:  it("shows no letter grade anywhere in the result", () => {
-exit: 0
+(exit 0)
 
 $ grep -rniw 'verdict' packages/analyzer/site apps/site/src --exclude-dir=node_modules
-packages/analyzer/site/form/analyze-result.tsx:286:        <motion.span className={cn("inline-block", LEAN_COLOR[lean])} {...stableId("verdict-word")} {...rise(off, { duration: DURATION.decision })}>
-packages/analyzer/site/form/analyze-result.tsx:454:    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition. The attribute data-trade-answer and the stable id verdict-word keep their names, because the eggs read them.
 apps/site/src/tracker-rule.test.ts:42: * An untracked draft ticket in one checkout does not change the verdict.
-apps/site/src/reduced-motion.test.tsx:92:    expectAtRest(screen.getByRole("heading", { level: 2, name: "Lean yes" }).querySelector("[data-stable-id='verdict-word']") as HTMLElement);
-apps/site/src/app/_routes/eggs/targets.test.tsx:272:    expect(ids()).toEqual(expect.arrayContaining(["verdict-word", "swap-card"]));
-apps/site/src/app/_routes/eggs/targets.test.tsx:292:    tap(target("verdict-word"));
-apps/site/src/app/_routes/eggs/targets.test.tsx:293:    tap(target("verdict-word"), TAP_GAP_MS + 1);
-apps/site/src/app/_routes/eggs/targets.test.tsx:297:        target: "verdict-word",
-exit: 0
+(exit 0)
 
-$ grep -rniE 'grade' <analyzer result and Finder files>
-packages/analyzer/site/form/trade-finder.tsx:19:// The finder asks Jev in waves and makes one Claude call, so it waits as long as a cold grade.
-packages/analyzer/site/form/trade-finder.tsx:42:  // A grade runs, so the picker and the buttons stay off until the grade ends.
-packages/analyzer/site/form/analyze-result.tsx:3: * The trade finder reuses SwapCard and AsOfLine. No letter grade shows anywhere.
-exit: 0
+$ git grep -n 'verdict-word' -- packages apps
+# git grep reads tracked files only. apps/site/out/ is a build output that git ignores.
+(exit 1)
+
+$ grep -rn 'lean-word' packages/analyzer/site --exclude-dir=node_modules
+packages/analyzer/site/form/analyze-result.tsx:286:        <motion.span className={cn("inline-block", LEAN_COLOR[lean])} {...stableId("lean-word")} {...rise(off, { duration: DURATION.decision })}>
+packages/analyzer/site/form/analyze-result.tsx:454:    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition. The attribute data-trade-answer keeps its name, because the eggs read it. The stable id is lean-word.
+(exit 0)
