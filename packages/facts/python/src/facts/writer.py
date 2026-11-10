@@ -57,9 +57,11 @@ ANALYZER_CACHE_TTL = "1h"
 # The analyzer answers a waiting browser, so it trades some depth for a faster call.
 # The writer and the verifier keep the default, because the Tuesday build has no reader who waits.
 ANALYZER_EFFORT = "medium"
-# The Finder pick reads 10 offers in one call, and a Finder press must end in 35 s, so it thinks less than a read.
-# A live press at medium effort took about 22 s in the call alone and came near the cost limit of $0.15.
-FINDER_PICK_EFFORT = "low"
+# The Finder pick reads 10 offers in one call, about 28,000 input tokens, and a Finder press must end in 35 s and
+# cost $0.15 or less. On Opus one call cost about $0.13, so a retry of the pick went past the limit. Sonnet costs half
+# of Opus per token. The read of one trade stays on MODEL.
+FINDER_PICK_MODEL = "claude-sonnet-5-5"
+FINDER_PICK_EFFORT = "medium"
 
 log = logging.getLogger(__name__)
 
@@ -81,6 +83,7 @@ class ClaudeWriter:
     def parse(
         self, content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
         cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
+        model: str | None = None,
     ) -> BaseModel:
         """The Claude call of `Writer.parse`. The docstring of the protocol in claude_port.py gives the arguments."""
         # One client per writer: it holds the connection pool. The first call makes it, so an import needs no API key.
@@ -99,7 +102,7 @@ class ClaudeWriter:
         if tools is not None:
             extra["tools"] = tools
         response = self._client.messages.parse(
-            model=MODEL,
+            model=MODEL if model is None else model,
             max_tokens=16000,
             messages=[{"role": "user", "content": content}],
             output_format=output_model,
@@ -134,13 +137,14 @@ WRITER = ClaudeWriter()
 def parse_call(
     content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
     cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
-    *, writer: Writer | None = None,
+    *, writer: Writer | None = None, model: str | None = None,
 ) -> BaseModel:
     """`Writer.parse` on `writer`, or on WRITER when `writer` is None. Every Claude call in the tool goes through here.
 
     The CLI passes its writer, and a test passes a fake.
     """
-    return (WRITER if writer is None else writer).parse(content, output_model, system, cache_ttl, effort, tools)
+    return (WRITER if writer is None else writer).parse(content, output_model, system, cache_ttl, effort, tools,
+                                                        model)
 
 
 def claude_call(system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None) -> BaseModel:
@@ -159,9 +163,10 @@ def analyzer_call(
 def finder_pick_call(
     system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None
 ) -> BaseModel:
-    """The Claude call of the Finder pick. It is `analyzer_call` at a lower effort."""
+    """The Claude call of the Finder pick. It is `analyzer_call` on FINDER_PICK_MODEL at FINDER_PICK_EFFORT."""
     return parse_call(
-        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=FINDER_PICK_EFFORT, writer=writer
+        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=FINDER_PICK_EFFORT, writer=writer,
+        model=FINDER_PICK_MODEL,
     )
 
 

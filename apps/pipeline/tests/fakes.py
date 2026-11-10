@@ -173,6 +173,7 @@ class FakeWriter:
     def parse(
         self, content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
         cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
+        model: str | None = None,
     ) -> BaseModel:
         self.calls.append(WriterCall(content, output_model, system, cache_ttl, effort, tools))
         if not self.answers:

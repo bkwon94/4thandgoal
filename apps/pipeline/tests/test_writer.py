@@ -347,15 +347,21 @@ def test_the_analyzer_call_alone_runs_at_medium_effort():
     assert sent["output_config"] == {"effort": "high"}
 
 
-def test_the_finder_pick_call_runs_at_low_effort_with_the_one_hour_lifetime():
-    # The pick reads 10 offers in one call, and a Finder press must end in 35 s (AT-33), so it thinks less.
+def test_the_finder_pick_call_runs_on_sonnet_and_the_read_call_on_opus():
+    # The pick reads 10 offers in one call, so it must end in 35 s and cost $0.15 or less (AT-33). Sonnet costs half
+    # of Opus per token. The read of one trade keeps the Opus model and the medium effort of prototype 04.
+    from analyzer.advisor import AdvisorOut
     from analyzer.finder_pick import FinderPickOut
-    from facts.writer import finder_pick_call
+    from facts.writer import analyzer_call, finder_pick_call
 
     writer, sent = _stub_writer()
     finder_pick_call("finder system", "user text", FinderPickOut, writer=writer)
-    assert sent["output_config"] == {"effort": "low"}
+    assert sent["model"] == "claude-sonnet-5-5"
+    assert sent["output_config"] == {"effort": "medium"}
     assert sent["system"][0]["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
+    analyzer_call("analyzer system", "user text", AdvisorOut, writer=writer)
+    assert sent["model"] == "claude-opus-5-5"
+    assert sent["output_config"] == {"effort": "medium"}
 
 
 # The API calls `read_trade` and `pick_trades` with no `call` argument, so these defaults are the API's calls.
