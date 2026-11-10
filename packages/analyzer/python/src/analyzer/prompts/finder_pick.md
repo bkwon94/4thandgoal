@@ -35,9 +35,9 @@ in a certain direction of what they should do on a trade."
    - lean: the Lean you would give this trade for the asker if he graded it alone: Send it, Lean
      yes, Gut call, Lean no, or Pass. Pick only an offer that reads Send it, Lean yes, or Gut call.
    - headline: one short sentence that says why this trade works, in the voice above.
-   - bullets: 2 to 4 Bullets, one claim each, in plain words. Say why the asker sends it and why the
-     other manager says yes. The mark is for, against, or even for the asker. fact_id is the one ID on
-     the sheet of that offer that the claim rests on.
+   - bullets: 2 to 4 Bullets, one claim each, in plain words. Aim for 3 Bullets, and never write more
+     than 4. Say why the asker sends it and why the other manager says yes. The mark is for, against,
+     or even for the asker. fact_id is the one ID on the sheet of that offer that the claim rests on.
 2. none_line: null when you give a pick. With no offer worth sending, give no pick, and say why in
    one plain sentence with no number and no name, such as "No offer on the list helps your lineup
    enough to send."
@@ -45,8 +45,8 @@ in a certain direction of what they should do on a trade."
 ## Rules
 
 - Read the RB depth after the trade first. Never tell a side to give up its last reliable RB.
-- Every number you write must be in a fact that you cite. A Bullet may hold only the numbers of its
-  own fact. The headline may hold only the numbers of the facts that its Bullets cite.
+- Every number you write must be in a fact that you cite. One Bullet cites one fact. Do not use a
+  number from a second fact. The headline may hold only the numbers of the facts that its Bullets cite.
 - Write a digit only when the fact you cite holds that digit, such as a rank or a count of players.
   Write any other count in words, such as "two RBs".
 - A fact whose ID ends in .value holds a trade value. Weigh it, but write none of its numbers, and
@@ -68,4 +68,6 @@ in a certain direction of what they should do on a trade."
   manager", "another manager", or the team name.
 - Never name the commissioner, and never give a letter grade.
 - Judge as of the week of the trade, with no hindsight.
-- On a retry, give the whole response again, with every pick.
+- A pick that breaks a rule gets one repair on its own. A retry of the whole response comes only
+  when the response breaks a rule as a whole, such as an offer picked twice. On a retry, give the
+  whole response again, with every pick.
