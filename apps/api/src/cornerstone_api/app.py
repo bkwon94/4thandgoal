@@ -12,6 +12,7 @@ On start, the real app refreshes the slow sources in a background thread, so the
 import functools
 import hmac
 import logging
+import sys
 import threading
 from collections.abc import Mapping, Sequence
 from datetime import datetime
@@ -57,6 +58,9 @@ COMMISSIONER_HEADER = "X-Commissioner-Key"
 EGGS_PREFIX = f"{CLIENT_PREFIX}/eggs"
 # The file of the daily grade counts of a client, in the result cache dir of the client.
 GRADE_COUNTS_FILE = "grade-counts.json"
+# The name of the stderr handler on the root logger, so a second setup finds it and adds no second copy.
+LOG_HANDLER_NAME = "cornerstone-api-stderr"
+LOG_FORMAT = "%(levelname)s:     %(name)s: %(message)s"
 
 
 class _Unauthorized(Exception):
@@ -271,11 +275,29 @@ def load_clients(repo: Path, fetch: SettingsFetch = fetch_settings) -> list[Clie
     return [load_client(repo, folder.name, None, fetch, VALUE_MODELS) for folder in folders]
 
 
+def configure_logging() -> None:
+    """Send each INFO line of the app to stderr, through one handler on the root logger.
+
+    uvicorn sets only its own loggers, so with no root handler each INFO line of the analyzer, such as the press line
+    and the Jev checks of the read, never reaches the Fly log. The uvicorn loggers keep their own handlers and do not
+    propagate, so the access log stays as it is and no line prints two times.
+    """
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+    if any(handler.get_name() == LOG_HANDLER_NAME for handler in root.handlers):
+        return
+    handler = logging.StreamHandler(sys.stderr)
+    handler.set_name(LOG_HANDLER_NAME)
+    handler.setFormatter(logging.Formatter(LOG_FORMAT))
+    root.addHandler(handler)
+
+
 def app_from_env() -> FastAPI:
     """The app with the settings from the environment and each client. The uvicorn factory flag calls it.
 
     A missing or bad client.toml stops the start, so a bad value never reaches a reader.
     """
+    configure_logging()
     clients = load_clients(repo_from_env())
     # The passphrases and the commissioner keys stay in the settings, because each one is a secret, so client.toml
     # never holds one.
