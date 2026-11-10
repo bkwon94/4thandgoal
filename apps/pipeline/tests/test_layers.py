@@ -196,6 +196,8 @@ LAYER_OF: dict[str, str] = {
     "waiver.buckets": "facts",
     "waiver.drops": "facts",
     "waiver.price": "facts",
+    # The Evidence flag questions read only the Jev port, as the Jev questions of a trade do.
+    "evidence_questions": "facts",
     "waiver.projection": "facts",
     # write
     "facts.writer": "write",
@@ -222,6 +224,7 @@ LAYER_OF: dict[str, str] = {
     "advisor_eval": "output",
     "egg_drop": "output",
     "egg_draft": "output",
+    "evidence_flags": "output",
     "pipeline": "output",
     "cli": "output",
 }

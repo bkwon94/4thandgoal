@@ -1,7 +1,7 @@
 """
 Command line entry point for Cornerstone Weekly.
 It defines the build, publish, rewrite, page-json, rankings, midseason, midseason-publish, history, chart,
-advisor-eval, egg-draft, and egg-drop subcommands.
+advisor-eval, egg-draft, egg-drop, check-client, and evidence-flags subcommands.
 """
 import argparse
 import logging
@@ -16,6 +16,7 @@ import httpx
 from cornerstone.advisor_eval import Meter, fetch_press_sources, load_test_set, run_eval, summary_lines
 from cornerstone.egg_draft import run_egg_draft
 from cornerstone.egg_drop import drop_after_publish, drop_from_env
+from cornerstone.evidence_flags import run_evidence_flags
 from cornerstone.pipeline import (
     BuildStopped,
     has_raw,
@@ -131,6 +132,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     check = sub.add_parser("check-client", help="check the client.toml of a client folder and the exported schema")
     check.add_argument("folder", type=Path, help="the client folder, such as ../../clients/cpc")
+
+    flags = sub.add_parser("evidence-flags",
+                           help="ask Jev about the evidence of each acceptance test and add each flag to FLAGS.md")
+    flags.add_argument("slug", help="the feature folder under .scratch/")
+    flags.add_argument("tests", nargs="*", metavar="AT-<n>", help="the tests to read; the default is every test in EVIDENCE.md")
+    flags.add_argument("--root", type=Path, help="the folder that holds .scratch/; the default is the current worktree")
 
     return parser
 
@@ -291,6 +298,14 @@ def run_settings(client: Client, season: int) -> int:
     return 0
 
 
+def find_scratch_root(start: Path) -> Path | None:
+    """The nearest folder at or above `start` that holds .scratch/, or None."""
+    for folder in (start, *start.parents):
+        if (folder / ".scratch").is_dir():
+            return folder
+    return None
+
+
 def main(
         argv: list[str] | None = None, *, writer: Writer | None = None, provider: Provider | None = None,
         fetch_state: Callable[[], RawState] = fetch_state, jev: Jev | None = None,
@@ -306,6 +321,13 @@ def main(
     args = build_parser().parse_args(argv)
     if args.command == "check-client":
         return run_check_client(args.folder)
+    if args.command == "evidence-flags":
+        # The command reads the tracker of a worktree, not a league, so it needs no client and no pipeline folder.
+        root = args.root or find_scratch_root(Path.cwd())
+        if root is None:
+            print(f"No .scratch folder in {Path.cwd()} or above it. Run the command inside a worktree, or pass --root.")
+            return 2
+        return run_evidence_flags(root, args.slug, args.tests, JEV if jev is None else jev)
     repo = Path.cwd()
     if not (repo / "pyproject.toml").exists():
         print("Run cornerstone from the pipeline folder. No pyproject.toml in the current directory.")
