@@ -66,7 +66,7 @@ export const weekLineSchema = z.object({
 });
 
 /* The read of one side: 3 to 5 Bullets, then the Week lines of the trade week and the next week. */
-export const decidedSideSchema = z.object({
+export const readSideSchema = z.object({
   roster_id: z.number(),
   bullets: z.array(bulletSchema),
   week_lines: z.array(weekLineSchema),
@@ -125,7 +125,7 @@ export const analyzeResponseSchema = z.object({
   case: z.string(),
   // Optional, because the ticket asks the page to render a document with no block, as a guard. The page then shows no fairness line.
   fairness: fairnessSchema.optional(),
-  sides: z.array(decidedSideSchema),
+  sides: z.array(readSideSchema),
   as_of: asOfSchema,
   missing: z.array(z.string()),
   stale: z.array(z.string()),

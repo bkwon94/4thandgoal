@@ -6,7 +6,7 @@
 
 import { motion } from "framer-motion";
 import { useId, useState, type ReactNode } from "react";
-import type { AnalyzeResponse, AsOf, DecidedSide, Fairness, Lean, TradeSide, TradedPlayer } from "../lib/analyze-types";
+import type { AnalyzeResponse, AsOf, ReadSide, Fairness, Lean, TradeSide, TradedPlayer } from "../lib/analyze-types";
 import { knownGamesSegments } from "../lib/known-games-segments";
 import { BulletRows } from "./bullet-rows";
 import { SideTabs } from "./side-tabs";
@@ -25,7 +25,7 @@ import { stableId, textId, TRADE_ANSWER, TRADE_KEY } from "@cpc/design/lib/stabl
 export type SwapSide = TradeSide & { mine: boolean };
 
 /* A trade side joined to its read, so each side reads from one object. */
-type Side = SwapSide & DecidedSide;
+type Side = SwapSide & ReadSide;
 
 /* Join the trade sides to the read sides by roster id. The asker's side goes first, so the Lean and "Your Side" name the same team. */
 function joinSides(doc: AnalyzeResponse): Side[] {
@@ -454,7 +454,7 @@ export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
   /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has four chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
-    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition.
+    // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition. The attribute data-trade-answer and the stable id verdict-word keep their names, because the eggs read them.
     <div className="tablet:flex tablet:flex-col tablet:gap-card-gap" {...{ [TRADE_KEY]: tradeKey(doc), [TRADE_ANSWER]: LEAN_ANSWER[doc.lean] }}>
       <ReadHero lean={doc.lean} readCase={doc.case} team={askerTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
 
