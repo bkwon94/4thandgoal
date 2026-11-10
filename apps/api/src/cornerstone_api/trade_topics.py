@@ -242,7 +242,6 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
     return stream(work)
 
 
-
 class SellHighRequest(BaseModel):
     """The body of sell high: the roster id of Your team."""
 
