@@ -90,6 +90,20 @@
     /* The space the dock takes at the bottom of a phone: the item, the 4px inset of the dock, its 1px edges, and its
        12px offset from the bottom edge. The body keeps it free, so the dock never covers the end of the page. */
     --spacing-dock-space: calc(var(--spacing-dock) + 2 * var(--spacing-sp-1) + 2px + var(--spacing-sp-3));
+    /* The height of the top band: one 44px row, 8px above and below, and its 1px rule. The name is not "band", because
+       max-w-band reads the container token of that name. */
+    --spacing-band-height: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2) + 1px);
+    /* The front door: the empty Thread fills the view between the top band and the dock, so the ask box sits at its
+       center. The dock space and the home bar of an iPhone leave the view with the dock; the desktop tier has no dock. */
+    --spacing-door-fill: calc(100dvh - var(--spacing-band-height) - var(--spacing-dock-space) - env(safe-area-inset-bottom));
+    --spacing-door-fill-desktop: calc(100dvh - var(--spacing-band-height));
+    /* The empty Thread pads its foot three times its head, so the ask box sits at the optical center, a little high. */
+    --spacing-door-lift: calc(var(--spacing-sp-6) * 3);
+    /* The ask box: a 44px send button in a 4px inset, so the whole box is a full tap target. */
+    --spacing-send: var(--spacing-touch);
+    --spacing-ask: calc(var(--spacing-send) + 2 * var(--spacing-sp-1) + 2px);
+    /* A row of the sheet of Your team: taller than a touch target, so twelve rows read as a calm list. */
+    --spacing-row-touch: 52px;
     /* The egg banner of the home page: one strip, edge to edge under the top band (ticket 07 of easter-eggs). */
     --spacing-banner: 52px;
     /* The letter tiles of the egg board. A long egg word, such as CORNERSTONE, takes the small tile, so its row fits a
@@ -162,6 +176,9 @@
     /* The viewport where a wide table has room for every column. Under it, a wide table folds part of each row under the row.
        480px is the narrowest width that fits every column of the unfolded tables. */
     --breakpoint-page: 480px;
+    /* The front door: the column of the empty Thread, and the sheet of Your team from the tablet tier up. */
+    --container-door: 560px;
+    --container-sheet: 440px;
     /* The measure: the widest line of prose. About 68 characters keeps the eye on the next line at every tier.
        It is in ch, so the cap grows with the body size of the tier. Tables, grids, and score rows take no cap. */
     --container-measure: 68ch;
@@ -200,6 +217,12 @@
     --tracking-snug: -0.01em;
     --tracking-tight: -0.02em;
     --tracking-grade: -0.03em;
+
+    /* The scrim under the sheet of Your team, and the lift of the sheet and of the ask box. The same in both themes,
+       because a shadow of black reads on a dark page only as depth. */
+    --color-scrim: rgb(0 0 0 / 0.45);
+    --shadow-sheet: 0 -8px 40px -12px rgb(0 0 0 / 0.35);
+    --shadow-ask: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.18);
 
     /* The red halo of a headshot in the waiver drift field. It sets each face apart from the black card, as the hero glow does. */
     --shadow-orb: 0 0 24px var(--color-accent-glow);
@@ -383,7 +406,11 @@
     scroll-padding-top: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2));
     }
   /* The dock is fixed over the bottom of a phone and a tablet, so the body keeps its space free under the page. */
+  /* The viewport covers the whole screen (viewport-fit=cover), so a phone on its side puts its notch over the page.
+     The body keeps the side safe areas free, and each is 0 on a screen with no notch. */
   body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
     padding-bottom: calc(var(--spacing-dock-space) + env(safe-area-inset-bottom));
     @variant desktop {
       padding-bottom: 0;

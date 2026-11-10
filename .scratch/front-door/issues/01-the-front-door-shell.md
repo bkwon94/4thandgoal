@@ -10,9 +10,9 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-1, AT-2, AT-47, AT-48, A
 
 **Status:** ready-for-agent
 
-- [ ] The sheet lists the 12 teams of CPC, with no skip, no close, and no login (AT-1).
-- [ ] A reload keeps Your team, and no sheet shows (AT-2).
-- [ ] The menu and the dock of CPC and NorCal show only the 4 links (AT-48). NorCal gets a `[menu]` table.
-- [ ] The week 8 report, the rankings, the managers, the midseason, and the Trade page render as before (AT-49).
+- [x] The sheet lists the 12 teams of CPC, with no skip, no close, and no login (AT-1).
+- [x] A reload keeps Your team, and no sheet shows (AT-2).
+- [x] The menu and the dock of CPC and NorCal show only the 4 links (AT-48). NorCal gets a `[menu]` table.
+- [x] The week 8 report, the rankings, the managers, the midseason, and the Trade page render as before (AT-49).
 - [ ] The ask box sits fully above the bottom safe area in an iPhone viewport (AT-47).
-- [ ] Each screen meets the DESIGN BAR of the map, in light and dark.
+- [x] Each screen meets the DESIGN BAR of the map, in light and dark.

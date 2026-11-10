@@ -1,5 +1,5 @@
 /**
- * Tests for the analyzer, the week page, the home page, the power rankings, the waiver page, and the manager page with the reduced-motion media query on. The content must show at rest at once.
+ * Tests for the analyzer, the week page, the front door at /, the power rankings, the waiver page, and the manager page with the reduced-motion media query on. The content must show at rest at once.
  * matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top of the file.
  * jsdom ignores opacity, so this test proves the text is present. The browser capture 12-week-off-390.png proves no motion.
  */
@@ -312,10 +312,16 @@ describe("Reduced motion on the static pages", () => {
     expect(main.getByText("Next week")).toBeTruthy();
   });
 
-  it("shows every home page row at once", () => {
+  it("fades the sheet of Your team in on the front door, with no move and no blur (AT-46 of front-door)", async () => {
     render(<HomePage />);
-    expect(screen.getByRole("link", { name: /Week 6/ })).toBeTruthy();
-    expect(screen.getByText("Oct 15 – Oct 19, 2026")).toBeTruthy();
+    const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
+    const row = within(sheet).getAllByRole("button")[0];
+    for (let box: HTMLElement | null = row; box; box = box.parentElement) {
+      expect(box.style.transform).not.toMatch(/translate/);
+      expect(box.style.filter).not.toMatch(/blur/);
+    }
+    // Reduced motion keeps the fade, so the row ends at full opacity.
+    await waitFor(() => expect(row.parentElement!.style.opacity).toBe("1"));
   });
 });
 

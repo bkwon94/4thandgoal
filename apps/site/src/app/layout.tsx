@@ -12,11 +12,9 @@ import { paintOf } from "@cpc/design/lib/theme";
 import { UsageScript } from "@cpc/design/shell/usage-script";
 import { fontVariables } from "./fonts/fonts";
 import { takesEggs } from "./shell-props";
+import { SITE_VIEWPORT } from "./viewport";
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-};
+export const viewport: Viewport = SITE_VIEWPORT;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   // Every brand ships dark on <html>, and the boot script removes the class for a stored light choice (ADR 0024).
