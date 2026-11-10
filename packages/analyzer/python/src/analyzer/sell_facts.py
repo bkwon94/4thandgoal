@@ -114,13 +114,15 @@ def _game_text(snapshot: Snapshot, pid: str, week: int, n: Nums) -> str:
                                                                       player.position)
     if rank is None:
         return f"week {n(week)} {where}"
-    # The rank goes through Nums, so a Bullet may say "3rd most points to WRs".
-    return f"week {n(week)} {where}, {n.text(most_points_text(rank, player.position))}"
+    # The rank goes through Nums, so a Bullet may say "3rd most points to WRs" or "4th fewest points to RBs".
+    teams = len(snapshot.points_allowed)
+    return f"week {n(week)} {where}, {n.text(most_points_text(rank, player.position, teams))}"
 
 
 def _schedule_fact(snapshot: Snapshot, pid: str) -> Fact:
     """The NFL games of the player's team in the trade week and the weeks after it, through the regular season, each
-    with the rank of the opponent in points allowed at his position. Rank 1 gives up the most."""
+    with the rank of the opponent in points allowed at his position. Rank 1 gives up the most, and a rank in the bottom
+    half reads from the fewest."""
     n = Nums()
     player = snapshot.players[pid]
     last = min(snapshot.week + AHEAD_WEEKS - 1, snapshot.client.settings.last_regular_week)

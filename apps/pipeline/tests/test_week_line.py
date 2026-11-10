@@ -15,7 +15,6 @@ from analyzer.cache import cache_key
 from analyzer.trade import ProposedTrade, TradeSide
 from analyzer.trade_facts import trade_fact_sheet
 from analyzer.week_line import week_lines
-from league.numbers import ordinal as _ordinal
 from league.paths import returns_path
 from league.provider.sleeper import load_raw
 from league.slow_sources import load_slow_sources
@@ -88,9 +87,11 @@ def test_trade_a_names_the_home_game_of_the_player_the_other_side_gets(thursday)
     texts = _texts(TRADE_A, thursday, 6)
     assert texts[0].startswith("Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, ")
     assert texts[1].startswith("Week 10: WRs in the top 36 who play stay at 3. Cooper plays BUF at home, ")
+    # KC is 31st of 32 in points allowed to WRs, so it reads from the other end. BUF is 3rd.
     allowed = thursday.points_allowed
-    assert texts[0].endswith(f"{_ordinal(allowed['KC']['WR'].rank)} most points to WRs.")
-    assert texts[1].endswith(f"{_ordinal(allowed['BUF']['WR'].rank)} most points to WRs.")
+    assert (allowed["KC"]["WR"].rank, allowed["BUF"]["WR"].rank, len(allowed)) == (31, 3, 32)
+    assert texts[0].endswith("at KC, 2nd fewest points to WRs.")
+    assert texts[1].endswith("BUF at home, 3rd most points to WRs.")
 
 
 def test_a_grade_on_a_tuesday_says_listed_out_last_week():
@@ -169,7 +170,8 @@ def test_the_prose_checks_accept_the_numbers_and_the_names_of_the_week_line(thur
     bullets = {10: ["Washington plays at BAL in week 9, 9th most points to WRs.",
                     "The WRs in the top 36 who play stay at 2 in weeks 9 and 10.",
                     "Washington plays at TEN in week 10, the most points to WRs."],
-               6: ["Cooper plays BUF at home in week 10.", "The WRs in the top 36 who play stay at 3."]}
+               6: ["Cooper plays BUF at home in week 10.", "The WRs in the top 36 who play stay at 3.",
+                   "Cooper plays at KC in week 9, 2nd fewest points to WRs."]}
     failures = [failure for roster_id, texts in bullets.items() for text in texts
                 for failure in guard.text_failures("bullet", text, [f"{roster_id}.week_line"])]
     assert failures == []

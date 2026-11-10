@@ -146,6 +146,24 @@ def test_the_trend_and_the_schedule_read_the_last_4_weeks_and_the_weeks_ahead(ap
     assert schedule.startswith("The schedule ahead of ") and "week 6 " in schedule
 
 
+def _bottom_half_sells(user: str) -> dict:
+    """Picks with a Bullet that cites a rank of the bottom half from a schedule fact, such as "4th fewest"."""
+    pid, rank = re.search(r"^- (\d+)\.schedule: .*?(\d+(?:st|nd|rd|th) fewest points to \w+)", user, re.MULTILINE).groups()
+    bullets = [{"text": f"One opponent ahead gives up the {rank}.", "mark": "against", "fact_id": f"{pid}.schedule"},
+               {"text": "Another manager pays for that kind of run.", "mark": "for", "fact_id": f"{pid}.trend"}]
+    return {"picks": [{"player_id": pid, "headline": HEADLINE, "bullets": bullets}], "none_line": None}
+
+
+def test_a_bullet_that_cites_a_rank_of_the_bottom_half_passes_the_number_check(settings, sources, jev):
+    # A rank in the bottom half reads from the other end, such as "4th fewest points to RBs". The schedule fact
+    # records the number of that text, so the Bullet that cites it passes with no retry.
+    seller = StubSeller(_bottom_half_sells)
+    [answer] = _of(_parts(_sell(_app(settings, sources, jev, seller))), "data-answer")
+    assert len(seller.calls) == 1
+    [pick] = answer["document"]["picks"]
+    assert " fewest points to " in pick["bullets"][0]["text"]
+
+
 def _other_player(user: str) -> dict:
     """Picks of a player who is not on the sheet, so the guard fails the response."""
     return passing_sells(user) | {"picks": [{**passing_sells(user)["picks"][0], "player_id": "0000"}]}

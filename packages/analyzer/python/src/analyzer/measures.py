@@ -39,8 +39,8 @@ from league.models import Fact, UsageShare
 from league.nfl_teams import team_name
 from league.nflverse import SKILL_POSITIONS, TeamSchedule
 from league.nflverse_expected import WINDOW_MIN_GAMES, window_gap
-from league.numbers import one_decimal_text, ordinal, round_half_up
-from league.points_allowed import most_points_text, opponent_rank
+from league.numbers import one_decimal_text, round_half_up
+from league.points_allowed import most_points_text, opponent_rank, rank_word
 from league.ranks import (
     OUT_STATUSES,
     RANKED_POSITIONS,
@@ -1042,7 +1042,8 @@ def _schedule_sentence(snapshot: Snapshot, player_id: str, name: str) -> str | N
     """The bye of the player after the Week line weeks, and each playoff opponent with its rank at his position.
 
     The Week line covers the trade week and the next week, so a bye in those weeks is its fact, not this row's.
-    The first opponent gives the rank in full, such as "TEN (3rd most points to WRs)", and the rest give the ordinal.
+    The first opponent gives the rank in full, such as "TEN (3rd most points to WRs)", and the rest give the rank
+    word, such as "HOU (5th fewest)". Each one keeps "most" or "fewest", because a bare ordinal reads one way only.
     None for a player with no schedule, or with no bye left and no playoff game.
     """
     schedule = _scheduled(snapshot, player_id)
@@ -1055,14 +1056,15 @@ def _schedule_sentence(snapshot: Snapshot, player_id: str, name: str) -> str | N
     weeks = sorted(schedule.playoff_opponents)
     if weeks:
         opponents = []
+        allowed = snapshot.points_allowed or {}
         for opponent in (schedule.playoff_opponents[week] for week in weeks):
-            rank = opponent_rank(snapshot.points_allowed or {}, opponent, position)
+            rank = opponent_rank(allowed, opponent, position)
             if rank is None:
                 opponents.append(opponent)
             elif not any("(" in text for text in opponents):
-                opponents.append(f"{opponent} ({most_points_text(rank, position)})")
+                opponents.append(f"{opponent} ({most_points_text(rank, position, len(allowed))})")
             else:
-                opponents.append(f"{opponent} ({ordinal(rank)})")
+                opponents.append(f"{opponent} ({rank_word(rank, len(allowed))})")
         parts.append(f"faces {_series(opponents)} in {_span_text(weeks)}")
     if not parts:
         return None

@@ -1859,12 +1859,14 @@ def test_schedule_without_its_sources_says_so(snap):
 # James Cook plays for BUF, with the bye in week 7 still left. His opponents are CHI, DEN, and MIA,
 # ranked 25, 7, and 6, a mean of 12.67. That is 7.67 softer, past the gap of 4.
 def test_schedule_names_the_playoff_opponents_of_the_players_each_side_gets(slow_snap):
+    # Of 32 defenses, rank 25 reads 8th fewest and rank 28 reads 5th fewest, so no high ordinal reads as soft.
+    assert len(slow_snap.points_allowed) == 32
     tenth, fifth = _reads(_trade(10, [SAQUON], 5, [COOK]), slow_snap)
     # The read names the opponents of the player each side gets.
     assert tenth[SCHEDULE].reason == (
-        "Cook faces CHI (25th most points to RBs), DEN (7th), and MIA (6th) in weeks 15 to 17.")
+        "Cook faces CHI (8th fewest points to RBs), DEN (7th most), and MIA (6th most) in weeks 15 to 17.")
     assert fifth[SCHEDULE].reason == (
-        "Barkley has his bye in week 10 and faces SEA (18th most points to RBs), HOU (28th), and SF (15th) "
+        "Barkley has his bye in week 10 and faces SEA (15th fewest points to RBs), HOU (5th fewest), and SF (15th most) "
         "in weeks 15 to 17.")
 
 
@@ -1873,7 +1875,7 @@ def test_schedule_names_a_bye_only_while_it_is_still_to_come(slow_snap):
     tenth, _ = _reads(_trade(10, [SAQUON], 5, [COOK]), _with_bye(slow_snap, "PHI", 5))
     # The BUF bye in week 7 is the week after the trade week, so the Week line names it and this read does not.
     assert tenth[SCHEDULE].reason == (
-        "Cook faces CHI (25th most points to RBs), DEN (7th), and MIA (6th) in weeks 15 to 17.")
+        "Cook faces CHI (8th fewest points to RBs), DEN (7th most), and MIA (6th most) in weeks 15 to 17.")
     # Moved to week 5, the PHI bye is behind the trade week, so the read of the side that gets Barkley names no bye.
     _, fifth = _reads(_trade(10, [SAQUON], 5, [COOK]), _with_bye(slow_snap, "PHI", 5))
     assert "bye" not in fifth[SCHEDULE].reason
@@ -1885,7 +1887,7 @@ def test_schedule_names_the_playoff_opponents_of_the_team_a_player_plays_for(slo
     schedules["BUF"] = schedules["PHI"].model_copy(update={"bye_week": 5})
     tenth, _ = _reads(_trade(10, [SAQUON], 5, [COOK]), slow_snap.model_copy(update={"schedules": schedules}))
     assert tenth[SCHEDULE].reason == (
-        "Cook faces SEA (18th most points to RBs), HOU (28th), and SF (15th) in weeks 15 to 17.")
+        "Cook faces SEA (15th fewest points to RBs), HOU (5th fewest), and SF (15th most) in weeks 15 to 17.")
 
 
 def test_the_same_trade_on_the_same_snapshot_gives_the_same_reads_every_time(slow_snap):
