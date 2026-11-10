@@ -9,8 +9,7 @@ from cpc import cpc_client
 from fakes import FakeJev
 
 from analyzer.adjusters import is_handcuff, trade_handcuffs
-from analyzer.finder import _out_with_no_return
-from analyzer.finder_search import SHORTLIST_KEEP, TARGET_MAX, offer_id, search
+from analyzer.finder_search import SHORTLIST_KEEP, TARGET_MAX, _out_with_no_return, offer_id, search
 from analyzer.jev_waves import REQUESTS_PER_SECOND, JevWaves, WaveRequest, plan_waves
 from league.jev_port import JevError, NoulQuestion
 from league.slow_sources import load_slow_sources

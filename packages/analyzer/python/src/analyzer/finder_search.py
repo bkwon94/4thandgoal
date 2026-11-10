@@ -8,13 +8,13 @@ from itertools import combinations
 from pydantic import BaseModel
 
 from analyzer.adjusters import is_handcuff, trade_handcuffs
-from analyzer.finder import _out_with_no_return
 from analyzer.jev_waves import JevWaves, WaveRequest
 from analyzer.rubric import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_facts import shown_ranks
 from analyzer.trade_jev import YES_AT, trade_jev_questions, weak_starting_slots
 from league.jev_port import Jev, NoulQuestion
 from league.lineup import _above_the_line, lineup_slots
+from league.ranks import OUT_STATUSES
 from league.snapshot import Snapshot
 
 log = logging.getLogger(__name__)
@@ -99,6 +99,12 @@ class Shortlist(BaseModel):
     offers: list[ProposedTrade]
     shortlist: list[ShortlistOffer]
 
+
+
+def _out_with_no_return(snapshot: Snapshot, player_id: str) -> bool:
+    """True when the player is out now and the returns file has no week for him."""
+    # The injury Measure uses the same statuses, so a player the Finder skips is one the sheet reads as out.
+    return snapshot.players[player_id].injury_status in OUT_STATUSES and player_id not in snapshot.returns
 
 def _player_line(snapshot: Snapshot, pid: str, starters: set[str]) -> dict:
     player = snapshot.players[pid]

@@ -183,7 +183,6 @@ LAYER_OF: dict[str, str] = {
     "analyzer.team_facts": "facts",
     "analyzer.measures": "facts",
     "analyzer.week_line": "facts",
-    "analyzer.finder": "facts",
     "analyzer.trade_jev": "facts",
     "analyzer.trade_splits": "facts",
     "analyzer.chart_facts": "facts",
@@ -206,7 +205,6 @@ LAYER_OF: dict[str, str] = {
     "facts.jev_check": "write",
     "week.median": "write",
     "analyzer.analysis": "write",
-    "analyzer.finder_reasons": "write",
     # The Finder pick makes the Claude call of the Advisor, as the read of one trade does.
     "analyzer.finder_pick": "write",
     "analyzer.routes": "write",
