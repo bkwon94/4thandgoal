@@ -35,6 +35,7 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - The day of the week sets the order of the Suggestions, and Jev lifts an urgent Topic. Each one shows its name and one fact from code. Three show, plus a "More" row. An opened Topic drops off until its fact changes. `decisions/02-grill-how-suggestions-rank.md`.
 - The front door takes the structure and the motion of variant C in the brand of variant A. The look of C becomes the dark theme, with a light theme beside it. `decisions/07-prototype-the-design-language.md`.
 - A free answer gets tools over this season and the nflverse game logs. Pydantic AI runs them on the API and streams through `VercelAIAdapter` to `useChat`. Jev checks each claim against the tool results, with at most 4 tool calls. `decisions/12-grill-free-answer-width.md`.
+- The API keeps each Answer under a key of the facts it read. The top Suggestion builds on open. The data block shows first, the text streams with visible tool steps, and Jev checks at the end, with one retry. `decisions/11-grill-live-answer-speed.md`.
 - `/` becomes the front door. The hero and the tool tiles go away. The menu stays with fewer links. Brian, 2026-11-09.
 
 ## NOT YET SPECIFIED
@@ -44,7 +45,6 @@ Each UI decision and each UI ticket meets this bar: smooth, beautiful, cohesive,
 - Where is the border with `manager-brain`? `decisions/06-grill-the-manager-brain-border.md`.
 - How does the front door look and move on a phone? `decisions/08-prototype-the-front-door.md`.
 - Does the Jev route pick the right Topic for real questions? `decisions/09-prototype-the-jev-route.md`.
-- How does a live personal Answer stay fast and cheap? `decisions/11-grill-live-answer-speed.md`.
 - Which links stay in the menu, and what does each Answer link to? `decisions/10-spec-the-menu-and-pages.md`.
 
 ## OUT OF SCOPE
