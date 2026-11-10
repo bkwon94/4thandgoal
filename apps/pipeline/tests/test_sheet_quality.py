@@ -7,7 +7,7 @@ import shutil
 import pytest
 from cpc import cpc_client, four_week
 
-from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade import ProposedTrade, TradeSide
 from analyzer.trade_facts import trade_fact_sheet
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot

@@ -19,18 +19,16 @@ from zoneinfo import ZoneInfo
 import anthropic
 import httpx
 import pytest
-from conftest import strip_trend_numbers
 from cpc import FIXTURE_LEAGUE, cli_root, cpc_client
 from fakes import NEWS_RECORDED, FakeJev, recorded_news
 from fastapi.testclient import TestClient
 
-from analyzer.adjusters import INJURY, ROSTER_FIT, SCHEDULE, TREND
 from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import ResultCache, cache_key, finder_cache_key
 from analyzer.finder_pick import NO_OFFER, SAME_FACT, FinderPickOut, pick_trades
 from analyzer.finder_search import search
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
-from analyzer.rubric import ProposedTrade
+from analyzer.trade import ProposedTrade
 from analyzer.trade_news import NewsFeed
 from analyzer.tunables import GRADES_PER_MINUTE
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
@@ -367,7 +365,7 @@ def test_a_start_up_refresh_that_raises_logs_and_the_app_still_answers(settings,
 
 
 def test_a_chart_read_that_raises_grades_the_trade_with_no_chart(settings, sources):
-    # A chart read that raises gives no chart, and a week with no chart grades from the adjusters alone.
+    # A chart read that raises gives no chart, and a week with no chart reads the other facts alone.
     analyzer = StubAnalyzer()
     chart = RaisingChart()
     response = _client(settings, dataclasses.replace(sources, read_chart=chart), analyzer).post(
@@ -426,7 +424,7 @@ def test_a_good_request_returns_the_read_of_the_advisor(settings, sources):
                             "no_chart": False, "no_chart_note": None}
 
 
-# The words a key of the read must never hold: the rubric spoke in letters, factors, decisions, and answers.
+# The words a key of the read must never hold: a letter, a factor, a decision, or an answer.
 OLD_KEYS = ("letter", "factor", "decision", "answer")
 
 
@@ -682,7 +680,7 @@ def test_a_week_with_no_chart_still_reads_and_says_so(settings, fixture_raw_dir)
     assert doc["lean"] == "Lean yes"
     assert doc["as_of"]["chart_week"] is None
     assert doc["as_of"]["no_chart"] is True
-    assert doc["as_of"]["no_chart_note"] == "This week's player values are not out yet, so both sides start even."
+    assert doc["as_of"]["no_chart_note"] == "This week's player values are not out yet."
     assert "chart" in doc["missing"]
 
 
@@ -1262,26 +1260,9 @@ DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name",
                      "offer_id"}
 
 
-# One count of the roster fit reason: the players at a position in the top N, before and after.
-TOP_N_COUNT = re.compile(r"\d+ (?:QB|RB|WR|TE)s? in the top \d+(?: to \d+)?")
-# The weeks and the ranks of the schedule row and the injury row, such as "week 13", "weeks 15 to 17", "3rd", and
-# "5 of 8 weeks".
-WEEKS_AND_RANKS = re.compile(r"\bweeks? \d+(?: to \d+)?|\b\d+(?:st|nd|rd|th)\b|\b\d+ of \d+ weeks")
-
-
 def _digits_outside_ids(value, key=None):
     """The numbers and the strings with digits under any key that may not hold them."""
     if isinstance(value, dict):
-        if value.get("name") == TREND:
-            # The trend reason may give share percents and the air yards per target. Any other number in it fails.
-            value = {**value, "reason": strip_trend_numbers(value["reason"])}
-        if value.get("name") in (SCHEDULE, INJURY):
-            # The code writes the weeks of a bye, a return, and the injury report, and the rank of each opponent.
-            value = {**value, "reason": WEEKS_AND_RANKS.sub("", value["reason"])}
-        if value.get("name") == ROSTER_FIT:
-            # The roster row counts the players in the top N, such as "3 WRs in the top 36", and can name a week. The
-            # code writes it, and this check guards Claude's prose, not the code's factor reasons.
-            value = {**value, "reason": re.sub(r"week \d+", "", TOP_N_COUNT.sub("", value["reason"]))}
         if set(value) == {"week", "text"}:
             # The code writes the Week line with its weeks, its counts, its top N, and the rank of each opponent.
             value = {"week": value["week"]}
@@ -1290,8 +1271,8 @@ def _digits_outside_ids(value, key=None):
             # code, with its own numbers, and the fact id names a player id.
             return []
         if set(value) == {"roster_id", "reason"}:
-            # A fairness side gives the reason of its first step up, which can be the roster row with its counts.
-            value = {**value, "reason": TOP_N_COUNT.sub("", value["reason"])}
+            # A fairness side gives what the side gains, in the words of the Advisor, whose guards check its numbers.
+            value = {"roster_id": value["roster_id"]}
         return [found for k, item in value.items() for found in _digits_outside_ids(item, k)]
     if isinstance(value, list):
         return [found for item in value for found in _digits_outside_ids(item, key)]
@@ -1544,7 +1525,7 @@ def test_a_find_in_a_week_with_no_chart_answers_and_says_so(settings, fixture_ra
     doc = response.json()
     assert doc["trades"]
     assert doc["as_of"]["no_chart"] is True
-    assert doc["as_of"]["no_chart_note"] == "This week's player values are not out yet, so both sides start even."
+    assert doc["as_of"]["no_chart_note"] == "This week's player values are not out yet."
 
 
 def test_find_needs_the_passphrase(settings, sources):
@@ -1987,7 +1968,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_20():
+def test_the_document_version_is_21():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -2001,9 +1982,10 @@ def test_the_document_version_is_20():
     # Each side carries its Week lines, so the shape changes.
     # A Week line names each player who steps up, so a stored Week line must never serve.
     # The injury and handcuff rows name no id map, so a stored row must never serve.
-    # The read of the Advisor takes the place of the decision and the factor rows, so no rubric result serves.
+    # The read of the Advisor takes the place of the decision and the factor rows, so no old result serves.
     # The Finder pick takes the place of the fairness and the reason of each finder trade, so no old list serves.
-    assert cache_module.DOCUMENT_VERSION == 20
+    # A fact text names a race group, not an old race word, so no stored fact text of the old words serves.
+    assert cache_module.DOCUMENT_VERSION == 21
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

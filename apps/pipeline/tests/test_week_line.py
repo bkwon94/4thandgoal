@@ -10,11 +10,11 @@ from zoneinfo import ZoneInfo
 import pytest
 from cpc import cpc_client
 
-from analyzer.analysis import AnalysisOut, _inner_word_failures, check_response, code_only
+from analyzer.advisor import TextGuard, inner_word_failures
 from analyzer.cache import cache_key
-from analyzer.routes import result_document
-from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade import ProposedTrade, TradeSide
 from analyzer.trade_facts import trade_fact_sheet
+from analyzer.week_line import week_lines
 from league.numbers import ordinal as _ordinal
 from league.paths import returns_path
 from league.provider.sleeper import load_raw
@@ -57,8 +57,7 @@ TRADE_A = _trade(10, [COOPER], 6, [WASHINGTON])
 
 
 def _lines(trade: ProposedTrade, snapshot, roster_id: int) -> list[dict]:
-    document = result_document(trade, snapshot, code_only(trade, snapshot))
-    return next(side for side in document["sides"] if side["roster_id"] == roster_id)["week_lines"]
+    return [line.model_dump() for line in week_lines(trade, snapshot)[roster_id]]
 
 
 def test_each_side_has_a_week_line_for_the_trade_week_and_the_next_week_only(thursday):
@@ -150,24 +149,11 @@ def test_a_three_side_trade_gives_week_lines_for_every_side(thursday):
         TradeSide(roster_id=4, gives=[{"player_id": "11620", "to": 12}]),
         TradeSide(roster_id=12, gives=[{"player_id": "8146", "to": 7}]),
         TradeSide(roster_id=7, gives=[{"player_id": "11783", "to": 4}])))
-    document = result_document(trade, thursday, code_only(trade, thursday))
-    assert [side["roster_id"] for side in document["sides"]] == [4, 12, 7]
-    for side in document["sides"]:
-        assert [line["week"] for line in side["week_lines"]] == [9, 10]
-        assert side["week_lines"][0]["text"].startswith("Week 9: WRs in the top 36 who play ")
-
-
-def test_the_week_line_is_never_a_factor_and_moves_no_letter(thursday):
-    with_lines = code_only(TRADE_A, thursday)
-    # On a Tuesday the Week line changes, but the breakdown stays the same: no adjuster reads the Week line.
-    tuesday = _snapshot(TUESDAY)
-    assert _texts(TRADE_A, tuesday, 10) != _texts(TRADE_A, thursday, 10)
-    assert code_only(TRADE_A, tuesday).breakdowns == with_lines.breakdowns
-    document = result_document(TRADE_A, thursday, with_lines)
-    names = {factor["name"] for side in document["sides"] for factor in side["factors"]}
-    assert not any("week" in name for name in names)
-    assert [a.name for a in with_lines.breakdowns[0].adjusters] == [
-        "roster fit", "standing", "trend and usage", "injury", "upside", "superstar", "handcuff", "schedule"]
+    lines = week_lines(trade, thursday)
+    assert list(lines) == [4, 12, 7]
+    for side_lines in lines.values():
+        assert [line.week for line in side_lines] == [9, 10]
+        assert side_lines[0].text.startswith("Week 9: WRs in the top 36 who play ")
 
 
 def test_the_fact_sheet_holds_one_week_line_fact_per_side_with_the_text_of_its_two_lines(thursday):
@@ -179,20 +165,19 @@ def test_the_fact_sheet_holds_one_week_line_fact_per_side_with_the_text_of_its_t
 
 def test_the_prose_checks_accept_the_numbers_and_the_names_of_the_week_line(thursday):
     facts = trade_fact_sheet(TRADE_A, thursday)
-    breakdowns = code_only(TRADE_A, thursday).breakdowns
+    guard = TextGuard(TRADE_A, thursday, facts)
     bullets = {10: ["Washington plays at BAL in week 9, 9th most points to WRs.",
-                    "The WRs in the top 36 who play stay at 2 in weeks 9 and 10."],
+                    "The WRs in the top 36 who play stay at 2 in weeks 9 and 10.",
+                    "Washington plays at TEN in week 10, the most points to WRs."],
                6: ["Cooper plays BUF at home in week 10.", "The WRs in the top 36 who play stay at 3."]}
-    out = AnalysisOut.model_validate({
-        "sides": [{"roster_id": b.roster_id, "final_letter": b.final_letter, "reason": None,
-                   "bullets": bullets[b.roster_id], "cited": [f"{b.roster_id}.week_line"]} for b in breakdowns],
-        "verdict": {"choice": "accept", "reason": "Washington plays at TEN in week 10, the most points to WRs."}})
-    assert check_response(out, thursday, breakdowns, facts) == []
+    failures = [failure for roster_id, texts in bullets.items() for text in texts
+                for failure in guard.text_failures("bullet", text, [f"{roster_id}.week_line"])]
+    assert failures == []
 
 
 def test_no_week_line_holds_an_inner_word(thursday):
     texts = [text for roster_id in (10, 6) for text in _texts(TRADE_A, thursday, roster_id)]
-    assert [(text, failure) for text in texts if (failure := _inner_word_failures("week line", text))] == []
+    assert [(text, failure) for text in texts if (failure := inner_word_failures("week line", text))] == []
 
 
 def test_with_no_schedule_the_week_line_says_so_and_names_no_bye_or_opponent(thursday):

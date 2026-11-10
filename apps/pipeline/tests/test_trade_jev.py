@@ -8,7 +8,7 @@ import pytest
 from cpc import cpc_client, four_week
 from fakes import FakeJev
 
-from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade import ProposedTrade, TradeSide
 from analyzer.trade_jev import trade_jev_facts
 from league.jev_port import JevError
 from league.slow_sources import load_slow_sources

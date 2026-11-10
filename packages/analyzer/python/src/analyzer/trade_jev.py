@@ -5,7 +5,7 @@ Code builds the state and asks one request, and each answer joins the fact sheet
 import logging
 import re
 
-from analyzer.rubric import ProposedTrade
+from analyzer.trade import ProposedTrade
 from analyzer.trade_facts import shown_ranks
 from facts.tokens import Nums, fact
 from league.jev_port import Jev, JevError, NoulQuestion

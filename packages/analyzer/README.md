@@ -2,8 +2,8 @@
 
 ## Knows
 
-- The rubric, the adjusters and `Side`, the trade facts, the analysis, the finder, and the finder reasons (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`, the team facts of `team_facts.py`, and the Measures of `measures.py`. The Finder search of `finder_search.py`: the partner filter, the targets, the offers, and the shortlist, with its Jev requests in waves by `jev_waves.py`. The Finder pick of `finder_pick.py`: one sheet per shortlist offer, the Advisor pick of up to 3 trades with a headline and Bullets, and the fallback to the shortlist with fact lines.
-- The rule prompts `prompts/advisor.md`, `prompts/analysis.md`, `prompts/finder.md`, `prompts/finder_pick.md`, and `prompts/rubric.md`, and the numbers of `tunables.py`.
+- The proposed trade of `trade.py`, the Measures and `Side` of `measures.py`, and the trade facts (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`, and the team facts of `team_facts.py`. The Finder search of `finder_search.py`: the partner filter, the targets, the offers, and the shortlist, with its Jev requests in waves by `jev_waves.py`. The Finder pick of `finder_pick.py`: one sheet per shortlist offer, the Advisor pick of up to 3 trades with a headline and Bullets, and the fallback to the shortlist with fact lines.
+- The rule prompts `prompts/advisor.md` and `prompts/finder_pick.md`, and the numbers of `tunables.py`.
 - The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit.
 - The grade limit counts per client and per address. Each client has its own result cache, so the roster ids of two leagues never share a grade.
 - The cache key reads the points key of the League settings of the client, such as `pts_ppr` for a full PPR league.

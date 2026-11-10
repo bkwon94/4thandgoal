@@ -321,11 +321,11 @@ def test_parse_call_raises_on_a_refusal_and_on_no_parsed_output():
 
 
 def test_the_analyzer_call_alone_sets_the_one_hour_lifetime():
-    from analyzer.analysis import AnalysisOut
+    from analyzer.advisor import AdvisorOut
     from facts.writer import analyzer_call, claude_call
 
     writer, sent = _stub_writer()
-    analyzer_call("analyzer system", "user text", AnalysisOut, writer=writer)
+    analyzer_call("analyzer system", "user text", AdvisorOut, writer=writer)
     assert sent["system"] == [{
         "type": "text",
         "text": "analyzer system",
@@ -337,24 +337,26 @@ def test_the_analyzer_call_alone_sets_the_one_hour_lifetime():
 
 
 def test_the_analyzer_call_alone_runs_at_medium_effort():
-    from analyzer.analysis import AnalysisOut
+    from analyzer.advisor import AdvisorOut
     from facts.writer import analyzer_call, claude_call
 
     writer, sent = _stub_writer()
-    analyzer_call("analyzer system", "user text", AnalysisOut, writer=writer)
+    analyzer_call("analyzer system", "user text", AdvisorOut, writer=writer)
     assert sent["output_config"] == {"effort": "medium"}
     claude_call("writer system", "user text", WriterOut, writer=writer)
     assert sent["output_config"] == {"effort": "high"}
 
 
-# The API route calls `analyze` with no `call` argument, so this default is the API's lifetime.
-def test_analyze_uses_the_analyzer_call_by_default():
+# The API calls `read_trade` and `pick_trades` with no `call` argument, so this default is the API's lifetime.
+def test_the_advisor_read_and_the_finder_pick_use_the_analyzer_call_by_default():
     import inspect
 
-    from analyzer.analysis import analyze
+    from analyzer.advisor import read_trade
+    from analyzer.finder_pick import pick_trades
     from facts.writer import analyzer_call
 
-    assert inspect.signature(analyze).parameters["call"].default is analyzer_call
+    assert inspect.signature(read_trade).parameters["call"].default is analyzer_call
+    assert inspect.signature(pick_trades).parameters["call"].default is analyzer_call
 
 
 def test_parse_call_logs_the_kind_and_the_three_usage_counts(caplog):

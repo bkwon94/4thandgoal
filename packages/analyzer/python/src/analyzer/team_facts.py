@@ -6,9 +6,8 @@ import json
 import logging
 from pathlib import Path
 
-from analyzer.adjusters import Side, trade_handcuffs
-from analyzer.measures import measure_facts
-from analyzer.rubric import ProposedTrade, build_sides
+from analyzer.measures import Side, measure_facts, trade_handcuffs
+from analyzer.trade import ProposedTrade, build_sides
 from facts.tokens import Nums, fact
 from league.models import Fact, OddsStatus
 from league.ranks import RANKED_POSITIONS
@@ -103,9 +102,8 @@ def _bye_fact(snapshot: Snapshot, side: Side) -> Fact | None:
 
 
 def team_facts(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact]:
-    """The team facts of each side by id. The team fact and a depth fact keep the ids of the trade sheet, so each
-    takes the place of the old fact. The team fact says race group, as the site does, not contender or seller.
-    The Measures of each side follow."""
+    """The team facts of each side by id. A depth fact keeps the id of the trade sheet, so it takes the place of that
+    fact. The team fact says race group, as the site does. The Measures of each side follow."""
     traded = {snapshot.players[pid].position for pid in trade.player_ids}
     positions = [p for p in RANKED_POSITIONS if (p in ALWAYS or p in traded) and p in snapshot.client.settings.lines]
     odds = _odds(snapshot, snapshot.as_of.completed_through)

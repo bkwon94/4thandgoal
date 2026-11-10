@@ -10,8 +10,8 @@ from pydantic import BaseModel
 
 from analyzer import RULE_PROMPTS
 from analyzer.read_jev_check import log_read_jev_checks
-from analyzer.rubric import Fairness, FairnessSide, ProposedTrade
 from analyzer.team_facts import team_facts
+from analyzer.trade import Fairness, FairnessSide, ProposedTrade
 from analyzer.trade_facts import trade_fact_sheet
 from analyzer.trade_jev import trade_jev_facts
 from analyzer.trade_news import NewsFeed, attribution_failures, news_facts

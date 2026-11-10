@@ -12,7 +12,7 @@ from cpc import cpc_client, four_week
 from fakes import FakeJev, no_news
 
 from analyzer.advisor import advisor_sheet
-from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade import ProposedTrade, TradeSide
 from analyzer.trade_news import NewsFeed
 from analyzer.trade_splits import Split, season_splits, trade_split_facts
 from league.past_seasons import fetch_past_seasons

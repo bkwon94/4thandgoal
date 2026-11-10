@@ -98,7 +98,7 @@ class Snapshot(BaseModel):
     players: dict[str, SnapshotPlayer]
     chart: ChartValues | None
     # The trade values of the newest saved chart read of the STAND_IN_WEEKS weeks before, when the week has no chart.
-    # Only the superstar check reads it. The start letters never do, so with no chart every side still starts at C.
+    # Only the superstar Measure reads it. The chart fact never does, so with no chart the sheet says the chart is missing.
     chart_before: ChartValues | None = None
     # Season stats from week 1 through as_of.stats_through, the player stat bound.
     # That is week N when the raw data holds week N stat lines, and week N-1 when only the history holds it.
@@ -138,7 +138,7 @@ class Snapshot(BaseModel):
     # The raw week's own projection is here too, so a player due back in that week counts for it.
     # A week with no row is a bye or no game. It is None when the raw data has no projections ahead file.
     projections_ahead: dict[str, dict[int, float]] | None = None
-    # The names of the sources the snapshot lacks, so the breakdown can say what it could not use.
+    # The names of the sources the snapshot lacks, so the document can say what the read could not use.
     missing: list[str] = []
     # The sources whose refresh failed, so the cache is older than a day or absent.
     # "history" is here when the history lacks week N-1, on a live or a saved build.
@@ -198,7 +198,7 @@ class Snapshot(BaseModel):
     def roster_read(self, roster_id: int, build: Callable[["Snapshot", list[str]], object]) -> object:
         """The read of the roster as it is now, built once per roster by `build`.
 
-        The adjusters own the read, and the adjusters import this module, so the caller passes the build.
+        The Measures own the read, and the Measures import this module, so the caller passes the build.
         """
         if roster_id not in self._roster_reads:
             self._roster_reads[roster_id] = build(self, self.rosters[roster_id])

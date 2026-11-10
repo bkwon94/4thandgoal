@@ -22,7 +22,7 @@ from analyzer.advisor import (
     check_read,
     read_trade_on_sheet,
 )
-from analyzer.rubric import GivenPlayer, ProposedTrade, TradeSide
+from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_news import NewsFeed
 from facts.writer import ClaudeCall
 from league.jev_port import Jev, JevResponse, NoulQuestion

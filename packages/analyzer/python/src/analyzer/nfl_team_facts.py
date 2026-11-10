@@ -2,7 +2,7 @@
 The NFL team facts of the sheet: the offense of the NFL team of each traded player, from the nflverse team stats.
 A player on a bad offense is not a safe start, so the Advisor reads this fact beside his own numbers.
 """
-from analyzer.rubric import ProposedTrade
+from analyzer.trade import ProposedTrade
 from facts.tokens import Nums, fact
 from league.models import Fact
 from league.nfl_teams import team_name

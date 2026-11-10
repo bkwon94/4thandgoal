@@ -151,8 +151,7 @@ LAYER_OF: dict[str, str] = {
     "week.facts_matchup": "facts",
     "week.facts_nflverse": "facts",
     "rankings.odds": "facts",
-    "analyzer.adjusters": "facts",
-    "analyzer.rubric": "facts",
+    "analyzer.trade": "facts",
     "analyzer.cache": "facts",
     "managers.entries": "facts",
     "managers.grade": "facts",
@@ -204,7 +203,6 @@ LAYER_OF: dict[str, str] = {
     # The Jev check reads the vocabulary through the writer, so it sits in the write layer beside the verifier.
     "facts.jev_check": "write",
     "week.median": "write",
-    "analyzer.analysis": "write",
     # The Finder pick makes the Claude call of the Advisor, as the read of one trade does.
     "analyzer.finder_pick": "write",
     "analyzer.routes": "write",

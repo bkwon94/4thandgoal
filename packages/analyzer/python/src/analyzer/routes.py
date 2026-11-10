@@ -6,29 +6,18 @@ The teams route keeps its answer per season in memory for a short window, so the
 """
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Annotated, Literal, Protocol
+from typing import Annotated, Protocol
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
-from analyzer.adjusters import Adjuster, Lean
 from analyzer.advisor import AdvisorFailed, TradeRead
-from analyzer.analysis import Analysis
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key
 from analyzer.errors import season_in_progress
 from analyzer.finder_pick import FinderPicks
 from analyzer.finder_search import Shortlist
 from analyzer.ratelimit import GradeLimiter, request_address
-from analyzer.rubric import (
-    NO_CHART_NOTE,
-    Breakdown,
-    ProposedTrade,
-    TradeInputError,
-    check_trade,
-    deal_reason,
-    fairness,
-    reason_names,
-)
+from analyzer.trade import ProposedTrade, TradeInputError, check_trade
 from analyzer.trade_facts import shown_ranks
 from analyzer.week_line import week_lines
 from league.client import Client
@@ -37,6 +26,8 @@ from league.snapshot import Snapshot
 
 router = APIRouter()
 
+# The line the site shows when the trade week has no chart. It names no source, so a manager reads plain words.
+NO_CHART_NOTE = "This week's player values are not out yet."
 # One 429 body for each full window.
 GRADE_LIMIT_DETAIL = {
     "minute": "Too many grades this minute. Try again later.",
@@ -158,32 +149,11 @@ def _as_of(snapshot: Snapshot) -> dict:
         "rosters_fetched": stamps.rosters_fetched.isoformat() if stamps.rosters_fetched else None,
         # The week N games that the player stats read. None when the grade reads no week N game.
         "known_games": stamps.known_games.model_dump() if stamps.known_games else None,
-        # The chart site posts the new chart hours after the trade week starts. The grade runs in that window too,
+        # The chart site posts the new chart hours after the trade week starts. The read runs in that window too,
         # so the document says the week has no chart, and the site shows the note with no words of its own.
         "no_chart": snapshot.chart is None,
         "no_chart_note": NO_CHART_NOTE if snapshot.chart is None else None,
     }
-
-
-# The decision a manager acts on, from the verdict choice of the rubric.
-Answer = Literal["yes", "no", "not_as_is"]
-ANSWERS: dict[str, Answer] = {"accept": "yes", "decline": "no", "counter": "not_as_is"}
-# The deal row of a side, from its start letter. It is the first factor, and no letter reaches the document.
-# Its words name no source of the values, so the row reads as plain advice.
-DEAL = "deal"
-DEAL_LEANS: dict[str, Lean] = {"A": "for", "B": "for", "C": "even", "D": "against", "F": "against"}
-
-
-def _deal_row(breakdown: Breakdown) -> dict:
-    """The deal row of one side: the start letter as a lean and one plain sentence."""
-    return {"name": DEAL, "lean": DEAL_LEANS[breakdown.start_letter], "reason": deal_reason(breakdown)}
-
-
-def _factor_lean(adjuster: Adjuster) -> Lean:
-    """The lean of one adjuster. The schedule never steps, so it keeps its own lean."""
-    if adjuster.lean is not None:
-        return adjuster.lean
-    return "for" if adjuster.step > 0 else "against" if adjuster.step < 0 else "even"
 
 
 def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
@@ -209,7 +179,7 @@ def read_document(trade: ProposedTrade, snapshot: Snapshot, read: TradeRead) -> 
     """The result the site renders: the Lean, the Case, the fairness, then the Bullets and the Week lines per side.
 
     Each Bullet carries the text of its fact, so a tap on the page opens the fact with no logic of the site.
-    It holds no letter, no factor, no decision, and no answer word.
+    It holds no letter and no score.
     """
     lines = week_lines(trade, snapshot)
     bullets = {side.roster_id: side.bullets for side in read.sides}
@@ -227,52 +197,6 @@ def read_document(trade: ProposedTrade, snapshot: Snapshot, read: TradeRead) -> 
             for side in trade.sides
         ],
         "as_of": _as_of(snapshot),
-        "missing": list(snapshot.missing),
-        "stale": list(snapshot.stale),
-    }
-
-
-def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
-    """The rubric form of the result: a decision first, the fairness, then the bullets, the Week lines, and the factors
-    per side. The analyze route serves read_document, so only the tests of the rubric read this form.
-
-    The deal row is the first factor of each side. The Week lines are never a factor, because they move no letter.
-
-    It holds no letter, no step, and never a trade value, sum, or ratio. A manager acts on a decision, not a letter.
-    """
-    echoed = _echoed_sides(trade, snapshot)
-    lines = week_lines(trade, snapshot)
-    sides = [
-        {
-            "roster_id": breakdown.roster_id,
-            "bullets": side.bullets,
-            "week_lines": [line.model_dump() for line in lines[breakdown.roster_id]],
-            "factors": [
-                _deal_row(breakdown),
-                # A row shows when it moves the grade or says something new, so a silent row with no step drops.
-                # The letter math still reads every step.
-                *({"name": adj.name, "lean": _factor_lean(adj), "reason": adj.reason}
-                  for adj in breakdown.adjusters if adj.step != 0 or not adj.silent),
-            ],
-        }
-        for breakdown, side in zip(analysis.breakdowns, analysis.sides)
-    ]
-    # The fairness reads the letters that stand after the Claude call, the same letters the verdict that stands
-    # comes with. The document drops the letters, so this function builds the block and a stored document cannot.
-    fairness_result = fairness(analysis.standing_letters, analysis.breakdowns, names=reason_names(snapshot))
-    return {
-        "trade": {"asker": trade.asker, "sides": echoed},
-        "decision": {
-            "for_roster": trade.asker,
-            "answer": ANSWERS[analysis.verdict.choice],
-            "reason": analysis.verdict.reason,
-            "differs": analysis.verdict_differs,
-        },
-        # The fairness is for every side, after the decision, so the asker's own answer stays the lead.
-        "fairness": fairness_result.model_dump(mode="json"),
-        "sides": sides,
-        "as_of": _as_of(snapshot),
-        "fallback": analysis.fallback,
         "missing": list(snapshot.missing),
         "stale": list(snapshot.stale),
     }

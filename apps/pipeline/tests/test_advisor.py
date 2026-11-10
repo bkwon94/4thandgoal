@@ -10,7 +10,7 @@ from cpc import cpc_client, four_week
 from fakes import FakeJev, no_news
 
 from analyzer.advisor import AdvisorFailed, AdvisorOut, read_trade
-from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade import ProposedTrade, TradeSide
 from analyzer.trade_news import NewsFeed
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot

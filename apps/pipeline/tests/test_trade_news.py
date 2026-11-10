@@ -12,7 +12,7 @@ from fakes import NEWS_RECORDED, FakeJev, recorded_news
 from test_advisor import COLLINS, StubAdvisor, sheet_facts
 
 from analyzer.advisor import advisor_sheet, read_trade
-from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade import ProposedTrade, TradeSide
 from analyzer.trade_news import NewsFeed
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot

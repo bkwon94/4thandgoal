@@ -11,7 +11,7 @@ from cpc import cpc_client
 from fakes import FakeJev, no_news
 
 from analyzer.advisor import advisor_sheet
-from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade import ProposedTrade, TradeSide
 from analyzer.trade_news import NewsFeed
 from league.paths import history_root, raw_dir
 from league.slow_sources import load_slow_sources
@@ -95,7 +95,7 @@ def test_a_bubble_side_that_gets_a_starter_with_a_bye_reads_both(week_7):
     assert "Omarion Hampton" in sheet["1.bye"].text and "week 7" in sheet["1.bye"].text
 
 
-def test_each_old_adjuster_writes_its_read_as_a_measure_fact_that_moves_nothing(week_7, trade_6):
+def test_each_measure_writes_its_read_as_a_fact_that_moves_nothing(week_7, trade_6):
     sheet = advisor_sheet(trade_6, week_7, FakeJev(), NewsFeed(fetch=no_news))
     trend = sheet["10.measure.trend"]
     # The trend Measure reads more than snaps: the carries of a back, and the targets and air yards of a receiver.

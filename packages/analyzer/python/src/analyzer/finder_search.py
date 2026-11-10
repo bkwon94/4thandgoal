@@ -7,9 +7,9 @@ from itertools import combinations
 
 from pydantic import BaseModel
 
-from analyzer.adjusters import is_handcuff, trade_handcuffs
 from analyzer.jev_waves import JevWaves, WaveRequest
-from analyzer.rubric import GivenPlayer, ProposedTrade, TradeSide
+from analyzer.measures import is_handcuff, trade_handcuffs
+from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_facts import shown_ranks
 from analyzer.trade_jev import YES_AT, trade_jev_questions, weak_starting_slots
 from league.jev_port import Jev, NoulQuestion

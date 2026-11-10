@@ -1,8 +1,8 @@
 """
-The analyzer package: the trade rubric, the analysis, the finder, the grade limits, and the analyzer routes of the API.
+The analyzer package: the proposed trade, the fact sheet, the Advisor, the Finder, the grade limits, and the routes.
 RULE_PROMPTS is the folder of its rule prompts, which facts.writer.load_prompt reads with the voice of the client.
 """
 from pathlib import Path
 
-# The rule prompts of the analyzer: advisor.md, analysis.md, finder.md, finder_pick.md, and rubric.md. A client never changes a rule prompt.
+# The rule prompts of the analyzer: advisor.md and finder_pick.md. A client never changes a rule prompt.
 RULE_PROMPTS = Path(__file__).parent / "prompts"

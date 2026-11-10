@@ -5,7 +5,7 @@ game in weeks 1 to 8, in weeks 9 to 17, and in cold games, each with its game co
 from pathlib import Path
 from typing import NamedTuple
 
-from analyzer.rubric import ProposedTrade
+from analyzer.trade import ProposedTrade
 from facts.tokens import Nums, fact
 from league.models import Fact
 from league.nflverse import SCHEDULES_URL, cache_path

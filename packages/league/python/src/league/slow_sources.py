@@ -49,11 +49,11 @@ class SlowSources(BaseModel):
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
     # The injury report status by gsis_id and week. `id_map` joins it to Sleeper ids, as for the depth chart.
     injuries: dict[str, dict[int, str]] | None = None
-    # The expected window of each player by Sleeper id. Only the expected gap adjuster reads it.
-    # That adjuster says in its own reason when the data is not there. A None here is "expected_points" in `missing`,
+    # The expected window of each player by Sleeper id. Only the expected gap Measure reads it.
+    # That Measure says in its own reason when the data is not there. A None here is "expected_points" in `missing`,
     # so the sources line shows that the grade did not read the file.
     expected: ExpectedPoints | None = None
-    # The WOPR by Sleeper id and week. Only the trend adjuster reads it, as a tiebreak before red-zone use.
+    # The WOPR by Sleeper id and week. Only the trend Measure reads it, as a tiebreak before red-zone use.
     # Without it, red-zone use breaks the tie. A None here is "player_weeks" in `missing`, the name of its file.
     wopr: dict[str, dict[int, int]] | None = None
     # The kickoff of each NFL team's game of `week`, from the schedules file. Only the in-progress label reads it.

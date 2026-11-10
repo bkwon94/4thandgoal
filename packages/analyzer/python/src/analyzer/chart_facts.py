@@ -2,7 +2,7 @@
 The chart facts of the sheet: the chart value of each traded player as one fact, and one fact when the week has no chart.
 The chart is a market price that informs the read and never gates it.
 """
-from analyzer.rubric import ProposedTrade
+from analyzer.trade import ProposedTrade
 from facts.tokens import Nums, fact
 from league.models import Fact
 from league.snapshot import Snapshot

@@ -8,7 +8,7 @@ import pytest
 from cpc import ROOT, cpc_client
 
 from analyzer.advisor import build_advisor_prompt, load_playbook
-from analyzer.rubric import ProposedTrade, TradeSide
+from analyzer.trade import ProposedTrade, TradeSide
 from league.paths import client_dir
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot

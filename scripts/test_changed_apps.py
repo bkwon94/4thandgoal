@@ -141,7 +141,7 @@ class TheRepoWorkspace(unittest.TestCase):
 
     def test_a_change_in_the_analyzer_package_of_the_repo_selects_the_apps_that_import_it(self):
         # The analyzer has both languages, so a change on either side selects the site and the two Python apps.
-        files = ["packages/analyzer/python/src/analyzer/rubric.py"]
+        files = ["packages/analyzer/python/src/analyzer/advisor.py"]
         self.assertEqual(select_apps(REPO, files), ["site", "pipeline", "api"])
         self.assertEqual(select_packages(REPO, files), ["analyzer"])
 

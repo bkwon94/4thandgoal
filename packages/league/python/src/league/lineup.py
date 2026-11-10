@@ -135,7 +135,7 @@ class StartingSlot(NamedTuple):
     roster_slot: str
     # His return after the trade week. None when he is not out after the trade week. A bye is never an absence.
     absence: Absence | None = None
-    # True when a middle team gets the player and he has his bye in the trade week. No cover cancels it.
+    # True when a team in the race gets the player and he has his bye in the trade week. No cover cancels it.
     bye_now: bool = False
 
     def is_hole(self, snapshot: Snapshot) -> bool:
@@ -143,7 +143,7 @@ class StartingSlot(NamedTuple):
 
         A hole holds no player or a player below the line for his own position. A starter due back after the trade
         week with no cover is a hole too. A K or DEF slot is never a hole. A player at a ranked position with
-        no rank is below the line, because he has no stat line to start on. A starter a middle team gets, who has his
+        no rank is below the line, because he has no stat line to start on. A starter a team in the race gets, who has his
         bye in the trade week, is a hole too.
         """
         if self.roster_slot not in FLEX_SLOTS and self.roster_slot not in RANKED_POSITIONS:

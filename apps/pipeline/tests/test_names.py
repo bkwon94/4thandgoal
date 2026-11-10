@@ -4,7 +4,7 @@ They use plain names, so no test reads a fixture.
 """
 from types import SimpleNamespace
 
-from analyzer.adjusters import _short_names
+from analyzer.measures import _short_names
 from facts.names import last_name
 
 

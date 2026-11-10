@@ -1,6 +1,6 @@
 """
 The position rank and what it reads: the lineup value of each player, his due-back week, and the pool rule.
-It imports no snapshot at run time, so the snapshot, the adjusters, and the waiver board all import it with no cycle.
+It imports no snapshot at run time, so the snapshot, the Measures, and the waiver board all import it with no cycle.
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 POSITION_ORDER = ("RB", "WR", "TE", "QB", "K", "DEF")
 
 # Injury report statuses that keep a player out of games. A player with one of them and no row in the
-# returns file has no known return, so the standing adjuster counts him as back after the return-by week of the
+# returns file has no known return, so the standing Measure counts him as back after the return-by week of the
 # client. The lineup value counts him as due back at that week, so his projection ahead gives his value.
 OUT_STATUSES = frozenset({"Out", "IR", "NA", "Sus", "PUP"})
 
@@ -178,7 +178,7 @@ def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     """The week the player counts as back, or None when he is not due back.
 
     The returns file gives the week. A player out with no row counts as back at the return-by week of the client, the
-    week the standing adjuster reads too. Sleeper projects 0 for the weeks he is out, so his projection ahead must
+    week the standing Measure reads too. Sleeper projects 0 for the weeks he is out, so his projection ahead must
     start at that week.
     A week through the last completed week is no return ahead, so he is not due back.
     A player with a returns row by the trade week who played in its known games is back, so he is not due back.

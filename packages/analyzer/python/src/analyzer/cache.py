@@ -10,9 +10,9 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import NamedTuple
 
-from analyzer.adjusters import due_back_week
-from analyzer.rubric import ProposedTrade
+from analyzer.trade import ProposedTrade
 from analyzer.week_line import chart_is_fresh, counted_status, last_game_status
+from league.ranks import due_back_week
 from league.snapshot import Snapshot
 
 # The stat fields the grade reads from a week N line, past the points key of the League settings of the client.
@@ -25,7 +25,7 @@ STAT_FIELDS = ("gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 20
+DOCUMENT_VERSION = 21
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:

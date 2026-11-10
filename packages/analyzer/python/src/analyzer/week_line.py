@@ -8,8 +8,8 @@ from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel
 
-from analyzer.adjusters import _join, _short_names
-from analyzer.rubric import ProposedTrade
+from analyzer.measures import _join, _short_names
+from analyzer.trade import ProposedTrade
 from analyzer.tunables import STEP_UP_CHART_HOURS
 from league.lineup import _above_the_line
 from league.nflverse import SKILL_POSITIONS, ScheduledGame
