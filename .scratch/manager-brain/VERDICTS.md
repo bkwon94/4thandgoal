@@ -1,5 +1,5 @@
-ACCEPTANCE.md: 9b387b3cea4cbc6b48a007b2932e6815183847c7
-EVIDENCE.md: 4677ca1833f2528e19c919308639d59d42e5cb1c
+ACCEPTANCE.md: d444318d85ff028dda20145471c9152e77c6a898
+EVIDENCE.md: bbcc6f46748a5e67bd1d61a5da0bc0345e4650b5
 
 Test verdicts
 AT-1: PASS
@@ -20,7 +20,7 @@ AT-15: PASS
 AT-16: PASS
 AT-17: PASS
 AT-18: PASS
-AT-19: FAIL The Then line needs each player name in a Bullet or a Case to be in a cited fact, but check_reads output shows 29 player names that are not in their cited facts.
+AT-19: PASS
 AT-20: PASS
 AT-21: PASS
 AT-22: PASS
@@ -37,7 +37,7 @@ AT-32: PASS
 AT-33: PASS
 AT-34: PASS
 AT-35: PASS
-AT-36: FAIL The Then line says no code holds a verdict, but search-site.txt shows the code of analyze-result.tsx still names the Lean element with the id `verdict-word`.
+AT-36: PASS
 AT-37: PASS
 AT-38: PASS
 AT-39: PASS
@@ -48,7 +48,7 @@ AT-43: PASS
 AT-44: PASS
 AT-45: PASS
 AT-46: PASS
-AT-47: FAIL The Then line needs the card to show a headline and the same tap as the analyzer, but in each card shot the fixed bar covers most of the headline, and no shot shows a tap on a card Bullet that opens its fact.
+AT-47: PASS
 AT-48: PASS
 AT-49: PASS
 AT-50: PASS
