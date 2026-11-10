@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-42, AT-43, AT-45, AT-46.
 
 **Blocked by:** 03, 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The ask box glides to the bottom in one move on the first question (AT-42).
 - [x] The tapped chip morphs into the question as one surface (AT-43).
