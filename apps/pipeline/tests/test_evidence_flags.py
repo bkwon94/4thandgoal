@@ -67,7 +67,7 @@ def _scratch(root: Path, slug: str = "demo", acceptance: str = ACCEPTANCE, evide
 
 
 def _not_shown(key, question, state):
-    """Each fact of the Then line is shown at 0.1, so question (a) flags at 0.9. FakeJev counts 100 tokens a Noul."""
+    """Each Noul gets 0.1, so question (a) flags at 0.9 and no other question flags. FakeJev counts 100 tokens a Noul."""
     return 0.1
 
 
@@ -87,9 +87,9 @@ def test_a_fact_that_no_file_shows_gets_an_open_flag_and_a_test_with_no_files_ge
     assert "Action: open" in flags
     assert "Reason: " in flags
     assert "## AT-1, question (a)" in out
-    assert "AT-1: asked a" in out
+    assert "AT-1: asked a, b, c, d" in out
     assert "AT-2" not in flags
-    assert out.strip().splitlines()[-1] == "Evidence flags: 1 tests, 1 flags, 0 errors, 200 input tokens"
+    assert out.strip().splitlines()[-1] == "Evidence flags: 1 tests, 1 flags, 0 errors, 600 input tokens"
 
 
 def test_a_jev_error_gives_no_flag_an_error_line_and_exit_0(tmp_path, capsys):
@@ -126,7 +126,7 @@ def _in_range(size: tuple[int, int]) -> bool:
 
 def test_every_real_shot_of_a_test_goes_to_jev_as_tiles_that_fit(tmp_path, capsys):
     shutil.copytree(AT_32, tmp_path / ".scratch" / "easter-eggs")
-    jev = FakeJev(yes=0.95)
+    jev = FakeJev(answer=_by_prefix(c_=0.05))
 
     code = cli.main(["evidence-flags", "easter-eggs", "AT-32", "--root", str(tmp_path)], jev=jev)
 
@@ -201,3 +201,103 @@ def test_a_state_over_32_mib_sends_the_shots_that_fit_in_the_order_of_files_and_
     assert sent == [f"evidence/AT-1/{name}" for name in names[:len(sent)]]
     assert evidence["text_files"] == {"evidence/AT-1/steps.txt": "1. Open the page.\n"}
     assert capsys.readouterr().out.strip().splitlines()[-1].endswith(", 1 cut")
+
+
+def _by_prefix(default: float = 0.95, **answers: float):
+    """An `answer` callback for FakeJev: each Noul whose key starts with a name of `answers` gets that value."""
+    def answer(key, question, state):
+        return next((value for prefix, value in answers.items() if key.startswith(prefix)), default)
+    return answer
+
+
+def test_motion_with_only_still_shots_gets_a_b_flag(tmp_path, capsys):
+    shutil.copytree(AT_32, tmp_path / ".scratch" / "easter-eggs")
+    jev = FakeJev(answer=_by_prefix(b_asks_motion=0.95, b_logs_motion=0.05, c_=0.05, d_rel=0.05))
+
+    code = cli.main(["evidence-flags", "easter-eggs", "AT-32", "--root", str(tmp_path)], jev=jev)
+
+    assert code == 0
+    flags = (tmp_path / ".scratch" / "easter-eggs" / "FLAGS.md").read_text(encoding="utf-8")
+    assert "## AT-32, question (b)" in flags
+    assert "Probability: 0.90" in flags
+    assert "question (a)" not in flags and "question (c)" not in flags and "question (d)" not in flags
+
+
+def test_a_test_with_a_video_or_timed_frames_gets_no_b_flag_and_no_question_about_it(tmp_path, capsys):
+    for case, names in {"video": ["clip.webm", "end.png"],
+                        "frames": ["frame-0ms-375.png", "frame-400ms-375.png"]}.items():
+        root = tmp_path / case
+        folder = _one_test(root, names)
+        for name in names:
+            if name.endswith(".png"):
+                _png(folder / "evidence" / "AT-1" / name, 375, 600)
+            else:
+                (folder / "evidence" / "AT-1" / name).write_bytes(b"\x1a\x45\xdf\xa3 webm")
+        jev = FakeJev(answer=_by_prefix(default=0.05, a_=0.95, d_shown=0.95))
+
+        code = cli.main(["evidence-flags", "demo", "--root", str(root)], jev=jev)
+
+        assert code == 0
+        questions = jev.requests[0].questions
+        assert not [key for key in questions if key.startswith("b_")]
+        assert not [key for key, q in questions.items() if "video" in f"{q.instructions} {q.yes} {q.no}".lower()]
+        assert not (folder / "FLAGS.md").exists()
+
+
+THREE_SENTENCES = (
+    "At 00:40 ET the check answered no match. At 23:30 ET the same check matched. "
+    "The run took 17 s.")
+
+
+def test_an_observation_of_three_sentences_gets_one_d_question_per_sentence(tmp_path, capsys):
+    folder = _scratch(tmp_path, evidence=EVIDENCE.replace(
+        "Observation: At 00:40 ET the check answered no match.", f"Observation: {THREE_SENTENCES}"))
+
+    def answer(key, question, state):
+        # Each sentence reports a result. Only the third one is in no file.
+        if key.startswith("d_shown_"):
+            return 0.05 if "17 s" in str(question.instructions) else 0.95
+        return 0.95 if key.startswith(("a_", "d_rel_")) else 0.05
+    jev = FakeJev(answer=answer)
+
+    code = cli.main(["evidence-flags", "demo", "--root", str(tmp_path)], jev=jev)
+
+    assert code == 0
+    questions = jev.requests[0].questions
+    shown = [q.instructions for key, q in questions.items() if key.startswith("d_shown_")]
+    relevant = [q.instructions for key, q in questions.items() if key.startswith("d_rel_")]
+    assert len(shown) == 3 and len(relevant) == 3
+    for sentence in ("At 00:40 ET the check answered no match.", "At 23:30 ET the same check matched.",
+                     "The run took 17 s."):
+        assert sum(sentence in str(text) for text in shown) == 1
+        assert sum(sentence in str(text) for text in relevant) == 1
+    flags = (folder / "FLAGS.md").read_text(encoding="utf-8")
+    assert "## AT-1, question (d)" in flags
+    assert "Probability: 0.90" in flags
+    assert "The run took 17 s." in flags
+
+
+def test_a_shot_with_the_then_text_cut_off_gets_a_c_flag_with_one_question_per_shot(tmp_path, capsys):
+    names = ["tuesday-375-light.png", "tuesday-1280-light.png"]
+    folder = _one_test(tmp_path, names)
+    for name in names:
+        _png(folder / "evidence" / "AT-1" / name, 375, 600)
+
+    def answer(key, question, state):
+        # Only the phone shot cuts the text of the Then line.
+        if key.startswith("c_"):
+            return 0.95 if "375" in str(question.instructions) else 0.05
+        return 0.95 if key.startswith(("a_", "d_shown")) else 0.05
+    jev = FakeJev(answer=answer)
+
+    code = cli.main(["evidence-flags", "demo", "--root", str(tmp_path)], jev=jev)
+
+    assert code == 0
+    shot_questions = [q for key, q in jev.requests[0].questions.items() if key.startswith("c_")]
+    assert len(shot_questions) == 2
+    assert all("Then line" in str(q.instructions) for q in shot_questions)
+    flags = (folder / "FLAGS.md").read_text(encoding="utf-8")
+    assert "## AT-1, question (c)" in flags
+    assert "Probability: 0.95" in flags
+    assert "evidence/AT-1/tuesday-375-light.png" in flags
+    assert "tuesday-1280" not in flags
