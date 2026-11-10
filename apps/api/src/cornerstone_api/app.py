@@ -35,6 +35,7 @@ from cornerstone_api import ask as ask_routes
 from cornerstone_api import free_answer as free_routes
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api import trade_topics
+from cornerstone_api.caps import Caps
 from cornerstone_api.miss_log import MissLog
 from cornerstone_api.settings import Settings, ask_dir, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
 from cornerstone_api.sources import Sources
@@ -184,9 +185,12 @@ def _rosters(client: Client, served: analyzer_routes.Served) -> Callable[[], dic
 
 
 def _asker(settings: Settings, client: Client, served: analyzer_routes.Served, jev: Jev) -> ask_routes.Asker:
-    """The ask route of one client. Its miss log is <slug>.sqlite in the ask folder, on the volume on Fly."""
-    return ask_routes.Asker(season=client.values.latest_season, jev=jev, misses=MissLog(ask_dir(settings) / f"{client.slug}.sqlite"),
-                            rosters=_rosters(client, served), clock=lambda: datetime.now(client.tz))
+    """The ask route of one client. Its miss log is <slug>.sqlite and its caps are <slug>.caps.sqlite in the ask folder,
+    on the volume on Fly, so each league keeps its own budget."""
+    folder = ask_dir(settings)
+    return ask_routes.Asker(season=client.values.latest_season, jev=jev, misses=MissLog(folder / f"{client.slug}.sqlite"),
+                            rosters=_rosters(client, served), clock=lambda: datetime.now(client.tz),
+                            caps=Caps(folder / f"{client.slug}.caps.sqlite", client.slug))
 
 
 def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) -> eggs_routes.Hunt:

@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 from analyzer import routes as analyzer_routes
 from analyzer.routes import FindRequest, ServedClient
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
-from cornerstone_api.ask import QUESTION_MAX, YES, ClientAsker
+from cornerstone_api.ask import QUESTION_MAX, YES, Asker, ClientAsker
 from cornerstone_api.trade_wording import (
     GETS_NAMED,
     GETS_PLAYER,
@@ -28,6 +28,7 @@ from cornerstone_api.trade_wording import (
     pick_state,
     player_line,
 )
+from facts.writer import metered_press
 from league.jev_port import Jev, JevError, JevResponse
 
 logger = logging.getLogger(__name__)
@@ -145,6 +146,28 @@ def stream(work: Callable[[Emit], None]) -> StreamingResponse:
     return StreamingResponse(events(), media_type="text/event-stream", headers=STREAM_HEADERS)
 
 
+def capped_press(asker: Asker, roster_id: int, emit: Emit, press: Callable[[], dict]) -> dict | None:
+    """Run one press of the Advisor under the caps: the Answer, or None after the cap part when a cap stops it.
+
+    The press meter adds up each Claude call, so the league pays what the press cost, even when it fails. Only a press
+    with a Claude call counts as an Answer of the team, because a cached repeat is a kept Answer and costs nothing.
+    """
+    hit = asker.caps.check(roster_id, asker.clock())
+    if hit is not None:
+        logger.info("A trade Topic stopped at the %s cap, with no Claude call", hit.cap)
+        emit("data-cap", {"cap": hit.cap, "line": hit.line})
+        return None
+    answered = False
+    with metered_press() as meter:
+        try:
+            document = press()
+            answered = True
+            return document
+        finally:
+            if meter.calls:
+                asker.caps.record(roster_id, meter.usd, asker.clock(), counts=answered)
+
+
 def _step(emit: Emit) -> Callable[[str], None]:
     return lambda line: emit("data-step", {"line": line})
 
@@ -187,8 +210,10 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
         trade = ProposedTrade(season=asker.season, asker=body.roster_id, sides=[
             TradeSide(roster_id=body.roster_id, gives=[GivenPlayer(player_id=gives.player_id, to=gets.roster_id)]),
             TradeSide(roster_id=gets.roster_id, gives=[GivenPlayer(player_id=gets.player_id, to=body.roster_id)])])
-        document = analyzer_routes.analyze_trade(request, trade, served, step)
-        emit("data-answer", {"kind": "check", "document": document})
+        document = capped_press(asker, body.roster_id, emit,
+                                lambda: analyzer_routes.analyze_trade(request, trade, served, step))
+        if document is not None:
+            emit("data-answer", {"kind": "check", "document": document})
 
     return stream(work)
 
@@ -209,8 +234,10 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
 
     def work(emit: Emit) -> None:
         pair = FindRequest(season=asker.season, asker=body.roster_id, partner=body.partner)
-        document = analyzer_routes.find_trades(request, pair, served, _step(emit))
-        emit("data-answer", {"kind": "ideas", "document": document})
+        document = capped_press(asker, body.roster_id, emit,
+                                lambda: analyzer_routes.find_trades(request, pair, served, _step(emit)))
+        if document is not None:
+            emit("data-answer", {"kind": "ideas", "document": document})
 
     return stream(work)
 

@@ -11,13 +11,15 @@ from fakes import NEWS_RECORDED, FakeJev, recorded_news
 from fastapi.testclient import TestClient
 from test_api import CLIENT, HEADERS, StubAdvisor, StubPicker, StubRepair, _cpc, _here
 
-from analyzer.advisor import read_trade
+from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.finder_pick import pick_trades
 from analyzer.finder_search import search
 from analyzer.trade_news import NewsFeed
 from analyzer.values import AnalyzerValues
 from cornerstone_api.app import create_app
+from cornerstone_api.caps import TEAM_LINE
 from cornerstone_api.trade_wording import GETS_NAMED, GETS_PLAYER, GIVES_NAMED, GIVES_PLAYER
+from facts.writer import ClaudeWriter
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 
 # The fixtures of the analyzer tests: the repo with the week 6 history, its settings, and the recorded sources.
@@ -222,3 +224,64 @@ def test_trade_ideas_with_a_named_partner_keep_each_offer_to_that_partner(api):
     [answer] = _of(parts, "data-answer")
     assert answer["document"]["trade_pair"]["partner"]["roster_id"] == BO_GIRDS
     assert all(trade["sides"][1]["roster_id"] == BO_GIRDS for trade in answer["document"]["trades"])
+
+
+class MeteredAdvisor(StubAdvisor):
+    """The stub Advisor, after one Claude call of a ClaudeWriter over a stub client, so the press meter counts it:
+    1,000 input tokens at $4 per million and 100 output tokens at $20 per million on Opus, $0.0060 a call."""
+
+    def __call__(self, system, user, output_model):
+        usage = type("Usage", (), {"input_tokens": 1000, "output_tokens": 100, "cache_read_input_tokens": 0,
+                                   "cache_creation_input_tokens": 0})
+        response = type("Response", (), {"stop_reason": "end_turn", "parsed_output": "parsed", "usage": usage})()
+        messages = type("Messages", (), {"parse": lambda self, **kwargs: response})()
+        ClaudeWriter(client=type("Client", (), {"messages": messages})()).parse("user", AdvisorOut, "system")
+        return super().__call__(system, user, output_model)
+
+
+def _caps(api):
+    asker = api.app.state.askers["cpc"]
+    return asker.caps, asker.clock()
+
+
+def test_a_trade_check_records_its_claude_cost_and_counts_as_one_answer(settings, sources, jev):
+    advisor = MeteredAdvisor()
+    news = NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
+    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
+                     analyzer=functools.partial(read_trade, jev=jev, news=news, call=advisor))
+    api = TestClient(app)
+    caps, now = _caps(api)
+    assert _of(_parts(_check(api, SURE_TRADE)), "data-answer")
+    assert caps.answers_today(LIL_FRIDGE, now) == 1
+    assert caps.month_usd(now) == pytest.approx(0.0060 * len(advisor.calls))
+    # A cached repeat is a kept Answer: no Claude call, no cost, and no count.
+    assert _of(_parts(_check(api, SURE_TRADE)), "data-answer")
+    assert caps.answers_today(LIL_FRIDGE, now) == 1
+
+
+def test_a_trade_form_counts_toward_no_cap(api):
+    caps, now = _caps(api)
+    _parts(_check(api, VAGUE_TRADE))
+    assert caps.answers_today(LIL_FRIDGE, now) == 0
+
+
+def test_past_the_team_cap_a_sure_trade_check_gives_the_cap_line_and_no_claude_call(api, advisor):
+    caps, now = _caps(api)
+    for _ in range(25):
+        caps.record(LIL_FRIDGE, 0.01, now, counts=True)
+    parts = _parts(_check(api, SURE_TRADE))
+    assert _of(parts, "data-cap") == [{"cap": "team", "line": TEAM_LINE}]
+    assert _of(parts, "data-answer") == []
+    assert advisor.calls == []
+    # The form of an unsure pick costs nothing, so it still opens past the cap.
+    [answer] = _of(_parts(_check(api, VAGUE_TRADE)), "data-answer")
+    assert answer["kind"] == "form"
+
+
+def test_past_the_league_cap_trade_ideas_give_the_league_line_and_no_claude_call(api, advisor):
+    caps, now = _caps(api)
+    caps.record(None, 25.00, now, counts=False)
+    parts = _parts(api.post(IDEAS, json={"roster_id": LIL_FRIDGE}, headers=HEADERS))
+    [cap] = _of(parts, "data-cap")
+    assert cap["cap"] == "league" and cap["line"].startswith("The league's question budget is used up")
+    assert _of(parts, "data-answer") == []
