@@ -1,10 +1,12 @@
 """
-The sell high sheet of one roster: per player the trade value, the lineup value, the trend of the last 4 weeks, and
-the schedule ahead, side by side as facts. Code measures and drops no player. The Advisor picks and writes why.
+The sell high sheet of one roster: per player the trade value, the lineup value, the injury, the trend of the last 4
+weeks, and the schedule ahead, side by side as facts. Code measures and drops no player. The Advisor picks and writes
+why.
 """
 from decimal import Decimal
 
 from analyzer.chart_facts import player_value_facts
+from analyzer.measures import _injury_text, _report_weeks
 from facts.tokens import Nums, fact
 from league.history import season_rank
 from league.models import Fact
@@ -61,6 +63,23 @@ def _lineup_fact(snapshot: Snapshot, pid: str) -> Fact:
     if rank is not None:
         text += f" His position rank is {n.text(f'{player.position}{rank}')}."
     return fact(f"{pid}.lineup", text, n, [], [player.name])
+
+
+def _injury_fact(snapshot: Snapshot, pid: str) -> Fact:
+    """The text of the injury Measure for the player: how long he is out, then his weeks on the injury report.
+
+    A player who is out has a low price, so the Advisor needs this fact to judge a sell. The fact only states the
+    injury: no code drops an injured player from the sheet (ADR 0030). A player with no injury gets a plain line, so
+    each player has the same reads.
+    """
+    n = Nums()
+    player = snapshot.players[pid]
+    text = _injury_text(snapshot, pid, player.name)
+    if not text:
+        text = f"{player.name} is not out now."
+        if _report_weeks(snapshot, pid) is None:
+            text += " No count of his weeks on the injury report is on file."
+    return fact(f"{pid}.injury", n.text(text), n, [], [player.name])
 
 
 def _trend_fact(snapshot: Snapshot, pid: str) -> Fact:
@@ -123,12 +142,12 @@ def _week_fact(snapshot: Snapshot) -> Fact:
 
 def sell_sheet(snapshot: Snapshot, roster_id: int) -> dict[str, Fact]:
     """The facts of the sell high sheet by id: the week, then for each player of the roster his trade value, his
-    lineup value, his trend, and his schedule ahead. A week with no chart has the one trade.chart fact instead of
-    each value fact. The news of each player comes after, from the news feed of the Advisor."""
+    lineup value, his injury, his trend, and his schedule ahead. A week with no chart has the one trade.chart fact
+    instead of each value fact. The news of each player comes after, from the news feed of the Advisor."""
     players = sheet_players(snapshot, roster_id)
     values = {f.id: f for f in player_value_facts(players, snapshot)}
     facts = [_week_fact(snapshot), *(values.values() if "trade.chart" in values else [])]
     for pid in players:
         facts += [*([values[f"{pid}.value"]] if f"{pid}.value" in values else []), _lineup_fact(snapshot, pid),
-                  _trend_fact(snapshot, pid), _schedule_fact(snapshot, pid)]
+                  _injury_fact(snapshot, pid), _trend_fact(snapshot, pid), _schedule_fact(snapshot, pid)]
     return {f.id: f for f in facts}

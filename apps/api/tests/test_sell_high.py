@@ -109,7 +109,7 @@ def test_the_answer_names_a_player_of_lil_fridge_to_sell_with_the_reason(api):
     assert all(bullet["fact_text"] for bullet in pick["bullets"])
 
 
-def test_the_sheet_puts_the_four_reads_of_each_player_side_by_side_and_drops_no_player(api, seller):
+def test_the_sheet_puts_the_reads_of_each_player_side_by_side_and_drops_no_player(api, seller):
     # Code gives facts and the Advisor picks, so every QB, RB, WR, and TE of the roster reaches the call.
     _sell(api)
     [(system, user)] = seller.calls
@@ -118,9 +118,23 @@ def test_the_sheet_puts_the_four_reads_of_each_player_side_by_side_and_drops_no_
     assert listed == ranked
     for pid in listed:
         block = user.split(f"Player {pid}:")[1].split("\nPlayer ")[0]
-        for read in ("value", "lineup", "trend", "schedule"):
+        for read in ("value", "lineup", "injury", "trend", "schedule"):
             assert f"- {pid}.{read}: " in block
     assert "Playbook" in system or "playbook" in system.lower()
+
+
+def test_the_injury_fact_gives_the_text_of_the_injury_measure_and_drops_no_injured_player(api, seller):
+    # A player who is out has a low price, so the Advisor reads the injury. Code states it and drops no one (ADR 0030).
+    _sell(api)
+    [(_, user)] = seller.calls
+    injuries = dict(re.findall(r"^- (\d+)\.injury: (.*)$", user, re.MULTILINE))
+    lineups = dict(re.findall(r"^- (\d+)\.lineup: (.*)$", user, re.MULTILINE))
+    assert injuries.keys() == lineups.keys()
+    for pid, text in injuries.items():
+        if " is out " in lineups[pid] or " is out for the season" in lineups[pid]:
+            assert " is out " in text
+        else:
+            assert " is not out now." in text or " was on the injury report in " in text
 
 
 def test_the_trend_and_the_schedule_read_the_last_4_weeks_and_the_weeks_ahead(api, seller):

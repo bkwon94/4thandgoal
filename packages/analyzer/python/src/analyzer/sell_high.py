@@ -92,7 +92,7 @@ def _owner(fid: str) -> str | None:
 def build_sell_prompt(snapshot: Snapshot, roster_id: int, facts: dict[str, Fact],
                       feedback: str | None) -> tuple[str, str]:
     """The system prompt and the user message of the sell high call: the week facts, then each player with his own
-    facts, so each player's four reads sit side by side."""
+    facts, so each player's reads sit side by side."""
     lines = [f"Your team: roster {roster_id}, {snapshot.teams[roster_id].name}.", "", "Facts of the week:"]
     lines += [f"- {fid}: {f.text}" for fid, f in facts.items() if _owner(fid) is None]
     for pid in sheet_players(snapshot, roster_id):
