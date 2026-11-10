@@ -6,10 +6,10 @@ import logging
 import threading
 from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass, field
-from typing import Annotated, Any
+from typing import Any
 
 import anyio
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_ai import Agent, RunContext
@@ -18,6 +18,7 @@ from pydantic_ai.models import Model
 from pydantic_ai.models.anthropic import AnthropicModelSettings
 from pydantic_ai.ui.vercel_ai.response_types import BaseChunk, DoneChunk, FinishChunk, StartChunk
 
+from analyzer.routes import ServedClient
 from cornerstone_api import free_tools
 from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Route, route_question
 from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data
@@ -123,13 +124,6 @@ class FreeRequest(BaseModel):
     week: int = Field(ge=1, le=WEEK_MAX)
 
 
-def _served(request: Request) -> Any:
-    return request.app.state.served[request.path_params["slug"]]
-
-
-Served = Annotated[Any, Depends(_served)]
-
-
 async def answer_stream(asker: Asker, route: Route, question: str, roster_id: int, deps: FreeDeps,
                         instructions: str, model: Model | None = None) -> AsyncIterator[BaseChunk]:
     """The whole stream of one free answer: the first text with its steps, the check, at most one rewrite, and the
@@ -170,7 +164,8 @@ def season_data(served: Any, season: int, week: int, teams: dict[int, str]) -> f
 
 
 @router.post("/ask/free")
-async def free(body: FreeRequest, asker: ClientAsker, served: Served, request: Request) -> StreamingResponse:
+async def free(body: FreeRequest, asker: ClientAsker, served: ServedClient,
+               request: Request) -> StreamingResponse:
     """The stream of one free answer. The route runs again first, so only a question that Jev routes to a free answer
     reaches Claude, whatever the client sends."""
     rosters = await anyio.to_thread.run_sync(asker.rosters)
@@ -192,5 +187,5 @@ async def free(body: FreeRequest, asker: ClientAsker, served: Served, request: R
         raise HTTPException(status_code=429, detail={"cap": hit.cap, "line": hit.line})
     deps = FreeDeps(data=season_data(served, asker.season, body.week, rosters))
     instructions = run_instructions(asker.season, body.week, rosters[body.roster_id], route.team)
-    return adapter(AGENT, question).streaming_response(answer_stream(asker, route, question, body.roster_id, deps, instructions,
-                                                    request.app.state.free_model))
+    stream = answer_stream(asker, route, question, body.roster_id, deps, instructions, request.app.state.free_model)
+    return adapter(AGENT, question).streaming_response(stream)

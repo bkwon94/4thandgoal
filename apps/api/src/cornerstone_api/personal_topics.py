@@ -7,10 +7,10 @@ import json
 import logging
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
-from typing import Annotated, Any
+from typing import Any
 
 import anyio
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict
 from pydantic_ai import Agent
@@ -27,6 +27,7 @@ from pydantic_ai.ui.vercel_ai.response_types import (
     TextStartChunk,
 )
 
+from analyzer.routes import ServedClient
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import Asker, ClientAsker
 from cornerstone_api.caps import CapHit
@@ -83,13 +84,6 @@ class PersonalRequest(BaseModel):
     topic: PersonalTopic
     roster_id: int
     team: int | None = None
-
-
-def _served(request: Request) -> Any:
-    return request.app.state.served[request.path_params["slug"]]
-
-
-Served = Annotated[Any, Depends(_served)]
 
 
 def answer_key(topic: str, own: bool, facts: PersonalFacts, roster: list[str]) -> str:
@@ -181,7 +175,8 @@ async def answer_stream(facts: PersonalFacts, key: str, text: AsyncIterator[Base
 
 
 @router.post("/personal")
-async def personal(body: PersonalRequest, asker: ClientAsker, served: Served, request: Request) -> StreamingResponse:
+async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClient,
+                   request: Request) -> StreamingResponse:
     """The stream of one personal Topic for the team of the body. The facts come from the live snapshot, so the
     Answer follows each waiver claim and trade."""
     live = await load_live(served, asker.season)

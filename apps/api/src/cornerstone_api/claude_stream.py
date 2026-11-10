@@ -1,6 +1,6 @@
 """
-The stream engine of each checked Claude answer of the front door: one run through VercelAIAdapter, the Jev check of
-each sentence after the last word, at most one rewrite, and the cost record. The free answer and each personal Topic use it.
+The stream engine of each checked Claude answer of the front door, for the free answer and each personal Topic: a run
+through VercelAIAdapter, the Jev check of each sentence after the last word, at most one rewrite, and the cost record.
 """
 import logging
 from collections.abc import AsyncIterator, Callable

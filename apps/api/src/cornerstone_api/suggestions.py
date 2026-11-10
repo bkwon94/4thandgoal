@@ -4,13 +4,13 @@ Jev lifts a Topic when its fact makes it urgent. Code keeps the hard rules: the 
 """
 import json
 import logging
-from typing import Annotated, Any
 
 import anyio
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_ai.models import Model
 
+from analyzer.routes import ServedClient
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import YES, Asker, ClientAsker
 from cornerstone_api.ask_wording import TOPICS
@@ -64,13 +64,6 @@ class CurrentRequest(BaseModel):
     answers: list[KeyItem] = Field(max_length=CHECK_MAX)
 
 
-def _served(request: Request) -> Any:
-    return request.app.state.served[request.path_params["slug"]]
-
-
-Served = Annotated[Any, Depends(_served)]
-
-
 def league_facts(live: Live, roster_id: int) -> dict[str, str]:
     """The fact of each league Topic of the team, from the Topics file of the latest published week up to now."""
     snapshot = live.snapshot
@@ -108,7 +101,7 @@ async def head_start(asker: Asker, store: AnswerStore, live: Live, topic: Person
 
 
 @router.post("/suggestions")
-async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Served, request: Request,
+async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: ServedClient, request: Request,
                       tasks: BackgroundTasks) -> dict:
     """The Suggestions of Your team: the fact of each Topic, the lift Noul of each, the urgent Topics, and the 3
     picks. When the top pick is a personal Topic, its Answer builds after the response. A failed Jev call is a 503."""
@@ -146,7 +139,7 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
 
 
 @router.post("/personal/current")
-async def current(body: CurrentRequest, asker: ClientAsker, served: Served, request: Request) -> dict:
+async def current(body: CurrentRequest, asker: ClientAsker, served: ServedClient, request: Request) -> dict:
     """Whether the key of each personal Answer of the Thread is still the key of its facts now. It costs nothing: no
     Claude call and no Jev call. A stale Answer gets the time that the store kept it, for the stale line."""
     live = await load_live(served, asker.season)
