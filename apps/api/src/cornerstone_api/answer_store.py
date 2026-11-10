@@ -1,6 +1,6 @@
 """
-The kept Answers of the personal Topics of one client: one SQLite file with one table, on the Fly volume and never in
-the repo. The key of each Answer comes from the facts it read, so the same facts give back the same Answer at no cost.
+The kept Answers of the personal Topics and the kept free answers of one client: one SQLite file with one table, on the
+Fly volume and never in the repo. Each key comes from the data the Answer read, so the same data gives it back free.
 """
 import json
 import sqlite3

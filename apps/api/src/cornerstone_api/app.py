@@ -238,7 +238,8 @@ def create_app(
                         for client in clients}
     # The free answer runs the model of its agent, Claude Sonnet 5.5. A test sets a test model of Pydantic AI here.
     app.state.free_model = None
-    # The kept Answers of the personal Topics of each client sit next to its miss log, on the volume on Fly.
+    # The kept Answers of the personal Topics and the kept free answers of each client sit next to its miss log, on the
+    # volume on Fly.
     app.state.kept = {client.slug: AnswerStore(ask_dir(settings) / f"{client.slug}-answers.sqlite") for client in clients}
     # A personal Topic runs the model of its agent, Claude Sonnet 5.5. A test sets a test model of Pydantic AI here.
     app.state.personal_model = None

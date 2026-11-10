@@ -23,6 +23,8 @@ from pydantic_ai.ui.vercel_ai.response_types import (
     MessageMetadataChunk,
     StartChunk,
     TextDeltaChunk,
+    TextEndChunk,
+    TextStartChunk,
 )
 
 from cornerstone_api.ask import YES, Asker
@@ -70,6 +72,14 @@ def adapter(agent: Agent[Any, str], prompt: str, message_id: str = "ask") -> Ver
 def data(kind: str, body: dict, id: str | None = None) -> DataChunk:
     """One data part of the stream, such as the check state, which the site reads as `data-<kind>`."""
     return DataChunk(type=f"data-{kind}", id=id, data=body)
+
+
+async def kept_text(text: str) -> AsyncIterator[BaseChunk]:
+    """The text of a kept answer at once, with its check, and no Claude call."""
+    yield TextStartChunk(id="kept")
+    yield TextDeltaChunk(id="kept", delta=text)
+    yield TextEndChunk(id="kept")
+    yield data("check", {"state": "checked"}, id="check")
 
 
 async def run(agent: Agent[Any, str], prompt: str, deps: Any, instructions: str, history: list[ModelMessage],

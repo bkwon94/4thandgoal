@@ -17,6 +17,7 @@ from fastapi.testclient import TestClient
 from pydantic_ai.messages import ModelMessage, ModelRequest, ToolReturnPart, UserPromptPart
 from pydantic_ai.models.function import AgentInfo, DeltaToolCall, DeltaToolCalls, FunctionModel
 
+from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.app import create_app
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
@@ -349,6 +350,9 @@ def test_a_question_about_the_whole_season_reads_the_moves_of_each_week_in_one_c
 def _output(api: TestClient, tool: str, args: dict) -> dict:
     script = Script(tool, args, lambda result, prompts: "The data holds it.")
     api.app.state.free_model = script.model()
+    # Each read asks the same question, so a fresh store keeps the answer of the last read from coming back kept.
+    folder = api.app.state.settings.ask_dir
+    api.app.state.kept["cpc"] = AnswerStore(folder / f"{tool}-{len(list(folder.iterdir()))}.sqlite")
     chunks = _chunks(_ask(api, "week 1 results"))
     [output] = [c["output"] for c in chunks if c["type"] == "tool-output-available"]
     return output
@@ -366,3 +370,54 @@ def test_a_roster_and_a_game_log_read_by_name_with_the_points_of_the_saved_weeks
     assert [week["week"] for week in log["weeks"]] == [1, 2, 3, 4, 5]
     assert log["season_points"] == top["season_points"] == round(sum(w.get("fantasy_points", 0) for w in log["weeks"]), 2)
     assert _output(api, "team_roster", {"team": "Nobody FC"})["error"] == "No team is named Nobody FC."
+
+
+def test_a_repeat_question_streams_the_kept_answer_with_no_claude_call_and_no_cost(repo, fixture_raw_dir):
+    # Decision 11: a free answer keys on the question text plus the data it read, so a repeat over the same data comes
+    # back at once from the store, with its check and its Suggestion, and no Claude call, no Jev check, and no cost.
+    checks = Checks([True])
+    script = Script("standings", {}, _leader)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=_choice), script.model())
+    first = _chunks(_ask(api, "highest scoring team this season"))
+    caps = api.app.state.askers["cpc"].caps
+    spent, answers = caps.month_usd(NOW), caps.answers_today(LIL_FRIDGE, NOW)
+    second = _chunks(_ask(api, "highest scoring team this season"))
+    assert len(script.requests) == 2  # the tool call and the text of the first answer only
+    assert len(checks.seen) == 1
+    assert _text(second) == _text(first)
+    assert [c["data"]["state"] for c in second if c["type"] == "data-check"] == ["checked"]
+    assert [c["data"] for c in second if c["type"] == "data-suggestion"] == [{"topic": "playoff_race", "team": None}]
+    assert not any(c["type"].startswith("tool-") for c in second)
+    assert (caps.month_usd(NOW), caps.answers_today(LIL_FRIDGE, NOW)) == (spent, answers)
+
+
+def test_a_changed_roster_changes_the_key_of_a_free_answer_and_claude_writes_a_fresh_one(repo, fixture_raw_dir,
+                                                                                       tmp_path):
+    # The answer read the roster of Bo Girds. A drop changes that read, so the kept answer of the old roster stays
+    # unused.
+    def write(result: dict, prompts: int) -> str:
+        return f"Bo Girds has {len(result['players'])} players."
+
+    script = Script("team_roster", {"team": "bo girds"}, write)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=Checks([True, True]).answer, choose=_choice), script.model())
+    first = _text(_chunks(_ask(api, "how's Bo Girds doing")))
+    raw = tmp_path / "raw-after-a-drop"
+    shutil.copytree(fixture_raw_dir, raw)
+    rosters = json.loads((raw / "rosters.json").read_text())
+    bo = next(roster for roster in rosters if roster["roster_id"] == BO_GIRDS)
+    bo["players"] = bo["players"][1:]
+    (raw / "rosters.json").write_text(json.dumps(rosters))
+    # A second app over the same store, as after a restart, reads the roster after the drop.
+    api = _api(repo, raw, FakeJev(answer=Checks([True, True]).answer, choose=_choice), script.model())
+    second = _text(_chunks(_ask(api, "how's Bo Girds doing")))
+    assert len(script.requests) == 4
+    assert first != second
+
+
+def test_an_honest_miss_keeps_nothing_so_a_repeat_asks_claude_again(repo, fixture_raw_dir):
+    script = Script("standings", {}, lambda result, prompts: "Bo Girds leads with 9999 points.")
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=Checks([False] * 6).answer, choose=_choice), script.model())
+    _ask(api, "highest scoring team this season")
+    _ask(api, "highest scoring team this season")
+    assert len([c for c in _chunks(_ask(api, "highest scoring team this season")) if c["type"] == "data-miss"]) == 1
+    assert len(script.requests) == 9

@@ -22,16 +22,13 @@ from pydantic_ai.ui.vercel_ai.response_types import (
     DoneChunk,
     FinishChunk,
     StartChunk,
-    TextDeltaChunk,
-    TextEndChunk,
-    TextStartChunk,
 )
 
 from analyzer.routes import ServedClient
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import Asker, ClientAsker
 from cornerstone_api.caps import CapHit
-from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data
+from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data, kept_text
 from cornerstone_api.personal_facts import (
     PersonalFacts,
     PersonalTopic,
@@ -152,14 +149,6 @@ async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: Per
                                        asker.clock())
 
 
-async def _kept(answer: dict) -> AsyncIterator[BaseChunk]:
-    """The text of a kept Answer at once, with its check, and no Claude call."""
-    yield TextStartChunk(id="kept")
-    yield TextDeltaChunk(id="kept", delta=answer["text"])
-    yield TextEndChunk(id="kept")
-    yield data("check", {"state": "checked"}, id="check")
-
-
 async def _capped(topic: str, hit: CapHit) -> AsyncIterator[BaseChunk]:
     """The calm line of a cap in place of the text, with the 3 closest Topics, and no Claude call."""
     yield data("cap", {"cap": hit.cap, "line": hit.line, "closest": CLOSEST[topic]})
@@ -192,7 +181,7 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClie
     kept = await anyio.to_thread.run_sync(store.get, key)
     if kept is not None:
         logger.info("The personal Topic %s came from the store, with no Claude call", body.topic)
-        text = _kept(kept)
+        text = kept_text(kept["text"])
     elif (hit := await anyio.to_thread.run_sync(asker.caps.check, body.roster_id, asker.clock())) is not None:
         # Past a cap, everything that costs nothing still works: the data block from code, and the cap line.
         logger.info("The personal Topic %s stopped at the %s cap, with no Claude call", body.topic, hit.cap)
