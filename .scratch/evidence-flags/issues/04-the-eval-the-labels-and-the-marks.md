@@ -8,7 +8,7 @@ Spec: `.scratch/evidence-flags/PRD.md`. Acceptance tests AT-4, AT-7, AT-8, AT-9,
 
 **Blocked by:** 03.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The live eval prints the four rows and the bar result, and the marks of the module equal them (AT-7).
 - [x] On easter-eggs AT-41 at `8d646bd0`, the printed question keys equal the in-flow keys (AT-4).
