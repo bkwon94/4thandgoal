@@ -4,6 +4,7 @@ A read that fails a guard retries once. After two failed calls, AdvisorFailed st
 """
 import logging
 import re
+from collections.abc import Sequence
 from typing import Literal
 
 from pydantic import BaseModel
@@ -206,6 +207,34 @@ class TextGuard:
         return failures
 
 
+def bullet_failures(label: str, bullets: Sequence[Bullet], facts: dict[str, Fact], guard: TextGuard, *,
+                    sheet: str = "the sheet", least: int = MIN_BULLETS, most: int = MAX_BULLETS,
+                    ) -> tuple[list[str], list[str]]:
+    """The guards that the Bullets of one side or one pick break, and the ids of the facts they cite.
+
+    The read of one trade and the Finder pick check their Bullets the same way, so both call this. Each Bullet must
+    cite a fact of `sheet`, and its words must pass the guard and the news attribution on that fact.
+    """
+    failures = []
+    if not least <= len(bullets) <= most:
+        failures.append(f"{label}: it has {len(bullets)} bullets; the range is {least} to {most}")
+    cited = []
+    for number, bullet in enumerate(bullets, start=1):
+        where = f"{label} bullet {number}"
+        if bullet.fact_id not in facts:
+            failures.append(f"{where}: fact ID {bullet.fact_id} is not on {sheet}")
+            continue
+        cited.append(bullet.fact_id)
+        failures += guard.text_failures(where, bullet.text, [bullet.fact_id])
+        failures += attribution_failures(where, bullet.text, bullet.fact_id, facts)
+    return failures, cited
+
+
+def read_bullets(bullets: Sequence[Bullet], facts: dict[str, Fact]) -> list[ReadBullet]:
+    """The Bullets as the page shows them, each with the text of its fact, so a tap opens the fact."""
+    return [ReadBullet(text=b.text, mark=b.mark, fact_id=b.fact_id, fact_text=facts[b.fact_id].text) for b in bullets]
+
+
 def check_read(out: AdvisorOut, trade: ProposedTrade, snapshot: Snapshot, facts: dict[str, Fact]) -> list[str]:
     """Every guard a read breaks. An empty list means the read stands."""
     rosters = [side.roster_id for side in trade.sides]
@@ -223,17 +252,9 @@ def check_read(out: AdvisorOut, trade: ProposedTrade, snapshot: Snapshot, facts:
     guard = TextGuard(trade, snapshot, facts)
     every: list[str] = []
     for side in out.sides:
-        label = f"roster {side.roster_id}"
-        if not MIN_BULLETS <= len(side.bullets) <= MAX_BULLETS:
-            failures.append(f"{label}: it has {len(side.bullets)} bullets; the range is {MIN_BULLETS} to {MAX_BULLETS}")
-        for number, bullet in enumerate(side.bullets, start=1):
-            where = f"{label} bullet {number}"
-            if bullet.fact_id not in facts:
-                failures.append(f"{where}: fact ID {bullet.fact_id} is not on the sheet")
-                continue
-            every.append(bullet.fact_id)
-            failures += guard.text_failures(where, bullet.text, [bullet.fact_id])
-            failures += attribution_failures(where, bullet.text, bullet.fact_id, facts)
+        side_failures, cited = bullet_failures(f"roster {side.roster_id}", side.bullets, facts, guard)
+        failures += side_failures
+        every += cited
     for side in out.sides:
         failures += guard.text_failures(f"roster {side.roster_id} gains", side.gains, every)
     failures += guard.text_failures("case", out.case, every)
@@ -244,9 +265,7 @@ def _read(out: AdvisorOut, facts: dict[str, Fact]) -> TradeRead:
     """The read of a checked output, with the text of each cited fact. A fair read names no side that gives more."""
     fairness = Fairness(state=out.fairness, gives_more=out.gives_more if out.fairness == "lopsided" else None,
                         sides=tuple(FairnessSide(roster_id=side.roster_id, reason=side.gains) for side in out.sides))
-    sides = tuple(ReadSide(roster_id=side.roster_id, bullets=[
-        ReadBullet(text=b.text, mark=b.mark, fact_id=b.fact_id, fact_text=facts[b.fact_id].text)
-        for b in side.bullets]) for side in out.sides)
+    sides = tuple(ReadSide(roster_id=side.roster_id, bullets=read_bullets(side.bullets, facts)) for side in out.sides)
     return TradeRead(lean=out.lean, case=out.case, fairness=fairness, sides=sides)
 
 

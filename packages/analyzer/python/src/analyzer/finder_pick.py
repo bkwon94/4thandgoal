@@ -11,14 +11,16 @@ from analyzer.advisor import (
     Lean,
     ReadBullet,
     TextGuard,
+    bullet_failures,
     inner_word_failures,
     measured_sheet,
+    read_bullets,
     side_lines,
     system_prompt,
 )
 from analyzer.finder_search import Shortlist, ShortlistOffer
 from analyzer.trade_jev import jev_answer_facts, trade_jev_questions
-from analyzer.trade_news import NewsFeed, attribution_failures
+from analyzer.trade_news import NewsFeed
 from facts.writer import ClaudeCall, call_with_retry, finder_pick_call
 from league.models import Fact
 from league.snapshot import Snapshot
@@ -125,17 +127,10 @@ def check_picks(out: FinderPickOut, shortlist: Shortlist, snapshot: Snapshot,
                             f"{', '.join(SEND_LEANS[:-1])}, or {SEND_LEANS[-1]}")
         sheet = sheets[pick.offer_id]
         guard = TextGuard(offers[pick.offer_id].trade, snapshot, sheet)
-        if not MIN_BULLETS <= len(pick.bullets) <= MAX_BULLETS:
-            failures.append(f"{label}: it has {len(pick.bullets)} bullets; the range is {MIN_BULLETS} to {MAX_BULLETS}")
-        cited = []
-        for n, bullet in enumerate(pick.bullets, start=1):
-            where = f"{label} bullet {n}"
-            if bullet.fact_id not in sheet:
-                failures.append(f"{where}: fact ID {bullet.fact_id} is not on the sheet of offer {pick.offer_id}")
-                continue
-            cited.append(bullet.fact_id)
-            failures += guard.text_failures(where, bullet.text, [bullet.fact_id])
-            failures += attribution_failures(where, bullet.text, bullet.fact_id, sheet)
+        pick_failures, cited = bullet_failures(label, pick.bullets, sheet, guard,
+                                               sheet=f"the sheet of offer {pick.offer_id}", least=MIN_BULLETS,
+                                               most=MAX_BULLETS)
+        failures += pick_failures
         failures += guard.text_failures(f"{label} headline", pick.headline, cited)
     return failures
 
@@ -165,7 +160,6 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed,
                                              fact_lines=_fact_lines(offer, sheets[offer.offer_id]))
                                   for offer in shortlist.shortlist], none_line=None, fallback=True)
     offers = {offer.offer_id: offer for offer in shortlist.shortlist}
-    picks = [FinderPick(offer=offers[pick.offer_id], headline=pick.headline, fact_lines=[], bullets=[
-        ReadBullet(text=b.text, mark=b.mark, fact_id=b.fact_id, fact_text=sheets[pick.offer_id][b.fact_id].text)
-        for b in pick.bullets]) for pick in out.picks]
+    picks = [FinderPick(offer=offers[pick.offer_id], headline=pick.headline, fact_lines=[],
+                        bullets=read_bullets(pick.bullets, sheets[pick.offer_id])) for pick in out.picks]
     return FinderPicks(picks=picks, none_line=None if picks else out.none_line, fallback=False)
