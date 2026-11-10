@@ -9,14 +9,19 @@ from league.snapshot import Snapshot
 
 
 def _value_fact(snapshot: Snapshot, pid: str) -> Fact:
-    """The chart value of a traded player, or the plain statement that he is not on the chart.
+    """The place and the chart value of a traded player, or the plain statement that he is not on the chart.
 
     A player off the chart stays in play: a waiver pickup can be traded, so the fact says so and nothing more.
+    A tap on a Bullet shows this text on the page, so it says the place on the chart in plain words and never an
+    inner word such as "trade value".
     """
     n = Nums()
     name = snapshot.players[pid].name
-    if pid in snapshot.chart.values:
-        text = f"{name}'s trade value is {n(snapshot.chart.values[pid])} in the week of the trade."
+    values = snapshot.chart.values
+    if pid in values:
+        # The place counts every player on the chart, over all positions, with a higher value.
+        place = 1 + sum(1 for v in values.values() if v > values[pid])
+        text = f"{name} is {n.ord(place)} on the chart of week {n(snapshot.chart.week)}, at {n(values[pid])}."
     else:
         text = f"{name} is not on the chart of week {n(snapshot.chart.week)}."
     return fact(f"{pid}.value", text, n, [], [name])

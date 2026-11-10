@@ -54,9 +54,18 @@ def test_the_sheet_has_no_nfl_team_fact_when_the_team_stats_file_is_missing(make
     assert not [fid for fid in facts if fid.endswith(".nfl_team")]
 
 
-def test_a_traded_player_on_the_chart_has_one_fact_with_his_value(make_snap, trade):
+def test_a_traded_player_on_the_chart_has_one_fact_with_his_place_and_his_value(make_snap, trade):
     facts = trade_fact_sheet(trade, make_snap())
-    assert facts[f"{HAMPTON}.value"].text == "Omarion Hampton's trade value is 68.5 in the week of the trade."
+    # Hampton holds the top value on the week 6 chart, over all positions.
+    assert facts[f"{HAMPTON}.value"].text == "Omarion Hampton is 1st on the chart of week 6, at 68.5."
+    assert {"1", "6", "68.5"} <= set(facts[f"{HAMPTON}.value"].numbers)
+
+
+def test_no_fact_text_of_the_sheet_holds_an_inner_word(make_snap, trade):
+    # A tap on a Bullet shows the text of its fact, so no fact of the sheet may hold an inner word (PRD story 55).
+    for snap in (make_snap(), make_snap(chart=None)):
+        for f in trade_fact_sheet(trade, snap).values():
+            assert "trade value" not in f.text.lower() and "return bet" not in f.text.lower(), f.id
 
 
 def test_a_traded_player_not_on_the_chart_has_a_fact_that_says_so(make_snap, trade):
