@@ -15,7 +15,9 @@ Rules:
   the best. `projected_rank_at_position` is the place of a player among the players at his position.
 - In `slot_ranks`, `depth_means` says what each depth word means. Use those words, not your own.
 - In `starters`, a hole is a slot with no player or with a player whose projected rank at his position is worse
-  than `starter_line`.
+  than `starter_line`. A starter with `can_play_now` false is out now, such as on IR, so his slot is a hole.
+- In `weak_starting_slots`, each line is a slot of the lineup of the players who can play now, with no player or
+  a weak one. A slot that says "empty" is the weakest spot of the team.
 - Never do math on the numbers, and never guess what the facts do not say.
 - Never name a tool, a file, a grade formula, or a data source. Never use a heading, a table, or a list.
 - Call the person who runs another team "the manager" of that team.

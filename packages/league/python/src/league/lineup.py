@@ -184,10 +184,10 @@ def lineup_now(roster: list[str], snapshot: Snapshot) -> list[StartingSlot]:
     cannot start now, so he fills no slot. A slot with no player who can play is empty. The trade code reads this, so
     a team whose only QB is on IR has an empty QB slot. The hole read keeps lineup_slots, which marks his absence.
     """
-    return lineup_slots([pid for pid in roster if not _cannot_play_now(snapshot, pid)], snapshot)
+    return lineup_slots([pid for pid in roster if not cannot_play_now(snapshot, pid)], snapshot)
 
 
-def _cannot_play_now(snapshot: Snapshot, player_id: str) -> bool:
+def cannot_play_now(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player is out after the trade week or out for the season."""
     return _out_now(snapshot, player_id) or player_id in snapshot.out_for_season
 
