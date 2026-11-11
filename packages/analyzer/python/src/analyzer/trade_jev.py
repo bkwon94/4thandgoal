@@ -10,7 +10,7 @@ from analyzer.trade_facts import shown_ranks
 from facts.tokens import Nums, fact
 from league.jev_port import Jev, JevError, NoulQuestion
 from league.league_settings import LeagueSettings
-from league.lineup import FLEX_SLOTS, lineup_slots
+from league.lineup import FLEX_SLOTS, lineup_now
 from league.models import Fact
 from league.snapshot import Snapshot
 
@@ -65,10 +65,11 @@ def _weak_limit(settings: LeagueSettings, slot_name: str, roster_slot: str, posi
 def weak_starting_slots(snapshot: Snapshot, roster_id: int) -> list[str]:
     """The starting slots of the best lineup with no player or a starter past the weak rank, such as "RB2: X (RB31)".
 
-    A K or DEF slot is never weak, because no question of the trade reads it.
+    A K or DEF slot is never weak, because no question of the trade reads it. A player who cannot play now, such as
+    a player on IR, fills no slot, so his slot is empty or holds the player behind him.
     """
     weak = []
-    for slot in lineup_slots(snapshot.rosters[roster_id], snapshot):
+    for slot in lineup_now(snapshot.rosters[roster_id], snapshot):
         if slot.roster_slot not in FLEX_SLOTS and slot.roster_slot not in TRADE_POSITIONS:
             continue
         if slot.player is None:

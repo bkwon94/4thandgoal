@@ -14,7 +14,7 @@ from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_facts import shown_ranks
 from analyzer.trade_jev import TRADE_POSITIONS, YES_AT, trade_jev_questions, weak_starting_slots
 from league.jev_port import Jev, NoulQuestion
-from league.lineup import above_the_line, lineup_slots
+from league.lineup import above_the_line, lineup_now
 from league.ranks import OUT_STATUSES
 from league.snapshot import Snapshot
 
@@ -116,7 +116,7 @@ def _player_line(snapshot: Snapshot, pid: str, starters: set[str]) -> dict:
 def _team_state(snapshot: Snapshot, roster_id: int) -> dict:
     """One team as the questions read it: the name, the weak starting slots, the depth that code counts, the players."""
     roster = snapshot.rosters[roster_id]
-    starters = {slot.player for slot in lineup_slots(roster, snapshot) if slot.player is not None}
+    starters = {slot.player for slot in lineup_now(roster, snapshot) if slot.player is not None}
     players = [pid for pid in roster if snapshot.players[pid].position in TRADE_POSITIONS]
     depth = {pos: sum(1 for pid in players if snapshot.players[pid].position == pos and above_the_line(snapshot, pid))
              for pos in TRADE_POSITIONS}
