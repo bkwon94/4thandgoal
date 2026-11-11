@@ -5,8 +5,8 @@
  */
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { useId } from "react";
+import { AnimatePresence, motion, useIsPresent } from "framer-motion";
+import { type ComponentProps, useId } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { closeKeyboard, keepFocus } from "./keyboard-tap";
@@ -15,6 +15,13 @@ import { TOPICS, type Topic } from "./topics";
 
 /* A chip keeps its place when the row changes: a chip that leaves fades out, and the others glide to their new place. */
 const CHIP_GLIDE = { type: "spring", bounce: 0, duration: 0.4 } as const;
+
+/* One Suggestion chip. A chip that leaves, such as a tapped chip while it morphs into its question, hides from a screen
+   reader and takes no second tap, so a quick double tap never opens its Topic twice. */
+function SuggestionChip(props: ComponentProps<typeof motion.button>) {
+  const present = useIsPresent();
+  return <motion.button {...props} aria-hidden={present ? undefined : true} disabled={!present || undefined} />;
+}
 
 export function Suggestions({
   picks,
@@ -90,7 +97,7 @@ export function Suggestions({
         )}
         <AnimatePresence initial={false} mode="popLayout">
           {topics.map((topic, index) => (
-            <motion.button
+            <SuggestionChip
               key={topic.key}
               type="button"
               layout={!off}
@@ -111,7 +118,7 @@ export function Suggestions({
               <span aria-hidden className="max-w-full truncate font-mono text-meta leading-tight text-mute tabular-nums">
                 {facts[topic.key]}
               </span>
-            </motion.button>
+            </SuggestionChip>
           ))}
         </AnimatePresence>
       </div>

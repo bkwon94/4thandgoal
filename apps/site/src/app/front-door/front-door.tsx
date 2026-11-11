@@ -374,7 +374,7 @@ export function FrontDoor({
                   answers={answers}
                   avatars={avatars}
                   newest={newest}
-                  renderOther={(entry, ref) => {
+                  renderOther={(entry, ref, morph) => {
                     switch (entry.kind) {
                       case "pending":
                         return <PendingCard ref={ref} question={entry.question} />;
@@ -400,7 +400,7 @@ export function FrontDoor({
                           since !== undefined && answer && entry.read && passphrase
                             ? { line: staleLine(since ?? entry.read.at), onRefresh: () => void runTrade(entry.id, entry.question, tradeRequestOf({ ...entry, answer }, team.id), passphrase, picks.filter((pick) => !TRADE_TOPICS[pick])) }
                             : null;
-                        return <TradeCard ref={ref} question={entry.question} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} stale={refresh} />;
+                        return <TradeCard ref={ref} question={entry.question} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} stale={refresh} morph={morph} />;
                       }
                       case "miss":
                         return <MissCard ref={ref} question={entry.question} closest={entry.closest} block={entry.block} avatars={avatars} onPick={(key) => open(key)} />;
@@ -435,6 +435,7 @@ export function FrontDoor({
                           name: personalName(entry, other),
                           href: personalHrefs[entry.team]?.[entry.key] ?? null,
                           avatars,
+                          morph,
                         };
                         const since = entry.result ? stale[entry.result.key] : undefined;
                         return entry.result ? (

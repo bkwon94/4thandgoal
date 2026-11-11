@@ -369,11 +369,11 @@ function FormBody({ form, analyze }: { form: TradeForm; analyze: string }) {
    personal Answer. */
 export const TradeCard = forwardRef<
   HTMLElement,
-  { question: string; steps: string[]; answer: TradeAnswer | null; analyze: string; stale?: { line: string; onRefresh: () => void } | null }
->(function TradeCard({ question, steps, answer, analyze, stale = null }, ref) {
+  { question: string; steps: string[]; answer: TradeAnswer | null; analyze: string; stale?: { line: string; onRefresh: () => void } | null; morph?: string }
+>(function TradeCard({ question, steps, answer, analyze, stale = null, morph }, ref) {
   return (
     <article ref={ref} aria-label={question} aria-busy={answer === null} data-stale={stale ? "" : undefined} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
-      <QuestionBubble question={question} />
+      <QuestionBubble question={question} morph={morph} />
       {/* The stale line comes before the read it warns about, so the manager sees it first. */}
       {stale && <StaleLine line={stale.line} onRefresh={stale.onRefresh} />}
       {/* The dim is an opacity change only, so reduced motion keeps it as is. */}

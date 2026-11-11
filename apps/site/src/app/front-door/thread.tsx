@@ -9,7 +9,7 @@ import { type ReactNode, type RefObject, useState } from "react";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AnswerCard } from "./answer-card";
 import { morphId } from "./motion";
-import type { ThreadItem } from "./ask-thread";
+import { TRADE_TOPIC_OF, type ThreadItem } from "./ask-thread";
 import { topicName } from "./topics";
 
 /* One item of the Thread with its id, so a reply of the API lands in the place of its question. */
@@ -28,7 +28,8 @@ export function Thread({
   newest: RefObject<HTMLElement | null>;
   // The front door renders each item that is not a league Topic as its card: a trade, a free or personal Answer, a
   // miss, a cap line, a note, a question in flight, or the passphrase card.
-  renderOther: (entry: Exclude<Entry, { kind: "topic" }>, ref: RefObject<HTMLElement | null> | undefined) => ReactNode;
+  // `morph` is the id that the newest item shares with its tapped Suggestion, so the chip morphs into its question.
+  renderOther: (entry: Exclude<Entry, { kind: "topic" }>, ref: RefObject<HTMLElement | null> | undefined, morph: string | undefined) => ReactNode;
 }) {
   // A kept Thread loads whole, so each Answer above the newest one settled on an earlier visit. Those show at rest: a
   // reread plays no rise and no blur again, and only the fades stay. The set holds for the life of the Thread, so a
@@ -42,7 +43,7 @@ export function Thread({
         // never plays its entrance or its stream again.
         let body: ReactNode;
         if (entry.kind !== "topic") {
-          body = renderOther(entry, last ? newest : undefined);
+          body = renderOther(entry, last ? newest : undefined, last ? morphOf(entry) : undefined);
         } else {
           const answer = (answers[entry.team] ?? []).find((candidate) => candidate.topic === entry.key);
           if (!answer) return null;
@@ -55,7 +56,7 @@ export function Thread({
               name={name}
               answer={answer}
               avatars={avatars}
-              morph={last && entry.question === null ? morphId(entry.key) : undefined}
+              morph={last ? morphOf(entry) : undefined}
             />
           );
         }
@@ -68,6 +69,15 @@ export function Thread({
       })}
     </div>
   );
+}
+
+/* The id that an item shares with the Suggestion chip that opened it, so the chip morphs into its question. A tapped
+   league or personal Topic has no typed question. A tapped trade Topic asks with the name of its Topic, as
+   tradeRequestOf reads it. A typed question has no chip, so it gets no id. */
+function morphOf(entry: Entry): string | undefined {
+  if (entry.kind === "topic" || entry.kind === "personal") return entry.question === null ? morphId(entry.key) : undefined;
+  if (entry.kind === "trade") return entry.question === topicName(TRADE_TOPIC_OF[entry.mode]) ? morphId(TRADE_TOPIC_OF[entry.mode]) : undefined;
+  return undefined;
 }
 
 /* The name of a personal Topic in the Thread: the typed question, else the Topic name, with the team after it when it

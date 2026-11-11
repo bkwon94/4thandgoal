@@ -9,7 +9,7 @@ import { forwardRef, useState, type ReactNode } from "react";
 import { ArrowUpIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { AnswerBody } from "./answer-card";
-import { FAST, SLOW, STAGGER, fadeIn, riseIn } from "./motion";
+import { FAST, SLOW, STAGGER, bubbleIn, fadeIn } from "./motion";
 import type { PersonalBlock } from "./personal-stream";
 import { Steps } from "./steps";
 import { TOPICS } from "./topics";
@@ -18,13 +18,13 @@ import { TOPICS } from "./topics";
    never names one cause that the route did not check. The line says only that the site cannot answer. */
 export const MISS_LEAD = "I can't answer that.";
 
-/* The typed question, on the right as in a chat. */
-export function QuestionBubble({ question }: { question: string }) {
+/* The typed question, on the right as in a chat. A tapped Suggestion passes its `morph` id, so the chip morphs into it. */
+export function QuestionBubble({ question, morph }: { question: string; morph?: string }) {
   const off = useMotionOff();
   return (
     <motion.p
       className="m-0 max-w-[85%] self-end rounded-hero rounded-br-letter bg-ink px-sp-4 py-sp-2 text-body leading-tight font-semibold break-words text-card"
-      {...riseIn(off)}
+      {...bubbleIn(off, morph)}
     >
       {question}
     </motion.p>
