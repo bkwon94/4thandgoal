@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { forwardRef, useId, useState, type ReactNode } from "react";
 import { ArrowRightIcon } from "lucide-react";
 import { BulletRows } from "@cpc/analyzer/form/bullet-rows";
-import type { AnalyzeResponse, FindResponse, FinderTrade, Lean } from "@cpc/analyzer/lib/analyze-types";
+import type { AnalyzeResponse, FindResponse, FinderTrade, Lean, NearIdea } from "@cpc/analyzer/lib/analyze-types";
 import { prefillQuery, type Prefill } from "@cpc/analyzer/lib/prefill";
 import { Headshot } from "@cpc/league/headshot";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -216,20 +216,72 @@ function Offer({ trade, asker, analyze, index }: { trade: FinderTrade; asker: nu
   );
 }
 
-/* The trade ideas: each offer of the trade judge, or its plain line when it found none. */
+/* One near idea: an offer that the trade judge weighed and would not send. It keeps the rows of an offer, with no
+   headline, in the quieter ink, and the reason it fell short sits under the trade, so the manager reads why not. */
+function Near({ idea, asker, analyze, index }: { idea: NearIdea; asker: number; analyze: string; index: number }) {
+  const off = useMotionOff();
+  const mine = idea.sides.find((side) => side.roster_id === asker) ?? idea.sides[0];
+  const partner = idea.sides.find((side) => side.roster_id !== mine.roster_id);
+  const prefill: Prefill = {
+    team: mine.roster_id,
+    partner: partner?.roster_id ?? null,
+    gives: mine.gives.map((player) => player.player_id),
+    gets: mine.gets.map((player) => player.player_id),
+  };
+  return (
+    <motion.li className="flex flex-col gap-sp-2 border-t border-rule pt-sp-3 first:border-t-0 first:pt-0" {...riseIn(off, { delay: 0.12 + index * 0.08 })}>
+      {partner && <Caps>With {partner.team}</Caps>}
+      <p className="m-0 text-body leading-tight text-ink-2">
+        You give <span className="font-semibold">{names(mine.gives)}</span> and get <span className="font-semibold">{names(mine.gets)}</span>.
+      </p>
+      {/* The rule on the left marks the reason as a note on the trade above it, not a claim of its own. */}
+      <p className="m-0 border-l-2 border-rule pl-sp-3 text-body leading-body text-mute">{idea.reason}</p>
+      <PageLink href={tradeHref(analyze, prefill)} label="Check this trade" delay={0.2 + index * 0.08} />
+    </motion.li>
+  );
+}
+
+/* The near ideas under one plain label. The label names the list, so a screen reader hears it with the list. */
+function NearList({ near, label, asker, analyze, from }: { near: NearIdea[]; label: string; asker: number; analyze: string; from: number }) {
+  const id = useId();
+  return (
+    <div className="flex flex-col gap-sp-3">
+      <span id={id}>
+        <Caps>{label}</Caps>
+      </span>
+      <ul aria-labelledby={id} className="m-0 flex list-none flex-col gap-sp-4 p-0">
+        {near.map((idea, index) => (
+          <Near key={idea.offer_id} idea={idea} asker={asker} analyze={analyze} index={from + index} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/* The trade ideas: each offer of the trade judge, then the near ideas it weighed with why each fell short. With no
+   offer to send, the near ideas lead, because an idea is an idea. Only a search that built no offer shows its plain
+   line alone. */
 function IdeasBody({ doc, analyze }: { doc: FindResponse; analyze: string }) {
   const asker = doc.trade_pair.asker.roster_id;
   return (
     <Settle label="Trade ideas">
-      {doc.trades.length > 0 ? (
+      {doc.trades.length > 0 && (
         <ul className="m-0 flex list-none flex-col gap-sp-4 p-0">
           {doc.trades.map((trade, index) => (
             <Offer key={trade.offer_id} trade={trade} asker={asker} analyze={analyze} index={index} />
           ))}
         </ul>
-      ) : (
-        <p className="m-0 text-body leading-body text-ink-2">{doc.empty}</p>
       )}
+      {doc.near.length > 0 && (
+        <NearList
+          near={doc.near}
+          label={doc.trades.length > 0 ? "Also weighed" : "Ideas, none a clear win"}
+          asker={asker}
+          analyze={analyze}
+          from={doc.trades.length}
+        />
+      )}
+      {doc.trades.length === 0 && doc.near.length === 0 && <p className="m-0 text-body leading-body text-ink-2">{doc.empty}</p>}
       <PageLink href={tradeHref(analyze, { team: asker, partner: doc.trade_pair.partner?.roster_id ?? null, gives: [], gets: [] })} label="Build a trade on the Trade page" />
     </Settle>
   );

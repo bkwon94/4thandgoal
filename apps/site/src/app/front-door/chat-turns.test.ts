@@ -103,11 +103,27 @@ describe("threadTurns of a trade Answer", () => {
   });
 
   it("names the sides of the top 3 offers of a trade ideas list at most", () => {
-    const document = { trades: [1, 2, 3, 4].map(offer) };
+    const document = { trades: [1, 2, 3, 4].map(offer), near: [] };
     const [turn] = threadTurns([tradeItem("ideas", { kind: "ideas", document })], answers, teamName);
     expect(turn.answer).toContain("4 offers");
     for (const n of [1, 2, 3]) expect(turn.answer).toContain(`Bo Girds gives Give ${n}`);
     expect(turn.answer).not.toContain("Give 4");
+  });
+
+  it("names the near ideas and the reason of each, so a follow-up can point at one (H21)", () => {
+    const near = [1, 2].map((n) => ({ offer_id: `n${n}`, sides: offer(n).sides, reason: `Reason ${n}.` }));
+    const document = { trades: [], near, empty: "No offer helps enough." };
+    const [turn] = threadTurns([tradeItem("ideas", { kind: "ideas", document })], answers, teamName);
+    expect(turn.answer).toBe(
+      "No clear offer. No offer helps enough. Idea 1: Bo Girds gives Give 1. Lil Fridge gives Get 1. Why not: Reason 1. " +
+        "Idea 2: Bo Girds gives Give 2. Lil Fridge gives Get 2. Why not: Reason 2.",
+    );
+  });
+
+  it("names the near ideas after the offers", () => {
+    const document = { trades: [offer(1)], near: [{ offer_id: "n2", sides: offer(2).sides, reason: "Reason 2." }], empty: null };
+    const [turn] = threadTurns([tradeItem("ideas", { kind: "ideas", document })], answers, teamName);
+    expect(turn.answer).toBe("1 offer. Offer 1: Bo Girds gives Give 1. Lil Fridge gives Get 1. Idea 2: Bo Girds gives Give 2. Lil Fridge gives Get 2. Why not: Reason 2.");
   });
 });
 
