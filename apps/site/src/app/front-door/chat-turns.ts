@@ -34,16 +34,29 @@ function turnOf(item: ThreadItem, answers: Record<number, DoorAnswer[]>, teamNam
   return { question: line.name, answer: line.fact };
 }
 
-/* The one fact of each trade Answer: the Lean of a trade check, the count of the trade ideas, or the players to sell. */
+/* The most offers of a trade ideas list that a turn names. The chat context has a cap, so the rest stay as a count. */
+const TURN_OFFERS_MAX = 3;
+
+type TradeSide = Extract<TradeAnswer, { kind: "check" }>["document"]["trade"]["sides"][number];
+
+/* Who gives whom in a trade: each side with the names of the players it gives, such as "Ann gives Cy." */
+function sidesLine(sides: TradeSide[]): string {
+  return sides.map((side) => `${side.team} gives ${side.gives.map((player) => player.name).join(", ") || "nobody"}.`).join(" ");
+}
+
+/* The one fact of each trade Answer: the Lean and the sides of a trade check, the count and the top offers of the trade
+   ideas, or the players to sell. */
 function tradeFact(answer: TradeAnswer): string {
   switch (answer.kind) {
     case "check":
-      return answer.document.lean;
+      return `${answer.document.lean}. ${sidesLine(answer.document.trade.sides)}`;
     case "form":
       return "Pick the players on the Trade page";
     case "ideas": {
-      const count = answer.document.trades.length;
-      return count === 0 ? "No offer found" : count === 1 ? "1 offer" : `${count} offers`;
+      const trades = answer.document.trades;
+      if (trades.length === 0) return "No offer found";
+      const offers = trades.slice(0, TURN_OFFERS_MAX).map((trade, i) => `Offer ${i + 1}: ${sidesLine(trade.sides)}`);
+      return [trades.length === 1 ? "1 offer." : `${trades.length} offers.`, ...offers].join(" ");
     }
     case "sell": {
       const names = answer.document.picks.map((pick) => pick.player.name);
