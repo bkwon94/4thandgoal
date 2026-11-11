@@ -306,9 +306,43 @@ def test_weak_spots_name_each_hole_of_the_lineup_in_the_slice(settings, sources)
     assert starters and all({"slot", "player", "position", "projected_rank_at_position", "starter_line", "hole"}
                             <= set(s) for s in starters)
     # A hole is a slot with no player, or a starter below the line of his position (GLOSSARY.md, "Hole").
+    # A starter who cannot play now, such as a player on IR, is a hole too.
     for s in starters:
         below = s["projected_rank_at_position"] is None or s["projected_rank_at_position"] > s["starter_line"]
-        assert s["hole"] == (s["player"] is None or below)
+        assert s["hole"] == (s["player"] is None or below or not s["can_play_now"])
+
+
+def _qbs_on_ir(fixture_raw_dir: Path, tmp_path: Path, roster_id: int) -> Path:
+    """A copy of the recorded raw week with each QB of `roster_id` on IR, as Sleeper gives a player on IR."""
+    raw = tmp_path / "raw-qbs-on-ir"
+    shutil.copytree(fixture_raw_dir, raw)
+    rosters = json.loads((raw / "rosters.json").read_text())
+    players = json.loads((raw / "players.json").read_text())
+    roster = next(each for each in rosters if each["roster_id"] == roster_id)
+    for pid in roster["players"]:
+        if players[pid].get("position") == "QB":
+            players[pid] = {**players[pid], "injury_status": "IR", "status": "Inactive"}
+    (raw / "players.json").write_text(json.dumps(players))
+    return raw
+
+
+def test_weak_spots_read_a_starter_on_ir_as_out_now_as_trade_ideas_do(settings, sources, fixture_raw_dir, tmp_path):
+    # H12: Bo Girds has every QB on IR, so the lineup now has an empty QB slot. Weak spots names it the weakest
+    # spot and a hole, as the weak starting slots of `/find` do, though the roster grade still ranks the QB.
+    raw = _qbs_on_ir(fixture_raw_dir, tmp_path, BO_GIRDS)
+    on_ir = dataclasses.replace(sources, fetch_sleeper=lambda league_id: (load_raw(raw), test_api.FETCHED))
+    writer = Writer()
+    api = _api(settings, on_ir, FakeJev(answer=Checks([True]).answer), writer)
+    block = _block(_chunks(_ask(api, "weak_spots", roster_id=BO_GIRDS)))
+    facts = _facts(writer.requests[0])
+    assert "QB: empty" in facts["weak_starting_slots"]
+    [qb] = [s for s in facts["starters"] if s["slot"] == "QB"]
+    assert qb["can_play_now"] is False and qb["hole"] is True
+    stats = {stat["label"]: stat["value"] for stat in block["stats"]}
+    assert stats["Weakest spot"] == "QB"
+    assert int(stats["Holes"]) >= 1
+    assert block["rows"][0]["label"] == "QB"
+    assert "hole" in block["rows"][0]["note"]
 
 
 def test_a_personal_topic_needs_the_passphrase(settings, sources):

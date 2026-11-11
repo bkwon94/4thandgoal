@@ -2181,7 +2181,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_21():
+def test_the_document_version_is_22():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -2198,7 +2198,8 @@ def test_the_document_version_is_21():
     # The read of the Advisor takes the place of the decision and the factor rows, so no old result serves.
     # The Finder pick takes the place of the fairness and the reason of each finder trade, so no old list serves.
     # A fact text names a race group, not an old race word, so no stored fact text of the old words serves.
-    assert cache_module.DOCUMENT_VERSION == 21
+    # A player who cannot play now fills no slot of the Finder lineup, so no list stored under the old fill serves.
+    assert cache_module.DOCUMENT_VERSION == 22
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

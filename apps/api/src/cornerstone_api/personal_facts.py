@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Literal
 
 from analyzer.trade_jev import weak_starting_slots
+from league.lineup import cannot_play_now, lineup_now
 from league.numbers import ordinal
 from league.paths import week_label
 from league.season_inputs import SeasonInputs
@@ -18,7 +19,7 @@ PersonalTopic = Literal["weak_spots", "stack_up", "waiver_targets"]
 
 # The fact groups of each personal Topic (decision 03). The slice holds only these groups.
 FACT_GROUPS: dict[str, tuple[str, ...]] = {
-    "weak_spots": ("slot_ranks", "starters", "grade_read"),
+    "weak_spots": ("slot_ranks", "starters", "grade_read", "weak_starting_slots"),
     "stack_up": ("grade", "part_ranks", "slot_ranks", "grade_read"),
     "waiver_targets": ("slot_ranks", "starters", "waiver_list"),
 }
@@ -103,8 +104,29 @@ def _slot_ranks(grade: ManagerGrade) -> list[dict]:
 def _starters(snapshot: Snapshot, starters: list[Starter]) -> list[dict]:
     lines = snapshot.client.settings.lines
     return [{"slot": s.slot, "player": _name(snapshot, s.player_id), "position": s.position,
-             "projected_rank_at_position": s.rank, "starter_line": lines.get(s.position or ""), "hole": s.hole}
+             "projected_rank_at_position": s.rank, "starter_line": lines.get(s.position or ""), "hole": s.hole,
+             "can_play_now": s.player_id is None or not cannot_play_now(snapshot, s.player_id)}
             for s in starters]
+
+
+def _now(snapshot: Snapshot, starters: list[Starter]) -> list[Starter]:
+    """The starters of the roster grade, with each starter who cannot play now marked as a hole. GLOSSARY.md, "Hole".
+
+    The roster grade reads the projections ahead only, so a starter on IR with points after his return still fills
+    his slot there. He cannot start in the trade week, so the personal Topics read his slot as a hole, as the weak
+    starting slots of `/find` read it empty.
+    """
+    return [s.model_copy(update={"hole": True})
+            if s.player_id is not None and cannot_play_now(snapshot, s.player_id) else s for s in starters]
+
+
+def _empty_now(snapshot: Snapshot, roster_id: int) -> list[str]:
+    """The roster slot of each slot of the lineup now that no player who can play fills, in fill order.
+
+    These are the empty slots of the weak starting slots of `/find`. A K or DEF slot is never a hole, so it is not here.
+    """
+    return [slot.roster_slot for slot in lineup_now(snapshot.rosters[roster_id], snapshot)
+            if slot.player is None and slot.is_hole(snapshot)]
 
 
 def _waiver_list(board: dict | None, snapshot: Snapshot) -> list[dict]:
@@ -135,9 +157,11 @@ def _worst(grade: ManagerGrade):
     return sorted(grade.slots, key=lambda slot: (-slot.rank, slot.position))
 
 
-def _slot_rows(snapshot: Snapshot, grade: ManagerGrade, starters: list[Starter], teams: int) -> list[dict]:
+def _slot_rows(snapshot: Snapshot, grade: ManagerGrade, starters: list[Starter], teams: int,
+               empty: list[str]) -> list[dict]:
     rows = []
-    for slot in _worst(grade):
+    # An empty slot now is the weakest spot, whatever the slot rank of its position, so its row comes first.
+    for slot in sorted(_worst(grade), key=lambda slot: slot.position not in empty):
         holes = [_name(snapshot, s.player_id) or s.slot for s in starters if s.hole and s.position == slot.position]
         note = slot.depth if not holes else f"{slot.depth} · hole: {', '.join(holes)}"
         rows.append({"label": slot.position, "value": _of(slot.rank, teams), "note": note, "roster_id": None,
@@ -159,7 +183,7 @@ def trade_ideas_fact(snapshot: Snapshot, roster_id: int) -> str | None:
 def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades: dict[int, ManagerGrade],
                 starters: dict[int, list[Starter]], board: dict | None) -> PersonalFacts:
     """The slice and the data block of `topic` for the team of `roster_id`."""
-    grade, mine = grades[roster_id], starters[roster_id]
+    grade, mine = grades[roster_id], _now(snapshot, starters[roster_id])
     teams = len(snapshot.rosters)
     groups = {
         "grade": {"letter": grade.letter},
@@ -168,17 +192,23 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
         "starters": _starters(snapshot, mine),
         "grade_read": grade.read,
         "waiver_list": _waiver_list(board, snapshot) if topic == "waiver_targets" else [],
+        "weak_starting_slots": weak_starting_slots(snapshot, roster_id) if topic == "weak_spots" else [],
     }
     slice_ = {"team": snapshot.teams[roster_id].name, "teams_in_league": teams, "week": snapshot.week,
               **{group: groups[group] for group in FACT_GROUPS[topic]}}
     worst = _worst(grade)[0]
     hole_count = sum(1 for s in mine if s.hole)
     if topic == "weak_spots":
-        block = {"fact": f"{worst.position} ranks {_of(worst.rank, teams)}",
-                 "stats": [{"label": "Weakest spot", "value": worst.position},
-                           {"label": "Rank", "value": _of(worst.rank, teams)},
+        empty = _empty_now(snapshot, roster_id)
+        if empty:
+            fact, weakest, rank = f"{empty[0]} empty now", empty[0], "Empty now"
+        else:
+            fact, weakest, rank = f"{worst.position} ranks {_of(worst.rank, teams)}", worst.position, _of(worst.rank, teams)
+        block = {"fact": fact,
+                 "stats": [{"label": "Weakest spot", "value": weakest},
+                           {"label": "Rank", "value": rank},
                            {"label": "Holes", "value": str(hole_count)}],
-                 "rows": _slot_rows(snapshot, grade, mine, teams)}
+                 "rows": _slot_rows(snapshot, grade, mine, teams, empty)}
     elif topic == "stack_up":
         best = _worst(grade)[-1]
         block = {"fact": f"Grade {grade.letter}, {worst.position} ranks {_of(worst.rank, teams)}",
