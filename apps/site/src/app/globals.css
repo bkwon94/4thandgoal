@@ -101,8 +101,8 @@
     --spacing-door-lift: calc(var(--spacing-sp-6) * 3);
     /* The foot of a Thread with an Answer: the chips and the ask box stick above the dock and the home bar. */
     --spacing-door-foot: calc(var(--spacing-dock-space) + env(safe-area-inset-bottom));
-    /* The Thread header sticks under the top band: one 44px row and 4px above and below. An opened fold scrolls to its
-       top under both, so the question line never hides behind them. */
+    /* The Thread header sticks under the top band: one 44px row and 4px above and below. A new question scrolls to
+       its top under both, so its bubble never hides behind them. */
     --spacing-door-head: calc(var(--spacing-touch) + 2 * var(--spacing-sp-1));
     --spacing-door-under-head: calc(var(--spacing-band-height) + var(--spacing-door-head) + var(--spacing-sp-2));
     /* The list of all 13 Topics under "More" scrolls inside half the view, so the ask box stays on screen. */

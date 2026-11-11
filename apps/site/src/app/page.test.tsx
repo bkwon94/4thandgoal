@@ -284,22 +284,24 @@ describe("the Thread of Lil Fridge", () => {
     expect(articles[0].textContent).toContain("Read the full report");
   });
 
-  it("puts a new Answer open at the bottom and folds the older one to its question and one fact (AT-30)", async () => {
+  it("keeps each question and its Answer whole in the Thread, as a plain chat with no fold (AT-30)", async () => {
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
     await openTopic("Week recap");
     await openTopic("Power rankings");
+    await openTopic("Playoff race");
     const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
-    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings"]);
-    const [recap, rankings] = articles;
-    const fold = within(recap).getByRole("button", { name: "Week recap: You scored 80.11, 12th of 12" });
-    expect(fold.getAttribute("aria-expanded")).toBe("false");
-    expect(within(recap).queryByRole("link", { name: "Read the full report" })).toBeNull();
-    expect(within(rankings).getByRole("link", { name: "Read the full report" })).toBeTruthy();
-    expect(within(rankings).queryByRole("button", { expanded: false })).toBeNull();
+    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings", "Playoff race"]);
+    for (const article of articles) {
+      // Each Answer keeps its question bubble, its card, and its link, and nothing in it opens or closes.
+      expect(within(article).getByText(article.getAttribute("aria-label")!, { selector: "p" })).toBeTruthy();
+      expect(article.querySelector(".door-sheen")).not.toBeNull();
+      expect(within(article).getByRole("link", { name: "Read the full report" })).toBeTruthy();
+      expect(article.querySelector("[aria-expanded]")).toBeNull();
+    }
   });
 
-  it("opens a fold in place at its top under the Thread header, and folds it on a second tap (AT-31)", async () => {
+  it("scrolls each new question to its top under the Thread header, and leaves the older Answers in place (AT-31)", async () => {
     localStorage.setItem("cpc.your-team", "3");
     // jsdom does no layout and has no scrollIntoView, so the test records each element that asks to scroll.
     const scrolled: Element[] = [];
@@ -311,23 +313,14 @@ describe("the Thread of Lil Fridge", () => {
     });
     render(<HomePage />);
     await openTopic("Week recap");
-    await openTopic("Power rankings");
-    const [recap] = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
-    const fold = within(recap).getByRole("button", { name: /^Week recap/ });
     scrolled.length = 0;
 
-    fireEvent.click(fold);
-    expect(fold.getAttribute("aria-expanded")).toBe("true");
+    await openTopic("Power rankings");
+    const [recap, rankings] = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    expect(scrolled.at(-1)).toBe(rankings);
+    expect(scrolled).not.toContain(recap);
+    expect(rankings.className).toContain("scroll-mt-door-under-head");
     expect(within(recap).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/2026/week-08/");
-    // It opens in place: the week recap stays above the power rankings, and the page scrolls to its top.
-    const order = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
-    expect(order.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings"]);
-    expect(scrolled).toEqual([recap]);
-    expect(recap.className).toContain("scroll-mt-door-under-head");
-
-    fireEvent.click(fold);
-    expect(fold.getAttribute("aria-expanded")).toBe("false");
-    await waitFor(() => expect(within(recap).queryByRole("link", { name: "Read the full report" })).toBeNull());
   });
 
   it("keeps the Thread after a closed tab on the same day (AT-32)", async () => {
@@ -344,7 +337,9 @@ describe("the Thread of Lil Fridge", () => {
     await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
     const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
     expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings"]);
-    expect(within(articles[0]).getByRole("button", { name: /^Week recap/ }).getAttribute("aria-expanded")).toBe("false");
+    // A kept Answer shows whole after the reload, as it rendered before.
+    expect(within(articles[0]).getByRole("link", { name: "Read the full report" })).toBeTruthy();
+    expect(articles[0].querySelector("[aria-expanded]")).toBeNull();
   });
 
   it("starts an empty Thread when a rebuild publishes a later latest week (AT-33)", async () => {
