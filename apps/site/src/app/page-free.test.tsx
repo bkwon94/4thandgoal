@@ -215,6 +215,10 @@ describe("the free answer of Lil Fridge", () => {
     await ask("week 1 results");
     const answer = await articleWith("week 1 results", "you beat NFC Least");
     expect(answer.querySelectorAll(".stream-word").length).toBeGreaterThan(10);
+    // The words of one read sweep in one after another, so each new word plays its own blur and not one block.
+    const delays = [...answer.querySelectorAll<HTMLElement>(".stream-word")].map((word) => parseFloat(word.style.animationDelay || "0"));
+    expect(delays.at(-1)!).toBeGreaterThan(delays[0]);
+    expect([...delays].sort((a, b) => a - b)).toEqual(delays);
     expect(screen.queryByRole("button", { name: /stop|cancel/i })).toBeNull();
     expect(answer.textContent).not.toContain("Checked");
     finish();

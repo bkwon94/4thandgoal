@@ -13,7 +13,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { AskTarget } from "./ask-api";
 import { type CheckState, type FreeResult, type FreeView, isKept, newPace, pacedView, shownText, viewOf } from "./free-stream";
 import { QuestionBubble, Surface, TopicChip } from "./miss-card";
-import { QUICK, SLOW, SMOOTH, STAGGER, fadeIn } from "./motion";
+import { QUICK, SLOW, SMOOTH, STAGGER, VERY_SLOW, fadeIn } from "./motion";
 
 /* The least time in ms that "Checking" and the fixing line hold on screen, so a fast check still reads as a check
    (AT-20, AT-21): two of --duration-slow, long enough to read one short word. */
@@ -106,13 +106,30 @@ export function useAnswerStream<V extends FreeView>({
 export const FIXING_LINE = "Fixing a number…";
 
 /* The words of a text, each with the space after it. A word keeps its place by its index, so a word that grows as the
-   stream adds letters never plays its blur again. */
+   stream adds letters never plays its blur again. One read of the stream can hold many words, so the new words of a
+   read sweep in one after another on --duration-stagger, and the whole read takes no more than --duration-very-slow
+   (AT-44). A word that comes while a sweep runs starts after the last word of that sweep, so the words keep their
+   order. Each word keeps the delay it got as it first showed, so a later render never plays its blur again. */
 function StreamText({ text, live }: { text: string; live: boolean }) {
   const words = text.match(/\S+\s*/g) ?? [];
+  const delays = useRef<number[]>([]);
+  // The time that the last word of the sweep starts.
+  const sweepEnd = useRef(0);
+  const fresh = words.length - delays.current.length;
+  if (live && fresh > 0) {
+    const now = performance.now();
+    const step = Math.min(STAGGER, VERY_SLOW / fresh) * 1000;
+    let at = Math.max(now, sweepEnd.current);
+    for (let index = 0; index < fresh; index++) {
+      delays.current.push(at - now);
+      at += step;
+    }
+    sweepEnd.current = at - step;
+  }
   return (
     <p className="m-0 text-body leading-body text-ink">
       {live ? words.map((word, index) => (
-        <span key={index} className="stream-word">
+        <span key={index} className="stream-word" style={{ animationDelay: `${Math.round(delays.current[index] ?? 0)}ms` }}>
           {word}
         </span>
       )) : text}
