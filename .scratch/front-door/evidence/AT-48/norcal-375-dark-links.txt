@@ -1,0 +1,6 @@
+Visible links inside nav elements:
+ -> /2026/week-08/
+Home -> /
+Week 8 -> /2026/week-08/
+Rankings -> /rankings/
+Managers -> /2026/managers/

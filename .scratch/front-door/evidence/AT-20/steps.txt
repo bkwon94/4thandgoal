@@ -1,0 +1,5 @@
+Driver: tests.mjs AT-20, 375x812, Wednesday clock, one screen recording per theme.
+Setup: before each run, the weak spots row of Lil Fridge leaves the answer store, so the Answer streams with its check (one Claude call per run).
+1. Store Lil Fridge and the passphrase. Open /. Open Weak spots.
+2. Every ~50 ms, scroll the page to its end, so the mark stays in view, and read the last role=status line of the Answer with its color (mark-<theme>.txt).
+3. Frames come from the recording with ffmpeg.

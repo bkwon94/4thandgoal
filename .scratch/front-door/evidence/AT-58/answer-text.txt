@@ -1,0 +1,8 @@
+is my RB for their WR fair
+
+Name the players to check that trade. The Trade page lists each roster, so pick them there.
+
+Open the Trade page
+
+href of the link: /analyze/?team=3
+URL after the tap: http://127.0.0.1:4173/analyze/?team=3

@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-47 with Playwright Chromium device emulation: 393x852 (iPhone 15 size), deviceScaleFactor 3, isMobile, hasTouch, iPhone user agent.
+The bottom safe area comes from the CDP command Emulation.setSafeAreaInsetsOverride {top: 59, bottom: 34}, so env(safe-area-inset-bottom) is 34 px in the page.
+1. Store Lil Fridge and the passphrase. Open /. Open Week recap, so the Thread holds one Answer.
+2. Viewport shot iphone-393-<theme>.png. A second shot draws the 34 px home bar zone in pink with a bar, iphone-393-<theme>-home-bar-marked.png.

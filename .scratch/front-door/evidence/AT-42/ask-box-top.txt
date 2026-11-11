@@ -1,0 +1,3 @@
+Top of the ask box (px from the viewport top) before the send: 386
+Every 50 ms after the tap on Send (30 samples):
+398, 463, 528, 594, 638, 655, 662, 666, 667, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668

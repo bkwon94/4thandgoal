@@ -1,0 +1,2 @@
+Driver: tests.mjs AT-49, 375x900, light, Wednesday clock.
+For each route: open it, wait for network idle, scroll to the end in 400 px steps and back, take a full-page shot <name>-375-light.png.

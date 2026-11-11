@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-43, 375x812, Wednesday clock, screen recording recording-375-light.webm.
+1. Store Lil Fridge and the passphrase. Open / with an empty Thread. Wait 2 s.
+2. Tap the first Suggestion. Wait 4 s. Frames come from the recording with ffmpeg.
+Frames come from the recording with ffmpeg at 20 fps from 5.40 s (contact-sheet-20fps-from-5.40s.png, frame n at 5.40 + (n-1)/20 s).

@@ -1,0 +1,50 @@
+# The team count is the count that the team cap reads: SELECT COUNT(*) FROM spend WHERE roster_id = 3 AND counts = 1 AND day = <today in the league tz>, in <scratchpad>/ask/cpc.caps.sqlite.
+# The answer store holds the weak spots Answer of Lil Fridge kept earlier in the round (AT-18 and AT-20 built it):
+topic       roster_id  kept_at                           key             
+----------  ---------  --------------------------------  ----------------
+weak_spots  3          2026-11-10T20:06:52.935627-05:00  ac47c8f87b5dcb84
+weak_spots  6          2026-11-10T20:09:54.191584-05:00  3567ea4a03855948
+
+team count before: 9
+
+$ curl -s -X POST http://localhost:8080/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"topic":"weak_spots","roster_id":3}'   # request 1
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"weak_spots","team":3,"fact":"QB ranks 7th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"Holes","value":"0"}],"rows":[{"label":"QB","value":"7th of 12","note":"deep","roster_id":null,"you":false},{"label":"RB","value":"7th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"3rd of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"3rd of 12","note":"fine","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"ac47c8f87b5dcb848a61753eae33ee8233ed4a9441c787cf5195a35331e4c9a7"}}
+
+data: {"type":"text-start","id":"kept"}
+
+data: {"type":"text-delta","delta":"Your team has no true holes right now, since every starter sits inside the starter line. Your lowest slot ranks are RB and QB, both 7th in the league, though QB is deep with one spare player and RB has no spare. Derrick Henry is the softest RB starter at 17th among running backs. Your flex WRs are also thin: Jakobi Meyers is 30th and Khalil Shakir is 32nd at WR, close to the line of 36.","id":"kept"}
+
+data: {"type":"text-end","id":"kept"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+team count after request 1: 9
+
+$ curl -s -X POST http://localhost:8080/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"topic":"weak_spots","roster_id":3}'   # request 2
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"weak_spots","team":3,"fact":"QB ranks 7th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"Holes","value":"0"}],"rows":[{"label":"QB","value":"7th of 12","note":"deep","roster_id":null,"you":false},{"label":"RB","value":"7th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"3rd of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"3rd of 12","note":"fine","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"ac47c8f87b5dcb848a61753eae33ee8233ed4a9441c787cf5195a35331e4c9a7"}}
+
+data: {"type":"text-start","id":"kept"}
+
+data: {"type":"text-delta","delta":"Your team has no true holes right now, since every starter sits inside the starter line. Your lowest slot ranks are RB and QB, both 7th in the league, though QB is deep with one spare player and RB has no spare. Derrick Henry is the softest RB starter at 17th among running backs. Your flex WRs are also thin: Jakobi Meyers is 30th and Khalil Shakir is 32nd at WR, close to the line of 36.","id":"kept"}
+
+data: {"type":"text-end","id":"kept"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+team count after request 2: 9

@@ -1,0 +1,3 @@
+Driver: tests.mjs AT-42, 375x812, Wednesday clock, screen recording recording-375-light.webm.
+1. Store Lil Fridge and the passphrase. Open / with an empty Thread. Type "who am i playing sunday". Tap Send.
+2. Sample the top of the ask box form every 50 ms for 1.5 s (ask-box-top.txt).

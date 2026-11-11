@@ -1,0 +1,31 @@
+# AT-56: the page.json of CPC 2026 week 8, built on front-door (bfb301df) and on origin/main (777bde7c).
+# What runs: make page-json on each branch. It writes page.json from the saved facts and blurbs of week 8 with no writer call and no network, so neither run refetches Sleeper or writes new Claude text.
+# Why not the full build: cornerstone build calls Claude for each chapter, so two full builds write two different texts and differ on every branch. Ticket 02 says page-json alone does not reproduce the published file, because it has no image step. Both runs here have the same lack, so the diff compares the content that the code writes.
+
+## front-door (bfb301df), in the Spec worktree
+$ make -C apps/pipeline page-json CLIENT=cpc WEEK=8
+uv run --exact --package cornerstone cornerstone page-json --client cpc --season 2026 --week 8
+<front-door worktree>/clients/cpc/build/2026/week-08/page.json
+(exit 0)
+$ git status --short clients/cpc/build/2026/week-08/page.json   # empty: the output is byte for byte the committed build file
+
+## origin/main (777bde7c), in a detached worktree
+$ make -C apps/pipeline page-json CLIENT=cpc WEEK=8   # in a detached worktree of origin/main at 777bde7c
+uv run --exact --package cornerstone cornerstone page-json --client cpc --season 2026 --week 8
+<main worktree>/clients/cpc/build/2026/week-08/page.json
+(exit 0)
+$ git -C <main worktree> status --short clients/cpc/build/2026/week-08/page.json   # empty too
+
+## The diff of the two page.json files
+$ diff <front-door worktree>/clients/cpc/build/2026/week-08/page.json <main worktree>/clients/cpc/build/2026/week-08/page.json
+(exit 0: 0 means no difference)
+$ shasum -a 256 of each
+51b5f77778d3190132cf5a276c48c186ba68e62419b22e077ee2d8cfb6c1916e  front-door build page.json
+51b5f77778d3190132cf5a276c48c186ba68e62419b22e077ee2d8cfb6c1916e  main build page.json
+
+## The published page.json of week 8 on both branches
+$ git diff --stat origin/main HEAD -- clients/cpc/published/2026/week-08/page.json clients/norcal/published/2026/week-08/page.json
+(exit 0, no lines means no difference)
+$ git diff --stat origin/main HEAD -- clients/cpc/published/2026/week-08/
+ clients/cpc/published/2026/week-08/topics.json | 3495 ++++++++++++++++++++++++
+ 1 file changed, 3495 insertions(+)

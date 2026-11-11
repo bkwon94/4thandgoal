@@ -1,0 +1,10 @@
+articles with aria-busy=true at the shot: 1
+Each visible button at the shot (aria-label or text):
+- Switch to dark theme
+- Your team: Lil Fridge. Change the team
+- Clear
+- More
+- Power rankings: 6th, down 5
+- Waiver targets: 19 free agents on the list
+- Weak spots: QB ranks 7th of 12
+- Send

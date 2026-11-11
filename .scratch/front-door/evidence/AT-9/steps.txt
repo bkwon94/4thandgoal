@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-9, 375x812, Wednesday clock.
+1. Store Lil Fridge and the passphrase. Open /. Type "who am i playing sunday" in the ask box. Tap Send.
+2. Wait for the Answer. Shot 375-light (live run). api-calls.json holds each API call of the live run with its full body. api-log.txt is the API log of the run.
+3. The dark shot opens / in a fresh context with the local storage of the live run, so the Thread shows the kept Answer with no new question.

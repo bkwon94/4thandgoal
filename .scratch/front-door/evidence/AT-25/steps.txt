@@ -1,0 +1,1 @@
+From the live trade check of AT-24 (tests.mjs AT-24). case-and-lean.txt holds the lean, the case, and the fairness of the data-answer part of the trade-check stream, copied from evidence/AT-24/api-calls.json. 375-light.png is a copy of AT-24/375-light.png.

@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-2 (Playwright 1.64, Chromium), 375x812, clock fixed to Wednesday 2026-11-04 10:00 America/Los_Angeles.
+1. Fresh context. Store only the league passphrase. Open /. Shot sheet-375-<theme>.
+2. Tap Lil Fridge in the sheet. Wait for the Suggestions. Shot before-reload-375-<theme>.
+3. Reload. Count role=dialog elements. Shot after-reload-375-<theme>.

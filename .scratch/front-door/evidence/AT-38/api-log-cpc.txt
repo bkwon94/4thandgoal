@@ -1,0 +1,30 @@
+INFO:     127.0.0.1:55025 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55025 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55025 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 149ms (request req_01a1c83d73307b9e895db5fc68948c7a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 73ms (request req_01a1c83d737378388ea2aa600aa9e32a)
+INFO:     127.0.0.1:55025 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55025 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 100ms (request req_01a1c83d78be7b30ba9428b3b2a3cc87)
+INFO:     cornerstone_api.ask: A free answer stopped at the league cap, with no Claude call
+INFO:     127.0.0.1:55027 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55040 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55040 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55040 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 98ms (request req_01a1c83d92b97906b11d6369818e158e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 112ms (request req_01a1c83d93167364906f92d2ebec7bd8)
+INFO:     127.0.0.1:55040 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55040 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 68ms (request req_01a1c83d988372a6b508072348125e7f)
+INFO:     cornerstone_api.ask: A free answer stopped at the league cap, with no Claude call
+INFO:     127.0.0.1:55042 - "POST /clients/cpc/ask HTTP/1.1" 200 OK

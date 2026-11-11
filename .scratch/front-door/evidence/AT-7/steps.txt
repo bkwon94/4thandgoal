@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-7, 375x812, Wednesday clock.
+1. Store Lil Fridge and the passphrase. Open /. Shot before-tap.
+2. Tap the Power rankings chip. Wait for its Answer. Reload. Shot after-reload.
+3. Tap More. Shot after-reload-more.

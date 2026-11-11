@@ -1,0 +1,295 @@
+# AT-51: the Topic Answers of CPC 2026 week 8.
+# The command: make page-json, the step of the weekly build that writes page.json and topics.json from the saved week (no Sleeper refetch, no Claude call; see AT-56 for why the full build is not rerun).
+$ make -C apps/pipeline page-json CLIENT=cpc WEEK=8
+uv run --exact --package cornerstone cornerstone page-json --client cpc --season 2026 --week 8
+<front-door worktree>/clients/cpc/build/2026/week-08/page.json
+(exit 0)
+# The run also writes clients/cpc/build/2026/week-08/topics.json (an untracked file, moved out of the repo after the run).
+$ diff <the topics.json of the run> clients/cpc/published/2026/week-08/topics.json
+214c214
+<             "value": "B"
+---
+>             "value": "A"
+220,221c220,221
+<             "value": "154.2",
+<             "note": "QB · 22 a game",
+---
+>             "value": "127.92",
+>             "note": "QB · 21.3 a game",
+227,228c227,228
+<             "value": "152.4",
+<             "note": "WR · 16.9 a game",
+---
+>             "value": "125.8",
+>             "note": "WR · 15.7 a game",
+234,235c234,235
+<             "value": "122",
+<             "note": "TE · 17.4 a game",
+---
+>             "value": "103.2",
+>             "note": "TE · 17.2 a game",
+241c241
+<           "Strong at WR and TE. Soft at RB."
+---
+>           "Strong at QB and TE. Soft at RB."
+500c500
+<             "value": "B"
+---
+>             "value": "C"
+506,507c506,507
+<             "value": "204.14",
+<             "note": "QB · 25.5 a game",
+---
+>             "value": "174.6",
+>             "note": "QB · 24.9 a game",
+512,514c512,514
+<             "label": "Ja'Marr Chase",
+<             "value": "133.2",
+<             "note": "WR · 16.7 a game",
+---
+>             "label": "Ashton Jeanty",
+>             "value": "113.8",
+>             "note": "RB · 14.2 a game",
+519,521c519,521
+<             "label": "Ashton Jeanty",
+<             "value": "118.3",
+<             "note": "RB · 13.1 a game",
+---
+>             "label": "Ja'Marr Chase",
+>             "value": "106.7",
+>             "note": "WR · 15.2 a game",
+527c527
+<           "Strong at QB and TE. Soft at RB."
+---
+>           "Deep at TE. Thin at WR."
+792,793c792,793
+<             "value": "196.56",
+<             "note": "WR · 21.8 a game",
+---
+>             "value": "187.96",
+>             "note": "WR · 23.5 a game",
+799,800c799,800
+<             "value": "148.7",
+<             "note": "RB · 18.6 a game",
+---
+>             "value": "127",
+>             "note": "RB · 18.1 a game",
+805,807c805,807
+<             "label": "Travis Kelce",
+<             "value": "82.8",
+<             "note": "TE · 10.3 a game",
+---
+>             "label": "Bryce Young",
+>             "value": "74.72",
+>             "note": "QB · 14.9 a game",
+813c813
+<           "Strong at WR."
+---
+>           "Deep at QB. Thin at WR."
+1070,1072c1070,1072
+<             "label": "Jameson Williams",
+<             "value": "91.7",
+<             "note": "WR · 11.5 a game",
+---
+>             "label": "Puka Nacua",
+>             "value": "91.1",
+>             "note": "WR · 15.2 a game",
+1077,1079c1077,1079
+<             "label": "Puka Nacua",
+<             "value": "91.1",
+<             "note": "WR · 15.2 a game",
+---
+>             "label": "Jameson Williams",
+>             "value": "87.2",
+>             "note": "WR · 12.5 a game",
+1084,1086c1084,1086
+<             "label": "Kirk Cousins",
+<             "value": "82.74",
+<             "note": "QB · 20.7 a game",
+---
+>             "label": "Jalen Hurts",
+>             "value": "80.02",
+>             "note": "QB · 16 a game",
+1092c1092
+<           "Strong at RB. Soft at QB, WR, and TE."
+---
+>           "Soft at QB and TE."
+1358c1358
+<             "value": "B"
+---
+>             "value": "A"
+1364,1365c1364,1365
+<             "value": "145.6",
+<             "note": "RB · 16.2 a game",
+---
+>             "value": "125.2",
+>             "note": "RB · 15.7 a game",
+1371,1372c1371,1372
+<             "value": "140.4",
+<             "note": "RB · 17.5 a game",
+---
+>             "value": "123.7",
+>             "note": "RB · 17.7 a game",
+1378,1379c1378,1379
+<             "value": "132.6",
+<             "note": "RB · 16.6 a game",
+---
+>             "value": "122",
+>             "note": "RB · 17.4 a game",
+1385c1385
+<           "Strong at QB and TE. Thin at WR."
+---
+>           "Strong at RB and TE."
+1651c1651
+<             "value": "B"
+---
+>             "value": "A"
+1657,1658c1657,1658
+<             "value": "183.4",
+<             "note": "RB · 22.9 a game",
+---
+>             "value": "149.1",
+>             "note": "RB · 21.3 a game",
+1664,1665c1664,1665
+<             "value": "137.4",
+<             "note": "WR · 15.3 a game",
+---
+>             "value": "110",
+>             "note": "WR · 13.8 a game",
+1671,1672c1671,1672
+<             "value": "106",
+<             "note": "WR · 13.2 a game",
+---
+>             "value": "102.2",
+>             "note": "WR · 14.6 a game",
+1678c1678
+<           "Soft at QB. Thin at WR."
+---
+>           "Strong at WR. Soft at QB."
+1971c1971
+<           "Deep at QB. Soft at TE. Thin at RB and WR."
+---
+>           "Deep at QB. Soft at TE. Thin at WR."
+2241,2247d2240
+<           {
+<             "label": "Jordan Love",
+<             "value": "97.9",
+<             "note": "QB · 24.5 a game",
+<             "roster_id": null,
+<             "you": false
+<           },
+2258a2252,2258
+>             "roster_id": null,
+>             "you": false
+>           },
+>           {
+>             "label": "Chase Brown",
+>             "value": "72.9",
+>             "note": "RB · 10.4 a game",
+2264c2264
+<           "Soft at QB."
+---
+>           "Strong at TE. Soft at QB and WR."
+2536,2537c2536,2537
+<             "value": "192.2",
+<             "note": "RB · 24 a game",
+---
+>             "value": "178.8",
+>             "note": "RB · 25.5 a game",
+2542,2544c2542,2544
+<             "label": "Drake Maye",
+<             "value": "156.26",
+<             "note": "QB · 22.3 a game",
+---
+>             "label": "D'Andre Swift",
+>             "value": "138.7",
+>             "note": "RB · 17.3 a game",
+2549,2551c2549,2551
+<             "label": "D'Andre Swift",
+<             "value": "141.8",
+<             "note": "RB · 15.8 a game",
+---
+>             "label": "Drake Maye",
+>             "value": "135",
+>             "note": "QB · 22.5 a game",
+2557c2557
+<           "Strong at RB. Deep at QB."
+---
+>           "Strong at RB."
+2829,2830c2829,2830
+<             "value": "203.18",
+<             "note": "QB · 25.4 a game",
+---
+>             "value": "189.32",
+>             "note": "QB · 27 a game",
+2843,2844c2843,2844
+<             "value": "81.1",
+<             "note": "RB · 10.1 a game",
+---
+>             "value": "76.1",
+>             "note": "RB · 10.9 a game",
+2850c2850
+<           "Soft at RB and TE. Thin at WR."
+---
+>           "Strong at QB. Soft at RB and TE. Thin at WR."
+3121,3123c3121,3123
+<             "label": "Dak Prescott",
+<             "value": "149.16",
+<             "note": "QB · 18.6 a game",
+---
+>             "label": "Jonathan Taylor",
+>             "value": "133.7",
+>             "note": "RB · 16.7 a game",
+3128,3130c3128,3130
+<             "label": "Jonathan Taylor",
+<             "value": "140.6",
+<             "note": "RB · 15.6 a game",
+---
+>             "label": "Dak Prescott",
+>             "value": "129.66",
+>             "note": "QB · 18.5 a game",
+3143c3143
+<           "Strong at RB. Soft at WR."
+---
+>           "Strong at RB. Deep at QB. Soft at WR."
+3415,3416c3415,3416
+<             "value": "149.18",
+<             "note": "QB · 18.6 a game",
+---
+>             "value": "135.6",
+>             "note": "QB · 19.4 a game",
+3422,3423c3422,3423
+<             "value": "135.8",
+<             "note": "WR · 17 a game",
+---
+>             "value": "118.1",
+>             "note": "WR · 16.9 a game",
+3429,3430c3429,3430
+<             "value": "75.6",
+<             "note": "TE · 9.4 a game",
+---
+>             "value": "70.4",
+>             "note": "TE · 10.1 a game",
+3436c3436
+<           "Strong at QB and WR. Deep at WR and TE."
+---
+>           "Strong at QB and WR. Deep at WR and TE. Soft at RB."
+(exit 1: 0 means the run wrote the same file as the published one)
+# Each changed line sits in a your_season Answer (a check by Topic key over both files gives the set {'your_season'}). topics.py reads managers.json of the season for that Topic, and the season file in the repo now holds the week 9 state, because main published week 9 after week 8.
+
+# The list of Answers in the published week, clients/cpc/published/2026/week-08/topics.json:
+schema_version 1, season 2026, week 8, teams: 12
+- roster 1 The Blue Tent: 7 Answers: week_recap (You scored 100.31, 6th of 12), last_matchup (Won 100.31 to 98.88), next_matchup (Next: NFC Least, 3-13), power_rankings (5th, up 3), playoff_race (75% playoff odds), your_season (9-7, 6th of 12), leaders_trades (Brock Bowers, 1st at TE)
+- roster 2 All You Need Is Love: 7 Answers: week_recap (You scored 116.83, 4th of 12), last_matchup (Won 116.83 to 92.55), next_matchup (Next: Return of T Mac, 9-7), power_rankings (1st, up 4), playoff_race (81% playoff odds), your_season (11-5, 1st of 12), leaders_trades (Joe Burrow, 1st at QB)
+- roster 3 Lil Fridge: 7 Answers: week_recap (You scored 80.11, 12th of 12), last_matchup (Lost 80.11 to 121.16), next_matchup (Next: behold the lamb, 6-10), power_rankings (6th, down 5), playoff_race (86% playoff odds), your_season (10-6, 2nd of 12), leaders_trades (1 trade this week)
+- roster 4 NFC Least: 7 Answers: week_recap (You scored 85.08, 11th of 12), last_matchup (Lost 85.08 to 134.1), next_matchup (Next: The Blue Tent, 9-7), power_rankings (12th, down 2), playoff_race (1% playoff odds), your_season (3-13, 12th of 12), leaders_trades (Kirk Cousins, 2nd at QB)
+- roster 5 London Cooking: 7 Answers: week_recap (You scored 98.88, 7th of 12), last_matchup (Lost 98.88 to 100.31), next_matchup (Next: Maye d'force B with U, 9-7), power_rankings (8th, down 4), playoff_race (83% playoff odds), your_season (9-7, 4th of 12), leaders_trades (Michael Wilson, 3rd at WR)
+- roster 6 Bo Girds: 7 Answers: week_recap (You scored 88.2, 9th of 12), last_matchup (Lost 88.2 to 118.89), next_matchup (Next: Teehee, 8-8), power_rankings (7th, down 4), playoff_race (76% playoff odds), your_season (9-7, 3rd of 12), leaders_trades (Jacksonville Jaguars, 1st at DEF)
+- roster 7 To Infinity and Bijan: 7 Answers: week_recap (You scored 118.89, 3rd of 12), last_matchup (Won 118.89 to 88.2), next_matchup (Next: Unsolicited Dak Picks, 6-10), power_rankings (9th, up 3), playoff_race (7% playoff odds), your_season (7-9, 9th of 12), leaders_trades (Harold Fannin Jr., 2nd at TE)
+- roster 8 Return of T Mac: 7 Answers: week_recap (You scored 111.97, 5th of 12), last_matchup (Won 111.97 to 85.76), next_matchup (Next: All You Need Is Love, 11-5), power_rankings (4th, down 2), playoff_race (42% playoff odds), your_season (9-7, 7th of 12), leaders_trades (Pittsburgh Steelers, 2nd at DEF)
+- roster 9 Maye d'force B with U: 7 Answers: week_recap (You scored 121.16, 2nd of 12), last_matchup (Won 121.16 to 80.11), next_matchup (Next: London Cooking, 9-7), power_rankings (3rd, up 3), playoff_race (77% playoff odds), your_season (9-7, 5th of 12), leaders_trades (D'Andre Swift, 2nd at RB)
+- roster 10 behold the lamb: 7 Answers: week_recap (You scored 85.76, 10th of 12), last_matchup (Lost 85.76 to 111.97), next_matchup (Next: Lil Fridge, 10-6), power_rankings (11th, no change), playoff_race (4% playoff odds), your_season (6-10, 11th of 12), leaders_trades (Josh Allen, 3rd at QB)
+- roster 11 Unsolicited Dak Picks: 7 Answers: week_recap (You scored 92.55, 8th of 12), last_matchup (Lost 92.55 to 116.83), next_matchup (Next: To Infinity and Bijan, 7-9), power_rankings (10th, down 1), playoff_race (8% playoff odds), your_season (6-10, 10th of 12), leaders_trades (Washington Commanders, 3rd at DEF)
+- roster 12 Teehee: 7 Answers: week_recap (You scored 134.1, 1st of 12), last_matchup (Won 134.1 to 85.08), next_matchup (Next: Bo Girds, 9-7), power_rankings (2nd, up 5), playoff_race (61% playoff odds), your_season (8-8, 8th of 12), leaders_trades (Bhayshul Tuten, 1st at RB)
+Distinct Topics: 7: ['last_matchup', 'leaders_trades', 'next_matchup', 'playoff_race', 'power_rankings', 'week_recap', 'your_season']
+Total Answers: 84

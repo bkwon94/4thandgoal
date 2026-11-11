@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-26, Wednesday clock.
+1. Live run at 375x812 light with a recording: store Lil Fridge and the passphrase, open /, open Trade ideas, wait for the whole Answer. Shot 375-light.
+2. Each other width and theme opens / with the local storage of the live run, so the Thread shows the kept Answer with no new call.
+api-calls.json holds the trade ideas stream with the /find result. The recording is also the recording of AT-28.

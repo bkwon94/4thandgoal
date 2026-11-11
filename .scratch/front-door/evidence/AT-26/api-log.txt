@@ -1,0 +1,214 @@
+# The API log from line 1766, during this test.
+INFO:     127.0.0.1:54262 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54262 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54262 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 94ms (request req_01a1c83411cc7754996120da28aa7cb3)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 79ms (request req_01a1c83412287999b44c074c8349ece9)
+INFO:     127.0.0.1:54262 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54262 - "OPTIONS /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54264 - "POST /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     analyzer.jev_waves: Jev wave 1 (partner filter): 11 requests, about 19057 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 95ms (request req_01a1c834209d7bfaa4c631c9f026e5ba)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 108ms (request req_01a1c83420db7fcba9d45526136ef854)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 111ms (request req_01a1c83420c07703b3e52e4ece4f76df)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 145ms (request req_01a1c83420eb77b4b6658bdbfc68e86f)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 157ms (request req_01a1c83420fc7de9b4ad01e9274234cf)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 177ms (request req_01a1c8342121703d93a37a6a7790d6a4)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 183ms (request req_01a1c834211779e5a106f857e4ad0b3d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 227ms (request req_01a1c834213674bf8a317642811ee9e4)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 231ms (request req_01a1c834214b7259accca3e204dd93c2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 261ms (request req_01a1c8342170708b9d88535fa1591bcb)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1c83421607b91af126adfb3da0244)
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with The Blue Tent: stopped, partner_has=0.88, partner_spares=0.83, asker_has=0.13, asker_spares=0.43
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with All You Need Is Love: stopped, partner_has=0.87, partner_spares=0.69, asker_has=0.92, asker_spares=0.75
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with NFC Least: passed, partner_has=0.71, partner_spares=0.71, asker_has=0.93, asker_spares=0.72
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with London Cooking: stopped, partner_has=0.89, partner_spares=0.70, asker_has=0.87, asker_spares=0.72
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Bo Girds: stopped, partner_has=0.91, partner_spares=0.80, asker_has=0.17, asker_spares=0.58
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with To Infinity and Bijan: stopped, partner_has=0.69, partner_spares=0.42, asker_has=0.90, asker_spares=0.80
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Return of T Mac: stopped, partner_has=0.87, partner_spares=0.68, asker_has=0.86, asker_spares=0.79
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Maye d'force B with U: stopped, partner_has=0.64, partner_spares=0.64, asker_has=0.84, asker_spares=0.64
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with behold the lamb: stopped, partner_has=0.77, partner_spares=0.60, asker_has=0.91, asker_spares=0.75
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Unsolicited Dak Picks: stopped, partner_has=0.62, partner_spares=0.56, asker_has=0.92, asker_spares=0.74
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Teehee: passed, partner_has=0.88, partner_spares=0.79, asker_has=0.79, asker_spares=0.73
+INFO:     analyzer.jev_waves: Jev wave 2 (targets): 2 requests, about 5793 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 78ms (request req_01a1c83424997ee49e1694642ae282c8)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 81ms (request req_01a1c83424957281a74fde3dfc26318b)
+INFO:     analyzer.finder_search: Finder target questions with NFC Least: Kirk Cousins=0.60, Tyler Warren=0.22, Tetairoa McMillan=0.50, Makai Lemon=0.27, Seth McGowan=0.08, Hunter Henry=0.20, Saquon Barkley=0.19, Jameson Williams=0.49, Chase Brown=0.27, Caleb Williams=0.19, Travis Kelce=0.82, Stefon Diggs=0.67, Derrick Henry=0.89, Christian McCaffrey=0.91, Courtland Sutton=0.33, Jakobi Meyers=0.45, J.K. Dobbins=0.45, Tyler Allgeier=0.69, Khalil Shakir=0.39, Bryce Young=0.26, Michael Mayer=0.33, Jaxon Smith-Njigba=0.82
+INFO:     analyzer.finder_search: Finder targets with NFC Least: the asker gives ['Christian McCaffrey', 'Derrick Henry', 'Travis Kelce', 'Jaxon Smith-Njigba']; the partner gives ['Kirk Cousins']
+INFO:     analyzer.finder_search: Finder target questions with Teehee: Dalton Kincaid=0.25, Sam LaPorta=0.36, Bo Nix=0.30, Bhayshul Tuten=0.19, Omarion Hampton=0.19, Luther Burden III=0.62, DJ Moore=0.19, Tony Pollard=0.24, Tee Higgins=0.67, Trevor Lawrence=0.26, Amon-Ra St. Brown=0.79, Kenny Gainwell=0.13, Caleb Williams=0.25, Travis Kelce=0.73, Stefon Diggs=0.33, Derrick Henry=0.74, Christian McCaffrey=0.84, Courtland Sutton=0.17, Jakobi Meyers=0.28, J.K. Dobbins=0.25, Tyler Allgeier=0.38, Khalil Shakir=0.30, Bryce Young=0.53, Michael Mayer=0.19, Jaxon Smith-Njigba=0.68
+INFO:     analyzer.finder_search: Finder targets with Teehee: the asker gives ['Christian McCaffrey', 'Derrick Henry', 'Travis Kelce', 'Jaxon Smith-Njigba']; the partner gives ['Amon-Ra St. Brown', 'Tee Higgins', 'Luther Burden III']
+INFO:     analyzer.finder_search: Finder offers of Lil Fridge: 52
+INFO:     analyzer.finder_search: Finder offer 3:4034-4:1166: Lil Fridge gives Christian McCaffrey (RB, SF); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198-4:1166: Lil Fridge gives Derrick Henry (RB, BAL); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466-4:1166: Lil Fridge gives Travis Kelce (TE, KC); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:9488-4:1166: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198+4034-4:1166: Lil Fridge gives Christian McCaffrey (RB, SF) and Derrick Henry (RB, BAL); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+4034-4:1166: Lil Fridge gives Christian McCaffrey (RB, SF) and Travis Kelce (TE, KC); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-4:1166: Lil Fridge gives Christian McCaffrey (RB, SF) and Jaxon Smith-Njigba (WR, SEA); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+3198-4:1166: Lil Fridge gives Derrick Henry (RB, BAL) and Travis Kelce (TE, KC); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198+9488-4:1166: Lil Fridge gives Derrick Henry (RB, BAL) and Jaxon Smith-Njigba (WR, SEA); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+9488-4:1166: Lil Fridge gives Travis Kelce (TE, KC) and Jaxon Smith-Njigba (WR, SEA); NFC Least gives Kirk Cousins (QB, MIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034-12:7547: Lil Fridge gives Christian McCaffrey (RB, SF); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:4034-12:6801: Lil Fridge gives Christian McCaffrey (RB, SF); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034-12:12519: Lil Fridge gives Christian McCaffrey (RB, SF); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:3198-12:7547: Lil Fridge gives Derrick Henry (RB, BAL); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:3198-12:6801: Lil Fridge gives Derrick Henry (RB, BAL); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198-12:12519: Lil Fridge gives Derrick Henry (RB, BAL); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:1466-12:7547: Lil Fridge gives Travis Kelce (TE, KC); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:1466-12:6801: Lil Fridge gives Travis Kelce (TE, KC); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466-12:12519: Lil Fridge gives Travis Kelce (TE, KC); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:9488-12:7547: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:9488-12:6801: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:9488-12:12519: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:3198+4034-12:7547: Lil Fridge gives Christian McCaffrey (RB, SF) and Derrick Henry (RB, BAL); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:3198+4034-12:6801: Lil Fridge gives Christian McCaffrey (RB, SF) and Derrick Henry (RB, BAL); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198+4034-12:12519: Lil Fridge gives Christian McCaffrey (RB, SF) and Derrick Henry (RB, BAL); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:1466+4034-12:7547: Lil Fridge gives Christian McCaffrey (RB, SF) and Travis Kelce (TE, KC); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:1466+4034-12:6801: Lil Fridge gives Christian McCaffrey (RB, SF) and Travis Kelce (TE, KC); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+4034-12:12519: Lil Fridge gives Christian McCaffrey (RB, SF) and Travis Kelce (TE, KC); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-12:7547: Lil Fridge gives Christian McCaffrey (RB, SF) and Jaxon Smith-Njigba (WR, SEA); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-12:6801: Lil Fridge gives Christian McCaffrey (RB, SF) and Jaxon Smith-Njigba (WR, SEA); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-12:12519: Lil Fridge gives Christian McCaffrey (RB, SF) and Jaxon Smith-Njigba (WR, SEA); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:1466+3198-12:7547: Lil Fridge gives Derrick Henry (RB, BAL) and Travis Kelce (TE, KC); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:1466+3198-12:6801: Lil Fridge gives Derrick Henry (RB, BAL) and Travis Kelce (TE, KC); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+3198-12:12519: Lil Fridge gives Derrick Henry (RB, BAL) and Travis Kelce (TE, KC); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:3198+9488-12:7547: Lil Fridge gives Derrick Henry (RB, BAL) and Jaxon Smith-Njigba (WR, SEA); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:3198+9488-12:6801: Lil Fridge gives Derrick Henry (RB, BAL) and Jaxon Smith-Njigba (WR, SEA); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198+9488-12:12519: Lil Fridge gives Derrick Henry (RB, BAL) and Jaxon Smith-Njigba (WR, SEA); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:1466+9488-12:7547: Lil Fridge gives Travis Kelce (TE, KC) and Jaxon Smith-Njigba (WR, SEA); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 3:1466+9488-12:6801: Lil Fridge gives Travis Kelce (TE, KC) and Jaxon Smith-Njigba (WR, SEA); Teehee gives Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+9488-12:12519: Lil Fridge gives Travis Kelce (TE, KC) and Jaxon Smith-Njigba (WR, SEA); Teehee gives Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:4034-12:6801+7547: Lil Fridge gives Christian McCaffrey (RB, SF); Teehee gives Amon-Ra St. Brown (WR, DET) and Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034-12:12519+7547: Lil Fridge gives Christian McCaffrey (RB, SF); Teehee gives Amon-Ra St. Brown (WR, DET) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:4034-12:12519+6801: Lil Fridge gives Christian McCaffrey (RB, SF); Teehee gives Tee Higgins (WR, CIN) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:3198-12:6801+7547: Lil Fridge gives Derrick Henry (RB, BAL); Teehee gives Amon-Ra St. Brown (WR, DET) and Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198-12:12519+7547: Lil Fridge gives Derrick Henry (RB, BAL); Teehee gives Amon-Ra St. Brown (WR, DET) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:3198-12:12519+6801: Lil Fridge gives Derrick Henry (RB, BAL); Teehee gives Tee Higgins (WR, CIN) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:1466-12:6801+7547: Lil Fridge gives Travis Kelce (TE, KC); Teehee gives Amon-Ra St. Brown (WR, DET) and Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466-12:12519+7547: Lil Fridge gives Travis Kelce (TE, KC); Teehee gives Amon-Ra St. Brown (WR, DET) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:1466-12:12519+6801: Lil Fridge gives Travis Kelce (TE, KC); Teehee gives Tee Higgins (WR, CIN) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:9488-12:6801+7547: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Teehee gives Amon-Ra St. Brown (WR, DET) and Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:9488-12:12519+7547: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Teehee gives Amon-Ra St. Brown (WR, DET) and Luther Burden III (WR, CHI)
+INFO:     analyzer.finder_search: Finder offer 3:9488-12:12519+6801: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Teehee gives Tee Higgins (WR, CIN) and Luther Burden III (WR, CHI)
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 2 requests, about 15680 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 88ms (request req_01a1c83428897af6bc503a6b46f7ccbf)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 120ms (request req_01a1c83428947f47be26e6e99abd9ec4)
+INFO:     analyzer.finder_search: Finder shortlist 3:4034-12:6801+7547: score=0.243 fair=0.46 needs={3: 0.8, 12: 0.66}
+INFO:     analyzer.finder_search: Finder shortlist 3:4034-12:7547: score=0.231 fair=0.40 needs={3: 0.79, 12: 0.73}
+INFO:     analyzer.finder_search: Finder shortlist 3:3198-12:12519+6801: score=0.210 fair=0.46 needs={3: 0.76, 12: 0.6}
+INFO:     analyzer.finder_search: Finder shortlist 3:4034-12:12519+7547: score=0.208 fair=0.38 needs={3: 0.83, 12: 0.66}
+INFO:     analyzer.finder_search: Finder shortlist 3:3198-12:7547: score=0.201 fair=0.48 needs={3: 0.79, 12: 0.53}
+INFO:     analyzer.finder_search: Finder shortlist 3:3198-12:6801: score=0.196 fair=0.45 needs={3: 0.79, 12: 0.55}
+INFO:     analyzer.finder_search: Finder shortlist 3:3198-12:12519+7547: score=0.188 fair=0.40 needs={3: 0.81, 12: 0.58}
+INFO:     analyzer.finder_search: Finder shortlist 3:9488-12:7547: score=0.167 fair=0.46 needs={3: 0.79, 12: 0.46}
+INFO:     analyzer.finder_search: Finder shortlist 3:4034-12:12519+6801: score=0.158 fair=0.31 needs={3: 0.77, 12: 0.66}
+INFO:     analyzer.finder_search: Finder shortlist 3:9488-12:12519+7547: score=0.152 fair=0.39 needs={3: 0.83, 12: 0.47}
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/4034/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 4034: 5 items
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/7547/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 7547: 5 items
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/6801/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 6801: 5 items
+INFO:     analyzer.trade_news: News of player 4034 from the cache
+INFO:     analyzer.trade_news: News of player 7547 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/3198/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 3198: 5 items
+INFO:     analyzer.trade_news: News of player 6801 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/12519/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 12519: 5 items
+INFO:     analyzer.trade_news: News of player 4034 from the cache
+INFO:     analyzer.trade_news: News of player 7547 from the cache
+INFO:     analyzer.trade_news: News of player 12519 from the cache
+INFO:     analyzer.trade_news: News of player 3198 from the cache
+INFO:     analyzer.trade_news: News of player 7547 from the cache
+INFO:     analyzer.trade_news: News of player 3198 from the cache
+INFO:     analyzer.trade_news: News of player 6801 from the cache
+INFO:     analyzer.trade_news: News of player 3198 from the cache
+INFO:     analyzer.trade_news: News of player 7547 from the cache
+INFO:     analyzer.trade_news: News of player 12519 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/9488/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 9488: 5 items
+INFO:     analyzer.trade_news: News of player 7547 from the cache
+INFO:     analyzer.trade_news: News of player 4034 from the cache
+INFO:     analyzer.trade_news: News of player 6801 from the cache
+INFO:     analyzer.trade_news: News of player 12519 from the cache
+INFO:     analyzer.trade_news: News of player 9488 from the cache
+INFO:     analyzer.trade_news: News of player 7547 from the cache
+INFO:     analyzer.trade_news: News of player 12519 from the cache
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=3030 cache_read_input_tokens=0 input_tokens=23927
+WARNING:     analyzer.finder_pick: finder pick attempt 1 failed: pick #: offer #-#:#+# is not on the shortlist; pick #: offer #-#:# is not on the shortlist
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3030 input_tokens=24001
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 103ms (request req_01a1c834ceaf7516aebacc3ca68e4a4d)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=827 faithful.3.1=0.08 no faithful.3.2=0.05 no faithful.3.3=0.8 yes
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 66ms (request req_01a1c834cef17eb89104f76658fe7ebe)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=976 faithful.3.1=0.1 no faithful.3.2=0.56 unsure faithful.3.3=0.67 unsure faithful.3.4=0.56 unsure
+INFO:     analyzer.routes: Press of find for cpc: time=47.1s cost=$0.1602 claude_calls=2
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54264 - "OPTIONS /clients/cpc/personal/current HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     127.0.0.1:54264 - "POST /clients/cpc/personal/current HTTP/1.1" 200 OK

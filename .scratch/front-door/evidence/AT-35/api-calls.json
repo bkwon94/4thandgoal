@@ -1,0 +1,534 @@
+[
+  {
+    "at": "2026-11-11T01:30:20.170Z",
+    "method": "GET",
+    "path": "/clients/cpc/eggs/board",
+    "status": 200,
+    "request": null,
+    "response": {
+      "counts": {
+        "left": 0,
+        "found": 0,
+        "to_drop": 54
+      },
+      "weeks": [
+        {
+          "week": 9,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 10,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 11,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 12,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 13,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 14,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 15,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 16,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 17,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        }
+      ],
+      "words": [
+        {
+          "word": "CORNERSTONE",
+          "prize": 50,
+          "winner": null,
+          "managers": [
+            {
+              "roster_id": 1,
+              "team": "The Blue Tent",
+              "letters": []
+            },
+            {
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "letters": []
+            },
+            {
+              "roster_id": 3,
+              "team": "Lil Fridge",
+              "letters": []
+            },
+            {
+              "roster_id": 4,
+              "team": "NFC Least",
+              "letters": []
+            },
+            {
+              "roster_id": 5,
+              "team": "London Cooking",
+              "letters": []
+            },
+            {
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "letters": []
+            },
+            {
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "letters": []
+            },
+            {
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "letters": []
+            },
+            {
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "letters": []
+            },
+            {
+              "roster_id": 11,
+              "team": "Unsolicited Dak Picks",
+              "letters": []
+            },
+            {
+              "roster_id": 12,
+              "team": "Teehee",
+              "letters": []
+            }
+          ]
+        },
+        {
+          "word": "LANSDALE",
+          "prize": 30,
+          "winner": null,
+          "managers": [
+            {
+              "roster_id": 1,
+              "team": "The Blue Tent",
+              "letters": []
+            },
+            {
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "letters": []
+            },
+            {
+              "roster_id": 3,
+              "team": "Lil Fridge",
+              "letters": []
+            },
+            {
+              "roster_id": 4,
+              "team": "NFC Least",
+              "letters": []
+            },
+            {
+              "roster_id": 5,
+              "team": "London Cooking",
+              "letters": []
+            },
+            {
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "letters": []
+            },
+            {
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "letters": []
+            },
+            {
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "letters": []
+            },
+            {
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "letters": []
+            },
+            {
+              "roster_id": 11,
+              "team": "Unsolicited Dak Picks",
+              "letters": []
+            },
+            {
+              "roster_id": 12,
+              "team": "Teehee",
+              "letters": []
+            }
+          ]
+        },
+        {
+          "word": "EAGLES",
+          "prize": 20,
+          "winner": null,
+          "managers": [
+            {
+              "roster_id": 1,
+              "team": "The Blue Tent",
+              "letters": []
+            },
+            {
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "letters": []
+            },
+            {
+              "roster_id": 3,
+              "team": "Lil Fridge",
+              "letters": []
+            },
+            {
+              "roster_id": 4,
+              "team": "NFC Least",
+              "letters": []
+            },
+            {
+              "roster_id": 5,
+              "team": "London Cooking",
+              "letters": []
+            },
+            {
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "letters": []
+            },
+            {
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "letters": []
+            },
+            {
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "letters": []
+            },
+            {
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "letters": []
+            },
+            {
+              "roster_id": 11,
+              "team": "Unsolicited Dak Picks",
+              "letters": []
+            },
+            {
+              "roster_id": 12,
+              "team": "Teehee",
+              "letters": []
+            }
+          ]
+        }
+      ],
+      "latest": [],
+      "managers": [
+        {
+          "roster_id": 1,
+          "team": "The Blue Tent"
+        },
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love"
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge"
+        },
+        {
+          "roster_id": 4,
+          "team": "NFC Least"
+        },
+        {
+          "roster_id": 5,
+          "team": "London Cooking"
+        },
+        {
+          "roster_id": 7,
+          "team": "To Infinity and Bijan"
+        },
+        {
+          "roster_id": 8,
+          "team": "Return of T Mac"
+        },
+        {
+          "roster_id": 9,
+          "team": "Maye d'force B with U"
+        },
+        {
+          "roster_id": 10,
+          "team": "behold the lamb"
+        },
+        {
+          "roster_id": 11,
+          "team": "Unsolicited Dak Picks"
+        },
+        {
+          "roster_id": 12,
+          "team": "Teehee"
+        }
+      ],
+      "last_drop": null
+    }
+  },
+  {
+    "at": "2026-11-11T01:30:25.966Z",
+    "method": "POST",
+    "path": "/clients/cpc/personal/current",
+    "status": 200,
+    "request": {
+      "answers": [
+        {
+          "topic": "weak_spots",
+          "roster_id": 3,
+          "team": null,
+          "key": "ac47c8f87b5dcb848a61753eae33ee8233ed4a9441c787cf5195a35331e4c9a7"
+        }
+      ]
+    },
+    "response": {
+      "answers": [
+        {
+          "key": "ac47c8f87b5dcb848a61753eae33ee8233ed4a9441c787cf5195a35331e4c9a7",
+          "current": false,
+          "kept_at": "2026-11-10T20:06:52.935627-05:00"
+        }
+      ]
+    }
+  },
+  {
+    "at": "2026-11-11T01:30:26.153Z",
+    "method": "POST",
+    "path": "/clients/cpc/suggestions",
+    "status": 200,
+    "request": {
+      "roster_id": 3,
+      "order": [
+        "waiver_targets",
+        "weak_spots",
+        "power_rankings",
+        "week_recap",
+        "playoff_race",
+        "last_matchup",
+        "next_matchup",
+        "your_season",
+        "leaders_trades",
+        "stack_up",
+        "sell_high",
+        "trade_ideas",
+        "trade_check"
+      ],
+      "opened": {
+        "weak_spots": "QB ranks 7th of 12"
+      }
+    },
+    "response": {
+      "picks": [
+        "sell_high",
+        "power_rankings",
+        "week_recap"
+      ],
+      "facts": {
+        "week_recap": "You scored 80.11, 12th of 12",
+        "last_matchup": "Lost 80.11 to 121.16",
+        "next_matchup": "Next: behold the lamb, 6-10",
+        "power_rankings": "6th, down 5",
+        "playoff_race": "86% playoff odds",
+        "your_season": "10-6, 2nd of 12",
+        "leaders_trades": "1 trade this week",
+        "weak_spots": "QB ranks 7th of 12",
+        "stack_up": "Grade A, QB ranks 7th of 12",
+        "waiver_targets": "18 free agents on the list",
+        "trade_ideas": "Offers for your QB, 7th of 12",
+        "sell_high": "Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season"
+      },
+      "lifts": {
+        "week_recap": 0.77,
+        "last_matchup": 0.53,
+        "next_matchup": 0.34,
+        "power_rankings": 0.82,
+        "playoff_race": 0.16,
+        "your_season": 0.16,
+        "leaders_trades": 0.12,
+        "weak_spots": 0.23,
+        "stack_up": 0.23,
+        "waiver_targets": 0.33,
+        "trade_ideas": 0.29,
+        "sell_high": 0.86
+      },
+      "urgent": [
+        "sell_high",
+        "power_rankings",
+        "week_recap"
+      ],
+      "head_start": null,
+      "jev": {
+        "model": "jev-1.14.0",
+        "nouls": {
+          "lift_week_recap": 0.77,
+          "lift_last_matchup": 0.53,
+          "lift_next_matchup": 0.34,
+          "lift_power_rankings": 0.82,
+          "lift_playoff_race": 0.16,
+          "lift_your_season": 0.16,
+          "lift_leaders_trades": 0.12,
+          "lift_weak_spots": 0.23,
+          "lift_stack_up": 0.23,
+          "lift_waiver_targets": 0.33,
+          "lift_trade_ideas": 0.29,
+          "lift_sell_high": 0.86,
+          "sell_high_clear": 0.71
+        },
+        "choices": {
+          "sell_high_player": {
+            "caleb_williams": 0,
+            "travis_kelce": 0,
+            "stefon_diggs": 0,
+            "derrick_henry": 0,
+            "christian_mccaffrey": 0.09,
+            "courtland_sutton": 0.05,
+            "jakobi_meyers": 0,
+            "j_k_dobbins": 0,
+            "romeo_doubs": 0.37,
+            "tyler_allgeier": 0.48,
+            "khalil_shakir": 0,
+            "bryce_young": 0,
+            "michael_mayer": 0,
+            "jaxon_smith_njigba": 0,
+            "sione_vaki": 0.01
+          }
+        }
+      }
+    }
+  },
+  {
+    "at": "2026-11-11T01:30:36.144Z",
+    "method": "POST",
+    "path": "/clients/cpc/personal",
+    "status": 200,
+    "request": {
+      "topic": "weak_spots",
+      "roster_id": 3,
+      "team": null,
+      "id": "hhVeFL0TkuZEW6uH",
+      "messages": [
+        {
+          "parts": [
+            {
+              "type": "text",
+              "text": "Weak spots"
+            }
+          ],
+          "id": "mHhHkL8LybwrXkLO",
+          "role": "user"
+        }
+      ],
+      "trigger": "submit-message"
+    },
+    "response": "data: {\"type\":\"start\"}\n\ndata: {\"type\":\"data-block\",\"data\":{\"topic\":\"weak_spots\",\"team\":3,\"fact\":\"QB ranks 7th of 12\",\"stats\":[{\"label\":\"Weakest spot\",\"value\":\"QB\"},{\"label\":\"Rank\",\"value\":\"7th of 12\"},{\"label\":\"Holes\",\"value\":\"0\"}],\"rows\":[{\"label\":\"QB\",\"value\":\"7th of 12\",\"note\":\"deep\",\"roster_id\":null,\"you\":false},{\"label\":\"RB\",\"value\":\"7th of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"TE\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"WR\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false}]}}\n\ndata: {\"type\":\"data-key\",\"data\":{\"key\":\"03b4dbeb58c41dbe60d9f5258af004d8f9ebcc82dcd7fbad5f991275249af107\"}}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"text-start\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"Your team has no real holes\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\", since\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" every starter s\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"its in\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"side the starter line. The we\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"akest sp\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ots are the R\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"B group\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" and\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" the QB group, which both\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" rank 7th\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" of\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" 12 te\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ams. At\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" RB, Derrick\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Henry is the\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" soft\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"est star\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ter at 17th among\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" back\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"s,\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" and\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" at\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" QB,\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Bryce Young is \",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"8th at\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" his position. Your FLE\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"X sl\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ots are the thinnest part\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" of\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" the lineup, with J\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"akobi Meyers \",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"30th and Khalil\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Shakir 32nd among\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" rece\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ivers, though\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" both are still\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" in\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"side the line\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\".\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"text-end\",\"id\":\"07288cfc-680a-45af-b1cb-50c0e7e89012\"}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checking\"}}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"fixing\"}}\n\ndata: {\"type\":\"data-fix\",\"data\":{}}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"text-start\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"Your team has no real holes\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\", since every starter sits in\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"side the starter line. The we\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"akest posit\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ions are R\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"B and QB, which\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" both rank 7th of \",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"12 teams. At RB\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\", Derrick Henry\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" is the softest starter at \",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"17th among backs,\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" and at QB, Bry\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ce Young is 8th at\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" his position. Your\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" W\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"R and TE gro\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ups are strong, \",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ranking 3rd of\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" 12 teams each\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\".\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"text-end\",\"id\":\"bbc0de94-76ba-459a-8ef3-5e6d08a4c393\"}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checking\"}}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checked\"}}\n\ndata: {\"type\":\"finish\",\"finishReason\":\"stop\"}\n\ndata: [DONE]\n\n"
+  },
+  {
+    "at": "2026-11-11T01:30:38.804Z",
+    "method": "POST",
+    "path": "/clients/cpc/personal/current",
+    "status": 200,
+    "request": {
+      "answers": [
+        {
+          "topic": "weak_spots",
+          "roster_id": 3,
+          "team": null,
+          "key": "03b4dbeb58c41dbe60d9f5258af004d8f9ebcc82dcd7fbad5f991275249af107"
+        }
+      ]
+    },
+    "response": {
+      "answers": [
+        {
+          "key": "03b4dbeb58c41dbe60d9f5258af004d8f9ebcc82dcd7fbad5f991275249af107",
+          "current": true,
+          "kept_at": "2026-11-10T20:30:36.139335-05:00"
+        }
+      ]
+    }
+  }
+]

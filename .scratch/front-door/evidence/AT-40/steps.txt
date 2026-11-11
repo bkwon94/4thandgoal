@@ -1,0 +1,2 @@
+Driver: tests.mjs AT-40, 375x812, Wednesday clock, with the team cap of AT-37 still in the store.
+1. Store Lil Fridge and the passphrase. Open /. Open Power rankings. Wait 2.5 s. Shot 375-<theme>.

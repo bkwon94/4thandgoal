@@ -1,0 +1,5 @@
+Driver: tests.mjs AT-8, 375x812, Wednesday clock, screen recording recording-375-light.webm.
+Setup: cpc.opened-topics marks Power rankings and Week recap opened at their current facts, so the first Suggestion is a personal Topic.
+1. Store Lil Fridge and the passphrase. Open /. The API gets the Suggestions call.
+2. Wait 30 s. Tap the first Suggestion. Wait 6 s. Shot after-tap (viewport).
+api-log.txt is the API log of the run. api-calls.json holds each API call with its body.

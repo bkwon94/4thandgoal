@@ -1,0 +1,131 @@
+INFO:     127.0.0.1:55194 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 105ms (request req_01a1c83ff47675a6899118850fca82bd)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 70ms (request req_01a1c83ff4bb7df0a0c78814f73a1b57)
+INFO:     127.0.0.1:55194 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     cornerstone_api.suggestions: The head start builds the personal Topic weak_spots on open
+INFO:     127.0.0.1:55194 - "OPTIONS /clients/norcal/ask HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 60ms (request req_01a1c84002537a99ae3f6adaa20d4e60)
+INFO:     127.0.0.1:55196 - "POST /clients/norcal/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55196 - "OPTIONS /clients/norcal/ask/free HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55194 - "POST /clients/norcal/ask/free HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 102ms (request req_01a1c840027a7b9884f979c56be88e26)
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 89ms (request req_01a1c8400ac77131bd8ab461c9bb55e3)
+INFO:     cornerstone_api.claude_stream: The personal Topic weak_spots ended as checked, with 2 texts, 3108 input tokens, 347 output tokens, and a cost of $0.0078
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 48ms (request req_01a1c8400e507c74b0b6338cb69076e2)
+INFO:     cornerstone_api.claude_stream: The free answer ended as checked, with 1 tool calls, 1 texts, 3131 input tokens, 99 output tokens, and a cost of $0.0042
+INFO:     127.0.0.1:55227 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 92ms (request req_01a1c84029177eb0a71ea67d7af7046e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 86ms (request req_01a1c840297772e8b037ad97c7547d95)
+INFO:     127.0.0.1:55227 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55242 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 250ms (request req_01a1c8404679738faca74d8f9380138a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 78ms (request req_01a1c840479a7f40ad5ec8daa629b4d6)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 81ms (request req_01a1c84047ce75d1890bec03cbb33a96)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 52ms (request req_01a1c84048207519a1c458d398537794)
+INFO:     127.0.0.1:55244 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55265 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 68ms (request req_01a1c840664a759295036ac2c9c47ce2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 89ms (request req_01a1c840668c7c2da89429d20c162c7f)
+INFO:     127.0.0.1:55265 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55290 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 73ms (request req_01a1c8408e1a7f059144a62dee39be5f)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 54ms (request req_01a1c8408e6275e7addd14612b20c39f)
+INFO:     127.0.0.1:55290 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     cornerstone_api.suggestions: The head start builds the personal Topic weak_spots on open
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 66ms (request req_01a1c84094e67eb5a5f502e7eded72e0)
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 74ms (request req_01a1c840998a7626afe1cb13078333df)
+INFO:     cornerstone_api.claude_stream: The personal Topic weak_spots ended as checked, with 2 texts, 3119 input tokens, 288 output tokens, and a cost of $0.0073
+INFO:     127.0.0.1:55311 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 91ms (request req_01a1c840ad257a969975fa6f08ec0902)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 97ms (request req_01a1c840ad817c3b9db51c51b4f21f16)
+INFO:     127.0.0.1:55311 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55331 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 94ms (request req_01a1c840d5dd78c98646f6f69ad817d8)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 132ms (request req_01a1c840d5ba7493b85819d0a8060bfd)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 52ms (request req_01a1c840d61975018eadd2e7c3debe85)
+INFO:     127.0.0.1:55333 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 65ms (request req_01a1c840d62d75ee991ddb54016a6007)
+INFO:     127.0.0.1:55352 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 135ms (request req_01a1c840f7fc7fbebae9acefa1dcbc16)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 59ms (request req_01a1c840f88474bc811b95c6e2a51d36)
+INFO:     127.0.0.1:55352 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55371 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 86ms (request req_01a1c841226775239c5ee963a6650e04)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 110ms (request req_01a1c84122687c44b59c6d3e2c6b95d2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 54ms (request req_01a1c84122ba75408e2b92cee3ef3b90)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 80ms (request req_01a1c84122d171738697fbe57f22d579)
+INFO:     127.0.0.1:55373 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55405 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 59ms (request req_01a1c8413acf70afb3198deace5c9132)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 97ms (request req_01a1c8413b0b7ed398d98e6677b23988)
+INFO:     127.0.0.1:55405 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55428 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 79ms (request req_01a1c8415f8d79d4989da6563a5758dc)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 86ms (request req_01a1c8415f8e7b52b41e0824b14e203d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 82ms (request req_01a1c8415fdf7f6ebc86923d5e22f25c)
+INFO:     127.0.0.1:55430 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 92ms (request req_01a1c8415fe47834b75c99546e0dbff7)
+INFO:     127.0.0.1:55454 - "OPTIONS /clients/norcal/suggestions HTTP/1.1" 200 OK
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 61ms (request req_01a1c84176eb739ca4ace4a478a47857)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 79ms (request req_01a1c841772a70709121e801ff7a9985)
+INFO:     127.0.0.1:55454 - "POST /clients/norcal/suggestions HTTP/1.1" 200 OK

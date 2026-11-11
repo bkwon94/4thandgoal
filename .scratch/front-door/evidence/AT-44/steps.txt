@@ -1,0 +1,2 @@
+The recording is the live run of AT-19 (tests.mjs AT-19, "week 1 results"), 375x812, light.
+Frames come from the recording with ffmpeg at 25 fps (from 4 s) and 10 fps (from 8.5 s). Each frame-<time>-<state>.png is one frame. frames-7.32s-to-7.48s-strip.png shows the text area of five frames side by side.

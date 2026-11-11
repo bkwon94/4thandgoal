@@ -1,0 +1,3 @@
+Driver: tests.mjs AT-46, 375x812, Wednesday clock, reducedMotion reduce, screen recording recording-375-light.webm.
+1. Store Lil Fridge and the passphrase. Open /. Type "who am i playing sunday". Tap Send.
+2. Sample the top and the opacity of the ask box form every 50 ms (ask-box-samples.txt).

@@ -1,0 +1,3 @@
+Driver: tests.mjs AT-19 run (the same live run as AT-19 and AT-44), 375x812, light.
+1. Type "week 1 results". Tap Send.
+2. When an article has aria-busy=true and the first step shows, wait 0.8 s and take a viewport shot. visible-buttons-during-stream.txt lists every visible button at that moment.

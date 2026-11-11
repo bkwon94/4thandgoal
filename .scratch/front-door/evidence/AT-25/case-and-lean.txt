@@ -1,0 +1,24 @@
+# From the data-answer part of the /clients/cpc/trade-check stream of AT-24 (evidence/AT-24/api-calls.json), the /analyze result of the Advisor.
+Question: is Courtland Sutton for Zay Flowers fair
+
+lean: Send it
+
+case:
+If you trust that Flowers' full season matters more than his last few weeks, this is a move you make. This week's chart is missing, so this read rests on the players' own facts. Flowers ranks WR11 on the season, and he has been a real weekly starter for you. Sutton sits back at WR54, and his Broncos are on a bye this week anyway, so you give up nothing right now. The risk is that Flowers' snaps and targets are sliding, and he keeps showing up on the injury report. Managers here chase recent points, so his slump is exactly why you can buy him this cheap, and I'd send it.
+
+fairness: {
+ "state": "lopsided",
+ "gives_more": 6,
+ "sides": [
+  {
+   "roster_id": 3,
+   "reason": "Lil Fridge gets a proven starting WR for a struggling one."
+  },
+  {
+   "roster_id": 6,
+   "reason": "Bo Girds gets a WR with rising snaps and a soft late schedule."
+  }
+ ]
+}
+
+The site shows the fairness state as the line "It helps Lil Fridge more." (evidence/AT-24/page-text-375-light.txt), with gives_more = 6 (Bo Girds gives more).

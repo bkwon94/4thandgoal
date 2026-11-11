@@ -1,0 +1,20 @@
+Buttons of the Suggestions row, in order:
+1. More
+2. Power rankings | 6th, down 5
+3. Week recap | You scored 80.11, 12th of 12
+4. Waiver targets | 19 free agents on the list
+
+Items of "More" (13):
+1. Week recap | You scored 80.11, 12th of 12
+2. Your last matchup | Lost 80.11 to 121.16
+3. Your next matchup | Next: behold the lamb, 6-10
+4. Power rankings | 6th, down 5
+5. Playoff race | 86% playoff odds
+6. Your season | 10-6, 2nd of 12
+7. Position leaders and recent trades | 1 trade this week
+8. Waiver targets | 19 free agents on the list
+9. How you stack up | Grade A, QB ranks 7th of 12
+10. Weak spots | QB ranks 7th of 12
+11. Sell high or buy low | Who to move while his price is up
+12. Trade ideas | Offers for your QB, 7th of 12
+13. Trade check | Name a trade, get the read

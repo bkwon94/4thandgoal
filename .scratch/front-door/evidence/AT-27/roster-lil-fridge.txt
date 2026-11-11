@@ -1,0 +1,17 @@
+$ curl -s -H "X-League-Passphrase: localtest" "http://localhost:8080/clients/cpc/teams?season=2026"   # roster 3, the live Sleeper roster that the API read during the round
+Lil Fridge (roster 3), 15 players:
+- Caleb Williams (QB, CHI) id 11560
+- Travis Kelce (TE, KC) id 1466
+- Stefon Diggs (WR, WAS) id 2449
+- Derrick Henry (RB, BAL) id 3198
+- Christian McCaffrey (RB, SF) id 4034
+- Courtland Sutton (WR, DEN) id 5045
+- Jakobi Meyers (WR, JAX) id 5947
+- J.K. Dobbins (RB, DEN) id 6806
+- Romeo Doubs (WR, NE) id 8121
+- Tyler Allgeier (RB, ARI) id 8132
+- Khalil Shakir (WR, BUF) id 8134
+- Bryce Young (QB, CAR) id 9228
+- Michael Mayer (TE, LV) id 9482
+- Jaxon Smith-Njigba (WR, SEA) id 9488
+- Denver Broncos (DEF, DEN) id DEN

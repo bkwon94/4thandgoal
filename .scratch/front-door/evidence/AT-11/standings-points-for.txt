@@ -1,0 +1,14 @@
+# Points for of each team after week 8, from teams.<id>.points_for of clients/cpc/published/2026/week-08/page.json (the standings data of week 8).
+$ python3 -c "import json; p=json.load(open('clients/cpc/published/2026/week-08/page.json')); [print(t['name'], t['points_for']) for t in p['teams'].values()]"   # then sorted by points_for
+ 1. Bo Girds (roster 6): 921.62
+ 2. London Cooking (roster 5): 918.99
+ 3. Lil Fridge (roster 3): 909.55
+ 4. Maye d'force B with U (roster 9): 901.65
+ 5. Teehee (roster 12): 885.88
+ 6. The Blue Tent (roster 1): 871.19
+ 7. All You Need Is Love (roster 2): 850.17
+ 8. Return of T Mac (roster 8): 831.55
+ 9. Unsolicited Dak Picks (roster 11): 793.58
+10. To Infinity and Bijan (roster 7): 769.09
+11. behold the lamb (roster 10): 765.42
+12. NFC Least (roster 4): 700.97

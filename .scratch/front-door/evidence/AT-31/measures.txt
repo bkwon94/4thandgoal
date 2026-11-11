@@ -1,0 +1,2 @@
+After the first tap: top of the Week recap article = 118 px, bottom of the Thread header = 118 px (viewport coordinates).
+After the second tap: aria-expanded of the Week recap button = false.

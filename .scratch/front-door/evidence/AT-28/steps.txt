@@ -1,0 +1,3 @@
+The recording is the live run of AT-26 (tests.mjs AT-26): 375x812, light, Wednesday clock. Store Lil Fridge and the passphrase, open /, open Trade ideas from "More" or a chip, wait for the whole Answer.
+Frames come from the recording with ffmpeg at 1 fps (contact-sheet-1fps.png, frame n at n-1 s). Each frame-<time>-<state>.png is one frame of the recording.
+The step lines of the stream are in evidence/AT-26/api-calls.json (data-step parts).

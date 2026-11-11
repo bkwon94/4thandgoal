@@ -1,0 +1,3 @@
+Driver: tests.mjs AT-35, 375x812, Wednesday clock, screen recording recording-375-light.webm.
+1. Open / with the local storage of AT-34 (light), while the roster seam still adds the player. The stale line shows.
+2. Tap Refresh. Wait for Checked. Viewport shot end-375-light.

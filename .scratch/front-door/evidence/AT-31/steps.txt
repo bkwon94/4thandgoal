@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-31, 375x812, Wednesday clock, screen recording recording-375-light.webm.
+1. Build the Thread of AT-30: Week recap, then Weak spots.
+2. Tap the folded Week recap. Wait 2.5 s. Viewport shot opened. Measure its top and the header bottom.
+3. Tap it again. Wait 2.5 s. Viewport shot folded-again.

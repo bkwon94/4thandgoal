@@ -1,0 +1,5 @@
+{
+  "body": "spaceGrotesk, \"spaceGrotesk Fallback\"",
+  "h1": "spaceGrotesk, \"spaceGrotesk Fallback\"",
+  "accent": "#c2410c"
+}

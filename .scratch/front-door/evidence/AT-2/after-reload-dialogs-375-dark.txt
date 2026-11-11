@@ -1,0 +1,2 @@
+dialogs on the page after the reload: 0
+cpc.your-team = 3

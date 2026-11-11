@@ -1,0 +1,19 @@
+The end of the text of the last article, each time it changed (sampled every ~100 ms after the tap):
+5 ms: Weak spots Reading the rosters…
+418 ms: Weak spots WEAKEST SPOT QB RANK 6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12
+933 ms: Weak spots WEAKEST SPOT QB RANK 6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest
+1035 ms:  spots WEAKEST SPOT QB RANK 6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is
+1137 ms: ts WEAKEST SPOT QB RANK 6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB,
+1239 ms: POT QB RANK 6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks
+1342 ms: RANK 6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of
+1444 ms:  6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of 12.
+2265 ms: 2 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of 12. Checking
+2776 ms:  6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of 12.
+3897 ms: KEST SPOT QB RANK 6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which
+4002 ms: QB RANK 6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th
+4109 ms: RANK 6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of
+4210 ms:  6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of 12.
+4922 ms: 2 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of 12. Checking
+5435 ms: E fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of 12. Checking Checked Read the full report
+5748 ms: h of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of 12. Checked Read the full report
+8403 ms:  6th of 12 HOLES 1 QB deep 6th of 12 TE fine 6th of 12 WR thin · hole: Jakobi Meyers 6th of 12 RB fine 3rd of 12 Your weakest spot is QB, which ranks 6th of 12.

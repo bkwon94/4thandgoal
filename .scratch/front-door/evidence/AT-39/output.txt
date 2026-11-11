@@ -1,0 +1,22 @@
+# The seed. The Given says $19.90, but one free answer costs about $0.004 to $0.006 (see the cost lines of the log), so $19.90 needs more than 15 answers to pass $20.00. The seed sets the month to $19.997, still under the 80% mark of $20.00.
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "DELETE FROM spend WHERE roster_id IS NULL AND usd > 1"   # takes out the league seed of AT-38 and the first seed of this test
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "INSERT INTO spend (roster_id, day, month, usd, counts) VALUES (NULL, '2026-11-10', '2026-11', 19.6542647, 0)"
+league month before: $19.997   rows in alerts: 0
+
+# Answer 1, by Bo Girds (roster 6), so the team cap of Lil Fridge from AT-37 does not stop it:
+$ curl -s -X POST http://localhost:8080/clients/cpc/ask -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the most points against this season","roster_id":6,"week":8}'
+{'route': 'free', 'topic': None, 'team': None, 'line': None}
+$ curl -s -X POST http://localhost:8080/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the most points against this season","roster_id":6,"week":8}'   # only the check, error, and finish parts
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+data: {"type":"finish","finishReason":"stop"}
+league month after: $20.0007   rows in alerts: 1
+
+# Answer 2, a later answer:
+$ curl -s -X POST http://localhost:8080/clients/cpc/ask -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the best head to head record","roster_id":6,"week":8}'
+{'route': 'free', 'topic': None, 'team': None, 'line': None}
+$ curl -s -X POST http://localhost:8080/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the best head to head record","roster_id":6,"week":8}'   # only the check, error, and finish parts
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+data: {"type":"finish","finishReason":"stop"}
+league month after: $20.0047   rows in alerts: 1

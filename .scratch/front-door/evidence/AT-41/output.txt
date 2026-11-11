@@ -1,0 +1,17 @@
+$ curl -s -i -X POST http://localhost:8080/clients/cpc/ask -H "Content-Type: application/json" -d '{"question":"who am i playing sunday","roster_id":3,"week":8}'
+HTTP/1.1 401 Unauthorized
+date: Wed, 11 Nov 2026 01:04:27 GMT
+server: uvicorn
+content-length: 0
+vary: Origin
+
+
+
+$ curl -s -i -X POST http://localhost:8080/clients/cpc/ask -H "Content-Type: application/json" -H "X-League-Passphrase: wrong-passphrase" -d '{"question":"who am i playing sunday","roster_id":3,"week":8}'
+HTTP/1.1 401 Unauthorized
+date: Wed, 11 Nov 2026 01:04:27 GMT
+server: uvicorn
+content-length: 0
+vary: Origin
+
+

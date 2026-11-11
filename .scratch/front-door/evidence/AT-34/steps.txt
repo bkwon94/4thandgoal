@@ -1,0 +1,5 @@
+Driver: tests.mjs AT-34 and AT-34-after, 375x812, Wednesday clock.
+1. Store Lil Fridge and the passphrase. Open /. Open Weak spots (kept in the answer store). Wait for Checked. Shot before-375-<theme>. Keep the storage state.
+2. The roster seam of the evidence launcher of the API (scratchpad driver/launch_api.py): when its flag file exists, the live Sleeper rosters come back with one more player on roster 3, Lil Fridge. The flag names Sione Vaki (player 11729), a free agent.
+3. Open / in a new context with the kept storage state. Wait for the stale line. Shot after-375-<theme>. marks-after-375-<theme>.txt counts the "Checked" text on the page.
+api-calls-after-<theme>.json holds the key check request and response (/clients/cpc/personal/current).

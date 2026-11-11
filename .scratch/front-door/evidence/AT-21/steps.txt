@@ -1,0 +1,7 @@
+Instrument: pytest of the API with FakeJev and a stand-in writer (output.txt), then a replay of the recorded stream in the front door.
+1. Run the two FakeJev tests of test_personal_topics.py, and a temp test file with the same runs that saves each raw stream (output.txt holds both commands and their output). The stream of the first fail is at-21-weak-spots-one-failed-claim.sse.
+2. Serve that stream from a small replay server on 127.0.0.1:8090 (scratchpad driver/replay.mjs). It sends each part in order with a pause: 60 ms per text-delta, 500 ms per data-check or data-fix, 150 ms for each other part.
+3. Driver replay-test.mjs AT-21: 375x812, light, Wednesday clock, screen recording recording-375-light.webm. Playwright routes the POST to /clients/cpc/personal to the replay server. Store Lil Fridge and the passphrase, open /, open Weak spots.
+4. Every ~100 ms, scroll to the end and read the end of the last article text (replay-text-changes.txt). Frames come from the recording with ffmpeg.
+The recorded stream comes from the test fixture data (week 6), so its block shows QB 6th of 12 and 1 hole. Its key is not a live key, so the key check of the site marks the Answer stale a few seconds after the end.
+Also here: live-AT-20-dark-frame-8.3s-fixing-a-number.png, a frame of the live dark run of AT-20, in which the real Jev check failed one claim and the front door showed "Fixing a number…".

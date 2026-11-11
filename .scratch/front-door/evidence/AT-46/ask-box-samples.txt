@@ -1,0 +1,4 @@
+prefers-reduced-motion: reduce (Playwright reducedMotion).
+Top px / opacity of the ask box form every 50 ms after the tap on Send:
+644/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1
+Elements with a CSS filter at the end: 0 []

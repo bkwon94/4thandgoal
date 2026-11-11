@@ -1,0 +1,111 @@
+# The store of the API in this round: CORNERSTONE_ASK_DIR=<scratchpad>/ask, an empty folder at the start of the round, outside the repo.
+
+$ sqlite3 <scratchpad>/ask/cpc-answers.sqlite .tables
+answers
+$ sqlite3 <scratchpad>/ask/cpc-answers.sqlite .schema
+CREATE TABLE answers (
+    key TEXT PRIMARY KEY,
+    topic TEXT NOT NULL,
+    roster_id INTEGER NOT NULL,
+    answer TEXT NOT NULL,
+    kept_at TEXT NOT NULL
+);
+
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite .tables
+alerts  spend 
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite .schema
+CREATE TABLE spend (
+    id INTEGER PRIMARY KEY,
+    roster_id INTEGER,
+    day TEXT NOT NULL,
+    month TEXT NOT NULL,
+    usd REAL NOT NULL,
+    counts INTEGER NOT NULL
+);
+CREATE TABLE alerts (
+    month TEXT PRIMARY KEY
+);
+
+$ sqlite3 <scratchpad>/ask/cpc.sqlite .tables
+misses
+$ sqlite3 <scratchpad>/ask/cpc.sqlite .schema
+CREATE TABLE misses (
+    id INTEGER PRIMARY KEY,
+    question TEXT NOT NULL,
+    roster_id INTEGER NOT NULL,
+    team TEXT NOT NULL,
+    asked_at TEXT NOT NULL,
+    closest TEXT NOT NULL
+);
+
+$ sqlite3 <scratchpad>/ask/norcal-answers.sqlite .tables
+answers
+$ sqlite3 <scratchpad>/ask/norcal-answers.sqlite .schema
+CREATE TABLE answers (
+    key TEXT PRIMARY KEY,
+    topic TEXT NOT NULL,
+    roster_id INTEGER NOT NULL,
+    answer TEXT NOT NULL,
+    kept_at TEXT NOT NULL
+);
+
+$ sqlite3 <scratchpad>/ask/norcal.caps.sqlite .tables
+alerts  spend 
+$ sqlite3 <scratchpad>/ask/norcal.caps.sqlite .schema
+CREATE TABLE spend (
+    id INTEGER PRIMARY KEY,
+    roster_id INTEGER,
+    day TEXT NOT NULL,
+    month TEXT NOT NULL,
+    usd REAL NOT NULL,
+    counts INTEGER NOT NULL
+);
+CREATE TABLE alerts (
+    month TEXT PRIMARY KEY
+);
+
+$ sqlite3 <scratchpad>/ask/norcal.sqlite .tables
+misses
+$ sqlite3 <scratchpad>/ask/norcal.sqlite .schema
+CREATE TABLE misses (
+    id INTEGER PRIMARY KEY,
+    question TEXT NOT NULL,
+    roster_id INTEGER NOT NULL,
+    team TEXT NOT NULL,
+    asked_at TEXT NOT NULL,
+    closest TEXT NOT NULL
+);
+
+# Each SQLite file that the API code opens (a search of the API source for sqlite3.connect and .sqlite names):
+apps/api/src/cornerstone_api/answer_store.py:35:        db = sqlite3.connect(self.path)
+apps/api/src/cornerstone_api/miss_log.py:51:        db = sqlite3.connect(self.path)
+apps/api/src/cornerstone_api/app.py:190:    """The ask route of one client. Its miss log is <slug>.sqlite and its caps are <slug>.caps.sqlite in the ask folder,
+apps/api/src/cornerstone_api/app.py:193:    return ask_routes.Asker(season=client.values.latest_season, jev=jev, misses=MissLog(folder / f"{client.slug}.sqlite"),
+apps/api/src/cornerstone_api/app.py:195:                            caps=Caps(folder / f"{client.slug}.caps.sqlite", client.slug))
+apps/api/src/cornerstone_api/app.py:199:    """The egg hunt of one client. Its SQLite file is <slug>.sqlite in the eggs folder, on the volume on Fly.
+apps/api/src/cornerstone_api/app.py:203:    return eggs_routes.Hunt(store=EggStore(eggs_dir(settings) / f"{client.slug}.sqlite"),
+apps/api/src/cornerstone_api/app.py:243:    app.state.kept = {client.slug: AnswerStore(ask_dir(settings) / f"{client.slug}-answers.sqlite") for client in clients}
+apps/api/src/cornerstone_api/caps.py:96:        db = sqlite3.connect(self.path)
+packages/eggs/python/src/eggs/store.py:92:        db = sqlite3.connect(self.path)
+
+# The eggs store (the eggs package, not the front door), data/eggs/cpc.sqlite of the repo, which the API also opens:
+$ sqlite3 data/eggs/cpc.sqlite .schema
+CREATE TABLE eggs (
+    id INTEGER PRIMARY KEY,
+    week INTEGER NOT NULL,
+    page TEXT NOT NULL,
+    target TEXT NOT NULL,
+    action TEXT NOT NULL,
+    conditions TEXT NOT NULL,
+    letter TEXT NOT NULL,
+    dropped_at TEXT NOT NULL
+);
+CREATE TABLE claims (
+    egg_id INTEGER NOT NULL REFERENCES eggs (id),
+    roster_id INTEGER NOT NULL,
+    word TEXT,
+    claimed_at TEXT NOT NULL,
+    browser TEXT,
+    undone_at TEXT
+);
+CREATE UNIQUE INDEX claims_egg_id ON claims (egg_id) WHERE undone_at IS NULL;

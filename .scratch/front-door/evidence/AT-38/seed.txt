@@ -1,0 +1,6 @@
+# The seed of the league cap. CPC held $0.3329585 of real Claude cost this month. One seeded row with no team brings it to $25.00. NorCal holds $0.
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "INSERT INTO spend (roster_id, day, month, usd, counts) VALUES (NULL, '2026-11-10', '2026-11', 24.6670415, 0)"
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "SELECT ROUND(SUM(usd),2) FROM spend WHERE month='2026-11'"
+25.0
+$ sqlite3 <scratchpad>/ask/norcal.caps.sqlite "SELECT COALESCE(SUM(usd),0) FROM spend WHERE month='2026-11'"
+0

@@ -1,0 +1,31 @@
+# 1. The text that the page showed at the end of the live run (page-text.txt, the innerText of the body):
+$ grep -i -c -E "jev|advisor|finder" .scratch/front-door/evidence/AT-19/page-text.txt
+0
+
+# 2. The front-door source of the site (every .ts and .tsx file of apps/site/src/app/front-door/ and app/page.tsx, no tests):
+$ grep -rn -i -E "jev|advisor|finder" apps/site/src/app/front-door/*.tsx apps/site/src/app/front-door/*.ts apps/site/src/app/page.tsx | grep -v "\.test\."
+apps/site/src/app/front-door/trade-answer.tsx:12:import type { AnalyzeResponse, FindResponse, FinderTrade, Lean } from "@cpc/analyzer/lib/analyze-types";
+apps/site/src/app/front-door/trade-answer.tsx:230:function Offer({ trade, asker, analyze, index }: { trade: FinderTrade; asker: number; analyze: string; index: number }) {
+apps/site/src/app/front-door/topics.ts:55:   lead, most urgent first, then the order of the day. Jev judges what is urgent on the API, and this rule only places
+# (2 hits are TypeScript type names, FinderTrade, and 1 hit is a code comment. None is a string that the page shows.)
+
+# 3. The wording modules of the API, which hold each step line and each line that the front door shows:
+$ grep -n -i -E "jev|advisor|finder" apps/api/src/cornerstone_api/*_wording.py
+apps/api/src/cornerstone_api/suggestion_wording.py:2:All the Jev wording of the Suggestions: the lift, one Noul per Topic over its fact, and the sell high pick, one Choice
+apps/api/src/cornerstone_api/suggestion_wording.py:7:from league.jev_port import ChoiceQuestion, NoulQuestion
+apps/api/src/cornerstone_api/suggestion_wording.py:9:# The name of each Topic as the site shows it on its Suggestion. Jev reads the Topic and its fact as one line.
+apps/api/src/cornerstone_api/personal_wording.py:3:that asks for a rewrite. The Jev check of each sentence is the check of the free answer, in free_wording.py.
+apps/api/src/cornerstone_api/free_wording.py:2:All the wording of a free answer: the instructions of Claude, the line that asks for a rewrite, and the Jev check of
+apps/api/src/cornerstone_api/free_wording.py:7:from league.jev_port import NoulQuestion
+apps/api/src/cornerstone_api/ask_wording.py:2:All the wording of the Jev route of the ask box: the 13 Topics, the data sources, the state, and the 7 typed questions.
+apps/api/src/cornerstone_api/ask_wording.py:7:from league.jev_port import ChoiceQuestion, NoulQuestion
+apps/api/src/cornerstone_api/ask_wording.py:113:    Option names reach Jev, so a key that reads as the name helps it more than a roster id.
+apps/api/src/cornerstone_api/trade_wording.py:2:All the wording of the Jev pick of a typed trade check: the state with the real rosters, and the 4 typed questions.
+apps/api/src/cornerstone_api/trade_wording.py:7:from league.jev_port import ChoiceQuestion, NoulQuestion
+apps/api/src/cornerstone_api/trade_wording.py:41:    Option names reach Jev, so a key that reads as the name helps it more than a player id. Two players with one name
+(exit 0)
+# (Each hit is a module docstring, a code comment, or an import line. These modules hold the wording that goes to Jev and Claude. The step lines that the page shows come from the site files of search 2.)
+
+# 4. The static export of / (the HTML of the page, built for this round):
+$ grep -o -i -E ".{40}(jev|advisor|finder).{40}" <scratchpad>/site-cpc/index.html
+(exit 1)

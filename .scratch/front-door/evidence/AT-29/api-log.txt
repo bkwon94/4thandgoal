@@ -1,0 +1,9 @@
+# API log lines 2280 to 2312, the two requests. A Claude call logs a line with api.anthropic.com.
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     cornerstone_api.personal_topics: The personal Topic weak_spots came from the store, with no Claude call
+INFO:     127.0.0.1:54470 - "POST /clients/cpc/personal HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+INFO:     cornerstone_api.personal_topics: The personal Topic weak_spots came from the store, with no Claude call
+INFO:     127.0.0.1:54477 - "POST /clients/cpc/personal HTTP/1.1" 200 OK

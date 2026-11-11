@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-38-cpc and AT-38-norcal, 375x812, Wednesday clock. seed.txt holds the seed of the league cap.
+CPC: store Lil Fridge and the passphrase, open /, type "highest scoring team this season", tap Send, wait for the budget line. Shot cpc-375-<theme> in each theme (two live runs). cpc-api-calls-<theme>.json holds the route response with its cap line.
+NorCal: the NorCal site build (CLIENT=norcal), with the same API. Store team 1 (puurdygood) and the passphrase, open /, ask the same question, wait for Checked. Shot norcal-375-light. The dark shot opens / with the local storage of that run.
+api-log-cpc.txt and api-log-norcal.txt are the API log of each part.

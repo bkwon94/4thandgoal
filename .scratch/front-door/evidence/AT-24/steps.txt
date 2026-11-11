@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-24, Wednesday clock.
+1. Live run at 375x812 light with a recording: store Lil Fridge and the passphrase, open /, type "is Courtland Sutton for Zay Flowers fair", tap Send, wait for the whole Answer. Shot 375-light.
+2. Each other width and theme opens / in a fresh context with the local storage of the live run, so the Thread shows the kept trade Answer with no new call.
+api-calls.json holds the route response with each player pick and the trade check stream with the /analyze result.

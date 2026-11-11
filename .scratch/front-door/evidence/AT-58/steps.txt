@@ -1,0 +1,5 @@
+Driver: tests.mjs AT-58, 375x812, Wednesday clock.
+1. Store Lil Fridge and the passphrase. Open /. Type "is my RB for their WR fair". Tap Send. Wait for the link to the Trade page in the Answer. Shot answer-375-light.
+2. Tap the link. Wait 5 s. Shot trade-page-375-light. answer-text.txt holds the text of the Answer and the href.
+3. Dark: open / with the local storage of the live run, shot answer-375-dark, tap the link, shot trade-page-375-dark.
+api-calls.json holds the route response and the trade check stream with each player pick.

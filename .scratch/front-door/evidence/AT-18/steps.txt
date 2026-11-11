@@ -1,0 +1,4 @@
+Driver: tests.mjs AT-18, 375x812, Wednesday clock, screen recording recording-375-light.webm.
+Setup: the answer store holds no weak spots Answer (checked in api-log.txt: the API builds it with a Claude call).
+1. Store Lil Fridge and the passphrase. Open /. Open Weak spots from the chip or More.
+2. Wait for Checked. Frames come from the recording with ffmpeg.

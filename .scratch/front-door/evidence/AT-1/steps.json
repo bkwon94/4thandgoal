@@ -1,0 +1,7 @@
+{
+  "route": "/",
+  "steps": [
+    { "wait": "text=Which team is yours?" },
+    { "wait": 1200 }
+  ]
+}
