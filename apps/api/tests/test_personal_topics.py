@@ -592,6 +592,9 @@ def test_a_kept_waiver_answer_comes_back_with_its_block_and_no_jev_read(week_9_r
     writer = Writer()
     api = _week_9_api(week_9_repo, sources, jev, writer)
     first = _chunks(_ask(api, "waiver_targets", roster_id=BO_GIRDS))
+    # The first tap reads each free agent, and its block lists the player that the read kept.
+    assert _reads(jev)
+    assert [row["label"] for row in _block(first)["rows"]] == [COREY_KINER]
     asked = len(jev.requests)
     second = _chunks(_ask(api, "waiver_targets", roster_id=BO_GIRDS))
     assert len(jev.requests) == asked
