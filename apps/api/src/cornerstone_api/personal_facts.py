@@ -1,15 +1,14 @@
 """
 The facts of the personal Topics of the front door, from the live snapshot: the roster grade, the slot ranks, the
-starters of the best lineup, and the waiver list of the latest published week. Code picks the slice and adds no formula.
+starters of the best lineup, and the free agents of the waiver targets. Code picks the slice and adds no formula.
 """
-import json
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Literal
 
 from analyzer.trade_jev import weak_starting_slots
+from cornerstone_api.waiver_targets import waiver_facts
 from league.numbers import ordinal
-from league.paths import week_label
+from league.provider.raw import RawTrending
 from league.season_inputs import SeasonInputs
 from league.snapshot import Snapshot
 from managers.grade import ManagerGrade, Starter, roster_grades, roster_starters
@@ -20,17 +19,15 @@ PersonalTopic = Literal["weak_spots", "stack_up", "waiver_targets"]
 FACT_GROUPS: dict[str, tuple[str, ...]] = {
     "weak_spots": ("slot_ranks", "starters", "grade_read"),
     "stack_up": ("grade", "part_ranks", "slot_ranks", "grade_read"),
-    "waiver_targets": ("slot_ranks", "starters", "waiver_list"),
+    # The facts before the Jev read: the need of the team and each candidate. The read keeps the players worth a claim,
+    # and Claude reads only those, in `kept_players` of judged_waiver.
+    "waiver_targets": ("team_need", "candidates"),
 }
 
 # The name of each part of the roster grade, as the managers page names it (packages/managers/site/page/part-names.ts).
 PART_NAMES = {"projection": "Projection Ahead", "production": "Season Production", "trade_value": "Trade Value",
               "depth": "Depth And Holes"}
 
-# The buckets of the waiver board that list a player to add. Trending comes first: it is Sleeper's own list of the
-# players most added in the last day, the crowd signal, so the Answer leans on it. A player in two buckets keeps the
-# first one of this order.
-WAIVER_BUCKETS = ("trending", "best_adds", "sneaky", "stashes")
 # What each depth word of the slot ranks means (GLOSSARY.md, "Depth"). The slice carries the meaning with the word, so
 # Claude and the Jev check read the same fact.
 DEPTH_MEANINGS = {
@@ -39,10 +36,6 @@ DEPTH_MEANINGS = {
     "deep": "one spare player inside the starter count past the starters",
     "stacked": "two or more spare players inside the starter count past the starters",
 }
-WAIVER_FILE = "waiver.json"
-# The data block lists the first players of the board in its own order, so the card stays one screen on a phone.
-# Claude reads the whole list.
-WAIVER_ROWS = 8
 
 
 @dataclass(frozen=True)
@@ -74,19 +67,6 @@ def live_grades(snapshot: Snapshot) -> tuple[dict[int, ManagerGrade], dict[int, 
     return roster_grades(inputs), roster_starters(inputs)
 
 
-def published_waiver(folder: Path, season: int, week: int) -> dict | None:
-    """The waiver file of the latest published week up to `week`, or None when the client published none."""
-    season_dir = folder / "published" / str(season)
-    for each in range(week, 0, -1):
-        path = season_dir / week_label(each) / WAIVER_FILE
-        if path.exists():
-            return json.loads(path.read_text(encoding="utf-8"))
-        if (season_dir / week_label(each)).exists():
-            # The latest published week has no waiver file, so the client does not publish one this week.
-            return None
-    return None
-
-
 def _of(rank: int, teams: int) -> str:
     return f"{ordinal(rank)} of {teams}"
 
@@ -105,29 +85,6 @@ def _starters(snapshot: Snapshot, starters: list[Starter]) -> list[dict]:
     return [{"slot": s.slot, "player": _name(snapshot, s.player_id), "position": s.position,
              "projected_rank_at_position": s.rank, "starter_line": lines.get(s.position or ""), "hole": s.hole}
             for s in starters]
-
-
-def _waiver_list(board: dict | None, snapshot: Snapshot) -> list[dict]:
-    """The players of the waiver board who are still free agents. A player on a roster now cannot be added, so that
-    hard rule drops him. Sleeper projects no points in any week left for a player with a rest of season projection
-    of 0 or none, so that hard rule drops him too. The list gives no bid: the bid of the board is flat per position,
-    so it tells nothing about the player."""
-    if board is None:
-        return []
-    rostered = {pid for players in snapshot.rosters.values() for pid in players}
-    seen: set[str] = set()
-    players = []
-    for bucket in WAIVER_BUCKETS:
-        for player in board["buckets"].get(bucket, []):
-            pid = player["player_id"]
-            if pid in rostered or pid in seen or not player.get("ros_projection"):
-                continue
-            seen.add(pid)
-            players.append({"name": player["name"], "position": player["position"], "nfl_team": player.get("team"),
-                            "bucket": bucket, "week_projection": player.get("week_projection"),
-                            "rest_of_season_projection": player.get("ros_projection"),
-                            "facts": [fact["text"] for fact in player.get("facts", [])]})
-    return players
 
 
 def _worst(grade: ManagerGrade):
@@ -156,9 +113,45 @@ def trade_ideas_fact(snapshot: Snapshot, roster_id: int) -> str | None:
     return f"Offers for your {weak[0]}" if weak else None
 
 
+def _weak_slot(need: dict) -> str | None:
+    """The first weak starting slot of the team, such as "QB", or None when it has none."""
+    weak = need["weak_starting_slots"]
+    return weak[0].partition(":")[0] if weak else None
+
+
+def _waiver_block(need: dict, read: int) -> dict:
+    """The block of the waiver targets before the Jev read: the first weak slot and the count of free agents to read.
+    The Suggestion shows its fact, so the fact costs no Jev call."""
+    slot = _weak_slot(need)
+    return {"fact": f"Free agents for the {slot} slot" if slot else "Free agents to stash",
+            "stats": [{"label": "Weak slot", "value": slot or "None"},
+                      {"label": "Free agents read", "value": str(read)}],
+            "rows": []}
+
+
+def judged_waiver(facts: PersonalFacts, kept: list[dict]) -> PersonalFacts:
+    """The facts of the waiver targets after the Jev read: Claude reads the need and the kept players only, best first,
+    and the block lists the kept players. With no kept player, the block says so plainly."""
+    slice_ = {key: value for key, value in facts.slice.items() if key != "candidates"}
+    read = len(facts.slice["candidates"])
+    slot = _weak_slot(facts.slice["team_need"])
+    count = len(kept)
+    fact = (f"{count} free {'agent' if count == 1 else 'agents'} worth a claim" if kept
+            else "No free agent beats the starters this week")
+    block = {**facts.block, "fact": fact,
+             "stats": [{"label": "Weak slot", "value": slot or "None"},
+                       {"label": "Free agents read", "value": str(read)},
+                       {"label": "Worth a claim", "value": str(count)}],
+             "rows": [{"label": player["name"], "value": "",
+                       "note": " · ".join(part for part in (player["position"], player["nfl_team"]) if part),
+                       "roster_id": None, "you": False} for player in kept]}
+    return PersonalFacts(slice={**slice_, "kept_players": kept}, block=block)
+
+
 def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades: dict[int, ManagerGrade],
-                starters: dict[int, list[Starter]], board: dict | None) -> PersonalFacts:
-    """The slice and the data block of `topic` for the team of `roster_id`."""
+                starters: dict[int, list[Starter]], trending: list[RawTrending]) -> PersonalFacts:
+    """The slice and the data block of `topic` for the team of `roster_id`. The waiver targets give the facts before
+    the Jev read, and judged_waiver gives the facts after it."""
     grade, mine = grades[roster_id], starters[roster_id]
     teams = len(snapshot.rosters)
     groups = {
@@ -167,8 +160,9 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
         "slot_ranks": _slot_ranks(grade),
         "starters": _starters(snapshot, mine),
         "grade_read": grade.read,
-        "waiver_list": _waiver_list(board, snapshot) if topic == "waiver_targets" else [],
     }
+    if topic == "waiver_targets":
+        groups["team_need"], groups["candidates"] = waiver_facts(snapshot, roster_id, trending)
     slice_ = {"team": snapshot.teams[roster_id].name, "teams_in_league": teams, "week": snapshot.week,
               **{group: groups[group] for group in FACT_GROUPS[topic]}}
     worst = _worst(grade)[0]
@@ -188,12 +182,5 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
                  "rows": [{"label": PART_NAMES[part.key], "value": _of(part.rank, teams), "note": None,
                            "roster_id": None, "you": False} for part in grade.parts]}
     else:
-        free = groups["waiver_list"]
-        block = {"fact": f"{len(free)} free agents on the list" if free else "No waiver list this week",
-                 "stats": [{"label": "Weakest spot", "value": worst.position},
-                           {"label": "Rank", "value": _of(worst.rank, teams)},
-                           {"label": "On the list", "value": str(len(free))}],
-                 "rows": [{"label": player["name"], "value": "",
-                           "note": " · ".join(part for part in (player["position"], player["nfl_team"]) if part),
-                           "roster_id": None, "you": False} for player in free[:WAIVER_ROWS]]}
+        block = _waiver_block(groups["team_need"], len(groups["candidates"]))
     return PersonalFacts(slice=slice_, block={"topic": topic, "team": roster_id, **block})

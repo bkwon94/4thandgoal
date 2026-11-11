@@ -23,7 +23,8 @@ from league.live import (
 )
 from league.models import Week
 from league.nflverse import CACHE_MAX_AGE_SECONDS, http_get
-from league.provider.sleeper import fetch_past_week
+from league.provider.raw import RawTrending
+from league.provider.sleeper import fetch_past_week, fetch_trending
 from league.snapshot import Snapshot
 
 
@@ -42,6 +43,8 @@ class Sources:
     fetch_history_week: PastLegFetcher = fetch_past_week
     # The download of the past season files. None skips it, so a test of another source makes no call.
     fetch_past: Callable[[str], bytes] | None = None
+    # The top adds across all Sleeper leagues in the last day. The waiver targets read it as the crowd signal.
+    fetch_trending: Callable[[], list[RawTrending]] = fetch_trending
     # One shared partial is safe as the default, because it holds no state that a call changes.
     read_chart: ChartReader = partial(chart_values, read=claude_reader(parse_call))  # noqa: RUF009
 

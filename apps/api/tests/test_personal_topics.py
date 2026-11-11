@@ -1,13 +1,16 @@
 """
 Tests for the personal Topics of the front door at the route seam: the FastAPI test client with FakeJev, a function
-model of Pydantic AI in place of Claude, and the recorded week 6 Sleeper data with the chart of week 6.
+model of Pydantic AI in place of Claude, and the recorded week 6 and week 9 Sleeper data with the chart of week 6.
 """
 import dataclasses
 import json
+import os
 import shutil
 from collections.abc import AsyncIterator
+from datetime import datetime
 from pathlib import Path
 
+import pytest
 import test_api
 from fakes import FakeJev
 from fastapi.testclient import TestClient
@@ -16,9 +19,12 @@ from pydantic_ai.models.function import AgentInfo, FunctionModel
 from test_api import CLIENT, HEADERS, _cpc, _here
 
 from cornerstone_api.app import create_app
-from cornerstone_api.personal_topics import LIVE_CACHE_SECONDS, LiveCache
+from cornerstone_api.personal_topics import LIVE_CACHE_SECONDS, TRENDING_CACHE_SECONDS, LiveCache
+from cornerstone_api.settings import Settings
+from cornerstone_api.waiver_targets import TOP_BY_ADDS, TOP_BY_REST_PER_POSITION, TOP_BY_WEEK_PER_POSITION
 from league.jev_port import JevError, NoulQuestion
 from league.numbers import ordinal
+from league.provider.raw import RawTrending
 from league.provider.sleeper import load_raw
 
 repo = test_api.repo
@@ -30,10 +36,21 @@ LIL_FRIDGE = 3
 BO_GIRDS = 6
 # The words that site copy never holds (decision 08 and the copy rules of the spec).
 INNER_NAMES = ("jev", "advisor", "finder", "rival", "brian")
-# The real waiver file of the latest published week of cpc.
-PUBLISHED_WAIVER = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "published" / "2026" / "week-08" / "waiver.json"
-# The real waiver file of cpc week 9. Its add buckets hold players with a rest of season projection of 0.
-WEEK_9_WAIVER = PUBLISHED_WAIVER.parents[1] / "week-09" / "waiver.json"
+# The recorded data of the cpc build of week 9, fetched on the Tuesday after the games: the rosters, the players file
+# with its injury report, the projections ahead, the trending adds, and the history of weeks 1 to 9.
+CPC_2026 = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026"
+WEEK_9_RAW = CPC_2026 / "week-09" / "raw"
+# The nflverse files of the week 9 build: the id map of 2026-11-03, the injury report of 2026-11-05, and the newest
+# scrape of the depth chart on 2026-11-10, the morning of the build.
+FIXTURES = Path(__file__).resolve().parents[2] / "pipeline" / "tests" / "fixtures"
+NFLVERSE_WEEK_9 = (FIXTURES / "nflverse-2026-11-03", FIXTURES / "nflverse-2026-11-05", FIXTURES / "nflverse-2026-11-10")
+RETURNS_2026 = Path(__file__).resolve().parents[3] / "data" / "nfl" / "2026" / "returns.json"
+# Wednesday of week 10, after the cutoff, so the trade week is 10 and the stats run through week 9.
+WEEK_10_NOW = datetime(2026, 11, 11, 12, 0, tzinfo=test_api.ET)
+WEEK_9_FETCHED = datetime(2026, 11, 10, 8, 0, tzinfo=test_api.ET)
+# The free agents that Brian saw on the weak list of the published week 9 file.
+WEAK_ADDS = ("Drew Sample", "Camden Brown", "Van Jefferson")
+COREY_KINER = "Corey Kiner"
 
 
 class Checks:
@@ -67,8 +84,13 @@ class Writer:
         self.calls += 1
         self.requests.append(messages)
         facts = _facts(messages)
-        worst = max(facts["slot_ranks"], key=lambda slot: slot["rank"])
-        text = f"Your weakest spot is {worst['position']}, which ranks {ordinal(worst['rank'])} of 12."
+        if "kept_players" in facts:
+            kept = facts["kept_players"]
+            text = (f"{kept[0]['name']} is the best add." if kept
+                    else "No free agent beats your starters this week.")
+        else:
+            worst = max(facts["slot_ranks"], key=lambda slot: slot["rank"])
+            text = f"Your weakest spot is {worst['position']}, which ranks {ordinal(worst['rank'])} of 12."
         for word in text.split(" "):
             yield word + " "
 
@@ -222,69 +244,9 @@ def test_how_you_stack_up_shows_the_four_parts_of_the_roster_grade_with_their_ra
                                                               for row in block["rows"]]
 
 
-def _publish_waiver(settings, source: Path = PUBLISHED_WAIVER) -> dict:
-    folder = settings.repo / "published" / "2026" / "week-06"
-    folder.mkdir(parents=True)
-    shutil.copy(source, folder / "waiver.json")
-    return json.loads(source.read_text())
-
-
 def _prompt(messages: list[ModelMessage]) -> str:
     return next(part.content for m in messages if isinstance(m, ModelRequest) for part in m.parts
                 if isinstance(part, UserPromptPart) and isinstance(part.content, str))
-
-
-def test_waiver_targets_read_the_published_waiver_list_and_drop_each_rostered_player(settings, sources,
-                                                                                   fixture_raw_dir):
-    board = _publish_waiver(settings)
-    writer = Writer()
-    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
-    block = _block(_chunks(_ask(api, "waiver_targets")))
-    facts = _facts(writer.requests[0])
-    rostered = {pid for roster in json.loads((fixture_raw_dir / "rosters.json").read_text())
-                for pid in roster["players"] or []}
-    on_board = {player["name"]: player["player_id"] for bucket in board["buckets"].values() for player in bucket}
-    listed = [player["name"] for player in facts["waiver_list"]]
-    assert listed, "the slice holds the free players of the board"
-    assert all(on_board[name] not in rostered for name in listed)
-    assert len(listed) < len(on_board) or not (set(on_board.values()) & rostered)
-    assert [row["label"] for row in block["rows"]] == listed[:len(block["rows"])]
-    assert set(facts) == {"team", "teams_in_league", "week", "slot_ranks", "starters", "waiver_list"}
-
-
-def test_waiver_targets_drop_each_player_with_no_rest_of_season_projection(settings, sources):
-    board = _publish_waiver(settings, WEEK_9_WAIVER)
-    writer = Writer()
-    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
-    _ask(api, "waiver_targets")
-    listed = {player["name"] for player in _facts(writer.requests[0])["waiver_list"]}
-    zero = {player["name"] for key, bucket in board["buckets"].items() if key != "drops" for player in bucket
-            if not player.get("ros_projection")}
-    assert zero, "the week 9 file holds players with a rest of season projection of 0"
-    assert listed and not listed & zero
-
-
-def test_waiver_targets_put_the_trending_bucket_first_and_give_no_bid(settings, sources):
-    board = _publish_waiver(settings, WEEK_9_WAIVER)
-    writer = Writer()
-    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
-    block = _block(_chunks(_ask(api, "waiver_targets")))
-    listed = _facts(writer.requests[0])["waiver_list"]
-    buckets = [player["bucket"] for player in listed]
-    trending = sum(1 for bucket in buckets if bucket == "trending")
-    assert board["buckets"]["trending"] and buckets[:trending] == ["trending"] * trending
-    assert all("bid" not in player for player in listed)
-    assert all("$" not in row["value"] for row in block["rows"])
-    assert "Quote no FAAB bid" in _prompt(writer.requests[0])
-
-
-def test_waiver_targets_with_no_published_waiver_list_say_so_in_the_block(settings, sources):
-    writer = Writer()
-    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
-    block = _block(_chunks(_ask(api, "waiver_targets")))
-    assert block["fact"] == "No waiver list this week"
-    assert block["rows"] == []
-    assert _facts(writer.requests[0])["waiver_list"] == []
 
 
 def test_a_topic_about_another_team_reads_the_slice_of_that_team(settings, sources):
@@ -329,7 +291,6 @@ def test_a_team_that_is_not_in_the_league_is_422_with_no_claude_call(settings, s
 
 
 def test_no_step_line_or_block_line_names_an_inner_tool(settings, sources):
-    _publish_waiver(settings)
     writer = Writer()
     api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
     for topic in ("weak_spots", "stack_up", "waiver_targets"):
@@ -445,3 +406,214 @@ def test_past_the_live_window_a_tap_loads_the_league_again(settings, sources, fi
     now[0] = LIVE_CACHE_SECONDS
     _ask(api, "weak_spots")
     assert fetches.calls == 2 * loads
+
+
+@pytest.fixture
+def week_9_repo(tmp_path, fixture_nflverse_dir) -> Path:
+    """A repo with the history of weeks 1 to 9, the Returns file, and the nflverse files of the week 9 build. The live
+    load saves week 9 into the history, so the history is a copy."""
+    shutil.copytree(CPC_2026 / "history", tmp_path / "data" / "2026" / "history")
+    shutil.copy(RETURNS_2026, tmp_path / "data" / "2026" / "returns.json")
+    cache = tmp_path / "data" / "cache" / "nflverse"
+    shutil.copytree(fixture_nflverse_dir, cache)
+    for folder in NFLVERSE_WEEK_9:
+        shutil.copytree(folder, cache, dirs_exist_ok=True)
+    for cached in cache.iterdir():
+        os.utime(cached)
+    return tmp_path
+
+
+def _week_9_trending() -> list[RawTrending]:
+    return [RawTrending.model_validate(row) for row in json.loads((WEEK_9_RAW / "trending.json").read_text())]
+
+
+@pytest.fixture
+def week_9_raw():
+    return load_raw(WEEK_9_RAW)
+
+
+def _week_9_api(repo: Path, sources, jev: FakeJev, writer: Writer, raw=None) -> TestClient:
+    """The app over the recorded week 9 data, in trade week 10. `raw` changes the Sleeper data, such as a roster."""
+    week_9 = load_raw(WEEK_9_RAW) if raw is None else raw
+    settings = Settings(passphrases={"cpc": test_api.PASSPHRASE}, repo=repo, result_cache_dir=repo / "results",
+                        commissioner_keys={"cpc": "commissioner-test"})
+    nine = dataclasses.replace(sources, fetch_sleeper=lambda league_id: (week_9, WEEK_9_FETCHED),
+                               fetch_trending=_week_9_trending, clock=lambda: WEEK_10_NOW)
+    return _api(settings, nine, jev, writer)
+
+
+class Reads:
+    """The Jev answers of the waiver read by player name: the add and the stash Noul of each player, 0.1 by default,
+    and a pass of each claim check. Each waiver state it reads stays in `players` by name."""
+
+    def __init__(self, add: dict[str, float] | None = None, stash: dict[str, float] | None = None):
+        self.add = add or {}
+        self.stash = stash or {}
+        self.players: dict[str, dict] = {}
+        self.need: dict | None = None
+
+    def answer(self, key: str, question: NoulQuestion, state: dict) -> float:
+        if "player" not in state:
+            return 0.95
+        name = state["player"]["name"]
+        self.players[name] = state["player"]
+        self.need = state["team"]
+        return (self.add if key == "add" else self.stash).get(name, 0.1)
+
+
+def _reads(jev: FakeJev) -> list:
+    return [request for request in jev.requests if "player" in request.state]
+
+
+def test_waiver_targets_read_each_free_agent_by_hard_rules_only_with_one_jev_request_each(week_9_repo, sources,
+                                                                                          week_9_raw):
+    reads = Reads()
+    jev = FakeJev(answer=reads.answer)
+    _ask(_week_9_api(week_9_repo, sources, jev, Writer()), "waiver_targets", roster_id=BO_GIRDS)
+    rostered = {pid for roster in week_9_raw.rosters for pid in roster.players or []}
+    names = {pid: (entry.get("full_name") or "") for pid, entry in week_9_raw.players.items()}
+    read = _reads(jev)
+    assert read and len(read) == len(reads.players)
+    # One run stays under about 60 Jev requests: the cap of the candidates and the claim check.
+    assert len(read) <= TOP_BY_ADDS + 4 * (TOP_BY_WEEK_PER_POSITION + TOP_BY_REST_PER_POSITION)
+    assert len(jev.requests) <= 60
+    rostered_names = {names[pid] for pid in rostered}
+    for name, player in reads.players.items():
+        assert name not in rostered_names
+        assert player["position"] in ("QB", "RB", "WR", "TE")
+        assert player["week_projection"] > 0 or player["rest_of_season_projection"] > 0
+    # Each request asks the two Nouls of one player, with the need of the team in the state.
+    assert all(set(request.questions) == {"add", "stash"} for request in read)
+    assert reads.need is not None and reads.need["name"] == "Bo Girds"
+
+
+def test_the_facts_of_a_free_agent_say_why_he_trends_from_the_depth_chart_and_the_sleeper_adds(week_9_repo, sources):
+    # Corey Kiner is third on the chart of the Patriots, and both backs above him are out, so his role is open.
+    reads = Reads()
+    _ask(_week_9_api(week_9_repo, sources, FakeJev(answer=reads.answer), Writer()), "waiver_targets",
+         roster_id=BO_GIRDS)
+    kiner = reads.players[COREY_KINER]
+    assert kiner["sleeper_adds_last_day"] > 0
+    assert kiner["depth_chart_place"] == 3 and kiner["every_player_above_is_out"] is True
+    assert all(above["out_now"] for above in kiner["players_above"])
+    assert [week["week"] for week in kiner["last_weeks"]] == [7, 8, 9]
+    assert {"points", "snap_share_percent", "targets", "carries"} <= set(next(
+        week for week in kiner["last_weeks"] if week["played"]))
+
+
+def test_the_team_need_names_the_empty_qb_slot_when_the_only_healthy_qb_leaves(week_9_repo, sources, week_9_raw):
+    # Bo Girds holds Lamar Jackson on IR. Without Malik Willis, no QB can play now, so the QB slot is empty.
+    mine = next(roster for roster in week_9_raw.rosters if roster.roster_id == BO_GIRDS)
+    willis = next(pid for pid in mine.players or [] if week_9_raw.players[pid].get("full_name") == "Malik Willis")
+    mine.players = [pid for pid in mine.players or [] if pid != willis]
+    reads = Reads()
+    _ask(_week_9_api(week_9_repo, sources, FakeJev(answer=reads.answer), Writer(), raw=week_9_raw),
+         "waiver_targets", roster_id=BO_GIRDS)
+    assert reads.need is not None
+    assert "QB: empty" in reads.need["weak_starting_slots"]
+    assert reads.need["weakest_starter_by_position"]["QB"] == {"slot": "QB", "player": None}
+    qbs = [player for player in reads.players.values() if player["position"] == "QB"]
+    assert qbs and all(player["empty_slots_he_fits"] == ["QB"] for player in qbs)
+
+
+def test_the_answer_reads_the_kept_players_only_best_first_and_the_block_lists_them(week_9_repo, sources):
+    reads = Reads(add={COREY_KINER: 0.92}, stash={"Kyler Murray": 0.81, "Drew Sample": 0.5})
+    writer = Writer()
+    chunks = _chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=reads.answer), writer),
+                          "waiver_targets", roster_id=BO_GIRDS))
+    block = _block(chunks)
+    assert [row["label"] for row in block["rows"]] == [COREY_KINER, "Kyler Murray"]
+    assert block["fact"] == "2 free agents worth a claim"
+    facts = _facts(writer.requests[0])
+    assert set(facts) == {"team", "teams_in_league", "week", "team_need", "kept_players"}
+    assert [(p["name"], p["kind"]) for p in facts["kept_players"]] == [(COREY_KINER, "add this week"),
+                                                                     ("Kyler Murray", "stash for later weeks")]
+    assert not any(name in json.dumps(facts) for name in WEAK_ADDS)
+    assert "Quote no FAAB bid" in _prompt(writer.requests[0])
+    assert all("$" not in row["value"] for row in block["rows"])
+
+
+def test_with_no_player_above_the_yes_line_the_answer_says_no_free_agent_beats_the_starters(week_9_repo, sources):
+    writer = Writer()
+    chunks = _chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=Reads().answer), writer),
+                          "waiver_targets", roster_id=BO_GIRDS))
+    block = _block(chunks)
+    assert block["fact"] == "No free agent beats the starters this week"
+    assert block["rows"] == []
+    assert _facts(writer.requests[0])["kept_players"] == []
+    assert "no free agent beats the starters" in _prompt(writer.requests[0])
+    # It is a real Answer, checked and kept, not the honest miss.
+    assert [c["data"]["state"] for c in chunks if c["type"] == "data-check"][-1] == "checked"
+
+
+def test_a_kept_waiver_answer_comes_back_with_its_block_and_no_jev_read(week_9_repo, sources):
+    reads = Reads(add={COREY_KINER: 0.92})
+    jev = FakeJev(answer=reads.answer)
+    writer = Writer()
+    api = _week_9_api(week_9_repo, sources, jev, writer)
+    first = _chunks(_ask(api, "waiver_targets", roster_id=BO_GIRDS))
+    asked = len(jev.requests)
+    second = _chunks(_ask(api, "waiver_targets", roster_id=BO_GIRDS))
+    assert len(jev.requests) == asked
+    assert writer.calls == 1
+    assert _block(second) == _block(first)
+    assert _text(second) == _text(first)
+
+
+def test_a_new_injury_of_a_free_agent_changes_the_waiver_key(week_9_repo, sources, week_9_raw):
+    # AT-8: the key covers the facts of each candidate, so a new injury gives a fresh Answer.
+    writer = Writer()
+    jev = FakeJev(answer=Reads().answer)
+    first = _chunks(_ask(_week_9_api(week_9_repo, sources, jev, writer), "waiver_targets", roster_id=BO_GIRDS))
+    kiner = next(pid for pid, entry in week_9_raw.players.items() if entry.get("full_name") == COREY_KINER)
+    week_9_raw.players[kiner] = {**week_9_raw.players[kiner], "injury_status": "Questionable"}
+    second = _chunks(_ask(_week_9_api(week_9_repo, sources, jev, writer, raw=week_9_raw), "waiver_targets",
+                          roster_id=BO_GIRDS))
+    key = lambda chunks: [c["data"]["key"] for c in chunks if c["type"] == "data-key"]
+    assert key(second) != key(first)
+
+
+def test_a_failed_waiver_read_ends_with_an_error_and_no_claude_call(week_9_repo, sources):
+    class DownReads(FakeJev):
+        def ask(self, state, questions):
+            if "player" in state:
+                raise JevError("down")
+            return super().ask(state, questions)
+
+    writer = Writer()
+    chunks = _chunks(_ask(_week_9_api(week_9_repo, sources, DownReads(), writer), "waiver_targets",
+                          roster_id=BO_GIRDS))
+    assert any(c["type"] == "error" for c in chunks)
+    assert not any(c["type"] == "data-block" for c in chunks)
+    assert writer.calls == 0
+
+
+def test_past_the_team_cap_the_waiver_targets_make_no_jev_read(week_9_repo, sources):
+    jev = FakeJev(answer=Reads().answer)
+    writer = Writer()
+    api = _week_9_api(week_9_repo, sources, jev, writer)
+    caps, now = _caps(api)
+    for _ in range(25):
+        caps.record(BO_GIRDS, 0.01, now, counts=True)
+    chunks = _chunks(_ask(api, "waiver_targets", roster_id=BO_GIRDS))
+    assert not _reads(jev) and writer.calls == 0
+    block = _block(chunks)
+    assert block["rows"] == [] and block["fact"] == "Free agents for the QB slot"
+
+
+def test_the_trending_list_serves_its_window_then_loads_again():
+    now = [0.0]
+    calls = []
+    cache = LiveCache(LIVE_CACHE_SECONDS, clock=lambda: now[0])
+
+    def fetch() -> list[RawTrending]:
+        calls.append(now[0])
+        return _week_9_trending()
+
+    cache.trending(fetch)
+    now[0] = TRENDING_CACHE_SECONDS - 1
+    cache.trending(fetch)
+    assert len(calls) == 1
+    now[0] = TRENDING_CACHE_SECONDS
+    cache.trending(fetch)
+    assert len(calls) == 2

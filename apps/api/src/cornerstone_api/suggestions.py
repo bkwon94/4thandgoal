@@ -17,7 +17,7 @@ from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import YES, Asker, ClientAsker
 from cornerstone_api.ask_wording import TOPICS
 from cornerstone_api.personal_facts import PersonalTopic, trade_ideas_fact
-from cornerstone_api.personal_topics import Live, claude_answer, load_live
+from cornerstone_api.personal_topics import Live, claude_answer, load_live, shown_facts
 from cornerstone_api.suggestion_wording import (
     SELL_CHOICE,
     SELL_NOUL,
@@ -146,7 +146,13 @@ async def head_start(asker: Asker, store: AnswerStore, live: Live, topic: Person
     try:
         logger.info("The head start builds the personal Topic %s on open", topic)
         your_team = live.snapshot.teams[roster_id].name
-        async for _ in claude_answer(asker, store, topic, facts, key, True, your_team, model, None):
+        try:
+            shown = await shown_facts(asker.jev, topic, facts)
+        except JevError as error:
+            # The tap reads the free agents again, so a failed read on open only loses the head start.
+            logger.warning("The Jev read of the head start of %s failed (%s)", topic, error)
+            return
+        async for _ in claude_answer(asker, store, topic, shown, key, True, your_team, model, None):
             pass
     finally:
         _building.discard(key)

@@ -10,7 +10,7 @@ from league.client import Client
 from league.models import Fact, WaiverPlayer
 from league.nflverse import gsis_id
 from league.parse import player_name
-from league.ranks import OUT_STATUSES, back_inside
+from league.ranks import OUT_STATUSES, STATUS_WORDS, back_inside
 from league.slow_sources import SlowSources
 from waiver.rank_score import rank_scores
 from waiver.tunables import BUCKET_POSITIONS, SNEAKY_USAGE_FLOOR, TOP_HALF
@@ -23,8 +23,7 @@ BEHIND_INJURY = "behind_injury"
 RETURN = "return"
 HANDCUFF = "handcuff"
 
-# The words of the story fact for each status of OUT_STATUSES: "{starter} is {word}".
-STATUS_WORDS = {"Out": "out", "IR": "on IR", "PUP": "on the PUP list", "Sus": "suspended", "NA": "not active"}
+# The words of the story fact for each status of OUT_STATUSES, "{starter} is {word}", are STATUS_WORDS of league.ranks.
 
 
 class BucketInputs(NamedTuple):
