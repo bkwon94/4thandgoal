@@ -1,6 +1,6 @@
 """
-The live route eval of the ask box (AT-17): the 57 questions of decision 09, H6, H13, and H18 go to the real Jev through
-the route of ask.py, and the test fails below 48 hits of the 54 questions with an expected route. Run it with `pytest -m live -s`.
+The live route eval of the ask box (AT-17): the 62 questions of decision 09, H6, H13, H18, and H28 go to the real Jev through
+the route of ask.py, and the test fails below 52 hits of the 59 questions with an expected route. Run it with `pytest -m live -s`.
 """
 import json
 from concurrent.futures import ThreadPoolExecutor
@@ -14,10 +14,10 @@ from league.jev import JEV
 from league.jev_port import JevError
 
 QUESTIONS = Path(__file__).parent / "fixtures" / "route-questions.json"
-# The spec asks for at least 35 of 40, a share of 87.5%. The bar keeps that share over the 54 scored questions, rounded
-# up to 48. It asserts no single probability.
-SCORED = 54
-HITS_NEEDED = 48
+# The spec asks for at least 35 of 40, a share of 87.5%. The bar keeps that share over the 59 scored questions, rounded
+# up to 52. It asserts no single probability.
+SCORED = 59
+HITS_NEEDED = 52
 
 
 def _hit(expect: str, route: Route) -> bool:
@@ -41,7 +41,7 @@ def _shown(route: Route | str) -> str:
 
 
 @pytest.mark.live
-def test_the_route_eval_hits_at_least_48_of_54():
+def test_the_route_eval_hits_at_least_52_of_59():
     data = json.loads(QUESTIONS.read_text())
     teams = data["teams"]
 

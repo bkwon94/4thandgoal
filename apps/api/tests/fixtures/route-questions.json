@@ -1,5 +1,5 @@
 {
-  "about": "The route eval of the ask box (AT-17), from decision 09 of .scratch/front-door/. A question with source 'real' is one the commissioner asked. A question with source 'claude' is written by Claude. Expect is topic:<key>, team:<name>, free_answer, miss, refuse, or judgment. A judgment question has no fixed route and is not in the count. The questions ran on week 8 of the 2026 season. A question with turns asks after those earlier turns of its Thread, oldest first (H18).",
+  "about": "The route eval of the ask box (AT-17), from decision 09 of .scratch/front-door/. A question with source 'real' is one the commissioner asked. A question with source 'claude' is written by Claude. Expect is topic:<key>, team:<name>, free_answer, miss, refuse, or judgment. A judgment question has no fixed route and is not in the count. The questions ran on week 8 of the 2026 season. A question with turns asks after those earlier turns of its Thread, oldest first (H18). A comparison of the asker's team with one named team goes to the free answer (H28).",
   "season": 2026,
   "week": 8,
   "teams": [
@@ -406,6 +406,36 @@
           "answer": "4 offers. Offer 1: Bo Girds gives Kenneth Walker III. Maye d'force B with U gives Jahmyr Gibbs. Offer 2: Bo Girds gives Zay Flowers. Teehee gives Jalen Hurts. Offer 3: Bo Girds gives Zay Flowers, Rhamondre Stevenson. London Cooking gives Jared Goff."
         }
       ]
+    },
+    {
+      "id": 58,
+      "text": "can you compare my roster to Teehee",
+      "source": "real",
+      "expect": "free_answer"
+    },
+    {
+      "id": 59,
+      "text": "me vs Teehee, whose roster is better",
+      "source": "claude",
+      "expect": "free_answer"
+    },
+    {
+      "id": 60,
+      "text": "how's my roster stack against the Bijan team",
+      "source": "claude",
+      "expect": "free_answer"
+    },
+    {
+      "id": 61,
+      "text": "compare my team with London Cooking side by side",
+      "source": "claude",
+      "expect": "free_answer"
+    },
+    {
+      "id": 62,
+      "text": "how good is my team",
+      "source": "claude",
+      "expect": "topic:stack_up"
     }
   ]
 }
