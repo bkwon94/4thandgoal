@@ -20,6 +20,7 @@ from pydantic_ai.models.function import AgentInfo, DeltaToolCall, DeltaToolCalls
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.app import create_app
 from cornerstone_api.ask import FREE_ROUTE_SECONDS, FreeRoutes
+from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
@@ -467,3 +468,17 @@ def test_a_kept_free_route_ends_after_its_time_limit(repo, fixture_raw_dir):
     clock[0] = FREE_ROUTE_SECONDS
     assert _free(api, "week 1 results").status_code == 409
     assert script.requests == []
+
+
+def test_the_instructions_ask_for_facts_only_with_no_advice_rating_or_opinion():
+    # H6: the check failed "a good time to sell" and "decent", each advice or an opinion and no wrong number.
+    assert "Give no advice, no rating, and no opinion word" in INSTRUCTIONS
+
+
+def test_the_rewrite_removes_or_restates_each_failed_sentence_and_adds_no_claim():
+    # H6: a rewrite that reworded a failed sentence kept it near the cutoff, and the second check failed it.
+    prompt = rewrite_prompt(["Now is a good time to sell him."])
+    assert "- Now is a good time to sell him." in prompt
+    assert "Remove each of these sentences" in prompt
+    assert "only the exact numbers of the tool results" in prompt
+    assert "Add no new claim" in prompt
