@@ -5,7 +5,7 @@ starters of the best lineup, and the free agents of the waiver targets. Code pic
 from dataclasses import dataclass
 from typing import Literal
 
-from analyzer.trade_jev import weak_starting_slots
+from analyzer.trade_jev import weak_slot_rows, weak_starting_slots
 from cornerstone_api.waiver_targets import waiver_facts
 from league.lineup import cannot_play_now, lineup_now
 from league.numbers import ordinal
@@ -184,7 +184,7 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
         "slot_ranks": _slot_ranks(grade),
         "starters": _starters(snapshot, mine),
         "grade_read": grade.read,
-        "weak_starting_slots": weak_starting_slots(snapshot, roster_id) if topic == "weak_spots" else [],
+        "weak_starting_slots": weak_slot_rows(snapshot, roster_id) if topic == "weak_spots" else [],
     }
     if topic == "waiver_targets":
         groups["team_need"], groups["candidates"] = waiver_facts(snapshot, roster_id, trending)

@@ -110,8 +110,9 @@ async def run(agent: Agent[Any, str], prompt: str, deps: Any, instructions: str,
     attempt.text = "".join(texts)
 
 
-def check(jev: Jev, question: str, your_team: str, text: str, results: dict[str, Any]) -> list[str]:
-    """The sentences of `text` that Jev does not read as following from `results`. Raises JevError when the call fails.
+def check(jev: Jev, question: str, your_team: str, text: str, results: dict[str, Any]) -> list[tuple[str, float]]:
+    """The sentences of `text` that Jev does not read as following from `results`, each with its noul, so the log can
+    show how sure the check was. Raises JevError when the call fails.
 
     A sentence passes only above the yes cutoff, so an unsure sentence gets the rewrite and the manager never reads a
     number that the data does not hold.
@@ -120,7 +121,8 @@ def check(jev: Jev, question: str, your_team: str, text: str, results: dict[str,
     if not parts:
         return []
     answers = jev.ask(check_state(question, your_team, parts, results), check_questions(parts))
-    return [part for i, part in enumerate(parts) if answers.nouls[sentence_key(i)] <= YES]
+    nouls = [answers.nouls[sentence_key(i)] for i in range(len(parts))]
+    return [(part, noul) for part, noul in zip(parts, nouls) if noul <= YES]
 
 
 def usage_line(label: str, attempts: list[Attempt], end: str, tool_calls: int | None) -> str:
@@ -197,6 +199,8 @@ async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_
             logger.warning("The Jev check of the %s failed (%s)", writer.label, type(error).__name__)
             yield ErrorChunk(error_text=STREAM_ERROR)
             break
+        for sentence, noul in failed:
+            logger.info("A sentence of the %s failed the check at %.2f: %s", writer.label, noul, sentence)
         if not failed:
             outcome.end, outcome.text = "checked", attempt.text.strip()
             for chunk in attempt.held:
@@ -209,7 +213,7 @@ async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_
             yield data("miss", {"closest": checker.closest})
             break
         history = attempt.messages
-        prompt = writer.rewrite(failed)
+        prompt = writer.rewrite([sentence for sentence, _ in failed])
     tool_calls = None if writer.tool_calls is None else writer.tool_calls()
     logger.info(usage_line(writer.label, attempts, outcome.end, tool_calls))
     usd = sum(sonnet_cost(a.result.usage) for a in attempts if a.result is not None)

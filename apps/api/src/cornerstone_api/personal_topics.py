@@ -30,7 +30,7 @@ from pydantic_ai.ui.vercel_ai.response_types import (
 
 from analyzer.routes import ServedClient
 from cornerstone_api.answer_store import AnswerStore
-from cornerstone_api.ask import Asker, ClientAsker
+from cornerstone_api.ask import QUESTION_MAX, Asker, ClientAsker
 from cornerstone_api.caps import CapHit
 from cornerstone_api.chat_turns import Turn, Turns, turn_messages, turns_instructions
 from cornerstone_api.claude_stream import (
@@ -51,6 +51,7 @@ from cornerstone_api.personal_facts import (
     topic_facts,
 )
 from cornerstone_api.personal_wording import (
+    FACT_MEANINGS,
     INSTRUCTIONS,
     TOPIC_ASKS,
     WAIVER_ADD,
@@ -104,8 +105,9 @@ AGENT = Agent(
 
 class PersonalRequest(BaseModel):
     """The body of a personal Topic: the Topic, the roster id of Your team, the roster id of the team that the
-    Answer is about, or None for Your team, and the earlier turns of the Thread. Only a typed question carries turns,
-    and a tapped Topic has none. useChat adds its own fields, and the route reads none of them."""
+    Answer is about, or None for Your team, the earlier turns of the Thread, and the typed question. Only a typed
+    question carries turns and its text, and a tapped Topic has none. useChat adds its own fields, and the route reads
+    none of them."""
 
     model_config = ConfigDict(extra="ignore")
 
@@ -113,6 +115,7 @@ class PersonalRequest(BaseModel):
     roster_id: int
     team: int | None = None
     turns: Turns = Field(default_factory=list)
+    question: str | None = Field(default=None, min_length=1, max_length=QUESTION_MAX)
 
 
 def answer_key(topic: str, own: bool, facts: PersonalFacts, roster: list[str]) -> str:
@@ -202,7 +205,7 @@ async def load_live(served: Any, season: int, cache: LiveCache) -> Live:
 
 async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: PersonalFacts, key: str, own: bool,
                         your_team: str, model: Model | None, roster_id: int | None,
-                        turns: list[Turn] | None = None) -> AsyncIterator[BaseChunk]:
+                        turns: list[Turn] | None = None, question: str | None = None) -> AsyncIterator[BaseChunk]:
     """The one place where a personal Answer calls Claude: the first text, the Jev check of each sentence against the
     slice, at most one rewrite, and the honest miss of a second failed check. A checked text goes to the store.
 
@@ -210,22 +213,23 @@ async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: Per
     asks the caps first. After the runs, the cost goes to the league month. Only a checked Answer of `roster_id` counts
     toward the team cap. The head start gives None, so it counts toward the league cap only (decision 04).
 
-    Claude reads the earlier `turns` of a typed question as messages before the prompt. The text then fits that chat,
-    so it never goes to the store, and the kept Answer of a tap stays as the tap wrote it.
+    Claude reads the earlier `turns` of a typed question as messages before the prompt, and the typed `question` in the
+    prompt. The text then fits that question, so it never goes to the store, and the kept Answer of a tap stays as the
+    tap wrote it.
     """
     team = facts.slice["team"]
     turns = turns or []
     instructions = turns_instructions(f"The facts are the league data now, before the games of week "
                                       f"{facts.slice['week']}.", turns)
-    writer = Writer(label=f"personal Topic {topic}", agent=AGENT, prompt=topic_prompt(topic, facts.slice, own),
+    writer = Writer(label=f"personal Topic {topic}", agent=AGENT, prompt=topic_prompt(topic, facts.slice, own, question),
                     deps=None, instructions=instructions, model=model, rewrite=rewrite_prompt,
                     history=turn_messages(turns))
-    checker = Checker(question=check_question(topic, team), your_team=your_team,
-                      results={"team_facts": facts.slice}, closest=CLOSEST[topic])
+    checker = Checker(question=check_question(topic, team, question), your_team=your_team,
+                      results={"team_facts": facts.slice, "meanings": FACT_MEANINGS}, closest=CLOSEST[topic])
     outcome = Outcome()
     async for chunk in checked_answer(asker, writer, checker, roster_id, outcome):
         yield chunk
-    if outcome.end == "checked" and not turns:
+    if outcome.end == "checked" and not turns and question is None:
         # The block goes with the text, so a kept waiver Answer shows the players of its Jev read with no second read.
         await anyio.to_thread.run_sync(store.put, key, topic, facts.block["team"],
                                        {"text": outcome.text, "block": facts.block}, asker.clock())
@@ -289,8 +293,10 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClie
     facts, key = live.key(body.topic, body.roster_id, subject)
     own = subject == body.roster_id
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
-    # A typed question with turns gets an Answer that fits its chat, so it reads no kept Answer.
-    kept = None if body.turns else await anyio.to_thread.run_sync(store.get, key)
+    # A typed question gets an Answer that fits its text and its chat, so it reads no kept Answer. Only a tap reads one,
+    # so a tap never gets the Answer of a typed question, and one typed question never gets the Answer of another.
+    typed = bool(body.turns) or body.question is not None
+    kept = None if typed else await anyio.to_thread.run_sync(store.get, key)
     if kept is not None:
         logger.info("The personal Topic %s came from the store, with no Claude call", body.topic)
         # A kept Answer shows the block it was written from. An Answer kept with no block shows the block of now.
@@ -307,5 +313,5 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClie
         model = request.app.state.personal_model
         stream = answer_stream(lambda: shown_facts(asker.jev, body.topic, facts), key,
                                lambda shown: claude_answer(asker, store, body.topic, shown, key, own, your_team, model,
-                                                           body.roster_id, body.turns))
+                                                           body.roster_id, body.turns, body.question))
     return adapter(AGENT, "").streaming_response(stream)
