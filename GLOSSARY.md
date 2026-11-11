@@ -1193,3 +1193,7 @@ _Avoid_: Grader, reviewer, checker, QA agent
 **Evidence**:
 The files and the observation that show what the finished work does for one acceptance test. It holds no Test verdict.
 _Avoid_: Proof, result, QA output
+
+**Evidence flag**:
+A note from Jev that the evidence of one acceptance test may not show what the test asks. It holds a reason and is never a Test verdict.
+_Avoid_: Pre-check, screen, pre-verdict, lint

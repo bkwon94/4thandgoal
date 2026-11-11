@@ -1,0 +1,14 @@
+$ T=$(mktemp -d) && git archive 9582a573 .scratch/easter-eggs | tar -x -C "$T"
+$ uv run --exact --package cornerstone cornerstone evidence-flags easter-eggs AT-54 --root "$T"
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 220ms (request req_01a1c79178cc79b6a3a2bb797b2cffcc)
+AT-54: asked a, b, d
+## AT-54, question (d)
+
+Question: the Observation
+Probability: 0.87
+Reason: No file may show this sentence of the Observation: "A real grade of a trade of The Blue Tent (1) and Lil Fridge (3) took 17 s and read "Not as is", with data-trade-key "1:10219|3:11560"." (shown at 0.04, a result of the Then line at 0.91).
+Action: open
+
+Evidence flags: 1 tests, 1 flags, 0 errors, 9076 input tokens
+exit: 0

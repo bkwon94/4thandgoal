@@ -1,0 +1,6 @@
+375-light: letter tile "C"
+375-dark: letter tile "C"
+768-light: letter tile "C"
+768-dark: letter tile "C"
+1280-light: letter tile "C"
+1280-dark: letter tile "C"

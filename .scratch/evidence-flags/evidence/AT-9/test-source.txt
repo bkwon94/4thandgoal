@@ -1,0 +1,17 @@
+# apps/pipeline/tests/test_evidence_flags_eval.py, lines 120 to 134, at ce7257c6
+
+def test_a_jev_error_counts_each_test_as_an_error_never_as_a_miss_or_a_pass(tmp_path, capsys):
+    repo, labels = _repo(tmp_path)
+    jev = FakeJev(error=JevError("TypeSafeError: no API key"))
+
+    code = cli.main(["evidence-flags-eval", "--labels", str(labels), "--repo", str(repo)], jev=jev)
+
+    out = capsys.readouterr().out
+    assert code == 0
+    rows = [line for line in out.splitlines() if line.startswith("(")]
+    assert len(rows) == 4
+    for row in rows:
+        assert "0 hits, 0 misses of 1 gaps" in row or "0 hits, 0 misses of 0 gaps" in row
+        assert "0 false flags of 0 pass tests, 4 errors" in row
+        assert row.endswith("meets the bar: no")
+    assert out.strip().splitlines()[-1].startswith("Evidence flags eval: 4 tests, 4 errors, 0 input tokens")

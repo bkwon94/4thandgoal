@@ -1,0 +1,14 @@
+$ T=$(mktemp -d) && git archive 566d11e7 .scratch/easter-eggs | tar -x -C "$T"
+$ uv run --exact --package cornerstone cornerstone evidence-flags easter-eggs AT-32 --root "$T"
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 571ms (request req_01a1c7915a177cc497f3a49a5a2ba8d1)
+AT-32: asked a, b, d
+## AT-32, question (b)
+
+Question: motion
+Probability: 0.98
+Reason: The Then line may ask for motion (at 0.99), and the files hold no video, no timed frames, and no log of animation values (a log at 0.01).
+Action: open
+
+Evidence flags: 1 tests, 1 flags, 0 errors, 26958 input tokens
+exit: 0

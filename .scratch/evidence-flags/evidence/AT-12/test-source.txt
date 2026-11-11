@@ -1,0 +1,21 @@
+# apps/pipeline/tests/test_evidence_flags.py, lines 75 to 93, at ce7257c6
+
+def test_a_fact_that_no_file_shows_gets_an_open_flag_and_a_test_with_no_files_gets_no_request(tmp_path, capsys):
+    folder = _scratch(tmp_path)
+    jev = FakeJev(answer=_not_shown)
+
+    code = cli.main(["evidence-flags", "demo", "--root", str(tmp_path)], jev=jev)
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert len(jev.requests) == 1
+    assert jev.requests[0].state["test"]["id"] == "AT-1"
+    flags = (folder / "FLAGS.md").read_text(encoding="utf-8")
+    assert "## AT-1, question (a)" in flags
+    assert "Probability: 0.90" in flags
+    assert "Action: open" in flags
+    assert "Reason: " in flags
+    assert "## AT-1, question (a)" in out
+    assert f"AT-1: asked {', '.join(question.key for question in in_flow())}" in out
+    assert "AT-2" not in flags
+    assert out.strip().splitlines()[-1] == "Evidence flags: 1 tests, 1 flags, 0 errors, 600 input tokens"

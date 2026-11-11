@@ -1,0 +1,22 @@
+# apps/pipeline/tests/test_evidence_flags.py, lines 128 to 147, at ce7257c6
+
+def test_every_real_shot_of_a_test_goes_to_jev_as_tiles_that_fit(tmp_path, capsys):
+    shutil.copytree(AT_32, tmp_path / ".scratch" / "easter-eggs")
+    jev = FakeJev(answer=_by_prefix(c_=0.05))
+
+    code = cli.main(["evidence-flags", "easter-eggs", "AT-32", "--root", str(tmp_path)], jev=jev)
+
+    assert code == 0
+    assert capsys.readouterr().out.strip().splitlines()[-1].startswith("Evidence flags: 1 tests, 0 flags, 0 errors")
+    evidence = jev.requests[0].state["evidence"]
+    listed = [path for path in evidence["file_names"] if path.endswith(".png")]
+    assert len(listed) == 12
+    assert list(evidence["screenshots"]) == listed
+    for path, tiles in evidence["screenshots"].items():
+        sizes = _sizes(tiles)
+        # The list of each shot with its tile count and sizes is evidence of AT-10, so the run with -s prints it.
+        print(path, len(tiles), sizes)
+        assert sizes and all(_in_range(size) for size in sizes)
+    # Each text file goes in full.
+    steps = (AT_32 / "evidence" / "AT-32" / "steps.txt").read_text(encoding="utf-8")
+    assert evidence["text_files"]["evidence/AT-32/steps.txt"] == steps

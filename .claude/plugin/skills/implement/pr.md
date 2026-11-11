@@ -24,6 +24,10 @@ The body:
 
 Spec: `.scratch/<slug>/PRD.md`. Acceptance tests: `.scratch/<slug>/ACCEPTANCE.md`. Evidence: [EVIDENCE.md](<link base>EVIDENCE.md). Test verdicts of the Judge: [VERDICTS.md](<link base>VERDICTS.md).
 
+## The Evidence flags
+
+<one line of counts of the `evidence-flags` run, from `.scratch/<slug>/FLAGS.md`, such as "9 flags: 5 new recordings, 1 fix group, 3 disagreements". Write "0 flags." if the file has no entry or does not exist.>
+
 ## The tickets
 
 | Ticket | Status | Commits | Tests |

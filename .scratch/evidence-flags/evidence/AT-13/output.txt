@@ -1,0 +1,5 @@
+$ rg -l 'typesafe_sdk' apps packages
+apps/pipeline/tests/test_jev_check.py
+apps/pipeline/tests/test_jev_image.py
+packages/league/python/src/league/jev.py
+exit: 0

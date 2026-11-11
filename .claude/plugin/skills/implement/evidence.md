@@ -20,7 +20,7 @@ Run one full check for each spec (`.scratch/fast-cycle/decisions/05-grill-local-
 
 **One `uv run` for each checkout.** Run no other `uv run --exact --package` in the Spec worktree while the check is live. Two members share one `.venv` and break each other (`.scratch/fast-cycle/decisions/09-research-parallel-pytest.md`). If you do, a run fails at random with a broken environment.
 
-The site evidence runner does not use `uv run`, so it runs at the same time. A pipeline test that needs `uv run` has two choices. Run it in a detached worktree of its own, or wait for the background run to end.
+The site evidence runner does not use `uv run`, so it runs at the same time. A pipeline test that needs `uv run` has two choices. Run it in a detached worktree of its own, or wait for the background run to end. The command `evidence-flags` uses `uv run`, so it takes the same two choices.
 
 Before the push, read the result of the run.
 
@@ -100,6 +100,27 @@ Use the `agent-browser` CLI for a test whose step no verb covers, such as a test
 
 A test of both apps gets the pipeline files and the shots of its `steps.json`.
 
+## The Evidence flags
+
+An Evidence flag is advice from Jev about a test. It is never a Test verdict, and the Judge never sees it (ADR 0031). The command is `uv run --exact --package cornerstone cornerstone evidence-flags <slug> [AT-<n> ...]`.
+
+1. Run it on every site test after the runner round, once each test has its entry in `EVIDENCE.md`. Run it on each pipeline test after its `output.txt` is saved.
+2. Never run it in the Spec worktree while the background check is live. Run it in a detached worktree of the head commit: `git worktree add --detach <scratchpad>/<slug>-flags HEAD`. Run `uv sync --all-packages` there first. Add `--root <absolute path of the Spec worktree>`, so the command reads the evidence in place. Remove the detached worktree when you are done.
+3. The command writes `.scratch/<slug>/FLAGS.md`. Each entry has the heading `## AT-<n>, question (<key>)`, then `Question:`, `Probability:`, `Reason:`, and `Action: open`. With `--root`, it writes the file in the Spec worktree.
+4. The command logs `Evidence flags: <tests> tests, <flags> flags, <errors> errors, <tokens> input tokens`. A missing key or a Jev error gives no flag and exit 0. Go on.
+
+Set the `Action` of each entry to one of three values. Set the action of each entry before the evidence commit. No entry stays `open`.
+
+- **An evidence gap.** The files do not show the Then line. Change `steps.json` or the command, record that test again, and set `Action: recorded again`.
+- **A product defect.** The product is wrong. Hand it to the orchestrator as a fix group before the Judge runs. Record the test again after the fix merges. Set `Action: fix group`.
+- **A false flag.** The files do show the Then line. Set `Action: disagree: <one line of why>`.
+
+Never stop to ask Brian about a flag. A flag is advice, and the Judge is still the gate.
+
+Each test gets one loop. After one new recording, run the command once more on that test. If the flag stays, set `Action: disagree: <one line of why>` and go on. A product defect is outside the limit. The limit starts again after its fix merges.
+
+Put no flag and no disagreement line in `EVIDENCE.md` or in `evidence/`. The Judge reads those files.
+
 ## EVIDENCE.md
 
 Write `.scratch/<slug>/EVIDENCE.md` in this shape:
@@ -130,4 +151,4 @@ Observation: <what the output shows>
 
 A skipped test gets `Files: none` and the reason in its Observation line, such as "ticket 02 is blocked". A screenshot test that no verb covers names its reason too, such as "scripts off", and gets its shots from `agent-browser`.
 
-**Stop rule of stage 3.** Commit `EVIDENCE.md` and `evidence/` on the Spec branch with the message `Record the evidence of <slug>`. The hook must pass. Then go to stage 4, [`judge.md`](judge.md). If a site build or a pipeline command fails, stop. Tell Brian the command and its error.
+**Stop rule of stage 3.** Commit `EVIDENCE.md`, `FLAGS.md`, and `evidence/` on the Spec branch with the message `Record the evidence of <slug>`. The hook must pass. Then go to stage 4, [`judge.md`](judge.md). If a site build or a pipeline command fails, stop. Tell Brian the command and its error.

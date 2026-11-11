@@ -1,0 +1,14 @@
+$ T=$(mktemp -d) && git archive 8d646bd0 .scratch/easter-eggs | tar -x -C "$T"
+$ uv run --exact --package cornerstone cornerstone evidence-flags easter-eggs AT-3 --root "$T"
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 103ms (request req_01a1c7917d32762c82e73763b3bd00f7)
+AT-3: asked a, b, d
+## AT-3, question (a)
+
+Question: the facts
+Probability: 0.70
+Reason: No file may show this fact of the Then line: "The same check inside the window matches." (shown at 0.30).
+Action: open
+
+Evidence flags: 1 tests, 1 flags, 0 errors, 3058 input tokens
+exit: 0
