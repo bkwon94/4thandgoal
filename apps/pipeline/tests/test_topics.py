@@ -75,7 +75,9 @@ def test_a_league_answer_reuses_the_blurbs_and_the_data_of_the_week(tmp_path):
     answers = {a["topic"]: a for a in _topics(folder / "build", 2026, 8)["teams"][LIL_FRIDGE]}
     page = json.loads((CPC / "published" / "2026" / "week-08" / "page.json").read_text(encoding="utf-8"))
     rankings = json.loads((CPC / "build" / "2026" / "rankings.json").read_text(encoding="utf-8"))
-    row = next(r for r in rankings["weeks"][-1]["rows"] if r["roster_id"] == 3)
+    # The test names week 8, so a later weekly publish adds a week to rankings.json and breaks nothing.
+    week_8 = next(w for w in rankings["weeks"] if w["week"] == 8)
+    row = next(r for r in week_8["rows"] if r["roster_id"] == 3)
 
     ranked = answers["power_rankings"]
     assert ranked["fact"] == "6th, down 5"
