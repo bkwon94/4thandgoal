@@ -5,7 +5,7 @@ Date: 2026-11-11
 Apps: both. The site changes only its package name. The pipeline changes its weekly build script and its LaunchAgent. The root changes the plugin, the docs, and the scripts. No page and no build output changes.
 Spec branch: `rebrand`.
 Source: the map `.scratch/rebrand/MAP.md` and decision tickets 01 to 07, from the session of 2026-11-11. ADRs 0018 and 0019.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 03, in `issues/`.
 
 ## Problem Statement
 
