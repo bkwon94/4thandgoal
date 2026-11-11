@@ -507,7 +507,9 @@ def test_the_best_roster_reads_the_grade_of_every_team_in_one_call_best_first(re
     assert [row["grade"] for row in rows] == sorted(row["grade"] for row in rows)
     assert _text(chunks) == f"{rows[0]['team']} has the best roster of the league, with grade {rows[0]['grade']}."
     # The meaning of each field rides in the result, so the check reads it beside the numbers.
-    assert set(output["what_each_field_means"]) == {"grade", "grade_rank", "parts"}
+    assert set(output["what_each_field_means"]) == {"grade", "grade_rank", "parts", "as_of"}
+    # H19: the grade is live, and the managers page grade is from the weekly build, so the result says "today".
+    assert output["as_of"] == "today"
     assert checks.seen[0]["tool_results"]["roster_grades"] == output
 
 

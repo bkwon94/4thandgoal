@@ -180,6 +180,22 @@ describe("the personal Topics of Lil Fridge", () => {
     expect(answer.textContent).toContain("Projection Ahead");
   });
 
+  it("says on the data block of How you stack up that the grade is as of today (ticket 32)", async () => {
+    streams.push(() => sse(recorded("stack-up-fixed")));
+    render(<HomePage />);
+    await tapInMore("How you stack up");
+    const answer = await articleWith("How you stack up", "Checked");
+    expect(within(answer).getByText("as of today")).toBeTruthy();
+  });
+
+  it("shows no as of label on the data block of Weak spots (ticket 32)", async () => {
+    streams.push(() => sse(recorded("weak-spots")));
+    render(<HomePage />);
+    await tapInMore("Weak spots");
+    const answer = await articleWith("Weak spots", "Checked");
+    expect(within(answer).queryByText("as of today")).toBeNull();
+  });
+
   it("never shows the failed first text, and shows the rewrite only with Checked (H10)", async () => {
     const seen: { failed: boolean; early: boolean } = { failed: false, early: false };
     const observer = new MutationObserver(() => {

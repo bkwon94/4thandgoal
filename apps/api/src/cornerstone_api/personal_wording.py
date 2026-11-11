@@ -11,6 +11,8 @@ from league.jev_port import NoulQuestion
 FACT_MEANINGS = {
     "rank": "A rank in `slot_ranks` or `part_ranks` is the place of the team among the teams of the league, where 1 "
             "is the best.",
+    "grade_as_of": "`grade_as_of` says the grade in `grade` is from the live league today, so say \"as of today\". The "
+                   "grade of the managers page is from the last week of the weekly build, so it can differ.",
     "projected_rank_at_position": "`projected_rank_at_position` is the place of a player among the players at his "
                                   "position, so 50 at QB is the 50th QB.",
     "depth_means": "In `slot_ranks`, `depth_means` says what each depth word means.",

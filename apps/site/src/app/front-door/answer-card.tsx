@@ -36,11 +36,14 @@ export const AnswerCard = forwardRef<
 export function AnswerBody({
   answer,
   avatars,
+  asOf,
   children,
 }: {
   // The body reads only the parts of an Answer that it shows, so a personal Answer from the API fits it too.
   answer: Pick<DoorAnswer, "stats" | "rows" | "text" | "href">;
   avatars: Record<number, string | null>;
+  // A quiet label under the stats that says when the numbers are from, such as "as of today".
+  asOf?: string;
   children?: ReactNode;
 }) {
   const off = useMotionOff();
@@ -64,6 +67,7 @@ export function AnswerBody({
           ))}
         </dl>
       )}
+      {asOf && <p className="m-0 font-mono text-meta leading-tight text-mute">{asOf}</p>}
       {answer.rows.length > 0 && (
         <ul className="m-0 flex list-none flex-col border-t border-rule p-0">
           {answer.rows.map((row, index) => (

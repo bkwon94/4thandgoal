@@ -33,7 +33,7 @@ type Shared = {
 function PersonalBody({ block, view, live, href, avatars }: { block: PersonalBlock; view: PersonalView; live: boolean; href: string | null; avatars: Shared["avatars"] }) {
   const checked = view.check === "checked";
   return (
-    <AnswerBody answer={{ stats: block.stats, rows: block.rows, text: [], href: checked ? href : null }} avatars={avatars}>
+    <AnswerBody answer={{ stats: block.stats, rows: block.rows, text: [], href: checked ? href : null }} avatars={avatars} asOf={block.as_of}>
       <div className="flex flex-col gap-sp-3">
         <FreeBody view={view} live={live} first={WRITING_LINE} />
       </div>

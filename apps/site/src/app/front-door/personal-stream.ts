@@ -27,6 +27,8 @@ export const personalBlockSchema = z.object({
   fact: z.string(),
   stats: z.array(topicStatSchema),
   rows: z.array(topicRowSchema),
+  // When the numbers are from, such as "as of today" for the live grade of How you stack up.
+  as_of: z.string().optional(),
 });
 export type PersonalBlock = z.infer<typeof personalBlockSchema>;
 
