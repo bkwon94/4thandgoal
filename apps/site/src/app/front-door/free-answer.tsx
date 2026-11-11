@@ -248,7 +248,7 @@ export const FreeAnswerCard = forwardRef<HTMLElement, Shared & { result: FreeRes
   const view: FreeView = { steps: result.steps.map((line) => ({ line, done: true })), first: result.text, second: null, answerBlock: result.block ?? null, check: "checked", suggestion: result.suggestion, closest: null };
   return (
     <AnimatePresence initial={false}>
-      <article key="kept" ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+      <article key="kept" ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
         <QuestionBubble question={question} />
         <Surface>
           <FreeBody view={view} live={false} />
@@ -295,7 +295,7 @@ export const FreeAnswerLive = forwardRef<
     onError,
   });
   return (
-    <article ref={ref} aria-label={question} aria-busy={busy} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+    <article ref={ref} aria-label={question} aria-busy={busy} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={question} />
       <Surface>
         {/* A kept Answer of the API shows whole at once, with no stream of its words. */}

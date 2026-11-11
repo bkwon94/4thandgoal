@@ -92,7 +92,7 @@ export const MissCard = forwardRef<
     </>
   );
   return (
-    <article ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+    <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={question} />
       {block ? (
         <AnswerBody answer={{ stats: block.stats, rows: block.rows, text: [], href: null }} avatars={avatars}>
@@ -114,7 +114,7 @@ export const CapCard = forwardRef<HTMLElement, { question: string; line: string;
     const lead = cut < 0 ? line : line.slice(0, cut + 1);
     const detail = cut < 0 ? "" : line.slice(cut + 2);
     return (
-      <article ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+      <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
         <QuestionBubble question={question} />
         <Surface>
           {/* One paragraph, so a screen reader reads the line of the API as one sentence after the other. */}
@@ -144,7 +144,7 @@ export const NoteCard = forwardRef<
   }
 >(function NoteCard({ question, line, action, topic, team, onPick }, ref) {
   return (
-    <article ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+    <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={question} />
       <Surface>
         <p className="m-0 text-body leading-body text-ink-2">{line}</p>
@@ -171,7 +171,7 @@ export const NoteCard = forwardRef<
    waits, so the card of the Answer takes its place with the same line. */
 export const PendingCard = forwardRef<HTMLElement, { question: string }>(function PendingCard({ question }, ref) {
   return (
-    <article ref={ref} aria-label={question} aria-busy="true" className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+    <article ref={ref} aria-label={question} aria-busy="true" className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={question} />
       <Surface>
         <Steps steps={[]} live />
@@ -187,7 +187,7 @@ export const PassphraseCard = forwardRef<HTMLElement, { question: string; wrong:
     const [value, setValue] = useState("");
     const typed = value.trim();
     return (
-      <article ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+      <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
         <QuestionBubble question={question} />
         <Surface>
           <p className="m-0 text-body leading-body text-ink-2">
