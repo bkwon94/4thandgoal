@@ -12,7 +12,9 @@ from fakes import FakeJev
 from analyzer.finder_search import (
     SHORTLIST_KEEP,
     TARGET_MAX,
+    WIDER_MAX,
     Anchor,
+    Limit,
     _out_with_no_return,
     in_pool,
     offer_id,
@@ -20,6 +22,7 @@ from analyzer.finder_search import (
 )
 from analyzer.jev_waves import REQUESTS_PER_SECOND, JevWaves, WaveRequest, plan_waves
 from analyzer.measures import is_handcuff, trade_handcuffs
+from analyzer.trade_jev import TRADE_POSITIONS, weak_slot_rows
 from league.jev_port import JevError, NoulQuestion
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot
@@ -226,7 +229,9 @@ def test_an_anchored_search_skips_the_partner_filter_and_the_plain_search_keeps_
     jev = FakeJev(answer=answer)
     found = search(ASKER, None, snap, jev)
     assert len(_filter_requests(jev)) == len(others)
-    assert not any(read.passed for read in found.partners) and found.offers == []
+    # No partner passed, so no target question asks. The wider pass gives the ideas that the pick weighs.
+    assert not any(read.passed for read in found.partners) and found.targets == {}
+    assert _target_requests(jev) == [] and found.wider
 
 
 def test_an_anchored_search_asks_if_each_player_coming_back_would_take_the_place_of_the_anchor(snap):
@@ -251,6 +256,86 @@ def test_an_anchored_search_asks_if_each_player_coming_back_would_take_the_place
     jev = FakeJev()
     search(ASKER, PARTNER, snap, jev)
     assert not any("take the place of" in q.instructions for r in _target_requests(jev) for q in r.questions.values())
+
+def _no_target(key, question, state):
+    """Each target question reads no, so the normal search builds no offer. Each other question reads yes."""
+    return 0.3 if "." in key and "|" not in key else 0.9
+
+
+def _weak_positions(snap, roster_id):
+    """The positions of the weak slots of a roster: the position of the weak starter, or of the empty slot."""
+    return {row["position"] or row["slot"].rstrip("0123456789") for row in weak_slot_rows(snap, roster_id)}
+
+
+def test_a_search_with_no_offers_runs_one_wider_pass_with_no_more_jev_target_questions(snap):
+    jev = FakeJev(answer=_no_target)
+    found = search(ASKER, None, snap, jev)
+    asked = len(_target_requests(jev))
+    assert found.wider and found.offers and found.shortlist
+    assert len(found.offers) <= WIDER_MAX
+    # The wider pass asks no target question: the one target request of each partner is the normal one.
+    assert asked == sum(read.passed for read in found.partners)
+    need = _weak_positions(snap, ASKER) & set(TRADE_POSITIONS)
+    assert need
+    partners = [trade.sides[1].roster_id for trade in found.offers]
+    # One 1-for-1 idea per partner at most, and each brings back a player at a weak slot of the asker.
+    assert len(partners) == len(set(partners))
+    for trade in found.offers:
+        assert [len(side.player_ids) for side in trade.sides] == [1, 1]
+        assert snap.players[trade.sides[1].player_ids[0]].position in need
+        assert trade_handcuffs(trade, snap) == []
+        for side in trade.sides:
+            assert all(in_pool(snap, pid, side.roster_id) for pid in side.player_ids)
+
+
+def test_a_search_with_offers_runs_no_wider_pass(snap):
+    lines = []
+    found = search(ASKER, None, snap, FakeJev(), stage=lambda line, live=False: lines.append((line, live)))
+    assert found.offers and not found.wider
+    assert not any("wider" in line for line, _ in lines)
+
+
+def test_the_wider_pass_tells_the_manager_with_a_live_line_and_a_done_line(snap):
+    lines = []
+    search(ASKER, None, snap, FakeJev(answer=_no_target), stage=lambda line, live=False: lines.append((line, live)))
+    assert ("Looking wider for ideas", True) in lines
+    assert ("Looked wider for ideas", False) in lines
+    assert lines.index(("Looking wider for ideas", True)) < lines.index(("Looked wider for ideas", False))
+
+
+def test_the_wider_pass_of_an_anchor_that_the_asker_gives_holds_him_and_asks_for_his_position(snap):
+    anchor = _last_pool_player(snap, ASKER)
+    position = snap.players[anchor].position
+    found = search(ASKER, None, snap, FakeJev(answer=_no_target), anchor=Anchor(player_id=anchor, side="gives"))
+    assert found.wider and found.offers
+    for trade in found.offers:
+        assert trade.sides[0].player_ids == [anchor]
+        assert snap.players[trade.sides[1].player_ids[0]].position == position
+
+
+def test_the_wider_pass_of_an_anchor_that_the_asker_gets_holds_him(snap):
+    anchor = _last_pool_player(snap, PARTNER)
+    found = search(ASKER, None, snap, FakeJev(answer=_no_target), anchor=Anchor(player_id=anchor, side="gets"))
+    assert found.wider and found.offers
+    for trade in found.offers:
+        assert [side.roster_id for side in trade.sides] == [ASKER, PARTNER]
+        assert trade.sides[1].player_ids == [anchor]
+
+
+def test_the_wider_pass_keeps_the_limit_of_the_manager(snap):
+    kept = {snap.players[pid].position for pid in snap.rosters[ASKER] if in_pool(snap, pid, ASKER)} - {"QB"}
+    limit = Limit(keep_positions=sorted(kept))
+    found = search(ASKER, None, snap, FakeJev(answer=_no_target), limit=limit)
+    assert found.wider and found.offers
+    for trade in found.offers:
+        assert all(snap.players[pid].position not in kept for pid in trade.sides[0].player_ids)
+
+
+def test_the_wider_pass_skips_a_partner_whose_request_failed(snap):
+    # A failed request is never a no, and it drops what it would judge, so the wider pass builds nothing for it.
+    found = search(ASKER, None, snap, FakeJev(error=JevError("429 Too Many Requests")))
+    assert found.offers == [] and found.shortlist == []
+
 
 def _tiny(n):
     return {str(i): WaveRequest({"n": i}, {"q": NoulQuestion("Is it?", "yes", "no")}) for i in range(n)}
