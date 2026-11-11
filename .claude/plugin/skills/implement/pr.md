@@ -8,6 +8,18 @@ The `gh` CLI of the agent and Brian share one GitHub account. So the marker `<!-
 
 Never write the line `Test verdicts` in a comment. Never write `AT-<n>: PASS`, `FAIL`, or `BLOCKED` in a comment.
 
+## Close the tickets
+
+Do this before the push. The squash merge of the PR then puts `done` on `main`.
+
+1. Set the Status of each `in-review` ticket to `done`.
+2. Add the close comment under `## Comments` of each ticket, per the close comment rule in `docs/agents/issue-tracker.md`. The text is "Closes with the squash merge of the spec PR."
+3. If no ticket of the feature is open now, remove its row from `docs/agents/state.md`. If a ticket is still open, set Next ticket to the lowest open number.
+4. Run the tracker rule tests: `apps/pipeline/tests/test_rule_tracker.py` and `apps/site/src/tracker-rule.test.ts`.
+5. Commit with the message `Close the <slug> tickets`.
+
+A `blocked` ticket stays open, so its feature keeps its row.
+
 ## Open the PR
 
 1. Push the Spec branch: `git push -u origin <slug>`.
@@ -32,7 +44,7 @@ Spec: `.scratch/<slug>/PRD.md`. Acceptance tests: `.scratch/<slug>/ACCEPTANCE.md
 
 | Ticket | Status | Commits | Tests |
 | --- | --- | --- | --- |
-| 01 <title> | in-review | `abc1234` | AT-1, AT-2 |
+| 01 <title> | done | `abc1234` | AT-1, AT-2 |
 
 ## The review
 
@@ -70,5 +82,6 @@ The Spec branch has an open PR when `gh pr list --head <slug> --state open` list
 4. Run stage 2 with the fixed point at the head of the previous push.
 5. Run stage 3 for the tests of the new tickets only. Add their entries to `EVIDENCE.md`.
 6. Run stage 4 for the tests of the new tickets only, with the lines of "Some tests only" of [`judge.md`](judge.md#some-tests-only). A FAIL gets its one fix round. If a test has BLOCKED, stop. Push nothing, and tell Brian the test and the reason of the Judge.
-7. Push. Post one comment that lists the new commits and the new evidence links, with the agent marker.
-8. If no ticket is `blocked` now, run `gh pr ready <PR number>`.
+7. Close the new tickets with [Close the tickets](#close-the-tickets).
+8. Push. Post one comment that lists the new commits and the new evidence links, with the agent marker.
+9. If no ticket is `blocked` now, run `gh pr ready <PR number>`.

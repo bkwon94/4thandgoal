@@ -8,7 +8,7 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, AT-
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] The root Makefile has one target per member, and `make check` still runs them all in sequence.
 - [ ] A push of `fast-cycle` gives a green `check` in 10 min or less, after one run that fills the cache (AT-1).
@@ -18,3 +18,6 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, AT-
 - [x] `deploy-sites.yml` and `deploy-api.yml` have no diff against `main` (AT-5).
 - [ ] A throwaway branch that changes one doc line runs all five jobs (AT-27).
 - [x] `main` still has no ruleset (AT-28).
+
+## Comments
+- Closed by the merge of PR #14.

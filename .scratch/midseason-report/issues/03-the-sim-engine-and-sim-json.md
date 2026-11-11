@@ -8,10 +8,13 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-3, AT-37, AT-38, a
 
 **Blocked by:** 01 and 02.
 
-**Status:** in-review
+**Status:** done
 
 - [x] Two builds of CPC week 8 give the same `sim.json`, byte for byte.
 - [x] `sim.json` holds 200 sim runs and the odds of 10,000 runs, and its gzip size is 50 KB or less.
 - [x] In a CPC sim run, seed 1 meets the lowest seed left in the semifinal.
 - [x] The parity test passes: the playoff odds of the sim are within 2 points of the published week 8 odds of CPC and NorCal.
 - [x] `clients/cpc/published/2026/rankings.json` does not change.
+
+## Comments
+- Closed by the merge of PR #13.

@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] One root uv workspace holds the pipeline, the API, and the package globs, with one root `uv.lock`.
 - [x] One root pnpm workspace holds the site and the package globs, with one root `pnpm-lock.yaml`.
@@ -16,3 +16,6 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1.
 - [x] The check runs each Python member with `uv run --exact --package`.
 - [x] A diff of a root file runs the full check. The root files are the workspace files, the lock files, the root `Makefile`, and `.github/`.
 - [x] The CPC golden diff is empty (AT-1).
+
+## Comments
+- Closed by the merge of PR #3.

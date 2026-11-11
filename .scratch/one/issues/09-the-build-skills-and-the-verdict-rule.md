@@ -6,7 +6,7 @@ Spec: `.scratch/one/PRD.md`. Solution parts 3, 4, and 5, ADR 0020, and Implement
 
 **Blocked by:** 08 and 04.
 
-**Status:** in-review
+**Status:** done
 
 - [ ] `cpc:implement` builds each ticket in its own worktree on a ticket branch, with `tdd`.
 - [x] It merges each ticket into the spec branch only after the diff check passes.
@@ -23,3 +23,4 @@ Spec: `.scratch/one/PRD.md`. Solution parts 3, 4, and 5, ADR 0020, and Implement
 - Open: three boxes wait for the first real spec, because the dry run did not run `tdd`, `code-review`, or `cpc:review`. The `issue_comment` path is also unproved live, because the workflow was not on `main` before the dry run. The ticket stays `in-review` until the first real spec PR proves them.
 - The notes: agent comments end with `<!-- cpc:agent -->`, because the agent and Brian share the account `bkwon94`, and the check ignores marked comments. Site evidence is about 320 KB for each test, and it reaches `main` through the squash merge. `verdict` blocks a merge only after Brian makes it a required check.
 - Read 14 files: CLAUDE.md, docs/agents/issue-tracker.md, docs/agents/state.md, GLOSSARY.md, .scratch/one/PRD.md, .scratch/one/issues/09-the-build-skills-and-the-verdict-rule.md, docs/adr/0019-main-is-the-record-branch.md, docs/adr/0020-a-spec-pr-merges-on-the-verdicts-of-its-acceptance-tests.md, Makefile, .github/workflows/check.yml, and in `~/repos/zero` branch `one`: implement/SKILL.md, review/SKILL.md, .agents/delivery.md, docs/adr/0014.
+- The spec PRs #3 to #31 ran on the build skills and the verdict check.

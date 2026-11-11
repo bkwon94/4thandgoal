@@ -8,7 +8,7 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-21 to AT-23, AT-25 to AT
 
 **Blocked by:** 04
 
-**Status:** in-review
+**Status:** done
 
 - [x] A board test reads the tab row in the fixed order with the count of each leader, and "Won" for a won word.
 - [x] A board test reads the first slide as the open word with the largest share, and a won word as the last slide.
@@ -18,3 +18,6 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-21 to AT-23, AT-25 to AT
 - [x] A board test reads the board before any claim: it opens on CORNERSTONE with every letter outlined.
 - [x] A board test presses the right arrow on a tab and reads the next tab selected, with the roles tablist, tab, and tabpanel.
 - [x] Only a won slide takes the red accent. An open slide sits on the dark hero ground.
+
+## Comments
+- Closed by the merge of PR #23.

@@ -8,7 +8,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-27, AT-28, AT-29, AT-31
 
 **Blocked by:** 01, 02, 03, 04, 05, 06, 07, 08, and 09
 
-**Status:** in-review
+**Status:** done
 
 - [ ] `CLIENT=cpc pnpm check:floor` and `CLIENT=norcal pnpm check:floor` pass with the new open states.
 - [x] No page scrolls sideways at 390 px, and each new control is 44 px or more.
@@ -26,3 +26,4 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-27, AT-28, AT-29, AT-31
 - 2026-11-08, ticket 10 build: The Scrolltide box stays unticked. The search of eight-line runs finds no match, but only the Team Roster excerpt, the Health Tracker notes, and the item notes are on disk. The prompts of Showcase Card, Lime Metrics, and Send Halo are not saved, and a fetch can count against the daily limit. AT-32 needs all five prompts.
 - 2026-11-08, ticket 10 build: Per Brian, the award and trade cards keep their plain look, so the floor adds no open award or trade card. The Open card entry of `GLOSSARY.md` names GameCard, LadderCard, and the rows of the Index list only.
 - 2026-11-08, ticket 10 build: The race group Out also holds each team under 25% odds, so it is wider than the term Out of the pipeline. `GLOSSARY.md` defines In, Bubble, and Out inside one Race group entry, so each term keeps one meaning.
+- Closed by the merge of PR #21.

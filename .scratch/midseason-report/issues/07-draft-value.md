@@ -8,9 +8,12 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-12, AT-13, and AT-
 
 **Blocked by:** 01 and 02.
 
-**Status:** in-review
+**Status:** done
 
 - [x] A CPC steal is Matthew Golden at $2, and a bust is A.J. Brown at $39 with "just bad".
 - [x] In NorCal, each pick's cost is its pick number.
 - [x] Tyler Allgeier, drafted by Bo Girds for $2 and dropped, carries the "the one that got away" line.
 - [x] A test of the provider passes the fake, with no patch of the port.
+
+## Comments
+- Closed by the merge of PR #13.

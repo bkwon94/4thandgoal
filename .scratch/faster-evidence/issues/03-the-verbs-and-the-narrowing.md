@@ -8,10 +8,13 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-5, AT-6, and AT-11.
 
 **Blocked by:** 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test on a small real folder proves each verb: a click, a fill, a scroll to a selector and to the end, a wait on a selector, the URL, and a time.
 - [x] The same test proves a named shot before and after a click, and the `url` file holds the URL after the click.
 - [x] A test proves `widths: [768, 1280]` writes no 375 file, and `themes: ["light"]` writes no dark file.
 - [x] A real run with one test id runs only that test.
 - [x] `pnpm check:fast` of the site passes.
+
+## Comments
+- Closed by the merge of PR #12.

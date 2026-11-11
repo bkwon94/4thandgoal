@@ -8,10 +8,13 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-19, AT-20, and AT-21.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] A unit test proves the level for zero, two, and six passed checks of a two-side trade, and full only when the ready rule passes.
 - [x] On `/analyze/`, two teams and no player give the level of 2 of 6, below full.
 - [x] The removal of a player from a full trade dims the halo.
 - [x] The halo reads in the light theme, and reduced motion shows no pulse.
 - [x] `make check-fast` passes.
+
+## Comments
+- Closed by the merge of PR #21.

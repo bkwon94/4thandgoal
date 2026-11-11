@@ -8,10 +8,13 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-9, AT-11, AT-12, and AT
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] Season So Far of The Blue Tent shows A, the grade read, and arcs 4th, 6th, 7th, and 7th, with 9, 7, 6, and 6 of 12 blades lit.
 - [x] Each arc has an accessible name with its part, its rank, and its weight.
 - [x] The weights test fails when the site constant differs from `GRADE_WEIGHTS`, and passes when they match.
 - [x] The reduced-motion test proves the arcs show lit at once.
 - [x] `make check-fast` passes.
+
+## Comments
+- Closed by the merge of PR #21.

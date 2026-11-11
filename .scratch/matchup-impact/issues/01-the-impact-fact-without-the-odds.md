@@ -8,7 +8,7 @@ Spec: `.scratch/matchup-impact/PRD.md`. Acceptance tests AT-4, AT-5, AT-6, and A
 
 **Blocked by:** None. It can start now.
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test on the fixture week reads `M<n>.impact` and finds the standings place before and after for both teams, as "rose from", "fell from", or "stayed" in the standings.
 - [x] A test finds the median result of both teams and the record of each team for the week, such as 2-0, 1-1, or 0-2.
@@ -20,3 +20,4 @@ Spec: `.scratch/matchup-impact/PRD.md`. Acceptance tests AT-4, AT-5, AT-6, and A
 - [ ] A build of `2026` week 8 records the evidence of AT-4, AT-5, AT-6, and AT-8 in `EVIDENCE.md`.
 
 ## Comments
+- Closed by the merge of PR #2.

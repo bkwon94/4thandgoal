@@ -8,7 +8,7 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-14, AT-15, AT-16, AT-17,
 
 **Blocked by:** 03
 
-**Status:** in-review
+**Status:** done
 
 - [ ] On a throwaway copy of the evidence of `faster-evidence` at `197fb328`, the Judge gives PASS to each of the 14 tests (AT-14).
 - [ ] With the Observation of AT-2 of that copy made false, a fresh Judge gives FAIL to AT-2 with a reason that names the mismatch (AT-15).
@@ -16,3 +16,6 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-14, AT-15, AT-16, AT-17,
 - [ ] A throwaway feature whose AT-2 cannot pass gets BLOCKED after the second round, no `gh pr create` runs, and the message to Brian names AT-2 and the reason (AT-17).
 - [ ] Each round is one commit that changes only `VERDICTS.md` (AT-18).
 - [x] `GLOSSARY.md` defines **Judge** and the changed **Test verdict**, and ADR 0020 names ADR 0026 (AT-25).
+
+## Comments
+- Closed by the merge of PR #14.

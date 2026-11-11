@@ -13,21 +13,12 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | --- | --- | --- | --- | --- |
 | `agent-habits` | site | 03 close the site tickets whose merge main proves | none | |
 | `analyzer-multi-team` | site | 10 the headshot strip gap | none | |
-| `card-polish` | site | 01 Open card and GameCard | none | |
-| `clients` | both | 01 the root workspaces and the API app | none | |
-| `easter-eggs` | both | 01 one egg from the drop to the board | none | |
-| `egg-polish` | site | 01 The crack starts at the tap point | none | must merge before the first egg drop on Tuesday, 2026-11-10 |
-| `fast-cycle` | both | 07 the midseason tests share one build | PR #13 | `fast-cycle` merges after PR #13 |
-| `faster-evidence` | both | 01 the rate limit setting and make api-evidence | none | |
-| `jev` | pipeline | 01 the weekly build saves one Jev check per blurb | none | |
 | `known-games` | pipeline | 08 the-site-renders-the-known-games-line | | |
-| `matchup-impact` | pipeline | 01 the impact fact, without the odds | none | |
 | `manager-pages` | site | 01 the past week keeps every rostered player | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
-| `midseason-report` | both | 15 the roast voice: one prose block per chapter | none | |
 | `modular` | site | 12 the fixtures carry every as-of key | none | |
 | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |
-| `one` | both | 09 the build skills and the verdict rule | none | 09 is in-review until the first real spec PR runs `tdd`, `code-review`, and `cpc:review` |
+| `one` | both | 11 rename the pipeline chapter to prose block | none | |
 | `next-week-byes` | site | 01 byes on the next-week games | the pipeline tracker | |
 | `next-week-byes` | pipeline | 06 two-chapters-fell-to-templates-in-the-week-7-rebuild | | |
 | `rankings` | site | 01 the reader and the route | none | |
@@ -36,10 +27,8 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `site-foundation` | site | 01 the tiers and the page column | none | |
 | `site-pages` | site | 01 the page shell | none | |
 | `site-report` | site | 01 the type scale, the measure, and the cards | none | |
-| `site-redesign` | site | 01 dark default and a light set for each client | none | |
 | `site-speed` | site | 01 the teams prefetch and the skeleton | none | |
 | `tone` | pipeline | 09 leftovers-after-the-second-rewrite | | |
-| `transaction-history` | pipeline | 01 each build writes the full week before into the history | none | |
 | `trade-grade-v3` | pipeline | 05 rebuild-week-6 | | Brian's review and the publish of week 6 |
 | `waiver` | site | 01 the route behind the flag | pipeline 01 the week file | |
 | `waiver` | pipeline | 09 usage-floor-for-ranked-buckets | | |

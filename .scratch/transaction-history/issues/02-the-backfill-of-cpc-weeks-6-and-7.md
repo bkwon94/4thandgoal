@@ -8,10 +8,13 @@ Spec: `.scratch/transaction-history/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, 
 
 **Blocked by:** none.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The CPC history of week 6 holds 83 rows, and its transaction IDs equal the live leg 6.
 - [x] The CPC history of week 7 holds 59 rows, and its transaction IDs equal the live leg 7.
 - [x] The bid history of CPC at week 8 returns 100 won claims on the spec branch, against 77 on `main`.
 - [x] No file under `clients/*/published/` and no file under `clients/norcal/` changes.
 - [x] No week 8 leg is fetched. The week 9 build writes it through ticket 01.
+
+## Comments
+- Closed by the merge of PR #10.

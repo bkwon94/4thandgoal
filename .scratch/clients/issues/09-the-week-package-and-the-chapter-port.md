@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1, AT-11, AT-13, and AT-23.
 
 **Blocked by:** 06, 07
 
-**Status:** in-review
+**Status:** done
 
 - [x] The `week` package holds the modules of decision 01 and the median text.
 - [x] The chapter port takes a chapter from another package. The registry of the site build lists only the chapters of the client.
@@ -16,3 +16,6 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1, AT-11, AT-13, and AT-23.
 - [x] A fixture test with no DEF slot shows no DEF in the pool and the leaders (AT-13).
 - [x] A test client with only `week` builds a week with no rankings chapter and no rankings route (AT-23).
 - [x] The CPC golden diff is empty (AT-1).
+
+## Comments
+- Closed by the merge of PR #3.

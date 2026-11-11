@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1 and AT-14.
 
 **Blocked by:** 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] The `league` package holds the modules of decision 01, in Python, and `headshot` and `avatar` on the site side.
 - [x] The Sleeper adapter takes its cache dir in its constructor. The fetch calls drop the cache argument.
@@ -17,3 +17,6 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1 and AT-14.
 - [x] `chart` is a package value of `league`, with no chart as the default. CPC sets its chart.
 - [x] The README states that the Sleeper player ID is the canonical ID, and lists each Sleeper shape as a duty of a later adapter.
 - [x] The CPC golden diff is empty (AT-1).
+
+## Comments
+- Closed by the merge of PR #3.

@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The brand schema keeps only the `light` and the `dark` sets, both required. A `[fonts]` key, a radius key, or a missing set fails the build and names the key or the set.
 - [x] `brand.toml` of CPC and of NorCal hold the light set of the spec table, with the new roles `raised` and `grid` in both sets.
@@ -18,3 +18,6 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 - [x] Each check of the 19 checks in `decisions/01-research-brand-schema-drops-fonts.notes.md` is changed or replaced.
 - [x] ADR 0022 no longer puts the fonts in `brand.toml`.
 - [x] The evidence of AT-1, AT-2, AT-3, AT-4, AT-37, and AT-39 is recorded in `EVIDENCE.md`.
+
+## Comments
+- Closed by the merge of PR #11.

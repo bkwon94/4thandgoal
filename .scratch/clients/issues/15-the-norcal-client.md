@@ -10,7 +10,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-9 to AT-16, AT-24, AT-27, a
 
 **Needs Brian:** manual step 3 of the spec for `norcal.4thandgoal.app`. `cpc:implement` stops here and gives Brian the dashboard page, each value, and the check.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The NorCal client folder holds the `client.toml`, `brand.toml`, and `copy.toml` of the spec, and its data.
 - [x] The pipeline builds 2026 week 8 for `norcal`, with no Median Game chapter, one game a week, no DEF, and full PPR (AT-11 to AT-14).
@@ -32,3 +32,4 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-9 to AT-16, AT-24, AT-27, a
   - AT-16: the masthead holds a row of links in this order: Home, Week 8, Power Rankings, Managers, Trade Analyzer. It has no menu button.
   - The screenshots of AT-9 to AT-16 and the API call of AT-27 need the live deploy. The evidence stage records them.
 
+- Closed by the merge of PR #3.

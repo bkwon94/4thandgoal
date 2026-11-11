@@ -8,10 +8,13 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance test AT-56.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The draft prompt states the rule.
 - [x] The draft refuses a `hold` on a `blurb-*` target and writes nothing.
 - [x] The drop answers 422 for a `hold` on a `blurb-*` target and stores no egg. A `tap2` on a blurb drops.
 - [x] The listener sends `tap2` with the id of the blurb for a double-tap anywhere in the blurb.
 - [x] Decision 01, the PRD, and the acceptance tests state the rule. AT-56 tests it.
+
+## Comments
+- Closed by the merge of PR #19.
