@@ -47,7 +47,7 @@ App: site
 Stories: 8, 9, 12
 Given: The Thread of Lil Fridge is empty.
 When: The reader looks at the front door.
-Then: 3 Suggestion chips show, each with a Topic name and one number, and "More" leads the row. A tap on "More" lists all 13 Topics.
+Then: 3 Suggestion chips show, each with a Topic name and one short fact, and "More" leads the row. A tap on "More" lists all 13 Topics.
 Evidence: screenshots at 375, 768, and 1280 px in both themes, with "More" closed and open.
 
 AT-5: Retired: Tuesday puts the week recap first
@@ -592,8 +592,8 @@ App: site
 Stories: 18, 65
 Given: Your team is Lil Fridge.
 When: The reader types "who are the highest scoring teams this season" and sends it.
-Then: The Answer shows a lead sentence and a list of teams by points for, most first, with "checked". Each total matches the standings data.
-Evidence: one live run: the tool results, the `data-block` part, the points for of each team from the standings data, and screenshots at 375, 768, and 1280 px in both themes.
+Then: The Answer shows a lead sentence and a list of teams by points for, most first, with "checked". Each total matches the live standings that the `standings` tool reads.
+Evidence: one live run: the tool results, the `data-block` part, the points for of each team from the `standings` tool result, and screenshots at 375, 768, and 1280 px in both themes.
 
 AT-73: A comparison of two teams shows as a table
 App: site
@@ -702,3 +702,4 @@ Out of scope "A Thread kept on the server": AT-57
 - 2026-11-11: Brian approved these changes. AT-17 sets the bar at 52 of the 59 questions with an expected route. AT-30 and AT-31 test the plain chat of ticket 18, with no fold. AT-48 applies only with `front_door = true` (ticket 43). The setup builds each site of the evidence with `front_door = true`. AT-59 tests the flag off. AT-60 to AT-75 test H13 to H30 of `HANDS-ON.md`, as tickets 26 to 43 built them. Both the CPC build and the NorCal build of the evidence set `front_door = true`. AT-13 says only "I can't answer that." (ticket 20). AT-21 holds each text until it passes the check, so a failed first text never shows (ticket 21). AT-66 counts a near idea as an idea (ticket 36). PRD stories 64 to 66 cover the flag, the answer blocks, and the rate limit, and AT-59, AT-70, and AT-72 to AT-74 trace to them.
 - 2026-11-11, after the evidence round: Brian approved these changes. AT-18 reads the reveal of the checked text, not a stream, as ticket 21 built. AT-5 and AT-62 take a team that the live data fits, because the live lifts and the live QB of Bo Girds changed. AT-59 drops Midseason Report, because the menu of `main` has none. AT-68 accepts the default return week when Sleeper gives none, and any QB in the place of Lamar Jackson.
 - 2026-11-11, later: Brian retired AT-5.
+- 2026-11-11, after Judge round 1: Brian approved these changes. AT-4 reads one short fact on each chip, not one number. AT-72 compares each total with the live `standings` tool result, not with the published week 8 page, which differs by later stat fixes.
