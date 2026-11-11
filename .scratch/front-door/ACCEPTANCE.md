@@ -372,7 +372,7 @@ App: site
 Stories: 55
 Given: The CPC site and the NorCal site.
 When: The reader opens `/` on each, with one Answer in the Thread.
-Then: Each front door uses the fonts, the band, and the accent of its client, in light and dark.
+Then: Each front door uses the band and the accent of its client, in light and dark. Both clients share one font, by ADR 0024.
 Evidence: screenshots at 375, 768, and 1280 px in both themes for each client.
 
 AT-46: Reduced motion keeps only the fades
