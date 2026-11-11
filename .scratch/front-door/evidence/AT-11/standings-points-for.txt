@@ -1,0 +1,13 @@
+$ jq -r '[.. | objects | select(has("points_for") and has("roster_id"))] | unique_by(.roster_id) | sort_by(-.points_for) | .[] | "\(.name): \(.points_for)"' clients/cpc/published/2026/week-08/page.json
+Bo Girds: 921.62
+London Cooking: 918.99
+Lil Fridge: 909.55
+Maye d'force B with U: 901.65
+Teehee: 885.88
+The Blue Tent: 871.19
+All You Need Is Love: 850.17
+Return of T Mac: 831.55
+Unsolicited Dak Picks: 793.58
+To Infinity and Bijan: 769.09
+behold the lamb: 765.42
+NFC Least: 700.97

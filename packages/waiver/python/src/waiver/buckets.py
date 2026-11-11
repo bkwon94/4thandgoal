@@ -10,7 +10,7 @@ from league.client import Client
 from league.models import Fact, WaiverPlayer
 from league.nflverse import gsis_id
 from league.parse import player_name
-from league.ranks import OUT_STATUSES, back_inside
+from league.ranks import OUT_STATUSES, STATUS_WORDS, back_inside
 from league.slow_sources import SlowSources
 from waiver.rank_score import rank_scores
 from waiver.tunables import BUCKET_POSITIONS, SNEAKY_USAGE_FLOOR, TOP_HALF
@@ -23,8 +23,7 @@ BEHIND_INJURY = "behind_injury"
 RETURN = "return"
 HANDCUFF = "handcuff"
 
-# The words of the story fact for each status of OUT_STATUSES: "{starter} is {word}".
-STATUS_WORDS = {"Out": "out", "IR": "on IR", "PUP": "on the PUP list", "Sus": "suspended", "NA": "not active"}
+# The words of the story fact for each status of OUT_STATUSES, "{starter} is {word}", are STATUS_WORDS of league.ranks.
 
 
 class BucketInputs(NamedTuple):
@@ -59,6 +58,8 @@ class PlayerAbove(NamedTuple):
     status: str | None
     # True when he is first on the chart, the starter.
     starter: bool
+    # True when every player above the pool player on the chart is out, this player too. Then a role is open.
+    every_above_out: bool
 
 
 def sneaky_and_stashes(
@@ -77,16 +78,19 @@ def _sneaky(players: list[WaiverPlayer], best_adds: list[WaiverPlayer],
             above_by_player: dict[str, PlayerAbove]) -> list[WaiverPlayer]:
     """The pool players with a top-quarter usage score and a bottom-half projection, or behind an injured player.
 
-    A player who is out himself is not sneaky.
+    A player is behind an injured player only when every player above him on the depth chart is out, so an out
+    backup under a healthy starter opens no role. A player who is out himself is not sneaky. A sneaky player needs a
+    rest of season projection above 0, as a stash does.
     """
     taken = {p.player_id for p in best_adds}
     sneaky = []
     for p in players:
-        if p.position not in BUCKET_POSITIONS or p.player_id in taken or p.injury_status in OUT_STATUSES:
+        if (p.position not in BUCKET_POSITIONS or p.player_id in taken or p.injury_status in OUT_STATUSES
+                or p.ros_projection <= 0):
             continue
         player_above = above_by_player.get(p.player_id)
         # The injury is the story of a usage rise too, so behind_injury wins when both rules hold.
-        if player_above is not None and player_above.status in OUT_STATUSES:
+        if player_above is not None and player_above.every_above_out:
             sneaky.append(_entry(p, BEHIND_INJURY, player_above))
         elif p.scores.usage >= SNEAKY_USAGE_FLOOR and p.scores.projection < TOP_HALF:
             sneaky.append(_entry(p, USAGE_RISE, player_above))
@@ -155,7 +159,8 @@ def _players_above(players: list[WaiverPlayer], inputs: BucketInputs) -> dict[st
     """The player one slot above each pool player on his team's depth chart at his position.
 
     The chart lists gsis_ids, so the Sleeper players file and the id map join them to Sleeper IDs. A player first
-    on his chart, or not on it, has no entry.
+    on his chart, or not on it, has no entry. A player above who is not in the Sleeper players file has no status,
+    so he does not count as out.
     """
     if inputs.slow is None or inputs.slow.depth_charts is None:
         return {}
@@ -171,9 +176,17 @@ def _players_above(players: list[WaiverPlayer], inputs: BucketInputs) -> dict[st
         above_id = sleeper_of.get(chart[slot_above])
         if above_id is not None:
             entry = sleeper_players[above_id]
+            every_above_out = all(_status(sleeper_players, sleeper_of.get(g)) in OUT_STATUSES
+                                  for g in chart[:slot_above + 1])
             above_by_player[p.player_id] = PlayerAbove(above_id, player_name(above_id, entry),
-                                                       entry.get("injury_status"), starter=slot_above == 0)
+                                                       entry.get("injury_status"), starter=slot_above == 0,
+                                                       every_above_out=every_above_out)
     return above_by_player
+
+
+def _status(sleeper_players: dict[str, dict], player_id: str | None) -> str | None:
+    """The Sleeper injury status of the player. None when the chart names a player that the players file lacks."""
+    return (sleeper_players.get(player_id) or {}).get("injury_status") if player_id is not None else None
 
 
 def _stash_key(p: WaiverPlayer) -> tuple[float, str]:

@@ -1,0 +1,54 @@
+$ make -C apps/pipeline page-json CLIENT=cpc WEEK=8
+uv run --exact --package cornerstone cornerstone page-json --client cpc --season 2026 --week 8
+<front-door worktree>/clients/cpc/build/2026/week-08/page.json
+(exit 0)
+
+# AT-51: the Topic Answers of CPC 2026 week 8, built from 99d00125 in a detached worktree of the front-door head.
+# The command is make page-json, the step of the weekly build that writes page.json and topics.json from the saved week, with no Sleeper refetch and no Claude call. A full cornerstone build is not run: it calls Claude for each chapter and refetches the week. See AT-56.
+
+$ git status --short   # in the worktree after the run
+?? clients/cpc/build/2026/week-08/topics.json
+
+# The list of Answers in the topics.json of the run, clients/cpc/build/2026/week-08/topics.json:
+$ python3 list_topics.py clients/cpc/build/2026/week-08/topics.json clients/cpc/published/2026/managers.json
+schema_version 1, season 2026, week 8, teams: 12
+- roster 1 The Blue Tent: 7 Answers: week_recap (You scored 100.31, 6th of 12), last_matchup (Won 100.31 to 98.88), next_matchup (Next: NFC Least, 3-13), power_rankings (5th, up 3), playoff_race (75% playoff odds), your_season (9-7, 6th of 12), leaders_trades (Brock Bowers, 1st at TE)
+- roster 2 All You Need Is Love: 7 Answers: week_recap (You scored 116.83, 4th of 12), last_matchup (Won 116.83 to 92.55), next_matchup (Next: Return of T Mac, 9-7), power_rankings (1st, up 4), playoff_race (81% playoff odds), your_season (11-5, 1st of 12), leaders_trades (Joe Burrow, 1st at QB)
+- roster 3 Lil Fridge: 7 Answers: week_recap (You scored 80.11, 12th of 12), last_matchup (Lost 80.11 to 121.16), next_matchup (Next: behold the lamb, 6-10), power_rankings (6th, down 5), playoff_race (86% playoff odds), your_season (10-6, 2nd of 12), leaders_trades (1 trade this week)
+- roster 4 NFC Least: 7 Answers: week_recap (You scored 85.08, 11th of 12), last_matchup (Lost 85.08 to 134.1), next_matchup (Next: The Blue Tent, 9-7), power_rankings (12th, down 2), playoff_race (1% playoff odds), your_season (3-13, 12th of 12), leaders_trades (Kirk Cousins, 2nd at QB)
+- roster 5 London Cooking: 7 Answers: week_recap (You scored 98.88, 7th of 12), last_matchup (Lost 98.88 to 100.31), next_matchup (Next: Maye d'force B with U, 9-7), power_rankings (8th, down 4), playoff_race (83% playoff odds), your_season (9-7, 4th of 12), leaders_trades (Michael Wilson, 3rd at WR)
+- roster 6 Bo Girds: 7 Answers: week_recap (You scored 88.2, 9th of 12), last_matchup (Lost 88.2 to 118.89), next_matchup (Next: Teehee, 8-8), power_rankings (7th, down 4), playoff_race (76% playoff odds), your_season (9-7, 3rd of 12), leaders_trades (Jacksonville Jaguars, 1st at DEF)
+- roster 7 To Infinity and Bijan: 7 Answers: week_recap (You scored 118.89, 3rd of 12), last_matchup (Won 118.89 to 88.2), next_matchup (Next: Unsolicited Dak Picks, 6-10), power_rankings (9th, up 3), playoff_race (7% playoff odds), your_season (7-9, 9th of 12), leaders_trades (Harold Fannin Jr., 2nd at TE)
+- roster 8 Return of T Mac: 7 Answers: week_recap (You scored 111.97, 5th of 12), last_matchup (Won 111.97 to 85.76), next_matchup (Next: All You Need Is Love, 11-5), power_rankings (4th, down 2), playoff_race (42% playoff odds), your_season (9-7, 7th of 12), leaders_trades (Pittsburgh Steelers, 2nd at DEF)
+- roster 9 Maye d'force B with U: 7 Answers: week_recap (You scored 121.16, 2nd of 12), last_matchup (Won 121.16 to 80.11), next_matchup (Next: London Cooking, 9-7), power_rankings (3rd, up 3), playoff_race (77% playoff odds), your_season (9-7, 5th of 12), leaders_trades (D'Andre Swift, 2nd at RB)
+- roster 10 behold the lamb: 7 Answers: week_recap (You scored 85.76, 10th of 12), last_matchup (Lost 85.76 to 111.97), next_matchup (Next: Lil Fridge, 10-6), power_rankings (11th, no change), playoff_race (4% playoff odds), your_season (6-10, 11th of 12), leaders_trades (Josh Allen, 3rd at QB)
+- roster 11 Unsolicited Dak Picks: 7 Answers: week_recap (You scored 92.55, 8th of 12), last_matchup (Lost 92.55 to 116.83), next_matchup (Next: To Infinity and Bijan, 7-9), power_rankings (10th, down 1), playoff_race (8% playoff odds), your_season (6-10, 10th of 12), leaders_trades (Washington Commanders, 3rd at DEF)
+- roster 12 Teehee: 7 Answers: week_recap (You scored 134.1, 1st of 12), last_matchup (Won 134.1 to 85.08), next_matchup (Next: Bo Girds, 9-7), power_rankings (2nd, up 5), playoff_race (61% playoff odds), your_season (8-8, 8th of 12), leaders_trades (Bhayshul Tuten, 1st at RB)
+Distinct Topics: 7: ['last_matchup', 'leaders_trades', 'next_matchup', 'playoff_race', 'power_rankings', 'week_recap', 'your_season']
+Total Answers: 84
+
+# The list of Answers in the published week, clients/cpc/published/2026/week-08/topics.json (committed at 99d00125):
+$ python3 list_topics.py clients/cpc/published/2026/week-08/topics.json clients/cpc/published/2026/managers.json
+schema_version 1, season 2026, week 8, teams: 12
+- roster 1 The Blue Tent: 7 Answers: week_recap (You scored 100.31, 6th of 12), last_matchup (Won 100.31 to 98.88), next_matchup (Next: NFC Least, 3-13), power_rankings (5th, up 3), playoff_race (75% playoff odds), your_season (9-7, 6th of 12), leaders_trades (Brock Bowers, 1st at TE)
+- roster 2 All You Need Is Love: 7 Answers: week_recap (You scored 116.83, 4th of 12), last_matchup (Won 116.83 to 92.55), next_matchup (Next: Return of T Mac, 9-7), power_rankings (1st, up 4), playoff_race (81% playoff odds), your_season (11-5, 1st of 12), leaders_trades (Joe Burrow, 1st at QB)
+- roster 3 Lil Fridge: 7 Answers: week_recap (You scored 80.11, 12th of 12), last_matchup (Lost 80.11 to 121.16), next_matchup (Next: behold the lamb, 6-10), power_rankings (6th, down 5), playoff_race (86% playoff odds), your_season (10-6, 2nd of 12), leaders_trades (1 trade this week)
+- roster 4 NFC Least: 7 Answers: week_recap (You scored 85.08, 11th of 12), last_matchup (Lost 85.08 to 134.1), next_matchup (Next: The Blue Tent, 9-7), power_rankings (12th, down 2), playoff_race (1% playoff odds), your_season (3-13, 12th of 12), leaders_trades (Kirk Cousins, 2nd at QB)
+- roster 5 London Cooking: 7 Answers: week_recap (You scored 98.88, 7th of 12), last_matchup (Lost 98.88 to 100.31), next_matchup (Next: Maye d'force B with U, 9-7), power_rankings (8th, down 4), playoff_race (83% playoff odds), your_season (9-7, 4th of 12), leaders_trades (Michael Wilson, 3rd at WR)
+- roster 6 Bo Girds: 7 Answers: week_recap (You scored 88.2, 9th of 12), last_matchup (Lost 88.2 to 118.89), next_matchup (Next: Teehee, 8-8), power_rankings (7th, down 4), playoff_race (76% playoff odds), your_season (9-7, 3rd of 12), leaders_trades (Jacksonville Jaguars, 1st at DEF)
+- roster 7 To Infinity and Bijan: 7 Answers: week_recap (You scored 118.89, 3rd of 12), last_matchup (Won 118.89 to 88.2), next_matchup (Next: Unsolicited Dak Picks, 6-10), power_rankings (9th, up 3), playoff_race (7% playoff odds), your_season (7-9, 9th of 12), leaders_trades (Harold Fannin Jr., 2nd at TE)
+- roster 8 Return of T Mac: 7 Answers: week_recap (You scored 111.97, 5th of 12), last_matchup (Won 111.97 to 85.76), next_matchup (Next: All You Need Is Love, 11-5), power_rankings (4th, down 2), playoff_race (42% playoff odds), your_season (9-7, 7th of 12), leaders_trades (Pittsburgh Steelers, 2nd at DEF)
+- roster 9 Maye d'force B with U: 7 Answers: week_recap (You scored 121.16, 2nd of 12), last_matchup (Won 121.16 to 80.11), next_matchup (Next: London Cooking, 9-7), power_rankings (3rd, up 3), playoff_race (77% playoff odds), your_season (9-7, 5th of 12), leaders_trades (D'Andre Swift, 2nd at RB)
+- roster 10 behold the lamb: 7 Answers: week_recap (You scored 85.76, 10th of 12), last_matchup (Lost 85.76 to 111.97), next_matchup (Next: Lil Fridge, 10-6), power_rankings (11th, no change), playoff_race (4% playoff odds), your_season (6-10, 11th of 12), leaders_trades (Josh Allen, 3rd at QB)
+- roster 11 Unsolicited Dak Picks: 7 Answers: week_recap (You scored 92.55, 8th of 12), last_matchup (Lost 92.55 to 116.83), next_matchup (Next: To Infinity and Bijan, 7-9), power_rankings (10th, down 1), playoff_race (8% playoff odds), your_season (6-10, 10th of 12), leaders_trades (Washington Commanders, 3rd at DEF)
+- roster 12 Teehee: 7 Answers: week_recap (You scored 134.1, 1st of 12), last_matchup (Won 134.1 to 85.08), next_matchup (Next: Bo Girds, 9-7), power_rankings (2nd, up 5), playoff_race (61% playoff odds), your_season (8-8, 8th of 12), leaders_trades (Bhayshul Tuten, 1st at RB)
+Distinct Topics: 7: ['last_matchup', 'leaders_trades', 'next_matchup', 'playoff_race', 'power_rankings', 'week_recap', 'your_season']
+Total Answers: 84
+
+# The diff of the topics.json of the run and the published topics.json:
+$ diff --brief clients/cpc/build/2026/week-08/topics.json clients/cpc/published/2026/week-08/topics.json
+Files clients/cpc/build/2026/week-08/topics.json and clients/cpc/published/2026/week-08/topics.json differ
+$ diff of the topic and fact of each Answer (jq -c ".teams[][] | [.topic, .fact]")
+(exit 0)
+$ diff of the topic of each Answer, team by team
+(exit 0)

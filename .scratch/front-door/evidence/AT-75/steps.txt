@@ -1,0 +1,4 @@
+Driver: site.mjs AT-75, 375x812, the date of the page shifted to Wednesday 2026-11-04.
+1. Store Bo Girds and the passphrase. Open /. Open How you stack up. Wait until no article is busy. Shot answer.
+2. Tap "Read the full report" in the Answer. Wait for the managers URL, then 3 s. Scroll the text "after week" to the center. Viewport shot page.
+text-375-<theme>.txt holds the Answer text, the URL, and the lines of the page with the grade time label. managers-through.txt holds `through` of managers.json.

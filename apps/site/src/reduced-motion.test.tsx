@@ -1,12 +1,13 @@
 /**
- * Tests for the analyzer, the week page, the home page, the power rankings, the waiver page, and the manager page with the reduced-motion media query on. The content must show at rest at once.
+ * Tests for the analyzer, the week page, the Front page, the front door, the power rankings, the waiver page, and the manager page with the reduced-motion media query on. The content must show at rest at once.
  * matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top of the file.
  * jsdom ignores opacity, so this test proves the text is present. The browser capture 12-week-off-390.png proves no motion.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { apiTarget, analyzeResponse as fixtureJson } from "@cpc/analyzer/lib/fixtures/api";
-import HomePage from "@/app/page";
+import HomePage from "@/app/front-door/door-page";
+import FrontPage from "@/app/front-page";
 import WeekPage from "@/app/_routes/week/page";
 import type { AnalyzeResponse } from "@cpc/analyzer/lib/analyze-types";
 import type { Team } from "@cpc/analyzer/lib/api";
@@ -25,6 +26,13 @@ import { WarChest } from "@cpc/waiver/war-chest";
 import { TeamPicker } from "@cpc/analyzer/form/team-picker";
 import { week6, week8 } from "@cpc/week/fixtures/week-page";
 import { AllMatchups } from "@cpc/week/chapters/all-matchups";
+import { readFixtureSite } from "@/fixtures/sites";
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
+   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
+   restore of the mocks removes it. */
+await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
 
 vi.stubGlobal(
   "matchMedia",
@@ -313,9 +321,63 @@ describe("Reduced motion on the static pages", () => {
   });
 
   it("shows every home page row at once", () => {
-    render(<HomePage />);
+    render(<FrontPage />);
     expect(screen.getByRole("link", { name: /Week 6/ })).toBeTruthy();
     expect(screen.getByText("Oct 15 – Oct 19, 2026")).toBeTruthy();
+  });
+
+  it("fades the sheet of Your team in on the front door, with no move and no blur (AT-46 of front-door)", async () => {
+    render(<HomePage />);
+    const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
+    const row = within(sheet).getAllByRole("button")[0];
+    for (let box: HTMLElement | null = row; box; box = box.parentElement) {
+      expect(box.style.transform).not.toMatch(/translate/);
+      expect(box.style.filter).not.toMatch(/blur/);
+    }
+    // Reduced motion keeps the fade, so the row ends at full opacity.
+    await waitFor(() => expect(row.parentElement!.style.opacity).toBe("1"));
+  });
+
+  it("keeps only the fades when a tapped Suggestion opens its Answer: no glide, blur, or spring (AT-46 of front-door)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    onTestFinished(() => localStorage.clear());
+    render(<HomePage />);
+    const chip = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole("button")[1];
+    const name = chip.getAttribute("aria-label")!.split(":")[0];
+    fireEvent.click(chip);
+    const answer = await screen.findByRole("article", { name });
+    const bubble = within(answer).getByText(name, { selector: "p" });
+    const ask = screen.getByRole("form", { name: "Ask" });
+    for (const part of [bubble, ask]) {
+      for (let box: HTMLElement | null = part; box; box = box.parentElement) {
+        expect(box.style.transform).not.toMatch(/translate|scale/);
+        expect(box.style.filter).not.toMatch(/blur/);
+      }
+    }
+    // The fade of the bubble ends at full opacity.
+    await waitFor(() => expect(bubble.style.opacity).toBe("1"));
+  });
+});
+
+describe("Reduced motion on the first question of the front door", () => {
+  it("fades the ask box in at the foot of the Thread, with no glide (AT-46 of front-door)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    onTestFinished(() => localStorage.clear());
+    render(<HomePage />);
+    await screen.findByRole("group", { name: "Suggestions" });
+    const box = screen.getByRole("form", { name: "Ask" });
+    // The ask box ends its first fade at the center before the question goes.
+    await waitFor(() => expect(box.parentElement!.style.opacity).toBe("1"));
+    fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), { target: { value: "who am i playing sunday" } });
+    fireEvent.submit(box);
+    await screen.findByRole("region", { name: "Thread" }).then(() => screen.findByRole("button", { name: "Clear" }));
+    // The ask box leaves the center and shows at the foot from opacity 0, so it fades in place and never moves.
+    const shown = screen.getByRole("form", { name: "Ask" });
+    const boxes: HTMLElement[] = [];
+    for (let part: HTMLElement | null = shown; part; part = part.parentElement) boxes.push(part);
+    expect(boxes.some((part) => part.style.opacity === "0")).toBe(true);
+    for (const part of boxes) expect(part.style.transform).not.toMatch(/translate|scale/);
+    await waitFor(() => expect(boxes.every((part) => part.style.opacity !== "0")).toBe(true));
   });
 });
 
@@ -334,7 +396,7 @@ function managerWithOdds(): Manager {
 
 describe("Reduced motion on the manager page", () => {
   it("shows the final grade letter and the final playoff percent at once", async () => {
-    render(<ManagerHero manager={managerWithOdds()} avatar="avatars/1.jpg" teams={12} />);
+    render(<ManagerHero manager={managerWithOdds()} avatar="avatars/1.jpg" teams={12} through={9} />);
     const numbers = screen.getByRole("group", { name: "Hero Numbers" });
     const odds = numbers.children[0].children[1] as HTMLElement;
     const grade = screen.getByRole("button", { name: /^Grade D/ });

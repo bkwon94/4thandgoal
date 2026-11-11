@@ -77,6 +77,7 @@ LAYER_OF: dict[str, str] = {
     "league.nfl_teams": "model",
     "league.player_ids": "model",
     "league.trades": "model",
+    "league.projection": "model",
     "facts": "model",
     "facts.chapters": "model",
     "facts.names": "model",
@@ -190,7 +191,11 @@ LAYER_OF: dict[str, str] = {
     "analyzer.read_jev_check": "facts",
     # The Finder search asks Jev in waves, as the Jev answers of one trade do.
     "analyzer.finder_search": "facts",
+    # The stage callback is one type with no import of the league, so the search of the facts layer can take it.
+    "analyzer.stage": "model",
     "analyzer.jev_waves": "facts",
+    # The sell high sheet measures one roster side by side, as the trade sheet measures one trade.
+    "analyzer.sell_facts": "facts",
     "waiver.rank_score": "facts",
     "waiver.board": "facts",
     "waiver.buckets": "facts",
@@ -209,11 +214,14 @@ LAYER_OF: dict[str, str] = {
     "analyzer.finder_pick": "write",
     "analyzer.routes": "write",
     "analyzer.advisor": "write",
+    # The sell high pick makes the Claude call of the Advisor, as the Finder pick does.
+    "analyzer.sell_high": "write",
     "waiver.research": "write",
     "midseason.prose": "write",
     # output
     "waiver.render": "output",
     "render": "output",
+    "topics": "output",
     "rankings.published": "output",
     "midseason.published": "output",
     "sim.published": "output",

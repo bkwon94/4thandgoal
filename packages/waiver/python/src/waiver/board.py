@@ -21,13 +21,14 @@ from league.models import (
 )
 from league.numbers import round_half_up
 from league.parse import player_name
+from league.projection import next_week, rest_of_season
 from league.provider.raw import RawWeek
 from league.ranks import OUT_STATUSES, in_pool
 from league.slow_sources import SlowSources
 from waiver.buckets import BucketInputs, sneaky_and_stashes
 from waiver.drops import drop_candidates
 from waiver.price import budget_left, price_players
-from waiver.projection import next_week, projections_ahead, rest_of_season
+from waiver.projection import projections_ahead
 from waiver.rank_score import rank_scores
 from waiver.tunables import BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, USAGE_WEEKS
 
@@ -79,9 +80,12 @@ def waiver_board(
     players = _with_trending(players, _trending_counts(raw))
     # A player who is out lands in stashes only, so every other bucket skips him.
     healthy = [p for p in players if p.injury_status not in OUT_STATUSES]
+    # Sleeper projects no points in any week left for a player with a rest of season projection of 0, so no add
+    # bucket takes him. A tie at 0 ranks him in the top half of his position, so his board score cannot keep him out.
+    addable = [p for p in healthy if p.ros_projection > 0]
     best_adds = _capped(sorted((p.model_copy(update={"reason": BOARD_SCORE})
-                                for p in healthy if p.position in BUCKET_POSITIONS), key=_rank_key))
-    buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(healthy)}
+                                for p in addable if p.position in BUCKET_POSITIONS), key=_rank_key))
+    buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(addable)}
     candidates = sneaky_and_stashes(players, best_adds, inputs)
     buckets |= {key: _capped(ranked) for key, ranked in candidates.items()}
     # Every bucket but drops carries a price. The drops bucket stays out of this step. A player in two buckets

@@ -8,9 +8,11 @@ from pathlib import Path
 
 from analyzer.measures import Side, measure_facts, trade_handcuffs
 from analyzer.trade import ProposedTrade, build_sides
+from analyzer.trade_jev import weak_slot_rows, weak_starting_slots
 from facts.tokens import Nums, fact
+from league.lineup import cannot_play_now, lineup_slots
 from league.models import Fact, OddsStatus
-from league.ranks import RANKED_POSITIONS
+from league.ranks import RANKED_POSITIONS, due_back_week
 from league.snapshot import Snapshot
 
 log = logging.getLogger(__name__)
@@ -76,6 +78,11 @@ def _depth_fact(snapshot: Snapshot, side: Side, position: str) -> Fact:
     line = snapshot.client.settings.lines[position]
     # One shape for every count, so "go from 2 to 2" says plainly that the trade leaves the room as it is.
     text = f"For {team}, the {position}s in the top {n(line)} go from {n(before)} to {n(after)}."
+    # A player on IR counts in the depth, so a second count shows who can play now when the two differ. The roster
+    # fit reads the season ahead, and this count keeps "0 who play now" in view beside it.
+    now = side.depth(snapshot, position, now=True)
+    if now != (before, after):
+        text += f" Of them, the {position}s who can play now go from {n(now[0])} to {n(now[1])}."
     return fact(f"{side.roster_id}.depth.{position.lower()}", text, n, [team], [])
 
 
@@ -99,6 +106,40 @@ def _bye_fact(snapshot: Snapshot, side: Side) -> Fact | None:
     verbs = "starts after the trade and has" if len(names) == 1 else "start after the trade and have"
     text = f"For {team}, {joined} {verbs} a bye in week {n(snapshot.week)}, the trade week."
     return fact(f"{side.roster_id}.bye", text, n, [team], names)
+
+
+def lineup_now_fact(snapshot: Snapshot, roster_id: int) -> Fact | None:
+    """The weak starting slots of the side in the trade week, of the players who can play, and each starter who cannot
+    play now with his return. None when no slot is weak and each starter can play.
+
+    The weak slots are the lines the Jev questions read, from lineup_now. A starter who cannot play now is a starter
+    of lineup_slots, which keeps him, so the fact says when he counts as back. The Finder pick weighs it beside the
+    roster fit, which reads the season ahead.
+    """
+    weak = weak_starting_slots(snapshot, roster_id)
+    starters = [slot.player for slot in lineup_slots(snapshot.rosters[roster_id], snapshot) if slot.player is not None]
+    out = [pid for pid in starters if cannot_play_now(snapshot, pid)]
+    if not weak and not out:
+        return None
+    n = Nums()
+    team = snapshot.teams[roster_id].name
+    week = n(snapshot.week)
+    if weak:
+        text = f"For {team}, the weak starting slots in week {week}, of the players who can play: {n.text(', '.join(weak))}."
+    else:
+        text = f"For {team}, no starting slot is weak in week {week}, of the players who can play."
+    for pid in out:
+        name = snapshot.players[pid].name
+        back = due_back_week(snapshot, pid)
+        if pid in snapshot.out_for_season or back is None:
+            when = "He is out for the season."
+        elif pid not in snapshot.returns:
+            when = f"He is out with no return week on file, so he counts as back in week {n(back)}."
+        else:
+            when = f"He is due back in week {n(back)}."
+        text += f" {name} is a starter who cannot play now. {when}"
+    weak_names = [row["player"] for row in weak_slot_rows(snapshot, roster_id) if row["player"] is not None]
+    return fact(f"{roster_id}.now", text, n, [team], [*weak_names, *(snapshot.players[pid].name for pid in out)])
 
 
 def team_facts(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact]:

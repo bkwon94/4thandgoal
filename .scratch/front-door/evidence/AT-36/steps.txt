@@ -1,0 +1,3 @@
+Driver: site.mjs AT-36, 375x812, the date of the page shifted to Wednesday 2026-11-04.
+1. Store Lil Fridge and the passphrase. Open Week recap, then Power rankings. Shot before.
+2. Tap Clear in the Thread header. Count articles and dialogs 150 ms later. Wait for the row. Shot after. after-375-<theme>.txt lists the row of Suggestions.

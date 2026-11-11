@@ -68,10 +68,24 @@ def opponent_rank(allowed: dict[str, dict[str, PositionAllowed]], opponent: str,
     return None if row is None else row.rank
 
 
-def most_points_text(rank: int, position: str) -> str:
-    """The rank of a defense at a position in a manager's words, such as "3rd most points to WRs".
+def rank_word(rank: int, teams: int) -> str:
+    """The rank of a defense out of `teams` as a plain word, such as "3rd most" or "4th fewest".
 
-    Rank 1 gives up the most, so it reads "the most points to WRs", never "1st most".
-    The schedule row and the Week line of the grade both name an opponent this way.
+    A rank in the top half counts from the most points, and a rank in the bottom half counts from the fewest.
+    A high ordinal of "most points", such as "29th most", reads like a soft defense, so the bottom half never says it.
+    The middle rank of an odd count reads "most". Rank 1 reads "the most" and the last rank reads "the fewest".
     """
-    return f"{'the' if rank == 1 else ordinal(rank)} most points to {position}s"
+    if rank <= (teams + 1) // 2:
+        return "the most" if rank == 1 else f"{ordinal(rank)} most"
+    fewest = teams - rank + 1
+    return "the fewest" if fewest == 1 else f"{ordinal(fewest)} fewest"
+
+
+def most_points_text(rank: int, position: str, teams: int) -> str:
+    """The rank of a defense out of `teams` at a position in a manager's words, such as "3rd most points to WRs".
+
+    Rank 1 gives up the most, so it reads "the most points to WRs", never "1st most". A rank in the bottom half reads
+    from the other end, so rank 29 of 32 reads "4th fewest points to RBs". See `rank_word`.
+    The schedule row, the Week line of the grade, and the sell sheet all name an opponent this way.
+    """
+    return f"{rank_word(rank, teams)} points to {position}s"

@@ -1,0 +1,6 @@
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, one screen recording per theme.
+One run per theme, light first, then dark. Each run is one live weak spots Answer of Lil Fridge: the weak spots row of Lil Fridge leaves the answer store before the run, so the Answer streams with its check and one Claude call (api-log-<theme>.txt).
+1. Store Lil Fridge and the passphrase. Open / with an empty Thread. Tap Weak spots, from the row or More.
+2. Sample the last article on each animation frame until Checked shows, plus 3 s, with the page scrolled to its end (samples-<theme>.txt). Each sample has the status lines and the color, filter, and transform of the mark. The first line of the file gives the colors of text-ink and text-mute in that theme.
+3. Viewport shot end-375-<theme>. frame-<time>-<theme>-checking.png and frame-<time>-<theme>-checked.png are frames of the recording at the first Checking sample and at the first Checked sample, from ffmpeg.
+Both runs ended as checked.

@@ -2,6 +2,8 @@
 # league, facts, and design are in every client, so the list omits them. NorCal takes the same list as CPC.
 packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim"]
 timezone = "America/New_York"
+# The front door at / of the site. Off, / is the home page and the front door sits at the hidden /ask/ route.
+front_door = false
 
 # One table per season. The provider gives the sizes, the scoring, and the median game of each season.
 [seasons.2026]
@@ -20,4 +22,12 @@ chart = "1QB1.0PPR4pt"
 [values.analyzer]
 finder = true
 
-# The file has no [menu], so the menu takes the home page, then the package list in its order.
+# The [menu] has no items, so the menu takes the home page, then the package list in its order.
+# With the front door on, the menu is front_door_items: the same four items as CPC (front-door PRD).
+[menu]
+front_door_items = [
+  { page = "home", label = "Home" },
+  { package = "week" },
+  { package = "rankings", label = "Power Rankings" },
+  { package = "managers", label = "Managers" },
+]

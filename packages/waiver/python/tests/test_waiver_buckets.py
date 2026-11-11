@@ -217,3 +217,38 @@ def test_every_player_carries_his_bye_his_injury_status_and_his_return_week(fixt
     assert (star.bye, star.injury_status, star.return_week) == (10, "Out", 9)
     healthy = board.buckets["trending"][0]
     assert (healthy.bye, healthy.injury_status, healthy.return_week, healthy.reason) == (None, None, None, "trending")
+
+
+def test_a_player_with_a_rest_of_season_projection_of_0_lands_in_no_add_bucket(fixture_raw_dir):
+    # The zero WR rises the most, trends, and sits one slot below an out starter, so each add rule would take him.
+    # Sleeper projects no points for him in any week left, so no add bucket takes him.
+    players = {"80001": _player("WR", "Hurt Starter", injury="Out"), "80002": _player("WR", "Zero Riser"),
+               "80003": _player("WR", "Real Guy", team="BUF")}
+    raw = _raw(fixture_raw_dir, players, {"80001": 12.0, "80003": 5.0})
+    raw.trending = [{"player_id": "80002", "count": 900}, {"player_id": "80003", "count": 10}]
+    usage = {"80002": [_usage(5, 30, 2), _usage(6, 75, 7)]}
+    board = waiver_board(raw, 6, BUILT, _nfl(usage), slow=_depth({"KC": {"WR": ["80001", "80002"]}}), client=CLIENT)
+    for key in ("best_adds", "trending", "sneaky", "stashes"):
+        assert "80002" not in _ids(board.buckets[key]), key
+    assert _ids(board.buckets["best_adds"]) == ["80003"]
+    assert _ids(board.buckets["trending"]) == ["80003"]
+
+
+def test_a_player_behind_an_out_backup_with_a_healthy_starter_above_is_not_sneaky(fixture_raw_dir):
+    players = {"80001": _player("RB", "Healthy Starter"), "80002": _player("RB", "Out Backup", injury="Out"),
+               "80003": _player("RB", "Third Back")} | _top_backs()
+    per_week = {"80001": 12.0, "80002": 6.0, "80003": 3.0} | dict.fromkeys(_top_backs(), 30.0)
+    raw = _raw(fixture_raw_dir, players, per_week)
+    board = waiver_board(raw, 6, BUILT, slow=_depth({"KC": {"RB": ["80001", "80002", "80003"]}}), client=CLIENT)
+    assert board.buckets["sneaky"] == []
+
+
+def test_a_player_with_every_player_above_him_out_is_sneaky(fixture_raw_dir):
+    players = {"80001": _player("RB", "Out Starter", injury="Out"), "80002": _player("RB", "Out Backup", injury="IR"),
+               "80003": _player("RB", "Third Back")} | _top_backs()
+    per_week = {"80001": 12.0, "80002": 6.0, "80003": 3.0} | dict.fromkeys(_top_backs(), 30.0)
+    raw = _raw(fixture_raw_dir, players, per_week)
+    board = waiver_board(raw, 6, BUILT, slow=_depth({"KC": {"RB": ["80001", "80002", "80003"]}}), client=CLIENT)
+    sneaky = board.buckets["sneaky"]
+    assert _ids(sneaky) == ["80003"]
+    assert sneaky[0].reason == "behind_injury"

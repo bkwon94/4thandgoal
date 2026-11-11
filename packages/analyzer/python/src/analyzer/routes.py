@@ -15,11 +15,13 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from analyzer.advisor import AdvisorFailed, TradeRead
-from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key
+from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key, sell_high_cache_key
 from analyzer.errors import season_in_progress
 from analyzer.finder_pick import FinderPicks
-from analyzer.finder_search import Shortlist
+from analyzer.finder_search import Anchor, Limit, Shortlist
 from analyzer.ratelimit import GradeLimiter, request_address
+from analyzer.sell_high import SellHigh, SellHighFailed
+from analyzer.stage import Stage
 from analyzer.trade import ProposedTrade, TradeInputError, check_trade
 from analyzer.trade_facts import shown_ranks
 from analyzer.week_line import week_lines
@@ -41,17 +43,26 @@ GRADE_LIMIT_DETAIL = {
 
 
 # The read of the Advisor: a proposed trade and its snapshot in, the read out. It raises AdvisorFailed after two
-# failed calls.
-Analyzer = Callable[[ProposedTrade, Snapshot], TradeRead]
+# failed calls. A press of the front door adds the keyword `stage`, so the type takes any arguments.
+Analyzer = Callable[..., TradeRead]
+# The sell high pick of the Advisor: the roster id and the snapshot in, the picks out, with the keyword `stage`. It sits
+# on the app state with the real Claude call, the real Jev, and the real news feed, so a test swaps in a stub call. It
+# raises SellHighFailed after two failed calls.
+SellHighPicker = Callable[..., SellHigh]
+# The plain error of a failed sell high pick. A failed pick never counts as a grade, as a failed read does not.
+SELL_HIGH_ERROR = ("The sell high read did not come through. Try again in a minute. "
+                   "This try does not count toward your grades.")
 # The plain error of a failed read. A failed read never counts as a grade, so the error says so.
 ADVISOR_ERROR = ("The read of this trade did not come through. Try again in a minute. "
                  "This try does not count toward your grades.")
 # The Finder pick of the Advisor: the shortlist and the snapshot in, the picks out. It sits on the app state with the
-# real Claude call and the real news feed, so a test swaps in a pick with a stub call.
-FinderPicker = Callable[[Shortlist, Snapshot], FinderPicks]
+# real Claude call and the real news feed, so a test swaps in a pick with a stub call. A press of the front door adds
+# the keyword `stage`, as with the Analyzer.
+FinderPicker = Callable[..., FinderPicks]
 # The Finder search: the asker, the picked partner or None for every other team, and the snapshot in, the shortlist
-# out. It sits on the app state with the real Jev, so a test swaps in FakeJev or a search of its own.
-FinderSearch = Callable[[int, int | None, Snapshot], Shortlist]
+# out. It sits on the app state with the real Jev, so a test swaps in FakeJev or a search of its own. A press of the
+# front door adds the keyword `stage`, as with the Analyzer.
+FinderSearch = Callable[..., Shortlist]
 
 
 class SnapshotSource(Protocol):
@@ -227,11 +238,20 @@ def _press_log(route: str, served: Served) -> Iterator[None]:
 @router.post("/analyze")
 def analyze(request: Request, trade: ProposedTrade, served: ServedClient) -> dict:
     """Read the proposed trade on the live snapshot and return the read document, or a 503 after a failed read."""
+    return analyze_trade(request, trade, served)
+
+
+def analyze_trade(request: Request, trade: ProposedTrade, served: Served, stage: Stage | None = None) -> dict:
+    """The analyze press of the route, for the route and for the trade check of the front door.
+
+    With `stage`, the Advisor gets it and sends a plain line at each stage. With none, the Advisor gets no stage
+    keyword and sends no line, because the plain route streams no step.
+    """
     with _press_log("analyze", served):
-        return _analyze(request, trade, served)
+        return _analyze(request, trade, served, stage)
 
 
-def _analyze(request: Request, trade: ProposedTrade, served: Served) -> dict:
+def _analyze(request: Request, trade: ProposedTrade, served: Served, stage: Stage | None) -> dict:
     snapshot = _snapshot(served, trade.season)
     try:
         check_trade(trade, snapshot)
@@ -248,7 +268,9 @@ def _analyze(request: Request, trade: ProposedTrade, served: Served) -> dict:
     # The count comes after the cache, because a cached repeat makes no Claude call and costs nothing.
     _count_grade(request, served)
     try:
-        read = request.app.state.analyzer(trade, snapshot)
+        # The stage goes only to a press that asks for it, so the Advisor of the route keeps its call as it is.
+        read = (request.app.state.analyzer(trade, snapshot) if stage is None
+                else request.app.state.analyzer(trade, snapshot, stage=stage))
     except AdvisorFailed:
         # A failed read costs the manager nothing, and nothing is stored, so the next press calls the Advisor again.
         served.grade_limiter.release(request_address(request))
@@ -272,11 +294,15 @@ class FindRequest(BaseModel):
     """The body of the find route: the season, the roster that asks, and the partner roster.
 
     The partner is optional. With no partner, the search runs over every other team of the league.
+    The anchor is optional too. With an anchor, each offer holds that one player on his side.
+    The limit is optional too. With a limit, no offer breaks it.
     """
 
     season: int
     asker: int
     partner: int | None = None
+    anchor: Anchor | None = None
+    limit: Limit | None = None
 
 
 def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
@@ -292,7 +318,8 @@ def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
 def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -> dict:
     """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
 
-    Each trade holds its offer id, its sides, the headline, and the Bullets of the Advisor. A Bullet has the shape of
+    Each trade holds its offer id, its sides, the headline, and the Bullets of the Advisor. Each near idea holds its
+    offer id, its sides, and the reason it fell short. A Bullet has the shape of
     the analyze document, so the site renders the rows one way. After a fallback, each trade of the shortlist has no
     headline and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the press, so
     the page needs no words of its own. No trade holds a score.
@@ -307,11 +334,16 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
         }
         for pick in picks.picks
     ]
+    # The offers that the pick weighed and would not send, each with the reason it fell short. An idea is an idea, so
+    # a list with offers always shows one, even when no pick stands.
+    near = [{"offer_id": idea.offer.offer_id, "sides": _echoed_sides(idea.offer.trade, snapshot), "reason": idea.reason}
+            for idea in picks.near]
     return {
         # The site calls the analyze route per card, and that route needs the season with the pair and the sides.
         "season": pair.season,
         "trade_pair": {"asker": _team(snapshot, pair.asker), "partner": _team(snapshot, pair.partner)},
         "trades": trades,
+        "near": near,
         # The key is always there, so the document keeps one shape with a list and without one.
         "empty": None if trades else picks.none_line,
         "as_of": _as_of(snapshot),
@@ -327,11 +359,20 @@ def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
 
     The Jev search makes the shortlist, and the Advisor picks up to 3 trades of it, each with a headline and Bullets.
     """
+    return find_trades(request, pair, served)
+
+
+def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None) -> dict:
+    """The find press of the route, for the route and for the trade ideas of the front door.
+
+    With `stage`, the search and the pick get it and send a plain line at each stage. With none, they get no stage
+    keyword and send no line, because the plain route streams no step.
+    """
     with _press_log("find", served):
-        return _find(request, pair, served)
+        return _find(request, pair, served, stage)
 
 
-def _find(request: Request, pair: FindRequest, served: Served) -> dict:
+def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
@@ -344,16 +385,66 @@ def _find(request: Request, pair: FindRequest, served: Served) -> dict:
         # The same words as check_trade, so the form shows one message for a roster that is gone.
         raise HTTPException(status_code=422, detail={"message": f"Roster {gone[0]} is not in the league"})
     cache = served.cache
-    key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot)
+    key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot, pair.anchor, pair.limit)
     cached = cache.get(key)
     if cached is not None:
         return cached
     # The count comes after the cache, because a cached repeat runs no finder and makes no Claude call.
     _count_grade(request, served)
-    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot)
-    picks = request.app.state.finder_pick(shortlist, snapshot)
+    # The search gets the anchor keyword only with an anchor, as it gets the stage, so a search with no anchor runs
+    # as it always has. The limit keyword goes the same way.
+    anchored = {} if pair.anchor is None else {"anchor": pair.anchor}
+    if pair.limit is not None:
+        anchored["limit"] = pair.limit
+    if stage is None:
+        shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **anchored)
+        picks = request.app.state.finder_pick(shortlist, snapshot)
+    else:
+        shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, stage=stage, **anchored)
+        picks = request.app.state.finder_pick(shortlist, snapshot, stage=stage)
     document = finder_document(pair, snapshot, picks)
     # A fallback is not stored, so the next request of the same pair tries the Claude call again.
     if not picks.fallback:
         cache.put(key, document)
     return document
+
+
+def sell_high_document(season: int, snapshot: Snapshot, sells: SellHigh) -> dict:
+    """The sell high result the site renders: Your team, each player to sell with his ranks, the headline, and the
+    Bullets, and the as-of stamps. An empty list carries the plain line of the Advisor. No pick holds a score."""
+    return {
+        "season": season,
+        "team": _team(snapshot, sells.roster_id),
+        "picks": [{"player": _traded_player(snapshot, pick.player_id), "headline": pick.headline,
+                   "bullets": [bullet.model_dump() for bullet in pick.bullets]} for pick in sells.picks],
+        "empty": sells.none_line,
+        "as_of": _as_of(snapshot),
+        "missing": list(snapshot.missing),
+        "stale": list(snapshot.stale),
+    }
+
+
+def sell_high_press(request: Request, season: int, roster_id: int, served: Served, stage: Stage) -> dict:
+    """The sell high press of the front door: the players of the roster that the Advisor would sell, with why.
+
+    A repeat on the same roster and snapshot comes from the result cache with no Claude call. A failed pick is a 503.
+    """
+    with _press_log("sell_high", served):
+        snapshot = _snapshot(served, season)
+        if roster_id not in snapshot.rosters:
+            served.teams_cache.clear(season)
+            raise HTTPException(status_code=422, detail={"message": f"Roster {roster_id} is not in the league"})
+        key = sell_high_cache_key(season, roster_id, snapshot)
+        cached = served.cache.get(key)
+        if cached is not None:
+            return cached
+        # The count comes after the cache, because a cached repeat makes no Claude call and costs nothing.
+        _count_grade(request, served)
+        try:
+            sells = request.app.state.sell_high(roster_id, snapshot, stage=stage)
+        except SellHighFailed:
+            served.grade_limiter.release(request_address(request))
+            raise HTTPException(status_code=503, detail={"message": SELL_HIGH_ERROR}) from None
+        document = sell_high_document(season, snapshot, sells)
+        served.cache.put(key, document)
+        return document

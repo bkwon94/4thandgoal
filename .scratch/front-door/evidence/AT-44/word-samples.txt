@@ -1,0 +1,78 @@
+The tap on Send was at about 1.68 s of the recording.
+The last article on each animation frame (only the changes). "words N (M blurred)" counts the span.stream-word elements and those with a CSS blur above 0.05 px.
+1.684 s: (no article)
+1.780 s: busy true | no block | steps [live ⠋ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+1.884 s: busy true | no block | steps [live ⠙ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+1.970 s: busy true | no block | steps [live ⠹ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.052 s: busy true | no block | steps [live ⠸ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.135 s: busy true | no block | steps [live ⠼ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.220 s: busy true | no block | steps [live ⠴ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.286 s: busy true | no block | steps [live ⠦ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.370 s: busy true | no block | steps [live ⠧ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.454 s: busy true | no block | steps [live ⠇ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.537 s: busy true | no block | steps [live ⠏ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.603 s: busy true | no block | steps [live ⠋ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.687 s: busy true | no block | steps [live ⠙ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.769 s: busy true | no block | steps [live ⠹ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.854 s: busy true | no block | steps [live ⠸ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.920 s: busy true | no block | steps [live ⠼ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+3.004 s: busy true | no block | steps [live ⠴ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+3.087 s: busy true | no block | steps [live ⠦ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+3.170 s: busy true | no block | steps [live ⠧ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+3.203 s: busy true | no block | steps [live ⠧ Reading the week…] | words 0 (0 blurred) | text (no text) | status -
+3.253 s: busy true | no block | steps [live ⠇ Reading the week…] | words 0 (0 blurred) | text (no text) | status -
+3.336 s: busy true | no block | steps [live ⠏ Reading the week…] | words 0 (0 blurred) | text (no text) | status -
+3.404 s: busy true | no block | steps [live ⠋ Reading the week…] | words 0 (0 blurred) | text (no text) | status -
+3.487 s: busy true | no block | steps [live ⠙ Reading the week…] | words 0 (0 blurred) | text (no text) | status -
+3.570 s: busy true | no block | steps [live ⠹ Reading the week…] | words 0 (0 blurred) | text (no text) | status -
+3.653 s: busy true | no block | steps [live ⠸ Reading the week…] | words 0 (0 blurred) | text (no text) | status -
+3.737 s: busy true | no block | steps [live ⠼ Reading the week…] | words 0 (0 blurred) | text (no text) | status -
+3.770 s: busy true | no block | steps [live ⠼ Reading week 1…] | words 0 (0 blurred) | text (no text) | status -
+3.803 s: busy true | no block | steps [live ⠴ Reading week 1…] | words 0 (0 blurred) | text (no text) | status -
+3.886 s: busy true | no block | steps [live ⠦ Reading week 1…] | words 0 (0 blurred) | text (no text) | status -
+3.970 s: busy true | no block | steps [live ⠧ Reading week 1…] | words 0 (0 blurred) | text (no text) | status -
+4.053 s: busy true | no block | steps [live ⠇ Reading week 1…] | words 0 (0 blurred) | text (no text) | status -
+4.136 s: busy true | no block | steps [live ⠏ Reading week 1…] | words 0 (0 blurred) | text (no text) | status -
+4.203 s: busy true | no block | steps [live ⠋ Reading week 1…] | words 0 (0 blurred) | text (no text) | status -
+4.288 s: busy true | no block | steps [live ⠙ Reading week 1…] | words 0 (0 blurred) | text (no text) | status -
+4.370 s: busy true | no block | steps [live ⠹ Reading week 1…] | words 0 (0 blurred) | text (no text) | status -
+4.436 s: busy true | no block | steps [done ⠹ Reading week 1] | words 0 (0 blurred) | text (no text) | status -
+4.454 s: busy true | no block | steps [done ⠸ Reading week 1] | words 0 (0 blurred) | text (no text) | status -
+4.537 s: busy true | no block | steps [done ⠼ Reading week 1] | words 0 (0 blurred) | text (no text) | status -
+4.603 s: busy true | no block | steps [done ✔ Reading week 1] | words 0 (0 blurred) | text (no text) | status -
+5.854 s: busy true | no block | steps [done ✔ Reading week 1] | words 0 (0 blurred) | text (no text) | status Checking
+5.920 s: busy false | no block | steps [done ✔ Reading week 1] | words 0 (0 blurred) | text (no text) | status Checking
+6.685 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (51 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checking
+Checked
+6.904 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (51 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+6.918 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (49 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+6.936 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (47 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+6.954 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (45 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+6.970 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (44 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+6.987 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (42 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.003 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (40 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.020 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (39 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.037 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (37 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.054 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (35 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.070 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (34 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.087 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (32 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.103 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (30 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.120 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (28 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.137 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (27 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.154 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (25 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.170 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (23 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.186 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (22 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.204 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (20 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.220 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (18 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.236 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (16 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.254 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (15 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.270 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (13 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.287 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (11 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.303 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (10 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.319 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (8 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.337 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (6 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.354 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (5 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.370 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (3 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.386 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (1 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.403 s: busy false | no block | steps [done ✔ Reading week 1] | words 51 (0 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked
+7.486 s: busy null | no block | steps [done ✔ Reading week 1] | words 0 (0 blurred) | text In week 1, you beat NFC Least 117.71 to  | status Checked

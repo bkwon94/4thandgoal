@@ -1,0 +1,2 @@
+$ jq '.through' clients/cpc/published/2026/managers.json
+9

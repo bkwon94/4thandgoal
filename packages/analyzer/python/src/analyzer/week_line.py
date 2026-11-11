@@ -118,7 +118,7 @@ def _opponent_sentence(snapshot: Snapshot, player_id: str, name: str, week: int)
     rank = None if snapshot.points_allowed is None else opponent_rank(snapshot.points_allowed, game.opponent, position)
     if rank is None:
         return f"{name} plays {where}."
-    return f"{name} plays {where}, {most_points_text(rank, position)}."
+    return f"{name} plays {where}, {most_points_text(rank, position, len(snapshot.points_allowed or {}))}."
 
 
 def _out_reason(snapshot: Snapshot, player: SnapshotPlayer, week: int) -> tuple[str, int | None] | None:

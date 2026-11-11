@@ -89,5 +89,21 @@ def test_the_weak_starting_slots_follow_the_team_count_and_the_lines_of_the_clie
     slots = {line.partition(":")[0] for line in weak_starting_slots(snap, 2)}
     assert slots == {"RB1", "TE"}
     # In a league of 10 teams, RB2 is weak past RB20, and a WR at FLEX is weak past the WR line of 30.
+    # Zach Charbonnet is on PUP with no return week, so Wan'Dale Robinson at WR36 fills FLEX2.
     slots = {line.partition(":")[0] for line in weak_starting_slots(_with_team_count(snap, 10), 2)}
-    assert slots == {"RB1", "RB2", "TE", "FLEX1"}
+    assert slots == {"RB1", "RB2", "TE", "FLEX1", "FLEX2"}
+
+
+def _on_ir(snap, player_ids: list[str]):
+    """The snapshot with each of `player_ids` on IR and no returns row, as Sleeper gives a player on IR."""
+    players = {**snap.players, **{pid: snap.players[pid].model_copy(update={"injury_status": "IR"})
+                                  for pid in player_ids}}
+    return snap.model_copy(update={"players": players, "returns": {
+        pid: week for pid, week in snap.returns.items() if pid not in player_ids}})
+
+
+def test_a_starter_who_cannot_play_now_leaves_his_slot_empty(snap):
+    # A player on IR cannot start now, so a team whose only QBs are on IR has an empty QB slot.
+    qbs = [pid for pid in snap.rosters[2] if snap.players[pid].position == "QB"]
+    assert qbs
+    assert "QB: empty" in weak_starting_slots(_on_ir(snap, qbs), 2)

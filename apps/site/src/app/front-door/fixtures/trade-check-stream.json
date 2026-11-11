@@ -1,0 +1,238 @@
+[
+ {
+  "type": "start"
+ },
+ {
+  "type": "data-picks",
+  "data": {
+   "model": "jev-1.14.0",
+   "gives": {
+    "named": 0.99,
+    "player_id": "5045",
+    "name": "Courtland Sutton",
+    "probability": 1.0,
+    "roster_id": 3,
+    "sure": true
+   },
+   "gets": {
+    "named": 0.97,
+    "player_id": "8151",
+    "name": "Kenneth Walker III",
+    "probability": 1.0,
+    "roster_id": 6,
+    "sure": true
+   }
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Found Courtland Sutton and Kenneth Walker III"
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Checked the players on each side"
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Checked each number of the read"
+  }
+ },
+ {
+  "type": "data-answer",
+  "data": {
+   "kind": "check",
+   "document": {
+    "trade": {
+     "asker": 3,
+     "sides": [
+      {
+       "roster_id": 3,
+       "team": "Lil Fridge",
+       "gives": [
+        {
+         "player_id": "5045",
+         "name": "Courtland Sutton",
+         "position": "WR",
+         "nfl_team": "DEN",
+         "headshot": "https://sleepercdn.com/content/nfl/players/5045.jpg",
+         "season_rank": "WR54",
+         "recent_rank": null,
+         "to": 6
+        }
+       ],
+       "gets": [
+        {
+         "player_id": "8151",
+         "name": "Kenneth Walker III",
+         "position": "RB",
+         "nfl_team": "KC",
+         "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+         "season_rank": "RB2",
+         "recent_rank": null,
+         "from": 6
+        }
+       ]
+      },
+      {
+       "roster_id": 6,
+       "team": "Bo Girds",
+       "gives": [
+        {
+         "player_id": "8151",
+         "name": "Kenneth Walker III",
+         "position": "RB",
+         "nfl_team": "KC",
+         "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+         "season_rank": "RB2",
+         "recent_rank": null,
+         "to": 3
+        }
+       ],
+       "gets": [
+        {
+         "player_id": "5045",
+         "name": "Courtland Sutton",
+         "position": "WR",
+         "nfl_team": "DEN",
+         "headshot": "https://sleepercdn.com/content/nfl/players/5045.jpg",
+         "season_rank": "WR54",
+         "recent_rank": null,
+         "from": 3
+        }
+       ]
+      }
+     ]
+    },
+    "lean": "Send it",
+    "case": "If Bo Girds will say yes, send this right away, because you turn a slumping WR into the RB2 on the season. The chart for this week is missing, so this call rests on the sheet, and the sheet points one way. Walker runs behind a Chiefs offense ranked 5th, while Sutton's Broncos have struggled to move the ball. The risk is history: Walker has faded in the second half of past seasons, though one of those splits rests on few games. The bigger risk is the other manager, since this costs them a top RB, so expect pushback and don't overpay to close it.",
+    "fairness": {
+     "state": "lopsided",
+     "gives_more": 6,
+     "sides": [
+      {
+       "roster_id": 3,
+       "reason": "Lil Fridge gets the RB2 on the season for a WR who has scored little."
+      },
+      {
+       "roster_id": 6,
+       "reason": "Bo Girds gets a WR with steady snaps and a good late schedule, but gives up a top RB."
+      }
+     ]
+    },
+    "sides": [
+     {
+      "roster_id": 3,
+      "bullets": [
+       {
+        "text": "Walker scores 22.9 points per game and ranks RB2 this season.",
+        "mark": "for",
+        "fact_id": "8151.ppg",
+        "fact_text": "Kenneth Walker III (RB, KC) scored 22.9 points per game over 8 games before the trade. His Season rank is RB2, by total points this season."
+       },
+       {
+        "text": "Walker plays for the Chiefs, who rank 5th of 32 on offense, so he gets more chances.",
+        "mark": "for",
+        "fact_id": "8151.nfl_team",
+        "fact_text": "Kenneth Walker III's NFL team, the Chiefs, ranks 5th of 32 on offense: 11.8 expected points added per 100 plays over 8 games before the trade."
+       },
+       {
+        "text": "Your RBs in the top 36 go from 3 to 4, which is real depth in a format where RBs are scarce.",
+        "mark": "for",
+        "fact_id": "3.depth.rb",
+        "fact_text": "For Lil Fridge, the RBs in the top 36 go from 3 to 4."
+       },
+       {
+        "text": "Walker scored less in weeks 9 to 17 than in weeks 1 to 8 in 2023 and 2024, though the 2024 late split is only 5 games.",
+        "mark": "against",
+        "fact_id": "8151.history",
+        "fact_text": "In 2023, Kenneth Walker III played for SEA and scored half PPR points per game as follows: 15.09 in weeks 1 to 8 over 7 games; 10.1 in weeks 9 to 17 over 7 games; no cold game. In 2024, Kenneth Walker III played for SEA and scored half PPR points per game as follows: 17.72 in weeks 1 to 8 over 6 games; 10.38 in weeks 9 to 17 over 5 games; 5.6 in cold games over 1 game. In 2025, Kenneth Walker III played for SEA and scored half PPR points per game as follows: 10.16 in weeks 1 to 8 over 7 games; 10 in weeks 9 to 17 over 9 games; no cold game. A cold game is outdoors at 40 degrees F or below."
+       },
+       {
+        "text": "Per Rotowire, Walker scored three touchdowns against the Jets in his latest game.",
+        "mark": "for",
+        "fact_id": "NEWS.8151.1",
+        "fact_text": "Reported on 2026-11-08 by Rotowire: Walker rushed 18 times for 102 yards and a touchdown and brought in all four targets for 41 yards and two more scores in the Chiefs' 35-12 win over the Jets on Sunday."
+       }
+      ],
+      "week_lines": [
+       {
+        "week": 10,
+        "text": "Week 10: RBs in the top 36 who play go from 3 to 4. WRs in the top 36 who play stay at 2. Walker plays at ATL, 8th most points to RBs. Dobbins has a bye. Doubs is on IR."
+       },
+       {
+        "week": 11,
+        "text": "Week 11: RBs in the top 36 who play go from 3 to 4. WRs in the top 36 who play stay at 1. Walker plays ARI at home, 16th most points to RBs. Doubs and Jaxon Smith-Njigba have a bye. Doubs is on IR."
+       }
+      ]
+     },
+     {
+      "roster_id": 6,
+      "bullets": [
+       {
+        "text": "Your RBs in the top 36 drop from 3 to 2, a big loss in this format.",
+        "mark": "against",
+        "fact_id": "6.depth.rb",
+        "fact_text": "For Bo Girds, the RBs in the top 36 go from 3 to 2."
+       },
+       {
+        "text": "Sutton scores 5.7 points per game and ranks WR54 this season.",
+        "mark": "against",
+        "fact_id": "5045.ppg",
+        "fact_text": "Courtland Sutton (WR, DEN) scored 5.7 points per game over 9 games before the trade. His Season rank is WR54, by total points this season."
+       },
+       {
+        "text": "Your starters ranked 24 or better at RB and WR go from 4 to 3.",
+        "mark": "against",
+        "fact_id": "6.strength",
+        "fact_text": "For Bo Girds, the starters at RB1, RB2, WR1, and WR2 with a position rank of 24 or better go from 4 to 3."
+       },
+       {
+        "text": "Sutton should get more work while Waddle is out.",
+        "mark": "for",
+        "fact_id": "6.measure.upside",
+        "fact_text": "The upside measure for Bo Girds: Sutton gets more work while Waddle is out."
+       },
+       {
+        "text": "Sutton faces NE, 2nd most points to WRs, in weeks 15 to 17.",
+        "mark": "for",
+        "fact_id": "6.measure.schedule",
+        "fact_text": "The schedule measure for Bo Girds: Sutton faces LV (10th most points to WRs), BUF (8th), and NE (2nd) in weeks 15 to 17."
+       }
+      ],
+      "week_lines": [
+       {
+        "week": 10,
+        "text": "Week 10: RBs in the top 36 who play go from 3 to 2. WRs in the top 36 who play stay at 3. Sutton has a bye. Singletary steps up."
+       },
+       {
+        "week": 11,
+        "text": "Week 11: RBs in the top 36 who play go from 1 to 0. WRs in the top 36 who play stay at 2. Sutton plays LV at home, 10th most points to WRs. Corum, Golden and Kyren Williams have a bye."
+       }
+      ]
+     }
+    ],
+    "as_of": {
+     "chart_week": null,
+     "stats_through": 9,
+     "completed_through": 9,
+     "rosters_fetched": "2026-11-10T13:56:21.384769-05:00",
+     "known_games": null,
+     "no_chart": true,
+     "no_chart_note": "This week's player values are not out yet."
+    },
+    "missing": [
+     "chart"
+    ],
+    "stale": []
+   }
+  }
+ },
+ {
+  "type": "finish"
+ }
+]

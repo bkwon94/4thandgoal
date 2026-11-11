@@ -1,0 +1,6 @@
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, screen recording recording-375-light.webm. The same run gives the mid-stream shot of AT-55.
+Setup: the answer store holds no free answer of Lil Fridge, so the question streams.
+1. Store Lil Fridge and the passphrase. Open /. Type "week 1 results". Tap Send.
+2. Sample the last article on each animation frame until Checked shows, plus 3 s (samples.txt). page-text.txt is the innerText of the page at the end. Viewport shot end-375-light.
+3. frame-<time>-<label>.png are frames of the recording just after each change of the step lines or the check. The recording runs about 0.1 s to 0.2 s behind the sample times.
+4. copy-search.txt is a text search of the front-door source, the copy file of CPC, the export of /, and the page text.

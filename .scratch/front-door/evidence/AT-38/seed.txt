@@ -1,0 +1,8 @@
+# The seed of the league cap. The team count of Lil Fridge goes back to 0 first, so the team cap of AT-37 does not stop the question.
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "UPDATE spend SET counts=0 WHERE roster_id=3 AND day='2026-11-11'"
+# CPC held $0.4046738 of real Claude cost this month. One seeded row with no team brings it to $25.00. NorCal holds $0.
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "INSERT INTO spend (roster_id, day, month, usd, counts) VALUES (NULL, '2026-11-11', '2026-11', 24.5953262, 0)"
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "SELECT ROUND(SUM(usd),2) FROM spend WHERE month='2026-11'"
+25.0
+$ sqlite3 <scratchpad>/ask/norcal.caps.sqlite "SELECT COALESCE(SUM(usd),0) FROM spend WHERE month='2026-11'"
+0

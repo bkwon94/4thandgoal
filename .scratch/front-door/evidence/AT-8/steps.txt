@@ -1,0 +1,7 @@
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, screen recording recording-weak-spots-375-light.webm. Built from a3f241e3.
+Setup: the answer store holds no personal Answer of Lil Fridge before the run. cpc.opened-topics marks sell_high, power_rankings, week_recap, and waiver_targets opened at the facts of the live Suggestions response, so Weak spots is the first Suggestion and the head start builds it.
+1. Store Lil Fridge and the passphrase. Open /. The page asks the API for the Suggestions.
+2. Wait 30 s. Tap the first Suggestion. Sample the last article on each animation frame for 5 s (run-weak-spots.txt).
+3. Wait 2 s. Take the viewport shot after-tap-weak-spots-375-light. frame-<time>-<label>.png are frames of the recording, from ffmpeg.
+api-log-weak-spots.txt is the API log of the run. api-calls-weak-spots.json holds each API call with its body.
+One run.

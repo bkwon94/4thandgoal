@@ -1,0 +1,17 @@
+# The live roster of Lil Fridge (roster 3) from Sleeper on 2026-11-11, with names from clients/cpc/data/2026/week-08/raw/players.json.
+$ curl -s https://api.sleeper.app/v1/league/1386167364424318976/rosters | jq -r ".[] | select(.roster_id==3) | .players[]"
+11560 Caleb Williams (QB)
+1466 Travis Kelce (TE)
+2449 Stefon Diggs (WR)
+3198 Derrick Henry (RB)
+4034 Christian McCaffrey (RB)
+5045 Courtland Sutton (WR)
+5947 Jakobi Meyers (WR)
+6806 J.K. Dobbins (RB)
+8121 Romeo Doubs (WR)
+8132 Tyler Allgeier (RB)
+8134 Khalil Shakir (WR)
+9228 Bryce Young (QB)
+9488 Jaxon Smith-Njigba (WR)
+DEN DEN (DEF)
+GB GB (DEF)

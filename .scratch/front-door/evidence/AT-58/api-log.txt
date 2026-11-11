@@ -1,0 +1,20 @@
+# The API log from line 902, during this test.
+INFO:     127.0.0.1:60269 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60269 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60269 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 77ms (request req_01a1cc10669f702a92bc4471d5a977cb)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 83ms (request req_01a1cc1066ee7cd89c3a83eb247b2b39)
+INFO:     127.0.0.1:60269 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60269 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 106ms (request req_01a1cc106c7679c4929db51c5811c18b)
+INFO:     127.0.0.1:60271 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60271 - "OPTIONS /clients/cpc/trade-check HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60269 - "POST /clients/cpc/trade-check HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 120ms (request req_01a1cc106d247f688c20e953eea6c35a)
+INFO:     127.0.0.1:60281 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60279 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60281 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK

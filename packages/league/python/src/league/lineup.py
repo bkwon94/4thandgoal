@@ -177,6 +177,21 @@ def lineup_slots(roster: list[str], snapshot: Snapshot) -> list[StartingSlot]:
                           snapshot)
 
 
+def lineup_now(roster: list[str], snapshot: Snapshot) -> list[StartingSlot]:
+    """The starting slots of the best lineup of the players who can play in the trade week, as lineup_slots gives.
+
+    A player out after the trade week, such as a player on IR with no return week, or a player out for the season,
+    cannot start now, so he fills no slot. A slot with no player who can play is empty. The trade code reads this, so
+    a team whose only QB is on IR has an empty QB slot. The hole read keeps lineup_slots, which marks his absence.
+    """
+    return lineup_slots([pid for pid in roster if not cannot_play_now(snapshot, pid)], snapshot)
+
+
+def cannot_play_now(snapshot: Snapshot, player_id: str) -> bool:
+    """True when the player is out after the trade week or out for the season."""
+    return _out_now(snapshot, player_id) or player_id in snapshot.out_for_season
+
+
 def _last_window_week(snapshot: Snapshot) -> int:
     """The last week of the return window, which starts at the trade week."""
     return snapshot.week + RETURN_WINDOW_WEEKS

@@ -1,0 +1,179 @@
+## 375 px, light
+Sheet title: Which team is yours?
+Sheet line: Pick once. This page then answers for your team.
+Rows in the sheet list: 12
+1. All You Need Is Love | 11-5 · 1st
+2. behold the lamb | 6-10 · 11th
+3. Bo Girds | 9-7 · 3rd
+4. Lil Fridge | 10-6 · 2nd
+5. London Cooking | 9-7 · 4th
+6. Maye d'force B with U | 9-7 · 5th
+7. NFC Least | 3-13 · 12th
+8. Return of T Mac | 9-7 · 7th
+9. Teehee | 8-8 · 8th
+10. The Blue Tent | 9-7 · 6th
+11. To Infinity and Bijan | 7-9 · 9th
+12. Unsolicited Dak Picks | 6-10 · 10th
+Controls in the sheet (12):
+- button[type=button] "All You Need Is Love | 11-5 · 1st"
+- button[type=button] "behold the lamb | 6-10 · 11th"
+- button[type=button] "Bo Girds | 9-7 · 3rd"
+- button[type=button] "Lil Fridge | 10-6 · 2nd"
+- button[type=button] "London Cooking | 9-7 · 4th"
+- button[type=button] "Maye d'force B with U | 9-7 · 5th"
+- button[type=button] "NFC Least | 3-13 · 12th"
+- button[type=button] "Return of T Mac | 9-7 · 7th"
+- button[type=button] "Teehee | 8-8 · 8th"
+- button[type=button] "The Blue Tent | 9-7 · 6th"
+- button[type=button] "To Infinity and Bijan | 7-9 · 9th"
+- button[type=button] "Unsolicited Dak Picks | 6-10 · 10th"
+
+## 375 px, dark
+Sheet title: Which team is yours?
+Sheet line: Pick once. This page then answers for your team.
+Rows in the sheet list: 12
+1. All You Need Is Love | 11-5 · 1st
+2. behold the lamb | 6-10 · 11th
+3. Bo Girds | 9-7 · 3rd
+4. Lil Fridge | 10-6 · 2nd
+5. London Cooking | 9-7 · 4th
+6. Maye d'force B with U | 9-7 · 5th
+7. NFC Least | 3-13 · 12th
+8. Return of T Mac | 9-7 · 7th
+9. Teehee | 8-8 · 8th
+10. The Blue Tent | 9-7 · 6th
+11. To Infinity and Bijan | 7-9 · 9th
+12. Unsolicited Dak Picks | 6-10 · 10th
+Controls in the sheet (12):
+- button[type=button] "All You Need Is Love | 11-5 · 1st"
+- button[type=button] "behold the lamb | 6-10 · 11th"
+- button[type=button] "Bo Girds | 9-7 · 3rd"
+- button[type=button] "Lil Fridge | 10-6 · 2nd"
+- button[type=button] "London Cooking | 9-7 · 4th"
+- button[type=button] "Maye d'force B with U | 9-7 · 5th"
+- button[type=button] "NFC Least | 3-13 · 12th"
+- button[type=button] "Return of T Mac | 9-7 · 7th"
+- button[type=button] "Teehee | 8-8 · 8th"
+- button[type=button] "The Blue Tent | 9-7 · 6th"
+- button[type=button] "To Infinity and Bijan | 7-9 · 9th"
+- button[type=button] "Unsolicited Dak Picks | 6-10 · 10th"
+
+## 768 px, light
+Sheet title: Which team is yours?
+Sheet line: Pick once. This page then answers for your team.
+Rows in the sheet list: 12
+1. All You Need Is Love | 11-5 · 1st
+2. behold the lamb | 6-10 · 11th
+3. Bo Girds | 9-7 · 3rd
+4. Lil Fridge | 10-6 · 2nd
+5. London Cooking | 9-7 · 4th
+6. Maye d'force B with U | 9-7 · 5th
+7. NFC Least | 3-13 · 12th
+8. Return of T Mac | 9-7 · 7th
+9. Teehee | 8-8 · 8th
+10. The Blue Tent | 9-7 · 6th
+11. To Infinity and Bijan | 7-9 · 9th
+12. Unsolicited Dak Picks | 6-10 · 10th
+Controls in the sheet (12):
+- button[type=button] "All You Need Is Love | 11-5 · 1st"
+- button[type=button] "behold the lamb | 6-10 · 11th"
+- button[type=button] "Bo Girds | 9-7 · 3rd"
+- button[type=button] "Lil Fridge | 10-6 · 2nd"
+- button[type=button] "London Cooking | 9-7 · 4th"
+- button[type=button] "Maye d'force B with U | 9-7 · 5th"
+- button[type=button] "NFC Least | 3-13 · 12th"
+- button[type=button] "Return of T Mac | 9-7 · 7th"
+- button[type=button] "Teehee | 8-8 · 8th"
+- button[type=button] "The Blue Tent | 9-7 · 6th"
+- button[type=button] "To Infinity and Bijan | 7-9 · 9th"
+- button[type=button] "Unsolicited Dak Picks | 6-10 · 10th"
+
+## 768 px, dark
+Sheet title: Which team is yours?
+Sheet line: Pick once. This page then answers for your team.
+Rows in the sheet list: 12
+1. All You Need Is Love | 11-5 · 1st
+2. behold the lamb | 6-10 · 11th
+3. Bo Girds | 9-7 · 3rd
+4. Lil Fridge | 10-6 · 2nd
+5. London Cooking | 9-7 · 4th
+6. Maye d'force B with U | 9-7 · 5th
+7. NFC Least | 3-13 · 12th
+8. Return of T Mac | 9-7 · 7th
+9. Teehee | 8-8 · 8th
+10. The Blue Tent | 9-7 · 6th
+11. To Infinity and Bijan | 7-9 · 9th
+12. Unsolicited Dak Picks | 6-10 · 10th
+Controls in the sheet (12):
+- button[type=button] "All You Need Is Love | 11-5 · 1st"
+- button[type=button] "behold the lamb | 6-10 · 11th"
+- button[type=button] "Bo Girds | 9-7 · 3rd"
+- button[type=button] "Lil Fridge | 10-6 · 2nd"
+- button[type=button] "London Cooking | 9-7 · 4th"
+- button[type=button] "Maye d'force B with U | 9-7 · 5th"
+- button[type=button] "NFC Least | 3-13 · 12th"
+- button[type=button] "Return of T Mac | 9-7 · 7th"
+- button[type=button] "Teehee | 8-8 · 8th"
+- button[type=button] "The Blue Tent | 9-7 · 6th"
+- button[type=button] "To Infinity and Bijan | 7-9 · 9th"
+- button[type=button] "Unsolicited Dak Picks | 6-10 · 10th"
+
+## 1280 px, light
+Sheet title: Which team is yours?
+Sheet line: Pick once. This page then answers for your team.
+Rows in the sheet list: 12
+1. All You Need Is Love | 11-5 · 1st
+2. behold the lamb | 6-10 · 11th
+3. Bo Girds | 9-7 · 3rd
+4. Lil Fridge | 10-6 · 2nd
+5. London Cooking | 9-7 · 4th
+6. Maye d'force B with U | 9-7 · 5th
+7. NFC Least | 3-13 · 12th
+8. Return of T Mac | 9-7 · 7th
+9. Teehee | 8-8 · 8th
+10. The Blue Tent | 9-7 · 6th
+11. To Infinity and Bijan | 7-9 · 9th
+12. Unsolicited Dak Picks | 6-10 · 10th
+Controls in the sheet (12):
+- button[type=button] "All You Need Is Love | 11-5 · 1st"
+- button[type=button] "behold the lamb | 6-10 · 11th"
+- button[type=button] "Bo Girds | 9-7 · 3rd"
+- button[type=button] "Lil Fridge | 10-6 · 2nd"
+- button[type=button] "London Cooking | 9-7 · 4th"
+- button[type=button] "Maye d'force B with U | 9-7 · 5th"
+- button[type=button] "NFC Least | 3-13 · 12th"
+- button[type=button] "Return of T Mac | 9-7 · 7th"
+- button[type=button] "Teehee | 8-8 · 8th"
+- button[type=button] "The Blue Tent | 9-7 · 6th"
+- button[type=button] "To Infinity and Bijan | 7-9 · 9th"
+- button[type=button] "Unsolicited Dak Picks | 6-10 · 10th"
+
+## 1280 px, dark
+Sheet title: Which team is yours?
+Sheet line: Pick once. This page then answers for your team.
+Rows in the sheet list: 12
+1. All You Need Is Love | 11-5 · 1st
+2. behold the lamb | 6-10 · 11th
+3. Bo Girds | 9-7 · 3rd
+4. Lil Fridge | 10-6 · 2nd
+5. London Cooking | 9-7 · 4th
+6. Maye d'force B with U | 9-7 · 5th
+7. NFC Least | 3-13 · 12th
+8. Return of T Mac | 9-7 · 7th
+9. Teehee | 8-8 · 8th
+10. The Blue Tent | 9-7 · 6th
+11. To Infinity and Bijan | 7-9 · 9th
+12. Unsolicited Dak Picks | 6-10 · 10th
+Controls in the sheet (12):
+- button[type=button] "All You Need Is Love | 11-5 · 1st"
+- button[type=button] "behold the lamb | 6-10 · 11th"
+- button[type=button] "Bo Girds | 9-7 · 3rd"
+- button[type=button] "Lil Fridge | 10-6 · 2nd"
+- button[type=button] "London Cooking | 9-7 · 4th"
+- button[type=button] "Maye d'force B with U | 9-7 · 5th"
+- button[type=button] "NFC Least | 3-13 · 12th"
+- button[type=button] "Return of T Mac | 9-7 · 7th"
+- button[type=button] "Teehee | 8-8 · 8th"
+- button[type=button] "The Blue Tent | 9-7 · 6th"
+- button[type=button] "To Infinity and Bijan | 7-9 · 9th"
+- button[type=button] "Unsolicited Dak Picks | 6-10 · 10th"

@@ -1,0 +1,192 @@
+# The weak spots slice of Return of T Mac (roster 8), from the live league at 2026-11-11 15:45 EST, just after the live run.
+# Made with slice.py (below), which calls Live.facts("weak_spots", 8) of cornerstone_api.personal_topics, the code that the /personal stream runs. No Claude call, no Jev call.
+{
+  "roster_id": 8,
+  "slice": {
+    "team": "Return of T Mac",
+    "teams_in_league": 12,
+    "week": 10,
+    "slot_ranks": [
+      {
+        "position": "QB",
+        "rank": 11,
+        "depth": "fine",
+        "depth_means": "no spare player inside the starter count past the starters"
+      },
+      {
+        "position": "RB",
+        "rank": 5,
+        "depth": "fine",
+        "depth_means": "no spare player inside the starter count past the starters"
+      },
+      {
+        "position": "WR",
+        "rank": 7,
+        "depth": "fine",
+        "depth_means": "no spare player inside the starter count past the starters"
+      },
+      {
+        "position": "TE",
+        "rank": 9,
+        "depth": "fine",
+        "depth_means": "no spare player inside the starter count past the starters"
+      }
+    ],
+    "starters": [
+      {
+        "slot": "QB",
+        "player": "Jordan Love",
+        "position": "QB",
+        "projected_rank_at_position": 14,
+        "starter_line": 24,
+        "hole": false,
+        "can_play_now": true
+      },
+      {
+        "slot": "RB",
+        "player": "Bijan Robinson",
+        "position": "RB",
+        "projected_rank_at_position": 6,
+        "starter_line": 36,
+        "hole": false,
+        "can_play_now": true
+      },
+      {
+        "slot": "RB",
+        "player": "Jaylen Warren",
+        "position": "RB",
+        "projected_rank_at_position": 8,
+        "starter_line": 36,
+        "hole": false,
+        "can_play_now": true
+      },
+      {
+        "slot": "WR",
+        "player": "CeeDee Lamb",
+        "position": "WR",
+        "projected_rank_at_position": 11,
+        "starter_line": 36,
+        "hole": false,
+        "can_play_now": true
+      },
+      {
+        "slot": "WR",
+        "player": "Carnell Tate",
+        "position": "WR",
+        "projected_rank_at_position": 17,
+        "starter_line": 36,
+        "hole": true,
+        "can_play_now": false
+      },
+      {
+        "slot": "TE",
+        "player": "T.J. Hockenson",
+        "position": "TE",
+        "projected_rank_at_position": 10,
+        "starter_line": 24,
+        "hole": false,
+        "can_play_now": true
+      },
+      {
+        "slot": "FLEX",
+        "player": "Jordan Mason",
+        "position": "RB",
+        "projected_rank_at_position": 26,
+        "starter_line": 36,
+        "hole": false,
+        "can_play_now": true
+      },
+      {
+        "slot": "FLEX",
+        "player": "Rome Odunze",
+        "position": "WR",
+        "projected_rank_at_position": 34,
+        "starter_line": 36,
+        "hole": false,
+        "can_play_now": true
+      }
+    ],
+    "grade_read": "Soft at QB.",
+    "weak_starting_slots": [
+      {
+        "slot": "WR2",
+        "player": "DeMario Douglas",
+        "position": "WR",
+        "projected_rank_at_position": 36,
+        "can_play_now": true
+      },
+      {
+        "slot": "FLEX1",
+        "player": "Pat Bryant",
+        "position": "WR",
+        "projected_rank_at_position": 41,
+        "can_play_now": true
+      }
+    ]
+  },
+  "block": {
+    "topic": "weak_spots",
+    "team": 8,
+    "fact": "QB ranks 11th of 12",
+    "stats": [
+      {
+        "label": "Weakest spot",
+        "value": "QB"
+      },
+      {
+        "label": "Rank",
+        "value": "11th of 12"
+      },
+      {
+        "label": "Holes",
+        "value": "1"
+      }
+    ],
+    "rows": [
+      {
+        "label": "QB",
+        "value": "11th of 12",
+        "note": "fine",
+        "roster_id": null,
+        "you": false
+      },
+      {
+        "label": "TE",
+        "value": "9th of 12",
+        "note": "fine",
+        "roster_id": null,
+        "you": false
+      },
+      {
+        "label": "WR",
+        "value": "7th of 12",
+        "note": "thin \u00b7 hole: Carnell Tate",
+        "roster_id": null,
+        "you": false
+      },
+      {
+        "label": "RB",
+        "value": "5th of 12",
+        "note": "fine",
+        "roster_id": null,
+        "you": false
+      }
+    ]
+  }
+}
+
+# slice.py:
+"""
+Print the weak spots slice and data block of one CPC roster from the live league, with the real code of the API.
+It calls no Claude and no Jev. The slice is the input that Claude reads; the block is the data block of the stream.
+"""
+import json
+import sys
+
+from cornerstone_api.app import app_from_env
+from cornerstone_api.personal_topics import LiveCache, _load
+
+app = app_from_env()
+live = _load(app.state.served["cpc"], 2026, LiveCache(60))
+facts = live.facts("weak_spots", int(sys.argv[1]))
+print(json.dumps({"roster_id": int(sys.argv[1]), "slice": facts.slice, "block": facts.block}, indent=2))

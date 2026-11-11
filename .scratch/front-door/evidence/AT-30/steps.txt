@@ -1,0 +1,5 @@
+Driver: site.mjs AT-30, viewport <width>x900, the date of the page shifted to Wednesday 2026-11-04.
+1. Store Lil Fridge and the passphrase. Open /. Open Week recap. Wait for its Answer.
+2. Open Weak spots. Wait until no article is busy, then 4 s.
+3. Scroll the Week recap article to the top of the window. Viewport shot recap-in-view-<width>-<theme>. Then a full-page shot full-<width>-<theme>.
+articles-<width>-<theme>.txt lists each article with its links and fold controls.

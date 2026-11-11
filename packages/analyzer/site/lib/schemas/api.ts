@@ -143,6 +143,14 @@ export const finderTradeSchema = z.object({
   fact_lines: z.array(z.string()),
 });
 
+/* One near idea of the finder: an offer the pick weighed and would not send, and the one reason it fell short. The
+   sides share the shape of a trade, so the site renders an idea as it renders an offer. */
+export const nearIdeaSchema = z.object({
+  offer_id: z.string(),
+  sides: z.array(tradeSideSchema),
+  reason: z.string(),
+});
+
 /* The finder document that the site API returns from POST /find. It follows the fixture at .scratch/site-react/fixtures/find-response.json. */
 export const findResponseSchema = z.object({
   season: z.number(),
@@ -153,6 +161,9 @@ export const findResponseSchema = z.object({
   }),
   // Up to three picks, best first. After a fallback, every offer of the shortlist, in its order.
   trades: z.array(finderTradeSchema),
+  // Up to three near ideas, best first. With no pick, at least one when the search built an offer. The key is
+  // required, so a trade Answer kept in the browser before the near ideas fails the parse and drops on a reload.
+  near: z.array(nearIdeaSchema),
   // The plain line for an empty list, or null when the list has a trade. The page shows it as the pipeline writes it.
   empty: z.string().nullable(),
   as_of: asOfSchema,

@@ -1,0 +1,28 @@
+Team: Bo Girds. The tap on Trade ideas was at about 1.56 s of the recording. The send of "week 1 results" was at about 33.05 s.
+Each article on each animation frame (only the changes): its steps, each as [state mark line]. "braille" means the mark is a frame of the braille spinner (U+2800 to U+28FF).
+1.571 s: 
+2.571 s: Trade ideas busy true: [live braille Reading the league…] | text short
+4.688 s: Trade ideas busy true: [live braille Checking 11 teams for a fit…] | text short
+5.574 s: Trade ideas busy true: [live braille Checked 11 teams for a fit…] | text short
+5.623 s: Trade ideas busy true: [done braille Checked 11 teams for a fit] [live braille Building offers…] | text short
+5.790 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [live braille Building offers…] | text short
+6.356 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [live braille Built 13 offers…] | text short
+6.374 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done braille Built 13 offers] [live braille Weighing the offers…] | text short
+6.556 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [live braille Weighing the offers…] | text short
+7.324 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [live braille Weighed 13 offers…] | text short
+7.372 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done braille Weighed 13 offers] [live braille Picking the best offers…] | text short
+7.538 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [live braille Picking the best offers…] | text short
+27.687 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [live braille Picked the best 2…] | text short
+29.575 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [done braille Picked the best 2] | text long
+29.738 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [done ✔ Picked the best 2] | text long
+33.126 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [done ✔ Picked the best 2] | text long || week 1 results busy true: [live braille Reading the league…] | text short
+33.904 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [done ✔ Picked the best 2] | text long || week 1 results busy true: [live braille Reading the week…] | text short
+34.205 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [done ✔ Picked the best 2] | text long || week 1 results busy true: [live braille Reading week 1…] | text short
+34.956 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [done ✔ Picked the best 2] | text long || week 1 results busy true: [done braille Reading week 1] | text short
+35.123 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [done ✔ Picked the best 2] | text long || week 1 results busy true: [done ✔ Reading week 1] | text short
+36.169 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [done ✔ Picked the best 2] | text long || week 1 results busy false: [done ✔ Reading week 1] | text short
+37.706 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 13 offers] [done ✔ Weighed 13 offers] [done ✔ Picked the best 2] | text long || week 1 results busy null: [done ✔ Reading week 1] | text short
+
+Where each step list sits, at the end:
+Trade ideas: the step list sits inside div bg rgb(255, 255, 255) border 1px under the article
+week 1 results: the step list sits inside div bg rgb(255, 255, 255) border 1px under the article

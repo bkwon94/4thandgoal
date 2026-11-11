@@ -1,0 +1,80 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_019U3f6rNfo68KNPcgGpuyX8","toolName":"player_log"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_019U3f6rNfo68KNPcgGpuyX8","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_019U3f6rNfo68KNPcgGpuyX8","inputTextDelta":"{\"playe"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_019U3f6rNfo68KNPcgGpuyX8","inputTextDelta":"r\": \"La"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_019U3f6rNfo68KNPcgGpuyX8","inputTextDelta":"mar Jac"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_019U3f6rNfo68KNPcgGpuyX8","inputTextDelta":"kson\"}"}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_019U3f6rNfo68KNPcgGpuyX8","toolName":"player_log","input":{"player":"Lamar Jackson"}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_019U3f6rNfo68KNPcgGpuyX8","output":{"player":"Lamar Jackson","position":"QB","nfl_team":"BAL","season_points":80.08,"status":"on IR","can_play_now":false,"what_each_field_means":{"status":"The status of the player on the injury report now, such as \"out\" or \"on IR\". \"healthy\" means the report lists no status.","can_play_now":"False when the status keeps the player out now, such as out, on IR, or suspended. A player listed as questionable can still play."},"weeks":[{"week":1,"league_team":"To Infinity and Bijan","started":true,"fantasy_points":24.96,"pass_yards":324.0,"pass_tds":1.0,"rush_attempts":7.0,"rush_yards":40.0,"rush_tds":1.0,"fumbles_lost":1.0},{"week":2,"league_team":"To Infinity and Bijan","started":true,"fantasy_points":15.8,"pass_yards":235.0,"pass_tds":1.0,"interceptions":1.0,"rush_attempts":4.0,"rush_yards":34.0},{"week":3,"league_team":"To Infinity and Bijan","started":true,"fantasy_points":20.44,"pass_yards":186.0,"pass_tds":2.0,"rush_attempts":6.0,"rush_yards":50.0},{"week":4,"league_team":"To Infinity and Bijan","started":true,"fantasy_points":18.88,"pass_yards":222.0,"pass_tds":2.0,"rush_attempts":2.0,"rush_yards":20.0},{"week":5,"league_team":"To Infinity and Bijan","started":false,"played":false},{"week":6,"league_team":"Bo Girds","started":false,"played":false},{"week":7,"league_team":"Bo Girds","started":false,"played":false},{"week":8,"league_team":"Bo Girds","started":true,"fantasy_points":0.0},{"week":9,"league_team":"Bo Girds","started":false,"played":false}]}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"reasoning-start","id":"f8d372cf-3783-4264-9919-5d7c9dc5ab73","providerMetadata":{"pydantic_ai":{"signature":"","provider_name":"anthropic"}}}
+
+data: {"type":"reasoning-end","id":"f8d372cf-3783-4264-9919-5d7c9dc5ab73","providerMetadata":{"pydantic_ai":{"signature":"CAQS0QgKEAgTGAI4AUIIdGhpbmtpbmcSDME0XF+WTR2CzZtfSBoMnDHc+UaVxWiU8XXZIjB8/bE+UWojY0jQNCyXn0vQqXpLf56dEKeKpGNZwfh59PQWGfB9QbWt046VxvgnK14q7gc4iWUnXB+uDEOuDCcG4bMt+tsy4GtewZpL10x6fEXt44a6wbU8ZVA/oa2yOl+HrCs7P/2+KfYiQwUAftIx9zBaamhSLVvAMDZzB0vDXZ6qF+nxphLEeSTSydi9pXiYlEADQtHbmSpwGqyu26t445L2AMxhxMZlkFM52Z9ues6P4uemR9gYjFKIrvFG19gPgsA4tBXlL6tpr+p87kd5M1NitufrmCai5WZZDQGqRezUKL4gSJ6xrWd+6Ztk1iNMR3dweewUcJkX019JCIKQOuBx6naB1tS24o4dP1yFx5kUkHzKMTNVab/l6NoDHxGLO5BKusOwA79f9iElm7dda4mOzVNbOTmPL+wO4XDziS9WB2wJVOh4rCoGBhohqKWSjqq7lTXiyyeMz0LwkjQVZWzWuLN6Odj8ZowWcrIxBZ2VjAZxb2QAVkq/m31ULBlATBoAKmHeuzvJIZTUXfLmhZd9CjsSvbHY4a4xgoDZa9GEpn1saQPfW6G81IVM26l5QcAmNoyF2qQcBNbxI4Nhdh+csTbmY9hVW5sMLN8KvvB/UyxbChQy0ejhtN3H1hP63vmTGtOrviWqkrfx6t+c5e+Xs0UduSIOYgLcYidm5NxRxHcdKOCZh2KbW9cdNHx0MSDMksOk7udHxRY8NV6mfH+n93fL6b/n9V6LuBqbNbUNpGihADVRMKQbjoEzUey3Sld9dv8I7T2E5crfUGnLE1vqN9NOksn9ZHA1TkKjRuf72aqaM9QswxRiLImeEaCXdhncE8D5BVTK6b8anywTTIYhhESm4I6cjxPEkICMOUUe7zfPrXFelvqpEYPnUAZyhyq3sAum2JbZQf1BxJdiof5mxT0VSIcrdv3K/2/hWPotlYGE2yyyojM3MIl2C/WY6nStatBjGZtSqO6ghnuyL+xn3Qb6Ndz9er3ur95Jm9BxD4ZgbTFlJZBw6lmuYSrUPtwCqNKFJMmgseOCgl2UHnhxSTdWXaQ/OlACPfd5tXnjxRosTSbCLjmfuPFi3/9wCf2jTbLqTUyzuSDtrDgdwttHv3j1uDnXdGZjr7Ix4ypIkajXxVDMi4jg7VdPY5dlOUsHgSXAPR4/mphAGtSy+X2N8kdGLCfysLcWOZBKnpuu+MRhrp6DqmEuHFSzdxI/dyvkNyNijOs8iJlOtE1iVsBRkR/Czbj10gwbCDL8ROmJo1d2mCdBkTG/Y854TGuZCATci8Qr/PYUQKixhX/2TmJ+Dn5oGZJsOaRPUawNhZUTy42xpVuF8m/s9hRTwnR3lcyTotUvjtjjA0lLmT+2suUypOX1gRXmRMFHwnUWMCt0ffYFaLf6pmzc7riAcyW4GAE=","provider_name":"anthropic"}}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-delta","delta":"Lamar Jackson","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-delta","delta":" is on IR and can't play","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-delta","delta":" now. He has 80.08","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-delta","delta":" points this season.","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-delta","delta":" His best week was 24.96","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-delta","delta":" in week 1, and he","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-delta","delta":" scored 0.0 in","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-delta","delta":" week 8 when","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-delta","delta":" you started him.","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"text-end","id":"7b3bb015-ce54-4aa8-8c0b-b89728a7243a"}
+
+data: {"type":"data-block","id":"block","data":{"kind":"player","name":"Lamar Jackson","position":"QB","nfl_team":"BAL","fantasy_team":"Bo Girds","can_play_now":false,"status":"on IR","stats":[{"label":"Season points","value":"80.08"},{"label":"Best week","value":"24.96 (wk 1)"},{"label":"Week 8","value":"0.0 (started)"}],"note":"Weeks 1-4 were with To Infinity and Bijan."}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

@@ -61,6 +61,8 @@ type TradeFormProps = {
   onUnauthorized: () => void;
   // Analyze answered 422, so the page fetches the current rosters.
   onRostersStale?: () => void;
+  // The sides of a link from the front door, such as a typed trade with an unsure player. Null keeps the empty Stack.
+  prefill?: Sides | null;
   /* The page places the parts, so it can put its own lines, such as a failed fetch, between the hero and the form.
      The form keeps the grade state, so it hands the parts out and does not lift the state. */
   children?: (parts: FormParts) => ReactNode;
@@ -123,7 +125,7 @@ function TitleHero() {
   );
 }
 
-export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized, onRostersStale, children = stackParts }: TradeFormProps) {
+export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized, onRostersStale, prefill = null, children = stackParts }: TradeFormProps) {
   const [sides, setSides] = useState<Sides>(EMPTY_SIDES);
   // The id of the next added side. EMPTY_SIDES holds ids 0 and 1, and an id is never reused, so a key never repeats.
   const nextSideId = useRef(EMPTY_SIDES.length);
@@ -137,6 +139,11 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollToResult = useRef(false);
   const off = useMotionOff();
+
+  // A link fills the Stack once, when the page reads its query. A later change of the trade is the reader's own.
+  useEffect(() => {
+    if (prefill) setSides(prefill);
+  }, [prefill]);
 
   // The scroll waits for the result, because the result is not in the page until the grade ends.
   useEffect(() => {

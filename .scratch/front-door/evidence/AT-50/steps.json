@@ -1,0 +1,10 @@
+{
+  "route": "/",
+  "steps": [
+    { "wait": "text=Which team is yours?" },
+    { "wait": 1200 },
+    { "click": "[role=dialog] button:has-text(\"Lil Fridge\")" },
+    { "wait": "[aria-label=\"Suggestions\"]" },
+    { "wait": 1500 }
+  ]
+}

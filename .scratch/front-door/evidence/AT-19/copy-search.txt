@@ -1,0 +1,10 @@
+$ grep -rnE 'Jev|Advisor|Finder' apps/site/src/app/front-door --include=*.tsx --include=*.ts | grep -v '.test.'
+/private/tmp/claude-503/fd-motion/apps/site/src/app/front-door/topics.ts:55:   lead, most urgent first, then the order of the day. Jev judges what is urgent on the API, and this rule only places
+/private/tmp/claude-503/fd-motion/apps/site/src/app/front-door/trade-answer.tsx:12:import type { AnalyzeResponse, FindResponse, FinderTrade, Lean, NearIdea } from "@cpc/analyzer/lib/analyze-types";
+/private/tmp/claude-503/fd-motion/apps/site/src/app/front-door/trade-answer.tsx:186:function Offer({ trade, asker, analyze, index }: { trade: FinderTrade; asker: number; analyze: string; index: number }) {
+
+$ grep -rnE 'Jev|Advisor|Finder' clients/cpc/copy.toml
+(no hit)
+$ grep -oE '.{0,40}(Jev|Advisor|Finder).{0,40}' apps/site/out/index.html   (the export of /)
+(no hit)
+The innerText of the page at the end of the run (page-text.txt): 0 hits for Jev, Advisor, or Finder.

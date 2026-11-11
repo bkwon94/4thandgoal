@@ -10,7 +10,7 @@ from analyzer.trade_facts import shown_ranks
 from facts.tokens import Nums, fact
 from league.jev_port import Jev, JevError, NoulQuestion
 from league.league_settings import LeagueSettings
-from league.lineup import FLEX_SLOTS, lineup_slots
+from league.lineup import FLEX_SLOTS, lineup_now
 from league.models import Fact
 from league.snapshot import Snapshot
 
@@ -62,24 +62,37 @@ def _weak_limit(settings: LeagueSettings, slot_name: str, roster_slot: str, posi
     return settings.team_count * (int(number.group()) if number else 1)
 
 
-def weak_starting_slots(snapshot: Snapshot, roster_id: int) -> list[str]:
-    """The starting slots of the best lineup with no player or a starter past the weak rank, such as "RB2: X (RB31)".
+def weak_slot_rows(snapshot: Snapshot, roster_id: int) -> list[dict]:
+    """The starting slots of the best lineup with no player or a starter past the weak rank, one row each: the slot, the
+    player, his position, his projected rank at his position, and whether he can play now.
 
-    A K or DEF slot is never weak, because no question of the trade reads it.
+    A K or DEF slot is never weak, because no question of the trade reads it. A player who cannot play now, such as
+    a player on IR, fills no slot, so his slot is empty or holds the player behind him, and each row can play now.
     """
-    weak = []
-    for slot in lineup_slots(snapshot.rosters[roster_id], snapshot):
+    rows = []
+    for slot in lineup_now(snapshot.rosters[roster_id], snapshot):
         if slot.roster_slot not in FLEX_SLOTS and slot.roster_slot not in TRADE_POSITIONS:
             continue
-        if slot.player is None:
-            weak.append(f"{slot.name}: empty")
+        player = None if slot.player is None else snapshot.players[slot.player]
+        if player is not None and slot.rank is not None and slot.rank <= _weak_limit(
+                snapshot.client.settings, slot.name, slot.roster_slot, player.position):
             continue
-        player = snapshot.players[slot.player]
-        if slot.rank is None or slot.rank > _weak_limit(snapshot.client.settings, slot.name, slot.roster_slot,
-                                                        player.position):
-            rank = f"{player.position}{slot.rank}" if slot.rank is not None else "no rank"
-            weak.append(f"{slot.name}: {player.name} ({rank})")
-    return weak
+        rows.append({"slot": slot.name, "player": player and player.name, "position": player and player.position,
+                     "projected_rank_at_position": player and slot.rank, "can_play_now": True})
+    return rows
+
+
+def weak_starting_slots(snapshot: Snapshot, roster_id: int) -> list[str]:
+    """The weak slot rows as lines, such as "RB2: X (RB31)" or "QB: empty", as the questions of a trade read them."""
+    lines = []
+    for row in weak_slot_rows(snapshot, roster_id):
+        if row["player"] is None:
+            lines.append(f"{row['slot']}: empty")
+            continue
+        rank = row["projected_rank_at_position"]
+        shown = f"{row['position']}{rank}" if rank is not None else "no rank"
+        lines.append(f"{row['slot']}: {row['player']} ({shown})")
+    return lines
 
 
 def _paths(trade: ProposedTrade) -> dict[int, str]:

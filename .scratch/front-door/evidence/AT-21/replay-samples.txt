@@ -1,0 +1,67 @@
+The tap on Weak spots was at about 1.74 s of the recording. The last article on each animation frame for 25 s (only the changes): busy, block, steps, stream words, text, status.
+1.748 s: (no article)
+2.708 s: busy true | no block | steps [live ⠋ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.759 s: busy true | no block | steps [live ⠙ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.841 s: busy true | no block | steps [live ⠹ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.927 s: busy true | no block | steps [live ⠸ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.992 s: busy true | no block | steps [live ⠼ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+3.028 s: busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.110 s: busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.193 s: busy true | block | steps [live ⠹ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.277 s: busy true | block | steps [live ⠸ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.358 s: busy true | block | steps [live ⠼ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.441 s: busy true | block | steps [live ⠴ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.509 s: busy true | block | steps [live ⠦ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.590 s: busy true | block | steps [live ⠧ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.677 s: busy true | block | steps [live ⠇ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.743 s: busy true | block | steps [live ⠏ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.827 s: busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.909 s: busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status -
+3.978 s: busy true | block | steps - | words 0 (0 blurred) | text Checking | status Checking
+4.793 s: busy true | block | steps - | words 0 (0 blurred) | text (no text) | status -
+4.978 s: busy true | block | steps - | words 0 (0 blurred) | text Fixing a number… | status -
+5.792 s: busy true | block | steps - | words 0 (0 blurred) | text Fixing a number… / Checking | status Checking
+7.194 s: busy true | block | steps - | words 10 (10 blurred) | text Your weakest spot is QB, which ranks 6th / Checking
+Checked | status Checking
+Checked
+7.424 s: busy true | block | steps - | words 10 (10 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.444 s: busy true | block | steps - | words 10 (9 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.477 s: busy true | block | steps - | words 10 (8 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.493 s: busy false | block | steps - | words 10 (8 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.508 s: busy false | block | steps - | words 10 (7 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.558 s: busy false | block | steps - | words 10 (6 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.593 s: busy false | block | steps - | words 10 (5 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.643 s: busy false | block | steps - | words 10 (4 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.674 s: busy false | block | steps - | words 10 (3 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.710 s: busy false | block | steps - | words 10 (2 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.758 s: busy false | block | steps - | words 10 (1 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+7.792 s: busy false | block | steps - | words 10 (0 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+8.009 s: busy null | block | steps - | words 0 (0 blurred) | text Your weakest spot is QB, which ranks 6th / Checked | status Checked
+8.027 s: busy null | block | steps - | words 0 (0 blurred) | text Your roster changed. / Your weakest spot is QB, which ranks 6th | status Your roster changed.
+
+The text of the last article at the end:
+Weak spots
+
+Your roster changed.
+
+Refresh
+WEAKEST SPOT
+QB
+RANK
+6th of 12
+HOLES
+1
+QB
+deep
+6th of 12
+TE
+fine
+6th of 12
+WR
+thin · hole: Jakobi Meyers
+6th of 12
+RB
+fine
+3rd of 12
+
+Your weakest spot is QB, which ranks 6th of 12.

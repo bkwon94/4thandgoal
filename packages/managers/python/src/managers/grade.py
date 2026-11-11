@@ -44,6 +44,16 @@ class ManagerGrade(BaseModel):
     read: str
 
 
+class Starter(BaseModel):
+    """One starter slot of the best lineup that the grade reads: the slot, its player, his position, his projected
+    rank at that position, and whether the slot is a hole. GLOSSARY.md, "Hole"."""
+    slot: str
+    player_id: str | None
+    position: str | None
+    rank: int | None
+    hole: bool
+
+
 class GradeParts(NamedTuple):
     """The four parts of the score, each from 0 to 1. GRADE_WEIGHTS weighs each one."""
     # The mean of two reads by the projections ahead, each against the league from 0 at the lowest roster to 1 at
@@ -174,6 +184,20 @@ def roster_grades(inputs: SeasonInputs) -> dict[int, ManagerGrade]:
     return grades
 
 
+def roster_places(inputs: SeasonInputs) -> dict[int, int]:
+    """The place of each roster from 1 by the score of its grade, best first, by roster id. The score stays here, so a
+    reader that ranks the rosters gets the place and never the value. The roster id breaks a tie."""
+    return _ranks({rid: grade_score(parts) for rid, parts in roster_parts(inputs).items()})
+
+
+def roster_starters(inputs: SeasonInputs) -> dict[int, list[Starter]]:
+    """The starters of the best lineup of each roster that the grade reads, by roster id, in the order of the slots.
+
+    These are the same slots that give the slot ranks and the holes of roster_grades, so a reader names each hole.
+    """
+    return {rid: read.starters() for rid, read, _ in _league_reads(inputs)}
+
+
 class _League(NamedTuple):
     """The five reads of one roster against the league, each from 0 at the lowest roster to 1 at the highest."""
     places: float
@@ -260,6 +284,10 @@ class _RosterRead:
         if slot.player is not None:
             return self.snapshot.players[slot.player].position
         return slot.roster_slot if slot.roster_slot in SLOT_POSITIONS else None
+
+    def starters(self) -> list[Starter]:
+        return [Starter(slot=slot.name, player_id=slot.player, position=self._position(slot), rank=slot.rank,
+                        hole=slot.is_hole(self.snapshot)) for slot in self.slots]
 
     def _at(self, position: str) -> list[StartingSlot]:
         return [slot for slot in self.slots if self._position(slot) == position]

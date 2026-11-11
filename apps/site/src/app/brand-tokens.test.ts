@@ -46,16 +46,20 @@ function longHex(value: string): string {
   return value.toLowerCase().replace(/#([0-9a-f])([0-9a-f])([0-9a-f])(?![0-9a-f])/g, "#$1$1$2$2$3$3");
 }
 
-let stripped = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
-for (const block of blocksAt(stripped, /@theme inline/)) stripped = stripped.replace(block, "");
-const darkBlocks = blocksAt(stripped, /\.dark\s*\{/);
-const lightMap = declarations(darkBlocks.reduce((css, block) => css.replace(block, ""), stripped));
-const darkMap = new Map([...lightMap, ...darkBlocks.flatMap((block) => [...declarations(block)])]);
-
-function value(theme: "light" | "dark", token: string): string {
-  const map = theme === "light" ? lightMap : darkMap;
-  return longHex(resolve(map.get(`--color-${token}`) ?? `MISSING(${token})`, map));
+/* The resolved color tokens of one stylesheet, light and dark. The .dark blocks re-point the light set. */
+function themesOf(css: string): (theme: "light" | "dark", token: string) => string {
+  let stripped = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const block of blocksAt(stripped, /@theme inline/)) stripped = stripped.replace(block, "");
+  const darkBlocks = blocksAt(stripped, /\.dark\s*\{/);
+  const lightMap = declarations(darkBlocks.reduce((rest, block) => rest.replace(block, ""), stripped));
+  const darkMap = new Map([...lightMap, ...darkBlocks.flatMap((block) => [...declarations(block)])]);
+  return (theme, token) => {
+    const map = theme === "light" ? lightMap : darkMap;
+    return longHex(resolve(map.get(`--color-${token}`) ?? `MISSING(${token})`, map));
+  };
 }
+
+const value = themesOf(CSS);
 
 /* The resolved value of each color token of CPC, light and dark. The key is the token name. */
 const CPC: Record<string, [string, string]> = {
@@ -114,6 +118,37 @@ describe("the three colors of the hero scene (decision 03)", () => {
     const light = colorsOf(brand, "light");
     const dark = colorsOf(brand, "dark");
     for (const role of ["accent", "on_dark", "on_dark_muted"] as const) expect(light[role], role).toEqual(dark[role]);
+  });
+});
+
+/* The look of the front door: the "Night" look of decision 07 in dark, the brand look in light. Each value mixes the
+   roles of the brand of the client, so each client keeps its own accent and surfaces in both themes (AT-45). */
+describe("the look of the front door in the brand of each client (AT-45 of front-door)", () => {
+  it.each(BRAND_CLIENTS)("derives the glass, the hairline, the halo, and the team name from the brand of %s", (slug) => {
+    const brand = parse(readFileSync(join(ROOT, "clients", slug, "brand.toml"), "utf8")) as unknown as BrandFile;
+    const door = themesOf(brandCss(brand, { source: `clients/${slug}/brand.toml` }) + GLOBALS);
+    for (const theme of ["light", "dark"] as const) {
+      expect(door(theme, "door-glass"), `${theme} glass`).toContain(door(theme, "card"));
+      expect(door(theme, "door-halo"), `${theme} halo`).toContain(door(theme, "accent"));
+    }
+    // Light keeps the rule and the ink of the brand. Dark takes a hairline of the ink and the accent ink for the name.
+    expect(door("light", "door-hair")).toBe(door("light", "rule"));
+    expect(door("dark", "door-hair")).toContain(door("dark", "ink"));
+    expect(door("light", "door-name")).toBe(door("light", "ink"));
+    expect(door("dark", "door-name")).toBe(door("dark", "accent-ink"));
+  });
+
+  it("sets no color and no font of its own in the components of the front door, so the brand and the look paint it", () => {
+    const hits = sourceFiles(join(process.cwd(), "src/app/front-door"))
+      .filter((file) => !file.endsWith(".test.ts") && !file.endsWith(".test.tsx"))
+      .flatMap((file) =>
+        readFileSync(file, "utf8")
+          .split("\n")
+          .map((text, index) => ({ at: `${file}:${index + 1}`, text }))
+          .filter(({ text }) => /#[0-9a-fA-F]{3,8}\b|rgba?\(|font-\[|fontFamily/.test(text))
+          .map(({ at, text }) => `${at}: ${text.trim()}`),
+      );
+    expect(hits).toEqual([]);
   });
 });
 

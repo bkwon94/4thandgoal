@@ -1,0 +1,6 @@
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, screen recording recording-375-light.webm.
+Setup: the weak spots row of Lil Fridge leaves the answer store before the run, so the Answer streams (api-log.txt shows the Claude call).
+1. Store Lil Fridge and the passphrase. Open / with an empty Thread. Tap Weak spots (from the row or More).
+2. Sample the last article on each animation frame until Checked shows, plus 3 s (samples.txt). Viewport shot end-375-light.
+3. frame-<time>-<label>.png are frames of the recording at the times of the samples: the block alone, the text in the stream, and Checked.
+4. frame-4.00s-block-alone-writing.png and frame-4.90s-block-alone-checking.png are two more frames of the block alone, taken after the run with ffmpeg at those times. One run: the Answer ended as checked.

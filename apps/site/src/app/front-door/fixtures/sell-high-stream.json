@@ -1,0 +1,119 @@
+[
+ {
+  "type": "start"
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Lined up your 14 players"
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Checked each number of the picks"
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Picked 2 players to sell"
+  }
+ },
+ {
+  "type": "data-answer",
+  "data": {
+   "kind": "sell",
+   "document": {
+    "season": 2026,
+    "team": {
+     "roster_id": 3,
+     "team": "Lil Fridge"
+    },
+    "picks": [
+     {
+      "player": {
+       "player_id": "8121",
+       "name": "Romeo Doubs",
+       "position": "WR",
+       "nfl_team": "NE",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8121.jpg",
+       "season_rank": "WR54",
+       "recent_rank": "WR26"
+      },
+      "headline": "You can sell Romeo Doubs now: he is out until week 14, but his hot last four weeks still make him look good to another manager.",
+      "bullets": [
+       {
+        "text": "He is out now and not due back until week 14, so he gives your lineup nothing until then.",
+        "mark": "for",
+        "fact_id": "8121.lineup",
+        "fact_text": "Romeo Doubs (WR, NE) is out now. He is due back in week 14, and he counts for 7.1 points per game in a lineup, by his projection from then on. His position rank is WR60."
+       },
+       {
+        "text": "He scored 10.7 points per game over the last four weeks against 8.4 over the season, and his Recent rank is WR26 against a Season rank of WR54. Another manager would pay for the hot month.",
+        "mark": "for",
+        "fact_id": "8121.trend",
+        "fact_text": "Over the last 4 weeks, Romeo Doubs scored 10.7 points per game, against 8.4 over the season. His Recent rank is WR26 and his Season rank is WR54."
+       },
+       {
+        "text": "The matchups ahead are soft, such as week 12 at LAC, 4th most points to WRs. He cannot use them while he is out, though.",
+        "mark": "even",
+        "fact_id": "8121.schedule",
+        "fact_text": "The schedule ahead of Romeo Doubs: week 10 at DET, 9th most points to WRs; week 11 bye; week 12 at LAC, 4th most points to WRs; week 13 BUF at home, 8th most points to WRs."
+       }
+      ]
+     },
+     {
+      "player": {
+       "player_id": "8132",
+       "name": "Tyler Allgeier",
+       "position": "RB",
+       "nfl_team": "ARI",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8132.jpg",
+       "season_rank": "RB22",
+       "recent_rank": null
+      },
+      "headline": "You can sell Tyler Allgeier while his hot month hides a weaker season.",
+      "bullets": [
+       {
+        "text": "He scored 12.7 points per game over the last four weeks against 8.8 over the season. His Recent rank is RB18 and his Season rank is RB22.",
+        "mark": "for",
+        "fact_id": "8132.trend",
+        "fact_text": "Over the last 4 weeks, Tyler Allgeier scored 12.7 points per game, against 8.8 over the season. His Recent rank is RB18 and his Season rank is RB22."
+       },
+       {
+        "text": "In your lineup he counts for 8.8 points per game now, a position rank of RB33, well short of what the hot month suggests.",
+        "mark": "for",
+        "fact_id": "8132.lineup",
+        "fact_text": "Tyler Allgeier (RB, ARI) counts for 8.8 points per game in a lineup now. His position rank is RB33."
+       },
+       {
+        "text": "The schedule ahead is soft, starting with week 10 LAR at home, 29th most points to RBs, so the good run could last.",
+        "mark": "against",
+        "fact_id": "8132.schedule",
+        "fact_text": "The schedule ahead of Tyler Allgeier: week 10 LAR at home, 29th most points to RBs; week 11 at KC, 27th most points to RBs; week 12 WAS at home, 26th most points to RBs; week 13 PHI at home, 18th most points to RBs."
+       }
+      ]
+     }
+    ],
+    "empty": null,
+    "as_of": {
+     "chart_week": null,
+     "stats_through": 9,
+     "completed_through": 9,
+     "rosters_fetched": "2026-11-10T15:02:39.201754-05:00",
+     "known_games": null,
+     "no_chart": true,
+     "no_chart_note": "This week's player values are not out yet."
+    },
+    "missing": [
+     "chart"
+    ],
+    "stale": []
+   }
+  }
+ },
+ {
+  "type": "finish"
+ }
+]

@@ -1,0 +1,14 @@
+# The API log from line 2493, during this test.
+INFO:     127.0.0.1:62334 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62334 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62334 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 123ms (request req_01a1cc1ee05273e2a8867f4463a07b78)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 61ms (request req_01a1cc1ee0a874939d6ac98958f6ee51)
+INFO:     127.0.0.1:62334 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62334 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 68ms (request req_01a1cc1ee5d77bedb01efca34c73a728)
+INFO:     cornerstone_api.ask: A free answer stopped at the league cap, with no Claude call
+INFO:     127.0.0.1:62338 - "POST /clients/cpc/ask HTTP/1.1" 200 OK

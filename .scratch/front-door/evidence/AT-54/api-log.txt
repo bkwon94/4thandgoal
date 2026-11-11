@@ -1,0 +1,13 @@
+# The API log from line 661, during this test.
+INFO:     127.0.0.1:59693 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59693 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59693 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 78ms (request req_01a1cc0da6b37478bb72356f8ee0a575)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 71ms (request req_01a1cc0da6ff76b786fbf6bacc922e65)
+INFO:     127.0.0.1:59693 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59693 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 95ms (request req_01a1cc0dac337ff8af0247040b366de0)
+INFO:     127.0.0.1:59695 - "POST /clients/cpc/ask HTTP/1.1" 200 OK

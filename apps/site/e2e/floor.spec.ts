@@ -7,7 +7,7 @@ import type { Theme } from "@cpc/design/lib/theme";
 import { expect, test, type Page } from "@playwright/test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
-import { openPage, scanContrast, scanScroll, scanTargets, scanText, scanWords } from "./floor";
+import { openPage, scanContrast, scanContrastInSteps, scanScroll, scanTargets, scanText, scanWords } from "./floor";
 import { serveDir } from "./serve";
 
 // check:floor runs in apps/site, as pnpm runs each script of the site there.
@@ -47,8 +47,9 @@ function longestNameRoute(): string {
 
 /*
  * The pages and the open states of the full floor: all four rules, in both themes, at both widths.
- * The spec names 7 pages and 4 open states per client. The closed home page is one of the 7 pages, and the open strip
- * of weeks is a tap on that same page. The Season So Far dial sits on the manager page of the list, so that page covers it.
+ * The spec names 7 pages and 4 open states per client. The home page is one of the 7 pages. With the flag front_door
+ * on, it is the front door, which shows the sheet of Your team on a first visit. With it off, the front door gets the
+ * full floor at the hidden /ask/ too (ticket 43 of front-door). The open strip of weeks is a tap on the latest week page. The Season So Far dial sits on the manager page of the list, so that page covers it.
  * A page not in the list, such as a past week, gets the fast sweep only, so it still has the text floor.
  */
 const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
@@ -68,8 +69,10 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   // panel of its game. The chevron has its own label, so the selector names the head.
   { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]:not([aria-label])' },
   "/",
-  // The open strip of weeks: a tap on the week chip of the top band opens the strip of the weeks of the season.
-  { route: "/", tap: "header details > summary", scope: 'header nav[aria-label="Weeks of the season"]' },
+  ...(existsSync(join(OUT, "ask", "index.html")) ? ["/ask/"] : []),
+  // The open strip of weeks: a tap on the week chip of the top band opens the strip of the weeks of the season. The
+  // sheet of Your team covers the band of the home page on a first visit, so the tap opens the strip on the latest week.
+  { route: LATEST_WEEK_ROUTE, tap: "header details > summary", scope: 'header nav[aria-label="Weeks of the season"]' },
 ];
 
 const routeOf = (entry: string | OpenState) => (typeof entry === "string" ? entry : entry.route);
@@ -129,12 +132,13 @@ test("each page of the full floor is a built page", () => {
    The URL of the waiver page of the latest week then gives the 404 page, as the Worker does. */
 /* The spec of the floor names 7 pages and 4 open states per client: home, the latest week, rankings, the managers index,
    the manager page with the longest team name, the empty analyzer, and 404, then an open game card, ladder card,
-   Index list row, and strip. */
+   Index list row, and strip. The hidden /ask/ of the front door is an extra page while the flag front_door is off. */
 test("the full floor holds the 7 pages and the 4 open states of the spec", () => {
-  const pages = FULL_FLOOR_PAGES.filter((entry) => typeof entry === "string");
+  const spec = FULL_FLOOR_PAGES.filter((entry) => entry !== "/ask/");
+  const pages = spec.filter((entry) => typeof entry === "string");
   expect(new Set(pages).size).toBe(pages.length);
   expect(pages.length).toBe(7);
-  expect(FULL_FLOOR_PAGES.length - pages.length).toBe(4);
+  expect(spec.length - pages.length).toBe(4);
 });
 
 test("no waiver page is built, and its URL shows the 404 page", async ({ page }) => {
@@ -188,7 +192,7 @@ for (const entry of FULL_FLOOR_PAGES) {
         // Each exempt link prints, so a reader of the log sees each link that the tap floor skips. A page with none says so.
         if (targets.exempt.length === 0) console.log(`${label}: exempt links inside prose: none`);
         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
-        failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+        failures.push(...targets.failures, ...(await scanContrastInSteps(page, typeof entry === "string" ? undefined : entry.scope)));
         expect(failures, `${label} breaks the readability floor`).toEqual([]);
       });
     }
@@ -342,6 +346,9 @@ for (const width of [768, 1024, 1280]) {
 for (const width of [375, 768, 1280]) {
   test(`the open strip of weeks of ${CLIENT} covers no page title at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
+    // A first visit to the front door shows the team sheet over the page, so the sheet takes the tap on the summary.
+    // A picked team hides the sheet. The key is the one that the front door reads.
+    await page.addInitScript(() => localStorage.setItem("cpc.your-team", "3"));
     await openPage(page, `${server.url}/`, "dark");
     await page.locator("header details > summary").click();
     const strip = await page.getByRole("navigation", { name: "Weeks of the season" }).boundingBox();

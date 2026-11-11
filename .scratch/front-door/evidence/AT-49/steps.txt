@@ -1,0 +1,5 @@
+Driver: site.mjs AT-49, 375x900, light, the date of the page shifted to Wednesday 2026-11-04.
+Two builds, each with latest week 8 (week 9 hidden), each served in turn on 127.0.0.1:4173:
+- front-door-<page>: the front-door worktree at 99d00125, CPC, front_door = true.
+- main-<page>: a detached worktree of origin/main at 1d7bfc0d, CPC, built with CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm --dir apps/site build. It shows each page as before the spec.
+For each route: open it, wait for network idle and 2 s, scroll to the end in 400 px steps and back, wait 2 s, take a full-page shot <side>-<name>-375-light.png.

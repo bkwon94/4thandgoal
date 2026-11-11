@@ -1,0 +1,7 @@
+dialogs on the page after the reload: 0
+cpc.your-team = 3
+Buttons of the Suggestions row after the reload:
+1. More
+2. Week recap | You scored 80.11, 12th of 12
+3. Power rankings | 6th, down 5
+4. Sell high or buy low | Romeo Doubs: 10.7 a game over 4 weeks, 8.4 for the season

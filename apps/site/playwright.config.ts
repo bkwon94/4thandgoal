@@ -20,8 +20,9 @@ export default defineConfig({
     // The project "rules" proves each scan of the floor, and each rule of the evidence runner, on small real pages.
     { name: "rules", testMatch: ["floor-rules.spec.ts", "evidence-rules.spec.ts"] },
     // The project "floor" runs the floor on the static export in out/ of the current CLIENT, and checks the hero scene of
-    // the latest week page, of a manager page, and of the home and 404 pages there, and the static heroes (ADR 0027).
-    { name: "floor", testMatch: ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts"] },
+    // the latest week page, of a manager page, and of the home and 404 pages there, and the static heroes (ADR 0027). It also checks
+    // the layout of the front door.
+    { name: "floor", testMatch: ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts"] },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
     { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },
     // The project "open-card" checks find-in-page and the frame rate of the Open card on the export of cpc, with motion on.

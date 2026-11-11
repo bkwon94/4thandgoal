@@ -1,0 +1,21 @@
+# The API log from line 644, during this test.
+INFO:     127.0.0.1:52148 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52148 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52148 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 88ms (request req_01a1cc5f0df97d49abf9487e6fcbb078)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 56ms (request req_01a1cc5f0e52782ba2b934e4c5e8d22d)
+INFO:     127.0.0.1:52148 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52148 - "OPTIONS /clients/cpc/personal HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52150 - "POST /clients/cpc/personal HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 93ms (request req_01a1cc5f1cb970c2b98cc11b90457061)
+INFO:     cornerstone_api.claude_stream: A sentence of the personal Topic weak_spots failed the check at 0.63: Next is QB at 7th, though it is deep, with one spare player past Bryce Young.
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 81ms (request req_01a1cc5f260b775b98fb7ccbf0265989)
+INFO:     cornerstone_api.claude_stream: The personal Topic weak_spots ended as checked, with 2 texts, 3602 input tokens, 356 output tokens, and a cost of $0.0044
+INFO:     127.0.0.1:52150 - "OPTIONS /clients/cpc/personal/current HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52150 - "POST /clients/cpc/personal/current HTTP/1.1" 200 OK

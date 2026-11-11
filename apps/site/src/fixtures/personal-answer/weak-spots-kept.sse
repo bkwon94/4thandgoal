@@ -1,0 +1,18 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"weak_spots","team":3,"fact":"QB ranks 7th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"Holes","value":"0"}],"rows":[{"label":"QB","value":"7th of 12","note":"fine","roster_id":null,"you":false},{"label":"RB","value":"7th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"3rd of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"3rd of 12","note":"fine","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"98348d20d2a6d5fa81add8df514ec8811ee6b558a59e65614f7b98aba4eda8d0"}}
+
+data: {"type":"text-start","id":"kept"}
+
+data: {"type":"text-delta","delta":"Your team has no true holes. Every starter is inside the starter line. The weakest spots by league rank are QB and RB, where you sit 7th of 12 at each. Bryce Young is the 8th-ranked QB, and Derrick Henry is the 16th-ranked RB next to Christian McCaffrey. Your lowest-ranked starters are the flex WRs, Khalil Shakir at 33rd and Jakobi Meyers at 29th, but both are still inside the line.","id":"kept"}
+
+data: {"type":"text-end","id":"kept"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

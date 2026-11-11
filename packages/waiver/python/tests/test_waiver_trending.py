@@ -52,10 +52,14 @@ def _player(position: str, name: str, team: str = "KC") -> dict:
 
 
 def _raw(fixture_raw_dir, players: dict[str, dict], counts: dict[str, int]) -> dict:
-    """The week 6 raw with `players` added to the players file and one trending row per ID in `counts`."""
+    """The week 6 raw with `players` added to the players file and one trending row per ID in `counts`.
+
+    Each added player projects 5 a week, weeks 7 to 17, as no add bucket takes a player who projects 0.
+    """
     raw = load_raw(fixture_raw_dir)
     raw.players = {**raw.players, **players}
     raw.trending = [{"player_id": pid, "count": count} for pid, count in counts.items()]
+    raw.projections_ahead = [{"week": w, "projections": dict.fromkeys(players, 5.0)} for w in range(7, 18)]
     return raw
 
 

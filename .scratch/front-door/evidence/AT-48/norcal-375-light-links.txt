@@ -1,0 +1,12 @@
+Visible links inside nav elements (checkVisibility true, a box of nonzero size inside the window), in DOM order:
+Home -> / [nav: Bottom menu]
+Week 8 -> /2026/week-08/ [nav: Bottom menu]
+Rankings -> /rankings/ [nav: Bottom menu]
+Managers -> /2026/managers/ [nav: Bottom menu]
+
+Links inside nav elements that do not show (not counted above):
+Home -> / [nav: Site menu]
+Week 8 -> /2026/week-08/ [nav: Site menu]
+Power Rankings -> /rankings/ [nav: Site menu]
+Managers -> /2026/managers/ [nav: Site menu]
+(no text) -> /2026/week-08/ [nav: Weeks of the season]

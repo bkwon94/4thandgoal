@@ -1,0 +1,11 @@
+At the shot: articles with aria-busy=true: 1
+The last article at the shot: busy true | no block | steps [live ⠴ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+Each visible button at the shot (aria-label or text):
+- Switch to dark theme
+- Your team: Lil Fridge. Change the team
+- Clear
+- More
+- Sell high or buy low: Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season
+- Power rankings: 6th, down 5
+- Week recap: You scored 80.11, 12th of 12
+- Send

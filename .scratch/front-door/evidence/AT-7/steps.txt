@@ -1,0 +1,5 @@
+Driver: site.mjs AT-7, 375x812, the date of the page shifted to Wednesday 2026-11-04. The shift changes only Date, so the reload starts a fresh count of the timers.
+1. Store Lil Fridge and the passphrase. Open /. Wait for More and 3 chips, then 7 s. Shot before-tap.
+2. Tap the Power rankings chip. Wait for its Answer, then 2 s. Reload. Wait for More and 3 chips, then 7 s. Shot after-reload.
+3. Tap More. Wait 2 s. Shot after-reload-more.
+row-after-reload-375-<theme>.txt lists the row before the tap, the row after the reload, and the items of More after the reload.

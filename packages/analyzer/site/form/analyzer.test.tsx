@@ -320,4 +320,29 @@ describe("Analyzer", () => {
     await pickTeam("Team Two", "Blitz Bakers");
     expect(await teamNames("Your Team")).toEqual(["Gridiron GhostsAna", "Punt PunksCy"]);
   });
+  it("fills the Stack from the query of a link of the front door, with only the players it names", async () => {
+    localStorage.setItem("cpc.passphrase", "pw");
+    answer(200, { teams: ROSTERS });
+    window.history.pushState({}, "", "/analyze/?team=1&with=2&give=p2&get=p3");
+    render(<Analyzer target={apiTarget} finderOn={false} />);
+    await formReady();
+    expect(slot("Your Team").getAttribute("aria-label")).toMatch(/^Your Team: Gridiron Ghosts/);
+    expect(slot("Team Two").getAttribute("aria-label")).toMatch(/^Team Two: Blitz Bakers/);
+    expect(screen.getByRole("button", { name: "Remove Ben One" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Remove Ana Two" })).toBeTruthy();
+    expect(submit().disabled).toBe(false);
+    window.history.pushState({}, "", "/");
+  });
+
+  it("fills only Your team from a link that names no player", async () => {
+    localStorage.setItem("cpc.passphrase", "pw");
+    answer(200, { teams: ROSTERS });
+    window.history.pushState({}, "", "/analyze/?team=1");
+    render(<Analyzer target={apiTarget} finderOn={false} />);
+    await formReady();
+    expect(slot("Your Team").getAttribute("aria-label")).toMatch(/^Your Team: Gridiron Ghosts/);
+    expect(slot("Team Two").getAttribute("aria-label")).toMatch(/^Pick Team Two/);
+    expect(submit().disabled).toBe(true);
+    window.history.pushState({}, "", "/");
+  });
 });

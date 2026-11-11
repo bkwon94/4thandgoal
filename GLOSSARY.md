@@ -160,6 +160,30 @@ _Avoid_: Manager cards, roster table, team list
 The group of a team in the chips of the Index list: In, Bubble, or Out. In is clinched or odds of 75% or more. Bubble is odds of 25% to under 75%. Out is eliminated or odds under 25%, so the group Out is wider than the term Out of the pipeline.
 _Avoid_: Tier, bracket, playoff status
 
+**Topic**:
+One thing the front door can answer, such as the recap, your roster, the playoff race, waiver targets, or trade ideas. Jev routes each question to a Topic.
+_Avoid_: Intent, category, feature, skill
+
+**Answer**:
+What the front door shows for one question: a short form of the chapters of a Topic, a short Claude answer, or an honest miss. An Answer of a Topic links to its page.
+_Avoid_: Card (a card is a plain surface), reply, response, result
+
+**Suggestion**:
+A Topic that the front door offers for Your team before the manager asks, such as "Week 9 in 3 lines".
+_Avoid_: Recommendation, prompt, nudge, tip
+
+**Thread**:
+The list of the questions of a manager and their Answers on the front door, for one team in one fantasy week.
+_Avoid_: Chat, conversation, feed, history
+
+**Route**:
+Where the ask box sends one typed question: a Topic, a free answer, an honest miss, or a calm refusal. Jev answers 7 typed questions in one request, and a table in code picks the route from the answers with the cutoffs 0.7 and 0.3.
+_Avoid_: Intent, classification, dispatch
+
+**Honest miss**:
+The Answer to a question that this season's data cannot answer, such as injury news or a past season. It says what the site does not have and offers the 3 closest Topics. The API logs each one for 90 days (ADR 0031).
+_Avoid_: Error, fallback, no result, "I don't know"
+
 ### The code
 
 **Part**:
@@ -763,11 +787,13 @@ _Avoid_: tier, group, tab (a tab is the page control that shows one bucket)
 
 **Top pickups**:
 The bucket of the pool players with the best board score, at QB, RB, WR, or TE only. K and DEF stay
-in the pool but never land in it. The code names it `best_adds`, and the waiver page tab says "Best".
+in the pool but never land in it. A top pickup needs a rest of season projection above 0. The code names it
+`best_adds`, and the waiver page tab says "Best".
 _Avoid_: best adds (that is the look-back of a manager page), top adds
 
 **Trending**:
-The bucket of the pool players at QB, RB, WR, or TE with the most Sleeper adds in the last day.
+The bucket of the pool players at QB, RB, WR, or TE with the most Sleeper adds in the last day. A trending
+player needs a rest of season projection above 0.
 _Avoid_: hot, buzz, most added
 
 **Drop candidate**:
@@ -784,7 +810,8 @@ _Avoid_: gap (that is the swing's difference between a win and a loss), edge
 
 **Sneaky add**:
 A healthy pool player at QB, RB, WR, or TE whose usage trend score is in the top quarter and whose
-projection score is in the bottom half, or who sits one depth chart slot below a player who is out. The
+projection score is in the bottom half, or for whom every player above him on the depth chart is out. An
+out backup under a healthy starter opens no role. A sneaky add needs a rest of season projection above 0. The
 bucket ranks by usage trend, with the shared cap. A player in the top pickups is not a sneaky add. The reason code
 is `usage_rise` or `behind_injury`.
 _Avoid_: sleeper, deep add. Sleeper is the league app.

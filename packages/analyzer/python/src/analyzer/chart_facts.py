@@ -2,6 +2,8 @@
 The chart facts of the sheet: the chart value of each traded player as one fact, and one fact when the week has no chart.
 The chart is a market price that informs the read and never gates it.
 """
+from collections.abc import Iterable
+
 from analyzer.trade import ProposedTrade
 from facts.tokens import Nums, fact
 from league.models import Fact
@@ -27,10 +29,18 @@ def _value_fact(snapshot: Snapshot, pid: str) -> Fact:
     return fact(f"{pid}.value", text, n, [], [name])
 
 
-def chart_facts(trade: ProposedTrade, snapshot: Snapshot) -> list[Fact]:
-    """One fact for each traded player. With no chart for the week, one fact that says the chart is missing."""
+def player_value_facts(player_ids: Iterable[str], snapshot: Snapshot) -> list[Fact]:
+    """One fact for each player of `player_ids`. With no chart for the week, one fact that says the chart is missing.
+
+    The trade sheet and the sell high sheet both read it, so a value fact has one text and one id.
+    """
     if snapshot.chart is None:
         n = Nums()
         text = f"The chart of week {n(snapshot.week)} is missing, so no player has a chart value."
         return [fact("trade.chart", text, n, [], [])]
-    return [_value_fact(snapshot, pid) for pid in trade.player_ids]
+    return [_value_fact(snapshot, pid) for pid in player_ids]
+
+
+def chart_facts(trade: ProposedTrade, snapshot: Snapshot) -> list[Fact]:
+    """One fact for each traded player. With no chart for the week, one fact that says the chart is missing."""
+    return player_value_facts(trade.player_ids, snapshot)

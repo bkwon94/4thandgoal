@@ -1,0 +1,65 @@
+$ curl -s -X POST http://localhost:8092/clients/cpc/ask -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"is CeeDee Lamb playing sunday","roster_id":3,"week":8}'   # the request of the test; the full run follows
+# The miss log of cpc is <ask dir>/cpc.sqlite. <ask dir> is CORNERSTONE_ASK_DIR=/private/tmp/claude-503/fd-ask of this round, an empty folder outside the repo at the start of the round.
+$ sqlite3 -header -column <ask dir>/cpc.sqlite "SELECT * FROM misses"   # before
+(rows: 0)
+
+$ curl -s -X POST http://localhost:8092/clients/cpc/ask -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"is CeeDee Lamb playing sunday","roster_id":3,"week":8}'
+{
+    "route": "miss",
+    "line": null,
+    "topic": null,
+    "team": null,
+    "closest": [
+        "next_matchup",
+        "week_recap",
+        "last_matchup"
+    ],
+    "suggestion": null,
+    "jev": {
+        "model": "jev-1.14.0",
+        "nouls": {
+            "fits_topic": 0.09,
+            "data_can_answer": 0.13,
+            "about_league": 0.99,
+            "abuse": 0.01,
+            "names_team": 0.35
+        },
+        "choices": {
+            "topic": {
+                "week_recap": 0.05,
+                "last_matchup": 0.02,
+                "next_matchup": 0.9,
+                "power_rankings": 0.0,
+                "playoff_race": 0.0,
+                "your_season": 0.0,
+                "leaders_trades": 0.01,
+                "waiver_targets": 0.0,
+                "stack_up": 0.02,
+                "weak_spots": 0.0,
+                "sell_high": 0.0,
+                "trade_ideas": 0.0,
+                "trade_check": 0.0
+            },
+            "team": {
+                "the_blue_tent": 0.0,
+                "all_you_need_is_love": 0.0,
+                "lil_fridge": 0.0,
+                "nfc_least": 0.0,
+                "puka_deez": 0.0,
+                "bo_girds": 0.0,
+                "to_infinity_and_bijan": 0.01,
+                "return_of_t_mac": 0.0,
+                "maye_d_force_b_with_u": 0.0,
+                "behold_the_lamb": 0.9,
+                "unsolicited_dak_picks": 0.09,
+                "teehee": 0.0
+            }
+        }
+    }
+}
+
+$ sqlite3 -header -column <ask dir>/cpc.sqlite "SELECT * FROM misses"   # after
+id  question                       roster_id  team        asked_at                          closest                                       
+--  -----------------------------  ---------  ----------  --------------------------------  ----------------------------------------------
+1   is CeeDee Lamb playing sunday  3          Lil Fridge  2026-11-11T13:50:46.534871-05:00  ["next_matchup", "week_recap", "last_matchup"]
+(rows: 1)

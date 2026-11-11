@@ -1,0 +1,174 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"weak_spots","team":3,"fact":"QB ranks 7th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"Holes","value":"0"}],"rows":[{"label":"QB","value":"7th of 12","note":"deep","roster_id":null,"you":false},{"label":"RB","value":"7th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"3rd of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"3rd of 12","note":"fine","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"4abe35bce1c068d2f22f35cbf7460883500c5999463fc4a75bc18717f98fdb61"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"Your team has no true","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" holes.","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" Every starter is in","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"side the starter line, so n","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"othing in","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" the","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" lineup is","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" emp","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"ty or we","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"ak by","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" that measure.\n\nThe weak","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"est sp","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"ots are R","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"B and Q","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"B, where","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" you","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" rank ","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"7th in the league at","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" each. R","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"B has no spare player","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":", so an","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" injury there would","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" hurt. At","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" QB,","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" Bryce Young is ","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"8th at his","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" position, and you have one spare","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" Q","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"B.\n\nYour th","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"innest star","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"ters are the F","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"LEX pic","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"ks, Khalil Sh","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"akir at","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" 33rd among","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" WRs and Jakob","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"i Meyers at 30","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"th. Both","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" are close","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" to the line of","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" 36, so they are the","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" first","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":" ","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-delta","delta":"ones to watch.","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"text-end","id":"4fb9fa18-bc61-4abe-81bb-ccaf5c6f9745"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"Your team has no true holes","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":". Every starter is inside","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" the starter line, so noth","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"ing in the lineup is emp","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"ty or weak by that measure","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":".\n\nThe weakest posit","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"ions are RB and QB,","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" where you rank 7th in","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" the league at each. R","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"B has no spare player past","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" the starters,","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" while QB has one spare.","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" Bryce Young is 8","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"th among","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" QBs.","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"\n\nYour l","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"owest-ranked starters","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" are in","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" the FLEX slots,","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" where Khalil Shak","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"ir is 33rd among W","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"Rs and Jakobi","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":" Meyers is 30th","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":". Both are inside the star","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-delta","delta":"ter line of 36.","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"text-end","id":"dea5464a-435a-4c93-8d27-f9b5edd6ff07"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

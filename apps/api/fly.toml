@@ -15,6 +15,8 @@ primary_region = "ewr"
   CORNERSTONE_RESULT_CACHE_DIR = "/data/cache/results"
   # The SQLite file of the egg hunt of each client, on the volume, so a deploy keeps every egg and claim.
   CORNERSTONE_EGGS_DIR = "/data/eggs"
+  # The SQLite file of the miss log of the ask box of each client, on the volume and never in the repo (ADR 0031).
+  CORNERSTONE_ASK_DIR = "/data/ask"
   # The site of each client at its Worker, and the old CPC host for a page that a reader still has open.
   CORNERSTONE_ALLOWED_ORIGINS = "https://cpc.4thandgoal.app,https://norcal.4thandgoal.app,https://cpcfantasy.com"
 

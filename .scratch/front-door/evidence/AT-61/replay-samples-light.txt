@@ -1,0 +1,54 @@
+The tap on Weak spots was at about 1.58 s of the recording. The last article on each animation frame for 25 s (only the changes): busy, block, steps, stream words, text, status.
+1.589 s: (no article)
+1.709 s: busy true | no block | steps [live ⠋ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+1.726 s: busy true | no block | steps [live ⠙ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+1.809 s: busy true | no block | steps [live ⠹ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+1.893 s: busy true | no block | steps [live ⠸ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+1.976 s: busy true | no block | steps [live ⠼ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+2.011 s: busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.092 s: busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.176 s: busy true | block | steps [live ⠹ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.259 s: busy true | block | steps [live ⠸ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.342 s: busy true | block | steps [live ⠼ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.427 s: busy true | block | steps [live ⠴ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.495 s: busy true | block | steps [live ⠦ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.576 s: busy true | block | steps [live ⠧ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.658 s: busy true | block | steps [live ⠇ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.743 s: busy true | block | steps [live ⠏ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.828 s: busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.892 s: busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status -
+2.961 s: busy true | block | steps - | words 0 (0 blurred) | text Checking | status Checking
+3.776 s: busy true | block | steps - | words 0 (0 blurred) | text (no text) | status -
+3.977 s: busy true | block | steps - | words 0 (0 blurred) | text Fixing a number… | status -
+4.776 s: busy true | block | steps - | words 0 (0 blurred) | text Fixing a number… / Checking | status Checking
+5.276 s: busy true | block | steps - | words 0 (0 blurred) | text Fixing a number… | status -
+5.726 s: busy null | block | steps - | words 0 (0 blurred) | text I can't answer that. | status -
+
+The text of the last article at the end:
+Weak spots
+
+WEAKEST SPOT
+QB
+RANK
+7th of 12
+HOLES
+2
+QB
+thin · hole: Lamar Jackson
+7th of 12
+RB
+fine
+5th of 12
+TE
+fine
+5th of 12
+WR
+thin · hole: Malik Washington
+3rd of 12
+
+I can't answer that.
+
+CLOSEST TOPICS
+How you stack up
+Waiver targets
+Trade ideas

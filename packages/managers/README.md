@@ -12,6 +12,7 @@
 ## Ports
 
 - `SeasonInputs` of `league`: the saved history, the snapshot, the projections ahead, and the chart. The pipeline loads them and passes them in.
+- The API reads the roster grade and the starters of each roster live, through `roster_grades` and `roster_starters` of `grade.py`, for the personal Topics of the front door. It builds the `SeasonInputs` from the live snapshot.
 - The odds and the power rank of a manager page come from the rankings file. The site app joins them into each entry, so the site side imports no rankings code.
 
 ## Does not do

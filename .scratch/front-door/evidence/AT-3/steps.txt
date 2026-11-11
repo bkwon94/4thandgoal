@@ -1,0 +1,5 @@
+Driver: site.mjs AT-3, 375x812, the date of the page shifted to Wednesday 2026-11-04.
+1. Store Lil Fridge and the passphrase. Open /. Open Week recap (chip or More). Wait for the Answer. Shot 1-lil-fridge-recap.
+2. Tap the team button of the Thread header. Pick Bo Girds in the sheet. Wait 4 s. Shot 2-bo-girds.
+3. Tap the team button. Pick Lil Fridge. Wait 4 s. Shot 3-lil-fridge-again.
+articles-375-<theme>.txt counts the articles of states 2 and 3.

@@ -25,7 +25,7 @@ from fastapi.testclient import TestClient
 
 from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import ResultCache, cache_key, finder_cache_key
-from analyzer.finder_pick import NO_OFFER, SAME_FACT, FinderPickOut, PickOut, pick_trades
+from analyzer.finder_pick import NO_OFFER, NO_PARTNER, SAME_FACT, FinderPickOut, PickOut, pick_trades
 from analyzer.finder_search import search
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.trade import ProposedTrade
@@ -41,7 +41,7 @@ from league.jev_port import JevError
 from league.live import RefreshResult
 from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from league.paths import client_dir, league_file
-from league.provider.raw import RawLeague
+from league.provider.raw import RawLeague, RawTrending
 from league.provider.sleeper import fetch_news, league_settings, load_raw
 from league.snapshot import SnapshotPlayer
 from league.tunables import TEAMS_CACHE_SECONDS
@@ -86,6 +86,13 @@ def _here(sources: Sources, settings: Settings) -> Sources:
     return dataclasses.replace(sources, client=cpc_client(at=settings.repo, models=VALUE_MODELS))
 
 
+def _recorded_trending() -> list[RawTrending]:
+    """The trending adds that the week 9 build recorded. The week 6 fixture has no trending file, and a test makes no
+    network call."""
+    path = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026" / "week-09" / "raw" / "trending.json"
+    return [RawTrending.model_validate(row) for row in json.loads(path.read_text())]
+
+
 @pytest.fixture
 def sources(fixture_raw_dir, chart_week6):
     return Sources(
@@ -93,7 +100,7 @@ def sources(fixture_raw_dir, chart_week6):
         fetch_nflverse=_no_network,
         fetch_history_week=_no_history_fetch,
         read_chart=lambda repo, season_start, week, lines, **_: chart_week6,
-        clock=lambda: NOW, client=CLIENT,
+        clock=lambda: NOW, client=CLIENT, fetch_trending=_recorded_trending,
     )
 
 
@@ -1098,7 +1105,7 @@ def _graded_client(settings, sources, clock, analyzer):
     """A client whose grade limit and general limit both read the moving clock."""
     client = _client(settings, sources, analyzer)
     client.app.state.served["cpc"].grade_limiter.clock = clock
-    # The general limit reads the same clock, so a test can make more than its 10 requests in one real minute.
+    # The general limit reads the same clock, so a test can make more than its 30 requests in one real minute.
     client.app.state.limiter.clock = lambda: clock().timestamp()
     return client
 
@@ -1439,7 +1446,7 @@ def passing_pick(user: str, **changes) -> dict:
     bullets = [{"text": "The trade lands in the middle of the season.", "mark": "for", "fact_id": "trade.week"},
                {"text": "The other manager gets help where he needs it.", "mark": "for", "fact_id": "trade.week"}]
     out = {"picks": [{"offer_id": offer, "lean": "Lean yes", "headline": HEADLINE, "bullets": bullets}
-                     for offer in offers], "none_line": None}
+                     for offer in offers], "near": [], "none_line": None}
     return out | changes
 
 
@@ -1581,12 +1588,17 @@ def test_a_find_with_no_partner_and_one_with_a_partner_have_two_cache_keys(setti
     assert finder_cache_key(2026, 2, None, snapshot) != finder_cache_key(2026, 2, 3, snapshot)
 
 
+# A limit that keeps every position, so the wider pass of a search with no offer builds no idea either.
+KEEP_ALL = {"keep_positions": ["QB", "RB", "WR", "TE"]}
+
+
 def test_an_empty_shortlist_gives_the_empty_line_and_makes_no_claude_call(settings, sources):
     picker = StubPicker()
     doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_partner)).post(
-        "/find", json=FIND, headers=HEADERS).json()
-    assert doc["trades"] == []
-    assert doc["empty"] == NO_OFFER
+        "/find", json=FIND | {"limit": KEEP_ALL}, headers=HEADERS).json()
+    assert doc["trades"] == [] and doc["near"] == []
+    # No team passed the partner filter, so the line says that no team fits, not that the pick found nothing.
+    assert doc["empty"] == NO_PARTNER
     assert doc["fallback"] is False
     assert picker.calls == []
     # The finder reads the same bounds and the same known games as the grade.
@@ -1598,9 +1610,10 @@ def test_an_empty_shortlist_gives_the_empty_line_and_makes_no_claude_call(settin
 def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_call(settings, sources):
     picker = StubPicker()
     client = _find_client(settings, sources, picker, MovingClock(NOW), jev=FakeJev(answer=_no_partner))
-    first = client.post("/find", json=FIND, headers=HEADERS).json()
+    empty = FIND | {"limit": KEEP_ALL}
+    first = client.post("/find", json=empty, headers=HEADERS).json()
     assert first["trades"] == []
-    assert client.post("/find", json=FIND, headers=HEADERS).json() == first
+    assert client.post("/find", json=empty, headers=HEADERS).json() == first
     assert picker.calls == []
     assert json.loads((settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
 
@@ -1757,7 +1770,7 @@ def _news_pick(user):
     (_bad_pick({"text": "A rival gets help here."}), "the words 'rival' are not allowed"),
     (_bad_pick({"text": "Josh Jacobs would fit here."}), "the name Josh Jacobs is not in the trade"),
     (lambda user: {"picks": [passing_pick(user)["picks"][0] | {"bullets": passing_pick(user)["picks"][0]["bullets"][:1]}],
-                   "none_line": None}, "it has 1 bullets; the range is 2 to 4"),
+                   "near": [], "none_line": None}, "it has 1 bullets; the range is 2 to 4"),
     (_pick_of_bullets(5), "it has 5 bullets; the range is 2 to 4"),
     (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"headline": "Send it for 12 points."}]},
      "pick 1 headline: number 12 is not in the cited facts"),
@@ -1782,7 +1795,13 @@ def test_a_pick_that_fails_a_guard_gets_one_repair_call_and_the_repaired_pick_st
      "offer 1:2-3:4 is not on the shortlist"),
     (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 2}, "is picked twice"),
     (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 4}, "the response has 4 picks"),
-    (lambda user: {"picks": [], "none_line": None}, "a response with no pick needs a none_line"),
+    (lambda user: {"picks": [], "near": near_ideas(user), "none_line": None},
+     "a response with no pick needs a none_line"),
+    # An idea is an idea: a list with offers always shows at least one, so no pick and no near idea retries.
+    (lambda user: {"picks": [], "near": [], "none_line": "No offer helps enough."},
+     "a response with no pick needs at least one near idea"),
+    (lambda user: passing_pick(user) | {"near": near_ideas(user, start=3, count=4)},
+     "the response has 4 near ideas; the most is 3"),
 ])
 def test_a_failure_of_the_whole_response_retries_the_whole_call_once(settings, sources, builder, failure):
     picker, repair = StubPicker(builder, passing_pick), StubRepair()
@@ -1904,13 +1923,121 @@ def test_a_pick_bullet_that_cites_news_and_names_no_report_gets_one_repair_call(
     assert doc["fallback"] is False
 
 
-def test_no_good_offer_gives_the_plain_line_of_the_advisor(settings, sources):
+def test_no_good_offer_gives_the_plain_line_of_the_advisor_and_the_near_ideas(settings, sources):
     line = "No offer on the list helps your lineup enough to send."
-    picker = StubPicker(lambda user: {"picks": [], "none_line": line})
+    picker = StubPicker(lambda user: {"picks": [], "near": near_ideas(user, count=2), "none_line": line})
     doc = _find_client(settings, sources, picker).post("/find", json=FIND, headers=HEADERS).json()
     assert doc["trades"] == []
     assert doc["empty"] == line
     assert doc["fallback"] is False
+    # An idea is an idea, so the offers that the pick weighed still show, each with why it fell short.
+    assert [item["reason"] for item in doc["near"]] == [NEAR_REASON] * 2
+    assert [item["offer_id"] for item in doc["near"]] == list(_offers_in(picker.calls[0][1]))[:2]
+
+
+# The near ideas: the offers that the pick weighed and would not send, each with the one reason it fell short.
+NEAR_REASON = "The trade lands in the middle of the season, when your starters count most."
+
+
+def near_ideas(user: str, start: int = 0, count: int = 3, **changes) -> list[dict]:
+    """Near ideas that pass every guard: `count` offers of the pick message from `start`, each on the week fact."""
+    offers = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)[start:start + count]
+    return [{"offer_id": offer, "reason": NEAR_REASON, "fact_id": "trade.week"} | changes for offer in offers]
+
+
+def test_the_picks_come_with_up_to_three_near_ideas_each_with_its_reason(settings, sources):
+    picker = StubPicker(lambda user: passing_pick(user) | {"near": near_ideas(user, start=3)})
+    doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
+                                                       headers=HEADERS).json()
+    offers = list(_offers_in(picker.calls[0][1]))
+    assert [item["offer_id"] for item in doc["trades"]] == offers[:3]
+    assert [item["offer_id"] for item in doc["near"]] == offers[3:6]
+    for item in doc["near"]:
+        assert set(item) == {"offer_id", "sides", "reason"}
+        assert item["reason"] == NEAR_REASON
+        # The asker's side comes first, as in each trade.
+        assert item["sides"][0]["roster_id"] == 2
+
+
+@pytest.mark.parametrize("change, failure", [
+    ({"reason": "The trade lands in week 9."}, "near 1 dropped: number # is not in the cited facts"),
+    ({"reason": "A rival gets the better end."}, "near 1 dropped: the words 'rival' are not allowed"),
+    ({"fact_id": "NO.such"}, "near 1 dropped: fact ID NO.such is not on the sheet of offer"),
+])
+def test_a_near_idea_that_fails_a_guard_drops_and_the_others_stand(settings, sources, caplog, change, failure):
+    def build(user):
+        near = near_ideas(user, start=3)
+        return passing_pick(user) | {"near": [near[0] | change, *near[1:]]}
+
+    picker, repair = StubPicker(build), StubRepair()
+    doc = _find_client(settings, sources, picker, repair=repair).post("/find", json={"season": 2026, "asker": 2},
+                                                                      headers=HEADERS).json()
+    offers = list(_offers_in(picker.calls[0][1]))
+    # A near idea is no advice to send, so it gets no repair call. It drops, and the log says why.
+    assert len(picker.calls) == 1 and repair.calls == []
+    assert [item["offer_id"] for item in doc["near"]] == offers[4:6]
+    assert failure in caplog.text
+
+
+@pytest.mark.parametrize("which", ["a pick", "a repeat", "not on the list"])
+def test_a_near_idea_that_is_a_pick_a_repeat_or_off_the_list_drops(settings, sources, which):
+    def build(user):
+        out = passing_pick(user)
+        near = near_ideas(user, start=3, count=2)
+        extra = {"a pick": out["picks"][0]["offer_id"], "a repeat": near[0]["offer_id"],
+                 "not on the list": "1:2-3:4"}[which]
+        return out | {"near": [*near, near[0] | {"offer_id": extra}]}
+
+    picker = StubPicker(build)
+    doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
+                                                       headers=HEADERS).json()
+    assert [item["offer_id"] for item in doc["near"]] == list(_offers_in(picker.calls[0][1]))[3:5]
+
+
+def test_no_pick_and_no_near_idea_that_stands_gives_the_shortlist_fallback(settings, sources):
+    bad = {"reason": "The trade lands in week 9."}
+    picker = StubPicker(lambda user: {"picks": [], "near": near_ideas(user, **bad), "none_line": "None helps."})
+    doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
+                                                       headers=HEADERS).json()
+    _assert_the_shortlist_fallback(doc, picker.calls[0][1])
+    assert doc["near"] == []
+
+
+def test_the_reason_of_each_near_idea_gets_the_jev_check_and_it_only_logs(settings, sources, caplog):
+    caplog.set_level("INFO", logger="analyzer.read_jev_check")
+    jev = FakeJev()
+    picker = StubPicker(lambda user: passing_pick(user) | {"near": near_ideas(user, start=3, count=2)})
+    doc = _find_client(settings, sources, picker, jev=jev).post("/find", json={"season": 2026, "asker": 2},
+                                                                headers=HEADERS).json()
+    checks = [r for r in jev.requests if r.questions and all(k.startswith(("faithful.", "rumor.")) for k in r.questions)]
+    # One request per pick and one per near idea, each with one faithfulness question per claim.
+    assert len(checks) == len(doc["trades"]) + 2
+    assert [r.questions[next(iter(r.questions))].instructions["bullet"] for r in checks[-2:]] == [NEAR_REASON] * 2
+
+
+def _no_target(key, question, state):
+    """A Jev that passes every partner and wants no player, so the search builds no offer."""
+    return 0.1 if re.fullmatch(r"\d+\.\w+", key) else 0.9
+
+
+def test_a_search_that_builds_no_offer_says_why_in_one_plain_line(settings, sources):
+    picker = StubPicker()
+    doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_target)).post(
+        "/find", json=FIND | {"limit": KEEP_ALL}, headers=HEADERS).json()
+    assert doc["trades"] == [] and doc["near"] == []
+    assert doc["empty"] == NO_OFFER
+    assert "fits" in NO_OFFER
+    assert picker.calls == []
+
+
+def test_a_search_with_no_offer_sends_the_ideas_of_the_wider_pass_to_the_pick(settings, sources):
+    picker = StubPicker()
+    doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_target)).post(
+        "/find", json=FIND, headers=HEADERS).json()
+    # The targets built no offer, so the wider pass gave the pick its ideas, and the empty line does not show.
+    assert len(picker.calls) >= 1
+    assert doc["trades"] or doc["near"]
+    assert doc["empty"] != NO_OFFER
 
 
 def _assert_the_shortlist_fallback(doc, user):
@@ -1993,6 +2120,8 @@ def test_the_pick_prompt_holds_the_playbook_and_the_pick_rules(settings, sources
     _find_client(settings, sources, picker).post("/find", json=FIND, headers=HEADERS)
     system = " ".join(picker.calls[0][0].split())
     for line in ("picks: up to 3 offers that you would send, best first, each once.",
+                 "near: up to 3 other offers of the list that came close, best first, each once.",
+                 "With no pick, give at least one near idea.",
                  "bullets: 2 to 4 Bullets, one claim each, in plain words.",
                  "Say why the asker sends it and why the other manager says yes.",
                  "Never name the commissioner, and never give a letter grade.",
@@ -2181,7 +2310,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_21():
+def test_the_document_version_is_26():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -2198,7 +2327,14 @@ def test_the_document_version_is_21():
     # The read of the Advisor takes the place of the decision and the factor rows, so no old result serves.
     # The Finder pick takes the place of the fairness and the reason of each finder trade, so no old list serves.
     # A fact text names a race group, not an old race word, so no stored fact text of the old words serves.
-    assert cache_module.DOCUMENT_VERSION == 21
+    # A player who cannot play now fills no slot of the Finder lineup, so no list stored under the old fill serves.
+    # The finder key holds the anchor of a search around one player, so the key changes shape.
+    # The finder key holds the limit of the manager, so the key changes shape again.
+    # The pick sheet holds the lineup now of the asker, and an anchored search skips the partner filter, so no list
+    # stored before either serves.
+    # The finder document holds the near ideas, so no list stored before them serves.
+    # A search with no offer runs the wider pass, so no empty list stored before it serves.
+    assert cache_module.DOCUMENT_VERSION == 27
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

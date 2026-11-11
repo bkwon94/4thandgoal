@@ -15,6 +15,8 @@ import { ApiError, type ApiTarget, retryText, type Team } from "../lib/api";
 import { DURATION } from "@cpc/design/lib/motion";
 import { clearPassphrase, getPassphrase, setPassphrase } from "../lib/passphrase";
 import { clearStoredTeams, fetchAndStoreTeams, readStoredTeams } from "../lib/teams-store";
+import { prefillSides, readPrefill } from "../lib/prefill";
+import type { Sides } from "../lib/trade";
 
 type TeamsState =
   | { status: "idle" }
@@ -39,8 +41,13 @@ export function Analyzer({ target, finderOn }: { target: ApiTarget; finderOn: bo
   // The refresh after a 422 runs outside the effect, so it reads its run before it sets state.
   const request = useRequest();
 
+  // The sides that a link of the front door names in the query. The static page has no query, so the effect reads it.
+  const [prefill, setPrefill] = useState<Sides | null>(null);
+
   useEffect(() => {
     setPassphraseState(getPassphrase());
+    const named = readPrefill(window.location.search);
+    if (named) setPrefill(prefillSides(named));
   }, []);
 
   useEffect(() => {
@@ -135,6 +142,7 @@ export function Analyzer({ target, finderOn }: { target: ApiTarget; finderOn: bo
       passphrase={passphrase ?? ""}
       onUnauthorized={handleUnauthorized}
       onRostersStale={handleStaleRosters}
+      prefill={prefill}
     >
       {({ hero, form, result }) => (
         <>
