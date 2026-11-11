@@ -343,6 +343,9 @@ for (const width of [768, 1024, 1280]) {
 for (const width of [375, 768, 1280]) {
   test(`the open strip of weeks of ${CLIENT} covers no page title at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
+    // A first visit to the front door shows the team sheet over the page, so the sheet takes the tap on the summary.
+    // A picked team hides the sheet. The key is the one that the front door reads.
+    await page.addInitScript(() => localStorage.setItem("cpc.your-team", "3"));
     await openPage(page, `${server.url}/`, "dark");
     await page.locator("header details > summary").click();
     const strip = await page.getByRole("navigation", { name: "Weeks of the season" }).boundingBox();
