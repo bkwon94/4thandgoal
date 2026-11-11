@@ -1,7 +1,7 @@
 # Front door: evidence
 
 Spec: `.scratch/front-door/PRD.md`. Acceptance tests: `.scratch/front-door/ACCEPTANCE.md`.
-Built from: `99d00125`, on 2026-11-11, and `4b8c83a0` for AT-8, AT-18, AT-20, AT-31, AT-42, AT-43, AT-46, AT-60, AT-62, and AT-68. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
+Built from: `99d00125`, on 2026-11-11, `4b8c83a0` for AT-18, AT-20, AT-31, AT-42, AT-43, AT-46, AT-60, AT-62, and AT-68, and `a3f241e3` for AT-1 and AT-8. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
 Round time: 1 min for 2 site tests with a `steps.json` (the runner total, 63.2 s, for AT-1 and AT-50). The driver tests took about 2 h of wall time in three parallel parts.
 
 AT-5 is retired, so it has no entry.
@@ -43,8 +43,8 @@ These ran in a detached worktree of `99d00125`, with the API on port 8092 and an
 
 App: site
 Then: A sheet lists the 12 teams of CPC, and it has no skip, no close, and no login.
-Files: `evidence/AT-1/steps.json`, `evidence/AT-1/1280-dark.png`, `evidence/AT-1/1280-light.png`, `evidence/AT-1/375-dark.png`, `evidence/AT-1/375-light.png`, `evidence/AT-1/768-dark.png`, `evidence/AT-1/768-light.png`
-Observation: Each shot shows the sheet "Which team is yours?" with 12 team rows of CPC, each with its record and place. The sheet shows no skip button, no close button, and no login field.
+Files: `evidence/AT-1/steps.json`, `evidence/AT-1/steps.txt`, `evidence/AT-1/sheet-rows.txt`, `evidence/AT-1/sheet-top-375-light.png`, `evidence/AT-1/sheet-top-375-dark.png`, `evidence/AT-1/sheet-top-768-light.png`, `evidence/AT-1/sheet-top-768-dark.png`, `evidence/AT-1/sheet-top-1280-light.png`, `evidence/AT-1/sheet-top-1280-dark.png`, `evidence/AT-1/sheet-end-375-light.png`, `evidence/AT-1/sheet-end-375-dark.png`, `evidence/AT-1/sheet-end-768-light.png`, `evidence/AT-1/sheet-end-768-dark.png`, `evidence/AT-1/sheet-end-1280-light.png`, `evidence/AT-1/sheet-end-1280-dark.png`
+Observation: Each sheet-top shot shows the sheet "Which team is yours?" from All You Need Is Love down; at 768 px and 1280 px the 11th row sits at the scroll edge. Each sheet-end shot shows the same list scrolled to its end, down to the 12th row Unsolicited Dak Picks. sheet-rows.txt lists the same 12 rows at each width and theme, and the 12 team buttons are the only controls in the sheet, with no skip, close, or login control.
 
 ## AT-2: The browser keeps Your team
 
@@ -63,9 +63,9 @@ Observation: Shot 2 shows "Ask about Bo Girds" with its Suggestions and no Answe
 ## AT-4: Three Suggestions with a fact each, plus More
 
 App: site
-Then: 3 Suggestion chips show, each with a Topic name and one number, and "More" leads the row. A tap on "More" lists all 13 Topics.
+Then: 3 Suggestion chips show, each with a Topic name and one short fact, and "More" leads the row. A tap on "More" lists all 13 Topics.
 Files: `evidence/AT-4/steps.txt`, `evidence/AT-4/api-calls.json`, `evidence/AT-4/closed-1280-dark.png`, `evidence/AT-4/closed-1280-light.png`, `evidence/AT-4/closed-375-dark.png`, `evidence/AT-4/closed-375-light.png`, `evidence/AT-4/closed-768-dark.png`, `evidence/AT-4/closed-768-light.png`, `evidence/AT-4/open-1280-dark.png`, `evidence/AT-4/open-1280-light.png`, `evidence/AT-4/open-375-dark.png`, `evidence/AT-4/open-375-light.png`, `evidence/AT-4/open-768-dark.png`, `evidence/AT-4/open-768-light.png`, `evidence/AT-4/row-1280-dark.txt`, `evidence/AT-4/row-1280-light.txt`, `evidence/AT-4/row-375-dark.txt`, `evidence/AT-4/row-375-light.txt`, `evidence/AT-4/row-768-dark.txt`, `evidence/AT-4/row-768-light.txt`
-Observation: Each row file lists "More" first, then 3 chips, each with a Topic name and a fact, and "More" lists 13 items. The chips wrap to a second line and each chip box sits inside the window. Some facts hold text as well as a number, such as "Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season", and the open list at 768 px runs under the bottom dock in the full-page shot.
+Observation: Each row file lists "More" first, then 3 chips, each with a Topic name and one short fact, such as "6th, down 5", and "More" lists 13 items. The chips wrap to a second line and each chip box sits inside the window. Some facts hold text as well as a number, such as "Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season", and the open list at 768 px runs under the bottom dock in the full-page shot.
 
 ## AT-6: Jev lifts an urgent Topic to the top
 
@@ -85,8 +85,8 @@ Observation: Before the tap, Power rankings is the second chip. After the reload
 
 App: site
 Then: The whole Answer shows at once, with no stream and no tool step.
-Files: `evidence/AT-8/after-tap-weak-spots-375-light.png`, `evidence/AT-8/api-calls-weak-spots.json`, `evidence/AT-8/api-log-weak-spots.txt`, `evidence/AT-8/frame-31.42s-weak-spots-before-tap.png`, `evidence/AT-8/frame-31.82s-weak-spots-after-tap.png`, `evidence/AT-8/frame-31.92s-weak-spots-after-tap.png`, `evidence/AT-8/frame-32.02s-weak-spots-after-tap.png`, `evidence/AT-8/frame-32.22s-weak-spots-after-tap.png`, `evidence/AT-8/frame-32.52s-weak-spots-after-tap.png`, `evidence/AT-8/frame-32.92s-weak-spots-after-tap.png`, `evidence/AT-8/frame-33.72s-weak-spots-after-tap.png`, `evidence/AT-8/recording-weak-spots-375-light.webm`, `evidence/AT-8/run-weak-spots.txt`, `evidence/AT-8/steps.txt`
-Observation: Weak spots is the first Suggestion, and the log shows "The head start builds the personal Topic weak_spots on open", ended as checked, then on the tap 30 s later "came from the store, with no Claude call". run-weak-spots.txt shows the step "Reading the league…" for about 35 ms after the tap, then the block, the whole text, and Checked in one sample with 0 stream words; the frames show the card fade in whole.
+Files: `evidence/AT-8/steps.txt`, `evidence/AT-8/run-weak-spots.txt`, `evidence/AT-8/api-log-weak-spots.txt`, `evidence/AT-8/api-calls-weak-spots.json`, `evidence/AT-8/recording-weak-spots-375-light.webm`, `evidence/AT-8/after-tap-weak-spots-375-light.png`, `evidence/AT-8/frame-31.40s-weak-spots-before-tap.png`, `evidence/AT-8/frame-31.80s-weak-spots-after-tap.png`, `evidence/AT-8/frame-31.90s-weak-spots-after-tap.png`, `evidence/AT-8/frame-32.00s-weak-spots-after-tap.png`, `evidence/AT-8/frame-32.20s-weak-spots-after-tap.png`, `evidence/AT-8/frame-32.50s-weak-spots-after-tap.png`, `evidence/AT-8/frame-32.90s-weak-spots-after-tap.png`, `evidence/AT-8/frame-33.70s-weak-spots-after-tap.png`
+Observation: Weak spots is the first Suggestion. The log shows "The head start builds the personal Topic weak_spots on open", ended as checked, then on the tap 30 s later "came from the store, with no Claude call". run-weak-spots.txt shows an empty busy article with no steps for about 43 ms, then the block, the whole text, and Checked in one sample, with 0 stream words and no step line in any sample. The frames show the card fade in whole.
 
 ## AT-9: Loose words reach the right Topic
 
@@ -532,7 +532,7 @@ Observation: Under "Ask about Lil Fridge", the line "or any team in the league."
 ## AT-72: A ranking of teams shows as a checked list
 
 App: site
-Then: The Answer shows a lead sentence and a list of teams by points for, most first, with "checked". Each total matches the standings data.
+Then: The Answer shows a lead sentence and a list of teams by points for, most first, with "checked". Each total matches the live standings that the `standings` tool reads.
 Files: `evidence/AT-72/steps.txt`, `evidence/AT-72/1280-dark.png`, `evidence/AT-72/1280-light.png`, `evidence/AT-72/375-dark.png`, `evidence/AT-72/375-light.png`, `evidence/AT-72/768-dark.png`, `evidence/AT-72/768-light.png`, `evidence/AT-72/answer-text-375-light.txt`, `evidence/AT-72/api-calls.json`, `evidence/AT-72/api-log.txt`, `evidence/AT-72/standings-points-for.txt`
 Observation: The stream calls `standings` and sends a `data-block` list "Points scored this season" of 5 teams, most first, with "Checked". Each of the 5 totals matches the live `standings` tool result in `standings-points-for.txt`, which reads through week 8. Against the week 8 `page.json`, the first three match, and two differ: Maye d'force B with U 900.65 against 901.65, and Teehee 885.98 against 885.88.
 

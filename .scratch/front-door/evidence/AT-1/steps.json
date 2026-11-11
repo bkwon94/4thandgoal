@@ -2,6 +2,10 @@
   "route": "/",
   "steps": [
     { "wait": "text=Which team is yours?" },
-    { "wait": 1200 }
+    { "wait": 1200 },
+    { "shot": "sheet-top" },
+    { "scroll": "[role=\"dialog\"] ul > li:last-child" },
+    { "wait": 800 },
+    { "shot": "sheet-end" }
   ]
 }

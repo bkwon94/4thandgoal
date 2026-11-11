@@ -1,6 +1,6 @@
 [
   {
-    "at": "2026-11-11T20:46:54.003Z",
+    "at": "2026-11-11T22:06:25.461Z",
     "method": "GET",
     "path": "/clients/cpc/eggs/board",
     "status": 200,
@@ -351,7 +351,7 @@
     }
   },
   {
-    "at": "2026-11-11T20:46:54.066Z",
+    "at": "2026-11-11T22:06:25.524Z",
     "method": "GET",
     "path": "/clients/cpc/eggs/board",
     "status": 200,
@@ -702,7 +702,7 @@
     }
   },
   {
-    "at": "2026-11-11T20:46:54.302Z",
+    "at": "2026-11-11T22:06:25.745Z",
     "method": "POST",
     "path": "/clients/cpc/suggestions",
     "status": 200,
@@ -751,18 +751,18 @@
         "sell_high": "Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season"
       },
       "lifts": {
-        "week_recap": 0.78,
+        "week_recap": 0.79,
         "last_matchup": 0.55,
-        "next_matchup": 0.35,
-        "power_rankings": 0.81,
-        "playoff_race": 0.15,
-        "your_season": 0.15,
+        "next_matchup": 0.32,
+        "power_rankings": 0.82,
+        "playoff_race": 0.14,
+        "your_season": 0.13,
         "leaders_trades": 0.08,
-        "weak_spots": 0.16,
-        "stack_up": 0.19,
-        "waiver_targets": 0.46,
+        "weak_spots": 0.17,
+        "stack_up": 0.17,
+        "waiver_targets": 0.47,
         "trade_ideas": 0.51,
-        "sell_high": 0.84
+        "sell_high": 0.86
       },
       "urgent": [
         "sell_high",
@@ -773,18 +773,18 @@
       "jev": {
         "model": "jev-1.14.0",
         "nouls": {
-          "lift_week_recap": 0.78,
+          "lift_week_recap": 0.79,
           "lift_last_matchup": 0.55,
-          "lift_next_matchup": 0.35,
-          "lift_power_rankings": 0.81,
-          "lift_playoff_race": 0.15,
-          "lift_your_season": 0.15,
+          "lift_next_matchup": 0.32,
+          "lift_power_rankings": 0.82,
+          "lift_playoff_race": 0.14,
+          "lift_your_season": 0.13,
           "lift_leaders_trades": 0.08,
-          "lift_weak_spots": 0.16,
-          "lift_stack_up": 0.19,
-          "lift_waiver_targets": 0.46,
+          "lift_weak_spots": 0.17,
+          "lift_stack_up": 0.17,
+          "lift_waiver_targets": 0.47,
           "lift_trade_ideas": 0.51,
-          "lift_sell_high": 0.84,
+          "lift_sell_high": 0.86,
           "sell_high_clear": 0.83
         },
         "choices": {
@@ -793,12 +793,12 @@
             "travis_kelce": 0,
             "stefon_diggs": 0,
             "derrick_henry": 0,
-            "christian_mccaffrey": 0.12,
-            "courtland_sutton": 0.04,
+            "christian_mccaffrey": 0.08,
+            "courtland_sutton": 0.03,
             "jakobi_meyers": 0,
             "j_k_dobbins": 0,
-            "romeo_doubs": 0.26,
-            "tyler_allgeier": 0.57,
+            "romeo_doubs": 0.38,
+            "tyler_allgeier": 0.5,
             "khalil_shakir": 0.01,
             "bryce_young": 0,
             "jaxon_smith_njigba": 0
@@ -808,7 +808,7 @@
     }
   },
   {
-    "at": "2026-11-11T20:47:25.733Z",
+    "at": "2026-11-11T22:06:57.115Z",
     "method": "POST",
     "path": "/clients/cpc/personal",
     "status": 200,
@@ -816,7 +816,7 @@
       "topic": "weak_spots",
       "roster_id": 3,
       "team": null,
-      "id": "ZENDISDxm2btGRdv",
+      "id": "qHTt2Iwh7ab3gfcS",
       "messages": [
         {
           "parts": [
@@ -825,16 +825,16 @@
               "text": "Weak spots"
             }
           ],
-          "id": "wV8zOj0CsGeAxssl",
+          "id": "A3anjs7wjNPlhtlk",
           "role": "user"
         }
       ],
       "trigger": "submit-message"
     },
-    "response": "data: {\"type\":\"start\"}\n\ndata: {\"type\":\"data-block\",\"data\":{\"topic\":\"weak_spots\",\"team\":3,\"fact\":\"QB ranks 7th of 12\",\"stats\":[{\"label\":\"Weakest spot\",\"value\":\"QB\"},{\"label\":\"Rank\",\"value\":\"7th of 12\"},{\"label\":\"Holes\",\"value\":\"0\"}],\"rows\":[{\"label\":\"QB\",\"value\":\"7th of 12\",\"note\":\"deep\",\"roster_id\":null,\"you\":false},{\"label\":\"RB\",\"value\":\"6th of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"TE\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"WR\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false}]}}\n\ndata: {\"type\":\"data-key\",\"data\":{\"key\":\"095060a50e1c26e96b9579d2e2efd2b91a0efc63c6b49cea9a299a1d062df2ab\"}}\n\ndata: {\"type\":\"text-start\",\"id\":\"kept\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"Your team has no holes in the lineup right now. Every starter can play today and is inside the starter line. Your weakest position is QB at rank 7 of 12, but it is deep, with one spare player past the starters, and Bryce Young is projected 8th at QB. Next is RB at rank 6, with no spare player past the starters. Derrick Henry is the weaker of your two RBs at 16th at his position, though Christian McCaffrey is 3rd.\",\"id\":\"kept\"}\n\ndata: {\"type\":\"text-end\",\"id\":\"kept\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checked\"}}\n\ndata: {\"type\":\"finish\",\"finishReason\":\"stop\"}\n\ndata: [DONE]\n\n"
+    "response": "data: {\"type\":\"start\"}\n\ndata: {\"type\":\"data-block\",\"data\":{\"topic\":\"weak_spots\",\"team\":3,\"fact\":\"QB ranks 7th of 12\",\"stats\":[{\"label\":\"Weakest spot\",\"value\":\"QB\"},{\"label\":\"Rank\",\"value\":\"7th of 12\"},{\"label\":\"Holes\",\"value\":\"0\"}],\"rows\":[{\"label\":\"QB\",\"value\":\"7th of 12\",\"note\":\"deep\",\"roster_id\":null,\"you\":false},{\"label\":\"RB\",\"value\":\"6th of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"TE\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"WR\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false}]}}\n\ndata: {\"type\":\"data-key\",\"data\":{\"key\":\"c712cbfb51f389e973986c3598d3c4ddbc7ef29c4c571b4b19f98991c65f146e\"}}\n\ndata: {\"type\":\"text-start\",\"id\":\"kept\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"Your team has no real holes right now. Every starter can play today and sits inside the starter line, so there are no weak starting slots to fix.\\n\\nYour weakest position is QB at rank 7 of 12, but it is deep, with a spare player inside the starter count. Bryce Young starts there and is projected 8th at QB. RB is next at rank 6, with no spare player. Christian McCaffrey is projected 3rd at RB and Derrick Henry 16th.\\n\\nWR and TE are both rank 3, so they are your strong spots, though neither has a spare player.\",\"id\":\"kept\"}\n\ndata: {\"type\":\"text-end\",\"id\":\"kept\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checked\"}}\n\ndata: {\"type\":\"finish\",\"finishReason\":\"stop\"}\n\ndata: [DONE]\n\n"
   },
   {
-    "at": "2026-11-11T20:47:26.544Z",
+    "at": "2026-11-11T22:06:57.923Z",
     "method": "POST",
     "path": "/clients/cpc/personal/current",
     "status": 200,
@@ -844,16 +844,16 @@
           "topic": "weak_spots",
           "roster_id": 3,
           "team": null,
-          "key": "095060a50e1c26e96b9579d2e2efd2b91a0efc63c6b49cea9a299a1d062df2ab"
+          "key": "c712cbfb51f389e973986c3598d3c4ddbc7ef29c4c571b4b19f98991c65f146e"
         }
       ]
     },
     "response": {
       "answers": [
         {
-          "key": "095060a50e1c26e96b9579d2e2efd2b91a0efc63c6b49cea9a299a1d062df2ab",
+          "key": "c712cbfb51f389e973986c3598d3c4ddbc7ef29c4c571b4b19f98991c65f146e",
           "current": true,
-          "kept_at": "2026-11-11T15:46:56.031295-05:00"
+          "kept_at": "2026-11-11T17:06:27.703618-05:00"
         }
       ]
     }

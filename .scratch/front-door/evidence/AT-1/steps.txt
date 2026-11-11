@@ -1,0 +1,5 @@
+Built from a3f241e3. The shots come from the evidence runner: pnpm --dir apps/site evidence front-door AT-1, with steps.json.
+1. Open / with no stored team, at 375, 768, and 1280 px, in the light theme and the dark theme.
+2. Wait for "Which team is yours?", then 1.2 s. Take the shot sheet-top-<width>-<theme>.png.
+3. Scroll the last row of the sheet list into view. The list scrolls inside the sheet. Wait 0.8 s. Take the shot sheet-end-<width>-<theme>.png.
+sheet-rows.txt comes from rows.mjs (Playwright, Chromium) on the same export. At each width and theme, it opens / with no stored team, waits for the sheet, and lists each row of the sheet list and each button, link, and field inside the sheet.
