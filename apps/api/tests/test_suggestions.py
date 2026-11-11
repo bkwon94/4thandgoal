@@ -16,6 +16,7 @@ from test_api import HEADERS, _here
 from test_personal_topics import LIL_FRIDGE, Checks, Writer, _api, _ask, _chunks, _text
 
 from analyzer.sell_facts import sheet_players
+from analyzer.trade_jev import weak_starting_slots
 from cornerstone_api.suggestion_wording import SELL_CHOICE, SELL_NOUL
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.provider.sleeper import load_raw
@@ -24,6 +25,8 @@ repo = test_api.repo
 settings = test_api.settings
 sources = test_api.sources
 
+# Bo Girds starts no weak player in the recorded week 6 data.
+BO_GIRDS = 6
 SUGGESTIONS = "/clients/cpc/suggestions"
 CURRENT = "/clients/cpc/personal/current"
 # The order of Wednesday on the site: the waivers lead, then the weak spots (topics.ts).
@@ -113,13 +116,22 @@ def _sell_request(jev: FakeJev):
     return request
 
 
-def test_trade_ideas_has_the_weakest_slot_of_weak_spots_as_its_fact(settings, sources):
+def test_trade_ideas_has_the_first_weak_starter_that_the_finder_fills_as_its_fact(settings, sources):
+    # AT-26: the fact names a weak starting slot that /find reads, so the offers fill the slot the fact names.
     _publish_topics(settings)
     api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
     facts = _suggest(api).json()["facts"]
-    # The same slot and rank that weak spots reads, so the two facts never disagree.
-    position, rank = facts["weak_spots"].split(" ranks ")
-    assert facts["trade_ideas"] == f"Offers for your {position}, {rank}"
+    snapshot = _here(sources, settings).snapshot(2026)
+    first = weak_starting_slots(snapshot, LIL_FRIDGE)[0]
+    assert facts["trade_ideas"] == f"Offers for your {first}" == "Offers for your WR2: Stefon Diggs (WR28)"
+
+
+def test_a_team_with_no_weak_starter_has_no_trade_ideas_fact(settings, sources):
+    # Bo Girds starts no player past the weak rank in the recorded week, so the Finder has no slot to fill.
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    body = _suggest(api, roster_id=BO_GIRDS).json()
+    assert "trade_ideas" not in body["facts"] and "trade_ideas" not in body["picks"]
 
 
 def test_the_trade_check_has_no_weekly_fact_so_it_never_shows_as_a_suggestion(settings, sources):

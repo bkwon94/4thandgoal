@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+from analyzer.trade_jev import weak_starting_slots
 from league.numbers import ordinal
 from league.paths import week_label
 from league.season_inputs import SeasonInputs
@@ -141,10 +142,15 @@ def _slot_rows(snapshot: Snapshot, grade: ManagerGrade, starters: list[Starter],
     return rows
 
 
-def trade_ideas_fact(snapshot: Snapshot, roster_id: int, grades: dict[int, ManagerGrade]) -> str:
-    """The fact of the trade ideas Suggestion: the weakest slot of the team, from the same slot ranks as weak spots."""
-    worst = _worst(grades[roster_id])[0]
-    return f"Offers for your {worst.position}, {_of(worst.rank, len(snapshot.rosters))}"
+def trade_ideas_fact(snapshot: Snapshot, roster_id: int) -> str | None:
+    """The fact of the trade ideas Suggestion: the first weak starting slot of the team, or None when it has none.
+
+    It reads the weak starting slots that `/find` reads, not the slot ranks of weak spots, so the offers fill the slot
+    that the fact names. A slot rank is a place in the league, and a position in the middle of the league can still
+    start players above the weak rank, so the Finder fills no slot there.
+    """
+    weak = weak_starting_slots(snapshot, roster_id)
+    return f"Offers for your {weak[0]}" if weak else None
 
 
 def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades: dict[int, ManagerGrade],

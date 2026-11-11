@@ -166,7 +166,9 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
     for topic in PERSONAL:
         facts[topic] = (await anyio.to_thread.run_sync(live.facts, topic, body.roster_id)).block["fact"]
     # The trade check has no weekly fact, so it stays in "More" only.
-    facts["trade_ideas"] = trade_ideas_fact(live.snapshot, body.roster_id, live.grades)
+    ideas = trade_ideas_fact(live.snapshot, body.roster_id)
+    if ideas is not None:
+        facts["trade_ideas"] = ideas
     team = live.snapshot.teams[body.roster_id].name
     try:
         sell, sell_choice, sell_clear = await anyio.to_thread.run_sync(sell_high_fact, asker.jev, live,
