@@ -209,6 +209,30 @@ def test_an_anchor_that_the_asker_gets_keeps_the_search_to_his_roster_and_each_o
         assert anchor in trade.sides[1].player_ids
 
 
+
+def test_an_anchored_search_asks_if_each_player_coming_back_would_take_the_place_of_the_anchor(snap):
+    anchor = _last_pool_player(snap, ASKER)
+    name = snap.players[anchor].name
+    jev = FakeJev()
+    search(ASKER, PARTNER, snap, jev, anchor=Anchor(player_id=anchor, side="gives"))
+    [request] = _target_requests(jev)
+    for key, question in request.questions.items():
+        owner = int(key.partition(".")[0])
+        # A player of the partner would come to the asker, so his question names the anchor he would replace.
+        assert (f"take the place of {name}" in question.instructions) == (owner == PARTNER), key
+    # A gets anchor turns it around: each player of the asker would go to the partner in his place.
+    other = _last_pool_player(snap, PARTNER)
+    jev = FakeJev()
+    search(ASKER, PARTNER, snap, jev, anchor=Anchor(player_id=other, side="gets"))
+    [request] = _target_requests(jev)
+    other_name = snap.players[other].name
+    assert all((f"take the place of {other_name}" in q.instructions) == key.startswith(f"{ASKER}.")
+               for key, q in request.questions.items())
+    # The plain search keeps the plain target question.
+    jev = FakeJev()
+    search(ASKER, PARTNER, snap, jev)
+    assert not any("take the place of" in q.instructions for r in _target_requests(jev) for q in r.questions.values())
+
 def _tiny(n):
     return {str(i): WaveRequest({"n": i}, {"q": NoulQuestion("Is it?", "yes", "no")}) for i in range(n)}
 

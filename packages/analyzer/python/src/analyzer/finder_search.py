@@ -60,6 +60,13 @@ TARGET = {
     "text": "Would {team} want {player} from {owner}?",
     "yes": "{name} would start for {team} or fill a weak spot on its roster.",
     "no": "{name} would sit behind better players at his position on {team}."}
+# The target question of a search around one player, for each player who would come back to the team that gives the
+# anchor. It asks whether he fills the spot that the anchor leaves, so the offers do not aim at the weakest slot.
+ANCHOR_TARGET = {
+    "text": "Would {team} want {player} from {owner} to take the place of {anchor}?",
+    "yes": "{name} would fill the lineup spot that {anchor_name} leaves on {team}.",
+    "no": "{name} would not fill the spot of {anchor_name}: he plays another position, or he would sit behind better "
+          "players on {team}."}
 TARGET_AT = 0.6      # a player is a target at this probability or more
 TARGET_MAX = 4       # at most this many targets per side, by probability
 SHORTLIST_KEEP = 10  # the offers that Jev rates highest, by the product of the fair and the need answers
@@ -156,17 +163,27 @@ def _described(snapshot: Snapshot, pid: str) -> str:
     return f"{player.name} ({player.position}, {player.nfl_team or 'no team'})"
 
 
-def _target_questions(snapshot: Snapshot, asker: int, partner: int) -> dict[str, NoulQuestion]:
-    """One question per pool player of each side: "<roster id>.<player id>" asks if the other side wants him."""
+def _target_questions(snapshot: Snapshot, asker: int, partner: int,
+                      anchor: Anchor | None = None) -> dict[str, NoulQuestion]:
+    """One question per pool player of each side: "<roster id>.<player id>" asks if the other side wants him.
+
+    With an anchor, each player who would go to the team that gives the anchor gets the anchor target question.
+    """
     questions = {}
+    giver = None if anchor is None else asker if anchor.side == "gives" else partner
     for owner, team in ((partner, asker), (asker, partner)):
         fill = {"team": snapshot.teams[team].name, "owner": snapshot.teams[owner].name}
+        wording = TARGET
+        if anchor is not None and team == giver:
+            wording = ANCHOR_TARGET
+            fill |= {"anchor": _described(snapshot, anchor.player_id),
+                     "anchor_name": snapshot.players[anchor.player_id].name}
         for pid in snapshot.rosters[owner]:
             if not in_pool(snapshot, pid, owner):
                 continue
             words = {**fill, "player": _described(snapshot, pid), "name": snapshot.players[pid].name}
             questions[f"{owner}.{pid}"] = NoulQuestion(
-                TARGET["text"].format(**words), TARGET["yes"].format(**words), TARGET["no"].format(**words))
+                wording["text"].format(**words), wording["yes"].format(**words), wording["no"].format(**words))
     return questions
 
 
@@ -291,7 +308,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     stage(f"Checked {len(partners)} teams for a fit" if len(partners) > 1 else "Checked the other team for a fit")
     stage("Building offers", live=True)
 
-    target_questions = {rid: _target_questions(snapshot, asker, rid) for rid in passing}
+    target_questions = {rid: _target_questions(snapshot, asker, rid, anchor) for rid in passing}
     rated = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid), target_questions[rid])
                        for rid in passing}, "targets")
     targets: dict[int, dict[str, list[str]]] = {}
