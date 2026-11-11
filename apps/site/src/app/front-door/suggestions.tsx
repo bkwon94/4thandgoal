@@ -32,19 +32,16 @@ export function Suggestions({
   const topics = picks.map((key) => TOPICS.find((topic) => topic.key === key)).filter((topic): topic is Topic => !!topic);
   return (
     <div className="flex flex-col gap-sp-2">
-      {/* The row scrolls sideways on a phone, so a long fact never wraps a chip to two rows. The bleed keeps the
-          last chip clear of the gutter. */}
-      <div
-        role="group"
-        aria-label="Suggestions"
-        className="-mx-gutter flex snap-x scroll-px-gutter gap-sp-2 overflow-x-auto overscroll-x-contain px-gutter pb-sp-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
+      {/* The row wraps, so all 3 chips show whole at each width and none hides past the edge (AT-4). On a phone "More"
+          and the first chip share the first line, and the other two chips share the second. A chip grows from a base of
+          9rem up to its cap, and a long fact cuts with an ellipsis after its number. */}
+      <div role="group" aria-label="Suggestions" className="flex flex-wrap gap-sp-2">
         <button
           type="button"
           aria-expanded={moreOpen}
           aria-controls={panelId}
           onClick={() => onMore(!moreOpen)}
-          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+          className="press door-sheen flex min-h-touch flex-none items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
         >
           <span>More</span>
           <ChevronDownIcon
@@ -67,9 +64,9 @@ export function Suggestions({
               animate={off ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }}
               transition={off ? fadeIn(FAST, index * STAGGER) : { ...CHIP_GLIDE, layout: GLIDE, opacity: fadeIn(FAST, index * STAGGER) }}
-              className="press door-sheen flex min-h-touch max-w-chip flex-none snap-start flex-col items-start justify-center gap-sp-0 rounded-tile border border-door-hair bg-card px-sp-4 py-sp-2 text-left transition-colors duration-150 hover-fine:bg-raised"
+              className="press door-sheen flex min-h-touch max-w-chip min-w-0 flex-[1_1_9rem] flex-col items-start justify-center gap-sp-0 rounded-tile border border-door-hair bg-card px-sp-4 py-sp-2 text-left transition-colors duration-150 hover-fine:bg-raised"
             >
-              <span aria-hidden className="text-body leading-tight font-semibold text-ink">
+              <span aria-hidden className="max-w-full truncate text-body leading-tight font-semibold text-ink">
                 {topic.name}
               </span>
               <span aria-hidden className="max-w-full truncate font-mono text-meta leading-tight text-mute tabular-nums">
