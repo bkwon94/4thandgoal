@@ -396,7 +396,7 @@ App: site
 Stories: 59
 Given: The CPC site and the NorCal site.
 When: The reader opens the menu and the dock.
-Then: Each shows Home, Week 8, Power Rankings, and Managers, and nothing else.
+Then: The menu shows Home, Week 8, Power Rankings, and Managers, and nothing else. The dock shows the same four items with its short labels, such as Rankings, and nothing else.
 Evidence: screenshots at 375 and 1280 px in both themes for each client.
 
 AT-49: Every page stays
