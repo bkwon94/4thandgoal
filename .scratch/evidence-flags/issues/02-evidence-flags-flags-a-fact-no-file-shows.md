@@ -8,7 +8,7 @@ Spec: `.scratch/evidence-flags/PRD.md`. Acceptance tests AT-3, AT-5, AT-6, AT-10
 
 **Blocked by:** 01.
 
-**Status:** in-review
+**Status:** done
 
 - [x] On easter-eggs AT-3 at `8d646bd0`, in a temp root, the live run writes an (a) entry at 0.7 or more (AT-3).
 - [x] On all of hero-slots at `f9304b5e`, the run exits 0 with one log line, and its counts match `EVIDENCE.md` and `FLAGS.md` (AT-5).

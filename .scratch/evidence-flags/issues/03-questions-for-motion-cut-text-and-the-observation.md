@@ -8,7 +8,7 @@ Spec: `.scratch/evidence-flags/PRD.md`. Acceptance tests AT-1 and AT-2, and Impl
 
 **Blocked by:** 02.
 
-**Status:** in-review
+**Status:** done
 
 - [x] On easter-eggs AT-32 at `566d11e7`, the live run writes a (b) entry at 0.7 or more (AT-1).
 - [x] On easter-eggs AT-54 at `9582a573`, the live run writes a (d) entry at 0.7 or more (AT-2).
