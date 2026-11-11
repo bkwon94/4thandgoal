@@ -287,6 +287,7 @@ def read_trade_on_sheet(
     A caller that saves the sheet builds it with advisor_sheet, so the saved sheet is the one the Advisor read.
     Raises AdvisorFailed after two failed calls, a failed API call included.
     """
+    stage("Checking each number of the read", live=True)
     out = call_with_retry(
         call, lambda feedback: build_advisor_prompt(trade, snapshot, facts, feedback), AdvisorOut,
         lambda out: check_read(out, trade, snapshot, facts), subject="trade read", log_label="advisor", logger=log)
@@ -304,6 +305,7 @@ def read_trade(trade: ProposedTrade, snapshot: Snapshot, *, jev: Jev, news: News
     `stage` gets one plain line after the sheet and one after the read passes its guards. The default drops them.
     Raises AdvisorFailed after two failed calls, a failed API call included.
     """
+    stage("Checking the players on each side", live=True)
     sheet = advisor_sheet(trade, snapshot, jev, news)
     stage("Checked the players on each side")
     return read_trade_on_sheet(trade, snapshot, sheet, jev=jev, call=call, stage=stage)

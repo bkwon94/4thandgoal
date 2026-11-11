@@ -262,6 +262,8 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     """
     if not shortlist.shortlist:
         return FinderPicks(picks=[], none_line=NO_OFFER, fallback=False)
+    # A pick with no offer that stands sends no done line, so the site drops this live line with the Answer.
+    stage("Picking the best offers", live=True)
     sheets = {offer.offer_id: offer_sheet(offer, snapshot, news) for offer in shortlist.shortlist}
     out = call_with_retry(
         call, lambda feedback: build_pick_prompt(shortlist, snapshot, sheets, feedback), FinderPickOut,

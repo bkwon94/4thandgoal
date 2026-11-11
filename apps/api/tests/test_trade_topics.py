@@ -445,3 +445,32 @@ def test_a_player_search_after_a_tap_never_serves_the_plain_list(api):
     [answer] = _of(_ideas(api, GIVE_IDEAS), "data-answer")
     assert all(SHAKIR in [player["player_id"] for player in trade["sides"][0]["gives"]]
                for trade in answer["document"]["trades"])
+
+
+def live_then_done(steps: list[dict]) -> list[str]:
+    """Check the step parts of one stream, and give its done lines. A live step names the stage at work in the present,
+    such as "Building offers". Its done line comes next, in the past, such as "Built 56 offers"."""
+    for index, step in enumerate(steps):
+        first = step["line"].split()[0]
+        if step["live"]:
+            assert first.endswith("ing"), step
+            assert index + 1 < len(steps) and not steps[index + 1]["live"], step
+        else:
+            assert not first.endswith("ing"), step
+    return [step["line"] for step in steps if not step["live"]]
+
+
+def test_each_stage_of_trade_ideas_sends_a_live_line_then_its_done_line(api):
+    steps = _of(_ideas(api), "data-step")
+    assert [step["line"] for step in steps if step["live"]] == [
+        "Checking 11 teams for a fit", "Building offers", "Weighing the offers", "Picking the best offers"]
+    done = live_then_done(steps)
+    assert done[0] == "Checked 11 teams for a fit" and done[-1] == "Picked the best 3"
+
+
+def test_each_stage_of_a_trade_check_sends_a_live_line_then_its_done_line(api):
+    steps = _of(_parts(_check(api, SURE_TRADE)), "data-step")
+    assert [step["line"] for step in steps if step["live"]] == [
+        "Checking the players on each side", "Checking each number of the read"]
+    assert live_then_done(steps) == [
+        "Found Khalil Shakir and Zay Flowers", "Checked the players on each side", "Checked each number of the read"]

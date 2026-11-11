@@ -43,17 +43,17 @@ export type TradeRead = z.infer<typeof tradeReadSchema>;
 
 /* One part of the stream that the site reads. The API sends more parts, such as the player picks, for the evidence. */
 const partSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("data-step"), data: z.object({ line: z.string() }) }),
+  z.object({ type: z.literal("data-step"), data: z.object({ line: z.string(), live: z.boolean().optional() }) }),
   z.object({ type: z.literal("data-key"), data: tradeReadSchema }),
   z.object({ type: z.literal("data-answer"), data: tradeAnswerSchema }),
   z.object({ type: z.literal("data-error"), data: z.object({ status: z.number(), line: z.string() }) }),
   z.object({ type: z.literal("data-cap"), data: z.object({ cap: z.enum(["team", "league"]), line: z.string() }) }),
 ]);
 
-/* What the stream gives the Thread, part by part. The key of the read comes before the Answer. A cap gives its calm
-   line in place of the Answer. */
+/* What the stream gives the Thread, part by part. A step is live while its stage works. The key of the read comes
+   before the Answer. A cap gives its calm line in place of the Answer. */
 export type TradeEvents = {
-  onStep: (line: string) => void;
+  onStep: (line: string, live: boolean) => void;
   onKey: (read: TradeRead) => void;
   onAnswer: (answer: TradeAnswer) => void;
   onCap: (line: string) => void;
@@ -65,6 +65,22 @@ export type TradeRequest =
   | { mode: "check"; question: string; roster_id: number }
   | { mode: "ideas"; roster_id: number; partner: number | null; question?: string }
   | { mode: "sell"; roster_id: number };
+
+/* The step lines of a trade stream so far, and whether the last line is a live line. */
+export type TradeSteps = { lines: string[]; live: boolean };
+export const noSteps: TradeSteps = { lines: [], live: false };
+
+/* The steps after one step part. A live line names the stage at work, such as "Building offers". The done line of
+   that stage, such as "Built 56 offers", takes its place, so the Thread never shows a past line next to a spinner. */
+export function addStep(steps: TradeSteps, line: string, live: boolean): TradeSteps {
+  const kept = steps.live ? steps.lines.slice(0, -1) : steps.lines;
+  return { lines: [...kept, line], live };
+}
+
+/* The step lines when the Answer comes. A live line that got no done line drops, because its stage gave no result. */
+export function endSteps(steps: TradeSteps): string[] {
+  return steps.live ? steps.lines.slice(0, -1) : steps.lines;
+}
 
 /* The path of the route of each mode, after /clients/<slug>/. */
 const ROUTE_PATH: Record<TradeRequest["mode"], string> = { check: "trade-check", ideas: "trade-ideas", sell: "sell-high" };
@@ -86,7 +102,7 @@ async function readParts(body: ReadableStream<Uint8Array>, events: TradeEvents):
       if (!line.startsWith("data: ") || line === "data: [DONE]") continue;
       const part = partSchema.safeParse(JSON.parse(line.slice("data: ".length)));
       if (!part.success) continue;
-      if (part.data.type === "data-step") events.onStep(part.data.data.line);
+      if (part.data.type === "data-step") events.onStep(part.data.data.line, part.data.data.live ?? false);
       if (part.data.type === "data-key") events.onKey(part.data.data);
       if (part.data.type === "data-error") throw new AskError(part.data.data.status, part.data.data.line);
       if (part.data.type === "data-answer") {

@@ -11,7 +11,7 @@ import test_api
 from fakes import NEWS_RECORDED, FakeJev, recorded_news
 from fastapi.testclient import TestClient
 from test_api import CLIENT, HEADERS, _cpc, _here
-from test_trade_topics import current, dropped
+from test_trade_topics import current, dropped, live_then_done
 
 from analyzer.sell_high import SellHighOut, pick_sells
 from analyzer.trade_news import NewsFeed
@@ -212,9 +212,14 @@ def test_the_steps_come_one_by_one_before_the_whole_answer_and_name_no_inner_too
     parts = _parts(_sell(api))
     kinds = [part["type"] for part in parts]
     assert kinds[0] == "start" and kinds[-1] == "finish"
-    lines = [step["line"] for step in _of(parts, "data-step")]
+    steps = _of(parts, "data-step")
+    lines = [step["line"] for step in steps]
     ranked = sum(p["position"] in ("QB", "RB", "WR", "TE") for p in _roster(api))
-    assert lines == [f"Lined up your {ranked} players", "Checked each number of the picks", "Picked one player to sell"]
+    # Each stage at work sends its live line first, then its done line takes its place.
+    assert [step["line"] for step in steps if step["live"]] == ["Lining up your players",
+                                                                "Checking each number of the picks"]
+    assert live_then_done(steps) == [f"Lined up your {ranked} players", "Checked each number of the picks",
+                                     "Picked one player to sell"]
     assert kinds.index("data-answer") > max(i for i, kind in enumerate(kinds) if kind == "data-step")
     assert not [line for line in lines if any(word in line.lower() for word in INNER_NAMES)]
 

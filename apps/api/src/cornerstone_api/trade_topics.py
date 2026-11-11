@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field
 from analyzer import routes as analyzer_routes
 from analyzer.finder_search import Anchor
 from analyzer.routes import FindRequest, ServedClient
+from analyzer.stage import Stage
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from cornerstone_api.ask import QUESTION_MAX, YES, Asker, ClientAsker
 from cornerstone_api.trade_wording import (
@@ -216,8 +217,13 @@ def capped_press(asker: Asker, roster_id: int, emit: Emit, press: Callable[[], d
                 asker.caps.record(roster_id, meter.usd, asker.clock(), counts=answered)
 
 
-def _step(emit: Emit) -> Callable[[str], None]:
-    return lambda line: emit("data-step", {"line": line})
+def _step(emit: Emit) -> Stage:
+    """The stage callback of a stream: each line goes out as a step part, with whether it is a live line."""
+
+    def step(line: str, *, live: bool = False) -> None:
+        emit("data-step", {"line": line, "live": live})
+
+    return step
 
 
 def _teams(asker: ClientAsker, served: analyzer_routes.Served, roster_id: int) -> list[dict]:

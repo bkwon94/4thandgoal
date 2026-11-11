@@ -271,6 +271,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
         # A player who left each roster since the pick keeps the partner, and no offer can hold him.
         partner = next((rid for rid, roster in snapshot.rosters.items() if anchor.player_id in roster), partner)
     partners = [partner] if partner is not None else sorted(rid for rid in snapshot.rosters if rid != asker)
+    stage(f"Checking {len(partners)} teams for a fit" if len(partners) > 1 else "Checking the other team for a fit",
+          live=True)
 
     filtered = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid),
                                                 _filter_questions(snapshot, asker, rid)) for rid in partners},
@@ -287,6 +289,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
                  ", ".join(f"{key}={p:.2f}" for key, p in answers.items()))
     passing = [read.roster_id for read in reads if read.passed]
     stage(f"Checked {len(partners)} teams for a fit" if len(partners) > 1 else "Checked the other team for a fit")
+    stage("Building offers", live=True)
 
     target_questions = {rid: _target_questions(snapshot, asker, rid) for rid in passing}
     rated = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid), target_questions[rid])
@@ -313,6 +316,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
     log.info("Finder offers of %s: %d", snapshot.teams[asker].name, len(offers))
     stage(f"Built {len(offers)} offers" if len(offers) != 1 else "Built one offer")
+    stage("Weighing the offers", live=True)
     for trade in offers:
         _log_offer(snapshot, trade)
 
