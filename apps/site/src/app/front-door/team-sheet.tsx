@@ -61,7 +61,8 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-end justify-center bg-scrim tablet:items-center tablet:p-sp-6"
-      initial={{ opacity: 0 }}
+      // With motion off, the scrim and the sheet show at once, so a scan of the floor never reads them in mid-fade.
+      initial={off ? false : { opacity: 0 }}
       animate={{ opacity: 1, transition: fadeIn(FAST) }}
       exit={{ opacity: 0, transition: fadeIn(FAST) }}
     >
@@ -74,7 +75,7 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
         tabIndex={-1}
         onKeyDown={trap}
         className="flex max-h-[88dvh] w-full max-w-sheet flex-col rounded-t-hero border border-b-0 border-rule bg-card text-ink shadow-sheet outline-none tablet:max-h-[80dvh] tablet:rounded-hero tablet:border-b"
-        initial={off ? { opacity: 0 } : { y: "100%" }}
+        initial={off ? false : { y: "100%" }}
         animate={off ? { opacity: 1, transition: fadeIn(FAST) } : { y: 0, transition: SHEET_SPRING }}
         exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { y: "100%", transition: { duration: 0.35, ease: SMOOTH } }}
       >
@@ -85,7 +86,7 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
           <h2 id="your-team-title" className="m-0 text-score leading-tight font-bold tracking-tight">
             Which team is yours?
           </h2>
-          <p id="your-team-line" className="m-0 text-body leading-body text-ink-2">
+          <p id="your-team-line" className="m-0 text-lead leading-body text-ink-2">
             Pick once. This page then answers for your team.
           </p>
         </div>
@@ -96,7 +97,8 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
             return (
               <motion.li
                 key={team.id}
-                initial={off ? { opacity: 0 } : { opacity: 0, y: 8 }}
+                // With motion off, a row shows at once, so a scan of the floor never reads a row in mid-fade.
+                initial={off ? false : { opacity: 0, y: 8 }}
                 animate={off ? { opacity: 1 } : { opacity: 1, y: 0 }}
                 transition={fadeIn(0.35, 0.12 + staggerOf(index))}
               >

@@ -7,7 +7,7 @@ import type { Theme } from "@cpc/design/lib/theme";
 import { expect, test, type Page } from "@playwright/test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
-import { openPage, scanContrast, scanScroll, scanTargets, scanText, scanWords } from "./floor";
+import { openPage, scanContrast, scanContrastInSteps, scanScroll, scanTargets, scanText, scanWords } from "./floor";
 import { serveDir } from "./serve";
 
 // check:floor runs in apps/site, as pnpm runs each script of the site there.
@@ -189,7 +189,7 @@ for (const entry of FULL_FLOOR_PAGES) {
         // Each exempt link prints, so a reader of the log sees each link that the tap floor skips. A page with none says so.
         if (targets.exempt.length === 0) console.log(`${label}: exempt links inside prose: none`);
         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
-        failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
+        failures.push(...targets.failures, ...(await scanContrastInSteps(page, typeof entry === "string" ? undefined : entry.scope)));
         expect(failures, `${label} breaks the readability floor`).toEqual([]);
       });
     }
