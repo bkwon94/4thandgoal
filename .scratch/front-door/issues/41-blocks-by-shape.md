@@ -14,4 +14,9 @@ A block eval holds at least 15 phrasings, 5 per kind, plus 5 that stay text. The
 
 **Blocked by:** 40
 
-**Status:** in-progress
+**Status:** in-review
+
+- [x] The router sends "can you compare my roster to Teehee" and 3 close forms to the free answer; "how do i stack up" and "how good is my team" stay on stack_up. The route eval goes from 54 to 56 of 59.
+- [x] The free answer rules name the shape of the answer: a list, a table, a player card, or text.
+- [x] "tell me my top players" gives a list, and the lead says "this season".
+- [x] The live block eval `tests/test_block_eval.py` holds 20 loose phrasings, 5 per kind. It goes from 14 to 18 of 20, over the bar of 17.

@@ -743,5 +743,14 @@ def test_a_roster_and_a_game_log_say_whether_each_player_can_play_now(repo, fixt
 
 def test_the_instructions_offer_one_block_after_a_lead_and_keep_text_the_default():
     assert "show_block" in INSTRUCTIONS
-    assert "Most answers need no block" in INSTRUCTIONS
+    assert "Text is the default" in INSTRUCTIONS
     assert "Never use a heading, a table, or a list." not in INSTRUCTIONS
+
+
+def test_the_instructions_pick_a_block_by_the_shape_of_the_answer_and_read_no_time_as_this_season():
+    # H28: a block must not need a specific ask. The rules name the shape of the answer, not the words of the question.
+    assert "shape of your answer, not by the words of the question" in INSTRUCTIONS
+    assert "ranks 3 or more players or teams" in INSTRUCTIONS
+    assert "2 teams or 2 players side by side" in INSTRUCTIONS
+    assert "about one NFL player" in INSTRUCTIONS
+    assert 'says "this season"' in INSTRUCTIONS
