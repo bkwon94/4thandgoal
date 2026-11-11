@@ -11,6 +11,8 @@ from league.jev_port import NoulQuestion
 FACT_MEANINGS = {
     "rank": "A rank in `slot_ranks` or `part_ranks` is the place of the team among the teams of the league, where 1 "
             "is the best.",
+    "weakest_position": "The weakest position of the team is the position with the worst `rank` in `slot_ranks`, the "
+                        "largest number.",
     "grade_as_of": "`grade_as_of` says the grade in `grade` is from the live league today, so say \"as of today\". The "
                    "grade of the managers page is from the last week of the weekly build, so it can differ.",
     "projected_rank_at_position": "`projected_rank_at_position` is the place of a player among the players at his "
@@ -20,8 +22,8 @@ FACT_MEANINGS = {
             "worse than `starter_line`.",
     "can_play_now": "A starter with `can_play_now` false is out now, such as on IR, so his slot is a hole.",
     "weak_starting_slots": "Each entry of `weak_starting_slots` is a slot of the lineup of the players who can play "
-                           "now, with no player or a weak one, so it shows who plays the slot of a starter who is out "
-                           "now. A slot with no player is the weakest spot of the team.",
+                           "now that `starters` does not show: a slot with no player, or the player who plays the slot "
+                           "of a starter who is out now. A slot with no player is the weakest spot of the team.",
 }
 
 INSTRUCTIONS = """\
@@ -40,7 +42,8 @@ Rules:
 
 # What each Topic asks of the text. The facts of each Topic are in FACT_GROUPS of personal_facts.py.
 TOPIC_ASKS = {
-    "weak_spots": "Name the weakest positions of the team and each hole in its lineup, worst first.",
+    "weak_spots": "Name the weakest positions of the team and each hole in its lineup, worst first. The weakest "
+                  "position is the one with the worst `rank` in `slot_ranks`.",
     "stack_up": "Say how the roster stacks up against the league: its grade, its best and its worst part, and its "
                 "best and its worst position.",
     "waiver_targets": "Name the first players of `kept_players`, at most 3, best first. Give each one short reason "

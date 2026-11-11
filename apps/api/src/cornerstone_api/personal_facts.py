@@ -100,6 +100,17 @@ def _now(snapshot: Snapshot, starters: list[Starter]) -> list[Starter]:
             if s.player_id is not None and cannot_play_now(snapshot, s.player_id) else s for s in starters]
 
 
+def _unshown(snapshot: Snapshot, roster_id: int, starters: list[Starter]) -> list[dict]:
+    """The weak slot rows that `starters` does not show: an empty slot, or a player who is not a starter there, such as
+    the stand-in for a starter on IR.
+
+    The weak slot rows rank a player by points per game, and `starters` ranks him by the projections ahead. A row for a
+    starter would give him two ranks, so a claim of "no hole" is true by one list and false by the other.
+    """
+    shown = {_name(snapshot, s.player_id) for s in starters if s.player_id is not None}
+    return [row for row in weak_slot_rows(snapshot, roster_id) if row["player"] is None or row["player"] not in shown]
+
+
 def _empty_now(snapshot: Snapshot, roster_id: int) -> list[str]:
     """The roster slot of each slot of the lineup now that no player who can play fills, in fill order.
 
@@ -186,7 +197,7 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
         "slot_ranks": _slot_ranks(grade),
         "starters": _starters(snapshot, mine),
         "grade_read": grade.read,
-        "weak_starting_slots": weak_slot_rows(snapshot, roster_id) if topic == "weak_spots" else [],
+        "weak_starting_slots": _unshown(snapshot, roster_id, mine) if topic == "weak_spots" else [],
     }
     if topic == "waiver_targets":
         groups["team_need"], groups["candidates"] = waiver_facts(snapshot, roster_id, trending)
