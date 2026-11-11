@@ -274,6 +274,9 @@ def test_a_client_without_the_eggs_package_skips_the_drop(api, settings, tmp_pat
 def test_the_egg_undo_and_the_egg_drop_default_to_the_same_live_api():
     pipeline = Path(__file__).resolve().parents[2] / "pipeline"
     env = {name: value for name, value in os.environ.items() if name != "CORNERSTONE_API_URL"}
+    # "make -n" still runs the shell call that sets the default URL, and that call is "uv run --exact".
+    # A sync of "--exact" removes the packages of the API from the shared .venv, so UV_NO_SYNC turns it off.
+    env["UV_NO_SYNC"] = "1"
     # "make -n" prints the curl line of the undo with the URL that the Makefile picks, and runs nothing else.
     # The "make" call runs the real Makefile, so the default of the Makefile is the one under test.
     dry = subprocess.run(["make", "-n", "egg-undo", "CLIENT=cpc", "EGG=1"], cwd=pipeline, env=env,
