@@ -49,3 +49,6 @@ After the triage, each issue that blocks becomes a ticket from 13 up. Then the e
 - The weak spots fact and the trade ideas fact can name different positions for one team.
 - A trade turn of the chat context carries only its lean or its offer count, not the two sides.
 - A live API run writes Sleeper week 9 over the hand-patched week 9 history, on Fly too (live-refetch 01).
+- Trade ideas read the points-per-game rank, while weak spots and its data block read the projected rank. So trade ideas can offer "Offers for your FLEX2" to a team that weak spots says has no hole. Brian chose a follow-up on 2026-11-11.
+- Claude often shortens the depth meaning ("one spare player inside the starter count") and drops a part, so Jev fails the sentence. In 2 of 5 runs after ticket 44, the first weak spots text failed on this or on an inference ("not a worry"), and the retry passed.
+- Two ADRs carry the number 0031: `0031-the-text-that-managers-type.md` of front-door and `0031-the-evidence-goes-to-typesafe-and-a-flag-is-not-a-verdict.md` of main.
