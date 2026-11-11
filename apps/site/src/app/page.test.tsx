@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixtures/sites";
-import HomePage from "./page";
+import HomePage from "./front-door/door-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
    runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
@@ -252,7 +252,7 @@ async function homeOfClient(slug: FixtureClient, { nextWeek = false }: { nextWee
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
   vi.resetModules();
-  return (await import("./page")).default;
+  return (await import("./front-door/door-page")).default;
 }
 
 /* Opens one Topic from "More", as a manager who looks past the 3 Suggestions does. */

@@ -3,6 +3,9 @@
 packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim", "eggs"]
 timezone = "America/New_York"
 usage_code = "cpcfantasy"
+# The front door at / of the site. Off, / is the home page and the menu of [menu] items, and the front door sits at
+# the hidden /ask/ route, so the commissioner tests it on the live site before the switch.
+front_door = false
 
 # One table per season. The provider gives the sizes of each season.
 [seasons.2026]
@@ -23,10 +26,18 @@ finder = false
 commissioner = 6
 
 # Each item names the home page or one package of the list. The order is the order of the menu.
-# The front door at Home is the main way in, so the menu keeps four items. The Trade page and the midseason report
-# keep their routes, and the front door links to them (front-door PRD).
+# With the front door on, the menu is front_door_items: the front door at Home is the main way in, so the menu keeps
+# four items. The Trade page and the midseason report keep their routes, and the front door links to them (front-door PRD).
 [menu]
 items = [
+  { page = "home", label = "Home" },
+  { package = "week" },
+  { package = "rankings", label = "Power Rankings" },
+  { package = "midseason", label = "Midseason Report" },
+  { package = "managers", label = "Managers" },
+  { package = "analyzer", label = "Trade Analyzer" },
+]
+front_door_items = [
   { page = "home", label = "Home" },
   { package = "week" },
   { package = "rankings", label = "Power Rankings" },

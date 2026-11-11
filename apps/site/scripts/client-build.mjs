@@ -91,9 +91,11 @@ export function readClient(root, slug) {
   const file = join(root, "clients", slug, "client.toml");
   const values = readChecked(root, slug, "client.toml", JSON.parse(readFileSync(join(root, SCHEMA_FILE), "utf8")));
   // A JSON Schema cannot tie a menu item to the package list, so this rule is code, as in the pydantic model.
-  const omitted = (values.menu?.items ?? [])
-    .filter((item) => item.package !== undefined && !values.packages.includes(item.package))
-    .map((item) => `- menu.items: The menu item for ${item.package} names a package that is not in the package list.`);
+  const omitted = ["items", "front_door_items"].flatMap((list) =>
+    (values.menu?.[list] ?? [])
+      .filter((item) => item.package !== undefined && !values.packages.includes(item.package))
+      .map((item) => `- menu.${list}: The menu item for ${item.package} names a package that is not in the package list.`),
+  );
   const lines = [...omitted, ...tableLines(root, values)];
   if (lines.length > 0) throw new ClientBuildError(`${file} breaks a rule:\n${lines.join("\n")}`);
   return values;
@@ -190,6 +192,16 @@ const ROUTES = {
   ],
 };
 
+/* The home tool of each package that has one: a row of the Tools chapter of the home page, in the order of the chapter.
+   The registry imports it only for a package of the list, so the home page of a client that omits the package holds
+   none of its code. The order is fixed here and not by the package list, so the order of client.toml never moves a row. */
+const HOME_TOOLS = { analyzer: "@/app/_routes/analyzer/home", managers: "@/app/_routes/managers/home" };
+
+/* The hidden route of the front door while the flag front_door of client.toml is off: / stays the home page, and the
+   commissioner tests the front door on the live site at /ask/. No menu item and no link reach it, and its page has
+   noindex. With the flag on, the front door is at /, so the build writes no /ask/ route. */
+const ASK_ROUTE = { path: "ask/page.tsx", source: "@/app/_routes/ask/page", exports: ["default", "metadata"] };
+
 /* The part that a package mounts on every page, such as the egg hunt. The registry imports it only for a package of the
    list, so the bundle of a client that omits the package holds none of its code. */
 const PAGE_PARTS = { eggs: "@/app/_routes/eggs/hunt" };
@@ -221,16 +233,25 @@ function routeText(slug, route) {
   return `${lines.join("\n")}\n`;
 }
 
+/* The packages that give the home page its parts. Each one has src/app/_routes/<package>/home.tsx, and each part
+   names its own place on the page. The order is fixed here and not by the package list, so the order of client.toml
+   never moves a part. */
+const HOME_SECTIONS = ["midseason", "rankings", "week"];
+
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
    the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */
 function registryText(slug, values) {
+  const tools = Object.keys(HOME_TOOLS).filter((name) => values.packages.includes(name));
+  const home = HOME_SECTIONS.filter((name) => values.packages.includes(name));
   const parts = Object.keys(PAGE_PARTS).filter((name) => values.packages.includes(name));
   const band = Object.keys(BAND_PARTS).filter((name) => values.packages.includes(name));
   const banners = Object.keys(HOME_BANNERS).filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { BandPart, HomeBanner, MenuLinks, PagePart } from "@/lib/client-values";`,
+    `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
+    ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
+    ...home.map((name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`),
     ...parts.map((name) => `import { PagePart as ${name}PagePart } from "${PAGE_PARTS[name]}";`),
     ...band.map((name) => `import { BandPart as ${name}BandPart } from "${BAND_PARTS[name]}";`),
     ...banners.map((name) => `import { HomeBanner as ${name}HomeBanner } from "${HOME_BANNERS[name]}";`),
@@ -239,6 +260,14 @@ function registryText(slug, values) {
     "export const menuLinks: MenuLinks = {",
     ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
     "};",
+    "",
+    "/* The home tool of each package of the client that has one, in the order of the Tools chapter. */",
+    `export const homeTools: HomeTool[] = [${tools.map((name) => `${name}HomeTool`).join(", ")}];`,
+    "",
+    "/* The home chapter of each package of the client, in the order of the home page. */",
+    "export const homeSections: HomeSections = [",
+    ...home.map((name) => `  ${name}HomeSection,`),
+    "];",
     "",
     "/* The part of each package of the client that every page mounts. */",
     `export const pageParts: PagePart[] = [${parts.map((name) => `${name}PagePart`).join(", ")}];`,
@@ -253,11 +282,16 @@ function registryText(slug, values) {
 }
 
 /* The menu of the client. The look owns the navigation, so the menu holds only its items (ADR 0024). With no items, the
-   menu takes the home page, then the package list in its order, because Brian chose Home as the first item of a default menu. */
+   menu takes the home page, then the package list in its order, because Brian chose Home as the first item of a default menu.
+   With the front door on, the menu takes front_door_items when [menu] gives them. */
 function menuOf(values) {
-  return {
-    items: values.menu?.items ?? [{ page: "home" }, ...values.packages.map((name) => ({ package: name }))],
-  };
+  const items = values.menu?.items ?? [{ page: "home" }, ...values.packages.map((name) => ({ package: name }))];
+  return { items: (frontDoorOf(values) && values.menu?.front_door_items) || items };
+}
+
+/* The flag front_door of client.toml. With none, the front door is off. */
+function frontDoorOf(values) {
+  return values.front_door ?? false;
 }
 
 /* The values of the client that the site reads. The site season is the latest season of the client. */
@@ -269,6 +303,7 @@ function clientValuesText(slug, values, brand, copy) {
     season: Math.max(...seasons),
     usageCode: values.usage_code ?? null,
     finder: values.values?.analyzer?.finder ?? false,
+    frontDoor: frontDoorOf(values),
     menu: menuOf(values),
     brand,
     copy: { siteName: copy.site_name, masthead: copy.masthead, tagline: copy.tagline },
@@ -340,6 +375,7 @@ export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", 
       writeFile(join(site, ROUTE_GROUP, route.path), routeText(slug, route));
     }
   }
+  if (!frontDoorOf(values)) writeFile(join(site, ROUTE_GROUP, ASK_ROUTE.path), routeText(slug, ASK_ROUTE));
   writeFile(join(site, GENERATED_DIR, "registry.ts"), registryText(slug, values));
   const logo = copyAssets(root, slug, site);
   writeFile(join(site, GENERATED_DIR, "client-values.ts"), clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy));

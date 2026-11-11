@@ -10,7 +10,16 @@ from pathlib import Path
 from typing import Annotated, Any, Literal, Self, TypeVar
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, WithJsonSchema, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictBool,
+    ValidationError,
+    WithJsonSchema,
+    field_validator,
+    model_validator,
+)
 
 from league.league_settings import LeagueSettings
 from league.paths import client_dir, league_file, nfl_dir
@@ -70,6 +79,9 @@ class Menu(_Strict):
     """The menu items. The look of the site owns the navigation, so a client sets no layout (ADR 0024).
     With no items, the site build puts the home page first, then the package list."""
     items: list[MenuItem] | None = None
+    # The menu with the front door on. The front door at Home is the main way in, so its menu is shorter. With none,
+    # the menu with the front door on is the menu of items.
+    front_door_items: list[MenuItem] | None = None
 
 
 class ClientValues(_Strict):
@@ -85,6 +97,9 @@ class ClientValues(_Strict):
     package_values: Annotated[dict[str, PackageValues], WithJsonSchema(TABLES_SCHEMA)] = Field(
         default_factory=dict, alias="values")
     menu: Menu = Field(default_factory=Menu)
+    # The front door at / of the site. Off, / is the home page and the front door sits at the hidden /ask/ route, so
+    # the commissioner tests it on the live site before the switch. Strict, so a string such as "yes" fails.
+    front_door: StrictBool = False
 
     @field_validator("timezone")
     @classmethod
@@ -97,7 +112,7 @@ class ClientValues(_Strict):
 
     @model_validator(mode="after")
     def _menu_names_taken_packages(self) -> Self:
-        for item in self.menu.items or []:
+        for item in [*(self.menu.items or []), *(self.menu.front_door_items or [])]:
             if item.package is not None and item.package not in self.packages:
                 raise ValueError(f"The menu item for {item.package} names a package that is not in the package list.")
         return self

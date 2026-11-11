@@ -6,7 +6,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFixtureSite } from "@/fixtures/sites";
-import HomePage from "./page";
+import HomePage from "./front-door/door-page";
 import { REFUSE_LINE } from "./front-door/ask-thread";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy

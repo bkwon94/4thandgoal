@@ -2,7 +2,8 @@
  * Checks that out/ holds a byte-identical copy of every file under public/, that each week page holds its text, that
  * each package the client omits is absent, that each page opens dark, and that the pages show the copy, the theme button,
  * and the finder of the client, and that each page preloads the two font files of the look from its own origin, under
- * their byte budget. Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
+ * their byte budget, and that the front door sits at / or at the hidden /ask/ as the flag front_door says.
+ * Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -106,6 +107,21 @@ if (values.packages.includes("analyzer")) {
   if (!analyze.includes(`finderOn\\":${finderOn}`)) fail(`out/analyze/index.html does not set the finder to ${finderOn}`);
   finder = finderOn ? "the finder" : "no finder";
 }
+// The flag front_door of client.toml (ticket 43 of front-door). Off, the front door sits at the hidden /ask/: its page
+// has noindex, and no other page links to it. On, the front door is at /, and the export has no /ask/ page.
+const ASK_PAGE = join("out", "ask", "index.html");
+const noindex = /<meta name="robots" content="noindex"\/?>/;
+let ask;
+if (values.front_door ?? false) {
+  if (exported.includes(ASK_PAGE)) fail(`${ASK_PAGE} exists, but the front door of ${process.env.CLIENT} is at /`);
+  ask = "the front door at / and no /ask/ page";
+} else {
+  if (!exported.includes(ASK_PAGE)) fail(`${ASK_PAGE} is missing, but the front door of ${process.env.CLIENT} is off`);
+  if (!noindex.test(readFileSync(ASK_PAGE, "utf8"))) fail(`${ASK_PAGE} has no robots noindex meta`);
+  const link = htmlPages.find((file) => file !== ASK_PAGE && /href="\/ask\/?"/.test(readFileSync(file, "utf8")));
+  if (link) fail(`${link} links to the hidden /ask/ page`);
+  ask = "the front door at /ask/ with noindex and no link";
+}
 // The fonts load from the site itself (AT-36). The media folder holds exactly the two font files, under the budget,
 // and each page preloads both of them from its own origin. No page and no stylesheet names an outside font host.
 const fontFiles = exported.filter((file) => file.startsWith("out/_next/static/media/") && file.endsWith(".woff2"));
@@ -138,6 +154,6 @@ for (const file of exported.filter((name) => name.endsWith(".html") || name.ends
 console.log(
   `check:export passed: ${sources.length} files are byte-identical; ${pages.length} week pages hold every team name; ` +
     `the client ${process.env.CLIENT} omits ${omitted.join(", ") || "no checked package"}, and the export holds none of it; ` +
-    `${htmlPages.length} pages open dark; the pages show "${copy.masthead}", the theme button, and ${finder}; ` +
+    `${htmlPages.length} pages open dark; the pages show "${copy.masthead}", the theme button, and ${finder}; ${ask}; ` +
     `each page but the 404 page preloads the ${fontFiles.length} font files of ${fontBytes} bytes from its own origin.`,
 );

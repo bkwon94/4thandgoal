@@ -1,14 +1,17 @@
 /**
- * The layout of the front door at / on the static export in out/ of the current CLIENT, in Chromium. It checks that
+ * The layout of the front door at / (or at the hidden /ask/ while the flag front_door is off) on the static export in out/ of the current CLIENT, in Chromium. It checks that
  * the 3 Suggestion chips show whole at each width, with no chip cut off at the edge of the row (AT-4 of front-door).
  * It also checks that one tap on Send sends while the keyboard is open (ticket 34), that Send closes the keyboard, and
  * that one tap on a Suggestion chip acts while the keyboard is open (ticket 37).
  */
 import { type Page, devices, expect, test } from "@playwright/test";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { serveDir } from "./serve";
 
 const OUT = join(process.cwd(), "out");
+// The client build writes the hidden /ask/ route only while the flag front_door is off. Then / is the home page.
+const DOOR = existsSync(join(OUT, "ask", "index.html")) ? "/ask/" : "/";
 
 let server: { url: string; close: () => Promise<void> };
 test.beforeAll(async () => {
@@ -21,7 +24,7 @@ test.afterAll(async () => {
 for (const width of [375, 768, 1280]) {
   test(`the front door shows its 3 Suggestion chips whole at ${width}px (AT-4 of front-door)`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto(`${server.url}/`);
+    await page.goto(`${server.url}${DOOR}`);
     // A first visit asks for Your team. The first team of the sheet works for each client.
     await page.getByRole("dialog").getByRole("button").first().click();
     const row = page.getByRole("group", { name: "Suggestions" });
@@ -71,7 +74,7 @@ test.describe("Send on a phone with the keyboard open", () => {
 
   test("one tap on Send sends while the field has the focus (ticket 34)", async ({ page }) => {
     await fakeKeyboard(page);
-    await page.goto(`${server.url}/`);
+    await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
     const field = page.getByRole("textbox", { name: "Ask a question" });
     const send = page.getByRole("button", { name: "Send" });
@@ -95,7 +98,7 @@ test.describe("Send on a phone with the keyboard open", () => {
 
   test("one tap on a Suggestion chip acts while the field has the focus (ticket 37)", async ({ page }) => {
     await fakeKeyboard(page);
-    await page.goto(`${server.url}/`);
+    await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
     const field = page.getByRole("textbox", { name: "Ask a question" });
     const row = page.getByRole("group", { name: "Suggestions" });
