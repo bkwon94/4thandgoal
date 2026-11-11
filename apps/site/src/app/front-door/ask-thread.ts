@@ -61,7 +61,7 @@ export const TRADE_LINES: Record<string, string> = {
   sell_high: "Who to move while his price is up",
 };
 
-export const REFUSE_LINE = "That is not a question the front door answers. Ask about your team, another team, or the league.";
+export const REFUSE_LINE = "I can't answer that. Ask about your team, another team, or the league.";
 export const RETRY_LINE = "The question did not go through. Ask again.";
 
 /* The item of a route. A Topic route opens the Answer of the team that the question names, else of Your team. A Topic

@@ -23,7 +23,7 @@ TOPIC_NAMES = {
     "trade_check": "Trade check",
 }
 
-CONTEXT = ("The front door of a 12-team fantasy football league site shows a few Suggestions to the manager of one "
+CONTEXT = ("A 12-team fantasy football league site shows a few Suggestions to the manager of one "
            "team. Each Suggestion is one Topic with one fact about that team from this week's league data. The games of "
            "the next fantasy week have not started.")
 

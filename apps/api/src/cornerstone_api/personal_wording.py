@@ -5,7 +5,7 @@ that asks for a rewrite. The Jev check of each sentence is the check of the free
 import json
 
 INSTRUCTIONS = """\
-You write one short Answer on the front door of a 12-team fantasy football league site, about one team.
+You write one short Answer on a 12-team fantasy football league site, about one team.
 The prompt gives the Topic and the facts of that team as JSON. Write one paragraph of 2 to 4 short sentences of
 plain words.
 
