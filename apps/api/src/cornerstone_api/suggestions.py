@@ -20,6 +20,7 @@ from cornerstone_api.personal_facts import PersonalTopic, trade_ideas_fact
 from cornerstone_api.personal_topics import Live, claude_answer, load_live
 from cornerstone_api.suggestion_wording import (
     SELL_CHOICE,
+    SELL_NOUL,
     lift_key,
     lift_questions,
     lift_state,
@@ -97,15 +98,16 @@ def _who(live: Live, pid: str) -> str:
     return f"{player.name} ({player.position}, {player.nfl_team})" if player.nfl_team else player.name
 
 
-def sell_high_fact(jev: Jev, live: Live, roster_id: int) -> tuple[str | None, dict[str, float]]:
+def sell_high_fact(jev: Jev, live: Live, roster_id: int) -> tuple[str | None, dict[str, float], float | None]:
     """The fact of the sell high Suggestion: the player whose recent run Jev reads as most past his season, with his
     points per game over the recent weeks and the season. Code gives the facts side by side and screens no player.
-    A pick at or below YES is unsure, so sell high has no fact this time. The probability of each option comes back
+    The Choice spreads its weight over the roster, so the Noul in the same request carries the cutoff: a Noul at or
+    below YES is unsure, so sell high has no fact this time. The probability of each option and the Noul come back
     too, for the log of a run. A failed request raises JevError."""
     snapshot = live.snapshot
     players = sheet_players(snapshot, roster_id)
     if not players:
-        return None, {}
+        return None, {}, None
     sheet = sell_sheet(snapshot, roster_id)
     keys = option_keys({pid: snapshot.players[pid].name for pid in players})
     state = sell_state(snapshot.teams[roster_id].name, snapshot.week, {
@@ -114,15 +116,16 @@ def sell_high_fact(jev: Jev, live: Live, roster_id: int) -> tuple[str | None, di
         for pid in players})
     answers = jev.ask(state, sell_questions({keys[pid]: _who(live, pid) for pid in players}))
     probabilities = answers.choices[SELL_CHOICE]
+    clear = answers.nouls[SELL_NOUL]
+    if clear <= YES:
+        return None, probabilities, clear
     top = max(probabilities, key=lambda option: probabilities[option])
-    if probabilities[top] <= YES:
-        return None, probabilities
     pid = next(pid for pid, key in keys.items() if key == top)
     # The same rounding as the trend fact of the sell sheet, so the chip and the fact that Jev read say one number.
     recent = float(round(recent_points_per_game(snapshot, pid), 1))
     season = float(round(season_points_per_game(snapshot, pid), 1))
     fact = f"{snapshot.players[pid].name}: {recent} a game over {LINEUP_WEEKS} weeks, {season} for the season"
-    return fact, probabilities
+    return fact, probabilities, clear
 
 
 def pick(order: list[str], urgent: list[str], facts: dict[str, str], opened: dict[str, str]) -> list[str]:
@@ -166,7 +169,8 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
     facts["trade_ideas"] = trade_ideas_fact(live.snapshot, body.roster_id, live.grades)
     team = live.snapshot.teams[body.roster_id].name
     try:
-        sell, sell_choice = await anyio.to_thread.run_sync(sell_high_fact, asker.jev, live, body.roster_id)
+        sell, sell_choice, sell_clear = await anyio.to_thread.run_sync(sell_high_fact, asker.jev, live,
+                                                                       body.roster_id)
         if sell is not None:
             facts["sell_high"] = sell
         answers = await anyio.to_thread.run_sync(asker.jev.ask, lift_state(team, live.snapshot.week, facts),
@@ -188,8 +192,10 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
     if start is not None:
         store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
         tasks.add_task(head_start, asker, store, live, start, body.roster_id, request.app.state.personal_model)
+    # The sell high Noul joins the lift Nouls in the log, so a run shows why sell high has a fact or none.
+    nouls = answers.nouls if sell_clear is None else {**answers.nouls, SELL_NOUL: sell_clear}
     return {"picks": picks, "facts": facts, "lifts": lifts, "urgent": urgent, "head_start": start,
-            "jev": {"model": answers.model, "nouls": answers.nouls, "choices": {SELL_CHOICE: sell_choice}}}
+            "jev": {"model": answers.model, "nouls": nouls, "choices": {SELL_CHOICE: sell_choice}}}
 
 
 @router.post("/personal/current")
