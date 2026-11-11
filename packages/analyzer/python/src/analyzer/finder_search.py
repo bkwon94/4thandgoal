@@ -79,6 +79,15 @@ class Anchor(BaseModel):
     side: Literal["gives", "gets"]
 
 
+class Limit(BaseModel):
+    """The limit that the manager sets on trade ideas: the positions and the players that his team never sends, and
+    one position to get. It is the manager's own hard rule, so code drops each offer that breaks it."""
+
+    keep_positions: list[str] = []
+    keep_players: list[str] = []
+    aim_position: str | None = None
+
+
 class PartnerRead(BaseModel):
     """The partner filter of one partner: the probability of yes of each of the four questions, and the result."""
 
@@ -163,11 +172,34 @@ def _described(snapshot: Snapshot, pid: str) -> str:
     return f"{player.name} ({player.position}, {player.nfl_team or 'no team'})"
 
 
+def _allowed(snapshot: Snapshot, pid: str, owner: int, asker: int, limit: Limit | None) -> bool:
+    """True when the limit lets the player move: a player of the asker that the limit keeps stays, and a player of the
+    partner must play the position to get, when the limit has one."""
+    if limit is None:
+        return True
+    position = snapshot.players[pid].position
+    if owner == asker:
+        return pid not in limit.keep_players and position not in limit.keep_positions
+    return limit.aim_position is None or position == limit.aim_position
+
+
+def _within(trade: ProposedTrade, snapshot: Snapshot, limit: Limit | None) -> bool:
+    """True when the trade keeps the limit: the asker's side sends no kept player and no player of a kept position,
+    and the partner's side sends a player of the position to get, when the limit has one."""
+    if limit is None:
+        return True
+    mine, theirs = trade.sides[0].player_ids, trade.sides[1].player_ids
+    if any(pid in limit.keep_players or snapshot.players[pid].position in limit.keep_positions for pid in mine):
+        return False
+    return limit.aim_position is None or any(snapshot.players[pid].position == limit.aim_position for pid in theirs)
+
+
 def _target_questions(snapshot: Snapshot, asker: int, partner: int,
-                      anchor: Anchor | None = None) -> dict[str, NoulQuestion]:
+                      anchor: Anchor | None = None, limit: Limit | None = None) -> dict[str, NoulQuestion]:
     """One question per pool player of each side: "<roster id>.<player id>" asks if the other side wants him.
 
     With an anchor, each player who would go to the team that gives the anchor gets the anchor target question.
+    With a limit, a player that the limit does not let move gets no question, so the targets of each side fit it.
     """
     questions = {}
     giver = None if anchor is None else asker if anchor.side == "gives" else partner
@@ -179,7 +211,7 @@ def _target_questions(snapshot: Snapshot, asker: int, partner: int,
             fill |= {"anchor": _described(snapshot, anchor.player_id),
                      "anchor_name": snapshot.players[anchor.player_id].name}
         for pid in snapshot.rosters[owner]:
-            if not in_pool(snapshot, pid, owner):
+            if not in_pool(snapshot, pid, owner) or not _allowed(snapshot, pid, owner, asker, limit):
                 continue
             words = {**fill, "player": _described(snapshot, pid), "name": snapshot.players[pid].name}
             questions[f"{owner}.{pid}"] = NoulQuestion(
@@ -270,7 +302,7 @@ def _log_target_questions(snapshot: Snapshot, partner: int, keys: list[str], nou
 
 
 def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves: JevWaves | None = None,
-           stage: Stage = quiet, anchor: Anchor | None = None) -> Shortlist:
+           stage: Stage = quiet, anchor: Anchor | None = None, limit: Limit | None = None) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
     1. The partner filter: four Jev questions per partner. Only a partner with four yes answers goes on.
@@ -281,6 +313,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     A failed Jev request drops what it would judge, and it logs. It never reads as a no and never stops the press.
     With an `anchor`, he is a target of his side, and each offer holds him on that side (a hard rule). An anchor that
     the asker gets keeps the search to his roster, because only that roster can give him.
+    With a `limit`, no offer sends a player that the manager keeps, and each offer brings back the position that he
+    aims at (a hard rule, because the manager set it).
     `stage` gets one plain line after the partner filter, the offers, and the shortlist. The default drops them.
     """
     waves = waves or JevWaves(jev)
@@ -308,7 +342,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     stage(f"Checked {len(partners)} teams for a fit" if len(partners) > 1 else "Checked the other team for a fit")
     stage("Building offers", live=True)
 
-    target_questions = {rid: _target_questions(snapshot, asker, rid, anchor) for rid in passing}
+    target_questions = {rid: _target_questions(snapshot, asker, rid, anchor, limit) for rid in passing}
     rated = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid), target_questions[rid])
                        for rid in passing}, "targets")
     targets: dict[int, dict[str, list[str]]] = {}
@@ -329,7 +363,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
                  [snapshot.players[pid].name for pid in sides["asker"]],
                  [snapshot.players[pid].name for pid in sides["partner"]])
         built = build_offers(asker, rid, sides["asker"], sides["partner"], snapshot)
-        offers_by_partner[rid] = [trade for trade in built if anchor is None or _holds(trade, anchor)]
+        offers_by_partner[rid] = [trade for trade in built
+                                  if (anchor is None or _holds(trade, anchor)) and _within(trade, snapshot, limit)]
     offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
     log.info("Finder offers of %s: %d", snapshot.teams[asker].name, len(offers))
     stage(f"Built {len(offers)} offers" if len(offers) != 1 else "Built one offer")

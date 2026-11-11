@@ -4,6 +4,7 @@
  */
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AskError, type AskAnswer } from "./ask-api";
+import type { Turn } from "./chat-turns";
 import type { TradeAnswer, TradeRead, TradeRequest } from "./trade-api";
 import type { FreeResult } from "./free-stream";
 import { type PersonalBlock, type PersonalResult, type PersonalTopic, isPersonal } from "./personal-stream";
@@ -58,6 +59,13 @@ export function tradeRequestOf(entry: { mode: TradeMode; question: string; answe
     return { mode: "ideas", roster_id: rosterId, partner, question: entry.question };
   }
   return { mode: "sell", roster_id: rosterId };
+}
+
+/* The request of a typed question that routes to trade ideas: the team that the question names as the partner, never
+   Your team, with the typed question and the earlier turns of the Thread. */
+export function ideasRequestOf(route: { team: number | null }, question: string, rosterId: number, turns: Turn[]): TradeRequest {
+  const partner = route.team !== null && route.team !== rosterId ? route.team : null;
+  return { mode: "ideas", roster_id: rosterId, partner, question, turns };
 }
 
 /* The line of each trade Topic in "More". A fact of the API takes its place when the API serves one. */

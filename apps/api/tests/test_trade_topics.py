@@ -16,13 +16,23 @@ from test_api import CLIENT, HEADERS, StubAdvisor, StubPicker, StubRepair, _cpc,
 from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import finder_cache_key
 from analyzer.finder_pick import pick_trades
-from analyzer.finder_search import Anchor, search
+from analyzer.finder_search import Anchor, Limit, search
 from analyzer.trade_news import NewsFeed
 from analyzer.values import AnalyzerValues
 from cornerstone_api.app import create_app
 from cornerstone_api.caps import TEAM_LINE
 from cornerstone_api.trade_topics import NO_ONE_PLAYER
-from cornerstone_api.trade_wording import GETS_NAMED, GETS_PLAYER, GIVES_NAMED, GIVES_PLAYER
+from cornerstone_api.trade_wording import (
+    AIM_POSITION,
+    AIMS_POSITION,
+    GETS_NAMED,
+    GETS_PLAYER,
+    GIVES_NAMED,
+    GIVES_PLAYER,
+    KEEPS_NAMED,
+    KEEPS_POSITION,
+    KEPT_PLAYER,
+)
 from facts.writer import ClaudeWriter
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.provider.sleeper import load_raw
@@ -42,6 +52,9 @@ HALF_TRADE = "is Khalil Shakir for their WR fair"
 GIVE_IDEAS = "trade ideas for khalil shakir"
 GET_IDEAS = "trade ideas to get zay flowers"
 VAGUE_IDEAS = "any trade ideas for my team"
+NO_TE = "id rather not trade a TE"
+KEEP_SHAKIR = "keep shakir"
+FOR_A_TE = "what about for a TE"
 SHAKIR = "8134"
 FLOWERS = "9997"
 # The words that site copy never holds (decision 08 and the copy rules of the spec).
@@ -55,18 +68,30 @@ PICKS = {
     GIVE_IDEAS: {GIVES_NAMED: 0.96, GETS_NAMED: 0.05, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
     GET_IDEAS: {GIVES_NAMED: 0.04, GETS_NAMED: 0.95, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
     VAGUE_IDEAS: {GIVES_NAMED: 0.05, GETS_NAMED: 0.06, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
+    NO_TE: {GIVES_NAMED: 0.05, GETS_NAMED: 0.04, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers",
+            KEEPS_POSITION["TE"]: 0.95},
+    KEEP_SHAKIR: {GIVES_NAMED: 0.2, GETS_NAMED: 0.04, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers",
+                  KEEPS_NAMED: 0.94, KEPT_PLAYER: "Khalil Shakir"},
+    FOR_A_TE: {GIVES_NAMED: 0.05, GETS_NAMED: 0.1, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers",
+               AIMS_POSITION: 0.93, AIM_POSITION: "TE"},
 }
 
 
 def _answer(key: str, question: NoulQuestion, state: dict) -> float:
-    """The Noul answers of a pick request by its question, and a yes for each Noul of the Advisor and the Finder."""
+    """The Noul answers of a pick request by its question, and a yes for each Noul of the Advisor and the Finder. A Noul
+    of the limit that PICKS does not name is a no, so a question sets no limit unless it says one."""
     picks = PICKS.get(state.get("manager_question", ""))
-    return picks[key] if picks is not None and key in picks else 0.9
+    if picks is None:
+        return 0.9
+    return picks.get(key, 0.05)
 
 
 def _choose(key: str, question: ChoiceQuestion, state: dict) -> dict[str, float]:
-    """Each Choice of a pick request puts its weight on the player of PICKS, by the name in its option text."""
-    name = PICKS[state["manager_question"]][key]
+    """Each Choice of a pick request puts its weight on the player of PICKS, by the name in its option text. A Choice
+    that PICKS does not name spreads its weight."""
+    name = PICKS[state["manager_question"]].get(key)
+    if name is None:
+        return {option: 1 / len(question.options) for option in question.options}
     return {option: (0.95 if text.startswith(name + " ") else 0.0) for option, text in question.options.items()}
 
 
@@ -137,7 +162,7 @@ def test_the_stream_holds_each_player_pick_with_its_jev_answers(api):
 def test_one_jev_request_picks_each_side_from_the_real_rosters(api, jev):
     _check(api, VAGUE_TRADE)
     [request] = [r for r in jev.requests if "manager_question" in r.state]
-    assert set(request.questions) == {GIVES_NAMED, GIVES_PLAYER, GETS_NAMED, GETS_PLAYER}
+    assert {GIVES_NAMED, GIVES_PLAYER, GETS_NAMED, GETS_PLAYER} <= set(request.questions)
     gives = request.questions[GIVES_PLAYER].options.values()
     gets = request.questions[GETS_PLAYER].options.values()
     # Your team gives from its own roster, and gets from each roster of the 11 other teams.
@@ -371,8 +396,10 @@ def test_trade_ideas_with_a_partner_read_only_the_two_rosters(settings, sources,
     assert not current(partner, "trade_ideas", key["key"], BO_GIRDS)
 
 
-def _ideas(api, question: str | None = None):
+def _ideas(api, question: str | None = None, turns: list[dict] | None = None):
     body = {"roster_id": LIL_FRIDGE} if question is None else {"roster_id": LIL_FRIDGE, "question": question}
+    if turns is not None:
+        body["turns"] = turns
     return _parts(api.post(IDEAS, json=body, headers=HEADERS))
 
 
@@ -385,7 +412,7 @@ def test_a_typed_question_of_trade_ideas_goes_with_one_jev_pick_over_the_real_ro
     [request] = _pick_requests(jev)
     assert request.state["manager_question"] == GIVE_IDEAS
     assert "trade ideas" in request.state["context"]
-    assert set(request.questions) == {GIVES_NAMED, GIVES_PLAYER, GETS_NAMED, GETS_PLAYER}
+    assert {GIVES_NAMED, GIVES_PLAYER, GETS_NAMED, GETS_PLAYER} <= set(request.questions)
     assert any(text.startswith("Khalil Shakir (WR") for text in request.questions[GIVES_PLAYER].options.values())
     assert any(text.startswith("Zay Flowers (WR") for text in request.questions[GETS_PLAYER].options.values())
     [picks] = _of(parts, "data-picks")
@@ -474,3 +501,66 @@ def test_each_stage_of_a_trade_check_sends_a_live_line_then_its_done_line(api):
         "Checking the players on each side", "Checking each number of the read"]
     assert live_then_done(steps) == [
         "Found Khalil Shakir and Zay Flowers", "Checked the players on each side", "Checked each number of the read"]
+
+
+# The trade turn before a follow-up, as the site sends it.
+IDEAS_TURN = {"question": "Trade ideas", "answer": "2 offers. Offer 1: Lil Fridge gives Khalil Shakir. Bo Girds gives "
+                                                  "Zay Flowers. Offer 2: Lil Fridge gives Derrick Henry. Teehee gives "
+                                                  "Jalen Hurts."}
+
+
+def _positions(side: dict) -> list[str]:
+    return [player["position"] for player in side["gives"]]
+
+
+def test_a_follow_up_reads_its_limit_with_the_pick_in_one_request_over_the_turns(api, jev):
+    parts = _ideas(api, NO_TE, [IDEAS_TURN])
+    [request] = _pick_requests(jev)
+    assert request.state["earlier_turns"] == [IDEAS_TURN]
+    assert set(KEEPS_POSITION.values()) | {KEEPS_NAMED, KEPT_PLAYER, AIMS_POSITION, AIM_POSITION} <= set(request.questions)
+    [limit] = _of(parts, "data-limit")
+    assert limit == {"keep_positions": ["TE"], "keep_players": [], "aim_position": None}
+
+
+def test_a_follow_up_that_keeps_each_te_gives_no_offer_that_sends_a_te_away(api):
+    plain = _of(_ideas(api), "data-answer")[0]["document"]["trades"]
+    # The plain list sends a TE away, so the limit has an offer to drop.
+    assert any("TE" in _positions(trade["sides"][0]) for trade in plain)
+    parts = _ideas(api, NO_TE, [IDEAS_TURN])
+    lines = [step["line"] for step in _of(parts, "data-step")]
+    assert "Left out each offer that sends away a TE" in lines
+    assert NO_ONE_PLAYER not in lines
+    trades = _of(parts, "data-answer")[0]["document"]["trades"]
+    assert trades
+    assert all("TE" not in _positions(trade["sides"][0]) for trade in trades)
+
+
+def test_a_follow_up_that_keeps_one_player_gives_no_offer_that_sends_him_away(api):
+    parts = _ideas(api, KEEP_SHAKIR, [IDEAS_TURN])
+    assert "Left out each offer that sends away Khalil Shakir" in [step["line"] for step in _of(parts, "data-step")]
+    trades = _of(parts, "data-answer")[0]["document"]["trades"]
+    assert trades
+    assert all(SHAKIR not in [player["player_id"] for player in trade["sides"][0]["gives"]] for trade in trades)
+
+
+def test_a_follow_up_that_aims_at_a_position_gives_offers_that_bring_one_back(api):
+    parts = _ideas(api, FOR_A_TE, [IDEAS_TURN])
+    assert "Looked only for offers that bring back a TE" in [step["line"] for step in _of(parts, "data-step")]
+    trades = _of(parts, "data-answer")[0]["document"]["trades"]
+    assert trades
+    assert all("TE" in _positions(trade["sides"][1]) for trade in trades)
+
+
+def test_no_limit_line_names_an_inner_tool(api):
+    lines = [step["line"] for question in (NO_TE, KEEP_SHAKIR, FOR_A_TE)
+             for step in _of(_ideas(api, question, [IDEAS_TURN]), "data-step")]
+    assert not any(word in line.lower() for line in lines for word in INNER_NAMES)
+
+
+def test_the_kept_answer_key_holds_the_limit(settings, sources):
+    snapshot = _here(sources, settings).snapshot(2026)
+    plain = finder_cache_key(2026, LIL_FRIDGE, None, snapshot)
+    no_wr = finder_cache_key(2026, LIL_FRIDGE, None, snapshot, limit=Limit(keep_positions=["WR"]))
+    keep = finder_cache_key(2026, LIL_FRIDGE, None, snapshot, limit=Limit(keep_players=[SHAKIR]))
+    te = finder_cache_key(2026, LIL_FRIDGE, None, snapshot, limit=Limit(aim_position="TE"))
+    assert len({plain, no_wr, keep, te}) == 4

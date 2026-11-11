@@ -18,7 +18,7 @@ from analyzer.advisor import AdvisorFailed, TradeRead
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key, sell_high_cache_key
 from analyzer.errors import season_in_progress
 from analyzer.finder_pick import FinderPicks
-from analyzer.finder_search import Anchor, Shortlist
+from analyzer.finder_search import Anchor, Limit, Shortlist
 from analyzer.ratelimit import GradeLimiter, request_address
 from analyzer.sell_high import SellHigh, SellHighFailed
 from analyzer.stage import Stage
@@ -295,12 +295,14 @@ class FindRequest(BaseModel):
 
     The partner is optional. With no partner, the search runs over every other team of the league.
     The anchor is optional too. With an anchor, each offer holds that one player on his side.
+    The limit is optional too. With a limit, no offer breaks it.
     """
 
     season: int
     asker: int
     partner: int | None = None
     anchor: Anchor | None = None
+    limit: Limit | None = None
 
 
 def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
@@ -377,15 +379,17 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
         # The same words as check_trade, so the form shows one message for a roster that is gone.
         raise HTTPException(status_code=422, detail={"message": f"Roster {gone[0]} is not in the league"})
     cache = served.cache
-    key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot, pair.anchor)
+    key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot, pair.anchor, pair.limit)
     cached = cache.get(key)
     if cached is not None:
         return cached
     # The count comes after the cache, because a cached repeat runs no finder and makes no Claude call.
     _count_grade(request, served)
     # The search gets the anchor keyword only with an anchor, as it gets the stage, so a search with no anchor runs
-    # as it always has.
+    # as it always has. The limit keyword goes the same way.
     anchored = {} if pair.anchor is None else {"anchor": pair.anchor}
+    if pair.limit is not None:
+        anchored["limit"] = pair.limit
     if stage is None:
         shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **anchored)
         picks = request.app.state.finder_pick(shortlist, snapshot)

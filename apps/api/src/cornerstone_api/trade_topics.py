@@ -17,18 +17,25 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from analyzer import routes as analyzer_routes
-from analyzer.finder_search import Anchor
+from analyzer.finder_search import Anchor, Limit
 from analyzer.routes import FindRequest, ServedClient
 from analyzer.stage import Stage
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from cornerstone_api.ask import QUESTION_MAX, YES, Asker, ClientAsker
+from cornerstone_api.chat_turns import Turn, Turns, with_turns
 from cornerstone_api.trade_wording import (
+    AIM_POSITION,
+    AIMS_POSITION,
     CONTEXT,
     GETS_NAMED,
     GETS_PLAYER,
     GIVES_NAMED,
     GIVES_PLAYER,
     IDEAS_CONTEXT,
+    KEEPS_NAMED,
+    KEEPS_POSITION,
+    KEPT_PLAYER,
+    limit_questions,
     option_keys,
     pick_questions,
     pick_state,
@@ -100,11 +107,13 @@ def _top(probabilities: dict[str, float]) -> tuple[str, float]:
     return key, probabilities[key]
 
 
-def pick_players(jev: Jev, question: str, teams: list[dict], asker: int,
-                 context: str = CONTEXT) -> tuple[Pick, Pick, JevResponse]:
+def pick_players(jev: Jev, question: str, teams: list[dict], asker: int, context: str = CONTEXT,
+                 turns: list[Turn] | None = None, limit: bool = False) -> tuple[Pick, Pick, JevResponse]:
     """One Jev request for the player that the manager gives and the player that the manager gets, over the real
     rosters of `teams`, as the teams route gives them. `context` says what the manager asks for: a trade check by
-    default, or trade ideas. A failed request raises JevError."""
+    default, or trade ideas. The earlier `turns` of the Thread go in the state, so a follow-up reads like the whole
+    question. With `limit`, the same request asks the questions of the limit of trade ideas, for `read_limit`. A failed
+    request raises JevError."""
     team_of = {player["player_id"]: team for team in teams for player in team["players"]}
     mine = next(team for team in teams if team["roster_id"] == asker)
     others = [team for team in teams if team["roster_id"] != asker]
@@ -116,10 +125,14 @@ def pick_players(jev: Jev, question: str, teams: list[dict], asker: int,
     gets = {player["player_id"]: line(player, team["team"]) for team in others for player in team["players"]}
     give_keys = option_keys({pid: _name(team_of[pid], pid) for pid in gives})
     get_keys = option_keys({pid: _name(team_of[pid], pid) for pid in gets})
-    state = pick_state(question, mine["team"], list(gives.values()),
-                       {team["team"]: [line(player) for player in team["players"]] for team in others}, context)
-    answers = jev.ask(state, pick_questions({give_keys[pid]: text for pid, text in gives.items()},
-                                            {get_keys[pid]: text for pid, text in gets.items()}))
+    state = with_turns(pick_state(question, mine["team"], list(gives.values()),
+                                  {team["team"]: [line(player) for player in team["players"]] for team in others},
+                                  context), turns or [])
+    give_options = {give_keys[pid]: text for pid, text in gives.items()}
+    questions = pick_questions(give_options, {get_keys[pid]: text for pid, text in gets.items()})
+    if limit:
+        questions |= limit_questions(give_options)
+    answers = jev.ask(state, questions)
 
     def side(named: str, choice: str, keys: dict[str, str]) -> Pick:
         key, probability = _top(answers.choices[choice])
@@ -128,6 +141,45 @@ def pick_players(jev: Jev, question: str, teams: list[dict], asker: int,
                     roster_id=team_of[pid]["roster_id"])
 
     return side(GIVES_NAMED, GIVES_PLAYER, give_keys), side(GETS_NAMED, GETS_PLAYER, get_keys), answers
+
+
+@dataclass(frozen=True)
+class ReadLimit:
+    """The limit that one Jev request read from a question of trade ideas, and the name of each kept player for the
+    step line."""
+
+    limit: Limit
+    kept_names: list[str]
+
+    @property
+    def empty(self) -> bool:
+        return not (self.limit.keep_positions or self.limit.keep_players or self.limit.aim_position)
+
+
+def read_limit(answers: JevResponse, teams: list[dict], asker: int) -> ReadLimit:
+    """The limit of trade ideas from the answers of a pick request with `limit`. Each part needs a sure yes, as a pick
+    does: a position Noul above YES keeps that position, and a Noul and its Choice above YES keep a player or aim at a
+    position. An unsure part sets nothing, so the search runs as a tap does."""
+    mine = next(team for team in teams if team["roster_id"] == asker)
+    names = {player["player_id"]: player["name"] for player in mine["players"]}
+    keep_positions = [position for position, key in KEEPS_POSITION.items() if answers.nouls[key] > YES]
+    kept: list[str] = []
+    key, probability = _top(answers.choices[KEPT_PLAYER])
+    if answers.nouls[KEEPS_NAMED] > YES and probability > YES:
+        kept = [pid for pid, option in option_keys(names).items() if option == key]
+    aim, probability = _top(answers.choices[AIM_POSITION])
+    aim_position = aim if answers.nouls[AIMS_POSITION] > YES and probability > YES else None
+    return ReadLimit(limit=Limit(keep_positions=keep_positions, keep_players=kept, aim_position=aim_position),
+                     kept_names=[names[pid] for pid in kept])
+
+
+def limit_lines(read: ReadLimit) -> list[str]:
+    """The plain step lines of a limit: one per kept position or player, and one for the position to get."""
+    lines = [f"Left out each offer that sends away a {position}" for position in read.limit.keep_positions]
+    lines += [f"Left out each offer that sends away {name}" for name in read.kept_names]
+    if read.limit.aim_position is not None:
+        lines.append(f"Looked only for offers that bring back a {read.limit.aim_position}")
+    return lines
 
 
 def ideas_anchor(gives: Pick, gets: Pick) -> tuple[Anchor, Pick] | None:
@@ -274,12 +326,13 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
 
 
 class TradeIdeasRequest(BaseModel):
-    """The body of trade ideas: the roster id of Your team, the partner roster that a typed question names, and the
-    typed question. A tap of the Suggestion sends no question."""
+    """The body of trade ideas: the roster id of Your team, the partner roster that a typed question names, the typed
+    question, and the earlier turns of the Thread, oldest first. A tap of the Suggestion sends no question."""
 
     roster_id: int
     partner: int | None = None
     question: str | None = Field(default=None, min_length=1, max_length=QUESTION_MAX)
+    turns: Turns = Field(default_factory=list)
 
 
 @router.post("/trade-ideas")
@@ -290,26 +343,37 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
 
     A typed question goes first to one Jev pick of the player it names. With a sure pick, each offer holds him on his
     side, and a player that the manager gets makes his team the partner. An unsure pick says so in a step line, and
-    the search aims at the weakest slot, as a tap does.
+    the search aims at the weakest slot, as a tap does. The same request reads the limit of the question with the turns
+    of the Thread, such as "not a WR" after earlier trade ideas, and no offer breaks it.
     """
     teams = _teams(asker, served, body.roster_id)
 
     def work(emit: Emit) -> None:
         step = _step(emit)
-        anchor, partner = None, body.partner
+        anchor, partner, limit = None, body.partner, None
         if body.question is not None:
-            gives, gets, answers = pick_players(asker.jev, body.question.strip(), teams, body.roster_id, IDEAS_CONTEXT)
+            gives, gets, answers = pick_players(asker.jev, body.question.strip(), teams, body.roster_id, IDEAS_CONTEXT,
+                                                body.turns, limit=True)
             emit("data-picks", {"model": answers.model, "gives": {**asdict(gives), "sure": gives.sure},
                                 "gets": {**asdict(gets), "sure": gets.sure}})
+            read = read_limit(answers, teams, body.roster_id)
+            emit("data-limit", read.limit.model_dump())
             picked = ideas_anchor(gives, gets)
-            if picked is None:
+            # The manager's keep wins over a give pick of the same player, because "keep Walker" names him too.
+            if picked is not None and picked[0].side == "gives" and picked[0].player_id in read.limit.keep_players:
+                picked = None
+            if not read.empty:
+                limit = read.limit
+            if picked is None and limit is None:
                 step(NO_ONE_PLAYER)
-            else:
+            if picked is not None:
                 anchor, pick = picked
                 step(f"Found {pick.name}")
                 if anchor.side == "gets":
                     partner = pick.roster_id
-        pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, anchor=anchor)
+            for line in [] if limit is None else limit_lines(read):
+                step(line)
+        pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, anchor=anchor, limit=limit)
         document = capped_press(asker, body.roster_id, emit,
                                 lambda: analyzer_routes.find_trades(request, pair, served, step))
         if document is not None:

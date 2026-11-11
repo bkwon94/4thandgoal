@@ -5,6 +5,7 @@
 import { z } from "zod";
 import { analyzeResponseSchema, asOfSchema, bulletSchema, findResponseSchema, tradedPlayerSchema } from "@cpc/analyzer/lib/schemas/api";
 import { AskError, type AskTarget, postClient, statusError } from "./ask-api";
+import type { Turn } from "./chat-turns";
 
 /* The form of the Trade page for an unsure pick: Your team, the partner of a sure player, and each sure player. */
 export const tradeFormSchema = z.object({
@@ -60,10 +61,11 @@ export type TradeEvents = {
 };
 
 /* The body of each route: the typed question of a trade check, or the partner that a question of trade ideas names
-   with the typed question. A tap of trade ideas sends no question. */
+   with the typed question and the earlier turns of the Thread, so a follow-up such as "not a WR" reads as a limit on
+   the ideas before it. A tap of trade ideas sends no question. */
 export type TradeRequest =
   | { mode: "check"; question: string; roster_id: number }
-  | { mode: "ideas"; roster_id: number; partner: number | null; question?: string }
+  | { mode: "ideas"; roster_id: number; partner: number | null; question?: string; turns?: Turn[] }
   | { mode: "sell"; roster_id: number };
 
 /* The step lines of a trade stream so far, and whether the last line is a live line. */

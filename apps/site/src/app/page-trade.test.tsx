@@ -170,7 +170,7 @@ describe("the trade ideas of Lil Fridge", () => {
     render(<HomePage />);
     await ask("any trades with Bo Girds");
     await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
-    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({ roster_id: 3, partner: 6, question: "any trades with Bo Girds" });
+    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({ roster_id: 3, partner: 6, question: "any trades with Bo Girds", turns: [] });
   });
 
   it("sends a typed question of trade ideas around one player, so the API can find him", async () => {
@@ -179,7 +179,23 @@ describe("the trade ideas of Lil Fridge", () => {
     render(<HomePage />);
     await ask("trade ideas for kenneth walker");
     await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
-    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({ roster_id: 3, partner: null, question: "trade ideas for kenneth walker" });
+    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({ roster_id: 3, partner: null, question: "trade ideas for kenneth walker", turns: [] });
+  });
+
+  it("sends a follow-up of trade ideas with the trade turn before it, so the API reads its limit (H18)", async () => {
+    streamOf("/trade-ideas", ideasStream);
+    render(<HomePage />);
+    await openTopic("Trade ideas");
+    await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
+    await screen.findByRole("article", { name: "Trade ideas", busy: false });
+    routeTo("trade_ideas");
+    await ask("id rather not trade a WR");
+    await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(2));
+    const body = JSON.parse(callsTo("/trade-ideas")[1][1].body);
+    expect(body.question).toBe("id rather not trade a WR");
+    expect(body.turns).toHaveLength(1);
+    expect(body.turns[0].question).toBe("Trade ideas");
+    expect(body.turns[0].answer).toMatch(/^\d+ offers?\. Offer 1: /);
   });
 
   it("shows each plain step one by one before the whole Answer (AT-28)", async () => {

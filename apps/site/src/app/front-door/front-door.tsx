@@ -15,7 +15,7 @@ import { analyzeHref } from "@/lib/routes";
 import { type AskTarget, AskError, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
 import { turnsBefore } from "./chat-turns";
-import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem, itemOfError, itemOfRoute, tradePartner, tradeRequestOf } from "./ask-thread";
+import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem, ideasRequestOf, itemOfError, itemOfRoute, tradePartner, tradeRequestOf } from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
 import { CapCard, MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
 import { GLIDE, riseIn } from "./motion";
@@ -252,15 +252,13 @@ export function FrontDoor({
     }
     put(id, { kind: "pending", question }, append);
     try {
-      const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns: turnsOf(id) });
+      const turns = turnsOf(id);
+      const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns });
       const mode = route.route === "topic" && route.topic ? TRADE_TOPICS[route.topic] : undefined;
       // A trade Topic needs the trade judge, so the typed question goes on to its route with the team it names.
       if (mode === "check") return void (await runTrade(id, question, { mode, question, roster_id: team.id }, passphrase, route.closest));
       if (mode === "sell") return void (await runTrade(id, question, { mode, roster_id: team.id }, passphrase, route.closest));
-      if (mode === "ideas") {
-        const partner = route.team !== null && route.team !== team.id ? route.team : null;
-        return void (await runTrade(id, question, { mode, roster_id: team.id, partner, question }, passphrase, route.closest));
-      }
+      if (mode === "ideas") return void (await runTrade(id, question, ideasRequestOf(route, question, team.id, turns), passphrase, route.closest));
       put(id, itemOfRoute(route, question, team.id, answers));
     } catch (error) {
       if (error instanceof AskError && error.status === 401) clearPassphrase();
