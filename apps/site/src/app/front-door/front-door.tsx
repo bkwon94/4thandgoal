@@ -6,7 +6,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { type CSSProperties, Fragment, useEffect, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -144,6 +144,18 @@ export function FrontDoor({
       live = false;
     };
   }, [teamId, keptSignature, askTarget]);
+
+  // The dock changes its height with the chips, "More", and the width, so the section keeps it as --door-dock. The newest
+  // turn of the Thread reads it to hold the view under the Thread header (thread.tsx).
+  const dock = useRef<HTMLDivElement>(null);
+  const [dockHeight, setDockHeight] = useState(0);
+  useEffect(() => {
+    const element = dock.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => setDockHeight(element.offsetHeight));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [teamId, off, thread.length === 0]);
 
   // A new Answer scrolls to its top, so the manager reads it from the question down.
   useEffect(() => {
@@ -314,6 +326,7 @@ export function FrontDoor({
           an Answer, it reads top to bottom, and the chips and the ask box sit at its foot, clear of the home bar. */}
       <section
         aria-label="Thread"
+        style={{ "--door-dock": `${dockHeight}px` } as CSSProperties}
         className={`mx-auto flex min-h-door-fill w-full max-w-door desktop:min-h-door-fill-desktop flex-col px-gutter ${empty ? "justify-center pt-sp-6 pb-door-lift" : "justify-end pt-sp-2"}`}
       >
         {team && (
@@ -486,6 +499,7 @@ export function FrontDoor({
               // size animation would stretch the ask box and the chips on the way. With motion off, the dock mounts again
               // at its new place, so each part fades in there and the ask box never jumps at full opacity (AT-46).
               key={off ? (empty ? "dock-center" : "dock-foot") : "dock"}
+              ref={dock}
               layout={off ? false : "position"}
               transition={{ layout: GLIDE }}
               className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter bg-page/90 px-gutter pt-sp-3 pb-sp-3 backdrop-blur-md desktop:bottom-0"}`}
