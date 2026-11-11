@@ -18,12 +18,14 @@ export function Suggestions({
   picks,
   facts,
   moreOpen,
+  wrap,
   onMore,
   onPick,
 }: {
   picks: string[];
   facts: Record<string, string>;
   moreOpen: boolean;
+  wrap: boolean;
   onMore: (open: boolean) => void;
   onPick: (key: string) => void;
 }) {
@@ -32,16 +34,26 @@ export function Suggestions({
   const topics = picks.map((key) => TOPICS.find((topic) => topic.key === key)).filter((topic): topic is Topic => !!topic);
   return (
     <div className="flex flex-col gap-sp-2">
-      {/* The row wraps, so all 3 chips show whole at each width and none hides past the edge (AT-4). On a phone "More"
-          and the first chip share the first line, and the other two chips share the second. A chip grows from a base of
-          9rem up to its cap, and a long fact cuts with an ellipsis after its number. */}
-      <div role="group" aria-label="Suggestions" className="flex flex-wrap gap-sp-2">
+      {/* With an empty Thread the row wraps, so all 3 chips show whole at each width and none hides past the edge (AT-4).
+          On a phone "More" and the first chip share the first line, and the other two chips share the second. With
+          Answers in the Thread the row sits in the dock at the foot, and two lines of chips would hide the Answers, so
+          it stays one row that scrolls sideways (the PRD). The bleed keeps the last chip clear of the gutter. A chip
+          grows from a base of 9rem up to its cap, and a long fact cuts with an ellipsis after its number. */}
+      <div
+        role="group"
+        aria-label="Suggestions"
+        className={
+          wrap
+            ? "flex flex-wrap gap-sp-2"
+            : "-mx-gutter flex snap-x scroll-px-gutter flex-nowrap gap-sp-2 overflow-x-auto overscroll-x-contain px-gutter pb-sp-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        }
+      >
         <button
           type="button"
           aria-expanded={moreOpen}
           aria-controls={panelId}
           onClick={() => onMore(!moreOpen)}
-          className="press door-sheen flex min-h-touch flex-none items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+          className={`press door-sheen flex min-h-touch flex-none ${wrap ? "" : "snap-start"} items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised`}
         >
           <span>More</span>
           <ChevronDownIcon
@@ -64,7 +76,7 @@ export function Suggestions({
               animate={off ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }}
               transition={off ? fadeIn(FAST, index * STAGGER) : { ...CHIP_GLIDE, layout: GLIDE, opacity: fadeIn(FAST, index * STAGGER) }}
-              className="press door-sheen flex min-h-touch max-w-chip min-w-0 flex-[1_1_9rem] flex-col items-start justify-center gap-sp-0 rounded-tile border border-door-hair bg-card px-sp-4 py-sp-2 text-left transition-colors duration-150 hover-fine:bg-raised"
+              className={`press door-sheen flex min-h-touch max-w-chip ${wrap ? "min-w-0 flex-[1_1_9rem]" : "flex-none snap-start"} flex-col items-start justify-center gap-sp-0 rounded-tile border border-door-hair bg-card px-sp-4 py-sp-2 text-left transition-colors duration-150 hover-fine:bg-raised`}
             >
               <span aria-hidden className="max-w-full truncate text-body leading-tight font-semibold text-ink">
                 {topic.name}

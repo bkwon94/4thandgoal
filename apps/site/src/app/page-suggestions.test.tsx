@@ -145,6 +145,22 @@ describe("the Suggestions that the API serves", () => {
   });
 });
 
+describe("the layout of the Suggestions row", () => {
+  it("wraps while the Thread is empty and scrolls sideways in one row once the Thread has Answers (AT-4)", async () => {
+    onWednesday();
+    streams.push(() => sse(fixture("personal-answer", "waiver-targets.sse")));
+    render(<HomePage />);
+    const row = await screen.findByRole("group", { name: "Suggestions" });
+    expect(row.className).toContain("flex-wrap");
+    await waitFor(async () => expect((await suggestionChips()).map((chip) => chip.getAttribute("aria-label"))).toContain("Waiver targets: 19 free agents on the list"));
+    fireEvent.click(screen.getByRole("button", { name: "Waiver targets: 19 free agents on the list" }));
+    await waitFor(() => expect(screen.getByRole("group", { name: "Suggestions" }).className).toContain("flex-nowrap"));
+    const docked = screen.getByRole("group", { name: "Suggestions" });
+    expect(docked.className).toContain("overflow-x-auto");
+    expect(docked.className).not.toContain("flex-wrap");
+  });
+});
+
 describe("the trade Topics as Suggestions", () => {
   it("show trade ideas with its fact, and a tap runs the Topic and drops the chip", async () => {
     onThursday();
