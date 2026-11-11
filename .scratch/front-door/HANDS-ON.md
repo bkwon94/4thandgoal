@@ -19,6 +19,8 @@ After the triage, each issue that blocks becomes a ticket from 13 up. Then the e
 | H9 | The copy says "front door", and the miss runs long. | The refusal line says "not a question the front door answers". The miss line lists what the site lacks. Two prompts tell Claude and Jev they write "on the front door". | Brian: never say front door; if it cannot answer, just say so | blocks: ticket 20 (miss and refusal say "I can't answer that.", prompts drop the phrase) |
 | H10 | Text streams, then a different answer replaces it. | Claude's text streams before the Jev check. A failed text gets a rewrite that replaces it. | Brian chose: hold, then reveal | blocks: ticket 21 (step lines only until the check passes, then the word reveal) |
 | H11 | "Cant choose mine" after "who has best roster" gives the miss. Each question has no chat context. | Each question goes to the router and to Claude alone. | Brian chose: the whole Thread, made efficient | blocks: ticket 22 (the turns of the Thread, newest last, about 8,000 tokens at most, cached) |
+| H12 | At head `0880c689`, weak spots says Lamar Jackson (IR) is the QB starter and not a hole, and trade ideas finds no trade for Bo Girds. | Not proven. The live data may read the injury status from a committed week 9 file, not from live Sleeper. Ticket 13 fixed only the trade code. | Found in the preview check | blocks: ticket 25 |
+| H13 | "who has the best roster" grades only Bo Girds, and the follow-up says "I can't rank rosters directly". | The router sends it to How you stack up. The free answer has no tool that reads the roster grades of all 12 teams. | Found in the preview check; Brian to decide | open |
 
 ## Follow-ups after the merge
 
@@ -28,3 +30,5 @@ After the triage, each issue that blocks becomes a ticket from 13 up. Then the e
 - `FreeRoutes` keeps a free route for 600 s after a later topic route.
 - `due_back_week` gives `None` in the playoffs for an IR player with no returns row.
 - The weak spots fact and the trade ideas fact can name different positions for one team.
+- A trade turn of the chat context carries only its lean or its offer count, not the two sides.
+- A live API run writes Sleeper week 9 over the hand-patched week 9 history, on Fly too (live-refetch 01).
