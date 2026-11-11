@@ -7,10 +7,13 @@ The Test verdict: the Judge gives one for each test in `VERDICTS.md`. The Judge 
 ## The setup of every test
 
 - The CPC site is built from `clients/cpc/published/2026/`, latest week 8, and served from the static export. The NorCal site is built from `clients/norcal/published/2026/`, week 8.
+- The CPC build and the NorCal build of the evidence each set `front_door = true` in the `client.toml` of the client. So a test that opens `/` checks the front door at `/`. Only AT-59 builds CPC with `front_door = false`.
 - The API runs on this machine with a temp SQLite file and the test passphrase of `make -C apps/api api-evidence`. It calls the real Jev and the real Claude.
 - Your team is Lil Fridge, unless the Given names another team.
 - The clock of a test is a fixed day of the fantasy week, as each Given says. Default: Wednesday of week 9.
 - A test of motion adds a screen recording at 375 px. A time in a Then is read from the recording.
+- A test of a live fact reads the live league of 2026 after the week 9 games. There, Bo Girds has Lamar Jackson on IR, so Fernando Mendoza plays QB.
+- A test with a live Claude or Jev call records one run as its evidence. Its Then names what must hold, not the words that Claude writes.
 - A test that needs a failed Jev check or a full cap uses a pytest run of the API with `FakeJev` or a seeded count in the store, as its Given says. The site shows the recorded stream of that run.
 
 ## Tests
@@ -116,7 +119,7 @@ App: site
 Stories: 20, 21
 Given: Your team is Lil Fridge.
 When: The reader types "is CeeDee Lamb playing sunday" and sends it.
-Then: The Answer says the site has no injury news, shows the 3 closest Topics, and hides the chips of the dock.
+Then: The Answer says only "I can't answer that.", shows the 3 closest Topics, and hides the chips of the dock.
 Evidence: screenshots at 375 px in both themes, and the route response.
 
 AT-14: An honest miss writes a log entry
@@ -143,12 +146,12 @@ When: The reader types "write me a poem about my kicker" and sends it.
 Then: The honest miss shows with the 3 closest Topics, and no poem shows.
 Evidence: screenshots at 375 px in both themes, and the route response.
 
-AT-17: The route eval hits 35 of 40
+AT-17: The route eval hits 52 of 59
 App: api
 Stories: 63
-Given: The question set of decision 09, 43 questions, in the repo.
+Given: The question set `apps/api/tests/fixtures/route-questions.json`, 62 questions, 59 of them with an expected route.
 When: The live route eval runs against the real Jev.
-Then: At least 35 of the 40 questions with an expected route get that route.
+Then: At least 52 of the 59 questions with an expected route get that route, a share of 87.5%.
 Evidence: the command, its output with the hit rate, and the table of each question with its route.
 
 AT-18: The data block of a Topic shows before the text
@@ -175,12 +178,12 @@ When: The last word lands.
 Then: A "checking" mark shows, then turns into "checked" in the ink color, with no bounce.
 Evidence: a screen recording at 375 px in both themes.
 
-AT-21: A failed check rewrites the text
+AT-21: A failed check holds the text, and only a checked text shows
 App: both
 Stories: 28
 Given: A pytest run of the API in which `FakeJev` fails one claim of the first text of the weak spots Answer.
 When: The stream of that run plays in the front door.
-Then: The first text fades out, "Fixing a number…" shows, and a second text streams with "checked".
+Then: The first text never shows. "Fixing a number…" shows, then the second text reveals whole with "checked".
 Evidence: the pytest output, and a screen recording at 375 px.
 
 AT-22: A second failed check gives the honest miss
@@ -247,20 +250,20 @@ When: The same ask request is sent again.
 Then: The kept Answer comes back with no Claude call, and the team count stays the same.
 Evidence: the API log of both requests, and the team count before and after.
 
-AT-30: The Thread reads like a chat, and older Answers fold
+AT-30: The Thread reads like a chat, and each older Answer stays as it rendered
 App: site
 Stories: 37, 38
 Given: The Thread of Lil Fridge holds the week recap Answer.
 When: The reader taps the weak spots Topic.
-Then: The weak spots Answer shows at the bottom, open. The week recap folds to one line with its question and one fact.
-Evidence: screenshots at 375, 768, and 1280 px in both themes.
+Then: The weak spots Answer shows at the bottom. The week recap stays above it in full, with its data block, its text, and its link, and nothing folds.
+Evidence: screenshots at 375, 768, and 1280 px in both themes, with the week recap scrolled into view.
 
-AT-31: A fold opens in place and folds again
+AT-31: A new question scrolls to its top, and the reader scrolls up to reread
 App: site
 Stories: 39
 Given: The Thread of AT-30.
-When: The reader taps the folded week recap, then taps it again.
-Then: The week recap opens in place at its top under the header, then folds to one line.
+When: The reader sends "week 1 results", then scrolls up.
+Then: The new question scrolls to its top under the Thread header. Above it, the week recap and the weak spots Answer show as they rendered, with no entrance and no stream again.
 Evidence: a screen recording at 375 px.
 
 AT-32: The Thread stays for the week
@@ -391,10 +394,10 @@ When: The reader opens `/` with one Answer in the Thread.
 Then: The ask box sits fully above the home bar.
 Evidence: a screenshot from an iPhone or a viewport with `viewport-fit=cover` and a bottom safe area, in both themes.
 
-AT-48: The menu keeps four links
+AT-48: With the front door on, the menu keeps four links
 App: site
 Stories: 59
-Given: The CPC site and the NorCal site.
+Given: The CPC site and the NorCal site, each built with `front_door = true`.
 When: The reader opens the menu and the dock.
 Then: The menu shows Home, Week 8, Power Rankings, and Managers, and nothing else. The dock shows the same four items with its short labels, such as Rankings, and nothing else.
 Evidence: screenshots at 375 and 1280 px in both themes for each client.
@@ -479,6 +482,142 @@ When: The reader types "is my RB for their WR fair" and sends it.
 Then: The Answer opens the Trade page with the form, and fills no player that Jev is unsure of.
 Evidence: the route response with each player pick, and screenshots at 375 px in both themes.
 
+AT-59: With the front door off, `/` keeps the old home page, and the front door hides at `/ask/`
+App: site
+Stories: 58, 59, 64
+Given: The CPC site built with `front_door = false` in `clients/cpc/client.toml`.
+When: The reader opens `/`, the menu, and `/ask/`.
+Then: `/` shows the home page of `main`, and the menu shows the items of `main`, with Midseason Report and Trade Analyzer. `/ask/` shows the front door with `noindex`, and no page links to `/ask/`.
+Evidence: screenshots of `/`, the open menu, and `/ask/` at 375, 768, and 1280 px in both themes, the `robots` meta of `out/ask/index.html`, and a search of `out/` for a link to `/ask/` with no hit.
+
+AT-60: A typed question to a personal Topic gets its own checked Answer
+App: site
+Stories: 15, 27
+Given: Your team is Bo Girds.
+When: The reader types "how can i improve my roster" and sends it.
+Then: The route is weak spots. The Answer shows the weak spots data block and a text that answers the question, with "checked".
+Evidence: one live run: the route response, the API log that shows a Claude call and no read of a stored Answer, and screenshots at 375 px in both themes.
+
+AT-61: A personal Topic that ends as a miss keeps its data block
+App: both
+Stories: 24, 29
+Given: A pytest run of the API in which `FakeJev` fails both texts of the weak spots Answer of Bo Girds.
+When: The stream of that run plays in the front door.
+Then: The weak spots data block stays, and only the text place shows "I can't answer that." The API log holds each failed sentence with its noul.
+Evidence: the pytest output with the API log, and screenshots at 375 px in both themes.
+
+AT-62: A row with a hole never reads "fine"
+App: site
+Stories: 24
+Given: Your team is Bo Girds.
+When: The reader taps the weak spots Topic.
+Then: The QB row of the data block names Lamar Jackson as a hole, and its depth word is not "fine".
+Evidence: the weak spots slice of the API, and screenshots at 375 px in both themes.
+
+AT-63: Trade ideas around a named player keep that player on his side
+App: site
+Stories: 33
+Given: Your team is Bo Girds.
+When: The reader types "trade ideas for kenneth walker" and sends it.
+Then: The Answer shows at least one idea, and each offer and each idea sends Kenneth Walker III away from Bo Girds.
+Evidence: one live run: the route response with the pick of the player and the side, the step lines, the Answer, and screenshots at 375 px in both themes.
+
+AT-64: "Who has the best roster" reads the grade of every team
+App: site
+Stories: 18
+Given: Your team is Lil Fridge.
+When: The reader types "who has the best roster" and sends it.
+Then: The route is a free answer, not How you stack up. The Answer names the team with the best roster grade and that grade, as the `roster_grades` tool result gives, with "checked".
+Evidence: one live run: the route response, the `roster_grades` tool result, and screenshots at 375 px in both themes.
+
+AT-65: Every wait shows one step pattern
+App: site
+Stories: 26, 35
+Given: Your team is Bo Girds.
+When: The reader taps the trade ideas Topic, then sends "week 1 results".
+Then: Both waits show step lines inside the Answer card. The first line reads "Reading the league…", the live step has a braille spinner, and each done step has ✔.
+Evidence: a screen recording at 375 px, with frames of the live step and the done steps of each Answer.
+
+AT-66: A trade follow-up routes to trade ideas with its limit
+App: site
+Stories: 33
+Given: Your team is Bo Girds. The Thread holds the Answer of a tap on the trade ideas Topic.
+When: The reader types "id rather not trade a WR" and sends it.
+Then: The route is trade ideas with the limit `keep_positions: ["WR"]`. The Answer shows at least one idea, a pick or a near idea, and no offer or idea sends a WR away from Bo Girds.
+Evidence: one live run: the route response, the limit that Jev read, the Answer, and screenshots at 375 px in both themes.
+
+AT-67: Trade ideas always show at least one idea with its reason
+App: site
+Stories: 33
+Given: Your team is Bo Girds.
+When: The reader taps the trade ideas Topic.
+Then: The Answer shows at least one idea. Each idea that the pick did not keep shows under "Also weighed" or "Ideas, none a clear win", with its reason in plain words.
+Evidence: one live run: the API log with the count of offers built, kept, and near, the Answer, and screenshots at 375, 768, and 1280 px in both themes.
+
+AT-68: The trade pick reads a starter on IR as out now
+App: api
+Stories: 33
+Given: Bo Girds has Lamar Jackson on IR, and Fernando Mendoza plays QB.
+When: The trade ideas request for Bo Girds runs.
+Then: The pick sheet of each offer names Lamar Jackson as a starter who cannot play now, with his return week. No reason in the Answer says that Bo Girds does not need a QB.
+Evidence: one live run: the pick sheet of one offer with its `now` facts, and the Answer.
+
+AT-69: One tap on Send sends, and the keyboard closes
+App: site
+Stories: 15, 57
+Given: WebKit on an iPhone 15 viewport with touch, and the ask box has the focus, so the keyboard is open.
+When: The reader types "week 1 results" and taps the send arrow once.
+Then: The question sends on that tap, and the ask box loses the focus, so the keyboard closes.
+Evidence: the log of the WebKit run with each event and its target, and a screen recording at 375 px.
+
+AT-70: The rate limit counts questions, not the reads of the page
+App: api
+Stories: 48, 66
+Given: The API runs with the default `RATE_LIMIT_PER_MINUTE` of 30, not the limit of the evidence setup.
+When: In one minute, one address sends 40 reads of `/suggestions` and `/personal/current`, then one question.
+Then: No request gets 429, and the question gets its Answer.
+Evidence: each request with its status, and the API log.
+
+AT-71: The empty screen says the league is fair game
+App: site
+Stories: 15, 17
+Given: The Thread of Lil Fridge is empty.
+When: The reader looks at the front door.
+Then: Under "Ask about Lil Fridge", the line "or any team in the league." shows, then "Try" with "who has the best roster" and "week 1 results". The ask box reads "Ask about your team or the league".
+Evidence: screenshots at 375, 768, and 1280 px in both themes.
+
+AT-72: A ranking of teams shows as a checked list
+App: site
+Stories: 18, 65
+Given: Your team is Lil Fridge.
+When: The reader types "who are the highest scoring teams this season" and sends it.
+Then: The Answer shows a lead sentence and a list of teams by points for, most first, with "checked". Each total matches the standings data.
+Evidence: one live run: the tool results, the `data-block` part, the points for of each team from the standings data, and screenshots at 375, 768, and 1280 px in both themes.
+
+AT-73: A comparison of two teams shows as a table
+App: site
+Stories: 17, 18, 65
+Given: Your team is Bo Girds.
+When: The reader types "can you compare my roster to Teehee" and sends it.
+Then: The route is a free answer, not How you stack up. The Answer shows a table that sets Bo Girds and Teehee side by side.
+Evidence: one live run: the route response, the `data-block` part, and screenshots at 375, 768, and 1280 px in both themes.
+
+AT-74: A question about one player shows a player card
+App: site
+Stories: 18, 65
+Given: Your team is Bo Girds.
+When: The reader types "how is Lamar Jackson doing" and sends it.
+Then: The Answer shows a player card of Lamar Jackson, with Bo Girds as his fantasy team and a status that says he cannot play now.
+Evidence: one live run: the `data-block` part, and screenshots at 375, 768, and 1280 px in both themes.
+
+AT-75: Each roster grade says when it is from
+App: site
+Stories: 24, 30
+Given: Your team is Bo Girds.
+When: The reader taps the How you stack up Topic, then "Read the full report".
+Then: The grade in the data block shows "as of today". The grade on the manager page of Bo Girds shows "after week 9", from `through` of `managers.json`.
+Evidence: screenshots at 375 px in both themes of the Answer and the manager page.
+
 ## Trace
 
 Story 1: AT-1
@@ -495,27 +634,27 @@ Story 11: AT-6
 Story 12: AT-4
 Story 13: AT-7
 Story 14: AT-8
-Story 15: AT-9
+Story 15: AT-9, AT-60, AT-69, AT-71
 Story 16: AT-9
-Story 17: AT-10
-Story 18: AT-11
+Story 17: AT-10, AT-71, AT-73
+Story 18: AT-11, AT-64, AT-72, AT-73, AT-74
 Story 19: AT-12
 Story 20: AT-13
 Story 21: AT-13
 Story 22: AT-15, AT-16
 Story 23: AT-14
-Story 24: AT-18, AT-51
+Story 24: AT-18, AT-51, AT-61, AT-62, AT-75
 Story 25: AT-18
-Story 26: AT-19
-Story 27: AT-20
+Story 26: AT-19, AT-65
+Story 27: AT-20, AT-60
 Story 28: AT-21
-Story 29: AT-22
-Story 30: AT-23, AT-51
+Story 29: AT-22, AT-61
+Story 30: AT-23, AT-51, AT-75
 Story 31: AT-24, AT-58
 Story 32: AT-25
-Story 33: AT-26
+Story 33: AT-26, AT-63, AT-66, AT-67, AT-68
 Story 34: AT-27
-Story 35: AT-28
+Story 35: AT-28, AT-65
 Story 36: AT-29
 Story 37: AT-30
 Story 38: AT-30
@@ -528,7 +667,7 @@ Story 44: AT-36
 Story 45: AT-37
 Story 46: AT-38
 Story 47: AT-39
-Story 48: AT-40
+Story 48: AT-40, AT-70
 Story 49: AT-37
 Story 50: AT-37, AT-38
 Story 51: AT-41
@@ -537,13 +676,16 @@ Story 53: AT-43
 Story 54: AT-44
 Story 55: AT-45
 Story 56: AT-46
-Story 57: AT-47
-Story 58: AT-49
-Story 59: AT-48, AT-50
+Story 57: AT-47, AT-69
+Story 58: AT-49, AT-59
+Story 59: AT-48, AT-50, AT-59
 Story 60: AT-19
 Story 61: AT-52
 Story 62: AT-52, AT-53
 Story 63: AT-17
+Story 64: AT-59
+Story 65: AT-72, AT-73, AT-74
+Story 66: AT-70
 Out of scope "Past seasons of the league in a free answer": AT-54
 Out of scope "A split that sends simple lookups to Haiku 5.5": no test. Reason: the model table is code, and AT-37 to AT-39 read the cost per answer.
 Out of scope "A port of the Advisor to Pydantic AI": no test. Reason: AT-24 and AT-28 show the whole Answer after the steps.
@@ -556,4 +698,4 @@ Out of scope "A Thread kept on the server": AT-57
 
 ## Revisions
 
-None yet.
+- 2026-11-11: Brian approved these changes. AT-17 sets the bar at 52 of the 59 questions with an expected route. AT-30 and AT-31 test the plain chat of ticket 18, with no fold. AT-48 applies only with `front_door = true` (ticket 43). The setup builds each site of the evidence with `front_door = true`. AT-59 tests the flag off. AT-60 to AT-75 test H13 to H30 of `HANDS-ON.md`, as tickets 26 to 43 built them. Both the CPC build and the NorCal build of the evidence set `front_door = true`. AT-13 says only "I can't answer that." (ticket 20). AT-21 holds each text until it passes the check, so a failed first text never shows (ticket 21). AT-66 counts a near idea as an idea (ticket 36). PRD stories 64 to 66 cover the flag, the answer blocks, and the rate limit, and AT-59, AT-70, and AT-72 to AT-74 trace to them.

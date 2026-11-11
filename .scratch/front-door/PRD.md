@@ -21,7 +21,7 @@ A manager with a question has no place to ask it. The commissioner asked "week 1
 2. The front door shows 3 Suggestions for Your team plus a "More" row of all 13 Topics. Each Suggestion shows its Topic name and one fact, such as "Your weak spots: RB ranks 11th of 12".
 3. The manager taps a Suggestion or types in the ask box. Each Answer lands in the Thread: a short form of the chapters of a Topic, a short Claude answer, or an honest miss. A Topic Answer links to its page with "Read the full report".
 4. Jev routes each typed question to a Topic. When no Topic fits and this season's data can answer, Claude writes a short answer with tools over the season, and Jev checks each claim. When the data cannot answer, the manager gets an honest miss with the 3 closest Topics, and the API logs the miss.
-5. The Thread is a chat scroll with the ask box at the bottom. Each older Answer folds to one line. The browser keeps one Thread per team for the fantasy week, and the Tuesday build starts an empty one.
+5. The Thread is a chat scroll with the ask box at the bottom. Each older Answer stays as it rendered, and the manager scrolls up to reread it. The browser keeps one Thread per team for the fantasy week, and the Tuesday build starts an empty one.
 6. The pages stay as the long form. The hero and the tool tiles of `/` go away, and the menu keeps fewer links.
 
 ## User Stories
@@ -77,8 +77,8 @@ A manager with a question has no place to ask it. The commissioner asked "week 1
 ### The Thread
 
 37. As a manager, I want the Thread to read top to bottom with the newest Answer at the bottom, so that it reads like a chat.
-38. As a manager, I want each older Answer to fold to one line with one fact, so that two long trade Answers do not make a long scroll.
-39. As a manager, I want a tap on a fold to open it in place, and a second tap to fold it, so that I can reread an old Answer.
+38. As a manager, I want each older Answer to stay in the scroll as it rendered, so that the Thread reads like a plain chat.
+39. As a manager, I want a new question to scroll to its top, and to scroll up to an older Answer, so that I can reread an old Answer.
 40. As a manager, I want the Thread to stay for the fantasy week, so that I can come back to a trade read.
 41. As a manager, I want the Tuesday build to start an empty Thread, so that stale weeks do not pile up.
 42. As a manager, I want an Answer to show dimmed with "Your roster changed since <day>. [Refresh]" after a trade or a claim, so that I never act on a stale read.
@@ -115,6 +115,12 @@ A manager with a question has no place to ask it. The commissioner asked "week 1
 61. As the commissioner, I want an ADR that says what manager text goes to TypeSafe and to Anthropic, so that the change is on record.
 62. As the commissioner, I want the miss log on Fly and never in the repo, so that typed questions stay out of a public repo.
 63. As the commissioner, I want a known hit rate of the route before the ask box goes live, so that I trust it.
+
+### After the hands-on round
+
+64. As the commissioner, I want a `front_door` flag per client, with the front door at a hidden `/ask/` route while the flag is off, so that I can test it before the managers see it.
+65. As a manager, I want a free answer to show a list, a table, or a player card when the shape of the answer fits, so that a ranking or a comparison reads at a glance.
+66. As a manager, I want the rate limit to count my questions, not the reads of the page, so that a second question never hits the limit.
 
 ## Implementation Decisions
 
@@ -220,7 +226,7 @@ The prototype hit rate was about 35 of 40 under these rules. The questions are i
 ### The Thread
 
 - The Thread reads top to bottom, newest at the bottom. The ask box stays at the bottom, with one row of Suggestion chips above it. "More" leads the chip row (decision 08).
-- When a new question lands, each older Answer folds to one line: the question plus one fact. The newest Answer never folds. An opened fold scrolls to its top, under the header, and its data block shows flat with a hairline.
+- When a new question lands, it scrolls to its top, under the header. Each older Answer stays in the scroll as it rendered, with no fold, and plays no entrance and no stream again. The manager scrolls up to reread it (ticket 18).
 - The browser keeps one Thread per team for the fantasy week. The week of the latest build keys it, so the Tuesday build starts an empty Thread (decision 05).
 - Clear in the Thread header empties the Thread of this week for Your team, with no confirm.
 - A miss and a cap line hide the Suggestion chips, so the 3 closest Topics show only once.
@@ -258,10 +264,10 @@ A good test drives the front door from outside: a request to the API, a page ren
 ### The seams
 
 1. **The API endpoints.** The ask endpoint, the Suggestions endpoint, and the key check run through `TestClient` with recorded Sleeper data, `FakeJev`, and a test model of Pydantic AI. They test the route table, the stream parts, the cache, the stale check, the caps, the passphrase, and the miss log. Prior art: `apps/api/tests/test_eggs.py` and `test_api.py`, with the fakes in `apps/pipeline/tests/fakes.py`.
-2. **The front door page.** A vitest page test renders `/` with the real published data of `cpc` and a recorded stream. It tests the sheet, the Suggestions, "More", the Thread, the folds, the stale line, the cap lines, and Clear. Prior art: `apps/site/src/app/page.test.tsx`.
+2. **The front door page.** A vitest page test renders `/` with the real published data of `cpc` and a recorded stream. It tests the sheet, the Suggestions, "More", the Thread, the stale line, the cap lines, and Clear. Prior art: `apps/site/src/app/page.test.tsx`.
 3. **The browser run.** A Playwright run drives the front door against the local API, on a phone viewport, in light and dark, with axe and with reduced motion. Prior art: `apps/site/e2e/eggs.spec.ts`.
 4. **The weekly build.** A pipeline test builds a week from recorded data and checks the Answers of the league Topics in the published week. Prior art: the build tests of the pipeline.
-5. **The route eval.** A test with the `live` marker sends the question set of decision 09 to the real Jev and reports the hit rate. It fails below 35 of 40. It asserts no single probability. The questions name teams of the league and no manager, so they sit in the repo.
+5. **The route eval.** A test with the `live` marker sends the question set of decision 09 to the real Jev and reports the hit rate. It fails below 52 of the 59 questions with an expected route. It asserts no single probability. The questions name teams of the league and no manager, so they sit in the repo.
 
 ### What the evidence shows
 
