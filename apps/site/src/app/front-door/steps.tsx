@@ -8,13 +8,27 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { spinners } from "unicode-animations";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { QUICK, STAGGER, fadeIn } from "./motion";
+import { QUICK, SLOW, STAGGER, fadeIn } from "./motion";
 
 /* One step of a wait: its plain line, and whether its work is done. */
 export type Step = { line: string; done: boolean };
 
 /* The line of every wait before its first step comes, so each kind of Answer starts the same way. */
 export const FIRST_LINE = "Reading the league";
+
+/* The intent delay in ms before a wait shows its first line: --duration-slow. A kept Answer of the API comes back in
+   about 200 ms, so it shows whole with no step line first (AT-8). A fresh Answer waits seconds, so its steps still show. */
+export const INTENT_MS = SLOW * 1000;
+
+/* Whether the intent delay of a wait has passed since the part mounted. */
+export function useIntentDelay(ms = INTENT_MS): boolean {
+  const [passed, setPassed] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setPassed(true), ms);
+    return () => clearTimeout(timer);
+  }, [ms]);
+  return passed;
+}
 
 /* The frames of the braille spinner, and the time of each frame in ms, from the frame data of unicode-animations. */
 const BRAILLE = spinners.braille;

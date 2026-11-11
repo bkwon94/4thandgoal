@@ -16,7 +16,7 @@ import { FreeBody, useAnswerStream } from "./free-answer";
 import { shownText } from "./free-stream";
 import { QuestionBubble, Surface } from "./miss-card";
 import { riseIn } from "./motion";
-import { Steps } from "./steps";
+import { Steps, useIntentDelay } from "./steps";
 import { type PersonalBlock, type PersonalCap, type PersonalResult, type PersonalTopic, type PersonalView, personalViewOf } from "./personal-stream";
 
 /* The step between the data block and the text, while Claude writes the text. */
@@ -144,6 +144,7 @@ export const PersonalAnswerLive = forwardRef<
     },
     onError,
   });
+  const waited = useIntentDelay();
   return (
     <article ref={ref} aria-label={name} aria-busy={busy} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={name} morph={morph} />
@@ -151,10 +152,13 @@ export const PersonalAnswerLive = forwardRef<
         // A kept Answer of the API shows whole at once, with no stream of its words (AT-8).
         <PersonalBody block={view.block} view={view} live={!kept} href={href} avatars={avatars} />
       ) : (
-        // The first line waits in the card while the API reads the rosters now, as every kind of Answer waits.
-        <Surface>
-          <Steps steps={[]} live />
-        </Surface>
+        // The first line waits in the card while the API reads the rosters now, as every kind of Answer waits. It shows
+        // only after the intent delay, so a kept Answer of the API shows whole with no step line first (AT-8).
+        waited && (
+          <Surface>
+            <Steps steps={[]} live />
+          </Surface>
+        )
       )}
     </article>
   );
