@@ -162,6 +162,60 @@ export async function scanContrast(page: Page, scope?: string): Promise<string[]
   return [...lines("violation", result.violations), ...lines("incomplete", result.incomplete)];
 }
 
+/*
+ * The contrast scan of a page with a list that scrolls inside a box, such as the team list of the sheet of Your team.
+ * Axe cannot judge a row that the box clips, and it reports the row as incomplete. An incomplete item fails the floor,
+ * so the list scrolls in steps and the page is scanned at each step. A row passes when it sits in full view at one step
+ * and axe reports nothing for it at that step. A violation of a row fails at any step. An incomplete item of a row fails
+ * when no step clears the row. A line of any other part of the page fails as it does in a plain scan.
+ * A page with no such list gets one plain scan.
+ */
+export async function scanContrastInSteps(page: Page, scope?: string): Promise<string[]> {
+  const listSelector = '[role="dialog"] ul';
+  const metrics = await page.evaluate(
+    ([selector]) => {
+      const list = document.querySelector(selector);
+      return list ? { overflow: list.scrollHeight > list.clientHeight, height: list.clientHeight, max: list.scrollHeight - list.clientHeight, rows: list.children.length } : null;
+    },
+    [listSelector],
+  );
+  if (metrics === null || !metrics.overflow) return scanContrast(page, scope);
+
+  const failures = new Set<string>();
+  const incomplete = new Map<number, string[]>();
+  const cleared = new Set<number>();
+  // Half a box per step, so a row that sits at the edge of one step sits in full view at the next.
+  const step = Math.max(1, Math.floor(metrics.height / 2));
+  for (let top = 0; ; top = Math.min(top + step, metrics.max)) {
+    const inView = await page.evaluate(
+      ([selector, scrollTop]) => {
+        const list = document.querySelector(selector) as HTMLElement;
+        list.scrollTop = scrollTop;
+        const box = list.getBoundingClientRect();
+        return ([...list.children] as HTMLElement[]).flatMap((row, index) => {
+          const rect = row.getBoundingClientRect();
+          return rect.top >= box.top && rect.bottom <= box.bottom ? [index + 1] : [];
+        });
+      },
+      [listSelector, top] as const,
+    );
+    const reported = new Set<number>();
+    for (const line of await scanContrast(page, scope)) {
+      const row = /^(violation|incomplete): li:nth-child\((\d+)\) > /.exec(line);
+      if (row === null || row[1] === "violation") failures.add(line);
+      if (row === null) continue;
+      reported.add(Number(row[2]));
+      if (row[1] === "incomplete") incomplete.set(Number(row[2]), [...(incomplete.get(Number(row[2])) ?? []), line]);
+    }
+    for (const row of inView) if (!reported.has(row)) cleared.add(row);
+    if (top >= metrics.max) break;
+  }
+  await page.evaluate(([selector]) => ((document.querySelector(selector) as HTMLElement).scrollTop = 0), [listSelector]);
+  for (const [row, lines] of incomplete) if (!cleared.has(row)) for (const line of lines) failures.add(line);
+  for (let row = 1; row <= metrics.rows; row++) if (!cleared.has(row)) failures.add(`row ${row} of the scrolled list was never judged in full view`);
+  return [...failures];
+}
+
 /* The axe tags of the full scan: each rule of WCAG 2.2 at the levels A and AA. */
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
