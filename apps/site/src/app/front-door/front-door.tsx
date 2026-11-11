@@ -5,8 +5,8 @@
  */
 "use client";
 
-import { AnimatePresence, motion, useIsPresent } from "framer-motion";
-import { type ComponentProps, Fragment, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -14,6 +14,7 @@ import type { DoorAnswer, DoorTeam } from "@/lib/data/front-door-data";
 import { analyzeHref } from "@/lib/routes";
 import { type AskTarget, AskError, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
+import { Dock } from "./dock";
 import { turnsBefore } from "./chat-turns";
 import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem, ideasRequestOf, itemOfError, itemOfRoute, tradePartner, tradeRequestOf } from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
@@ -39,13 +40,6 @@ const EXAMPLES = ["who has the best roster", "week 1 results"];
 /* The greeting changes with the hour, so the front door reads as a person and not a page. */
 function greeting(hour: number): string {
   return hour < 5 ? "Late night" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-}
-
-/* The dock of the chips and the ask box. A dock that leaves in the cross-fade of reduced motion hides from a screen
-   reader and takes no input, so the page holds one ask box. */
-function Dock(props: ComponentProps<typeof motion.div>) {
-  const present = useIsPresent();
-  return <motion.div {...props} aria-hidden={present ? undefined : true} inert={!present || undefined} />;
 }
 
 export function FrontDoor({
