@@ -352,6 +352,28 @@ describe("Reduced motion on the static pages", () => {
   });
 });
 
+describe("Reduced motion on the first question of the front door", () => {
+  it("fades the ask box in at the foot of the Thread, with no glide (AT-46 of front-door)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    onTestFinished(() => localStorage.clear());
+    render(<HomePage />);
+    await screen.findByRole("group", { name: "Suggestions" });
+    const box = screen.getByRole("form", { name: "Ask" });
+    // The ask box ends its first fade at the center before the question goes.
+    await waitFor(() => expect(box.parentElement!.style.opacity).toBe("1"));
+    fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), { target: { value: "who am i playing sunday" } });
+    fireEvent.submit(box);
+    await screen.findByRole("region", { name: "Thread" }).then(() => screen.findByRole("button", { name: "Clear" }));
+    // The ask box leaves the center and shows at the foot from opacity 0, so it fades in place and never moves.
+    const shown = screen.getByRole("form", { name: "Ask" });
+    const boxes: HTMLElement[] = [];
+    for (let part: HTMLElement | null = shown; part; part = part.parentElement) boxes.push(part);
+    expect(boxes.some((part) => part.style.opacity === "0")).toBe(true);
+    for (const part of boxes) expect(part.style.transform).not.toMatch(/translate|scale/);
+    await waitFor(() => expect(boxes.every((part) => part.style.opacity !== "0")).toBe(true));
+  });
+});
+
 /* A fixture entry with the joined fields of the loader and playoff odds of 63 percent. */
 function managerWithOdds(): Manager {
   const entry = managersFixture.managers[0] as Manager;

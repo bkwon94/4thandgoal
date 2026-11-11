@@ -453,7 +453,9 @@ export function FrontDoor({
               // The ask box and the chips glide from the center of the empty Thread to the bottom on the first Answer,
               // in one move on the shared layout spring. With motion off, the dock jumps to its place, and only the
               // fades of its parts run. Only the position animates: the dock changes its height when "More" opens, and a
-              // size animation would stretch the ask box and the chips on the way.
+              // size animation would stretch the ask box and the chips on the way. With motion off, the dock mounts again
+              // at its new place, so each part fades in there and the ask box never jumps at full opacity (AT-46).
+              key={off ? (empty ? "dock-center" : "dock-foot") : "dock"}
               layout={off ? false : "position"}
               transition={{ layout: GLIDE }}
               className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter bg-page/90 px-gutter pt-sp-3 pb-sp-3 backdrop-blur-md desktop:bottom-0"}`}
