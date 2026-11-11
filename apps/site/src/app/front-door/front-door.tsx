@@ -159,9 +159,20 @@ export function FrontDoor({
   }, [teamId, off, thread.length === 0]);
 
   // A new Answer scrolls to its top, so the manager reads it from the question down.
+  const scrollDue = useRef(false);
   useEffect(() => {
-    if (thread.length > 0) newest.current?.scrollIntoView?.({ behavior: off ? "auto" : "smooth", block: "start" });
+    scrollDue.current = thread.length > 0;
   }, [thread, off]);
+  useEffect(() => {
+    if (!scrollDue.current) return;
+    // The fill of the newest turn reads --door-dock. A dock that changes in the same render as the turn, as a miss drops
+    // the chips, leaves --door-dock old for one render. The page is then short, and the browser stops the scroll at its
+    // old foot. So the scroll waits for the render with the new height (ticket 50).
+    const height = dock.current?.offsetHeight ?? dockHeight;
+    if (height !== dockHeight) return setDockHeight(height);
+    scrollDue.current = false;
+    newest.current?.scrollIntoView?.({ behavior: off ? "auto" : "smooth", block: "start" });
+  }, [thread, off, dockHeight]);
 
   const team = teams.find((candidate) => candidate.id === teamId) ?? null;
   const sheetOpen = teamId === null || picking;
