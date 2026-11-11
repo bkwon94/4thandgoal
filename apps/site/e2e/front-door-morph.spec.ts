@@ -55,11 +55,11 @@ for (const name of ["Weak spots", "Sell high or buy low"]) {
     await chip.click();
     const tops = (await samplesWhenStill<number | null>(page)).filter((top): top is number => top !== null);
     const end = tops.at(-1)!;
-    // One surface moves: the question starts at the chip and glides to its place. A fade shows it at its place at once.
-    // A busy run can drop the first frames, so the test looks for the frame nearest the chip.
-    const nearest = Math.min(...tops.map((top) => Math.abs(top - from.y)));
-    expect(nearest, `the question starts at the chip (${from.y}px): ${tops.join(", ")}`).toBeLessThanOrEqual(40);
+    // One surface moves: the question starts at the chip, low in the dock, and glides up to its place. A fade shows it
+    // at its place at once, with only a rise of a few pixels. A busy run can drop the first frames of the glide, so the
+    // test reads the travel of the question, not its first frame.
     expect(Math.abs(end - from.y), "the question ends away from the chip").toBeGreaterThan(100);
+    expect(tops[0] - end, `the question glides up from the chip (${from.y}px): ${tops.join(", ")}`).toBeGreaterThan(100);
     // The chip leaves once the morph ends, so the question is the one surface left.
     await expect(chip).toHaveCount(0);
   });
