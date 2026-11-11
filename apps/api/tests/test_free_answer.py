@@ -187,6 +187,14 @@ def test_the_highest_scoring_team_names_the_most_points_for_of_the_standings(rep
     [step] = [c for c in chunks if c["type"] == "tool-input-available"]
     assert (step["toolName"], step["input"]) == ("standings", {})
     assert any(c["type"] == "tool-output-available" for c in chunks)
+    # H29: the standings hold two ranks. Their meanings ride in the result, so the check reads a row of a points
+    # list by `points_for_rank`, not by the place in the standings.
+    output = checks.seen[0]["tool_results"]["standings"]
+    assert {"rank", "points_for", "points_for_rank", "teams_by_points_for"} <= set(output["what_each_field_means"])
+    # The teams come in the order of the standings, so the order by points rides beside them, and the check never
+    # sorts close totals by eye.
+    by_points = sorted(output["teams"], key=lambda team: -team["points_for"])
+    assert output["teams_by_points_for"] == [team["team"] for team in by_points]
 
 
 def test_a_half_fit_ends_with_its_topic_as_a_suggestion_after_the_check(repo, fixture_raw_dir):

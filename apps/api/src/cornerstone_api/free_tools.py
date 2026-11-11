@@ -45,6 +45,17 @@ GRADE_MEANINGS = {
              "managers page is from the last week of the weekly build, so it can differ.",
 }
 
+# What the rank fields of the standings mean. A standings result holds two ranks, and the teams come in the order of
+# the standings, so without these meanings a row of a list by points reads against the wrong rank (H29). The order by
+# points rides as its own field too, so the check never sorts close totals by eye.
+STANDINGS_MEANINGS = {
+    "rank": "The place of the team in the standings, by record, from 1 to 12. The teams are in this order.",
+    "points_for": "The fantasy points that the team scored this season, through `through_week`.",
+    "points_for_rank": "The place of the team by `points_for`, from 1, the most points of the league, to 12. A list of "
+                       "the highest scoring teams follows this field, not `rank`.",
+    "teams_by_points_for": "The names of the teams in the order of `points_for_rank`, the most points first.",
+}
+
 
 # What the status fields of a player mean, in the tool result, so the check reads "cannot play now" beside the field.
 STATUS_MEANINGS = {
@@ -145,6 +156,8 @@ def standings(data: SeasonData) -> dict:
         "how_records_count": (f"Each week is two games: the head-to-head game and a game against the league median "
                               f"score. So a record over {through} weeks has {2 * through} games.")
         if data.median_game else "Each week is one head-to-head game.",
+        "what_each_field_means": STANDINGS_MEANINGS,
+        "teams_by_points_for": [_team(data, rid) for rid in sorted(by_points, key=by_points.__getitem__)],
         "teams": [
             {"rank": rank, "team": _team(data, rid), "record": f"{records[rid][0]}-{records[rid][1]}",
              "head_to_head_record": f"{head[rid][0]}-{head[rid][1]}", "points_for": records[rid][2], "points_for_rank": by_points[rid],
