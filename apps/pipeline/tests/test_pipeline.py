@@ -1204,9 +1204,10 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(
 
 
 def test_a_build_with_no_search_sends_the_research_through_the_writer(
-        tmp_path, free_agent_raw_dir, offline, fake_writer):
+        tmp_path, fixture_raw_dir, offline, fake_writer):
     # The free agents give the waiver board ranked players, so the research has players to search.
-    repo = _repo(tmp_path / "repo", free_agent_raw_dir)
+    # A player with a rest of season projection of 0 lands in no add bucket, so the free agent has a projection ahead.
+    repo = _repo_with_free_agent(tmp_path / "repo", fixture_raw_dir)
     # The gate tests stop before the research, so this build runs past it with the search left out.
     run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "research": None}, writer=fake_writer, client=cpc_client(at=repo))
     # The fake has no answer, so each search fails and the build goes on. Each call to the writer is a search.
