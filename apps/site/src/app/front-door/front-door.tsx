@@ -374,7 +374,7 @@ export function FrontDoor({
                           since !== undefined && answer && entry.read && passphrase
                             ? { line: staleLine(since ?? entry.read.at), onRefresh: () => void runTrade(entry.id, entry.question, tradeRequestOf({ ...entry, answer }, team.id), passphrase, picks.filter((pick) => !TRADE_TOPICS[pick])) }
                             : null;
-                        return <TradeCard ref={ref} question={entry.question} mode={entry.mode} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} stale={refresh} />;
+                        return <TradeCard ref={ref} question={entry.question} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} stale={refresh} />;
                       }
                       case "miss":
                         return <MissCard ref={ref} question={entry.question} closest={entry.closest} block={entry.block} avatars={avatars} onPick={(key) => open(key)} />;
@@ -464,13 +464,15 @@ export function FrontDoor({
               transition={{ layout: GLIDE }}
               className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter bg-page/90 px-gutter pt-sp-3 pb-sp-3 backdrop-blur-md desktop:bottom-0"}`}
             >
-              {!missed && (picks.length > 0 || moreOpen) ? (
+              {!missed && (day === null || picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
-                  <Suggestions picks={picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} wrap={empty} onMore={setMoreOpen} onPick={(key) => open(key)} />
+                  {/* Until the browser reads the day, quiet placeholder chips hold the place of the chips. */}
+                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} wrap={empty} onMore={setMoreOpen} onPick={(key) => open(key)} />
                 </motion.div>
               ) : null}
               <motion.div {...riseIn(off, { delay: 0.08 })}>
-                <AskBox onAsk={ask} />
+                {/* Send holds busy while a question routes, so a second tap never sends it twice. */}
+                <AskBox onAsk={ask} pending={thread.some((entry) => entry.kind === "pending")} />
               </motion.div>
               {empty && (
                 <motion.div className="flex" {...riseIn(off, { delay: 0.16 })}>

@@ -12,14 +12,15 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { AnswerBody } from "./answer-card";
 import type { AskTarget } from "./ask-api";
 import type { Turn } from "./chat-turns";
-import { FreeBody, Shimmer, useAnswerStream } from "./free-answer";
+import { FreeBody, useAnswerStream } from "./free-answer";
 import { shownText } from "./free-stream";
-import { QuestionBubble } from "./miss-card";
+import { QuestionBubble, Surface } from "./miss-card";
 import { riseIn } from "./motion";
+import { Steps } from "./steps";
 import { type PersonalBlock, type PersonalCap, type PersonalResult, type PersonalTopic, type PersonalView, personalViewOf } from "./personal-stream";
 
-/* The line before the data block lands, while the API reads the rosters now. */
-export const READING_LINE = "Reading the rosters…";
+/* The step between the data block and the text, while Claude writes the text. */
+export const WRITING_LINE = "Writing";
 
 type Shared = {
   name: string;
@@ -27,13 +28,14 @@ type Shared = {
   avatars: Record<number, string | null>;
 };
 
-/* The card of one personal Answer: the data block, then the text and the check, then the link once the text is checked. */
+/* The card of one personal Answer: the data block, then the text and the check, then the link once the text is checked.
+   Under the data block, the Writing step waits until the check comes, so the card never sits still. */
 function PersonalBody({ block, view, live, href, avatars }: { block: PersonalBlock; view: PersonalView; live: boolean; href: string | null; avatars: Shared["avatars"] }) {
   const checked = view.check === "checked";
   return (
     <AnswerBody answer={{ stats: block.stats, rows: block.rows, text: [], href: checked ? href : null }} avatars={avatars}>
       <div className="flex flex-col gap-sp-3">
-        <FreeBody view={view} live={live} />
+        <FreeBody view={view} live={live} first={WRITING_LINE} />
       </div>
     </AnswerBody>
   );
@@ -145,9 +147,10 @@ export const PersonalAnswerLive = forwardRef<
         // A kept Answer of the API shows whole at once, with no stream of its words (AT-8).
         <PersonalBody block={view.block} view={view} live={!kept} href={href} avatars={avatars} />
       ) : (
-        <p className="m-0 px-sp-1 font-mono text-meta leading-tight">
-          <Shimmer>{READING_LINE}</Shimmer>
-        </p>
+        // The first line waits in the card while the API reads the rosters now, as every kind of Answer waits.
+        <Surface>
+          <Steps steps={[]} live />
+        </Surface>
       )}
     </article>
   );

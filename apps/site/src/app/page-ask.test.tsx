@@ -3,7 +3,7 @@
  * types a question, and reads the Thread. fetch is a test stub that answers as the ask route of the API does. Each other
  * call of the page, such as the egg board, gets a 404, so only the ask route counts.
  */
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./page";
@@ -87,6 +87,24 @@ describe("the ask box of Lil Fridge", () => {
     expect(turns[0].question).toBe("who am i playing sunday");
     expect(turns[0].answer).toContain("The Must Watch of the week");
     expect(Object.keys(turns[0]).sort()).toEqual(["answer", "question"]);
+  });
+
+  it("waits on the one first line as a live step, and holds Send busy while the question routes", async () => {
+    let reply: (response: Response) => void = () => {};
+    // The route holds its reply until the test sends it, so the test reads the wait.
+    fetchStub.mockImplementation(async (url: string) =>
+      String(url).endsWith("/ask") ? new Promise<Response>((resolve) => (reply = resolve)) : new Response("", { status: 404 }),
+    );
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    const pending = await articleWith("who am i playing sunday", "Reading the league…");
+    const [step] = within(within(pending).getByRole("list", { name: "Steps" })).getAllByRole("listitem");
+    expect(step.getAttribute("data-state")).toBe("live");
+    const send = within(screen.getByRole("form", { name: "Ask" })).getByRole("button", { name: "Send" });
+    expect(send.getAttribute("aria-busy")).toBe("true");
+    await act(async () => reply(new Response(JSON.stringify(route({ route: "topic", topic: "next_matchup" })))));
+    await articleWith("who am i playing sunday", "behold the lamb");
+    expect(send.getAttribute("aria-busy")).toBeNull();
   });
 
   it("opens the next matchup of Lil Fridge, with the name of its opponent, for loose words (AT-9)", async () => {

@@ -10,7 +10,6 @@ import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 
 import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { FIXING_LINE } from "./front-door/free-answer";
 import { MISS_LEAD } from "./front-door/miss-card";
-import { READING_LINE } from "./front-door/personal-answer";
 import HomePage from "./page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
@@ -115,11 +114,28 @@ describe("the personal Topics of Lil Fridge", () => {
     expect(within(answer).getByRole("link", { name: /Read the full report/ }).getAttribute("href")).toBe(`/2026/managers/${LIL_FRIDGE}/`);
   });
 
-  it("shows the reading line before the data block lands", async () => {
+  it("shows the first line as a live step before the data block lands", async () => {
     streams.push(() => sse(new ReadableStream<Uint8Array>({ start() {} })));
     render(<HomePage />);
     await tapInMore("Weak spots");
-    await articleWith("Weak spots", READING_LINE);
+    const answer = await articleWith("Weak spots", "Reading the league…");
+    const [step] = within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem");
+    expect(step.getAttribute("data-state")).toBe("live");
+  });
+
+  it("shows a live Writing step between the data block and the text, and drops it with the check", async () => {
+    const release = heldStream("weak-spots");
+    render(<HomePage />);
+    await tapInMore("Weak spots");
+    const answer = await articleWith("Weak spots", "Weakest spot");
+    const steps = () => within(answer).queryByRole("list", { name: "Steps" });
+    await waitFor(() => expect(steps()?.textContent).toContain("Writing…"));
+    // The step sits under the data block, where the text lands.
+    const text = answer.textContent ?? "";
+    expect(text.indexOf("Weakest spot")).toBeLessThan(text.indexOf("Writing…"));
+    release();
+    await articleWith("Weak spots", "Checked");
+    expect(answer.textContent).not.toContain("Writing");
   });
 
   it("keeps a checked Answer, so a reload shows it with no new stream (AT-29, story 36)", async () => {

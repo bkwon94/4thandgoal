@@ -11,6 +11,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { AnswerBody } from "./answer-card";
 import { FAST, SLOW, STAGGER, fadeIn, riseIn } from "./motion";
 import type { PersonalBlock } from "./personal-stream";
+import { Steps } from "./steps";
 import { TOPICS } from "./topics";
 
 /* What the site holds and what it does not, as the state of the route says it. One line serves each miss, so the site
@@ -166,27 +167,15 @@ export const NoteCard = forwardRef<
   );
 });
 
-/* The line while the API routes the question. It shimmers from the mute ink to the ink, and holds still with motion off. */
+/* The wait while the API routes the question: the first line as a live step in the card, as every kind of Answer
+   waits, so the card of the Answer takes its place with the same line. */
 export const PendingCard = forwardRef<HTMLElement, { question: string }>(function PendingCard({ question }, ref) {
-  const off = useMotionOff();
   return (
     <article ref={ref} aria-label={question} aria-busy="true" className="flex scroll-mt-sp-6 flex-col gap-sp-3">
       <QuestionBubble question={question} />
-      <motion.p role="status" className="m-0 px-sp-1 text-body leading-tight font-semibold" {...riseIn(off, { delay: 0.12 })}>
-        {off ? (
-          <span className="text-mute">Reading your question…</span>
-        ) : (
-          // The shimmer of transitions-dev: a band of the ink sweeps the mute text, on a linear loop of 2 s.
-          <motion.span
-            className="bg-clip-text text-transparent [background-image:linear-gradient(90deg,var(--color-mute)_0%,var(--color-mute)_40%,var(--color-ink)_50%,var(--color-mute)_60%,var(--color-mute)_100%)] [background-size:400%_100%]"
-            initial={{ backgroundPosition: "100% 0%" }}
-            animate={{ backgroundPosition: "0% 0%" }}
-            transition={{ duration: 2, ease: "linear", repeat: Infinity }}
-          >
-            Reading your question…
-          </motion.span>
-        )}
-      </motion.p>
+      <Surface>
+        <Steps steps={[]} live />
+      </Surface>
     </article>
   );
 });

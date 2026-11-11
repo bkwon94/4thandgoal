@@ -111,6 +111,17 @@ describe("the free answer of Lil Fridge", () => {
     expect(JSON.parse(init.body)).toMatchObject({ question: "highest scoring team this season", roster_id: 3, week: 8 });
   });
 
+  it("waits on the one first line as a live step inside the card before the first tool call", async () => {
+    routes.push({ route: "free", topic: null, team: null, closest: [], suggestion: null, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } });
+    streams.push(() => sse(new ReadableStream<Uint8Array>({ start() {} })));
+    render(<HomePage />);
+    await ask("highest scoring team this season");
+    await waitFor(() => expect(freeCalls()).toHaveLength(1));
+    const answer = await articleWith("highest scoring team this season", "Reading the league…");
+    const [step] = within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem");
+    expect(step.getAttribute("data-state")).toBe("live");
+  });
+
   it("names the team with the most points for, after the step of the standings, checked (AT-11, AT-20)", async () => {
     freeWith("highest-scoring", { suggestion: "your_season" });
     render(<HomePage />);
