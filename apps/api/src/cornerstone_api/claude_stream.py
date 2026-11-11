@@ -47,6 +47,8 @@ class Attempt:
 
     text: str = ""
     held: list[BaseChunk] = field(default_factory=list)
+    # The block that the display tool of the run showed, which waits for the check with the text.
+    block: dict | None = None
     messages: list[ModelMessage] = field(default_factory=list)
     errored: bool = False
     result: AgentRunResult | None = None
@@ -58,6 +60,7 @@ class Outcome:
 
     end: str = "an error"
     text: str = ""
+    block: dict | None = None
 
 
 def adapter(agent: Agent[Any, str], prompt: str, message_id: str = "ask") -> VercelAIAdapter[Any, str]:
@@ -75,18 +78,21 @@ def data(kind: str, body: dict, id: str | None = None) -> DataChunk:
     return DataChunk(type=f"data-{kind}", id=id, data=body)
 
 
-async def kept_text(text: str) -> AsyncIterator[BaseChunk]:
-    """The text of a kept answer at once, with its check, and no Claude call."""
+async def kept_text(text: str, block: dict | None = None) -> AsyncIterator[BaseChunk]:
+    """The text of a kept answer at once, with its block and its check, and no Claude call."""
     yield TextStartChunk(id="kept")
     yield TextDeltaChunk(id="kept", delta=text)
     yield TextEndChunk(id="kept")
+    if block is not None:
+        yield data("block", block, id="block")
     yield data("check", {"state": "checked"}, id="check")
 
 
 async def run(agent: Agent[Any, str], prompt: str, deps: Any, instructions: str, history: list[ModelMessage],
-              attempt: Attempt, model: Model | None) -> AsyncIterator[BaseChunk]:
+              attempt: Attempt, model: Model | None, hidden: str | None = None) -> AsyncIterator[BaseChunk]:
     """The chunks of one run, with the frame chunks left out. The text parts wait in `attempt.held`, and the text in
     `attempt.text`, so a text goes to the manager only after its check passes (H10). The tool steps stream as they run.
+    The calls of the tool named `hidden`, the display tool, never stream, because its block waits for the check too.
     """
 
     async def keep(result: AgentRunResult) -> None:
@@ -94,9 +100,16 @@ async def run(agent: Agent[Any, str], prompt: str, deps: Any, instructions: str,
         attempt.messages = result.all_messages()
 
     texts: list[str] = []
+    # The ids of the calls of the hidden tool. Only the first part of a call names its tool, so the id marks the rest.
+    hidden_ids: set[str] = set()
     async for chunk in adapter(agent, prompt, f"ask-{len(history)}").run_stream(
             deps=deps, instructions=instructions, message_history=history, model=model, on_complete=keep):
         if isinstance(chunk, _FRAME):
+            continue
+        call_id = getattr(chunk, "tool_call_id", None)
+        if hidden is not None and getattr(chunk, "tool_name", None) == hidden and call_id is not None:
+            hidden_ids.add(call_id)
+        if call_id is not None and call_id in hidden_ids:
             continue
         if isinstance(chunk, TextDeltaChunk):
             texts.append(chunk.delta)
@@ -110,17 +123,18 @@ async def run(agent: Agent[Any, str], prompt: str, deps: Any, instructions: str,
     attempt.text = "".join(texts)
 
 
-def check(jev: Jev, question: str, your_team: str, text: str, results: dict[str, Any]) -> list[tuple[str, float]]:
-    """The sentences of `text` that Jev does not read as following from `results`, each with its noul, so the log can
-    show how sure the check was. Raises JevError when the call fails.
+def check(jev: Jev, question: str, your_team: str, text: str, results: dict[str, Any],
+          rows: list[str] | None = None) -> list[tuple[str, float]]:
+    """The sentences of `text` and the row sentences of its block, `rows`, that Jev does not read as following from
+    `results`, each with its noul, so the log can show how sure the check was. Raises JevError when the call fails.
 
     A sentence passes only above the yes cutoff, so an unsure sentence gets the rewrite and the manager never reads a
     number that the data does not hold.
     """
-    parts = sentences(text)
+    parts = sentences(text) + list(rows or [])
     if not parts:
         return []
-    answers = jev.ask(check_state(question, your_team, parts, results), check_questions(parts))
+    answers = jev.ask(check_state(question, your_team, parts, results, has_block=bool(rows)), check_questions(parts))
     nouls = [answers.nouls[sentence_key(i)] for i in range(len(parts))]
     return [(part, noul) for part, noul in zip(parts, nouls) if noul <= YES]
 
@@ -152,6 +166,10 @@ class Writer:
     rewrite: Callable[[list[str]], str]
     tool_calls: Callable[[], int] | None = None
     history: list[ModelMessage] = field(default_factory=list)
+    # The display tool of a block, and the read of the block that it showed in the last run, as JSON, with its row
+    # sentences for the check. None for an answer with no block.
+    display_tool: str | None = None
+    block: Callable[[], tuple[dict, list[str]] | None] | None = None
 
 
 @dataclass(frozen=True)
@@ -186,14 +204,17 @@ async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_
             # The site shows "Fixing a number…" at this part. The failed first text never left the API.
             yield data("check", {"state": "fixing"}, id="check")
             yield data("fix", {})
-        async for chunk in run(writer.agent, prompt, writer.deps, writer.instructions, history, attempt, writer.model):
+        async for chunk in run(writer.agent, prompt, writer.deps, writer.instructions, history, attempt, writer.model,
+                               writer.display_tool):
             yield chunk
         if attempt.errored:
             break
+        shown = None if writer.block is None else writer.block()
+        attempt.block, rows = (None, []) if shown is None else shown
         yield data("check", {"state": "checking"}, id="check")
         try:
             failed = await anyio.to_thread.run_sync(check, asker.jev, checker.question, checker.your_team,
-                                                    attempt.text, checker.results)
+                                                    attempt.text, checker.results, rows)
         except JevError as error:
             # A failed Jev call is an error, never a "no" and never a pass.
             logger.warning("The Jev check of the %s failed (%s)", writer.label, type(error).__name__)
@@ -202,9 +223,12 @@ async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_
         for sentence, noul in failed:
             logger.info("A sentence of the %s failed the check at %.2f: %s", writer.label, noul, sentence)
         if not failed:
-            outcome.end, outcome.text = "checked", attempt.text.strip()
+            outcome.end, outcome.text, outcome.block = "checked", attempt.text.strip(), attempt.block
             for chunk in attempt.held:
                 yield chunk
+            # The block comes whole after its lead line, so the site reveals both with "checked".
+            if attempt.block is not None:
+                yield data("block", attempt.block, id="block")
             yield data("check", {"state": "checked"}, id="check")
             break
         if number == 2:

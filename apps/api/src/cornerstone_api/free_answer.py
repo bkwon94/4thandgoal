@@ -27,6 +27,7 @@ from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Route
 from cornerstone_api.chat_turns import Turn, Turns, turn_messages, turns_instructions
 from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data, kept_text
+from cornerstone_api.free_blocks import BLOCK, Block, row_sentences
 from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt, run_instructions
 from cornerstone_api.personal_facts import _ahead
 from cornerstone_api.personal_topics import LiveCache, _load
@@ -59,6 +60,10 @@ READERS: dict[str, Callable[..., dict]] = {
     "player_log": free_tools.player_log,
     "roster_grades": free_tools.roster_grades,
 }
+# The display tool of a block. It reads no data, so it does not count toward the cap, and its calls never stream.
+DISPLAY_TOOL = "show_block"
+# The tool result of a second call of the display tool. An answer shows one block at most.
+ONE_BLOCK = {"error": "This answer already shows a block. Finish with the text."}
 # The topic of the two rows of a kept free answer in the AnswerStore: the reads of the question, and the answer.
 READS_TOPIC = "free_reads"
 ANSWER_TOPIC = "free"
@@ -73,6 +78,10 @@ class FreeDeps:
     calls: int = 0
     results: dict[str, Any] = field(default_factory=dict)
     reads: dict[str, tuple[str, dict]] = field(default_factory=dict)
+    # The block of the run, and the prompt count of the run that showed it, so the rewrite can show its own block.
+    block: Block | None = None
+    block_run: int = 0
+    run: int = 0
     lock: threading.Lock = field(default_factory=threading.Lock)
 
 
@@ -126,7 +135,8 @@ def season_moves(ctx: RunContext[FreeDeps]) -> dict:
 
 @AGENT.tool
 def team_roster(ctx: RunContext[FreeDeps], team: str) -> dict:
-    """The players on one team of the league now, with each player's fantasy points this season."""
+    """The players on one team of the league now, with each player's position, fantasy points this season, injury
+    status, and whether he can play now."""
     return _call(ctx, f"team_roster_{team}", "team_roster", team=team)
 
 
@@ -139,9 +149,29 @@ def roster_grades(ctx: RunContext[FreeDeps]) -> dict:
 
 @AGENT.tool
 def player_log(ctx: RunContext[FreeDeps], player: str) -> dict:
-    """The game log of one NFL player this season: fantasy points and main stats each week, and the league team that
-    held him."""
+    """The game log of one NFL player this season: fantasy points and main stats each week, the league team that held
+    him, his injury status now, and whether he can play now."""
     return _call(ctx, f"player_log_{player}", "player_log", player=player)
+
+
+@AGENT.tool(name=DISPLAY_TOOL)
+def show_block(ctx: RunContext[FreeDeps], block: Block) -> dict:
+    """Show one block under the lead sentence: a ranked "list", a comparison "table" of at most 4 columns and 12 rows,
+    or a "player" card. Copy every value from the tool results of your earlier calls. Call it once at most."""
+    with ctx.deps.lock:
+        if ctx.deps.block is not None and ctx.deps.block_run == ctx.deps.run:
+            return ONE_BLOCK
+        ctx.deps.block, ctx.deps.block_run = block, ctx.deps.run
+    return {"shown": True}
+
+
+def shown_block(deps: FreeDeps) -> tuple[dict, list[str]] | None:
+    """The block of the run that just ended, as JSON, and its row sentences for the check. A rewrite that shows no new
+    block keeps the block of the first run, so the check reads it again. The next run counts as a new run."""
+    deps.run += 1
+    if deps.block is None:
+        return None
+    return BLOCK.dump_python(deps.block, mode="json", exclude_none=True), row_sentences(deps.block)
 
 
 class FreeRequest(BaseModel):
@@ -175,11 +205,14 @@ def answer_key(base: str, results: dict[str, Any]) -> str:
     return hashlib.sha256(json.dumps(body, sort_keys=True, default=str).encode()).hexdigest()
 
 
-def keep(store: AnswerStore, base: str, roster_id: int, deps: FreeDeps, text: str, now: datetime) -> None:
-    """Keep a checked free answer: the reads of its question, and its text under the key of the data it read."""
+def keep(store: AnswerStore, base: str, roster_id: int, deps: FreeDeps, text: str, now: datetime,
+         block: dict | None = None) -> None:
+    """Keep a checked free answer: the reads of its question, and its text and its block under the key of the data it
+    read."""
     reads = [[name, tool, args] for name, (tool, args) in deps.reads.items()]
     store.put(base, READS_TOPIC, roster_id, {"reads": reads}, now)
-    store.put(answer_key(base, deps.results), ANSWER_TOPIC, roster_id, {"text": text}, now)
+    store.put(answer_key(base, deps.results), ANSWER_TOPIC, roster_id,
+              {"text": text, **({"block": block} if block is not None else {})}, now)
 
 
 def kept_answer(store: AnswerStore, base: str, data: free_tools.SeasonData) -> dict | None:
@@ -192,11 +225,13 @@ def kept_answer(store: AnswerStore, base: str, data: free_tools.SeasonData) -> d
     return store.get(answer_key(base, results))
 
 
-async def kept_stream(route: Route, teams: dict[int, str], text: str) -> AsyncIterator[BaseChunk]:
-    """The whole stream of a kept free answer: its text at once with its check, and the Suggestion of a half fit."""
+async def kept_stream(route: Route, teams: dict[int, str], text: str,
+                      block: dict | None = None) -> AsyncIterator[BaseChunk]:
+    """The whole stream of a kept free answer: its text and its block at once with its check, and the Suggestion of a
+    half fit."""
     named = next((rid for rid, name in teams.items() if name == route.team), None)
     yield StartChunk()
-    async for chunk in kept_text(text):
+    async for chunk in kept_text(text, block):
         yield chunk
     if route.suggestion is not None:
         yield data("suggestion", {"topic": route.suggestion, "team": named})
@@ -218,7 +253,7 @@ async def answer_stream(asker: Asker, route: Route, question: str, roster_id: in
     your_team = deps.data.teams[roster_id]
     writer = Writer(label="free answer", agent=AGENT, prompt=question, deps=deps, instructions=instructions,
                     model=model, rewrite=rewrite_prompt, tool_calls=lambda: deps.calls,
-                    history=turn_messages(turns or []))
+                    history=turn_messages(turns or []), display_tool=DISPLAY_TOOL, block=lambda: shown_block(deps))
     checker = Checker(question=question, your_team=your_team, results=deps.results, closest=route.closest)
     outcome = Outcome()
     yield StartChunk()
@@ -226,7 +261,7 @@ async def answer_stream(asker: Asker, route: Route, question: str, roster_id: in
         yield chunk
     if outcome.end == "checked" and store is not None:
         await anyio.to_thread.run_sync(keep, store, question_key(question, instructions, turns), roster_id, deps,
-                                       outcome.text, asker.clock())
+                                       outcome.text, asker.clock(), outcome.block)
     if outcome.end == "checked" and route.suggestion is not None:
         yield data("suggestion", {"topic": route.suggestion, "team": named})
     if outcome.end == "an honest miss":
@@ -284,7 +319,8 @@ async def free(body: FreeRequest, asker: ClientAsker, served: ServedClient,
                                           deps.data)
     if kept is not None:
         logger.info("A free answer came from the store, with no Claude call")
-        return adapter(AGENT, question).streaming_response(kept_stream(route, rosters, kept["text"]))
+        return adapter(AGENT, question).streaming_response(kept_stream(route, rosters, kept["text"],
+                                                                                 kept.get("block")))
     hit = await anyio.to_thread.run_sync(asker.caps.check, body.roster_id, asker.clock())
     if hit is not None:
         # The ask route gives the cap line first, so only a client that skips it gets here. It makes no Claude call.

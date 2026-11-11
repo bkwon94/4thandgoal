@@ -4,6 +4,7 @@ each sentence against the tool results. Change the check here and run the live c
 """
 import re
 
+from cornerstone_api.free_blocks import BLOCK_MEANING
 from league.jev_port import NoulQuestion
 
 INSTRUCTIONS = """\
@@ -15,9 +16,14 @@ Rules:
 - State only facts from the tool results. Give no advice, no rating, and no opinion word, such as "decent", "good \
 time to sell", or "can afford to move him". For a trade question, end with the facts. The site can offer the trade \
 ideas under the answer.
-- You can make at most 4 tool calls. Ask for only what the question needs.
+- You can make at most 4 data tool calls. Ask for only what the question needs. show_block does not count.
 - If the tools do not hold the answer, say what you could not find. Never guess.
-- Never name a tool, a file, or a data source. Never use a heading, a table, or a list.
+- Never name a tool, a file, or a data source. Never write a heading, a table, or a list in the text.
+- Most answers need no block. Answer in plain text by default. Call show_block once at most, only when the answer is \
+a ranking of many players or teams (kind "list"), a side-by-side comparison (kind "table"), or about one player \
+(kind "player"). Then the text is one short lead sentence, and the block holds the rest. Copy each value of the \
+block from the tool results of your earlier calls. show_block reads no data.
+- In a player block, take `can_play_now` and `status` from the tool results.
 - Call the person who runs another team "the manager" of that team.
 """
 
@@ -25,7 +31,8 @@ REWRITE = """\
 A check found that these sentences of your answer do not follow from the tool results:
 {sentences}
 Write the whole answer again, with the same rules. Remove each of these sentences, or restate it with only the exact \
-numbers of the tool results. Add no new claim. Keep each other sentence as it is.
+numbers of the tool results. Add no new claim. Keep each other sentence as it is. If a failed sentence is a row of your block, call show_block again with that row \
+fixed or removed.
 """
 
 
@@ -72,8 +79,13 @@ def check_questions(parts: list[str]) -> dict[str, NoulQuestion]:
             for i, part in enumerate(parts)}
 
 
-def check_state(question: str, your_team: str, parts: list[str], tool_results: dict[str, object]) -> dict:
+def check_state(question: str, your_team: str, parts: list[str], tool_results: dict[str, object],
+                has_block: bool = False) -> dict:
     """The state of one check: the question, the team of the manager who asks, so "your team" has its name, the whole
-    answer so a pronoun has its subject, and each tool result by the name of its call."""
-    return {"context": CHECK_CONTEXT, "manager_question": question, "manager_team": your_team, "answer": parts,
-            "tool_results": tool_results}
+    answer so a pronoun has its subject, and each tool result by the name of its call. An answer with a block holds
+    the meaning of its row sentences too, so the check reads a row as the manager does."""
+    state = {"context": CHECK_CONTEXT, "manager_question": question, "manager_team": your_team, "answer": parts,
+             "tool_results": tool_results}
+    if has_block:
+        state["block_rows"] = BLOCK_MEANING
+    return state

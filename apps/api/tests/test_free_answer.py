@@ -525,3 +525,223 @@ def test_the_rewrite_removes_or_restates_each_failed_sentence_and_adds_no_claim(
     assert "Remove each of these sentences" in prompt
     assert "only the exact numbers of the tool results" in prompt
     assert "Add no new claim" in prompt
+
+
+class Blocks:
+    """A stand-in for Claude that reads with `reads`, then shows one block from the results, then writes a lead line.
+
+    `block(results, prompts)` gives the args of the display tool, or None for a text with no block. `lead` is the text.
+    """
+
+    def __init__(self, reads: list[tuple[str, dict]], block, lead: str = "Here are the players by season points."):
+        self.reads, self.block, self.lead = reads, block, lead
+        self.requests: list[list[ModelMessage]] = []
+
+    async def stream(self, messages: list[ModelMessage], info: AgentInfo) -> AsyncIterator[str | DeltaToolCalls]:
+        self.requests.append(messages)
+        returns = _returns(messages)
+        prompts = len(_prompts(messages))
+        if not returns:
+            yield {i: DeltaToolCall(name=tool, json_args=json.dumps(args), tool_call_id=f"read-{i}")
+                   for i, (tool, args) in enumerate(self.reads)}
+            return
+        shown = [part for part in returns if part.tool_name == "show_block"]
+        # The rewrite reads the whole first run, so a block of the first run counts once per prompt.
+        if len(shown) < prompts:
+            args = self.block({part.tool_name: part.content for part in returns if part.tool_name != "show_block"},
+                              prompts)
+            if args is not None:
+                yield {0: DeltaToolCall(name="show_block", json_args=json.dumps({"block": args}),
+                                        tool_call_id=f"show-{len(shown)}")}
+                return
+        yield self.lead
+
+    def model(self) -> FunctionModel:
+        return FunctionModel(stream_function=self.stream)
+
+
+def _top_players(results: dict, prompts: int) -> dict:
+    players = results["team_roster"]["players"][:3]
+    return {"kind": "list", "title": "Season points",
+            "rows": [{"rank": i, "name": p["player"], "tag": p["position"], "value": str(p["season_points"])}
+                     for i, p in enumerate(players, start=1)]}
+
+
+class RowChecks:
+    """The Jev check that fails each sentence that holds `bad`, and passes each other sentence."""
+
+    def __init__(self, bad: str = "9999"):
+        self.bad = bad
+        self.seen: list[dict] = []
+
+    def answer(self, key: str, question: NoulQuestion, state: dict) -> float:
+        if "tool_results" in state:
+            if key == "sentence_0":
+                self.seen.append(state)
+            return 0.1 if self.bad in question.instructions["sentence"] else 0.95
+        return ROUTES[state["manager_question"]].get(key, 0.01)
+
+
+def _blocks(chunks: list[dict]) -> list[dict]:
+    return [c["data"] for c in chunks if c["type"] == "data-block"]
+
+
+def test_a_list_block_comes_whole_after_its_checked_lead_and_before_checked(repo, fixture_raw_dir):
+    # H27: "order my players by performance" gives a lead line and a list. The block is held with the text until the
+    # check passes, so no row shows early (H10), and the display tool never shows as a step.
+    checks = RowChecks()
+    script = Blocks([("team_roster", {"team": "Bo Girds"})], _top_players)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=_choice), script.model())
+    chunks = _chunks(_ask(api, "how's Bo Girds doing", roster_id=BO_GIRDS))
+    [block] = _blocks(chunks)
+    assert block["kind"] == "list" and block["title"] == "Season points" and len(block["rows"]) == 3
+    kinds = [c["type"] for c in chunks]
+    checks_at = [i for i, kind in enumerate(kinds) if kind == "data-check"]
+    at = kinds.index("data-block")
+    assert checks_at[0] < at < checks_at[1]
+    assert max(i for i, kind in enumerate(kinds) if kind.startswith("text-")) < at
+    assert "show_block" not in json.dumps([c for c in chunks if c["type"].startswith("tool-")])
+    assert _text(chunks) == "Here are the players by season points."
+    # The check reads each row as one sentence, with its rank, its name, its tag, and its value.
+    first = block["rows"][0]
+    row = f"Row 1 of the list \"Season points\": {first['name']}, {first['tag']}, {first['value']}."
+    assert row in checks.seen[0]["answer"]
+    assert "block_rows" in checks.seen[0]
+    # The display tool reads nothing, so the check reads only the data tool.
+    assert set(checks.seen[0]["tool_results"]) == {"team_roster_Bo Girds"}
+
+
+def test_a_row_that_the_tool_results_do_not_hold_fails_the_check_and_gets_the_rewrite(repo, fixture_raw_dir):
+    def block(results: dict, prompts: int) -> dict:
+        shown = _top_players(results, prompts)
+        if prompts == 1:
+            shown["rows"][0]["value"] = "9999"
+        return shown
+
+    checks = RowChecks()
+    script = Blocks([("team_roster", {"team": "Bo Girds"})], block)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=_choice), script.model())
+    chunks = _chunks(_ask(api, "how's Bo Girds doing", roster_id=BO_GIRDS))
+    states = [c["data"]["state"] for c in chunks if c["type"] == "data-check"]
+    assert states == ["checking", "fixing", "checking", "checked"]
+    # The failed block never leaves the API. The block of the rewrite comes once, after the fix.
+    assert "9999" not in json.dumps(chunks)
+    [shown] = _blocks(chunks)
+    assert kinds_after(chunks, "data-fix", "data-block")
+    assert shown["rows"][0]["value"] != "9999"
+    assert "9999" in _prompts(script.requests[-2])[-1]
+
+
+def kinds_after(chunks: list[dict], first: str, then: str) -> bool:
+    kinds = [c["type"] for c in chunks]
+    return kinds.index(first) < kinds.index(then)
+
+
+def test_a_second_failed_block_ends_as_the_honest_miss_with_no_block(repo, fixture_raw_dir):
+    def block(results: dict, prompts: int) -> dict:
+        shown = _top_players(results, prompts)
+        shown["rows"][0]["value"] = "9999"
+        return shown
+
+    script = Blocks([("team_roster", {"team": "Bo Girds"})], block)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=RowChecks().answer, choose=_choice), script.model())
+    chunks = _chunks(_ask(api, "how's Bo Girds doing", roster_id=BO_GIRDS))
+    assert any(c["type"] == "data-miss" for c in chunks)
+    assert not _blocks(chunks)
+
+
+def test_a_table_and_a_player_card_each_stream_as_their_kind(repo, fixture_raw_dir):
+    def table(results: dict, prompts: int) -> dict:
+        rows = results["standings"]["teams"][:2]
+        return {"kind": "table", "title": "Two teams", "columns": ["Team", "Record", "Points for"],
+                "rows": [[r["team"], r["record"], str(r["points_for"])] for r in rows]}
+
+    checks = RowChecks()
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=_choice),
+               Blocks([("standings", {})], table, "Here is how the two teams compare.").model())
+    [shown] = _blocks(_chunks(_ask(api, "highest scoring team this season")))
+    assert shown["kind"] == "table" and len(shown["rows"]) == 2
+    row = shown["rows"][0]
+    assert (f"Row 1 of the table \"Two teams\": Team: {row[0]}; Record: {row[1]}; Points for: {row[2]}."
+            in checks.seen[0]["answer"])
+
+    def player(results: dict, prompts: int) -> dict:
+        log = results["player_log"]
+        return {"kind": "player", "name": log["player"], "position": log["position"], "nfl_team": log["nfl_team"],
+                "fantasy_team": "Bo Girds", "can_play_now": log["can_play_now"], "status": log["status"],
+                "stats": [{"label": "Season points", "value": str(log["season_points"])}],
+                "note": "He has not played since week 5."}
+
+    checks = RowChecks()
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=_choice),
+               Blocks([("player_log", {"player": "Lamar Jackson"})], player, "Lamar Jackson is out now.").model())
+    [card] = _blocks(_chunks(_ask(api, "how's Bo Girds doing", roster_id=BO_GIRDS)))
+    assert card["kind"] == "player" and card["can_play_now"] is False
+    answer = checks.seen[0]["answer"]
+    assert "The player card: Lamar Jackson, QB, BAL, on Bo Girds, cannot play now (out)." in answer
+    assert f"Lamar Jackson: Season points {card['stats'][0]['value']}." in answer
+    assert "He has not played since week 5." in answer
+
+
+def test_a_bad_block_fails_its_validation_and_the_answer_streams_as_text(repo, fixture_raw_dir):
+    # A table row with more cells than columns fails the validation of the display tool, never the page. Claude gets
+    # the error as a retry, and here it answers in text alone.
+    calls = []
+
+    def bad(results: dict, prompts: int) -> dict | None:
+        calls.append(prompts)
+        if len(calls) > 1:
+            return None
+        return {"kind": "table", "title": "Bad", "columns": ["Team", "Record"], "rows": [["a", "b", "c"]]}
+
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=RowChecks().answer, choose=_choice),
+               Blocks([("standings", {})], bad, "Bo Girds leads the league.").model())
+    chunks = _chunks(_ask(api, "highest scoring team this season"))
+    assert not _blocks(chunks)
+    assert _text(chunks) == "Bo Girds leads the league."
+    assert [c["data"]["state"] for c in chunks if c["type"] == "data-check"] == ["checking", "checked"]
+
+
+def test_the_display_tool_does_not_count_toward_the_cap_of_4_data_calls(repo, fixture_raw_dir):
+    reads = [("week_results", {"week": week}) for week in (1, 2, 3, 4)]
+
+    def block(results: dict, prompts: int) -> dict:
+        return {"kind": "list", "title": "High score of each week",
+                "rows": [{"rank": week, "name": results["week_results"]["high_score"]["team"], "tag": f"Wk {week}",
+                          "value": "high"} for week in (1,)]}
+
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=RowChecks().answer, choose=_choice),
+               Blocks(reads, block, "Here is the high score.").model())
+    chunks = _chunks(_ask(api, "week 1 results"))
+    assert len(_blocks(chunks)) == 1
+    assert not any("limit of 4 tool calls" in json.dumps(c.get("output", "")) for c in chunks)
+
+
+def test_a_repeat_question_streams_the_kept_block_with_its_text(repo, fixture_raw_dir):
+    script = Blocks([("team_roster", {"team": "Bo Girds"})], _top_players)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=RowChecks().answer, choose=_choice), script.model())
+    first = _chunks(_ask(api, "how's Bo Girds doing", roster_id=BO_GIRDS))
+    second = _chunks(_ask(api, "how's Bo Girds doing", roster_id=BO_GIRDS))
+    assert len(script.requests) == 3
+    assert _blocks(second) == _blocks(first)
+    kinds = [c["type"] for c in second]
+    assert kinds.index("text-end") < kinds.index("data-block") < kinds.index("data-check")
+
+
+def test_a_roster_and_a_game_log_say_whether_each_player_can_play_now(repo, fixture_raw_dir):
+    # The player card says whether a player can play now, so the tools give the status of the injury report.
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=Checks([True] * 2).answer, choose=_choice),
+               Script("standings", {}, _leader).model())
+    roster = _output(api, "team_roster", {"team": "Bo Girds"})
+    lamar = next(p for p in roster["players"] if p["player"] == "Lamar Jackson")
+    assert (lamar["status"], lamar["can_play_now"]) == ("out", False)
+    assert all(p["can_play_now"] for p in roster["players"] if p["player"] != "Lamar Jackson")
+    assert "can_play_now" in roster["what_each_field_means"]
+    log = _output(api, "player_log", {"player": "Lamar Jackson"})
+    assert (log["status"], log["can_play_now"]) == ("out", False)
+
+
+def test_the_instructions_offer_one_block_after_a_lead_and_keep_text_the_default():
+    assert "show_block" in INSTRUCTIONS
+    assert "Most answers need no block" in INSTRUCTIONS
+    assert "Never use a heading, a table, or a list." not in INSTRUCTIONS

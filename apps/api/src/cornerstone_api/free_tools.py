@@ -16,6 +16,7 @@ from league.models import History, PastWeek
 from league.numbers import r2
 from league.parse import player_name
 from league.provider.raw import RawWeek
+from league.ranks import OUT_STATUSES, STATUS_WORDS
 from league.standings_table import season_records, standings_order, week_median
 from managers.grade import ManagerGrade
 
@@ -43,6 +44,22 @@ GRADE_MEANINGS = {
     "as_of": "`as_of` says every grade here is from the live league today, so say \"as of today\". The grade of the "
              "managers page is from the last week of the weekly build, so it can differ.",
 }
+
+
+# What the status fields of a player mean, in the tool result, so the check reads "cannot play now" beside the field.
+STATUS_MEANINGS = {
+    "status": "The status of the player on the injury report now, such as \"out\" or \"on IR\". \"healthy\" means "
+              "the report lists no status.",
+    "can_play_now": "False when the status keeps the player out now, such as out, on IR, or suspended. A player "
+                    "listed as questionable can still play.",
+}
+
+
+def _status(entry: dict) -> dict:
+    """The status of a player on the injury report of the live fetch, and whether he can play now."""
+    reported = entry.get("injury_status") or ""
+    return {"status": STATUS_WORDS.get(reported, reported.lower() or "healthy"),
+            "can_play_now": reported not in OUT_STATUSES}
 
 
 @dataclass(frozen=True)
@@ -200,16 +217,19 @@ def _season_points(data: SeasonData, player_id: str) -> float:
 
 
 def team_roster(data: SeasonData, team: str) -> dict:
-    """The players on one team now, with the position, the NFL team, and the fantasy points of this season."""
+    """The players on one team now, with the position, the NFL team, the fantasy points of this season, and the status
+    of the injury report."""
     roster_id = find_team(data, team)
     if roster_id is None:
         return {"error": f"No team is named {team}.", "teams": sorted(data.teams.values())}
     raw = data.raw()
     players = next((r.players or [] for r in raw.rosters if r.roster_id == roster_id), [])
     rows = [{"player": data.name(pid), "position": (raw.players.get(pid) or {}).get("position"),
-             "nfl_team": (raw.players.get(pid) or {}).get("team"), "season_points": _season_points(data, pid)}
+             "nfl_team": (raw.players.get(pid) or {}).get("team"), "season_points": _season_points(data, pid),
+             **_status(raw.players.get(pid) or {})}
             for pid in players]
-    return {"team": _team(data, roster_id), "players": sorted(rows, key=lambda row: -row["season_points"])}
+    return {"team": _team(data, roster_id), "what_each_field_means": STATUS_MEANINGS,
+            "players": sorted(rows, key=lambda row: -row["season_points"])}
 
 
 def _matches(data: SeasonData, player: str) -> list[str]:
@@ -255,7 +275,8 @@ def player_log(data: SeasonData, player: str) -> dict:
             row.update({name: line[key] for name, key in GAME_STATS.items() if line.get(key)})
         weeks.append(row)
     return {"player": data.name(pid), "position": entry.get("position"), "nfl_team": entry.get("team"),
-            "season_points": _season_points(data, pid), "weeks": weeks}
+            "season_points": _season_points(data, pid), **_status(entry), "what_each_field_means": STATUS_MEANINGS,
+            "weeks": weeks}
 
 
 def roster_grades(data: SeasonData) -> dict:
