@@ -50,7 +50,8 @@ When: The reader looks at the front door.
 Then: 3 Suggestion chips show, each with a Topic name and one number, and "More" leads the row. A tap on "More" lists all 13 Topics.
 Evidence: screenshots at 375, 768, and 1280 px in both themes, with "More" closed and open.
 
-AT-5: Tuesday puts the week recap first
+AT-5: Retired: Tuesday puts the week recap first
+Retired: Brian, 2026-11-11: every CPC team has a lift Noul above 0.7 in the live data, so no team shows the order of the day alone. AT-6 checks the lift.
 App: site
 Stories: 10
 Given: The clock is Tuesday of week 9. Your team is a team of CPC whose Suggestions response gives no lift Noul above 0.7. The builder finds that team in the live data.
@@ -629,7 +630,7 @@ Story 6: AT-3
 Story 7: AT-1
 Story 8: AT-4
 Story 9: AT-4
-Story 10: AT-5
+Story 10: no test. Reason: AT-5 is retired, because the live lifts always place an urgent Topic above the order of the day.
 Story 11: AT-6
 Story 12: AT-4
 Story 13: AT-7
@@ -700,3 +701,4 @@ Out of scope "A Thread kept on the server": AT-57
 
 - 2026-11-11: Brian approved these changes. AT-17 sets the bar at 52 of the 59 questions with an expected route. AT-30 and AT-31 test the plain chat of ticket 18, with no fold. AT-48 applies only with `front_door = true` (ticket 43). The setup builds each site of the evidence with `front_door = true`. AT-59 tests the flag off. AT-60 to AT-75 test H13 to H30 of `HANDS-ON.md`, as tickets 26 to 43 built them. Both the CPC build and the NorCal build of the evidence set `front_door = true`. AT-13 says only "I can't answer that." (ticket 20). AT-21 holds each text until it passes the check, so a failed first text never shows (ticket 21). AT-66 counts a near idea as an idea (ticket 36). PRD stories 64 to 66 cover the flag, the answer blocks, and the rate limit, and AT-59, AT-70, and AT-72 to AT-74 trace to them.
 - 2026-11-11, after the evidence round: Brian approved these changes. AT-18 reads the reveal of the checked text, not a stream, as ticket 21 built. AT-5 and AT-62 take a team that the live data fits, because the live lifts and the live QB of Bo Girds changed. AT-59 drops Midseason Report, because the menu of `main` has none. AT-68 accepts the default return week when Sleeper gives none, and any QB in the place of Lamar Jackson.
+- 2026-11-11, later: Brian retired AT-5.
