@@ -87,7 +87,7 @@ class _RateLimited(Exception):
 
 def _guard(request: Request) -> None:
     """Stop a request past the rate limit or without the passphrase of its client. Every route runs it, except health,
-    the open eggs routes, and the commissioner routes of the eggs, which run their own guard.
+    the open eggs routes, the commissioner routes of the eggs, and the cheap read routes, which run their own guard.
 
     The client is the slug of the path. An old path with no client checks the passphrase of DEFAULT_SLUG.
     """
@@ -95,6 +95,17 @@ def _guard(request: Request) -> None:
     retry_after = request.app.state.limiter.hit(request_address(request))
     if retry_after is not None:
         raise _RateLimited(retry_after)
+    _check_passphrase(request)
+
+
+def _read_guard(request: Request) -> None:
+    """Stop a request without the passphrase of its client, and count none of it. The cheap read routes run it: one
+    question makes several reads of the page, so counting them would stop the second question at the limit."""
+    _check_passphrase(request)
+
+
+def _check_passphrase(request: Request) -> None:
+    """Stop a request with a wrong or missing passphrase for the client of its path."""
     slug = request.path_params.get("slug", request.app.state.default_slug)
     expected = request.app.state.settings.passphrases.get(slug)
     if expected is None:
@@ -287,7 +298,8 @@ def create_app(
     app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(free_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(personal_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
-    app.include_router(suggestions.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
+    # The Suggestions and the key check are reads that cost no Claude call, so they check the passphrase and no limit.
+    app.include_router(suggestions.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_read_guard)])
 
     # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
     # commissioner key. The check and the board each have their own limit of each address, and each other group keeps

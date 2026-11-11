@@ -1105,7 +1105,7 @@ def _graded_client(settings, sources, clock, analyzer):
     """A client whose grade limit and general limit both read the moving clock."""
     client = _client(settings, sources, analyzer)
     client.app.state.served["cpc"].grade_limiter.clock = clock
-    # The general limit reads the same clock, so a test can make more than its 10 requests in one real minute.
+    # The general limit reads the same clock, so a test can make more than its 30 requests in one real minute.
     client.app.state.limiter.clock = lambda: clock().timestamp()
     return client
 

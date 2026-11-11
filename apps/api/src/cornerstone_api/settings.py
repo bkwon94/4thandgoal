@@ -19,8 +19,9 @@ DEFAULT_ORIGINS = (
 
 # The API service: the count of requests one address may make in a fixed one-minute window, over every client.
 # Past it the route answers 429, so one browser cannot loop the API and run up the Claude bill.
+# One question makes 3 to 4 requests, and the cheap reads of the page count none.
 # This is the default. CORNERSTONE_RATE_LIMIT_PER_MINUTE changes it, and Fly never sets it.
-RATE_LIMIT_PER_MINUTE = 10
+RATE_LIMIT_PER_MINUTE = 30
 
 
 @dataclass(frozen=True)
