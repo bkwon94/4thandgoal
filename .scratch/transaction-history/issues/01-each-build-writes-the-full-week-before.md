@@ -8,7 +8,7 @@ Spec: `.scratch/transaction-history/PRD.md`. Acceptance tests AT-4, AT-5, and AT
 
 **Blocked by:** none.
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test of the history module shows that a short `transactions.json` of week N−1 becomes the full list from `transactions_prev.json` of week N.
 - [x] A test shows that with no `transactions_prev.json`, or with no history of week N−1, the history stays byte for byte the same and no error rises. A week 1 build writes nothing.
@@ -16,3 +16,6 @@ Spec: `.scratch/transaction-history/PRD.md`. Acceptance tests AT-4, AT-5, and AT
 - [x] The copy is a file copy, not a symlink, and it is atomic.
 - [x] A run of the history step of the week 8 build on a temporary copy of the CPC files turns a 32-row week 7 into 59 rows.
 - [x] The loader keeps its swap of fresh transactions, and the live path does not change.
+
+## Comments
+- Closed by the merge of PR #10.

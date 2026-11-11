@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-35.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] axe with the rule `color-contrast` fails on a violation and on an `incomplete` result.
 - [x] The scan fails prose under 16px, other text under 11px, a link or button under 44px, and a sideways scroll at 390px. A link inside prose is exempt, and the check prints each exempt link.
@@ -18,3 +18,6 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-35.
 - [x] A 14px blurb on a local branch fails the check, which names the page, the element, and the size.
 - [x] A new ADR, beside ADR 0016, fixes the readability floor as a rule.
 - [x] The evidence of AT-35 is recorded in `EVIDENCE.md`.
+
+## Comments
+- Closed by the merge of PR #11.

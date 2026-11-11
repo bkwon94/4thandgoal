@@ -8,7 +8,7 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-1, AT-8, AT-12, AT-
 
 **Blocked by:** 01, 03, 04
 
-**Status:** in-review
+**Status:** done
 
 - [x] `evidence.md` teaches each item above, and no step of it uses `removeItem('cpc.theme')`.
 - [x] `GLOSSARY.md` holds **Evidence**, and the tracker and glossary rules pass.
@@ -16,3 +16,6 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-1, AT-8, AT-12, AT-
 - [x] One run of `pnpm --dir apps/site evidence site-redesign`, with `make api-evidence` running, prints a total of 15 min or less. The close comment records the total.
 - [x] The analyzer tests AT-24 and AT-25 of site-redesign get no 429, and no request waits on the limit.
 - [x] `git diff main -- .claude/plugin/skills/review` is empty.
+
+## Comments
+- Closed by the merge of PR #12.

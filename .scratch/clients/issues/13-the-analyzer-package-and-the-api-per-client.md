@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-27, AT-29, AT-30, and AT-34
 
 **Blocked by:** 06, 07
 
-**Status:** in-review
+**Status:** done
 
 - [x] The `analyzer` package holds the modules of decision 01, its prompts, and its API routes.
 - [x] The API answers `/clients/<slug>/teams`, `/analyze`, `/find`, and `/refresh` for each client. `/clients/cpc/teams` lists the CPC teams (AT-27).
@@ -18,3 +18,6 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-27, AT-29, AT-30, and AT-34
 - [x] Each client has its own passphrase in `CORNERSTONE_PASSPHRASE_<SLUG>`. A wrong passphrase gets 401, and a missing one stops the API at start (AT-34).
 - [x] `finder` is a package value of `analyzer`, and the site calls the API with the client in the path.
 - [x] The CPC golden diff is empty (AT-1).
+
+## Comments
+- Closed by the merge of PR #3.

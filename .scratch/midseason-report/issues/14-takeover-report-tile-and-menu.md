@@ -8,8 +8,11 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-44, AT-45, and AT-
 
 **Blocked by:** 11.
 
-**Status:** in-review
+**Status:** done
 
 - [x] With week 8 or week 9 published, the home page shows the takeover.
 - [x] With week 10 published, the home page shows the report tile.
 - [x] The dock and the menu have the same items as before.
+
+## Comments
+- Closed by the merge of PR #13.

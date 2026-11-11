@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-15, AT-16, AT-20, AT-21
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] The drop route gives each egg the letter that the most managers need over the open egg words, ties in the order of the alphabet, and no repeat in one egg drop. An empty store drops A, C, D, E, G, and L.
 - [x] The drop route never gives the last letter that the leader of an egg word needs.
@@ -17,3 +17,6 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-15, AT-16, AT-20, AT-21
 - [x] When the API is down, the drop step warns and the publish exits 0. `make egg-drop CLIENT=cpc WEEK=N` retries.
 - [x] The publish of a client without the package skips the drop.
 - [x] The egg file sits outside the repo. A test runs on a temp copy and sends it to the API app in process.
+
+## Comments
+- Closed by the merge of PR #19.

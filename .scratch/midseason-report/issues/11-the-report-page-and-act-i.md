@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-8, AT-11, AT-26, A
 
 **Blocked by:** 04, 05, 06.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The Zod schema parses the real `midseason.json` of CPC.
 - [x] The three acts render in order, each with a dark title page.
@@ -16,3 +16,6 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-8, AT-11, AT-26, A
 - [x] Position top 10 opens on RB and shows one position.
 - [x] One plain sentence explains the All-play record.
 - [x] The floor tests pass at 375, 768, and 1280 px, in the light and the dark theme.
+
+## Comments
+- Closed by the merge of PR #13.

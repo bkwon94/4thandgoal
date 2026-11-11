@@ -8,7 +8,7 @@ Spec: `.scratch/matchup-impact/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, and A
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test finds the odds part in `M<n>.impact` with both numbers as whole percents, the words "playoff odds", and the words "this week".
 - [x] A test of a week with no saved odds the week before finds no odds part, and finds the other parts.
@@ -18,3 +18,4 @@ Spec: `.scratch/matchup-impact/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, and A
 - [ ] Builds of `2026` weeks 6 and 8 record the evidence of AT-1, AT-2, AT-3, and AT-7 in `EVIDENCE.md`.
 
 ## Comments
+- Closed by the merge of PR #2.

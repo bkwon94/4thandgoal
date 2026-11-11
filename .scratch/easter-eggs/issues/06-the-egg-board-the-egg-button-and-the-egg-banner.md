@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-40, AT-41, AT-42, AT-43
 
 **Blocked by:** 01, 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] The egg button sits beside the theme button on every page of a client with the package. Its badge is the count left to find, and a tap opens `/eggs/`.
 - [x] The egg banner reads "6 eggs dropped today · 6 left" on the day of the drop, then "6 eggs dropped Tue · 5 left". A hide stays after a reload until the next drop.
@@ -17,3 +17,6 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-40, AT-41, AT-42, AT-43
 - [x] "Latest claims" shows the manager, the letter, and the egg word, with no page, no spot, and no block. "How the hunt works" ends the page.
 - [x] Before the first drop, the board shows three empty egg words and 54 to drop.
 - [ ] The copy has no "rival", no name of the commissioner, and no hint. The readability floor passes on the board and the banner.
+
+## Comments
+- Closed by the merge of PR #19.

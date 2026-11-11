@@ -8,7 +8,7 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-25.
 
 **Blocked by:** 08, and the `hero-slots` spec merged into `main`
 
-**Status:** in-review
+**Status:** done
 
 - [x] At 1280 px, a hover on The Blue Tent and a focus on Lil Fridge each swap the stage.
 - [x] The stage uses the hero slots, not the old hero part.
@@ -19,3 +19,4 @@ Spec: `.scratch/card-polish/PRD.md`. Acceptance tests AT-25.
 
 - 2026-11-08, cpc:implement: blocked until the `hero-slots` spec merges into `main`. Brian chose to build ticket 10 now without the stage check; a second start builds 09 and adds the stage to the floor check.
 - 2026-11-08, cpc:implement second start: `hero-slots` merged into `main` as #20 (f9304b5e), and `main` is merged into `card-polish`. The ticket builds now.
+- Closed by the merge of PR #21.

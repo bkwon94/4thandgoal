@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-32, AT-33, AT-34, AT-35
 
 **Blocked by:** 01, 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] The find plays the blur, the ring, the egg that bobs, the crack, and the red letter tile, in the look of ADR 0024.
 - [x] The claim sheet shows 11 team pills, then one card per egg word with its gift card value, count, tiles, leader, and ghost tile. A word with no open slot is faded and disabled.
@@ -16,3 +16,6 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-32, AT-33, AT-34, AT-35
 - [x] Each end has its hero card: the claim with the tile in its slot, the gift card of a full word, another manager first, a block, and "The eggs need a rest. Try again in N minutes."
 - [x] With reduced motion on, the find shows the tile with no motion.
 - [ ] The readability floor passes on the claim sheet.
+
+## Comments
+- Closed by the merge of PR #19.

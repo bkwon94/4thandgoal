@@ -8,10 +8,13 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-24, AT-25, AT-26, AT-
 
 **Blocked by:** 09
 
-**Status:** in-review
+**Status:** done
 
 - [ ] Each state shows against the live API, in both themes, at 375, 768, and 1280 px.
 - [x] The result text, the error lines, and "Suggested Counters · No counters yet." match `main` for the same trade.
 - [x] Only NorCal shows the finder card.
 - [x] The local dev server runs for Brian after the build.
 - [x] The evidence of AT-24, AT-25, AT-26, AT-27, and AT-40 is recorded in `EVIDENCE.md`.
+
+## Comments
+- Closed by the merge of PR #11.

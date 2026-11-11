@@ -8,7 +8,7 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-6, AT-7, AT-9, AT-10, A
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] Two claims of one egg at once give one winner. The other answers that another manager claimed first.
 - [x] The API refuses a claim for the roster of the commissioner of the package values.
@@ -17,3 +17,6 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-6, AT-7, AT-9, AT-10, A
 - [x] The claim that fills an egg word names the winner on the board. That egg word then takes no more letters.
 - [ ] `make egg-undo CLIENT=cpc EGG=<id>` sets the undo time of the claim. The egg is live again, and the claims table keeps the row.
 - [x] The API tests cover each rule through the FastAPI test client with a temp SQLite file.
+
+## Comments
+- Closed by the merge of PR #19.
