@@ -14,6 +14,7 @@ import type { DoorAnswer, DoorTeam } from "@/lib/data/front-door-data";
 import { analyzeHref } from "@/lib/routes";
 import { type AskTarget, AskError, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
+import { turnsBefore } from "./chat-turns";
 import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem, itemOfError, itemOfRoute, tradePartner, tradeRequestOf } from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
 import { CapCard, MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
@@ -239,6 +240,9 @@ export function FrontDoor({
     if (owner === team.id) setOpened(markOpened(team.id, week, key, answer.fact));
     put(nextId.current++, { kind: "topic", key, team: owner, question: null }, true);
   };
+  /* The earlier turns of the Thread before the item of `id`, so a follow-up reads like the whole question. */
+  const turnsOf = (id: number) =>
+    turnsBefore(thread, id, answers, (other) => (team && other !== team.id ? teams.find((candidate) => candidate.id === other)?.name : undefined));
   const send = async (id: number, question: string, append = false) => {
     if (!team) return;
     const passphrase = getPassphrase();
@@ -248,7 +252,7 @@ export function FrontDoor({
     }
     put(id, { kind: "pending", question }, append);
     try {
-      const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week });
+      const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns: turnsOf(id) });
       const mode = route.route === "topic" && route.topic ? TRADE_TOPICS[route.topic] : undefined;
       // A trade Topic needs the trade judge, so the typed question goes on to its route with the team it names.
       if (mode === "check") return void (await runTrade(id, question, { mode, question, roster_id: team.id }, passphrase, route.closest));
@@ -391,7 +395,7 @@ export function FrontDoor({
                             ref={ref}
                             target={askTarget}
                             passphrase={getPassphrase() ?? ""}
-                            body={{ roster_id: team.id, week }}
+                            body={{ roster_id: team.id, week, turns: turnsOf(entry.id) }}
                             onDone={(result) => put(entry.id, { kind: "free", question: entry.question, result })}
                             onMiss={(closest) => put(entry.id, { kind: "miss", question: entry.question, closest })}
                             onError={() => put(entry.id, { kind: "note", question: entry.question, line: RETRY_LINE, topic: null, team: null, retry: true })}
@@ -421,7 +425,8 @@ export function FrontDoor({
                             ref={ref}
                             target={askTarget}
                             passphrase={getPassphrase() ?? ""}
-                            body={{ topic: entry.key, roster_id: team.id, team: entry.team === team.id ? null : entry.team }}
+                            // Only a typed question carries the turns. A tapped Topic keeps its kept Answer (AT-8).
+                            body={{ topic: entry.key, roster_id: team.id, team: entry.team === team.id ? null : entry.team, ...(entry.question !== null ? { turns: turnsOf(entry.id) } : {}) }}
                             onDone={(result) => put(entry.id, { ...entry, result })}
                             onMiss={(closest) => put(entry.id, { kind: "miss", question: shared.name, closest })}
                             // Past a cap, the API writes the line and sends the closest Topics of this Topic.

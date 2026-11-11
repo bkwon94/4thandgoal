@@ -69,7 +69,23 @@ describe("the ask box of Lil Fridge", () => {
     const [url, init] = askCalls()[0];
     expect(url).toMatch(/\/clients\/cpc\/ask$/);
     expect(init.headers["X-League-Passphrase"]).toBe(PASSPHRASE);
-    expect(JSON.parse(init.body)).toEqual({ question: "who am i playing sunday", roster_id: 3, week: 8 });
+    // The first question of an empty Thread carries no earlier turn.
+    expect(JSON.parse(init.body)).toEqual({ question: "who am i playing sunday", roster_id: 3, week: 8, turns: [] });
+  });
+
+  it("sends the earlier turn of the Thread with a follow-up question, so the route reads it as the whole question", async () => {
+    answerWith(route({ route: "topic", topic: "next_matchup" }));
+    answerWith(route({ route: "topic", topic: "next_matchup" }));
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    await articleWith("who am i playing sunday", "behold the lamb");
+    await ask("and who is their best player");
+    await waitFor(() => expect(askCalls()).toHaveLength(2));
+    const { turns } = JSON.parse(askCalls()[1][1].body);
+    expect(turns).toHaveLength(1);
+    expect(turns[0].question).toBe("who am i playing sunday");
+    expect(turns[0].answer).toContain("The Must Watch of the week");
+    expect(Object.keys(turns[0]).sort()).toEqual(["answer", "question"]);
   });
 
   it("opens the next matchup of Lil Fridge, with the name of its opponent, for loose words (AT-9)", async () => {

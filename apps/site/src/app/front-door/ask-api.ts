@@ -3,6 +3,7 @@
  * league passphrase. A failed call throws an AskError with its status, so the Thread can show the right line.
  */
 import { z } from "zod";
+import type { Turn } from "./chat-turns";
 
 /* The API that a call goes to: its base URL and the slug of the client. The app builds it from its config. */
 export type AskTarget = { url: string; client: string };
@@ -20,8 +21,9 @@ export const askAnswerSchema = z.object({
 });
 export type AskAnswer = z.infer<typeof askAnswerSchema>;
 
-/* The body of the ask route: the question as typed, the roster id of Your team, and the latest week of the site. */
-export type AskQuestion = { question: string; roster_id: number; week: number };
+/* The body of the ask route: the question as typed, the roster id of Your team, the latest week of the site, and the
+   earlier turns of the Thread, oldest first. */
+export type AskQuestion = { question: string; roster_id: number; week: number; turns?: Turn[] };
 
 /* A failed call: its status, and the wait of a 429 in seconds. A status of 0 is a call that never reached the API. */
 export class AskError extends Error {
