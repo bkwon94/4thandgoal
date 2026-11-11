@@ -120,7 +120,9 @@ def _slot_rows(snapshot: Snapshot, grade: ManagerGrade, starters: list[Starter],
     # An empty slot now is the weakest spot, whatever the slot rank of its position, so its row comes first.
     for slot in sorted(_worst(grade), key=lambda slot: slot.position not in empty):
         holes = [_name(snapshot, s.player_id) or s.slot for s in starters if s.hole and s.position == slot.position]
-        note = slot.depth if not holes else f"{slot.depth} · hole: {', '.join(holes)}"
+        # The depth word comes from the grade, which counts a starter who is out now. A row with a hole reads "thin", the
+        # word for a hole, so it never reads "fine" or "deep" next to the name of a hole.
+        note = slot.depth if not holes else f"thin · hole: {', '.join(holes)}"
         rows.append({"label": slot.position, "value": _of(slot.rank, teams), "note": note, "roster_id": None,
                      "you": False})
     return rows

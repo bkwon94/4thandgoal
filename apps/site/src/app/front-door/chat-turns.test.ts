@@ -88,6 +88,29 @@ describe("threadTurns", () => {
   });
 });
 
+const player = (name: string) => ({ player_id: name, name, position: "WR", nfl_team: "SEA", headshot: "" });
+const side = (roster_id: number, team: string, gives: string[], gets: string[]) => ({ roster_id, team, gives: gives.map(player), gets: gets.map(player) });
+const offer = (n: number) => ({ offer_id: `o${n}`, sides: [side(1, "Bo Girds", [`Give ${n}`], [`Get ${n}`]), side(2, "Lil Fridge", [`Get ${n}`], [`Give ${n}`])], headline: null, bullets: [], fact_lines: [] });
+
+describe("threadTurns of a trade Answer", () => {
+  const tradeItem = (mode: "check" | "ideas", answer: unknown): ThreadItem =>
+    ({ kind: "trade", mode, question: "q", steps: [], answer }) as ThreadItem;
+
+  it("names the players of each side of a trade check, after the lean", () => {
+    const document = { lean: "Lean yes", trade: { asker: 1, sides: [side(1, "Bo Girds", ["Ann", "Bob"], ["Cy"]), side(2, "Lil Fridge", ["Cy"], ["Ann", "Bob"])] } };
+    const [turn] = threadTurns([tradeItem("check", { kind: "check", document })], answers, teamName);
+    expect(turn.answer).toBe("Lean yes. Bo Girds gives Ann, Bob. Lil Fridge gives Cy.");
+  });
+
+  it("names the sides of the top 3 offers of a trade ideas list at most", () => {
+    const document = { trades: [1, 2, 3, 4].map(offer) };
+    const [turn] = threadTurns([tradeItem("ideas", { kind: "ideas", document })], answers, teamName);
+    expect(turn.answer).toContain("4 offers");
+    for (const n of [1, 2, 3]) expect(turn.answer).toContain(`Bo Girds gives Give ${n}`);
+    expect(turn.answer).not.toContain("Give 4");
+  });
+});
+
 describe("turnsBefore", () => {
   const entries = [
     { ...free("first", "One."), id: 1 },
