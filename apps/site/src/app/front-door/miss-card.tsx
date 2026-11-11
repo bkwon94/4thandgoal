@@ -12,10 +12,8 @@ import { FAST, SLOW, STAGGER, fadeIn, riseIn } from "./motion";
 import { TOPICS } from "./topics";
 
 /* What the site holds and what it does not, as the state of the route says it. One line serves each miss, so the site
-   never names one cause that the route did not check. The lead says the miss, and the detail says why. */
-export const MISS_LEAD = "The site has no answer to that.";
-export const MISS_DETAIL =
-  "It holds this season's league data and game stats, but no injury news, live game status, betting odds, news articles, or past seasons.";
+   never names one cause that the route did not check. The line says only that the site cannot answer. */
+export const MISS_LEAD = "I can't answer that.";
 
 /* The typed question, on the right as in a chat. */
 export function QuestionBubble({ question }: { question: string }) {
@@ -78,17 +76,14 @@ function ClosestTopics({ closest, onPick }: { closest: string[]; onPick: (key: s
   );
 }
 
-/* The honest miss: the question, the line of what the site holds, and the 3 closest Topics. */
+/* The honest miss: the question, the line that says the site cannot answer, and the 3 closest Topics. */
 export const MissCard = forwardRef<HTMLElement, { question: string; closest: string[]; onPick: (key: string) => void }>(
   function MissCard({ question, closest, onPick }, ref) {
     return (
       <article ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
         <QuestionBubble question={question} />
         <Surface>
-          <div className="flex flex-col gap-sp-1">
-            <p className="m-0 text-body leading-tight font-semibold text-ink">{MISS_LEAD}</p>
-            <p className="m-0 text-body leading-body text-ink-2">{MISS_DETAIL}</p>
-          </div>
+          <p className="m-0 text-body leading-tight font-semibold text-ink">{MISS_LEAD}</p>
           <ClosestTopics closest={closest} onPick={onPick} />
         </Surface>
       </article>
