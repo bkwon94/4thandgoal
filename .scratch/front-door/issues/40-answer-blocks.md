@@ -14,11 +14,11 @@ The block args are a Pydantic discriminated union, so a bad block fails validati
 
 **Blocked by:** none
 
-**Status:** in-progress
+**Status:** in-review
 
-- [ ] "order my players by performance" for Bo Girds gives a lead sentence and a list.
-- [ ] "compare Bo Girds and Teehee" gives a table.
-- [ ] "how is Lamar Jackson doing" gives a player card that says he cannot play now.
-- [ ] "who won week 1" still gives text.
-- [ ] A row that the tool results do not hold fails the check.
-- [ ] Each component renders at 390 px with no horizontal scroll.
+- [x] "order my players by performance" for Bo Girds gives a lead sentence and a list.
+- [x] "compare Bo Girds and Teehee" gives a table.
+- [x] "how is Lamar Jackson doing" gives a player card that says he cannot play now.
+- [x] "who won week 1" still gives text.
+- [x] A row that the tool results do not hold fails the check.
+- [x] Each component renders at 390 px with no horizontal scroll.
