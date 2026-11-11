@@ -43,9 +43,10 @@ _FRAME = (StartChunk, FinishChunk, DoneChunk, MessageMetadataChunk)
 
 @dataclass
 class Attempt:
-    """One run of Claude: the text that the manager saw, the messages of the run, and its usage."""
+    """One run of Claude: its text, the text parts that wait for the check, the messages of the run, and its usage."""
 
     text: str = ""
+    held: list[BaseChunk] = field(default_factory=list)
     messages: list[ModelMessage] = field(default_factory=list)
     errored: bool = False
     result: AgentRunResult | None = None
@@ -84,7 +85,9 @@ async def kept_text(text: str) -> AsyncIterator[BaseChunk]:
 
 async def run(agent: Agent[Any, str], prompt: str, deps: Any, instructions: str, history: list[ModelMessage],
               attempt: Attempt, model: Model | None) -> AsyncIterator[BaseChunk]:
-    """The chunks of one run, with the frame chunks left out. It keeps the text that streamed in `attempt`."""
+    """The chunks of one run, with the frame chunks left out. The text parts wait in `attempt.held`, and the text in
+    `attempt.text`, so a text goes to the manager only after its check passes (H10). The tool steps stream as they run.
+    """
 
     async def keep(result: AgentRunResult) -> None:
         attempt.result = result
@@ -97,6 +100,10 @@ async def run(agent: Agent[Any, str], prompt: str, deps: Any, instructions: str,
             continue
         if isinstance(chunk, TextDeltaChunk):
             texts.append(chunk.delta)
+        if isinstance(chunk, (TextStartChunk, TextDeltaChunk, TextEndChunk)):
+            # A text that fails its check gets a rewrite, so no word of it may show before the check.
+            attempt.held.append(chunk)
+            continue
         if isinstance(chunk, ErrorChunk):
             attempt.errored = True
         yield chunk
@@ -156,8 +163,10 @@ class Checker:
 
 async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_id: int | None,
                          outcome: Outcome) -> AsyncIterator[BaseChunk]:
-    """The text of one checked answer, as stream parts with no frame: the first text, the check, at most one rewrite,
-    and the honest miss of a second failed check. `outcome` holds the end and the checked text for the caller.
+    """The text of one checked answer, as stream parts with no frame: the tool steps of the first run, the check, at
+    most one rewrite, and the honest miss of a second failed check. Only a text that passes its check streams, whole,
+    just before "checked", so the manager never reads a text that a rewrite replaces (H10). `outcome` holds the end
+    and the checked text for the caller.
 
     After the runs, the cost goes to the league month. Only a checked answer of `roster_id` counts toward the team
     cap, because an honest miss and an error do not count. A `roster_id` of None counts toward the league cap only.
@@ -169,7 +178,7 @@ async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_
         attempt = Attempt()
         attempts.append(attempt)
         if number == 2:
-            # The site fades the first text out at this part, and the second text streams under "Fixing a number…".
+            # The site shows "Fixing a number…" at this part. The failed first text never left the API.
             yield data("check", {"state": "fixing"}, id="check")
             yield data("fix", {})
         async for chunk in run(writer.agent, prompt, writer.deps, writer.instructions, history, attempt, writer.model):
@@ -187,6 +196,8 @@ async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_
             break
         if not failed:
             outcome.end, outcome.text = "checked", attempt.text.strip()
+            for chunk in attempt.held:
+                yield chunk
             yield data("check", {"state": "checked"}, id="check")
             break
         if number == 2:

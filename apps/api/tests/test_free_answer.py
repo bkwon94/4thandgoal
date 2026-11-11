@@ -184,15 +184,17 @@ def test_the_highest_scoring_team_names_the_most_points_for_of_the_standings(rep
 
 
 def test_a_half_fit_ends_with_its_topic_as_a_suggestion_after_the_check(repo, fixture_raw_dir):
-    # AT-12 and AT-20: "checking" turns into "checked" after the last word, then the chip of the top Topic.
+    # AT-12 and AT-20: "checking" comes after the last word of Claude, the text that passed comes whole, then
+    # "checked", then the chip of the top Topic. No word comes before the check passes (H10).
     script = Script("standings", {}, _leader)
     api = _api(repo, fixture_raw_dir, FakeJev(answer=Checks([True]).answer, choose=_choice), script.model())
     chunks = _chunks(_ask(api, "highest scoring team this season"))
     kinds = [c["type"] for c in chunks]
-    last_text = max(i for i, kind in enumerate(kinds) if kind == "text-delta")
+    texts = [i for i, kind in enumerate(kinds) if kind.startswith("text-")]
     checks = [(i, c["data"]["state"]) for i, c in enumerate(chunks) if c["type"] == "data-check"]
     assert [state for _, state in checks] == ["checking", "checked"]
-    assert checks[0][0] > last_text
+    assert checks[0][0] < min(texts) and max(texts) < checks[1][0]
+    assert kinds.index("tool-output-available") < checks[0][0]
     assert all(c["id"] == "check" for c in chunks if c["type"] == "data-check")
     [suggestion] = [c["data"] for c in chunks if c["type"] == "data-suggestion"]
     assert suggestion == {"topic": "playoff_race", "team": None}
@@ -250,7 +252,9 @@ def test_one_failed_claim_fades_the_text_and_streams_a_second_checked_text(repo,
     assert states == ["checking", "fixing", "checking", "checked"]
     fix = next(i for i, c in enumerate(chunks) if c["type"] == "data-fix")
     first, second = _text(chunks[:fix]), _text(chunks[fix:])
-    assert first == "Bo Girds leads with 9999 points."
+    # The failed first text never leaves the API, so no word that the manager reads is pulled back (H10).
+    assert first == ""
+    assert "9999" not in json.dumps(chunks)
     assert "has scored the most points this season" in second
     # The rewrite reads the same tool results, so it makes no second tool call, and it names the failed sentence.
     assert len([c for c in chunks if c["type"] == "tool-input-available"]) == 1
@@ -270,8 +274,8 @@ def test_a_second_failed_claim_ends_with_the_honest_miss_and_a_log_entry(repo, f
     miss = next(i for i, c in enumerate(chunks) if c["type"] == "data-miss")
     closest = chunks[miss]["data"]["closest"]
     assert closest[0] == "playoff_race" and set(closest) == {"playoff_race", "your_season", "power_rankings"}
-    # No text comes after the miss, and the stream holds no Suggestion.
-    assert not [c for c in chunks[miss:] if c["type"].startswith("text")]
+    # Neither failed text comes, and the stream holds no Suggestion.
+    assert not [c for c in chunks if c["type"].startswith("text")]
     assert not any(c["type"] == "data-suggestion" for c in chunks)
     [entry] = api.app.state.askers["cpc"].misses.misses()
     assert (entry.question, entry.team) == ("highest scoring team this season", "Lil Fridge")

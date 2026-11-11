@@ -1,6 +1,7 @@
 """
 The personal Topics of the front door, live on the API: weak spots, how you stack up, and waiver targets. Each streams
-its data block from code first, then the text of Claude over its slice, then the Jev check. A kept Answer comes back free.
+its data block from code first, then the Jev check of the text of Claude over its slice, then the text that passed. A
+kept Answer comes back free.
 """
 import hashlib
 import json
