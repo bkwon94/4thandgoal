@@ -92,6 +92,8 @@ describe("the personal Topics of Lil Fridge", () => {
     expect(url).toMatch(/\/clients\/cpc\/personal$/);
     expect(new Headers(init.headers).get("X-League-Passphrase")).toBe(PASSPHRASE);
     expect(JSON.parse(init.body)).toMatchObject({ topic: "weak_spots", roster_id: LIL_FRIDGE, team: null });
+    // A tap sends no typed question, so the API may serve its kept Answer.
+    expect(JSON.parse(init.body)).not.toHaveProperty("question");
   });
 
   it("shows the data block alone first, then the text under it, then checked (AT-18, AT-20)", async () => {
@@ -185,6 +187,25 @@ describe("the personal Topics of Lil Fridge", () => {
     const miss = await articleWith("Weak spots", MISS_LEAD);
     const chips = within(within(miss).getByRole("group", { name: "Closest Topics" })).getAllByRole("button");
     expect(chips.map((chip) => chip.textContent)).toEqual(["How you stack up", "Waiver targets", "Trade ideas"]);
+  });
+
+  it("keeps the data block of an honest miss, with the miss line in the place of the text (H17)", async () => {
+    streams.push(() => sse(recorded("weak-spots-miss")));
+    const first = render(<HomePage />);
+    await tapInMore("Weak spots");
+    const miss = await articleWith("Weak spots", MISS_LEAD);
+    expect(miss.textContent).toContain("Weakest spot");
+    expect(miss.textContent).toContain("7th of 12");
+    const text = miss.textContent ?? "";
+    expect(text.indexOf("Weakest spot")).toBeLessThan(text.indexOf(MISS_LEAD));
+    expect(text).not.toContain("Checked");
+    // The miss stays in the Thread with its block, so a reload shows both with no new stream.
+    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("Weakest spot"));
+    first.unmount();
+    render(<HomePage />);
+    const kept = await articleWith("Weak spots", MISS_LEAD);
+    expect(kept.textContent).toContain("7th of 12");
+    expect(personalCalls()).toHaveLength(1);
   });
 
   it("shows the cap line with the closest Topics past the team cap, and hides the chips (AT-37)", async () => {

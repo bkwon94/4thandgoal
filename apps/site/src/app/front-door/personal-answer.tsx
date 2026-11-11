@@ -105,14 +105,14 @@ export const PersonalAnswerLive = forwardRef<
   Shared & {
     target: AskTarget;
     passphrase: string;
-    body: { topic: PersonalTopic; roster_id: number; team: number | null; turns?: Turn[] };
+    body: { topic: PersonalTopic; roster_id: number; team: number | null; turns?: Turn[]; question?: string };
     onDone: (result: PersonalResult) => void;
-    onMiss: (closest: string[]) => void;
+    onMiss: (closest: string[], block: PersonalBlock | null) => void;
     onCap: (cap: PersonalCap) => void;
     onError: () => void;
   }
 >(function PersonalAnswerLive({ name, href, avatars, target, passphrase, body, onDone, onMiss, onCap, onError }, ref) {
-  // The API reads only the body, so the prompt of Claude comes from the facts.
+  // The API reads only the body, so the prompt of Claude comes from the facts and the typed question, if any.
   const { view, busy, kept } = useAnswerStream({
     target,
     passphrase,
@@ -130,7 +130,8 @@ export const PersonalAnswerLive = forwardRef<
         return true;
       }
       if (ended.closest) {
-        onMiss(ended.closest);
+        // The data block came from code, so the miss keeps it, and only the text gives way to the miss line.
+        onMiss(ended.closest, ended.block);
         return true;
       }
       return false;

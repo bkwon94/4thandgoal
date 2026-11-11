@@ -6,6 +6,22 @@ import json
 
 from league.jev_port import NoulQuestion
 
+# What each fact of the slices means. Claude reads them as rules of INSTRUCTIONS, and the Jev check reads them in its
+# state, so the writer and the check read the same meaning of each fact.
+FACT_MEANINGS = {
+    "rank": "A rank in `slot_ranks` or `part_ranks` is the place of the team among the teams of the league, where 1 "
+            "is the best.",
+    "projected_rank_at_position": "`projected_rank_at_position` is the place of a player among the players at his "
+                                  "position, so 50 at QB is the 50th QB.",
+    "depth_means": "In `slot_ranks`, `depth_means` says what each depth word means.",
+    "hole": "In `starters`, a hole is a slot with no player or with a player whose projected rank at his position is "
+            "worse than `starter_line`.",
+    "can_play_now": "A starter with `can_play_now` false is out now, such as on IR, so his slot is a hole.",
+    "weak_starting_slots": "Each entry of `weak_starting_slots` is a slot of the lineup of the players who can play "
+                           "now, with no player or a weak one, so it shows who plays the slot of a starter who is out "
+                           "now. A slot with no player is the weakest spot of the team.",
+}
+
 INSTRUCTIONS = """\
 You write one short Answer on a 12-team fantasy football league site, about one team.
 The prompt gives the Topic and the facts of that team as JSON. Write one paragraph of 2 to 4 short sentences of
@@ -13,13 +29,8 @@ plain words.
 
 Rules:
 - Use only what the facts say. Give the real ranks, positions, and player names from them.
-- A rank in `slot_ranks` or `part_ranks` is the place of the team among the teams of the league, where 1 is
-  the best. `projected_rank_at_position` is the place of a player among the players at his position.
-- In `slot_ranks`, `depth_means` says what each depth word means. Use those words, not your own.
-- In `starters`, a hole is a slot with no player or with a player whose projected rank at his position is worse
-  than `starter_line`. A starter with `can_play_now` false is out now, such as on IR, so his slot is a hole.
-- In `weak_starting_slots`, each line is a slot of the lineup of the players who can play now, with no player or
-  a weak one. A slot that says "empty" is the weakest spot of the team.
+""" + "".join(f"- {meaning}\n" for meaning in FACT_MEANINGS.values()) + """\
+- Use the depth words of `depth_means`, not your own.
 - Never do math on the numbers, and never guess what the facts do not say.
 - Never name a tool, a file, a grade formula, or a data source. Never use a heading, a table, or a list.
 - Call the person who runs another team "the manager" of that team.
@@ -61,12 +72,13 @@ Write the whole Answer again. Keep only what the facts say, with the same rules.
 """
 
 
-def topic_prompt(topic: str, facts: dict, own: bool) -> str:
-    """The prompt of one Topic: what to write, whom it addresses, and the slice as JSON with sorted keys, so the same
-    facts give the same prompt."""
+def topic_prompt(topic: str, facts: dict, own: bool, question: str | None = None) -> str:
+    """The prompt of one Topic: what to write, the typed question if the manager typed one, whom it addresses, and the
+    slice as JSON with sorted keys, so the same facts give the same prompt."""
     voice = ("The manager of this team asks, so call the team \"your team\" or \"you\"." if own
              else f"The manager of another team asks, so call this team {facts['team']}.")
-    return (f"Topic: {TOPIC_NAMES[topic]}.\n{TOPIC_ASKS[topic]}\n{voice}\n\nFacts:\n"
+    typed = "" if question is None else f"The manager asks: \"{question}\". Answer that question from the facts.\n"
+    return (f"Topic: {TOPIC_NAMES[topic]}.\n{TOPIC_ASKS[topic]}\n{typed}{voice}\n\nFacts:\n"
             f"{json.dumps(facts, sort_keys=True, indent=1)}")
 
 
@@ -74,9 +86,10 @@ def rewrite_prompt(failed: list[str]) -> str:
     return REWRITE.format(sentences="\n".join(f"- {sentence}" for sentence in failed))
 
 
-def check_question(topic: str, team: str) -> str:
-    """The question that the claim check reads as `manager_question`: the Topic and the team it is about."""
-    return f"{TOPIC_NAMES[topic]} of {team}"
+def check_question(topic: str, team: str, question: str | None = None) -> str:
+    """The question that the claim check reads as `manager_question`: the typed question, or else the Topic and the
+    team it is about."""
+    return question if question is not None else f"{TOPIC_NAMES[topic]} of {team}"
 
 
 def waiver_questions(player: str, team: str, week: int) -> dict[str, NoulQuestion]:
