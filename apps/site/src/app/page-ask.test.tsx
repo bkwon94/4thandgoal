@@ -180,7 +180,7 @@ describe("the ask box of Lil Fridge", () => {
     // The personal Topic streams from its own route, for the team that the question names.
     await waitFor(() => expect(fetchStub.mock.calls.some(([url]) => String(url).endsWith("/personal"))).toBe(true));
     const [, init] = fetchStub.mock.calls.find(([url]) => String(url).endsWith("/personal"))!;
-    expect(JSON.parse(init.body)).toMatchObject({ topic: "weak_spots", roster_id: 3, team: 6 });
+    expect(JSON.parse(init.body)).toMatchObject({ topic: "weak_spots", roster_id: 3, team: 6, question: "where is bo girds weak" });
     await articleWith("where is bo girds weak", "did not go through");
   });
 
