@@ -360,17 +360,42 @@ def test_weak_spots_name_each_hole_of_the_lineup_in_the_slice(settings, sources)
         assert s["hole"] == (s["player"] is None or below or not s["can_play_now"])
 
 
-def test_each_weak_starting_slot_of_weak_spots_is_a_row(settings, sources):
+def test_each_weak_starting_slot_of_weak_spots_is_a_row(settings, sources, fixture_raw_dir, tmp_path):
     # H17: a row names the slot, the player, his position, and his rank, so the check reads no "QB50" string.
+    # Bryce Young and Caleb Williams of Lil Fridge are on IR, so Jameis Winston plays the QB slot as a weak stand-in,
+    # and the slice holds a row with a player.
     writer = Writer()
-    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
-    weak = []
-    for roster_id in range(1, 13):
-        _ask(api, "weak_spots", roster_id=roster_id)
-        weak += _facts(writer.requests[-1])["weak_starting_slots"]
-    assert any(row["player"] for row in weak)
+    raw = _on_ir(fixture_raw_dir, tmp_path, {"Bryce Young", "Caleb Williams"})
+    on_ir = dataclasses.replace(sources, fetch_sleeper=lambda league_id: (load_raw(raw), test_api.FETCHED))
+    _ask(_api(settings, on_ir, FakeJev(answer=Checks([True]).answer), writer), "weak_spots")
+    weak = _facts(writer.requests[-1])["weak_starting_slots"]
+    assert any(row["player"] == "Jameis Winston" for row in weak)
     assert all(set(row) == {"slot", "player", "position", "projected_rank_at_position", "can_play_now"}
                for row in weak)
+
+
+def _on_ir(fixture_raw_dir: Path, tmp_path: Path, names: set[str]) -> Path:
+    """A copy of the recorded raw week with each player of `names` on IR, as Sleeper gives a player on IR."""
+    raw = tmp_path / "raw-on-ir"
+    shutil.copytree(fixture_raw_dir, raw)
+    players = json.loads((raw / "players.json").read_text())
+    for pid, player in players.items():
+        if f"{player.get('first_name')} {player.get('last_name')}" in names:
+            players[pid] = {**player, "injury_status": "IR", "status": "Inactive"}
+    (raw / "players.json").write_text(json.dumps(players))
+    return raw
+
+
+def test_weak_spots_slice_has_one_hole_scale(settings, sources):
+    # Ticket 44: `starters` holds the projected rank of the roster grade, so a weak row repeats no starter on a second
+    # scale. Each weak row with a player names a stand-in that `starters` does not show.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    for roster_id in range(1, 13):
+        _ask(api, "weak_spots", roster_id=roster_id)
+        facts = _facts(writer.requests[-1])
+        shown = {s["player"] for s in facts["starters"] if s["player"]}
+        assert all(row["player"] not in shown for row in facts["weak_starting_slots"] if row["player"])
 
 
 def _qbs_on_ir(fixture_raw_dir: Path, tmp_path: Path, roster_id: int) -> Path:
