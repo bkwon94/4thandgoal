@@ -201,13 +201,32 @@ def test_an_anchor_that_the_asker_gets_keeps_the_search_to_his_roster_and_each_o
     anchor = _last_pool_player(snap, PARTNER)
     jev = FakeJev()
     found = search(ASKER, None, snap, jev, anchor=Anchor(player_id=anchor, side="gets"))
-    # Only the roster of the anchor can give him, so the partner filter asks of that roster alone.
-    assert [r.state["teams"]["partner"]["roster_id"] for r in _filter_requests(jev)] == [PARTNER]
+    # Only the roster of the anchor can give him, so the search reads that roster alone.
+    assert [read.roster_id for read in found.partners] == [PARTNER]
     assert found.offers and found.shortlist
     for trade in found.offers + [offer.trade for offer in found.shortlist]:
         assert [side.roster_id for side in trade.sides] == [ASKER, PARTNER]
         assert anchor in trade.sides[1].player_ids
 
+
+
+def test_an_anchored_search_skips_the_partner_filter_and_the_plain_search_keeps_it(snap):
+    # Each filter question reads no here, so a filter would stop every partner.
+    def answer(key, question, state):
+        return 0.1 if key in ("partner_has", "partner_spares", "asker_has", "asker_spares") else 0.9
+
+    others = sorted(rid for rid in snap.rosters if rid != ASKER)
+    anchor = _last_pool_player(snap, ASKER)
+    jev = FakeJev(answer=answer)
+    found = search(ASKER, None, snap, jev, anchor=Anchor(player_id=anchor, side="gives"))
+    # The filter reads the weakest slots, and the anchor names the player the trade turns on, so no filter asks.
+    assert _filter_requests(jev) == []
+    assert [read.roster_id for read in found.partners if read.passed] == others
+    assert sorted(found.targets) == others
+    jev = FakeJev(answer=answer)
+    found = search(ASKER, None, snap, jev)
+    assert len(_filter_requests(jev)) == len(others)
+    assert not any(read.passed for read in found.partners) and found.offers == []
 
 
 def test_an_anchored_search_asks_if_each_player_coming_back_would_take_the_place_of_the_anchor(snap):

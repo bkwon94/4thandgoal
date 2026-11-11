@@ -305,7 +305,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
            stage: Stage = quiet, anchor: Anchor | None = None, limit: Limit | None = None) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
-    1. The partner filter: four Jev questions per partner. Only a partner with four yes answers goes on.
+    1. The partner filter: four Jev questions per partner. Only a partner with four yes answers goes on. A search with
+       an anchor skips it, and every partner goes on.
     2. The targets: Jev rates each pool player of each side. A target needs TARGET_AT, at most TARGET_MAX per side.
     3. The offers: code builds them from the targets only, under the hard rules.
     4. The shortlist: Jev asks the fair and the need questions of each offer. The SHORTLIST_KEEP offers with the
@@ -325,19 +326,26 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     stage(f"Checking {len(partners)} teams for a fit" if len(partners) > 1 else "Checking the other team for a fit",
           live=True)
 
-    filtered = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid),
-                                                _filter_questions(snapshot, asker, rid)) for rid in partners},
-                         "partner filter")
-    reads = []
-    for rid in partners:
-        response = filtered[str(rid)]
-        answers = response.nouls if response is not None else {}
-        passed = response is not None and all(answers[key] > YES_AT for key in PARTNER_FILTER)
-        reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers=answers, passed=passed,
-                                 failed=response is None))
-        log.info("Partner filter of %s with %s: %s, %s", snapshot.teams[asker].name, snapshot.teams[rid].name,
-                 "passed" if passed else "failed request" if response is None else "stopped",
-                 ", ".join(f"{key}={p:.2f}" for key, p in answers.items()))
+    reads: list[PartnerRead] = []
+    if anchor is not None:
+        # The filter asks about the weakest slots of each team. The anchor names the player the trade turns on, and the
+        # anchor target question asks who fills his spot, so every partner goes on to the targets.
+        reads = [PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers={}, passed=True, failed=False)
+                 for rid in partners]
+        log.info("Partner filter of %s: skipped for the anchor", snapshot.teams[asker].name)
+    else:
+        filtered = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid),
+                                                    _filter_questions(snapshot, asker, rid)) for rid in partners},
+                             "partner filter")
+        for rid in partners:
+            response = filtered[str(rid)]
+            answers = response.nouls if response is not None else {}
+            passed = response is not None and all(answers[key] > YES_AT for key in PARTNER_FILTER)
+            reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers=answers, passed=passed,
+                                     failed=response is None))
+            log.info("Partner filter of %s with %s: %s, %s", snapshot.teams[asker].name, snapshot.teams[rid].name,
+                     "passed" if passed else "failed request" if response is None else "stopped",
+                     ", ".join(f"{key}={p:.2f}" for key, p in answers.items()))
     passing = [read.roster_id for read in reads if read.passed]
     stage(f"Checked {len(partners)} teams for a fit" if len(partners) > 1 else "Checked the other team for a fit")
     stage("Building offers", live=True)

@@ -24,6 +24,7 @@ from analyzer.advisor import (
 from analyzer.finder_search import Shortlist, ShortlistOffer
 from analyzer.read_jev_check import log_read_jev_checks
 from analyzer.stage import Stage, quiet
+from analyzer.team_facts import lineup_now_fact
 from analyzer.trade_jev import jev_answer_facts, trade_jev_questions
 from analyzer.trade_news import NewsFeed
 from facts.writer import (
@@ -103,11 +104,13 @@ class FinderPicks(BaseModel):
 
 def offer_sheet(offer: ShortlistOffer, snapshot: Snapshot, news: NewsFeed) -> dict[str, Fact]:
     """The facts of one shortlist offer by id: the measured facts of its trade, with the news of its players only,
-    then the Jev answers of the shortlist as JEV facts, so the pick makes no new Jev call."""
+    the lineup now of the asker, then the Jev answers of the shortlist as JEV facts, so the pick makes no new Jev
+    call."""
     trade = offer.trade
     nouls = {"fair": offer.fair, **{f"need.{rid}": p for rid, p in offer.needs.items()}}
     questions = trade_jev_questions(trade, snapshot)
-    return {**measured_sheet(trade, snapshot, news),
+    now = lineup_now_fact(snapshot, trade.asker)
+    return {**measured_sheet(trade, snapshot, news), **({} if now is None else {now.id: now}),
             **jev_answer_facts(trade, snapshot, questions, {key: p for key, p in nouls.items() if key in questions})}
 
 
