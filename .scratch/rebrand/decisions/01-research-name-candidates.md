@@ -6,7 +6,7 @@ Map: `.scratch/rebrand/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,9 @@ Find 10 to 15 candidate Product names for a fantasy football AI expert that answ
 
 ## Decision
 
-None yet.
+The notes are `decisions/01-research-name-candidates.notes.md`, checked 2026-11-11. The research gives facts and a rank, not the choice. Brian chooses in decision 02.
+
+- "Fantasy Bot" is out. FantasyBot is a live AI fantasy app on the App Store, and all three domains are taken.
+- "Commish Bot" is out. CommishBot is a live AI newsletter for Sleeper and ESPN leagues.
+- The top 5 by the research: Ask Huddle, Huddle Sage, Pocket OC, League Oracle, and Grid Genie. The first four have `.com`, `.app`, and `.ai` free. The orchestrator checked three `.com` results at the Verisign registry.
+- No USPTO check ran. It needs a browser session. Run it on the last two or three names before the purchase.

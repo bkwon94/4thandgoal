@@ -14,11 +14,11 @@ These came from the Stage 1 grill of 2026-11-11. Brian decided each one.
 - The goal is both: a name that sells a fantasy AI expert to any league and any manager, and one name for us everywhere. Front door is the first version of that product, and the name reflects it.
 - The **Product name** is the one name of the app across all clients. **Brand** keeps its meaning: the identity of one client in `brand.toml`. `GLOSSARY.md`, **Product name**.
 - The plan, the name search, and the domain purchase run now. `cpc:implement rebrand` starts after `front-door` merges to `main`, because a rename of the folder and the plugin breaks the open worktrees of front door.
+- "Fantasy Bot" and "Commish Bot" are taken by live AI fantasy products. The top 5 free names are Ask Huddle, Huddle Sage, Pocket OC, League Oracle, and Grid Genie. `decisions/01-research-name-candidates.md`.
 - The rename covers each name a person types or sees: the domain, the GitHub repo, the local folder, the plugin, the Fly app, and the Worker names.
 
 ## NOT YET SPECIFIED
 
-- Which names fit the product, and which have a free domain? `decisions/01-research-name-candidates.md`.
 - What is the Product name? `decisions/02-grill-the-product-name.md`.
 - Where is each old name wired, and in what order does the cutover run with no downtime? `decisions/03-research-the-cutover.md`.
 - How long do `4thandgoal.app` and `cpcfantasy.com` redirect, and do we renew them? `decisions/04-spec-the-old-domains.md`.
