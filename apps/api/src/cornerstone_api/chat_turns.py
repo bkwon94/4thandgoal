@@ -24,7 +24,9 @@ JEV_TURNS_CONTEXT = ("`earlier_turns` holds the earlier questions of this manage
                      "follow-up such as 'what about him' or 'not mine' asks what the whole question would ask.")
 # The line that tells Claude how to read the turns. A run adds it to its instructions only when a question carries turns.
 CLAUDE_TURNS_LINE = ("The earlier messages are this manager's chat so far, oldest first, for context only. Read the "
-                     "new question as the next message of that chat. Take no fact from an earlier answer.")
+                     "new question as the next message of that chat: a short follow-up asks the last question again "
+                     "with its change, so 'not mine' asks it with the manager's own team left out. Take no fact from "
+                     "an earlier answer.")
 
 
 class Turn(BaseModel):
