@@ -251,3 +251,11 @@ def test_the_state_names_the_latest_week_in_each_topic_of_one_week(api, jev):
     assert topics["week_recap"].startswith("The recap of week 8, the latest fantasy week")
     assert "week 8" in topics["last_matchup"]
     assert set(topics) == set(TOPICS)
+
+
+def test_the_trade_ideas_topic_covers_a_trade_away_of_one_named_player(api, jev):
+    # H6: "i want to trade parker washington" sat at the fits_topic cutoff, so the Topic says it covers this ask.
+    _ask(api, "who am i playing sunday")
+    request = jev.requests[0]
+    assert "trade away one named player" in request.state["topics"]["trade_ideas"]
+    assert "trade away one named player" in request.questions["topic"].options["trade_ideas"]
