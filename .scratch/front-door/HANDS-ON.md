@@ -31,6 +31,8 @@ After the triage, each issue that blocks becomes a ticket from 13 up. Then the e
 | H21 | Trade ideas can end with no idea at all ("The search found no trade that works for both teams"). | The final pick keeps only offers it would send; an empty pick shows nothing it weighed. | Brian: an idea is an idea; always show at least one, plus the ones weighed and why each fell short | blocks: ticket 35 |
 | H22 | After Send, the keyboard stays open and covers the Answer. | Ticket 34 keeps the focus on the field during the tap, so nothing closes the keyboard after the send. | Brian: close the keyboard on send | blocks: ticket 37 |
 | H23 | Tap How you stack up (a Suggestion chip) needed two taps. | Not proven. Likely the H20 cause on the chips: with the keyboard open, the first tap blurs the field and the dock moves before the click. | Found 2026-11-11 | blocks: ticket 37 |
+| H24 | The second question says "That is a lot of questions at once. Try again in 7 seconds." | The API allows 10 requests per minute per address over every route, from the old analyzer. One question now makes 3 to 4 requests. | Brian agreed: cheap reads stop counting, the limit goes to 30 | blocks: ticket 38 |
+| H25 | No Suggestion card shows after most Answers. | Only a free answer has a Suggestion chip; personal and trade Answers have none. | Brian: fine as is | closed |
 
 ## Follow-ups after the merge
 
