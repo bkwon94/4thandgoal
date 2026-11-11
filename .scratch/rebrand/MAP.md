@@ -34,3 +34,4 @@ None.
 - A landing page at the bare domain for new leagues. It is a growth feature, not a rename.
 - A rename of `cornerstone_api`, the `@cpc/*` npm names, and the other package names. It touches every import for no user gain.
 - A rewrite of old text under `.scratch/`. Evidence is a record of what happened.
+- The same skills in Codex. 11 of 14 skill files call Claude-only tools, so the port is its own spec, `codex-skills`, after this one. Brian chose it on 2026-11-11.
