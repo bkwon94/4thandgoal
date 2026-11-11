@@ -29,6 +29,8 @@ After the triage, each issue that blocks becomes a ticket from 13 up. Then the e
 | H19 | The roster grade of Bo Girds in an Answer (C) differs from the manager page (B). | The page is the weekly build through week 9. The Answer reads the live league, with Lamar Jackson on IR. Neither says when it is from. | Brian agreed: label both | blocks: ticket 32. follow-up: the manager page reads the live grade |
 | H20 | On a phone, with the keyboard open, the first tap on the send arrow does nothing; a second tap sends. | Not proven. Likely the tap blurs the field first, the keyboard closes and the nav comes back (ticket 19), and the button moves before the click lands. | Found 2026-11-11 | blocks: ticket 34 |
 | H21 | Trade ideas can end with no idea at all ("The search found no trade that works for both teams"). | The final pick keeps only offers it would send; an empty pick shows nothing it weighed. | Brian: an idea is an idea; always show at least one, plus the ones weighed and why each fell short | blocks: ticket 35 |
+| H22 | After Send, the keyboard stays open and covers the Answer. | Ticket 34 keeps the focus on the field during the tap, so nothing closes the keyboard after the send. | Brian: close the keyboard on send | blocks: ticket 37 |
+| H23 | Tap How you stack up (a Suggestion chip) needed two taps. | Not proven. Likely the H20 cause on the chips: with the keyboard open, the first tap blurs the field and the dock moves before the click. | Found 2026-11-11 | blocks: ticket 37 |
 
 ## Follow-ups after the merge
 
