@@ -1,0 +1,5 @@
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, reducedMotion reduce, screen recording recording-375-light.webm.
+Setup: the answer store holds no free answer of Lil Fridge, so the question streams.
+1. Store Lil Fridge and the passphrase. Open / with an empty Thread. Wait 4 s. Type "who am i playing sunday".
+2. Tap Send. Sample on each animation frame for 20 s (ask-box-samples.txt). Wait 3 s. List each element with a CSS filter. Viewport shot end-375-light.
+3. frame-<time>-<label>.png are frames of the recording, from ffmpeg.

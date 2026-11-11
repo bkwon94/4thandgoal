@@ -6,7 +6,7 @@ import json
 import shutil
 import tempfile
 import threading
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -17,7 +17,7 @@ from pydantic import BaseModel, TypeAdapter
 
 from league.claude_errors import WriterError
 from league.claude_port import Writer
-from league.jev_port import Jev, JevError, JevResponse, NoulQuestion
+from league.jev_port import ChoiceQuestion, Jev, JevError, JevResponse, NoulQuestion
 from league.league_settings import LeagueSettings
 from league.models import ResearchOut
 from league.nflverse import nflverse_week
@@ -194,7 +194,7 @@ FAKE_WRITER: Writer = FakeWriter()
 class JevRequest:
     """The arguments of one call to `Jev.ask`."""
     state: dict
-    questions: dict[str, NoulQuestion]
+    questions: Mapping[str, NoulQuestion | ChoiceQuestion]
 
 
 class FakeJev:
@@ -202,27 +202,34 @@ class FakeJev:
 
     With `error`, each call raises that JevError, as a failed TypeSafe call does.
     With `answer`, each question gets `answer(key, question, state)` in place of `yes`, so a test can say no to some.
+    Each Choice gets all of its probability on its first option. With `choose`, it gets `choose(key, question, state)`.
     The call is safe from many threads, because the Finder sends its requests in waves.
     """
 
     MODEL = "jev-fake"
 
     def __init__(self, yes: float = 0.9, error: JevError | None = None,
-                 answer: Callable[[str, NoulQuestion, dict], float] | None = None):
+                 answer: Callable[[str, NoulQuestion, dict], float] | None = None,
+                 choose: Callable[[str, ChoiceQuestion, dict], dict[str, float]] | None = None):
         self.yes = yes
         self.error = error
         self.answer = answer
+        self.choose = choose
         self.requests: list[JevRequest] = []
         self._lock = threading.Lock()
 
-    def ask(self, state: dict, questions: dict[str, NoulQuestion]) -> JevResponse:
+    def ask(self, state: dict, questions: Mapping[str, NoulQuestion | ChoiceQuestion]) -> JevResponse:
         with self._lock:
             self.requests.append(JevRequest(state, questions))
         if self.error is not None:
             raise self.error
-        answer = self.answer
-        nouls = {key: (answer(key, q, state) if answer is not None else self.yes) for key, q in questions.items()}
-        return JevResponse(model=self.MODEL, nouls=nouls, input_tokens=100 * len(questions))
+        answer, choose = self.answer, self.choose
+        nouls = {key: (answer(key, q, state) if answer is not None else self.yes)
+                 for key, q in questions.items() if isinstance(q, NoulQuestion)}
+        choices = {key: (choose(key, q, state) if choose is not None
+                         else {option: float(i == 0) for i, option in enumerate(q.options)})
+                   for key, q in questions.items() if isinstance(q, ChoiceQuestion)}
+        return JevResponse(model=self.MODEL, nouls=nouls, input_tokens=100 * len(questions), choices=choices)
 
 
 # The annotation makes pyright prove that the fake has the method of the Jev protocol, with the same types.

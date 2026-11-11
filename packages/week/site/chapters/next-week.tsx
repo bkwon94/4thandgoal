@@ -10,6 +10,13 @@ import { avatarSrc } from "@cpc/league/images";
 import { WeekChapter } from "../parts/week-chapter";
 import { stableId, textId } from "@cpc/design/lib/stable-id";
 
+/* The id of the card of one game, from the roster ids of its two teams, lower first, so a link can reach the game of
+   one team. A game of next week takes its own prefix, so the same two teams in both chapters keep two ids. The module
+   holds no client code, so a server loader can import it too. */
+export function gameId(when: "last" | "next", a: number, b: number): string {
+  return `${when === "next" ? "next-game" : "game"}-${Math.min(a, b)}-${Math.max(a, b)}`;
+}
+
 /* The players on bye of one side, key starters first, as the JSON lists them. The key starter's name is the one emphasis.
    The line wraps and never cuts, so a long list stays whole. */
 function ByeLine({ byes }: { byes: ByePlayer[] }) {
@@ -44,7 +51,12 @@ function Side({ team, avatars }: { team: Team; avatars: AvatarMap }) {
 function Game({ game, avatars }: { game: NextGame; avatars: AvatarMap }) {
   return (
     // The article carries the Must Watch state, so a test and a style hook read it without the class names.
-    <article data-must-watch={game.must_watch} {...stableId("next-game", game.a.roster_id, game.b.roster_id)}>
+    // The id lets the front door link to the next game of one team.
+    <article
+      id={gameId("next", game.a.roster_id, game.b.roster_id)}
+      data-must-watch={game.must_watch}
+      {...stableId("next-game", game.a.roster_id, game.b.roster_id)}
+    >
       <Card edge={game.must_watch} className="flex h-full flex-col gap-sp-3">
         {game.must_watch && (
           <div className="flex flex-col gap-sp-1">

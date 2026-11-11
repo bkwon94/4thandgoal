@@ -23,6 +23,18 @@ describe("API response schemas", () => {
     expect(findResponseSchema.safeParse(fixture("find-response.json")).success).toBe(true);
   });
 
+  it("parses the near ideas of the find fixture, each with its reason", () => {
+    const parsed = findResponseSchema.parse(fixture("find-response.json"));
+    expect(parsed.near.length).toBeGreaterThan(0);
+    expect(parsed.near[0].reason).toMatch(/\w/);
+  });
+
+  it("rejects a find document with no near key, so an Answer kept before the near ideas drops", () => {
+    const body = fixture("find-response.json") as Record<string, unknown>;
+    delete body.near;
+    expect(findResponseSchema.safeParse(body).success).toBe(false);
+  });
+
   it("fills a missing team avatar with null", () => {
     const body = { teams: [{ roster_id: 1, team: "A", manager: "Ana", players: [] }] };
     expect(teamsResponseSchema.parse(body).teams[0].avatar).toBeNull();

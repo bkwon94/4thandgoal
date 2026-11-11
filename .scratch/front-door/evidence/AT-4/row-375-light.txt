@@ -1,0 +1,27 @@
+Buttons of the Suggestions row, in order:
+1. More
+2. Sell high or buy low | Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season
+3. Power rankings | 6th, down 5
+4. Week recap | You scored 80.11, 12th of 12
+
+Boxes of the row, closed:
+window width 375 px. Row box: left 16, right 359, top 377, bottom 484. Row scrollWidth 343, clientWidth 343.
+- "More": left 16, right 104, top 377, bottom 426; inside the window and the row: true
+- "Sell high or buy low | Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season": left 112, right 352, top 377, bottom 426; inside the window and the row: true
+- "Power rankings | 6th, down 5": left 16, right 184, top 434, bottom 484; inside the window and the row: true
+- "Week recap | You scored 80.11, 12th of 12": left 192, right 359, top 434, bottom 484; inside the window and the row: true
+
+Items of "More" (13):
+1. Week recap | You scored 80.11, 12th of 12
+2. Your last matchup | Lost 80.11 to 121.16
+3. Your next matchup | Next: behold the lamb, 6-10
+4. Power rankings | 6th, down 5
+5. Playoff race | 86% playoff odds
+6. Your season | 10-6, 2nd of 12
+7. Position leaders and recent trades | 1 trade this week
+8. Waiver targets | Free agents for the WR2 slot
+9. How you stack up | Grade A, QB ranks 7th of 12
+10. Weak spots | QB ranks 7th of 12
+11. Sell high or buy low | Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season
+12. Trade ideas | Offers for your WR2: Stefon Diggs (WR25)
+13. Trade check | Name a trade, get the read

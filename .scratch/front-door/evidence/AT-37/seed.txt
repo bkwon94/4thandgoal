@@ -1,0 +1,6 @@
+# The seed of the team cap. The store holds 11 real Claude Answers of Lil Fridge today (2026-11-11 in the league time zone, the API clock). The seed adds 14 rows with no cost, so the count is 25.
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i+1 FROM n WHERE i<14) INSERT INTO spend (roster_id, day, month, usd, counts) SELECT 3, '2026-11-11', '2026-11', 0.0, 1 FROM n"
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "SELECT COUNT(*) FROM spend WHERE roster_id=3 AND counts=1 AND day='2026-11-11'"
+25
+$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "SELECT ROUND(SUM(usd),4) FROM spend WHERE month='2026-11'"   # the league month, far under $25
+0.4047

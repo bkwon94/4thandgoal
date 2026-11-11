@@ -1,0 +1,123 @@
+/**
+ * The turns of the Thread that each typed question carries to the API: the question and the shown answer text of each
+ * earlier item, oldest first and newest last. A follow-up such as "cant choose mine" then reads like the whole question.
+ */
+import type { DoorAnswer } from "@/lib/data/front-door-data";
+import { blockText } from "./answer-block";
+import type { ThreadItem } from "./ask-thread";
+import { MISS_LEAD } from "./miss-card";
+import { personalName } from "./thread";
+import type { TradeAnswer } from "./trade-api";
+
+/* One earlier turn: plain text only, so no data block, tool result, or step line leaves the browser. */
+export type Turn = { question: string; answer: string };
+
+// The hard limit of the turns of one question, as in chat_turns.py of the API: about 8,000 tokens at about 4
+// characters per token. A follow-up needs only the last few turns, and a long Thread must not make each question cost
+// more, so the oldest turns drop first. The API cuts past the same limit, so a client that skips this cut gains nothing.
+export const TURNS_MAX_CHARS = 32_000;
+// The caps of one turn on the API. A longer turn gets a 422, so the site cuts each turn to them first.
+export const TURN_QUESTION_MAX = 300;
+export const TURN_ANSWER_MAX = 2_000;
+
+/* The turn of one item, or null for an item in flight. A free and a personal answer give their whole checked text, a
+   free answer with the short text of its block, and a league Topic its text. Each other kind gives its one line, as
+   the manager saw it. */
+function turnOf(item: ThreadItem, answers: Record<number, DoorAnswer[]>, teamName: (team: number) => string | undefined): Turn | null {
+  if (item.kind === "topic") {
+    const answer = (answers[item.team] ?? []).find((candidate) => candidate.topic === item.key);
+    if (!answer) return null;
+    return { question: personalName(item, teamName(item.team)), answer: answer.text.join(" ") || answer.fact };
+  }
+  const line = turnLine(item, teamName);
+  if (!line) return null;
+  // A free answer carries its block as short text after the lead, so "the second one" has a list to point at.
+  if (item.kind === "free" && item.result) {
+    const block = item.result.block;
+    return { question: line.name, answer: block ? `${item.result.text} ${blockText(block)}` : item.result.text };
+  }
+  if (item.kind === "personal" && item.result) return { question: line.name, answer: item.result.text };
+  return { question: line.name, answer: line.fact };
+}
+
+/* The most offers of a trade ideas list that a turn names. The chat context has a cap, so the rest stay as a count. */
+const TURN_OFFERS_MAX = 3;
+
+type TradeSide = Extract<TradeAnswer, { kind: "check" }>["document"]["trade"]["sides"][number];
+
+/* Who gives whom in a trade: each side with the names of the players it gives, such as "Ann gives Cy." */
+function sidesLine(sides: TradeSide[]): string {
+  return sides.map((side) => `${side.team} gives ${side.gives.map((player) => player.name).join(", ") || "nobody"}.`).join(" ");
+}
+
+/* The one fact of each trade Answer: the Lean and the sides of a trade check, the count and the top offers of the trade
+   ideas, or the players to sell. */
+function tradeFact(answer: TradeAnswer): string {
+  switch (answer.kind) {
+    case "check":
+      return `${answer.document.lean}. ${sidesLine(answer.document.trade.sides)}`;
+    case "form":
+      return "Pick the players on the Trade page";
+    case "ideas": {
+      const { trades, near, empty } = answer.document;
+      // Each near idea keeps the number it shows with after the offers, so "the second one" points at one idea.
+      const ideas = near.slice(0, TURN_OFFERS_MAX).map((idea, i) => `Idea ${trades.length + i + 1}: ${sidesLine(idea.sides)} Why not: ${idea.reason}`);
+      if (trades.length === 0) return ideas.length === 0 ? "No offer found" : ["No clear offer.", ...(empty ? [empty] : []), ...ideas].join(" ");
+      const offers = trades.slice(0, TURN_OFFERS_MAX).map((trade, i) => `Offer ${i + 1}: ${sidesLine(trade.sides)}`);
+      return [trades.length === 1 ? "1 offer." : `${trades.length} offers.`, ...offers, ...ideas].join(" ");
+    }
+    case "sell": {
+      const names = answer.document.picks.map((pick) => pick.player.name);
+      return names.length === 0 ? "No clear sell" : `Sell ${names.join(", ")}`;
+    }
+  }
+}
+
+/* The name and one plain fact of an item that is not a league Topic, or null for an item in flight: a question that
+   routes, the passphrase field, or a stream that has not ended. A free and a personal answer use only the name here. */
+function turnLine(item: Exclude<ThreadItem, { kind: "topic" }>, teamName: (team: number) => string | undefined): { name: string; fact: string } | null {
+  switch (item.kind) {
+    case "pending":
+    case "passphrase":
+      return null;
+    case "trade":
+      return item.answer ? { name: item.question, fact: tradeFact(item.answer) } : null;
+    case "free":
+      return item.result ? { name: item.question, fact: item.result.text } : null;
+    case "personal":
+      return item.result ? { name: personalName(item, teamName(item.team)), fact: item.result.text } : null;
+    case "miss":
+      return { name: item.question, fact: MISS_LEAD };
+    case "cap":
+    case "note":
+      return { name: item.question, fact: item.line };
+  }
+}
+
+/* The turns of `items`, each cut to the caps of the API, oldest first. The oldest turns drop first past the limit. */
+export function threadTurns(items: ThreadItem[], answers: Record<number, DoorAnswer[]>, teamName: (team: number) => string | undefined): Turn[] {
+  const turns = items
+    .map((item) => turnOf(item, answers, teamName))
+    .filter((turn): turn is Turn => turn !== null && turn.question.trim() !== "" && turn.answer.trim() !== "")
+    .map((turn) => ({ question: turn.question.slice(0, TURN_QUESTION_MAX), answer: turn.answer.slice(0, TURN_ANSWER_MAX) }));
+  const kept: Turn[] = [];
+  let size = 0;
+  for (const turn of turns.toReversed()) {
+    size += turn.question.length + turn.answer.length;
+    if (size > TURNS_MAX_CHARS) break;
+    kept.unshift(turn);
+  }
+  return kept;
+}
+
+/* The turns before the item of `id`. A new question with no place yet reads every turn of the Thread. */
+export function turnsBefore(
+  entries: (ThreadItem & { id: number })[],
+  id: number,
+  answers: Record<number, DoorAnswer[]>,
+  teamName: (team: number) => string | undefined,
+): Turn[] {
+  const at = entries.findIndex((entry) => entry.id === id);
+  return threadTurns(at < 0 ? entries : entries.slice(0, at), answers, teamName);
+}
+

@@ -70,6 +70,11 @@ describe("generateStaticParams", () => {
 });
 
 describe("ManagersIndex", () => {
+  it("names the race groups with the id that the playoff race Answer of the front door links to", async () => {
+    const { main } = await indexOfClient("cpc");
+    expect(main.getByRole("group", { name: "Playoff Race" }).id).toBe("race");
+  });
+
   it("has the managers title", async () => {
     const { metadata } = await routeOver(fixture);
     expect(metadata.title).toBe("Managers · Cornerstone Fantasy Football League");

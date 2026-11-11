@@ -26,6 +26,7 @@ from cornerstone.sheet import (
     saved_chapter,
     write_bundle,
 )
+from cornerstone.topics import write_topics_or_warn
 from facts.chapters import RANKINGS_CHAPTER
 from facts.verifier import page_words, reserved_words, write_and_verify
 from facts.writer import ClaudeCall
@@ -468,6 +469,15 @@ def run_build(
 
     site_dir = build_dir(client.folder)
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
+    _write_season_files(client, season, week, raw_path, raw, bundle, blurbs)
+    # The Topic Answers read the page and both season files, so they come last.
+    write_topics_or_warn(site_dir, season, week)
+    return page
+
+
+def _write_season_files(client: Client, season: int, week: int, raw_path: Path, raw: RawWeek, bundle: Bundle,
+                        blurbs: dict[str, Blurb]) -> None:
+    """Save the week to the history, then write rankings.json and managers.json from it."""
     # The page is built by now, so a history problem only logs a warning.
     try:
         save_week_to_history(raw_path, history_dir(client.folder, season, week))
@@ -486,7 +496,7 @@ def run_build(
     except (OSError, ValueError, KeyError) as err:
         log.warning("rankings.json not written for week %d: %s", week, err)
         log.warning("managers.json not written for week %d: %s", week, err)
-        return page
+        return
     # The rankings package writes its own file, so a client that omits it gets no rankings.json.
     if "rankings" in client.values.packages:
         _write_rankings_or_warn(season, week, bundle, blurbs.get(RANKINGS_CHAPTER), lambda: history, client)
@@ -494,13 +504,12 @@ def run_build(
     # The snapshot, the projections ahead, and the chart load inside this try, so their failure skips only this file.
     # A client that omits the managers package gets no managers file, so the build loads none of its inputs.
     if not _takes_managers(client):
-        return page
+        return
     try:
         _write_managers(season, week, bundle.data.teams,
                         _season_inputs(season, week, raw, history, client), client)
     except (OSError, ValueError, KeyError) as err:
         log.warning("managers.json not written for week %d: %s", week, err)
-    return page
 
 
 def _takes_managers(client: Client) -> bool:
@@ -687,13 +696,17 @@ def run_rewrite(
         # The rankings file reads only the history, so a rewrite loads no raw week.
         _write_rankings_or_warn(season, week, bundle, blurbs[chapter],
                                 lambda: _season_history(client, season, week), client)
+    # The Topic Answers quote the blurbs, so a rewrite writes them again.
+    write_topics_or_warn(site_dir, season, week)
     return page
 
 
 def run_page_json(repo: Path, season: int, week: int, *, client: Client) -> Path:
     """Write page.json for a saved week from its facts and blurbs. It calls no writer and no network."""
     bundle, blurbs = _load_saved_week(client, season, week)
-    return render_page_json(bundle, blurbs, build_dir(client.folder))
+    page = render_page_json(bundle, blurbs, build_dir(client.folder))
+    write_topics_or_warn(build_dir(client.folder), season, week)
+    return page
 
 
 def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client: Client) -> Path:
@@ -723,10 +736,11 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client
     # The command rebuilds the season files from the saved history, so the managers file comes along.
     # A thin history only logs: the rankings file is the output of the command.
     # The raw week loads after the rankings file, so a failed load of the grade inputs leaves that file written.
-    if not _takes_managers(client):
-        return out
-    inputs = _season_inputs(season, week, _raw_for_season_files(client, season, week), season_history, client)
-    _write_managers(season, week, bundle.data.teams, inputs, client)
+    if _takes_managers(client):
+        inputs = _season_inputs(season, week, _raw_for_season_files(client, season, week), season_history, client)
+        _write_managers(season, week, bundle.data.teams, inputs, client)
+    # The Topic Answers read both season files, so they come after them.
+    write_topics_or_warn(build_dir(client.folder), season, week)
     return out
 
 

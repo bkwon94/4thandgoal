@@ -1,0 +1,3 @@
+Driver: site.mjs AT-23, 375x812, the date of the page shifted to Wednesday 2026-11-04.
+1. Store Lil Fridge and the passphrase. Open /. Open Power rankings. Shot answer.
+2. Tap "Read the full report" in the Answer. Wait for the URL. Shot page. url-375-<theme>.txt holds the URL.

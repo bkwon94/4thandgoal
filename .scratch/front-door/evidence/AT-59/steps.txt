@@ -1,0 +1,7 @@
+Driver: site.mjs AT-59, viewport <width>x900, the date of the page shifted to Wednesday 2026-11-04.
+Build: CPC with front_door = false in clients/cpc/client.toml (CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm --dir apps/site build), latest week 8, served on 127.0.0.1:4173.
+1. Open / with the passphrase only. Wait 2.5 s. Shot home-<width>-<theme>.
+2. Tap the menu button if one shows. Viewport shot menu-<width>-<theme>. menu-links-<width>-<theme>.txt lists the visible links.
+3. Open /ask/ with Lil Fridge and the passphrase. Wait for the ask box, then 6 s. Shot ask-<width>-<theme>.
+robots.txt and ask-links.txt come from the shell commands named in each file.
+menu-vs-main.txt lists the nav links of out/index.html of this build and of a build of origin/main (1d7bfc0d, week 9 hidden too), and diffs the visible text of both home pages.

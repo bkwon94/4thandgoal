@@ -20,7 +20,10 @@ export type ClientValues = {
   usageCode: string | null;
   // The trade finder of the analyzer.
   finder: boolean;
+  // The front door at /, from front_door of client.toml. Off, / is the home page and the front door sits at /ask/.
+  frontDoor: boolean;
   // The menu of [menu] in client.toml. The client build fills the items from the package list when client.toml gives none.
+  // With the front door on, it takes front_door_items when [menu] gives them.
   menu: ClientMenu;
   // The sets of brand.toml in paint order, and the src of the logo in assets/, or null with no logo.
   brand: { sets: BrandSets; logo: string | null };

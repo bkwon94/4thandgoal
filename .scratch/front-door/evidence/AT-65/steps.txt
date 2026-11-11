@@ -1,0 +1,6 @@
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, screen recording recording-375-light.webm.
+Setup: the answer store holds no free answer of Bo Girds, so week 1 results streams.
+1. Store Bo Girds (roster 6) and the passphrase. Open /. Tap Trade ideas. Wait for the whole Answer, plus 3 s. Viewport shot trade-end-375-light.
+2. Type "week 1 results". Tap Send. Wait for Checked, plus 3 s. Viewport shot week-1-end-375-light.
+3. Sample each article on each animation frame through both waits (steps-samples.txt). The file ends with the elements with a background or a border between each step list and its article.
+4. frame-<time>-<answer>-<state>.png are frames of the recording at the times of the samples: the live step and the done steps of each Answer. The recording runs about 0.1 s to 0.2 s behind the sample times.

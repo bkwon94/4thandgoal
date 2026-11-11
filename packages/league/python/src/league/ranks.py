@@ -23,6 +23,8 @@ POSITION_ORDER = ("RB", "WR", "TE", "QB", "K", "DEF")
 # returns file has no known return, so the standing Measure counts him as back after the return-by week of the
 # client. The lineup value counts him as due back at that week, so his projection ahead gives his value.
 OUT_STATUSES = frozenset({"Out", "IR", "NA", "Sus", "PUP"})
+# The words of each status of OUT_STATUSES in a sentence, such as "{starter} is {word}".
+STATUS_WORDS = {"Out": "out", "IR": "on IR", "PUP": "on the PUP list", "Sus": "suspended", "NA": "not active"}
 
 # The points per game that the lineup value reads. GLOSSARY.md, "Position rank".
 # "recent" reads the last LINEUP_WEEKS weeks. The weekly report reads it.

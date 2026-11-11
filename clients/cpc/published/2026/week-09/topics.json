@@ -1,0 +1,3495 @@
+{
+  "schema_version": 1,
+  "season": 2026,
+  "week": 9,
+  "teams": {
+    "1": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 132.68, 2nd of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "132.68"
+          },
+          {
+            "label": "Place",
+            "value": "2nd of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 132.68 to 86.79",
+        "stats": [],
+        "rows": [
+          {
+            "label": "The Blue Tent",
+            "value": "132.68",
+            "note": "Christian Watson 26.6",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "NFC Least",
+            "value": "86.79",
+            "note": "Kirk Cousins 14.64",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "NFC Least led by 46.45 after the early Sunday games and still lost by 45.89 to The Blue Tent. The trade pickups Tetairoa McMillan and Makai Lemon managed 13.6 and 9.1, and Xavier Worthy is now listed Out. The winners climbed a spot in the standings while the losers stayed dead last."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Bo Girds, 11-7",
+        "stats": [],
+        "rows": [
+          {
+            "label": "The Blue Tent",
+            "value": "11-7",
+            "note": "Bye: Bucky Irving, Dallas Goedert, RJ Harvey",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "11-7",
+            "note": null,
+            "roster_id": 6,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "2nd, up 3",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "2nd"
+          },
+          {
+            "label": "Move",
+            "value": "Up 3"
+          },
+          {
+            "label": "Record",
+            "value": "11-7"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Return of T Mac",
+            "value": "1st",
+            "note": "11-7",
+            "roster_id": 8,
+            "you": false
+          },
+          {
+            "label": "The Blue Tent",
+            "value": "2nd",
+            "note": "11-7",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "All You Need Is Love",
+            "value": "3rd",
+            "note": "12-6",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": [
+          "The Blue Tent climbs to 2nd after a 46-point beating of the last-place team. They have won 3 straight, though the scoring has dipped to 106.29 a week lately."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "76% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "76%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "24%"
+          },
+          {
+            "label": "Seed",
+            "value": "3"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "All You Need Is Love",
+            "value": "78%",
+            "note": "Seed 1",
+            "roster_id": 2,
+            "you": false
+          },
+          {
+            "label": "The Blue Tent",
+            "value": "76%",
+            "note": "Seed 3",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "Return of T Mac",
+            "value": "62%",
+            "note": "Seed 6",
+            "roster_id": 8,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "11-7, 5th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "11-7"
+          },
+          {
+            "label": "Standing",
+            "value": "5th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1003.87"
+          },
+          {
+            "label": "Roster grade",
+            "value": "B"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Brock Purdy",
+            "value": "154.2",
+            "note": "QB · 22 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Christian Watson",
+            "value": "152.4",
+            "note": "WR · 16.9 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "122",
+            "note": "TE · 17.4 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at WR and TE. Soft at RB."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Brock Bowers, 1st at TE",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "2": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 106.39, 6th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "106.39"
+          },
+          {
+            "label": "Place",
+            "value": "6th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 106.39 to 144.03",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Return of T Mac",
+            "value": "144.03",
+            "note": "Jordan Love 36.18",
+            "roster_id": 8,
+            "you": false
+          },
+          {
+            "label": "All You Need Is Love",
+            "value": "106.39",
+            "note": "Joe Burrow 29.54",
+            "roster_id": 2,
+            "you": true
+          }
+        ],
+        "text": [
+          "All You Need Is Love lost to Return of T Mac in an upset, and the Love that mattered was Jordan Love, who put up 36.18 for the other side. A 24.44 lead after the early Sunday games vanished, with the recent add CeeDee Lamb posting 28.5 for the winners. The winners crossed into the playoff spots and kept their winning streak alive, while the losers still sit on top of the standings anyway."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: behold the lamb, 6-12",
+        "stats": [],
+        "rows": [
+          {
+            "label": "All You Need Is Love",
+            "value": "12-6",
+            "note": "Bye: Colston Loveland",
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "behold the lamb",
+            "value": "6-12",
+            "note": "Bye: Kyle Monangai",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "3rd, down 2",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "3rd"
+          },
+          {
+            "label": "Move",
+            "value": "Down 2"
+          },
+          {
+            "label": "Record",
+            "value": "12-6"
+          }
+        ],
+        "rows": [
+          {
+            "label": "The Blue Tent",
+            "value": "2nd",
+            "note": "11-7",
+            "roster_id": 1,
+            "you": false
+          },
+          {
+            "label": "All You Need Is Love",
+            "value": "3rd",
+            "note": "12-6",
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "4th",
+            "note": "11-7",
+            "roster_id": 6,
+            "you": false
+          }
+        ],
+        "text": [
+          "All You Need Is Love drops to 3rd after a 38-point loss. They still sit atop the standings at 12-6."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "78% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "78%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "27%"
+          },
+          {
+            "label": "Seed",
+            "value": "1"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Maye d'force B with U",
+            "value": "80%",
+            "note": "Seed 2",
+            "roster_id": 9,
+            "you": false
+          },
+          {
+            "label": "All You Need Is Love",
+            "value": "78%",
+            "note": "Seed 1",
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "The Blue Tent",
+            "value": "76%",
+            "note": "Seed 3",
+            "roster_id": 1,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "12-6, 1st of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "12-6"
+          },
+          {
+            "label": "Standing",
+            "value": "1st of 12"
+          },
+          {
+            "label": "Points",
+            "value": "956.56"
+          },
+          {
+            "label": "Roster grade",
+            "value": "B"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "204.14",
+            "note": "QB · 25.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Ja'Marr Chase",
+            "value": "133.2",
+            "note": "WR · 16.7 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Ashton Jeanty",
+            "value": "118.3",
+            "note": "RB · 13.1 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at QB and TE. Soft at RB."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Joe Burrow, 2nd at QB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "3": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 95.09, 8th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "95.09"
+          },
+          {
+            "label": "Place",
+            "value": "8th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 95.09 to 92.71",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Lil Fridge",
+            "value": "95.09",
+            "note": "Christian McCaffrey 21.7",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "behold the lamb",
+            "value": "92.71",
+            "note": "Puka Nacua 28",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge trailed by 38.82 after the early Sunday games and still beat behold the lamb by 2.38. The recent adds went both ways: the Rams defense put up 13.95 for the losers, while Tyler Allgeier managed 5.6 for the winners. Both sides missed the median, Puka Nacua is now listed Questionable with a knee, and the losing side keeps losing with its playoff odds all but gone this week."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: London Cooking, 11-7",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Lil Fridge",
+            "value": "11-7",
+            "note": "Bye: J.K. Dobbins, Caleb Williams, Courtland Sutton, Denver Broncos",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "London Cooking",
+            "value": "11-7",
+            "note": "Bye: Emeka Egbuka",
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "8th, down 2",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "8th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 2"
+          },
+          {
+            "label": "Record",
+            "value": "11-7"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Maye d'force B with U",
+            "value": "7th",
+            "note": "10-8",
+            "roster_id": 9,
+            "you": false
+          },
+          {
+            "label": "Lil Fridge",
+            "value": "8th",
+            "note": "11-7",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "To Infinity and Bijan",
+            "value": "9th",
+            "note": "8-10",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge slips to 8th despite a 2-point win. They went 0-3 against the median over the last 3 weeks. The fridge is running cold."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "85% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "85%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "36%"
+          },
+          {
+            "label": "Seed",
+            "value": "1"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Lil Fridge",
+            "value": "85%",
+            "note": "Seed 1",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "82%",
+            "note": "Seed 1",
+            "roster_id": 6,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "11-7, 4th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "11-7"
+          },
+          {
+            "label": "Standing",
+            "value": "4th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1004.64"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jaxon Smith-Njigba",
+            "value": "196.56",
+            "note": "WR · 21.8 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Christian McCaffrey",
+            "value": "148.7",
+            "note": "RB · 18.6 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Travis Kelce",
+            "value": "82.8",
+            "note": "TE · 10.3 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Travis Kelce, 2nd at TE",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "4": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 86.79, 10th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "86.79"
+          },
+          {
+            "label": "Place",
+            "value": "10th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 86.79 to 132.68",
+        "stats": [],
+        "rows": [
+          {
+            "label": "The Blue Tent",
+            "value": "132.68",
+            "note": "Christian Watson 26.6",
+            "roster_id": 1,
+            "you": false
+          },
+          {
+            "label": "NFC Least",
+            "value": "86.79",
+            "note": "Kirk Cousins 14.64",
+            "roster_id": 4,
+            "you": true
+          }
+        ],
+        "text": [
+          "NFC Least led by 46.45 after the early Sunday games and still lost by 45.89 to The Blue Tent. The trade pickups Tetairoa McMillan and Makai Lemon managed 13.6 and 9.1, and Xavier Worthy is now listed Out. The winners climbed a spot in the standings while the losers stayed dead last."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Maye d'force B with U, 10-8",
+        "stats": [],
+        "rows": [
+          {
+            "label": "NFC Least",
+            "value": "3-15",
+            "note": "Bye: Saquon Barkley, DeVonta Smith, Makai Lemon",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "Maye d'force B with U",
+            "value": "10-8",
+            "note": "Bye: D'Andre Swift, Jonah Coleman, Jaylen Waddle",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "11th, up 1",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "11th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 1"
+          },
+          {
+            "label": "Record",
+            "value": "3-15"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "10th",
+            "note": "6-12",
+            "roster_id": 11,
+            "you": false
+          },
+          {
+            "label": "NFC Least",
+            "value": "11th",
+            "note": "3-15",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "behold the lamb",
+            "value": "12th",
+            "note": "6-12",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": [
+          "NFC Least somehow moves up a spot to 11th after losing by 46. At 3-15, the name remains accurate. They also face the hardest remaining schedule."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "1% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "1%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-8"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 11,
+            "you": false
+          },
+          {
+            "label": "NFC Least",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 4,
+            "you": true
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "3-15, 12th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "3-15"
+          },
+          {
+            "label": "Standing",
+            "value": "12th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "787.76"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jameson Williams",
+            "value": "91.7",
+            "note": "WR · 11.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "91.1",
+            "note": "WR · 15.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kirk Cousins",
+            "value": "82.74",
+            "note": "QB · 20.7 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at RB. Soft at QB, WR, and TE."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "2 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "5": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 111.46, 4th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "111.46"
+          },
+          {
+            "label": "Place",
+            "value": "4th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 111.46 to 106.71",
+        "stats": [],
+        "rows": [
+          {
+            "label": "London Cooking",
+            "value": "111.46",
+            "note": "Javonte Williams 20.4",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "Maye d'force B with U",
+            "value": "106.71",
+            "note": "Drake Maye 21.26",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Lil Fridge, 11-7",
+        "stats": [],
+        "rows": [
+          {
+            "label": "London Cooking",
+            "value": "11-7",
+            "note": "Bye: Emeka Egbuka",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "Lil Fridge",
+            "value": "11-7",
+            "note": "Bye: J.K. Dobbins, Caleb Williams, Courtland Sutton, Denver Broncos",
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "5th, up 3",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "5th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 3"
+          },
+          {
+            "label": "Record",
+            "value": "11-7"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "4th",
+            "note": "11-7",
+            "roster_id": 6,
+            "you": false
+          },
+          {
+            "label": "London Cooking",
+            "value": "5th",
+            "note": "11-7",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "Teehee",
+            "value": "6th",
+            "note": "8-10",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [
+          "London Cooking rises to 5th on a 5-point win. Squeaker or not, they sit 3rd in the standings at 11-7. The kitchen has cooled off lately, though."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "80% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "80%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "29%"
+          },
+          {
+            "label": "Seed",
+            "value": "1"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "82%",
+            "note": "Seed 1",
+            "roster_id": 6,
+            "you": false
+          },
+          {
+            "label": "London Cooking",
+            "value": "80%",
+            "note": "Seed 1",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "Maye d'force B with U",
+            "value": "80%",
+            "note": "Seed 2",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "11-7, 3rd of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "11-7"
+          },
+          {
+            "label": "Standing",
+            "value": "3rd of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1030.45"
+          },
+          {
+            "label": "Roster grade",
+            "value": "B"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Javonte Williams",
+            "value": "145.6",
+            "note": "RB · 16.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "James Cook III",
+            "value": "140.4",
+            "note": "RB · 17.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Chuba Hubbard",
+            "value": "132.6",
+            "note": "RB · 16.6 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at QB and TE. Thin at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "2 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "6": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 114.07, 3rd of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "114.07"
+          },
+          {
+            "label": "Place",
+            "value": "3rd of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 114.07 to 100.63",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "114.07",
+            "note": "Kenneth Walker III 34.3",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "Teehee",
+            "value": "100.63",
+            "note": "Tee Higgins 17.7",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds held the lead over Teehee from Thursday all the way to Monday, and Kenneth Walker III and Matthew Golden each outscored the margin on his own. The win snapped a 4-game losing streak, while the other side's playoff odds slid to about 49% this week. Malik Willis, the new pickup at quarterback, scored 4.82 and is now listed Questionable (Groin), as is Luther Burden III, who was hurt late in his game against Tampa Bay."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: The Blue Tent, 11-7",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "11-7",
+            "note": null,
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "The Blue Tent",
+            "value": "11-7",
+            "note": "Bye: Bucky Irving, Dallas Goedert, RJ Harvey",
+            "roster_id": 1,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "4th, up 3",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "4th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 3"
+          },
+          {
+            "label": "Record",
+            "value": "11-7"
+          }
+        ],
+        "rows": [
+          {
+            "label": "All You Need Is Love",
+            "value": "3rd",
+            "note": "12-6",
+            "roster_id": 2,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "4th",
+            "note": "11-7",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "London Cooking",
+            "value": "5th",
+            "note": "11-7",
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds moves up to 4th on a 13-point win. The scoring is sliding, though: 104.18 a week lately against a 115.08 season average."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "82% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "82%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "35%"
+          },
+          {
+            "label": "Seed",
+            "value": "1"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Lil Fridge",
+            "value": "85%",
+            "note": "Seed 1",
+            "roster_id": 3,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "82%",
+            "note": "Seed 1",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "London Cooking",
+            "value": "80%",
+            "note": "Seed 1",
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "11-7, 2nd of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "11-7"
+          },
+          {
+            "label": "Standing",
+            "value": "2nd of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1035.69"
+          },
+          {
+            "label": "Roster grade",
+            "value": "B"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Kenneth Walker III",
+            "value": "183.4",
+            "note": "RB · 22.9 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Matthew Golden",
+            "value": "137.4",
+            "note": "WR · 15.3 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Zay Flowers",
+            "value": "106",
+            "note": "WR · 13.2 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Soft at QB. Thin at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Kenneth Walker III, 1st at RB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "7": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 83.08, 11th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "83.08"
+          },
+          {
+            "label": "Place",
+            "value": "11th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 83.08 to 64.65",
+        "stats": [],
+        "rows": [
+          {
+            "label": "To Infinity and Bijan",
+            "value": "83.08",
+            "note": "New York Giants 16.4",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "64.65",
+            "note": "Dak Prescott 19.5",
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [
+          "To Infinity and Bijan beat Unsolicited Dak Picks in a battle of recent-add defenses, the New York Giants at 16.4 against the New Orleans Saints at 6.55, and both sides still missed the median. Rhamondre Stevenson, hurt in this game, and Josh Jacobs are now listed Out, while Patrick Mahomes and Ladd McConkey are now listed Questionable. Adonai Mitchell, a waiver add, scored 0 for the losers, whose playoff odds fell to 1% this week."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Return of T Mac, 11-7",
+        "stats": [],
+        "rows": [
+          {
+            "label": "To Infinity and Bijan",
+            "value": "8-10",
+            "note": null,
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "Return of T Mac",
+            "value": "11-7",
+            "note": "Bye: Rome Odunze",
+            "roster_id": 8,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "9th, no change",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "9th"
+          },
+          {
+            "label": "Move",
+            "value": "No change"
+          },
+          {
+            "label": "Record",
+            "value": "8-10"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Lil Fridge",
+            "value": "8th",
+            "note": "11-7",
+            "roster_id": 3,
+            "you": false
+          },
+          {
+            "label": "To Infinity and Bijan",
+            "value": "9th",
+            "note": "8-10",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "10th",
+            "note": "6-12",
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [
+          "To Infinity and Bijan holds 9th for another week. They have won 2 straight but still sit 3 games below the cut. Playoff odds of 6% say the trip ends well short of infinity."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "6% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "6%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Teehee",
+            "value": "49%",
+            "note": "Seed None",
+            "roster_id": 12,
+            "you": false
+          },
+          {
+            "label": "To Infinity and Bijan",
+            "value": "6%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "behold the lamb",
+            "value": "2%",
+            "note": "Seed None",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "8-10, 9th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "8-10"
+          },
+          {
+            "label": "Standing",
+            "value": "9th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "852.17"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bijan Robinson",
+            "value": "116.5",
+            "note": "RB · 19.4 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Lamar Jackson",
+            "value": "80.08",
+            "note": "QB · 20 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Nico Collins",
+            "value": "53.1",
+            "note": "WR · 17.7 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Deep at QB. Soft at TE. Thin at RB and WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "New York Giants, 3rd at DEF",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "8": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 144.03, 1st of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "144.03"
+          },
+          {
+            "label": "Place",
+            "value": "1st of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 144.03 to 106.39",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Return of T Mac",
+            "value": "144.03",
+            "note": "Jordan Love 36.18",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "All You Need Is Love",
+            "value": "106.39",
+            "note": "Joe Burrow 29.54",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": [
+          "All You Need Is Love lost to Return of T Mac in an upset, and the Love that mattered was Jordan Love, who put up 36.18 for the other side. A 24.44 lead after the early Sunday games vanished, with the recent add CeeDee Lamb posting 28.5 for the winners. The winners crossed into the playoff spots and kept their winning streak alive, while the losers still sit on top of the standings anyway."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: To Infinity and Bijan, 8-10",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Return of T Mac",
+            "value": "11-7",
+            "note": "Bye: Rome Odunze",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "To Infinity and Bijan",
+            "value": "8-10",
+            "note": null,
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "1st, up 3",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "1st"
+          },
+          {
+            "label": "Move",
+            "value": "Up 3"
+          },
+          {
+            "label": "Record",
+            "value": "11-7"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Return of T Mac",
+            "value": "1st",
+            "note": "11-7",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "The Blue Tent",
+            "value": "2nd",
+            "note": "11-7",
+            "roster_id": 1,
+            "you": false
+          }
+        ],
+        "text": [
+          "Return of T Mac takes the top spot after a 38-point win over the 1st-place team. That makes 6 straight wins for a team still clinging to the last playoff spot."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "62% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "62%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "15%"
+          },
+          {
+            "label": "Seed",
+            "value": "6"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "The Blue Tent",
+            "value": "76%",
+            "note": "Seed 3",
+            "roster_id": 1,
+            "you": false
+          },
+          {
+            "label": "Return of T Mac",
+            "value": "62%",
+            "note": "Seed 6",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "Teehee",
+            "value": "49%",
+            "note": "Seed None",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "11-7, 6th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "11-7"
+          },
+          {
+            "label": "Standing",
+            "value": "6th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "976.58"
+          },
+          {
+            "label": "Roster grade",
+            "value": "C"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "97.9",
+            "note": "QB · 24.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Malik Nabers",
+            "value": "81.9",
+            "note": "WR · 13.7 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Jaylen Warren",
+            "value": "77.6",
+            "note": "RB · 19.4 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Soft at QB."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Jordan Love, 1st at QB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "4"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "9": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 106.71, 5th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "106.71"
+          },
+          {
+            "label": "Place",
+            "value": "5th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 106.71 to 111.46",
+        "stats": [],
+        "rows": [
+          {
+            "label": "London Cooking",
+            "value": "111.46",
+            "note": "Javonte Williams 20.4",
+            "roster_id": 5,
+            "you": false
+          },
+          {
+            "label": "Maye d'force B with U",
+            "value": "106.71",
+            "note": "Drake Maye 21.26",
+            "roster_id": 9,
+            "you": true
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: NFC Least, 3-15",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Maye d'force B with U",
+            "value": "10-8",
+            "note": "Bye: D'Andre Swift, Jonah Coleman, Jaylen Waddle",
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "NFC Least",
+            "value": "3-15",
+            "note": "Bye: Saquon Barkley, DeVonta Smith, Makai Lemon",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "7th, down 4",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "7th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 4"
+          },
+          {
+            "label": "Record",
+            "value": "10-8"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Teehee",
+            "value": "6th",
+            "note": "8-10",
+            "roster_id": 12,
+            "you": false
+          },
+          {
+            "label": "Maye d'force B with U",
+            "value": "7th",
+            "note": "10-8",
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "Lil Fridge",
+            "value": "8th",
+            "note": "11-7",
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": [
+          "Maye d'force B with U falls to 7th after a 5-point loss. They still rank 1st in scoring and sit outside the playoff spots anyway."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "80% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "80%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "29%"
+          },
+          {
+            "label": "Seed",
+            "value": "2"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "London Cooking",
+            "value": "80%",
+            "note": "Seed 1",
+            "roster_id": 5,
+            "you": false
+          },
+          {
+            "label": "Maye d'force B with U",
+            "value": "80%",
+            "note": "Seed 2",
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "All You Need Is Love",
+            "value": "78%",
+            "note": "Seed 1",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "10-8, 7th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "10-8"
+          },
+          {
+            "label": "Standing",
+            "value": "7th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1007.36"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jahmyr Gibbs",
+            "value": "192.2",
+            "note": "RB · 24 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Drake Maye",
+            "value": "156.26",
+            "note": "QB · 22.3 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "D'Andre Swift",
+            "value": "141.8",
+            "note": "RB · 15.8 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at RB. Deep at QB."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "San Francisco 49ers, 1st at DEF",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": true
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "10": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 92.71, 9th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "92.71"
+          },
+          {
+            "label": "Place",
+            "value": "9th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 92.71 to 95.09",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Lil Fridge",
+            "value": "95.09",
+            "note": "Christian McCaffrey 21.7",
+            "roster_id": 3,
+            "you": false
+          },
+          {
+            "label": "behold the lamb",
+            "value": "92.71",
+            "note": "Puka Nacua 28",
+            "roster_id": 10,
+            "you": true
+          }
+        ],
+        "text": [
+          "Lil Fridge trailed by 38.82 after the early Sunday games and still beat behold the lamb by 2.38. The recent adds went both ways: the Rams defense put up 13.95 for the losers, while Tyler Allgeier managed 5.6 for the winners. Both sides missed the median, Puka Nacua is now listed Questionable with a knee, and the losing side keeps losing with its playoff odds all but gone this week."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: All You Need Is Love, 12-6",
+        "stats": [],
+        "rows": [
+          {
+            "label": "behold the lamb",
+            "value": "6-12",
+            "note": "Bye: Kyle Monangai",
+            "roster_id": 10,
+            "you": true
+          },
+          {
+            "label": "All You Need Is Love",
+            "value": "12-6",
+            "note": "Bye: Colston Loveland",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "12th, down 1",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "12th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 1"
+          },
+          {
+            "label": "Record",
+            "value": "6-12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "NFC Least",
+            "value": "11th",
+            "note": "3-15",
+            "roster_id": 4,
+            "you": false
+          },
+          {
+            "label": "behold the lamb",
+            "value": "12th",
+            "note": "6-12",
+            "roster_id": 10,
+            "you": true
+          }
+        ],
+        "text": [
+          "behold the lamb lands last after a 2-point loss. That is 3 straight losses. Nothing to behold in the win column over that stretch, head-to-head or against the median."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "2% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "2%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-5"
+          }
+        ],
+        "rows": [
+          {
+            "label": "To Infinity and Bijan",
+            "value": "6%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": false
+          },
+          {
+            "label": "behold the lamb",
+            "value": "2%",
+            "note": "Seed None",
+            "roster_id": 10,
+            "you": true
+          },
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "6-12, 11th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "6-12"
+          },
+          {
+            "label": "Standing",
+            "value": "11th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "858.13"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Josh Allen",
+            "value": "203.18",
+            "note": "QB · 25.4 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "129",
+            "note": "WR · 18.4 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Quinshon Judkins",
+            "value": "81.1",
+            "note": "RB · 10.1 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Soft at RB and TE. Thin at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Puka Nacua, 2nd at WR",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "11": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 64.65, 12th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "64.65"
+          },
+          {
+            "label": "Place",
+            "value": "12th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 64.65 to 83.08",
+        "stats": [],
+        "rows": [
+          {
+            "label": "To Infinity and Bijan",
+            "value": "83.08",
+            "note": "New York Giants 16.4",
+            "roster_id": 7,
+            "you": false
+          },
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "64.65",
+            "note": "Dak Prescott 19.5",
+            "roster_id": 11,
+            "you": true
+          }
+        ],
+        "text": [
+          "To Infinity and Bijan beat Unsolicited Dak Picks in a battle of recent-add defenses, the New York Giants at 16.4 against the New Orleans Saints at 6.55, and both sides still missed the median. Rhamondre Stevenson, hurt in this game, and Josh Jacobs are now listed Out, while Patrick Mahomes and Ladd McConkey are now listed Questionable. Adonai Mitchell, a waiver add, scored 0 for the losers, whose playoff odds fell to 1% this week."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Teehee, 8-10",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "6-12",
+            "note": null,
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "Teehee",
+            "value": "8-10",
+            "note": "Bye: Luther Burden III, Bo Nix, Kenny Gainwell, Chicago Bears",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "10th, no change",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "10th"
+          },
+          {
+            "label": "Move",
+            "value": "No change"
+          },
+          {
+            "label": "Record",
+            "value": "6-12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "To Infinity and Bijan",
+            "value": "9th",
+            "note": "8-10",
+            "roster_id": 7,
+            "you": false
+          },
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "10th",
+            "note": "6-12",
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "NFC Least",
+            "value": "11th",
+            "note": "3-15",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "Unsolicited Dak Picks stays parked at 10th. A 6-12 record and 2 straight losses, and nobody asked for either."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "1% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "1%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-5"
+          }
+        ],
+        "rows": [
+          {
+            "label": "behold the lamb",
+            "value": "2%",
+            "note": "Seed None",
+            "roster_id": 10,
+            "you": false
+          },
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "NFC Least",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "6-12, 10th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "6-12"
+          },
+          {
+            "label": "Standing",
+            "value": "10th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "858.23"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Dak Prescott",
+            "value": "149.16",
+            "note": "QB · 18.6 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Jonathan Taylor",
+            "value": "140.6",
+            "note": "RB · 15.6 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "George Pickens",
+            "value": "84.8",
+            "note": "WR · 10.6 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at RB. Soft at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "2 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ],
+    "12": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 100.63, 7th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "100.63"
+          },
+          {
+            "label": "Place",
+            "value": "7th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "103.51"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.36",
+            "note": "C.J. Stroud · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "36.18",
+            "note": "Jordan Love · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "The San Francisco defense, a recent add off waivers, put up 20.05 for Maye d'force B with U, and D'Andre Swift blew it right back at 3.1. They still led by 4.65 after Sunday night, then James Cook III posted 16.7 on Monday and the lead flipped for good. London Cooking climbed in the standings while this side fell out of the playoff spots, with Emmett Johnson parked on the bench in a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 100.63 to 114.07",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "114.07",
+            "note": "Kenneth Walker III 34.3",
+            "roster_id": 6,
+            "you": false
+          },
+          {
+            "label": "Teehee",
+            "value": "100.63",
+            "note": "Tee Higgins 17.7",
+            "roster_id": 12,
+            "you": true
+          }
+        ],
+        "text": [
+          "Bo Girds held the lead over Teehee from Thursday all the way to Monday, and Kenneth Walker III and Matthew Golden each outscored the margin on his own. The win snapped a 4-game losing streak, while the other side's playoff odds slid to about 49% this week. Malik Willis, the new pickup at quarterback, scored 4.82 and is now listed Questionable (Groin), as is Luther Burden III, who was hurt late in his game against Tampa Bay."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Unsolicited Dak Picks, 6-12",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Teehee",
+            "value": "8-10",
+            "note": "Bye: Luther Burden III, Bo Nix, Kenny Gainwell, Chicago Bears",
+            "roster_id": 12,
+            "you": true
+          },
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "6-12",
+            "note": null,
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [
+          "Lil Fridge goes to 94% playoff odds with a win and 76% with a loss in a top-of-the-table shootout at the cut. London Cooking swings from 90% to 70% playoff odds on the same game. Return of T Mac puts its win streak on the line against To Infinity and Bijan, who have nobody on bye. The streak side lands at 73% playoff odds with a win and 43% with a loss. Teehee, at 8-10, and Unsolicited Dak Picks, at 6-12, meet in a showdown of the awful below the cut. NFC Least, at 3-15, draws Maye d'force B with U, at 10-8, another pairing of teams both below the cut."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "6th, down 4",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "6th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 4"
+          },
+          {
+            "label": "Record",
+            "value": "8-10"
+          }
+        ],
+        "rows": [
+          {
+            "label": "London Cooking",
+            "value": "5th",
+            "note": "11-7",
+            "roster_id": 5,
+            "you": false
+          },
+          {
+            "label": "Teehee",
+            "value": "6th",
+            "note": "8-10",
+            "roster_id": 12,
+            "you": true
+          },
+          {
+            "label": "Maye d'force B with U",
+            "value": "7th",
+            "note": "10-8",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": [
+          "Teehee tumbles to 6th after a 13-point loss. They have still averaged 127.62 a week over the last 3 weeks. With the easiest remaining schedule ahead, their playoff odds sit at a coin flip of 49%."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "49% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "49%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "6%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Return of T Mac",
+            "value": "62%",
+            "note": "Seed 6",
+            "roster_id": 8,
+            "you": false
+          },
+          {
+            "label": "Teehee",
+            "value": "49%",
+            "note": "Seed None",
+            "roster_id": 12,
+            "you": true
+          },
+          {
+            "label": "To Infinity and Bijan",
+            "value": "6%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "8-10, 8th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "8-10"
+          },
+          {
+            "label": "Standing",
+            "value": "8th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "986.61"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Trevor Lawrence",
+            "value": "149.18",
+            "note": "QB · 18.6 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "135.8",
+            "note": "WR · 17 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Sam LaPorta",
+            "value": "75.6",
+            "note": "TE · 9.4 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at QB and WR. Deep at WR and TE."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "2 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "2"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jordan Love",
+            "value": "36.18",
+            "note": "QB · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "34.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "28.5",
+            "note": "WR · Return of T Mac",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "18.8",
+            "note": "TE · The Blue Tent",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "San Francisco 49ers",
+            "value": "20.05",
+            "note": "DEF · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
+        ]
+      }
+    ]
+  }
+}

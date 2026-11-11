@@ -1,0 +1,64 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01MxYNWVJRrSz6KtGkhBqhuS","toolName":"week_results"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01MxYNWVJRrSz6KtGkhBqhuS","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01MxYNWVJRrSz6KtGkhBqhuS","inputTextDelta":"{\"week\""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01MxYNWVJRrSz6KtGkhBqhuS","inputTextDelta":": 1}"}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01MxYNWVJRrSz6KtGkhBqhuS","toolName":"week_results","input":{"week":1}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01MxYNWVJRrSz6KtGkhBqhuS","output":{"week":1,"games":[{"teams":[{"team":"Lil Fridge","score":117.71},{"team":"NFC Least","score":82.07}],"winner":"Lil Fridge"},{"teams":[{"team":"All You Need Is Love","score":113.51},{"team":"To Infinity and Bijan","score":109.21}],"winner":"All You Need Is Love"},{"teams":[{"team":"London Cooking","score":100.51},{"team":"Bo Girds","score":153.54}],"winner":"Bo Girds"},{"teams":[{"team":"behold the lamb","score":79.21},{"team":"Teehee","score":115.3}],"winner":"Teehee"},{"teams":[{"team":"Maye d'force B with U","score":156.92},{"team":"Unsolicited Dak Picks","score":96.2}],"winner":"Maye d'force B with U"},{"teams":[{"team":"The Blue Tent","score":139.06},{"team":"Return of T Mac","score":107.35}],"winner":"The Blue Tent"}],"median_score":111.36,"beat_the_median":["Maye d'force B with U","Bo Girds","The Blue Tent","Lil Fridge","Teehee","All You Need Is Love"],"high_score":{"team":"Maye d'force B with U","score":156.92},"low_score":{"team":"behold the lamb","score":79.21}}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":"In week 1 ","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":"you","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":" be","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":"at NFC Least ","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":"117.71 ","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":"to 82.07, and your","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":" score was also","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":" above the median of","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":" 111.36. The","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":" high","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":" score was Maye d'force","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":" B with U with 156.92","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":". The low score was behold the","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":" lamb with 79.21","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-delta","delta":".","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"text-end","id":"ab040500-a8c2-456c-b965-546ab5d6deaa"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

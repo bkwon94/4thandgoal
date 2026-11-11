@@ -37,6 +37,9 @@ const RANKINGS = published("rankings.json", (json) => rankingsSchema.parse(json)
 const RANK_ONE = RANKINGS?.weeks.at(-1)?.rows[0];
 /* A season with no managers file has no manager page, so the hero shows no manager link. */
 const MANAGERS = existsSync(join(OUT, SEASON, "managers.json"));
+// The client build writes the hidden /ask/ route only while the flag front_door is off. Then / is the Front page, and the
+// front door sits at /ask/ (ticket 43 of front-door).
+const DOOR = existsSync(join(OUT, "ask", "index.html")) ? "/ask/" : "/";
 
 /* The midseason report. A client with no report has no report page. */
 const MIDSEASON = published("midseason.json", (json) => midseasonSchema.parse(json));
@@ -84,7 +87,7 @@ async function expectStatic(page: Page, name: string): Promise<void> {
 }
 
 /* The rankings, the midseason report, the home takeover, and the analyzer keep the static grid. Only the week page, the
-   home Matchup hero, the manager pages, and the 404 draw a scene. */
+   Matchup hero of the Front page, the manager pages, and the 404 draw a scene. The front door has no hero. */
 test.describe(`the static heroes of ${CLIENT}`, () => {
   test.use({ viewport: PHONE });
 
@@ -101,7 +104,8 @@ test.describe(`the static heroes of ${CLIENT}`, () => {
     await expect(page.locator(CANVAS)).toHaveCount(0);
   });
 
-  test("the home page has no scene under the takeover, and one in the Matchup hero without it (AT-35, AT-44)", async ({ page }) => {
+  test("the Front page has no scene under the takeover, and one in the Matchup hero without it (AT-35, AT-44)", async ({ page }) => {
+    test.skip(DOOR === "/", "the front door is at /, so the build has no Front page");
     await open(page, "/");
     const takeover = page.getByRole("region", { name: `${SEASON} Midseason Report`, exact: true });
     if ((await takeover.count()) > 0) {
@@ -112,6 +116,13 @@ test.describe(`the static heroes of ${CLIENT}`, () => {
       await expect(page.getByRole("region", { name: "Matchup of the Week" }).locator(CANVAS)).toHaveCount(1);
       await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest");
     }
+  });
+
+  test("the front door has no hero and no scene (AT-50 of front-door)", async ({ page }) => {
+    await open(page, DOOR);
+    await expect(page.getByRole("dialog", { name: "Which team is yours?" })).toBeVisible();
+    await expect(page.locator("[data-hero-slot]")).toHaveCount(0);
+    await expect(page.locator(CANVAS)).toHaveCount(0);
   });
 
   test("the analyzer has no scene before a grade, and its title hero is static (AT-35, AT-44)", async ({ page }) => {

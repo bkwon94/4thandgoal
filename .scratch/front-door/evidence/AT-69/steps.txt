@@ -1,0 +1,7 @@
+Driver: at69.mjs (Playwright WebKit), the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, light theme.
+Two runs with the same steps: run iphone15-393 with the iPhone 15 profile as is (393x659 viewport, touch, mobile), and run 375 with the same profile at a 375x667 viewport, for the recording at 375 px.
+A fake keyboard: visualViewport.height drops by 336 px while an INPUT has the focus, as on iOS. WebKit here has no soft keyboard.
+1. Store Lil Fridge and the passphrase. Open /. Wait for the row, then 6 s.
+2. Tap the ask box (the keyboard opens). Fill "week 1 results". Tap Send once, with a touch tap.
+3. webkit-log-<run>.txt lists each event with its target from the tap on the ask box on, the state 1.5 s after the tap on Send, and each POST to the API in that time.
+4. recording-<run>.webm is the screen recording. frame-<run>-<time>-<label>.png are frames of it, from ffmpeg. end-<run>.png is a viewport shot 7.5 s after the tap.

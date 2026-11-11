@@ -1,0 +1,116 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"stack_up","team":3,"as_of":"as of today","fact":"Grade A, QB ranks 7th of 12","stats":[{"label":"Grade","value":"A"},{"label":"Best spot","value":"WR 3rd"},{"label":"Weakest spot","value":"QB 7th"}],"rows":[{"label":"Projection Ahead","value":"3rd of 12","note":null,"roster_id":null,"you":false},{"label":"Season Production","value":"4th of 12","note":null,"roster_id":null,"you":false},{"label":"Trade Value","value":"3rd of 12","note":null,"roster_id":null,"you":false},{"label":"Depth And Holes","value":"2nd of 12","note":null,"roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"cd896e0423b43f9fb00e800bd46af8c4da7537e96b27b336b095d7d8b3d1d4c0"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":"Your team gr","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":"ades an","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" A, and the","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" league","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" data","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" cal","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":"ls you","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" strong at WR and TE","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":". Your best part is Dep","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":"th And Holes, where","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" you rank 2n","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":"d of","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" 12. Your we","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":"akest part is Season Production","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" at","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" 4th, which","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" is still near","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" the top. By position, WR","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" and TE are your best, both","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" ranked","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" 3rd,","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" while QB and RB are your","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" l","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":"owest at","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":" 7th each","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-delta","delta":".","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"text-end","id":"c8ca1081-c584-4a0e-b412-8426d0eb21c5"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":"Your team grades an A,","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":" and the league data calls you str","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":"ong at WR and TE.","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":" Your best part is Depth","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":" And Holes, where you r","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":"ank 2nd of 12","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":". Your worst part is","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":" Season Production, where you rank","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":" 4th. By position, W","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":"R and TE are your best,","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":" both ranked 3rd","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":", while QB and RB are","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":" your lowest at 7th","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-delta","delta":" each.","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"text-end","id":"d8718dec-4817-420a-93bb-566e553914db"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

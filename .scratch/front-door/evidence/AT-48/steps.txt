@@ -1,0 +1,3 @@
+Driver: site.mjs AT-48, viewport <width>x900, the date of the page shifted to Wednesday 2026-11-04, once per client build (CPC with Lil Fridge, NorCal with roster 1), each built with front_door = true.
+1. Store Your team and the passphrase. Open /. Wait 3 s. Viewport shot <client>-<width>-<theme>.png. At 375 px the dock at the bottom is the menu. At 1280 px the menu is the header nav.
+2. <client>-<width>-<theme>-links.txt lists each visible link inside a nav element, and apart from it each link that does not show (such as the links of the closed week picker).

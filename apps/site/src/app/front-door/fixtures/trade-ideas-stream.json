@@ -1,0 +1,244 @@
+[
+ {
+  "type": "start"
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Checked 11 teams for a fit"
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Built 56 offers"
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Weighed 56 offers"
+  }
+ },
+ {
+  "type": "data-step",
+  "data": {
+   "line": "Picked the best 2"
+  }
+ },
+ {
+  "type": "data-answer",
+  "data": {
+   "kind": "ideas",
+   "document": {
+    "season": 2026,
+    "trade_pair": {
+     "asker": {
+      "roster_id": 3,
+      "team": "Lil Fridge"
+     },
+     "partner": null
+    },
+    "trades": [
+     {
+      "offer_id": "3:3198-12:6801",
+      "sides": [
+       {
+        "roster_id": 3,
+        "team": "Lil Fridge",
+        "gives": [
+         {
+          "player_id": "3198",
+          "name": "Derrick Henry",
+          "position": "RB",
+          "nfl_team": "BAL",
+          "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+          "season_rank": "RB11",
+          "recent_rank": "RB46",
+          "to": 12
+         }
+        ],
+        "gets": [
+         {
+          "player_id": "6801",
+          "name": "Tee Higgins",
+          "position": "WR",
+          "nfl_team": "CIN",
+          "headshot": "https://sleepercdn.com/content/nfl/players/6801.jpg",
+          "season_rank": "WR6",
+          "recent_rank": null,
+          "from": 12
+         }
+        ]
+       },
+       {
+        "roster_id": 12,
+        "team": "Teehee",
+        "gives": [
+         {
+          "player_id": "6801",
+          "name": "Tee Higgins",
+          "position": "WR",
+          "nfl_team": "CIN",
+          "headshot": "https://sleepercdn.com/content/nfl/players/6801.jpg",
+          "season_rank": "WR6",
+          "recent_rank": null,
+          "to": 3
+         }
+        ],
+        "gets": [
+         {
+          "player_id": "3198",
+          "name": "Derrick Henry",
+          "position": "RB",
+          "nfl_team": "BAL",
+          "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+          "season_rank": "RB11",
+          "recent_rank": "RB46",
+          "from": 3
+         }
+        ]
+       }
+      ],
+      "headline": "Sell Henry while his season rank still looks good and get Higgins, a WR6 with a steady role.",
+      "bullets": [
+       {
+        "text": "Henry is RB11 on the season but only RB46 over the last four weeks, so you sell him at his season-long standing while his recent form has dipped.",
+        "mark": "for",
+        "fact_id": "3198.ppg",
+        "fact_text": "Derrick Henry (RB, BAL) scored 15.1 points per game over 9 games before the trade. His Season rank is RB11, by total points this season. His Recent rank is RB46, by points per game over the last 4 weeks."
+       },
+       {
+        "text": "Higgins is WR6 and scores 17 points per game, with a steady snap and target share, so he is a firm WR starter for you.",
+        "mark": "for",
+        "fact_id": "6801.ppg",
+        "fact_text": "Tee Higgins (WR, CIN) scored 17 points per game over 8 games before the trade. His Season rank is WR6, by total points this season."
+       },
+       {
+        "text": "Your RBs in the top 36 go from 3 to 2, so you keep two RBs who start and are not giving up your last reliable one.",
+        "mark": "even",
+        "fact_id": "3.depth.rb",
+        "fact_text": "For Lil Fridge, the RBs in the top 36 go from 3 to 2."
+       },
+       {
+        "text": "Henry has historically been strong late in the season and in cold weather, which gives Teehee a reason to buy a back who is slumping now.",
+        "mark": "even",
+        "fact_id": "3198.history",
+        "fact_text": "In 2023, Derrick Henry played for TEN and scored half PPR points per game as follows: 13.71 in weeks 1 to 8 over 7 games; 12.82 in weeks 9 to 17 over 9 games; 17.7 in cold games over 1 game. In 2024, Derrick Henry played for BAL and scored half PPR points per game as follows: 21.4 in weeks 1 to 8 over 8 games; 15.82 in weeks 9 to 17 over 8 games; 18.57 in cold games over 3 games. In 2025, Derrick Henry played for BAL and scored half PPR points per game as follows: 12.84 in weeks 1 to 8 over 7 games; 18.83 in weeks 9 to 17 over 9 games; 21.58 in cold games over 5 games. A cold game is outdoors at 40 degrees F or below."
+       }
+      ],
+      "fact_lines": []
+     },
+     {
+      "offer_id": "3:3198-12:7547",
+      "sides": [
+       {
+        "roster_id": 3,
+        "team": "Lil Fridge",
+        "gives": [
+         {
+          "player_id": "3198",
+          "name": "Derrick Henry",
+          "position": "RB",
+          "nfl_team": "BAL",
+          "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+          "season_rank": "RB11",
+          "recent_rank": "RB46",
+          "to": 12
+         }
+        ],
+        "gets": [
+         {
+          "player_id": "7547",
+          "name": "Amon-Ra St. Brown",
+          "position": "WR",
+          "nfl_team": "DET",
+          "headshot": "https://sleepercdn.com/content/nfl/players/7547.jpg",
+          "season_rank": "WR8",
+          "recent_rank": null,
+          "from": 12
+         }
+        ]
+       },
+       {
+        "roster_id": 12,
+        "team": "Teehee",
+        "gives": [
+         {
+          "player_id": "7547",
+          "name": "Amon-Ra St. Brown",
+          "position": "WR",
+          "nfl_team": "DET",
+          "headshot": "https://sleepercdn.com/content/nfl/players/7547.jpg",
+          "season_rank": "WR8",
+          "recent_rank": null,
+          "to": 3
+         }
+        ],
+        "gets": [
+         {
+          "player_id": "3198",
+          "name": "Derrick Henry",
+          "position": "RB",
+          "nfl_team": "BAL",
+          "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+          "season_rank": "RB11",
+          "recent_rank": "RB46",
+          "from": 3
+         }
+        ]
+       }
+      ],
+      "headline": "Henry for St. Brown turns a cooling back into a WR8 with a big target share, if you trust the passing game.",
+      "bullets": [
+       {
+        "text": "Henry is RB11 on the season but RB46 over the last four weeks, so you sell him before the slump drags his price down further.",
+        "mark": "for",
+        "fact_id": "3198.ppg",
+        "fact_text": "Derrick Henry (RB, BAL) scored 15.1 points per game over 9 games before the trade. His Season rank is RB11, by total points this season. His Recent rank is RB46, by points per game over the last 4 weeks."
+       },
+       {
+        "text": "St. Brown is WR8 at 15.6 points per game and gives your WR group real weight.",
+        "mark": "for",
+        "fact_id": "7547.ppg",
+        "fact_text": "Amon-Ra St. Brown (WR, DET) scored 15.6 points per game over 8 games before the trade. His Season rank is WR8, by total points this season."
+       },
+       {
+        "text": "Your WRs in the top 36 go from 2 to 3 and you still hold two RBs, so the lineup gets deeper where it was thin.",
+        "mark": "for",
+        "fact_id": "3.depth.wr",
+        "fact_text": "For Lil Fridge, the WRs in the top 36 go from 2 to 3."
+       },
+       {
+        "text": "St. Brown's snap share is 73 percent and trending down, so there is some risk in what you get back.",
+        "mark": "against",
+        "fact_id": "7547.usage",
+        "fact_text": "Amon-Ra St. Brown's snap share was 73 percent over the last 2 weeks before the trade, down from the 2 weeks before that."
+       }
+      ],
+      "fact_lines": []
+     }
+    ],
+    "near": [],
+    "empty": null,
+    "as_of": {
+     "chart_week": null,
+     "stats_through": 9,
+     "completed_through": 9,
+     "rosters_fetched": "2026-11-10T13:57:01.891745-05:00",
+     "known_games": null,
+     "no_chart": true,
+     "no_chart_note": "This week's player values are not out yet."
+    },
+    "fallback": false,
+    "missing": [
+     "chart"
+    ],
+    "stale": []
+   }
+  }
+ },
+ {
+  "type": "finish"
+ }
+]

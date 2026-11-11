@@ -1,0 +1,7 @@
+How the menu opened: the header nav shows with no button
+Visible links of the menu and the nav:
+Home -> /
+Week 8 -> /2026/week-08/
+Power Rankings -> /rankings/
+Managers -> /2026/managers/
+Trade Analyzer -> /analyze/

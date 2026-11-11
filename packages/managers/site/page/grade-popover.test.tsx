@@ -18,14 +18,14 @@ function manager(overrides: Partial<Manager> = {}): Manager {
 
 /* Renders the hero, clicks the grade letter, and returns the open popover. */
 async function openPopover() {
-  render(<ManagerHero manager={manager()} avatar="avatars/9.jpg" teams={12} />);
+  render(<ManagerHero manager={manager()} avatar="avatars/9.jpg" teams={12} through={9} />);
   fireEvent.click(screen.getByRole("button", { name: "Grade B, how the grade reads" }));
   return screen.findByRole("dialog", { name: "How The Grade Reads" });
 }
 
 describe("Grade popover", () => {
   it("names the trigger with the letter and what it opens", () => {
-    render(<ManagerHero manager={manager()} avatar="avatars/9.jpg" teams={12} />);
+    render(<ManagerHero manager={manager()} avatar="avatars/9.jpg" teams={12} through={9} />);
     const trigger = screen.getByRole("button", { name: "Grade B, how the grade reads" });
     expect(trigger.textContent).toBe("B");
     expect(trigger.getAttribute("aria-expanded")).toBe("false");
@@ -62,7 +62,7 @@ describe("Grade popover", () => {
   });
 
   it("does not open on hover alone", async () => {
-    render(<ManagerHero manager={manager()} avatar="avatars/9.jpg" teams={12} />);
+    render(<ManagerHero manager={manager()} avatar="avatars/9.jpg" teams={12} through={9} />);
     const trigger = screen.getByRole("button", { name: "Grade B, how the grade reads" });
     fireEvent.pointerEnter(trigger);
     fireEvent.mouseEnter(trigger);
@@ -72,7 +72,7 @@ describe("Grade popover", () => {
   });
 
   it("shows a plain dash and no button with no grade", () => {
-    render(<ManagerHero manager={manager({ grade: null })} avatar="avatars/9.jpg" teams={12} />);
+    render(<ManagerHero manager={manager({ grade: null })} avatar="avatars/9.jpg" teams={12} through={9} />);
     expect(screen.queryByRole("button")).toBeNull();
     expect(screen.getByLabelText("No grade").textContent).toBe("—");
   });

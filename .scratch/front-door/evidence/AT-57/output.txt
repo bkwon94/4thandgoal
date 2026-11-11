@@ -1,0 +1,121 @@
+$ for f in /private/tmp/claude-503/fd-ask/*.sqlite; do sqlite3 $f .tables; sqlite3 $f .schema; done
+# The store of the API in this round: CORNERSTONE_ASK_DIR=/private/tmp/claude-503/fd-ask, an empty folder at the start of the round, outside the repo.
+# Before the schema read, Lil Fridge got two Answers in this round: the weak spots Answer of AT-29 and the free answer of AT-70. Bo Girds got the free answers of AT-39 and the trade ideas of AT-68.
+$ sqlite3 -header -column /private/tmp/claude-503/fd-ask/cpc-answers.sqlite "SELECT topic, roster_id, kept_at FROM answers"
+topic       roster_id  kept_at                         
+----------  ---------  --------------------------------
+weak_spots  3          2026-11-11T13:51:12.817118-05:00
+free_reads  6          2026-11-11T13:52:17.792080-05:00
+free        6          2026-11-11T13:52:17.792080-05:00
+free_reads  6          2026-11-11T13:52:21.459304-05:00
+free        6          2026-11-11T13:52:21.459304-05:00
+free_reads  3          2026-11-11T13:56:22.344283-05:00
+free        3          2026-11-11T13:56:22.344283-05:00
+
+$ sqlite3 /private/tmp/claude-503/fd-ask/cpc-answers.sqlite .tables
+answers
+$ sqlite3 /private/tmp/claude-503/fd-ask/cpc-answers.sqlite .schema
+CREATE TABLE answers (
+    key TEXT PRIMARY KEY,
+    topic TEXT NOT NULL,
+    roster_id INTEGER NOT NULL,
+    answer TEXT NOT NULL,
+    kept_at TEXT NOT NULL
+);
+
+$ sqlite3 /private/tmp/claude-503/fd-ask/cpc.caps.sqlite .tables
+alerts  spend 
+$ sqlite3 /private/tmp/claude-503/fd-ask/cpc.caps.sqlite .schema
+CREATE TABLE spend (
+    id INTEGER PRIMARY KEY,
+    roster_id INTEGER,
+    day TEXT NOT NULL,
+    month TEXT NOT NULL,
+    usd REAL NOT NULL,
+    counts INTEGER NOT NULL
+);
+CREATE TABLE alerts (
+    month TEXT PRIMARY KEY
+);
+
+$ sqlite3 /private/tmp/claude-503/fd-ask/cpc.sqlite .tables
+misses
+$ sqlite3 /private/tmp/claude-503/fd-ask/cpc.sqlite .schema
+CREATE TABLE misses (
+    id INTEGER PRIMARY KEY,
+    question TEXT NOT NULL,
+    roster_id INTEGER NOT NULL,
+    team TEXT NOT NULL,
+    asked_at TEXT NOT NULL,
+    closest TEXT NOT NULL
+);
+
+$ sqlite3 /private/tmp/claude-503/fd-ask/norcal-answers.sqlite .tables
+answers
+$ sqlite3 /private/tmp/claude-503/fd-ask/norcal-answers.sqlite .schema
+CREATE TABLE answers (
+    key TEXT PRIMARY KEY,
+    topic TEXT NOT NULL,
+    roster_id INTEGER NOT NULL,
+    answer TEXT NOT NULL,
+    kept_at TEXT NOT NULL
+);
+
+$ sqlite3 /private/tmp/claude-503/fd-ask/norcal.caps.sqlite .tables
+alerts  spend 
+$ sqlite3 /private/tmp/claude-503/fd-ask/norcal.caps.sqlite .schema
+CREATE TABLE spend (
+    id INTEGER PRIMARY KEY,
+    roster_id INTEGER,
+    day TEXT NOT NULL,
+    month TEXT NOT NULL,
+    usd REAL NOT NULL,
+    counts INTEGER NOT NULL
+);
+CREATE TABLE alerts (
+    month TEXT PRIMARY KEY
+);
+
+$ sqlite3 /private/tmp/claude-503/fd-ask/norcal.sqlite .tables
+misses
+$ sqlite3 /private/tmp/claude-503/fd-ask/norcal.sqlite .schema
+CREATE TABLE misses (
+    id INTEGER PRIMARY KEY,
+    question TEXT NOT NULL,
+    roster_id INTEGER NOT NULL,
+    team TEXT NOT NULL,
+    asked_at TEXT NOT NULL,
+    closest TEXT NOT NULL
+);
+
+# The eggs store of the API: CORNERSTONE_EGGS_DIR was not set, so it is data/eggs of the worktree.
+$ sqlite3 /private/tmp/claude-503/fd-api-evidence/data/eggs/cpc.sqlite .tables
+claims  eggs  
+$ sqlite3 /private/tmp/claude-503/fd-api-evidence/data/eggs/cpc.sqlite .schema
+CREATE TABLE eggs (
+    id INTEGER PRIMARY KEY,
+    week INTEGER NOT NULL,
+    page TEXT NOT NULL,
+    target TEXT NOT NULL,
+    action TEXT NOT NULL,
+    conditions TEXT NOT NULL,
+    letter TEXT NOT NULL,
+    dropped_at TEXT NOT NULL
+);
+CREATE TABLE claims (
+    egg_id INTEGER NOT NULL REFERENCES eggs (id),
+    roster_id INTEGER NOT NULL,
+    word TEXT,
+    claimed_at TEXT NOT NULL,
+    browser TEXT,
+    undone_at TEXT
+);
+CREATE UNIQUE INDEX claims_egg_id ON claims (egg_id) WHERE undone_at IS NULL;
+
+$ grep -rnI -E "CREATE TABLE" apps/api/src packages/*/python/src   # every table that the code of 99d00125 creates
+apps/api/src/cornerstone_api/answer_store.py:13:CREATE TABLE IF NOT EXISTS answers (
+apps/api/src/cornerstone_api/miss_log.py:17:CREATE TABLE IF NOT EXISTS misses (
+apps/api/src/cornerstone_api/caps.py:39:CREATE TABLE IF NOT EXISTS spend (
+apps/api/src/cornerstone_api/caps.py:47:CREATE TABLE IF NOT EXISTS alerts (
+packages/eggs/python/src/eggs/store.py:26:CREATE TABLE IF NOT EXISTS eggs (
+packages/eggs/python/src/eggs/store.py:36:CREATE TABLE IF NOT EXISTS claims (

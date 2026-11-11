@@ -4,13 +4,14 @@ A read that fails a guard retries once. After two failed calls, AdvisorFailed st
 """
 import logging
 import re
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import Literal
 
 from pydantic import BaseModel
 
 from analyzer import RULE_PROMPTS
 from analyzer.read_jev_check import log_read_jev_checks
+from analyzer.stage import Stage, quiet
 from analyzer.team_facts import team_facts
 from analyzer.trade import Fairness, FairnessSide, ProposedTrade
 from analyzer.trade_facts import trade_fact_sheet
@@ -178,12 +179,20 @@ def inner_word_failures(label: str, text: str) -> list[str]:
 
 
 class TextGuard:
-    """The guards of one read: the names and numbers each text may hold, from the facts it cites."""
+    """The guards of one read: the names and numbers each text may hold, from the facts it cites.
 
-    def __init__(self, trade: ProposedTrade, snapshot: Snapshot, facts: dict[str, Fact]) -> None:
+    The names of the trade are always allowed. A read with no trade, such as the sell high pick, gives `trade` None and
+    its own names in `allowed`.
+    """
+
+    def __init__(self, trade: ProposedTrade | None, snapshot: Snapshot, facts: dict[str, Fact], *,
+                 allowed: Iterable[str] = ()) -> None:
         self.facts = facts
-        self.trade_names = {snapshot.players[pid].name for pid in trade.player_ids} | {
-            snapshot.teams[side.roster_id].name for side in trade.sides}
+        if trade is None:
+            self.trade_names = set(allowed)
+        else:
+            self.trade_names = {snapshot.players[pid].name for pid in trade.player_ids} | {
+                snapshot.teams[side.roster_id].name for side in trade.sides}
         # Longest first, so a long name goes before a short name inside it.
         self.names = sorted({p.name for p in snapshot.players.values()} | {t.name for t in snapshot.teams.values()},
                             key=len, reverse=True)
@@ -271,25 +280,32 @@ def _read(out: AdvisorOut, facts: dict[str, Fact]) -> TradeRead:
 
 def read_trade_on_sheet(
     trade: ProposedTrade, snapshot: Snapshot, facts: dict[str, Fact], *, jev: Jev, call: ClaudeCall = analyzer_call,
+    stage: Stage = quiet,
 ) -> TradeRead:
     """The read of the Advisor on the trade, from a sheet that the caller built. A failed guard retries once.
 
     A caller that saves the sheet builds it with advisor_sheet, so the saved sheet is the one the Advisor read.
     Raises AdvisorFailed after two failed calls, a failed API call included.
     """
+    stage("Checking each number of the read", live=True)
     out = call_with_retry(
         call, lambda feedback: build_advisor_prompt(trade, snapshot, facts, feedback), AdvisorOut,
         lambda out: check_read(out, trade, snapshot, facts), subject="trade read", log_label="advisor", logger=log)
     if out is None:
         raise AdvisorFailed("The Advisor gave no read that passed the guards in two calls.")
+    stage("Checked each number of the read")
     log_read_jev_checks(out.sides, facts, jev)
     return _read(out, facts)
 
 
 def read_trade(trade: ProposedTrade, snapshot: Snapshot, *, jev: Jev, news: NewsFeed,
-               call: ClaudeCall = analyzer_call) -> TradeRead:
+               call: ClaudeCall = analyzer_call, stage: Stage = quiet) -> TradeRead:
     """The read of the Advisor on the trade. A failed guard retries once with the failures as feedback.
 
+    `stage` gets one plain line after the sheet and one after the read passes its guards. The default drops them.
     Raises AdvisorFailed after two failed calls, a failed API call included.
     """
-    return read_trade_on_sheet(trade, snapshot, advisor_sheet(trade, snapshot, jev, news), jev=jev, call=call)
+    stage("Checking the players on each side", live=True)
+    sheet = advisor_sheet(trade, snapshot, jev, news)
+    stage("Checked the players on each side")
+    return read_trade_on_sheet(trade, snapshot, sheet, jev=jev, call=call, stage=stage)

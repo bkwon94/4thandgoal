@@ -1,0 +1,10 @@
+{
+  "body_font": "spaceGrotesk, \"spaceGrotesk Fallback\"",
+  "h1_font": "spaceGrotesk, \"spaceGrotesk Fallback\"",
+  "accent": "#c2410c",
+  "band": "#0a0a0a",
+  "header_background": "rgb(20, 20, 20)",
+  "header_text": "NORCAL APEX 6 Home Week 8 Power Rankings Managers WK 08",
+  "body_background": "rgb(35, 35, 35)",
+  "h1_team_color": "rgb(245, 240, 230)"
+}

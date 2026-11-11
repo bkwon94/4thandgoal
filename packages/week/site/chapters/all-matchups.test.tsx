@@ -53,6 +53,16 @@ describe("AllMatchups", () => {
     expect(within(chapter).getAllByRole("button", { name: "Show the details" })).toHaveLength(buttons.length);
   });
 
+  it("gives each game an id with the roster ids of its two teams, lower first, so a link reaches one game", () => {
+    renderGames();
+    const ids = week8.matchups.map((matchup) => {
+      const [low, high] = matchup.sides.map((side) => side.team.roster_id).sort((a, b) => a - b);
+      return `game-${low}-${high}`;
+    });
+    for (const id of ids) expect(document.getElementById(id)?.tagName).toBe("LI");
+    expect(document.getElementById("game-3-9")?.textContent).toContain("Lil Fridge");
+  });
+
   it("shows both teams and both scores on a card, as plain text in one button", () => {
     renderGames();
     const button = gameOf("The Blue Tent");

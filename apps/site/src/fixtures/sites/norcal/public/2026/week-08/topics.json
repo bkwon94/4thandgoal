@@ -1,0 +1,3363 @@
+{
+  "schema_version": 1,
+  "season": 2026,
+  "week": 8,
+  "teams": {
+    "1": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 145.78, 3rd of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "145.78"
+          },
+          {
+            "label": "Place",
+            "value": "3rd of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 145.78 to 100.42",
+        "stats": [],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "145.78",
+            "note": "Kirk Cousins 34.18",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "Breece Mode",
+            "value": "100.42",
+            "note": "Jordan Love 28.52",
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [
+          "puurdygood flattened Breece Mode 145.78 to 100.42 in an upset, and Kirk Cousins led the way as top scorer. Down 16.72 after Thursday, they grabbed the lead in the early Sunday games, never gave it back, and rose to 2nd. DJ Moore is now listed Questionable, while Tre Tucker and Chris Godwin Jr. both blanked for the losing side as it slid down the standings."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: VarsityBlue2, 3-5",
+        "stats": [],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "5-3",
+            "note": "Bye: Wan'Dale Robinson",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "3-5",
+            "note": null,
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "5th, up 5",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "5th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 5"
+          },
+          {
+            "label": "Record",
+            "value": "5-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "kaiedmonds",
+            "value": "4th",
+            "note": "5-3",
+            "roster_id": 9,
+            "you": false
+          },
+          {
+            "label": "puurdygood",
+            "value": "5th",
+            "note": "5-3",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "Davlionman",
+            "value": "6th",
+            "note": "5-3",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": [
+          "puurdygood rises 5 places after a 45-point win. At 5-3, they sit 2nd in the standings."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "81% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "81%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "28%"
+          },
+          {
+            "label": "Seed",
+            "value": "2"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "kaiedmonds",
+            "value": "82%",
+            "note": "Seed 2",
+            "roster_id": 9,
+            "you": false
+          },
+          {
+            "label": "puurdygood",
+            "value": "81%",
+            "note": "Seed 2",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "77%",
+            "note": "Seed 4",
+            "roster_id": 8,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "5-3, 2nd of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "5-3"
+          },
+          {
+            "label": "Standing",
+            "value": "2nd of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1010.86"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Kyren Williams",
+            "value": "150",
+            "note": "RB · 18.8 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Christian McCaffrey",
+            "value": "144",
+            "note": "RB · 20.6 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tetairoa McMillan",
+            "value": "108.9",
+            "note": "WR · 15.6 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at RB. Soft at QB."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Kirk Cousins, 2nd at QB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "2": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 105.2, 9th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "105.2"
+          },
+          {
+            "label": "Place",
+            "value": "9th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 105.2 to 82.1",
+        "stats": [],
+        "rows": [
+          {
+            "label": "VarsityBlue2",
+            "value": "105.2",
+            "note": "Dak Prescott 21.8",
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "82.1",
+            "note": "Trevor Lawrence 25.4",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": [
+          "VarsityBlue2 led from the early Sunday games on and beat Bo Girds 105.2 to 82.1 in an upset. Mike Gesicki, a recent waiver add, posted 17.6 for the winners, while trade pickup CeeDee Lamb managed just 12.8 on the losing side. The win snapped a losing streak and lifted the winners a spot, while the losers slid down the standings on their season low."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: puurdygood, 5-3",
+        "stats": [],
+        "rows": [
+          {
+            "label": "VarsityBlue2",
+            "value": "3-5",
+            "note": null,
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "puurdygood",
+            "value": "5-3",
+            "note": "Bye: Wan'Dale Robinson",
+            "roster_id": 1,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "9th, up 3",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "9th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 3"
+          },
+          {
+            "label": "Record",
+            "value": "3-5"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Breece Mode",
+            "value": "8th",
+            "note": "4-4",
+            "roster_id": 11,
+            "you": false
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "9th",
+            "note": "3-5",
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "10th",
+            "note": "3-5",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": [
+          "VarsityBlue2 climbs 3 spots on a 23-point win. Still 3-5 and 1 game below the cut."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "11% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "11%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Skol Daddy ",
+            "value": "30%",
+            "note": "Seed None",
+            "roster_id": 5,
+            "you": false
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "11%",
+            "note": "Seed None",
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "8%",
+            "note": "Seed None",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "3-5, 10th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "3-5"
+          },
+          {
+            "label": "Standing",
+            "value": "10th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "927.22"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "CeeDee Lamb",
+            "value": "155.5",
+            "note": "WR · 22.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Dak Prescott",
+            "value": "136.64",
+            "note": "QB · 22.8 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Sam LaPorta",
+            "value": "85.9",
+            "note": "TE · 12.3 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at TE. Soft at QB and RB."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "1 trade this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "3": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 162.56, 2nd of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "162.56"
+          },
+          {
+            "label": "Place",
+            "value": "2nd of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 162.56 to 84.8",
+        "stats": [],
+        "rows": [
+          {
+            "label": "BobBuckstein",
+            "value": "162.56",
+            "note": "Josh Allen 31.56",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "84.8",
+            "note": "Bucky Irving 21",
+            "roster_id": 8,
+            "you": false
+          }
+        ],
+        "text": [
+          "BobBuckstein flattened Hock Tua 💦 162.56 to 84.8 in an upset, grabbing the lead after the early Sunday games and only stretching it from there. Lamar Jackson was hurt early in his game and is now listed Out (Thumb), while Bhayshul Tuten and Amon-Ra St. Brown on the winning side are now listed Questionable. The winners have now won 3 straight, and the losers slid all the way to 4th."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Skol Daddy , 3-5",
+        "stats": [],
+        "rows": [
+          {
+            "label": "BobBuckstein",
+            "value": "4-4",
+            "note": "Bye: Tony Pollard, Germie Bernard, Aaron Rodgers",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "Skol Daddy ",
+            "value": "3-5",
+            "note": "Bye: Jaylen Warren",
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "2nd, up 2",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "2nd"
+          },
+          {
+            "label": "Move",
+            "value": "Up 2"
+          },
+          {
+            "label": "Record",
+            "value": "4-4"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "1st",
+            "note": "6-2",
+            "roster_id": 6,
+            "you": false
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "2nd",
+            "note": "4-4",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "Skol Daddy ",
+            "value": "3rd",
+            "note": "3-5",
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": [
+          "BobBuckstein climbs to 2nd behind a 78-point demolition job. Still a 4-4 team sitting 1 spot outside the playoff spots. Playoff odds of about 57% come with the hardest remaining schedule."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "57% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "57%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "11%"
+          },
+          {
+            "label": "Seed",
+            "value": "6"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Davlionman",
+            "value": "69%",
+            "note": "Seed 4",
+            "roster_id": 10,
+            "you": false
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "57%",
+            "note": "Seed 6",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "Breece Mode",
+            "value": "50%",
+            "note": "Seed 6",
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "4-4, 7th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "4-4"
+          },
+          {
+            "label": "Standing",
+            "value": "7th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1014.38"
+          },
+          {
+            "label": "Roster grade",
+            "value": "B"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Amon-Ra St. Brown",
+            "value": "141",
+            "note": "WR · 20.1 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Ashton Jeanty",
+            "value": "132.3",
+            "note": "RB · 16.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Joe Burrow",
+            "value": "126.24",
+            "note": "QB · 25.2 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at QB. Soft at TE. Thin at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Bhayshul Tuten, 1st at RB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "4": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 121.76, 5th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "121.76"
+          },
+          {
+            "label": "Place",
+            "value": "5th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 121.76 to 132.38",
+        "stats": [],
+        "rows": [
+          {
+            "label": "kaiedmonds",
+            "value": "132.38",
+            "note": "Chuba Hubbard 24.9",
+            "roster_id": 9,
+            "you": false
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "121.76",
+            "note": "Tee Higgins 37.5",
+            "roster_id": 4,
+            "you": true
+          }
+        ],
+        "text": [
+          "The Mean Machine led after Sunday night, kaiedmonds took it back on Monday with Caleb Williams playing, and the week moved the winners up to 3rd and the losers down to 11th. Jeremiyah Love was hurt in this game and is now listed Out, while Tyler Allgeier sat on the bench with enough points to flip the result. Recent add Treylon Burks gave this side 11.1, and fellow new pickup Elic Ayomanor added 6.4."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Davlionman, 5-3",
+        "stats": [],
+        "rows": [
+          {
+            "label": "The Mean Machine",
+            "value": "3-5",
+            "note": "Bye: Tyjae Spears, Michael Pittman Jr., Elic Ayomanor",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "Davlionman",
+            "value": "5-3",
+            "note": "Bye: Pat Freiermuth",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "11th, down 2",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "11th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 2"
+          },
+          {
+            "label": "Record",
+            "value": "3-5"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "10th",
+            "note": "3-5",
+            "roster_id": 7,
+            "you": false
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "11th",
+            "note": "3-5",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "The Dart Side",
+            "value": "12th",
+            "note": "2-6",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [
+          "The Mean Machine sinks 2 places after an 11-point loss. They have 883.14 points for and a 3-5 record."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "8% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "8%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "VarsityBlue2",
+            "value": "11%",
+            "note": "Seed None",
+            "roster_id": 2,
+            "you": false
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "8%",
+            "note": "Seed None",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "The Dart Side",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "3-5, 11th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "3-5"
+          },
+          {
+            "label": "Standing",
+            "value": "11th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "883.14"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jonathan Taylor",
+            "value": "144.2",
+            "note": "RB · 18 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "139.6",
+            "note": "WR · 19.9 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Jameson Williams",
+            "value": "100.7",
+            "note": "WR · 14.4 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at QB. Deep at QB. Soft at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Tee Higgins, 1st at WR",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "5": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 193.18, 1st of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "193.18"
+          },
+          {
+            "label": "Place",
+            "value": "1st of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 193.18 to 106.6",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Skol Daddy ",
+            "value": "193.18",
+            "note": "Joe Burrow 52.48",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "Davlionman",
+            "value": "106.6",
+            "note": "Jahmyr Gibbs 24.8",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": [
+          "Skol Daddy  trailed after Thursday, then ran away with it from the early Sunday games on to bury Davlionman in an upset. Joe Burrow put up 52.48 toward a season high, while the new pickup Baker Mayfield answered with 1.4 at quarterback. The losers slide from 3rd to 5th, and Drake London and Jakobi Meyers, one on each roster, are now listed Questionable."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: BobBuckstein, 4-4",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Skol Daddy ",
+            "value": "3-5",
+            "note": "Bye: Jaylen Warren",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "4-4",
+            "note": "Bye: Tony Pollard, Germie Bernard, Aaron Rodgers",
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "3rd, up 4",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "3rd"
+          },
+          {
+            "label": "Move",
+            "value": "Up 4"
+          },
+          {
+            "label": "Record",
+            "value": "3-5"
+          }
+        ],
+        "rows": [
+          {
+            "label": "BobBuckstein",
+            "value": "2nd",
+            "note": "4-4",
+            "roster_id": 3,
+            "you": false
+          },
+          {
+            "label": "Skol Daddy ",
+            "value": "3rd",
+            "note": "3-5",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "4th",
+            "note": "5-3",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": [
+          "Skol Daddy rockets to 3rd off an 87-point beatdown. The record still says 3-5, 1 game below the cut. Playoff odds of about 30% ride on the 10th easiest remaining schedule."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "30% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "30%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "3%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "36%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": false
+          },
+          {
+            "label": "Skol Daddy ",
+            "value": "30%",
+            "note": "Seed None",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "11%",
+            "note": "Seed None",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "3-5, 8th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "3-5"
+          },
+          {
+            "label": "Standing",
+            "value": "8th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1089.82"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Josh Allen",
+            "value": "160.96",
+            "note": "QB · 32.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Jaylen Warren",
+            "value": "140.8",
+            "note": "RB · 17.6 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Ja'Marr Chase",
+            "value": "128.2",
+            "note": "WR · 18.3 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at TE. Soft at RB."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Joe Burrow, 1st at QB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": true
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "6": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 118.64, 6th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "118.64"
+          },
+          {
+            "label": "Place",
+            "value": "6th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 118.64 to 116.46",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "118.64",
+            "note": "D'Andre Swift 27.9",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "The Dart Side",
+            "value": "116.46",
+            "note": "Michael Wilson 26.8",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [
+          "Down 13.02 after Sunday night, Mitseeker5000 flipped it on Monday behind D'Andre Swift's 27.9 and kept the top spot. Hunter Henry is now listed Out and Michael Wilson is now listed Questionable, while the new pickup Mason Taylor managed 4.9. The Dart Side, still stuck in last, left Emmett Johnson on the bench behind Omarion Hampton, a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Hock Tua 💦, 5-3",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "6-2",
+            "note": "Bye: Carnell Tate, Rico Dowdle",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "5-3",
+            "note": "Bye: DK Metcalf",
+            "roster_id": 8,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "1st, no change",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "1st"
+          },
+          {
+            "label": "Move",
+            "value": "No change"
+          },
+          {
+            "label": "Record",
+            "value": "6-2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "1st",
+            "note": "6-2",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "2nd",
+            "note": "4-4",
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 stays on top, 1st in standing and 1st in scoring. They have won 5 straight. They hold playoff odds of about 97% and bye odds of 73%."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "97% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "97%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "73%"
+          },
+          {
+            "label": "Seed",
+            "value": "1"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "97%",
+            "note": "Seed 1",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "82%",
+            "note": "Seed 2",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "6-2, 1st of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "6-2"
+          },
+          {
+            "label": "Standing",
+            "value": "1st of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1130.34"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "D'Andre Swift",
+            "value": "150.7",
+            "note": "RB · 18.8 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "138.6",
+            "note": "WR · 19.8 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Javonte Williams",
+            "value": "137.2",
+            "note": "RB · 17.1 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at WR. Deep at QB."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "D'Andre Swift, 3rd at RB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "7": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 82.1, 12th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "82.1"
+          },
+          {
+            "label": "Place",
+            "value": "12th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 82.1 to 105.2",
+        "stats": [],
+        "rows": [
+          {
+            "label": "VarsityBlue2",
+            "value": "105.2",
+            "note": "Dak Prescott 21.8",
+            "roster_id": 2,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "82.1",
+            "note": "Trevor Lawrence 25.4",
+            "roster_id": 7,
+            "you": true
+          }
+        ],
+        "text": [
+          "VarsityBlue2 led from the early Sunday games on and beat Bo Girds 105.2 to 82.1 in an upset. Mike Gesicki, a recent waiver add, posted 17.6 for the winners, while trade pickup CeeDee Lamb managed just 12.8 on the losing side. The win snapped a losing streak and lifted the winners a spot, while the losers slid down the standings on their season low."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: kaiedmonds, 5-3",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "3-5",
+            "note": "Bye: Roman Wilson",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "5-3",
+            "note": null,
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "10th, down 5",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "10th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 5"
+          },
+          {
+            "label": "Record",
+            "value": "3-5"
+          }
+        ],
+        "rows": [
+          {
+            "label": "VarsityBlue2",
+            "value": "9th",
+            "note": "3-5",
+            "roster_id": 2,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "10th",
+            "note": "3-5",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "11th",
+            "note": "3-5",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds tumbles 5 places after a 23-point loss. Playoff odds of about 36% survive on the 2nd easiest remaining schedule. They project to outscore their season pace from here."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "36% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "36%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "3%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Breece Mode",
+            "value": "50%",
+            "note": "Seed 6",
+            "roster_id": 11,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "36%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "Skol Daddy ",
+            "value": "30%",
+            "note": "Seed None",
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "3-5, 9th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "3-5"
+          },
+          {
+            "label": "Standing",
+            "value": "9th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "983.36"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Kenneth Walker III",
+            "value": "160.1",
+            "note": "RB · 22.9 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Zay Flowers",
+            "value": "122.2",
+            "note": "WR · 17.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Luther Burden III",
+            "value": "115.6",
+            "note": "WR · 14.4 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at QB, WR, and TE. Thin at RB."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "1 trade this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "8": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 84.8, 11th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "84.8"
+          },
+          {
+            "label": "Place",
+            "value": "11th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 84.8 to 162.56",
+        "stats": [],
+        "rows": [
+          {
+            "label": "BobBuckstein",
+            "value": "162.56",
+            "note": "Josh Allen 31.56",
+            "roster_id": 3,
+            "you": false
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "84.8",
+            "note": "Bucky Irving 21",
+            "roster_id": 8,
+            "you": true
+          }
+        ],
+        "text": [
+          "BobBuckstein flattened Hock Tua 💦 162.56 to 84.8 in an upset, grabbing the lead after the early Sunday games and only stretching it from there. Lamar Jackson was hurt early in his game and is now listed Out (Thumb), while Bhayshul Tuten and Amon-Ra St. Brown on the winning side are now listed Questionable. The winners have now won 3 straight, and the losers slid all the way to 4th."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Mitseeker5000, 6-2",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Hock Tua 💦",
+            "value": "5-3",
+            "note": "Bye: DK Metcalf",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "Mitseeker5000",
+            "value": "6-2",
+            "note": "Bye: Carnell Tate, Rico Dowdle",
+            "roster_id": 6,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "7th, down 4",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "7th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 4"
+          },
+          {
+            "label": "Record",
+            "value": "5-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Davlionman",
+            "value": "6th",
+            "note": "5-3",
+            "roster_id": 10,
+            "you": false
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "7th",
+            "note": "5-3",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "Breece Mode",
+            "value": "8th",
+            "note": "4-4",
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 falls 4 places after getting buried by 78. The scoring has gone soft lately."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "77% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "77%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "24%"
+          },
+          {
+            "label": "Seed",
+            "value": "4"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "81%",
+            "note": "Seed 2",
+            "roster_id": 1,
+            "you": false
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "77%",
+            "note": "Seed 4",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "Davlionman",
+            "value": "69%",
+            "note": "Seed 4",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "5-3, 4th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "5-3"
+          },
+          {
+            "label": "Standing",
+            "value": "4th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1006.98"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bijan Robinson",
+            "value": "153.3",
+            "note": "RB · 19.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Trey McBride",
+            "value": "150.4",
+            "note": "TE · 18.8 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Matthew Golden",
+            "value": "131.5",
+            "note": "WR · 16.4 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at RB. Soft at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Trey McBride, 3rd at TE",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "9": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 132.38, 4th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "132.38"
+          },
+          {
+            "label": "Place",
+            "value": "4th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 132.38 to 121.76",
+        "stats": [],
+        "rows": [
+          {
+            "label": "kaiedmonds",
+            "value": "132.38",
+            "note": "Chuba Hubbard 24.9",
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "121.76",
+            "note": "Tee Higgins 37.5",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "The Mean Machine led after Sunday night, kaiedmonds took it back on Monday with Caleb Williams playing, and the week moved the winners up to 3rd and the losers down to 11th. Jeremiyah Love was hurt in this game and is now listed Out, while Tyler Allgeier sat on the bench with enough points to flip the result. Recent add Treylon Burks gave this side 11.1, and fellow new pickup Elic Ayomanor added 6.4."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Bo Girds, 3-5",
+        "stats": [],
+        "rows": [
+          {
+            "label": "kaiedmonds",
+            "value": "5-3",
+            "note": null,
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "3-5",
+            "note": "Bye: Roman Wilson",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "4th, up 4",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "4th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 4"
+          },
+          {
+            "label": "Record",
+            "value": "5-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Skol Daddy ",
+            "value": "3rd",
+            "note": "3-5",
+            "roster_id": 5,
+            "you": false
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "4th",
+            "note": "5-3",
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "puurdygood",
+            "value": "5th",
+            "note": "5-3",
+            "roster_id": 1,
+            "you": false
+          }
+        ],
+        "text": [
+          "kaiedmonds jumps to 4th after an 11-point escape. The scoring keeps sagging, though."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "82% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "82%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "32%"
+          },
+          {
+            "label": "Seed",
+            "value": "2"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "97%",
+            "note": "Seed 1",
+            "roster_id": 6,
+            "you": false
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "82%",
+            "note": "Seed 2",
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "puurdygood",
+            "value": "81%",
+            "note": "Seed 2",
+            "roster_id": 1,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "5-3, 3rd of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "5-3"
+          },
+          {
+            "label": "Standing",
+            "value": "3rd of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1010.86"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Christian Watson",
+            "value": "146.8",
+            "note": "WR · 18.4 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Chuba Hubbard",
+            "value": "133",
+            "note": "RB · 19 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "James Cook III",
+            "value": "131.7",
+            "note": "RB · 18.8 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Thin at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "1 trade this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "10": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 106.6, 8th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "106.6"
+          },
+          {
+            "label": "Place",
+            "value": "8th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 106.6 to 193.18",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Skol Daddy ",
+            "value": "193.18",
+            "note": "Joe Burrow 52.48",
+            "roster_id": 5,
+            "you": false
+          },
+          {
+            "label": "Davlionman",
+            "value": "106.6",
+            "note": "Jahmyr Gibbs 24.8",
+            "roster_id": 10,
+            "you": true
+          }
+        ],
+        "text": [
+          "Skol Daddy  trailed after Thursday, then ran away with it from the early Sunday games on to bury Davlionman in an upset. Joe Burrow put up 52.48 toward a season high, while the new pickup Baker Mayfield answered with 1.4 at quarterback. The losers slide from 3rd to 5th, and Drake London and Jakobi Meyers, one on each roster, are now listed Questionable."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: The Mean Machine, 3-5",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Davlionman",
+            "value": "5-3",
+            "note": "Bye: Pat Freiermuth",
+            "roster_id": 10,
+            "you": true
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "3-5",
+            "note": "Bye: Tyjae Spears, Michael Pittman Jr., Elic Ayomanor",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "6th, down 4",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "6th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 4"
+          },
+          {
+            "label": "Record",
+            "value": "5-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "5th",
+            "note": "5-3",
+            "roster_id": 1,
+            "you": false
+          },
+          {
+            "label": "Davlionman",
+            "value": "6th",
+            "note": "5-3",
+            "roster_id": 10,
+            "you": true
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "7th",
+            "note": "5-3",
+            "roster_id": 8,
+            "you": false
+          }
+        ],
+        "text": [
+          "Davlionman drops 4 places after an 87-point loss. Rough afternoon. The good news is the easiest remaining schedule in the league."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "69% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "69%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "17%"
+          },
+          {
+            "label": "Seed",
+            "value": "4"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Hock Tua 💦",
+            "value": "77%",
+            "note": "Seed 4",
+            "roster_id": 8,
+            "you": false
+          },
+          {
+            "label": "Davlionman",
+            "value": "69%",
+            "note": "Seed 4",
+            "roster_id": 10,
+            "you": true
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "57%",
+            "note": "Seed 6",
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "5-3, 5th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "5-3"
+          },
+          {
+            "label": "Standing",
+            "value": "5th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "972.32"
+          },
+          {
+            "label": "Roster grade",
+            "value": "B"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jahmyr Gibbs",
+            "value": "195.8",
+            "note": "RB · 28 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Malik Nabers",
+            "value": "120.5",
+            "note": "WR · 17.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Drake London",
+            "value": "109.8",
+            "note": "WR · 13.7 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at RB. Soft at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "1 trade this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "11": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 100.42, 10th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "100.42"
+          },
+          {
+            "label": "Place",
+            "value": "10th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 100.42 to 145.78",
+        "stats": [],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "145.78",
+            "note": "Kirk Cousins 34.18",
+            "roster_id": 1,
+            "you": false
+          },
+          {
+            "label": "Breece Mode",
+            "value": "100.42",
+            "note": "Jordan Love 28.52",
+            "roster_id": 11,
+            "you": true
+          }
+        ],
+        "text": [
+          "puurdygood flattened Breece Mode 145.78 to 100.42 in an upset, and Kirk Cousins led the way as top scorer. Down 16.72 after Thursday, they grabbed the lead in the early Sunday games, never gave it back, and rose to 2nd. DJ Moore is now listed Questionable, while Tre Tucker and Chris Godwin Jr. both blanked for the losing side as it slid down the standings."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: The Dart Side, 2-6",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Breece Mode",
+            "value": "4-4",
+            "note": null,
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "The Dart Side",
+            "value": "2-6",
+            "note": null,
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "8th, down 2",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "8th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 2"
+          },
+          {
+            "label": "Record",
+            "value": "4-4"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Hock Tua 💦",
+            "value": "7th",
+            "note": "5-3",
+            "roster_id": 8,
+            "you": false
+          },
+          {
+            "label": "Breece Mode",
+            "value": "8th",
+            "note": "4-4",
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "9th",
+            "note": "3-5",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": [
+          "Breece Mode slips 2 places after a 45-point loss. They have lost 2 straight and cling to the last playoff spot. Playoff odds sit at a coin-flip 50%."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "50% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "50%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "7%"
+          },
+          {
+            "label": "Seed",
+            "value": "6"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "BobBuckstein",
+            "value": "57%",
+            "note": "Seed 6",
+            "roster_id": 3,
+            "you": false
+          },
+          {
+            "label": "Breece Mode",
+            "value": "50%",
+            "note": "Seed 6",
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "36%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "4-4, 6th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "4-4"
+          },
+          {
+            "label": "Standing",
+            "value": "6th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1055.74"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jaxon Smith-Njigba",
+            "value": "219.96",
+            "note": "WR · 27.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Trevor Lawrence",
+            "value": "146.2",
+            "note": "QB · 24.4 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Derrick Henry",
+            "value": "136.7",
+            "note": "RB · 17.1 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Soft at QB, RB, and TE. Thin at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "1 trade this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ],
+    "12": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 116.46, 7th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "116.46"
+          },
+          {
+            "label": "Place",
+            "value": "7th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "36.1",
+            "note": "Tyler Allgeier · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "0",
+            "note": "Lamar Jackson · Hock Tua 💦",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "52.48",
+            "note": "Joe Burrow · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Tee Higgins hung 37.5 on kaiedmonds, and The Mean Machine still lost after leading by 5.36 going into Monday. Caleb Williams flipped it with 15.98 on Monday, and recent add Quentin Johnston chipped in 7.7 along the way. Tyler Allgeier sat on the bench with 36.1 while Jeremiyah Love started and scored 2.3, a swap that would have flipped the result. Love was hurt in the opening quarter and is now listed Out with an ankle injury, while James Cook III and Christian Watson, also hurt in this game, are now listed Questionable. Recent adds Treylon Burks and Elic Ayomanor gave the losers 11.1 and 6.4. The losers slid to 11th while the winners climbed to 3rd."
+        ]
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 116.46 to 118.64",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "118.64",
+            "note": "D'Andre Swift 27.9",
+            "roster_id": 6,
+            "you": false
+          },
+          {
+            "label": "The Dart Side",
+            "value": "116.46",
+            "note": "Michael Wilson 26.8",
+            "roster_id": 12,
+            "you": true
+          }
+        ],
+        "text": [
+          "Down 13.02 after Sunday night, Mitseeker5000 flipped it on Monday behind D'Andre Swift's 27.9 and kept the top spot. Hunter Henry is now listed Out and Michael Wilson is now listed Questionable, while the new pickup Mason Taylor managed 4.9. The Dart Side, still stuck in last, left Emmett Johnson on the bench behind Omarion Hampton, a swap that would have flipped the result."
+        ]
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Breece Mode, 4-4",
+        "stats": [],
+        "rows": [
+          {
+            "label": "The Dart Side",
+            "value": "2-6",
+            "note": null,
+            "roster_id": 12,
+            "you": true
+          },
+          {
+            "label": "Breece Mode",
+            "value": "4-4",
+            "note": null,
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 puts its win streak on the line against Hock Tua 💦 in a shootout between top-four lineups at the top of the table. The leader's playoff odds hold near 97% either way. The challenger is the one sweating, with playoff odds of 89% after a win and 65% after a loss. BobBuckstein puts a 3-game streak on the line against Skol Daddy  near the cut, and does it with Tony Pollard on bye and Samaje Perine filling his slot at 4.5 a game. A win puts the streaking side at 75% playoff odds, a loss at 40%. Their opponent's playoff odds go to 46% with a win and 14% with a loss."
+        ]
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "12th, down 1",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "12th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 1"
+          },
+          {
+            "label": "Record",
+            "value": "2-6"
+          }
+        ],
+        "rows": [
+          {
+            "label": "The Mean Machine",
+            "value": "11th",
+            "note": "3-5",
+            "roster_id": 4,
+            "you": false
+          },
+          {
+            "label": "The Dart Side",
+            "value": "12th",
+            "note": "2-6",
+            "roster_id": 12,
+            "you": true
+          }
+        ],
+        "text": [
+          "The Dart Side brings up the rear after a 2-point loss to the league leader. A 2-6 record leaves them 2 games below the cut. Playoff odds sit at about 1%."
+        ]
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "1% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "1%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "The Mean Machine",
+            "value": "8%",
+            "note": "Seed None",
+            "roster_id": 4,
+            "you": false
+          },
+          {
+            "label": "The Dart Side",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 12,
+            "you": true
+          }
+        ],
+        "text": []
+      },
+      {
+        "topic": "your_season",
+        "fact": "2-6, 12th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "2-6"
+          },
+          {
+            "label": "Standing",
+            "value": "12th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "790.8"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Michael Wilson",
+            "value": "108.68",
+            "note": "WR · 13.6 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tyler Shough",
+            "value": "102.36",
+            "note": "QB · 20.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Chase Brown",
+            "value": "90.9",
+            "note": "RB · 13 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Deep at QB. Soft at TE. Thin at WR."
+        ]
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Michael Wilson, 3rd at WR",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "1"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Joe Burrow",
+            "value": "52.48",
+            "note": "QB · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "29.9",
+            "note": "RB · BobBuckstein",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tee Higgins",
+            "value": "37.5",
+            "note": "WR · The Mean Machine",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "28.2",
+            "note": "TE · Skol Daddy ",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Joe Burrow (QB, CIN) scored 52.48 for Skol Daddy , 1st of 12 among started QBs this week."
+        ]
+      }
+    ]
+  }
+}

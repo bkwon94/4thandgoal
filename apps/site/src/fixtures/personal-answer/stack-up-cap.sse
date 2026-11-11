@@ -1,0 +1,12 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"stack_up","team":3,"fact":"Grade A, QB ranks 7th of 12","stats":[{"label":"Grade","value":"A"},{"label":"Best spot","value":"WR 3rd"},{"label":"Weakest spot","value":"QB 7th"}],"rows":[{"label":"Projection Ahead","value":"3rd of 12","note":null,"roster_id":null,"you":false},{"label":"Season Production","value":"4th of 12","note":null,"roster_id":null,"you":false},{"label":"Trade Value","value":"3rd of 12","note":null,"roster_id":null,"you":false},{"label":"Depth And Holes","value":"2nd of 12","note":null,"roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"a8e6a24596dc0f61559b93463a23b537f5b809a3b9a963438586655f4feb6b98"}}
+
+data: {"type":"data-cap","data":{"cap":"team","line":"That's 25 questions today. Ask again tomorrow.","closest":["weak_spots","power_rankings","your_season"]}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

@@ -2,9 +2,9 @@
 
 ## Knows
 
-- The proposed trade of `trade.py`, the Measures and `Side` of `measures.py`, and the trade facts (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`, and the team facts of `team_facts.py`. The Finder search of `finder_search.py`: the partner filter, the targets, the offers, and the shortlist, with its Jev requests in waves by `jev_waves.py`. The Finder pick of `finder_pick.py`: one sheet per shortlist offer, the Advisor pick of up to 3 trades with a headline and Bullets, and the fallback to the shortlist with fact lines.
-- The rule prompts `prompts/advisor.md` and `prompts/finder_pick.md`, and the numbers of `tunables.py`.
-- The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit.
+- The proposed trade of `trade.py`, the Measures and `Side` of `measures.py`, and the trade facts (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`, and the team facts of `team_facts.py`. The Finder search of `finder_search.py`: the partner filter, the targets, the offers, and the shortlist, with its Jev requests in waves by `jev_waves.py`. The Finder pick of `finder_pick.py`: one sheet per shortlist offer, the Advisor pick of up to 3 trades with a headline and Bullets, and the fallback to the shortlist with fact lines. The sell high pick of `sell_high.py`: the sheet of one roster in `sell_facts.py`, with the trade value, the lineup value, the trend of the last 4 weeks, and the schedule ahead of each player side by side, and the Advisor pick of up to 3 players to sell with the guards and the Jev checks of the read.
+- The rule prompts `prompts/advisor.md`, `prompts/finder_pick.md`, `prompts/finder_pick_repair.md`, and `prompts/sell_high.md`, and the numbers of `tunables.py`.
+- The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit. The sell high press of the front door is there too, with no route of its own.
 - The grade limit counts per client and per address. Each client has its own result cache, so the roster ids of two leagues never share a grade.
 - The cache key reads the points key of the League settings of the client, such as `pts_ppr` for a full PPR league.
 - The trade form, the finder, the API client, the passphrase, the teams store, and the team picker of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.
@@ -14,7 +14,7 @@
 ## Ports
 
 - `SnapshotSource` in `routes.py`: the live snapshots of one client. The API app gives its `Sources`, and a test gives fixture-backed ones.
-- `Analyzer` and `FinderPicker` in `routes.py`: the Advisor calls of the grade and of the Finder pick. A test gives a stub call. The Advisor takes the Jev port of `league`, and a test gives `FakeJev`. `FinderSearch` in `routes.py` is the Finder search with the real Jev, and a test gives a search with `FakeJev`.
+- `Analyzer` and `FinderPicker` in `routes.py`: the Advisor calls of the grade and of the Finder pick. Each takes an optional `Stage` of `stage.py`, a plain line per stage for the front door. A test gives a stub call. The Advisor takes the Jev port of `league`, and a test gives `FakeJev`. `FinderSearch` in `routes.py` is the Finder search with the real Jev, and a test gives a search with `FakeJev`. `SellHighPicker` in `routes.py` is the sell high pick, and a test gives a stub call.
 
 ## Does not do
 

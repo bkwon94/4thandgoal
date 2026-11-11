@@ -49,11 +49,14 @@ export function ManagerHero({
   manager,
   avatar,
   teams,
+  through,
   scene,
 }: {
   manager: Manager;
   avatar: string;
   teams: number;
+  // The last week of the build. The grade is from that week, so the hero says so beside the grade.
+  through: number;
   // The scene of the weeks. The manager page passes it, because this hero is the first hero of the page.
   scene?: HeroScene;
 }) {
@@ -74,6 +77,10 @@ export function ManagerHero({
               <div className={cn(HERO_CAPS, "flex items-center")}>
                 Grade
                 {grade && <GradeMark />}
+                {/* The grade reads the build, not the live league, so it names its week. */}
+                {grade && (
+                  <span className="ml-sp-3 font-normal tracking-normal text-on-dark-2 normal-case">after week {through}</span>
+                )}
               </div>
               <div className="mt-sp-2 flex flex-wrap items-center gap-x-sp-5 gap-y-sp-2">
                 {/* The letter opens the grade popover, which says what each part of the grade ranks.

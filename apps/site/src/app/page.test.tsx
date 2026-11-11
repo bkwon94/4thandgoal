@@ -1,18 +1,14 @@
 /**
- * Tests for the home page. Most render the page with the fixed copy of the public/ data of cpc and read what a reader sees.
- * The NorCal test copies the fixed copy of the published files of norcal, and the registry tests build a temp public/ folder from week 6.
+ * Tests for the front door at /. Each test renders the page with the fixed copy of the published data of a client and
+ * reads what a manager sees: the sheet that asks for Your team on the first visit, then the empty Thread with the ask box.
  */
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
-import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixtures/sites";
-import { weekPageJson } from "@/fixtures/week-page-json";
-import fixture from "@cpc/rankings/fixtures/rankings.json";
-import { week8 } from "@cpc/week/fixtures/week-page";
-import { season } from "@/lib/config";
-import HomePage from "./page";
+import HomePage from "./front-door/door-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
    runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
@@ -20,264 +16,378 @@ import HomePage from "./page";
 await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
 beforeEach(() => readFixtureSite("cpc"));
 
-/* The temp public/ folders that homeOver made, so each test removes its own folder. */
+/* The temp public/ folders that homeOfClient made, so each test removes its own folder. */
 const roots: string[] = [];
 
 afterEach(() => {
   cleanup();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
-  vi.unstubAllGlobals();
   localStorage.clear();
-  sessionStorage.clear();
   vi.restoreAllMocks();
 });
 
-describe("HomePage", () => {
-  it("opens the hero on the Matchup of the Week of the latest week, with the winner by the margin as the title", async () => {
-    const Home = await homeOfCpcWithoutReport();
-    render(<Home />);
-    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
-    // CPC week 8: The Blue Tent over London Cooking, 100.31 to 98.88 (AT-10).
-    expect(within(hero).getByText("Week 08 // Matchup of the Week")).toBeTruthy();
-    expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("The Blue Tent by 1.43");
-    expect(within(hero).getByText("Closest Finish")).toBeTruthy();
-    expect(within(hero).getByText("The Blue Tent")).toBeTruthy();
-    expect(within(hero).getByText("100.31")).toBeTruthy();
-    expect(within(hero).getByText("London Cooking")).toBeTruthy();
-    expect(within(hero).getByText("98.88")).toBeTruthy();
-    // The first sentence of the blurb shows under the hero, outside its frame. The pipeline rewrites blurbs, so the test
-    // reads the fixture.
-    expect(hero.querySelector("p")).toBeNull();
-    const sentence = hero.nextElementSibling!.querySelector("p")!.textContent!;
-    expect(week8.blurbs.motw.startsWith(sentence)).toBe(true);
-    expect(sentence.length).toBeLessThan(week8.blurbs.motw.length);
-    expect(sentence.endsWith(".")).toBe(true);
-    const read = within(hero).getByRole("link", { name: "Read Week 8" });
-    expect(read.getAttribute("href")).toBe("/2026/week-08/");
+describe("the front door of cpc", () => {
+  it("asks for Your team in a sheet that lists the 12 teams, with no skip, no close, and no login (AT-1)", async () => {
+    render(<HomePage />);
+    const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
+    const teams = within(sheet).getAllByRole("button");
+    expect(teams).toHaveLength(12);
+    expect(teams[0].textContent).toContain("All You Need Is Love");
+    expect(within(sheet).getByRole("button", { name: /Lil Fridge/ })).toBeTruthy();
+    expect(within(sheet).queryByRole("button", { name: /skip|close|later|log ?in|sign ?in/i })).toBeNull();
+    expect(within(sheet).queryByRole("textbox")).toBeNull();
+    expect(sheet.querySelector("input[type=password]")).toBeNull();
   });
 
-  it("has exactly one scene, in the hero of the Matchup, when no report takes over the top (AT-35)", async () => {
-    const Home = await homeOfCpcWithoutReport();
-    const { container } = render(<Home />);
-    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
-    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
-    expect(hero.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(1);
+  it("keeps Your team after a reload, so no sheet shows and the empty Thread asks about Lil Fridge (AT-2)", async () => {
+    render(<HomePage />);
+    const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
+    fireEvent.click(within(sheet).getByRole("button", { name: /Lil Fridge/ }));
+    // The check lands, then the sheet leaves.
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Ask about Lil Fridge");
+
+    // A reload renders the page again from the static markup, with the store of the browser as it was.
+    cleanup();
+    render(<HomePage />);
+    const heading = await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
+    expect(heading).toBeTruthy();
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
-  it("has no scene when the midseason report takes over the top, as the takeover keeps the static grid (AT-35, AT-44)", async () => {
-    const Home = await homeOfClient("cpc");
-    const { container } = render(<Home />);
-    expect(screen.getByRole("region", { name: "2026 Midseason Report" })).toBeTruthy();
+  it("shows the ask box at the center of the empty Thread, with a send button that waits for a question", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    const thread = await screen.findByRole("region", { name: "Thread" });
+    const box = within(thread).getByRole("form", { name: "Ask" });
+    const field = within(box).getByRole("textbox", { name: "Ask a question" });
+    const send = within(box).getByRole("button", { name: "Send" }) as HTMLButtonElement;
+    expect(field.getAttribute("placeholder")).toBe("Ask about your team or the league");
+    expect(send.disabled).toBe(true);
+    fireEvent.change(field, { target: { value: "who am i playing sunday" } });
+    expect(send.disabled).toBe(false);
+  });
+
+  it("grows the halo of the send button as the field fills, full at 24 letters (decision 07)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    const box = within(await screen.findByRole("region", { name: "Thread" })).getByRole("form", { name: "Ask" });
+    const field = within(box).getByRole("textbox", { name: "Ask a question" });
+    const halo = () => within(box).getByRole("button", { name: "Send" }).style.getPropertyValue("--halo");
+    expect(halo()).toBe("0");
+    fireEvent.change(field, { target: { value: "who is first" } });
+    expect(halo()).toBe("0.5");
+    fireEvent.change(field, { target: { value: "who am i playing on sunday night" } });
+    expect(halo()).toBe("1");
+    // Spaces are no question, so the halo stays off.
+    fireEvent.change(field, { target: { value: "   " } });
+    expect(halo()).toBe("0");
+  });
+
+  it("opens the sheet again from the Thread, so a manager can change Your team", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    fireEvent.click(await screen.findByRole("button", { name: "Your team: Lil Fridge. Change the team" }));
+    const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
+    expect(within(sheet).getByRole("button", { name: /Lil Fridge/ }).getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(within(sheet).getByRole("button", { name: /Bo Girds/ }));
+    await screen.findByRole("heading", { level: 1, name: "Ask about Bo Girds" }, { timeout: 3000 });
+    expect(localStorage.getItem("cpc.your-team")).toBe("6");
+  });
+
+  it("asks again when the stored team is no team of the league", async () => {
+    localStorage.setItem("cpc.your-team", "99");
+    render(<HomePage />);
+    expect(await screen.findByRole("dialog", { name: "Which team is yours?" })).toBeTruthy();
+  });
+
+  it("shows no hero, no four numbers, no midseason takeover, and no tool tiles (AT-50)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    const { container } = render(<HomePage />);
+    await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
     expect(screen.queryByRole("region", { name: "Matchup of the Week" })).toBeNull();
-    expect(container.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
-  });
-
-  it("names the season and the league in the intro", () => {
-    render(<HomePage />);
-    expect(screen.getByText(`${season} // League Weekly`)).toBeTruthy();
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Cornerstone Fantasy Football League");
-  });
-
-  it("shows the parts in the order of the Front page", async () => {
-    const Home = await homeOfCpcWithoutReport();
-    render(<Home />);
-    const main = screen.getByRole("main");
-    const hero = within(main).getByRole("region", { name: "Matchup of the Week" });
-    // The title of the hero is an h2 too, so the order of the chapters skips it.
-    const order = [
-      screen.getByRole("heading", { level: 1 }),
-      hero,
-      ...within(main)
-        .getAllByRole("heading", { level: 2 })
-        .filter((heading) => !hero.contains(heading)),
-    ];
-    expect(order.slice(2).map((heading) => heading.textContent)).toEqual([
-      "Week 8 in four numbers",
-      "Power Rankings",
-      "Tools",
-      "Weekly Reports",
-    ]);
-    for (let index = 1; index < order.length; index++) {
-      expect(order[index - 1].compareDocumentPosition(order[index]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    }
-  });
-
-  it("shows the four numbers of the latest week", async () => {
-    const Home = await homeOfCpcWithoutReport();
-    render(<Home />);
-    const numbers = screen.getByRole("region", { name: "The week in numbers" });
-    const labels = within(numbers)
-      .getAllByRole("listitem")
-      .map((item) => item.textContent);
-    expect(labels).toHaveLength(4);
-    expect(labels[2]).toContain("Closest1.43");
-  });
-
-  it("shows the top three of Power Rankings, led by All You Need Is Love, and a link to all teams", () => {
-    render(<HomePage />);
-    const top = screen.getByRole("list", { name: "Top three" });
-    const rows = within(top).getAllByRole("listitem");
-    expect(rows).toHaveLength(3);
-    expect(rows[0].textContent).toContain("01");
-    expect(rows[0].textContent).toContain("All You Need Is Love");
-    expect(rows[0].textContent).toMatch(/11.5/);
-    expect(rows[0].textContent).toContain("Up4");
-    expect(rows[0].textContent).toContain("Playoff odds 81%");
-    // Each row shows the avatar of its team from the latest week folder, since the home page sits outside it.
-    expect(rows[0].querySelector("img")!.getAttribute("src")).toMatch(/^\/2026\/week-08\//);
-    const all = within(screen.getByRole("main")).getByRole("link", { name: "All 12 teams" });
-    expect(all.getAttribute("href")).toBe("/rankings/");
-  });
-
-  it("shows a tile for each tool, each with one line", () => {
-    render(<HomePage />);
-    const tools = screen.getByRole("region", { name: "Tools" });
-    const links = within(tools).getAllByRole("link");
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/analyze/", "/2026/managers/"]);
-    expect(links[0].textContent).toBe("Trade AnalyzerGrade a trade offer before you send it.");
-    expect(links[0].querySelector("svg")).toBeTruthy();
-  });
-
-  it("shows a row for each published week, newest first, with its dates and its Matchup of the Week", () => {
-    render(<HomePage />);
-    const weeks = screen.getByRole("region", { name: "Weekly Reports" });
-    expect(within(weeks).getByText("3 weeks")).toBeTruthy();
-    const links = within(weeks).getAllByRole("link");
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/2026/week-08/", "/2026/week-07/", "/2026/week-06/"]);
-    expect(links[2].textContent).toContain("Week 6");
-    expect(links[2].textContent).toContain("Oct 15 – Oct 19, 2026");
-    expect(links[0].textContent).toContain("The Blue Tent vs London Cooking");
-  });
-
-  it("shows no empty-list blurb when weeks exist", () => {
-    render(<HomePage />);
-    expect(screen.queryByText("No weeks are published yet.")).toBeNull();
-  });
-
-  it("fetches the teams in the background and stores them when a passphrase is stored", async () => {
-    localStorage.setItem("cpc.passphrase", "localtest");
-    const teams = [{ roster_id: 1, team: "Gridiron Ghosts", manager: "Ana", avatar: null, players: [] }];
-    const fetchStub = vi.fn().mockResolvedValue(new Response(JSON.stringify({ teams })));
-    vi.stubGlobal("fetch", fetchStub);
-    render(<HomePage />);
-
-    // The list renders without a wait on the fetch.
-    expect(screen.getByText("Week 6")).toBeTruthy();
-    await waitFor(() => expect(sessionStorage.getItem("cpc.teams.2026")).not.toBeNull());
-    expect(fetchStub.mock.calls[0][1].headers["X-League-Passphrase"]).toBe("localtest");
-    expect(JSON.parse(sessionStorage.getItem("cpc.teams.2026")!).teams[0].team).toBe("Gridiron Ghosts");
-  });
-
-  it("skips the fetch with no passphrase", () => {
-    const fetchStub = vi.fn();
-    vi.stubGlobal("fetch", fetchStub);
-    render(<HomePage />);
-    expect(fetchStub).not.toHaveBeenCalled();
+    expect(screen.queryByRole("region", { name: "The week in numbers" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "2026 Midseason Report" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Tools" })).toBeNull();
+    expect(container.querySelectorAll("canvas")).toHaveLength(0);
+    // The menu keeps its links, but the main holds no link to a tool page.
+    expect(within(screen.getByRole("main")).queryAllByRole("link")).toHaveLength(0);
   });
 });
 
-/* A temp public/ folder with the week 5 and week 6 pages, the rankings file when one is given, and the managers file when asked. */
-async function homeOver(rankings?: unknown, managers = false) {
-  const root = tempRoot();
-  for (const week of [5, 6]) {
-    const folder = join(root, "public", "2026", `week-0${week}`);
-    mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, "page.json"), weekPageJson({ week, dates: `Dates of week ${week}`, avatars: {} }));
-  }
-  if (rankings !== undefined) {
-    writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
-  }
-  if (managers) {
-    // The tile only reads that the file exists, so an empty season is enough.
-    writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify({ schema_version: 1, season: 2026, through: 6, managers: [] }));
-  }
-  return homeAt(root);
+/* The clock of a test: a fixed day of the fantasy week. 2026-11-10 is a Tuesday and 2026-11-11 is a Wednesday. */
+function onDay(iso: string) {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date(iso));
 }
 
-/* A temp public/ folder with the fixed copy of the published files of one client, as its client build copies them. */
-async function homeOfClient(slug: FixtureClient, skip: string[] = []) {
-  const root = tempRoot();
-  cpSync(fixturePublished(slug), join(root, "public"), {
-    recursive: true,
-    filter: (source) => !skip.includes(basename(source)),
+/* The Suggestion chips of the front door, in their order, by their names. "More" leads the row. */
+async function suggestionChips() {
+  const row = await screen.findByRole("group", { name: "Suggestions" });
+  return within(row).getAllByRole("button");
+}
+
+describe("the Suggestions of Lil Fridge", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("show 3 Suggestions, each with a Topic name and one number, and More lists all 13 Topics (AT-4)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    const [more, ...chips] = await suggestionChips();
+    expect(more.textContent).toBe("More");
+    expect(chips).toHaveLength(3);
+    for (const chip of chips) expect(chip.getAttribute("aria-label")).toMatch(/^[A-Z][a-z ]+: .*\d/);
+    fireEvent.click(more);
+    expect(more.getAttribute("aria-expanded")).toBe("true");
+    const topics = within(await screen.findByRole("list", { name: "All Topics" })).getAllByRole("listitem");
+    expect(topics.map((topic) => topic.querySelector("[data-topic-name]")?.textContent)).toEqual([
+      "Week recap",
+      "Your last matchup",
+      "Your next matchup",
+      "Power rankings",
+      "Playoff race",
+      "Your season",
+      "Position leaders and recent trades",
+      "Waiver targets",
+      "How you stack up",
+      "Weak spots",
+      "Sell high or buy low",
+      "Trade ideas",
+      "Trade check",
+    ]);
   });
-  return homeAt(root);
-}
 
-/* The files of a client with no report, so the tests of the plain home page hold whether or not it has published one. */
-const homeWithoutReport = (slug: FixtureClient) => homeOfClient(slug, ["midseason.json", "sim.json"]);
-const homeOfCpcWithoutReport = () => homeWithoutReport("cpc");
+  it("put the week recap first on a Tuesday (AT-5)", async () => {
+    onDay("2026-11-10T09:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    const [, first] = await suggestionChips();
+    expect(first.getAttribute("aria-label")).toBe("Week recap: You scored 80.11, 12th of 12");
+  });
 
-function tempRoot(): string {
+  it("drop an opened Topic from the 3 Suggestions after a reload, and keep it in More (AT-7)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"));
+    expect(rankings).toBeTruthy();
+    fireEvent.click(rankings!);
+    expect(await screen.findByRole("article", { name: "Power rankings" })).toBeTruthy();
+
+    cleanup();
+    render(<HomePage />);
+    const [more, ...chips] = await suggestionChips();
+    expect(chips).toHaveLength(3);
+    expect(chips.map((chip) => chip.getAttribute("aria-label"))).not.toContainEqual(expect.stringMatching(/^Power rankings/));
+    fireEvent.click(more);
+    const all = await screen.findByRole("list", { name: "All Topics" });
+    expect(within(all).getByRole("button", { name: /^Power rankings/ })).toBeTruthy();
+  });
+
+  it("bring an opened Topic back when the week turns", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    // An open of week 7 no longer counts in week 8.
+    localStorage.setItem("cpc.opened-topics", JSON.stringify({ "3": { week: 7, topics: { power_rankings: "6th, down 5" } } }));
+    render(<HomePage />);
+    const labels = (await suggestionChips()).map((chip) => chip.getAttribute("aria-label"));
+    expect(labels).toContainEqual(expect.stringMatching(/^Power rankings/));
+  });
+
+  it("show the power rankings Answer in the Thread with Read the full report to /rankings/ (AT-23)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    fireEvent.click((await suggestionChips())[0]);
+    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Power rankings/ }));
+    const answer = await screen.findByRole("article", { name: "Power rankings" });
+    // The text is the blurb of the rankings row of Lil Fridge, as the rankings page shows it.
+    expect(answer.textContent).toContain("Lil Fridge tumbles 5 places after getting run by 41.");
+    expect(within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/rankings/");
+  });
+
+  it.each([
+    ["Week recap", "/2026/week-08/"],
+    ["Your last matchup", "/2026/week-08/#game-3-9"],
+    ["Your next matchup", "/2026/week-08/#next-game-3-10"],
+    ["Playoff race", "/2026/managers/#race"],
+    ["Your season", "/2026/managers/3/"],
+    ["Position leaders and recent trades", "/2026/week-08/#leaders"],
+  ])("link the %s Answer to its page", async (name, href) => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    fireEvent.click((await suggestionChips())[0]);
+    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: new RegExp(`^${name}`) }));
+    const answer = await screen.findByRole("article", { name });
+    expect(within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe(href);
+  });
+});
+
+describe("the front door of NorCal", () => {
+  it("lists the 12 teams of NorCal in the sheet", async () => {
+    const Home = await homeOfClient("norcal");
+    render(<Home />);
+    const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
+    expect(within(sheet).getAllByRole("button")).toHaveLength(12);
+    expect(within(sheet).getByRole("button", { name: /kaiedmonds/ })).toBeTruthy();
+  });
+});
+
+/* A temp public/ folder with the fixed copy of the published files of one client, as its client build copies them. With
+   nextWeek, it also holds a later latest week. */
+async function homeOfClient(slug: FixtureClient, { nextWeek = false }: { nextWeek?: boolean } = {}) {
   const root = mkdtempSync(join(tmpdir(), "home-page-"));
   roots.push(root);
-  return root;
-}
-
-async function homeAt(root: string) {
+  cpSync(fixturePublished(slug), join(root, "public"), { recursive: true });
+  // The next week of a test is a rebuild that publishes week 9: the files of week 8 under the number 9.
+  if (nextWeek) {
+    const next = join(root, "public", "2026", "week-09");
+    cpSync(join(root, "public", "2026", "week-08"), next, { recursive: true });
+    for (const file of ["page.json", "topics.json"]) {
+      const path = join(next, file);
+      writeFileSync(path, JSON.stringify({ ...JSON.parse(readFileSync(path, "utf8")), week: 9 }));
+    }
+  }
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
   vi.resetModules();
-  return (await import("./page")).default;
+  return (await import("./front-door/door-page")).default;
 }
 
-describe("HomePage of the NorCal data", () => {
-  it("shows kaiedmonds by 10.62 as the title, Mitseeker5000 first, and one row for week 8", async () => {
-    const Home = await homeWithoutReport("norcal");
-    render(<Home />);
-    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
-    // NorCal week 8: kaiedmonds over The Mean Machine, 132.38 to 121.76.
-    expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("kaiedmonds by 10.62");
-    expect(within(hero).getByText("kaiedmonds")).toBeTruthy();
-    expect(within(hero).getByText("The Mean Machine")).toBeTruthy();
-    const rows = within(screen.getByRole("list", { name: "Top three" })).getAllByRole("listitem");
-    expect(rows[0].textContent).toContain("Mitseeker5000");
-    const weeks = within(screen.getByRole("region", { name: "Weekly Reports" })).getAllByRole("link");
-    expect(weeks.map((link) => link.getAttribute("href"))).toEqual(["/2026/week-08/"]);
-    expect(within(screen.getByRole("region", { name: "Weekly Reports" })).getByText("1 week")).toBeTruthy();
-  });
-});
+/* Opens one Topic from "More", as a manager who looks past the 3 Suggestions does. */
+async function openTopic(name: string) {
+  const [more] = await suggestionChips();
+  if (more.getAttribute("aria-expanded") !== "true") fireEvent.click(more);
+  fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: new RegExp(`^${name}`) }));
+  return screen.findAllByRole("article", { name });
+}
 
-describe("HomePage parts from the registry", () => {
-  it("shows the top three of the fixture week, with the playoff odds as a word once a team is in", async () => {
-    const Home = await homeOver(fixture);
-    render(<Home />);
-    const rows = within(screen.getByRole("list", { name: "Top three" })).getAllByRole("listitem");
-    expect(rows[0].textContent).toContain("London Cooking");
-    expect(rows[1].textContent).toContain("Lil Fridge");
-    expect(rows[1].textContent).toContain("Playoff odds In");
-    expect(rows[2].textContent).toContain("Bo Girds");
-  });
+describe("the Thread of Lil Fridge", () => {
+  it("keeps one Thread per team, so a change of Your team and a change back shows the first Thread again (AT-3)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    await openTopic("Week recap");
+    const pickTeam = async (from: string, to: string) => {
+      fireEvent.click(screen.getByRole("button", { name: `Your team: ${from}. Change the team` }));
+      fireEvent.click(within(await screen.findByRole("dialog", { name: "Which team is yours?" })).getByRole("button", { name: new RegExp(to) }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
+    };
 
-  it("hides the Power Rankings chapter when the file is missing and still lists the weeks", async () => {
-    const Home = await homeOver();
-    render(<Home />);
-    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
-    // The title of the hero is an h2 too, so the list of the chapters skips it.
-    const headings = within(screen.getByRole("main"))
-      .getAllByRole("heading", { level: 2 })
-      .filter((heading) => !hero.contains(heading))
-      .map((heading) => heading.textContent);
-    expect(headings).toEqual(["Week 6 in four numbers", "Tools", "Weekly Reports"]);
-    expect(screen.queryByRole("list", { name: "Top three" })).toBeNull();
-    expect(within(screen.getByRole("region", { name: "Weekly Reports" })).getByRole("link", { name: /Week 6/ })).toBeTruthy();
+    await pickTeam("Lil Fridge", "Bo Girds");
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Ask about Bo Girds");
+    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+
+    await pickTeam("Bo Girds", "Lil Fridge");
+    const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap"]);
+    expect(articles[0].textContent).toContain("Read the full report");
   });
 
-  it("opens the hero on the latest week of the folder", async () => {
-    const Home = await homeOver(fixture);
-    render(<Home />);
-    const hero = screen.getByRole("region", { name: "Matchup of the Week" });
-    expect(within(hero).getByRole("link", { name: "Read Week 6" }).getAttribute("href")).toBe("/2026/week-06/");
+  it("keeps each question and its Answer whole in the Thread, as a plain chat with no fold (AT-30)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    await openTopic("Week recap");
+    await openTopic("Power rankings");
+    await openTopic("Playoff race");
+    const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings", "Playoff race"]);
+    for (const article of articles) {
+      // Each Answer keeps its question bubble, its card, and its link, and nothing in it opens or closes.
+      expect(within(article).getByText(article.getAttribute("aria-label")!, { selector: "p" })).toBeTruthy();
+      expect(article.querySelector(".door-sheen")).not.toBeNull();
+      expect(within(article).getByRole("link", { name: "Read the full report" })).toBeTruthy();
+      expect(article.querySelector("[aria-expanded]")).toBeNull();
+    }
   });
 
-  it("links the managers index from the tools only when the managers file exists", async () => {
-    const With = await homeOver(fixture, true);
-    render(<With />);
-    const card = within(screen.getByRole("main")).getByRole("link", { name: /Managers/ });
-    expect(card.getAttribute("href")).toBe("/2026/managers/");
+  it("scrolls each new question to its top under the Thread header, and leaves the older Answers in place (AT-31)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    // jsdom does no layout and has no scrollIntoView, so the test records each element that asks to scroll.
+    const scrolled: Element[] = [];
+    Element.prototype.scrollIntoView = function (this: Element) {
+      scrolled.push(this);
+    };
+    onTestFinished(() => {
+      delete (Element.prototype as Partial<Element>).scrollIntoView;
+    });
+    render(<HomePage />);
+    await openTopic("Week recap");
+    scrolled.length = 0;
+
+    await openTopic("Power rankings");
+    const [recap, rankings] = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    expect(scrolled.at(-1)).toBe(rankings);
+    expect(scrolled).not.toContain(recap);
+    expect(rankings.className).toContain("scroll-mt-door-under-head");
+    expect(within(recap).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/2026/week-08/");
+  });
+
+  it("keeps the Thread after a closed tab on the same day (AT-32)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    await openTopic("Week recap");
+    await openTopic("Power rankings");
+
+    // A closed tab drops the page. The store of the browser stays.
     cleanup();
-    const Without = await homeOver(fixture);
-    render(<Without />);
-    expect(within(screen.getByRole("main")).queryByRole("link", { name: /Managers/ })).toBeNull();
+    onDay("2026-11-11T21:00:00");
+    render(<HomePage />);
+    await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
+    const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
+    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings"]);
+    // A kept Answer shows whole after the reload, as it rendered before.
+    expect(within(articles[0]).getByRole("link", { name: "Read the full report" })).toBeTruthy();
+    expect(articles[0].querySelector("[aria-expanded]")).toBeNull();
+  });
+
+  it("starts an empty Thread when a rebuild publishes a later latest week (AT-33)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    const WeekEight = await homeOfClient("cpc");
+    render(<WeekEight />);
+    await openTopic("Week recap");
+    await openTopic("Power rankings");
+    expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toHaveLength(2);
+
+    // The Tuesday build publishes week 9.
+    cleanup();
+    vi.restoreAllMocks();
+    const WeekNine = await homeOfClient("cpc", { nextWeek: true });
+    render(<WeekNine />);
+    await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
+    expect(within(screen.getByRole("region", { name: "Thread" })).getByText(/Week 9/)).toBeTruthy();
+    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+  });
+
+  it("empties the Thread at once on Clear, with no confirm, and keeps the opened Topics off the Suggestions (AT-36)", async () => {
+    onDay("2026-11-11T12:00:00");
+    localStorage.setItem("cpc.your-team", "3");
+    const confirm = vi.spyOn(window, "confirm");
+    render(<HomePage />);
+    const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"))!;
+    fireEvent.click(rankings);
+    await openTopic("Week recap");
+    expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toHaveLength(2);
+
+    fireEvent.click(within(screen.getByRole("banner", { name: "Thread header" })).getByRole("button", { name: "Clear" }));
+    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+    expect(confirm).not.toHaveBeenCalled();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    // A chip that left the row fades out first, so the check waits for the row to settle.
+    await waitFor(
+      async () => {
+        const labels = (await suggestionChips()).map((chip) => chip.getAttribute("aria-label"));
+        expect(labels).toHaveLength(4);
+        expect(labels).not.toContainEqual(expect.stringMatching(/^(Power rankings|Week recap)/));
+      },
+      { timeout: 3000 },
+    );
+
+    // The Thread stays empty after a reload.
+    cleanup();
+    render(<HomePage />);
+    await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
+    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
   });
 });

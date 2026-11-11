@@ -1,0 +1,5 @@
+Driver: site.mjs AT-33-before and AT-33-after, 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles.
+This test uses the real week 9: the rest of the round hid week 9, and this test puts it back for the rebuild.
+1. Build of the round (latest week 8): store Lil Fridge and the passphrase, open Week recap, then Power rankings, so the Thread holds two Answers. Shot before-rebuild-375-<theme>. Keep the storage state of each context.
+2. Put back clients/cpc/published/2026/week-09/. Build the CPC site again with the same command (CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm --dir apps/site build), with front_door = true. Its latest week is 9. Serve it on the same port.
+3. Open / in a new context with the kept storage state. Wait 5 s. Shot after-rebuild-375-<theme>. thread-after-375-<theme>.txt counts the articles and holds the cpc.thread value of local storage after the open.

@@ -448,6 +448,19 @@ def test_a_metered_press_adds_up_the_calls_and_the_dollars_of_each_claude_call_i
     assert meter.calls == 2
 
 
+def test_a_metered_press_inside_another_adds_each_call_to_both_meters():
+    from facts.writer import metered_press, parse_call
+
+    writer, _ = _stub_writer()
+    with metered_press() as outer:
+        parse_call("user text", WriterOut, "system text", writer=writer)
+        with metered_press() as inner:
+            parse_call("user text", WriterOut, "system text", writer=writer)
+    # The inner press sees its own call, and the caller of the press sees both calls.
+    assert inner.calls == 1 and inner.usd == pytest.approx(4 / 1_000_000)
+    assert outer.calls == 2 and outer.usd == pytest.approx(8 / 1_000_000)
+
+
 def test_a_call_outside_a_metered_press_counts_on_no_meter():
     from facts.writer import metered_press, parse_call
 

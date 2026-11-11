@@ -1,0 +1,4 @@
+viewport meta: width=device-width, initial-scale=1, viewport-fit=cover
+viewport 393x852, innerHeight 852, deviceScaleFactor 3, safe area insets override top 59 bottom 34.
+env(safe-area-inset-bottom) measured in the page: 34 px
+ask box form: top 674 px, bottom 728 px. The home bar zone starts at 818 px.

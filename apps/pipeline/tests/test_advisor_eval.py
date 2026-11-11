@@ -324,7 +324,7 @@ class StubPick:
                    {"text": "The other side gets depth.", "mark": "even", "fact_id": fact_ids[1]}]
         return FinderPickOut.model_validate({"picks": [{"offer_id": offer_id, "lean": "Gut call",
                                                         "headline": "A swap that fits both teams.",
-                                                        "bullets": bullets}], "none_line": None})
+                                                        "bullets": bullets}], "near": [], "none_line": None})
 
 
 def test_the_eval_runs_the_finder_of_each_asker_on_the_newest_week_and_saves_the_picks(snap, weeks, tmp_path):

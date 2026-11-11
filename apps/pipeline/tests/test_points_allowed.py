@@ -5,7 +5,7 @@ They read the weekly stats of the history fixture.
 import json
 import shutil
 
-from league.points_allowed import most_points_text, points_allowed
+from league.points_allowed import most_points_text, points_allowed, rank_word
 
 
 def test_points_allowed_ranks_a_defense_at_a_position(fixture_history_root):
@@ -54,7 +54,26 @@ def test_points_allowed_with_an_outage_week_is_none(fixture_history_root, tmp_pa
     assert points_allowed(tmp_path / "history", 5) is None
 
 
-def test_rank_1_reads_the_most_points_and_every_other_rank_reads_its_ordinal():
-    assert most_points_text(1, "WR") == "the most points to WRs"
-    assert most_points_text(3, "WR") == "3rd most points to WRs"
-    assert most_points_text(32, "RB") == "32nd most points to RBs"
+def test_rank_1_reads_the_most_points_and_a_rank_in_the_top_half_reads_its_ordinal():
+    assert most_points_text(1, "WR", 32) == "the most points to WRs"
+    assert most_points_text(3, "WR", 32) == "3rd most points to WRs"
+    assert most_points_text(16, "WR", 32) == "16th most points to WRs"
+
+
+def test_a_rank_in_the_bottom_half_reads_fewest_points_counted_from_the_other_end():
+    # A high ordinal of "most points" reads like a soft defense, so the bottom half names the fewest.
+    assert most_points_text(17, "RB", 32) == "16th fewest points to RBs"
+    assert most_points_text(29, "RB", 32) == "4th fewest points to RBs"
+    assert most_points_text(32, "RB", 32) == "the fewest points to RBs"
+
+
+def test_the_middle_rank_of_an_odd_count_reads_most_points():
+    assert most_points_text(16, "TE", 31) == "16th most points to TEs"
+    assert most_points_text(17, "TE", 31) == "15th fewest points to TEs"
+
+
+def test_the_rank_word_is_the_text_without_the_position():
+    assert rank_word(1, 32) == "the most"
+    assert rank_word(7, 32) == "7th most"
+    assert rank_word(28, 32) == "5th fewest"
+    assert rank_word(32, 32) == "the fewest"

@@ -14,6 +14,7 @@ import { rankingsSchema } from "@cpc/rankings/schema/rankings";
 import { simSchema } from "@cpc/sim/schema/sim";
 import { waiverBoardSchema } from "@cpc/waiver/schema";
 import { weekPageSchema } from "@cpc/week/schema/week";
+import { topicsFileSchema } from "./topics-schema";
 
 const PUBLIC_DIR = join(process.cwd(), "public");
 
@@ -47,6 +48,8 @@ describe.each([
   // No waiver.json is published yet. The waiver page tests cover the waiver schema through the component fixture.
   ["waiver.json", waiverBoardSchema, 0],
   ["rankings.json", rankingsSchema, 1],
+  // The weekly build writes the Answers of the league Topics of the front door beside each page.json from week 8 on.
+  ["topics.json", topicsFileSchema, 1],
   ["managers.json", managersFileSchema, 1],
   // Only a season after the midseason publish holds midseason.json, so the least count is zero. The midseason tests
   // and the floor of the fixture client cover its schema through the package fixture.

@@ -1,0 +1,4 @@
+One live run on 4b8c83a0: real Sleeper, real Jev, real Claude.
+1. Start the API with sheet_launcher.py on port 8080, with the env of make api-evidence, an empty answer store, and an empty result cache (CORNERSTONE_RESULT_CACHE_DIR). The launcher wraps finder_pick.offer_sheet and build_pick_prompt and saves each return value to a JSON lines file. It changes no input and no output.
+2. Send the trade ideas request for Bo Girds (roster 6), as the first line of output.txt says. output.txt holds the full stream.
+3. pick-sheet.txt lists the 6.now fact of each of the 10 offer sheets, then the full sheet of the first offer. answer.txt is the data-answer part of the stream. api-log.txt is the API log of the run.

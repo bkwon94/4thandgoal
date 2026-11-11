@@ -1,0 +1,231 @@
+# The API log from line 779, during this test.
+INFO:     127.0.0.1:59988 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59988 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59988 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 73ms (request req_01a1cc0fea0b7c0ebc000313c51e6b37)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 72ms (request req_01a1cc0fea5679c79861fbda3f632b27)
+INFO:     127.0.0.1:59988 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59988 - "OPTIONS /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59990 - "POST /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     analyzer.jev_waves: Jev wave 1 (partner filter): 11 requests, about 18716 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 80ms (request req_01a1cc0ffdab73a2b1b3458233d2ff85)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 83ms (request req_01a1cc0ffdca7339a344240487bc2623)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 98ms (request req_01a1cc0ffddb7a0c87054b30c32dcdd4)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 138ms (request req_01a1cc0ffdeb7fbab67b9049e31b5b24)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 148ms (request req_01a1cc0ffdfc7bdb98d8a0c6fde3a5d7)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 168ms (request req_01a1cc0ffe20748db144a3a48eb8b928)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 189ms (request req_01a1cc0ffe0f73a69df562cca73045b4)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 206ms (request req_01a1cc0ffe487ab4bc4114a01b148e9d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 244ms (request req_01a1cc0ffe577767b96e5a0fcdd27d8b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 258ms (request req_01a1cc0ffe39786981e24080346d4d7a)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 259ms (request req_01a1cc0ffe6d7b668259b102b5de81d6)
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with The Blue Tent: passed, partner_has=0.89, partner_spares=0.81, asker_has=0.95, asker_spares=0.81
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with All You Need Is Love: passed, partner_has=0.88, partner_spares=0.71, asker_has=0.92, asker_spares=0.74
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with NFC Least: passed, partner_has=0.81, partner_spares=0.73, asker_has=0.94, asker_spares=0.75
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Puka Deez...: passed, partner_has=0.87, partner_spares=0.78, asker_has=0.88, asker_spares=0.80
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Bo Girds: passed, partner_has=0.92, partner_spares=0.82, asker_has=0.84, asker_spares=0.73
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with To Infinity and Bijan: stopped, partner_has=0.76, partner_spares=0.47, asker_has=0.89, asker_spares=0.77
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Return of T Mac: passed, partner_has=0.89, partner_spares=0.79, asker_has=0.91, asker_spares=0.87
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Maye d'force B with U: stopped, partner_has=0.76, partner_spares=0.60, asker_has=0.80, asker_spares=0.74
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with behold the lamb: passed, partner_has=0.80, partner_spares=0.75, asker_has=0.92, asker_spares=0.75
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Unsolicited Dak Picks: stopped, partner_has=0.63, partner_spares=0.69, asker_has=0.91, asker_spares=0.73
+INFO:     analyzer.finder_search: Partner filter of Lil Fridge with Teehee: stopped, partner_has=0.92, partner_spares=0.68, asker_has=0.78, asker_spares=0.74
+INFO:     analyzer.jev_waves: Jev wave 2 (targets): 7 requests, about 20964 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 62ms (request req_01a1cc10019978feb42b3412f18648f3)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 75ms (request req_01a1cc1001a57ee885479bb3ee6fb059)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 78ms (request req_01a1cc10019d79b6b28ce51c84513502)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 83ms (request req_01a1cc1001a87b199e08d3560f115fbf)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 84ms (request req_01a1cc1001a078cba611067c5a08b707)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 93ms (request req_01a1cc1001a87f4f8327ce514d627827)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 99ms (request req_01a1cc1001997de5b5a9a85d93816211)
+INFO:     analyzer.finder_search: Finder target questions with The Blue Tent: Chris Rodriguez Jr.=0.15, Rashee Rice=0.26, Bucky Irving=0.46, Brock Bowers=0.63, Jordyn Tyson=0.09, Jadarian Price=0.11, Mike Evans=0.44, Darren Waller=0.21, Dallas Goedert=0.17, Christian Watson=0.68, Brock Purdy=0.54, Caleb Williams=0.14, Travis Kelce=0.35, Stefon Diggs=0.34, Derrick Henry=0.59, Christian McCaffrey=0.81, Courtland Sutton=0.17, Jakobi Meyers=0.28, J.K. Dobbins=0.36, Tyler Allgeier=0.48, Khalil Shakir=0.28, Bryce Young=0.19, Jaxon Smith-Njigba=0.69
+INFO:     analyzer.finder_search: Finder targets with The Blue Tent: the asker gives ['Christian McCaffrey', 'Jaxon Smith-Njigba']; the partner gives ['Christian Watson', 'Brock Bowers']
+INFO:     analyzer.finder_search: Finder target questions with All You Need Is Love: Tre Tucker=0.43, Dylan Sampson=0.08, Corey Kiner=0.10, Colston Loveland=0.19, Ashton Jeanty=0.25, Aaron Jones Sr.=0.20, Joe Burrow=0.66, Ja'Marr Chase=0.72, Wan'Dale Robinson=0.24, Chris Olave=0.65, Brenton Strange=0.19, Zach Charbonnet=0.09, Jordan Addison=0.14, Caleb Williams=0.13, Travis Kelce=0.88, Stefon Diggs=0.30, Derrick Henry=0.77, Christian McCaffrey=0.88, Courtland Sutton=0.16, Jakobi Meyers=0.28, J.K. Dobbins=0.41, Tyler Allgeier=0.52, Khalil Shakir=0.27, Bryce Young=0.17, Jaxon Smith-Njigba=0.68
+INFO:     analyzer.finder_search: Finder targets with All You Need Is Love: the asker gives ['Travis Kelce', 'Christian McCaffrey', 'Derrick Henry', 'Jaxon Smith-Njigba']; the partner gives ["Ja'Marr Chase", 'Joe Burrow', 'Chris Olave']
+INFO:     analyzer.finder_search: Finder target questions with NFC Least: Xavier Worthy=0.21, Kirk Cousins=0.53, Cam Skattebo=0.19, Tyler Warren=0.17, Tetairoa McMillan=0.43, Makai Lemon=0.18, Seth McGowan=0.07, Hunter Henry=0.14, Saquon Barkley=0.25, David Montgomery=0.19, Jameson Williams=0.50, Chase Brown=0.29, Caleb Williams=0.18, Travis Kelce=0.75, Stefon Diggs=0.51, Derrick Henry=0.82, Christian McCaffrey=0.91, Courtland Sutton=0.26, Jakobi Meyers=0.40, J.K. Dobbins=0.46, Tyler Allgeier=0.58, Khalil Shakir=0.37, Bryce Young=0.25, Jaxon Smith-Njigba=0.79
+INFO:     analyzer.finder_search: Finder targets with NFC Least: the asker gives ['Christian McCaffrey', 'Derrick Henry', 'Jaxon Smith-Njigba', 'Travis Kelce']; the partner gives []
+INFO:     analyzer.finder_search: Finder target questions with Puka Deez...: Woody Marks=0.18, Emeka Egbuka=0.34, Denzel Boston=0.47, Matthew Stafford=0.40, George Kittle=0.53, Josh Allen=0.67, Mike Gesicki=0.25, DK Metcalf=0.33, Chuba Hubbard=0.28, Pat Freiermuth=0.18, James Cook III=0.40, Puka Nacua=0.68, Caleb Williams=0.12, Travis Kelce=0.45, Stefon Diggs=0.48, Derrick Henry=0.38, Christian McCaffrey=0.66, Courtland Sutton=0.23, Jakobi Meyers=0.44, J.K. Dobbins=0.16, Tyler Allgeier=0.21, Khalil Shakir=0.38, Bryce Young=0.15, Jaxon Smith-Njigba=0.79
+INFO:     analyzer.finder_search: Finder targets with Puka Deez...: the asker gives ['Jaxon Smith-Njigba', 'Christian McCaffrey']; the partner gives ['Puka Nacua', 'Josh Allen']
+INFO:     analyzer.finder_search: Finder target questions with Bo Girds: Audric Estime=0.10, Blake Corum=0.24, Matthew Golden=0.60, Konata Mumpfield=0.08, Fernando Mendoza=0.08, Antonio Williams=0.10, Mike Washington Jr.=0.10, Trey McBride=0.68, Kyren Williams=0.39, Kenneth Walker III=0.48, Parker Washington=0.51, Aaron Rodgers=0.25, Zay Flowers=0.68, Caleb Williams=0.52, Travis Kelce=0.17, Stefon Diggs=0.27, Derrick Henry=0.30, Christian McCaffrey=0.54, Courtland Sutton=0.14, Jakobi Meyers=0.23, J.K. Dobbins=0.16, Tyler Allgeier=0.20, Khalil Shakir=0.22, Bryce Young=0.50, Jaxon Smith-Njigba=0.64
+INFO:     analyzer.finder_search: Finder targets with Bo Girds: the asker gives ['Jaxon Smith-Njigba']; the partner gives ['Trey McBride', 'Zay Flowers', 'Matthew Golden']
+INFO:     analyzer.finder_search: Finder target questions with Return of T Mac: Xavier Hutchinson=0.18, Rome Odunze=0.43, Pat Bryant=0.12, Carnell Tate=0.25, T.J. Hockenson=0.29, CeeDee Lamb=0.75, Jordan Love=0.59, Jaylen Warren=0.27, Jordan Mason=0.13, Tucker Kraft=0.27, DeMario Douglas=0.42, Bijan Robinson=0.53, Caleb Williams=0.15, Travis Kelce=0.72, Stefon Diggs=0.43, Derrick Henry=0.41, Christian McCaffrey=0.61, Courtland Sutton=0.30, Jakobi Meyers=0.48, J.K. Dobbins=0.23, Tyler Allgeier=0.28, Khalil Shakir=0.50, Bryce Young=0.18, Jaxon Smith-Njigba=0.74
+INFO:     analyzer.finder_search: Finder targets with Return of T Mac: the asker gives ['Jaxon Smith-Njigba', 'Travis Kelce', 'Christian McCaffrey']; the partner gives ['CeeDee Lamb']
+INFO:     analyzer.finder_search: Finder target questions with behold the lamb: Jayden Daniels=0.24, Quinshon Judkins=0.23, Germie Bernard=0.14, Omar Cooper Jr.=0.17, Keenan Allen=0.41, Austin Ekeler=0.12, Deebo Samuel Sr.=0.23, Rico Dowdle=0.14, Nico Collins=0.57, Javonte Williams=0.37, Drake London=0.56, Chig Okonkwo=0.17, Caleb Williams=0.30, Travis Kelce=0.93, Stefon Diggs=0.47, Derrick Henry=0.67, Christian McCaffrey=0.76, Courtland Sutton=0.23, Jakobi Meyers=0.36, J.K. Dobbins=0.31, Tyler Allgeier=0.43, Khalil Shakir=0.28, Bryce Young=0.45, Jaxon Smith-Njigba=0.68
+INFO:     analyzer.finder_search: Finder targets with behold the lamb: the asker gives ['Travis Kelce', 'Christian McCaffrey', 'Jaxon Smith-Njigba', 'Derrick Henry']; the partner gives []
+INFO:     analyzer.finder_search: Finder offers of Lil Fridge: 70
+INFO:     analyzer.finder_search: Finder offer 3:4034-1:8167: Lil Fridge gives Christian McCaffrey (RB, SF); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 3:4034-1:11604: Lil Fridge gives Christian McCaffrey (RB, SF); The Blue Tent gives Brock Bowers (TE, LV)
+INFO:     analyzer.finder_search: Finder offer 3:9488-1:8167: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 3:9488-1:11604: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); The Blue Tent gives Brock Bowers (TE, LV)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-1:8167: Lil Fridge gives Christian McCaffrey (RB, SF) and Jaxon Smith-Njigba (WR, SEA); The Blue Tent gives Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-1:11604: Lil Fridge gives Christian McCaffrey (RB, SF) and Jaxon Smith-Njigba (WR, SEA); The Blue Tent gives Brock Bowers (TE, LV)
+INFO:     analyzer.finder_search: Finder offer 3:4034-1:11604+8167: Lil Fridge gives Christian McCaffrey (RB, SF); The Blue Tent gives Christian Watson (WR, GB) and Brock Bowers (TE, LV)
+INFO:     analyzer.finder_search: Finder offer 3:9488-1:11604+8167: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); The Blue Tent gives Christian Watson (WR, GB) and Brock Bowers (TE, LV)
+INFO:     analyzer.finder_search: Finder offer 3:1466-2:7564: Lil Fridge gives Travis Kelce (TE, KC); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466-2:6770: Lil Fridge gives Travis Kelce (TE, KC); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466-2:8144: Lil Fridge gives Travis Kelce (TE, KC); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:4034-2:7564: Lil Fridge gives Christian McCaffrey (RB, SF); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034-2:6770: Lil Fridge gives Christian McCaffrey (RB, SF); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034-2:8144: Lil Fridge gives Christian McCaffrey (RB, SF); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:3198-2:7564: Lil Fridge gives Derrick Henry (RB, BAL); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198-2:6770: Lil Fridge gives Derrick Henry (RB, BAL); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198-2:8144: Lil Fridge gives Derrick Henry (RB, BAL); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:9488-2:7564: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:9488-2:6770: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:9488-2:8144: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:1466+4034-2:7564: Lil Fridge gives Travis Kelce (TE, KC) and Christian McCaffrey (RB, SF); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+4034-2:6770: Lil Fridge gives Travis Kelce (TE, KC) and Christian McCaffrey (RB, SF); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+4034-2:8144: Lil Fridge gives Travis Kelce (TE, KC) and Christian McCaffrey (RB, SF); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:1466+3198-2:7564: Lil Fridge gives Travis Kelce (TE, KC) and Derrick Henry (RB, BAL); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+3198-2:6770: Lil Fridge gives Travis Kelce (TE, KC) and Derrick Henry (RB, BAL); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+3198-2:8144: Lil Fridge gives Travis Kelce (TE, KC) and Derrick Henry (RB, BAL); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:1466+9488-2:7564: Lil Fridge gives Travis Kelce (TE, KC) and Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+9488-2:6770: Lil Fridge gives Travis Kelce (TE, KC) and Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466+9488-2:8144: Lil Fridge gives Travis Kelce (TE, KC) and Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:3198+4034-2:7564: Lil Fridge gives Christian McCaffrey (RB, SF) and Derrick Henry (RB, BAL); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198+4034-2:6770: Lil Fridge gives Christian McCaffrey (RB, SF) and Derrick Henry (RB, BAL); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198+4034-2:8144: Lil Fridge gives Christian McCaffrey (RB, SF) and Derrick Henry (RB, BAL); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-2:7564: Lil Fridge gives Christian McCaffrey (RB, SF) and Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-2:6770: Lil Fridge gives Christian McCaffrey (RB, SF) and Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-2:8144: Lil Fridge gives Christian McCaffrey (RB, SF) and Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:3198+9488-2:7564: Lil Fridge gives Derrick Henry (RB, BAL) and Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198+9488-2:6770: Lil Fridge gives Derrick Henry (RB, BAL) and Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198+9488-2:8144: Lil Fridge gives Derrick Henry (RB, BAL) and Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:1466-2:6770+7564: Lil Fridge gives Travis Kelce (TE, KC); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:1466-2:7564+8144: Lil Fridge gives Travis Kelce (TE, KC); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:1466-2:6770+8144: Lil Fridge gives Travis Kelce (TE, KC); All You Need Is Love gives Joe Burrow (QB, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:4034-2:6770+7564: Lil Fridge gives Christian McCaffrey (RB, SF); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:4034-2:7564+8144: Lil Fridge gives Christian McCaffrey (RB, SF); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:4034-2:6770+8144: Lil Fridge gives Christian McCaffrey (RB, SF); All You Need Is Love gives Joe Burrow (QB, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:3198-2:6770+7564: Lil Fridge gives Derrick Henry (RB, BAL); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:3198-2:7564+8144: Lil Fridge gives Derrick Henry (RB, BAL); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:3198-2:6770+8144: Lil Fridge gives Derrick Henry (RB, BAL); All You Need Is Love gives Joe Burrow (QB, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:9488-2:6770+7564: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 3:9488-2:7564+8144: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:9488-2:6770+8144: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); All You Need Is Love gives Joe Burrow (QB, CIN) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 3:9488-5:9493: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Puka Deez... gives Puka Nacua (WR, LAR)
+INFO:     analyzer.finder_search: Finder offer 3:9488-5:4984: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Puka Deez... gives Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 3:4034-5:9493: Lil Fridge gives Christian McCaffrey (RB, SF); Puka Deez... gives Puka Nacua (WR, LAR)
+INFO:     analyzer.finder_search: Finder offer 3:4034-5:4984: Lil Fridge gives Christian McCaffrey (RB, SF); Puka Deez... gives Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-5:9493: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA) and Christian McCaffrey (RB, SF); Puka Deez... gives Puka Nacua (WR, LAR)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-5:4984: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA) and Christian McCaffrey (RB, SF); Puka Deez... gives Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 3:9488-5:4984+9493: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Puka Deez... gives Puka Nacua (WR, LAR) and Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 3:4034-5:4984+9493: Lil Fridge gives Christian McCaffrey (RB, SF); Puka Deez... gives Puka Nacua (WR, LAR) and Josh Allen (QB, BUF)
+INFO:     analyzer.finder_search: Finder offer 3:9488-6:8130: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Bo Girds gives Trey McBride (TE, ARI)
+INFO:     analyzer.finder_search: Finder offer 3:9488-6:9997: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Bo Girds gives Zay Flowers (WR, BAL)
+INFO:     analyzer.finder_search: Finder offer 3:9488-6:12501: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Bo Girds gives Matthew Golden (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 3:9488-6:8130+9997: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL)
+INFO:     analyzer.finder_search: Finder offer 3:9488-6:12501+8130: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Bo Girds gives Trey McBride (TE, ARI) and Matthew Golden (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 3:9488-6:12501+9997: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Bo Girds gives Zay Flowers (WR, BAL) and Matthew Golden (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 3:9488-8:6786: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 3:1466-8:6786: Lil Fridge gives Travis Kelce (TE, KC); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 3:4034-8:6786: Lil Fridge gives Christian McCaffrey (RB, SF); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 3:1466+9488-8:6786: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA) and Travis Kelce (TE, KC); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 3:4034+9488-8:6786: Lil Fridge gives Jaxon Smith-Njigba (WR, SEA) and Christian McCaffrey (RB, SF); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 3:1466+4034-8:6786: Lil Fridge gives Travis Kelce (TE, KC) and Christian McCaffrey (RB, SF); Return of T Mac gives CeeDee Lamb (WR, DAL)
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 5 requests, about 24710 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 81ms (request req_01a1cc1005827044a44d1943390cc940)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 86ms (request req_01a1cc10058e733e8c1eb57238cfe9a3)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 92ms (request req_01a1cc100595756ab0b1be95b2de0eb2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 108ms (request req_01a1cc1005917c7d834e3e7a90d2a0f2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 155ms (request req_01a1cc1005967ea49c587bcd18ca4a90)
+INFO:     analyzer.finder_search: Finder shortlist 3:1466-2:7564: score=0.322 fair=0.47 needs={3: 0.77, 2: 0.89}
+INFO:     analyzer.finder_search: Finder shortlist 3:1466-2:8144: score=0.286 fair=0.48 needs={3: 0.71, 2: 0.84}
+INFO:     analyzer.finder_search: Finder shortlist 3:4034-2:7564+8144: score=0.275 fair=0.46 needs={3: 0.73, 2: 0.82}
+INFO:     analyzer.finder_search: Finder shortlist 3:9488-5:9493: score=0.269 fair=0.48 needs={3: 0.79, 5: 0.71}
+INFO:     analyzer.finder_search: Finder shortlist 3:3198-2:8144: score=0.268 fair=0.48 needs={3: 0.68, 2: 0.82}
+INFO:     analyzer.finder_search: Finder shortlist 3:3198-2:7564: score=0.265 fair=0.42 needs={3: 0.77, 2: 0.82}
+INFO:     analyzer.finder_search: Finder shortlist 3:4034-2:7564: score=0.239 fair=0.36 needs={3: 0.79, 2: 0.84}
+INFO:     analyzer.finder_search: Finder shortlist 3:4034-8:6786: score=0.224 fair=0.46 needs={3: 0.8, 8: 0.61}
+INFO:     analyzer.finder_search: Finder shortlist 3:9488-8:6786: score=0.222 fair=0.38 needs={3: 0.76, 8: 0.77}
+INFO:     analyzer.finder_search: Finder shortlist 3:9488-2:7564: score=0.180 fair=0.39 needs={3: 0.77, 2: 0.6}
+INFO:     analyzer.trade_news: News of player 1466 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/7564/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 7564: 5 items
+INFO:     analyzer.trade_news: News of player 1466 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/8144/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 8144: 5 items
+INFO:     analyzer.trade_news: News of player 4034 from the cache
+INFO:     analyzer.trade_news: News of player 7564 from the cache
+INFO:     analyzer.trade_news: News of player 8144 from the cache
+INFO:     analyzer.trade_news: News of player 9488 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/9493/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 9493: 5 items
+INFO:     analyzer.trade_news: News of player 3198 from the cache
+INFO:     analyzer.trade_news: News of player 8144 from the cache
+INFO:     analyzer.trade_news: News of player 3198 from the cache
+INFO:     analyzer.trade_news: News of player 7564 from the cache
+INFO:     analyzer.trade_news: News of player 4034 from the cache
+INFO:     analyzer.trade_news: News of player 7564 from the cache
+INFO:     analyzer.trade_news: News of player 4034 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/6786/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 6786: 5 items
+INFO:     analyzer.trade_news: News of player 9488 from the cache
+INFO:     analyzer.trade_news: News of player 6786 from the cache
+INFO:     analyzer.trade_news: News of player 9488 from the cache
+INFO:     analyzer.trade_news: News of player 7564 from the cache
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3722 input_tokens=25698
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 111ms (request req_01a1cc10897578f7b769186ad962fd3e)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=1011 faithful.3.1=0.72 yes faithful.3.2=0.74 yes faithful.3.3=0.03 no faithful.3.4=0.61 unsure
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 72ms (request req_01a1cc1089bb75d7b83e650c964afb38)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=800 faithful.3.1=0.04 no faithful.3.2=0.67 unsure faithful.3.3=0.05 no
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 52ms (request req_01a1cc108a027d6dbdbc394e32b9eec2)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=469 faithful.3.1=0.1 no
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 58ms (request req_01a1cc108a357471af7ec865519991cf)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=443 faithful.3.1=0.02 no
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 69ms (request req_01a1cc108a737c14a7b1b13a41a82dcf)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=464 faithful.3.1=0.01 no
+INFO:     analyzer.routes: Press of find for cpc: time=38.8s cost=$0.0902 claude_calls=1
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:59990 - "OPTIONS /clients/cpc/personal/current HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59990 - "POST /clients/cpc/personal/current HTTP/1.1" 200 OK

@@ -1,0 +1,4 @@
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, screen recording recording-375-light.webm.
+1. Store Lil Fridge and the passphrase. Open /. Tap Trade ideas (from the row or More).
+2. Sample each article on each animation frame, with the page scrolled to its end, until the Answer ends, plus 3 s (steps-samples.txt). Viewport shot trade-end-375-light.
+3. frame-<time>-change-<n>.png are frames of the recording just after each change of the step lines or the text.

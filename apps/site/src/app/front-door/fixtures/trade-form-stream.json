@@ -1,0 +1,42 @@
+[
+ {
+  "type": "start"
+ },
+ {
+  "type": "data-picks",
+  "data": {
+   "model": "jev-1.14.0",
+   "gives": {
+    "named": 0.05,
+    "player_id": "3198",
+    "name": "Derrick Henry",
+    "probability": 0.64,
+    "roster_id": 3,
+    "sure": false
+   },
+   "gets": {
+    "named": 0.03,
+    "player_id": "6794",
+    "name": "Justin Jefferson",
+    "probability": 0.27,
+    "roster_id": 9,
+    "sure": false
+   }
+  }
+ },
+ {
+  "type": "data-answer",
+  "data": {
+   "kind": "form",
+   "form": {
+    "asker": 3,
+    "partner": null,
+    "gives": [],
+    "gets": []
+   }
+  }
+ },
+ {
+  "type": "finish"
+ }
+]

@@ -1,0 +1,29 @@
+WebKit (Playwright 1.64.1), devices["iPhone 15"]: hasTouch true, isMobile true, viewport 393x659.
+The fake keyboard: visualViewport.height is innerHeight minus 336 px while an INPUT has the focus.
+After the tap on the ask box: focus=INPUT[Ask a question] keyboard=open visualViewport.height=323 innerHeight=659
+The Send button box before the tap: x 328, y 381, 44x44. The tap was at about 7.58 s of the recording.
+
+Each event from the tap on the ask box on, in the capture phase, with its target, the focused element, the keyboard state, the y of Send, and the count of articles:
++47 ms pointerdown target=INPUT[Ask a question] focus=BODY keyboard=closed sendY=381 articles=0
++47 ms touchstart target=INPUT[Ask a question] focus=BODY keyboard=closed sendY=381 articles=0
++48 ms pointerup target=INPUT[Ask a question] focus=BODY keyboard=closed sendY=381 articles=0
++48 ms touchend target=INPUT[Ask a question] focus=BODY keyboard=closed sendY=381 articles=0
++49 ms mousedown target=INPUT[Ask a question] focus=BODY keyboard=closed sendY=381 articles=0
++50 ms focusin target=INPUT[Ask a question] focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++65 ms mouseup target=INPUT[Ask a question] focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++65 ms click target=INPUT[Ask a question] focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
+---- the one tap on Send ----
++1139 ms pointerdown target=path focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++1139 ms touchstart target=path focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++1140 ms pointerup target=path focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++1140 ms touchend target=path focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++1141 ms mousedown target=path focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++1142 ms mouseup target=path focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++1142 ms click target=path focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++1142 ms submit target=FORM[Ask] focus=INPUT[Ask a question] keyboard=open sendY=381 articles=0
++1144 ms focusout target=INPUT[Ask a question] focus=BODY keyboard=closed sendY=381 articles=0
+
+1.5 s after the one tap on Send: focus=BODY keyboard=closed articles=week 1 results field value=''
+POST requests to the API in that 1.5 s: 2
+- 7.61 s /clients/cpc/ask {"question":"week 1 results","roster_id":3,"week":8,"turns":[]}
+- 7.71 s /clients/cpc/ask/free {"question":"week 1 results","roster_id":3,"week":8,"turns":[],"id":"2aFzRGyOCsmCzqoH","messages":[{"parts":[{"type":"text","text":"week 1 results"}],"id":"0XE3

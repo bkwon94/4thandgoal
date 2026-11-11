@@ -1,0 +1,52 @@
+{
+  "type": "data-block",
+  "data": {
+    "topic": "weak_spots",
+    "team": 8,
+    "fact": "QB ranks 11th of 12",
+    "stats": [
+      {
+        "label": "Weakest spot",
+        "value": "QB"
+      },
+      {
+        "label": "Rank",
+        "value": "11th of 12"
+      },
+      {
+        "label": "Holes",
+        "value": "1"
+      }
+    ],
+    "rows": [
+      {
+        "label": "QB",
+        "value": "11th of 12",
+        "note": "fine",
+        "roster_id": null,
+        "you": false
+      },
+      {
+        "label": "TE",
+        "value": "9th of 12",
+        "note": "fine",
+        "roster_id": null,
+        "you": false
+      },
+      {
+        "label": "WR",
+        "value": "7th of 12",
+        "note": "thin \u00b7 hole: Carnell Tate",
+        "roster_id": null,
+        "you": false
+      },
+      {
+        "label": "RB",
+        "value": "5th of 12",
+        "note": "fine",
+        "roster_id": null,
+        "you": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,204 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"waiver_targets","team":3,"fact":"18 free agents on the list","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"On the list","value":"18"}],"rows":[{"label":"Sione Vaki","value":"$11","note":"RB · DET","roster_id":null,"you":false},{"label":"Brevyn Spann-Ford","value":"$10","note":"TE · DAL","roster_id":null,"you":false},{"label":"Darnell Washington","value":"$10","note":"TE · PIT","roster_id":null,"you":false},{"label":"Sam Roush","value":"$10","note":"TE · CHI","roster_id":null,"you":false},{"label":"Reggie Virgil","value":"$10","note":"WR · ARI","roster_id":null,"you":false},{"label":"Devin Duvernay","value":"$9","note":"WR · ARI","roster_id":null,"you":false},{"label":"Baker Mayfield","value":"$9","note":"QB · TB","roster_id":null,"you":false},{"label":"Eli Raridon","value":"$9","note":"TE · NE","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"be6382d600d5f5493023be2552ec59777674c012dfb87b0a78702b80c201d3f4"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"text-start","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"Your","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" team has no holes, but your","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" weakest spots are the fl","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"ex slots and your","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" second star","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"ters at","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" RB and WR. J","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"akobi Meyers (","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"29th among","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" WRs) and Khal","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"il Shakir (33r","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"d) sit in the flex","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":",","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" and Stefon Digg","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"s is","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" 22nd. Treyl","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"on Burks f","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"its there","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":", since","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" he had","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" 5 targ","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"ets in","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" the","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" first game without Terry McL","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"aurin, and Coo","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"per Kupp fits too","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":", since","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" he played 92% of sna","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"ps with Rashid Sh","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"aheed out. At","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" RB, Derrick","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" Henry is 16th, so","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" Keaton Mitch","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"ell and Samaje Per","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"ine are the","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" depth to","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" add.","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" Perine is a handcu","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":"ff to Chase Brown","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":", and Mitchell is","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-delta","delta":" a deep-league stash.","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"text-end","id":"afeaee71-0079-488d-995f-d7a6537de0ed"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"reasoning-start","id":"ab6a526a-5889-44e0-a7d3-8564d6edd6fb","providerMetadata":{"pydantic_ai":{"signature":"","provider_name":"anthropic"}}}
+
+data: {"type":"reasoning-end","id":"ab6a526a-5889-44e0-a7d3-8564d6edd6fb","providerMetadata":{"pydantic_ai":{"signature":"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","provider_name":"anthropic"}}}
+
+data: {"type":"text-start","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":"Your team has no holes,","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" but your","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" QB and RB groups r","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":"ank 7th in","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" the league, the lowest of","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" your four positions, and you","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" have no spare player at any position","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":". At RB,","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" Samaje Perine played","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" 35% of snaps with","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" 4 carries last week and","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" is a handcuff to","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" Chase Brown,","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" so","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" he would","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" give you a","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" spare back","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":". Keaton Mit","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":"chell is","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" a deep-league stash who","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" played 32% of snaps","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" with 3 targets. For","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" WR, Jakobi","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" Meyers (","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":"29th) and Khalil","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" Shakir (33rd","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":") f","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":"ill your flex slots,","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" so Treylon Burks","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" (3 catches for 81","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" yards in","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" Week 8,","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" the first game without Terry Mc","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":"Laurin) and C","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":"ooper Kupp (92","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":"% of snaps last week,","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" next on the depth chart with","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" Rashid Shahe","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":"ed out) are the","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" names","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-delta","delta":" to look at.","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"text-end","id":"8068fecf-a180-4c0b-98da-caebd1ffb454"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

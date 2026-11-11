@@ -1,0 +1,3 @@
+# The team count that the team cap reads: SELECT COUNT(*) FROM spend WHERE roster_id = 3 AND counts = 1 AND day = '2026-11-11' (the day in the league time zone), in <scratchpad>/askdir/cpc.caps.sqlite.
+team count before the tap on Refresh: 4
+team count after the fresh Answer: 5

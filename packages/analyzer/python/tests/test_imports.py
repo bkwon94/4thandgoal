@@ -20,4 +20,4 @@ def test_the_rule_prompts_sit_in_the_package():
     from analyzer import RULE_PROMPTS
 
     assert sorted(path.name for path in RULE_PROMPTS.glob("*.md")) == ["advisor.md", "finder_pick.md",
-                                                                      "finder_pick_repair.md"]
+                                                                      "finder_pick_repair.md", "sell_high.md"]

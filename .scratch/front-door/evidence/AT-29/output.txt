@@ -1,0 +1,53 @@
+$ curl -s -X POST http://localhost:8092/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"topic":"weak_spots","roster_id":3}'   # request 1 and request 2, after the Given
+# The team count is the count that the team cap reads: SELECT COUNT(*) FROM spend WHERE roster_id = 3 AND counts = 1 AND day = '2026-11-11' (today in the league tz), in <ask dir>/cpc.caps.sqlite.
+# The Given: one earlier request of this round built and kept the weak spots Answer of Lil Fridge (API log lines 70 to 106, in api-log.txt). The answer store holds it:
+$ sqlite3 -header -column <ask dir>/cpc-answers.sqlite "SELECT topic, roster_id, kept_at, substr(key,1,16) AS key FROM answers"
+topic       roster_id  kept_at                           key             
+----------  ---------  --------------------------------  ----------------
+weak_spots  3          2026-11-11T13:51:12.817118-05:00  e8628f6ceeb4ee12
+
+team count before: 1
+
+$ curl -s -X POST http://localhost:8092/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"topic":"weak_spots","roster_id":3}'   # request 1
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"weak_spots","team":3,"fact":"QB ranks 7th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"Holes","value":"0"}],"rows":[{"label":"QB","value":"7th of 12","note":"deep","roster_id":null,"you":false},{"label":"RB","value":"6th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"3rd of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"3rd of 12","note":"fine","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"e8628f6ceeb4ee12593001d2c46c8eedf5576d3a62eb20d7e86c6618bc9c8dfe"}}
+
+data: {"type":"text-start","id":"kept"}
+
+data: {"type":"text-delta","delta":"Your weakest spot is the second FLEX slot, where Jakobi Meyers is projected 45th among WRs, which is worse than the starter line of 36. That is the only slot listed as weak right now. Of your four position groups, RB ranks lowest in the league at 6th, with no spare player past the starters. QB is deep at 7th, and WR and TE are both 3rd.","id":"kept"}
+
+data: {"type":"text-end","id":"kept"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+team count after request 1: 1
+
+$ curl -s -X POST http://localhost:8092/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"topic":"weak_spots","roster_id":3}'   # request 2
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"weak_spots","team":3,"fact":"QB ranks 7th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"Holes","value":"0"}],"rows":[{"label":"QB","value":"7th of 12","note":"deep","roster_id":null,"you":false},{"label":"RB","value":"6th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"3rd of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"3rd of 12","note":"fine","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"e8628f6ceeb4ee12593001d2c46c8eedf5576d3a62eb20d7e86c6618bc9c8dfe"}}
+
+data: {"type":"text-start","id":"kept"}
+
+data: {"type":"text-delta","delta":"Your weakest spot is the second FLEX slot, where Jakobi Meyers is projected 45th among WRs, which is worse than the starter line of 36. That is the only slot listed as weak right now. Of your four position groups, RB ranks lowest in the league at 6th, with no spare player past the starters. QB is deep at 7th, and WR and TE are both 3rd.","id":"kept"}
+
+data: {"type":"text-end","id":"kept"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+team count after request 2: 1

@@ -1,0 +1,30 @@
+Text of the Answer:
+How you stack up
+
+GRADE
+B
+BEST SPOT
+TE 4th
+WEAKEST SPOT
+QB 10th
+
+as of today
+
+Projection Ahead
+6th of 12
+Season Production
+2nd of 12
+Trade Value
+4th of 12
+Depth And Holes
+11th of 12
+
+As of today, your team grades a B. Your best part is Season Production, where you rank 2nd of 12, and your worst is Depth And Holes, where you rank 11th. By position, TE and RB are your best at 4th each, but RB is thin, since a starter slot there is a hole. QB is your worst position at 10th, and it reads soft.
+
+Checked
+
+Read the full report
+
+URL after the tap: http://127.0.0.1:4173/2026/managers/6/
+Lines of the manager page with "after week" or "as of":
+after week 9

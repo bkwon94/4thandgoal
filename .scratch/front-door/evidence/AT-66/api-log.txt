@@ -1,0 +1,123 @@
+# The API log from line 1252, during this test.
+INFO:     127.0.0.1:60823 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60823 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60823 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 93ms (request req_01a1cc1447347f5d8373cb73a4e7d051)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 64ms (request req_01a1cc144793745fba1048bafceb7c43)
+INFO:     127.0.0.1:60823 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60823 - "OPTIONS /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60825 - "POST /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:60825 - "OPTIONS /clients/cpc/personal/current HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60823 - "POST /clients/cpc/personal/current HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60823 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 66ms (request req_01a1cc146f24774da9b4461bbbe193d6)
+INFO:     127.0.0.1:60825 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60825 - "POST /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 133ms (request req_01a1cc146f7270fa8fe6fec7e3225b70)
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     analyzer.jev_waves: Jev wave 1 (partner filter): 11 requests, about 19073 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 53ms (request req_01a1cc1479787691a5cdb39820350597)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 100ms (request req_01a1cc1479ab744d9b46378f6c5bebba)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 117ms (request req_01a1cc1479bc71ae88a0b17b03204d94)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 134ms (request req_01a1cc14799b727bb0b9573af49e1af4)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 134ms (request req_01a1cc1479cb780b8ab813099d0ee40d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 156ms (request req_01a1cc1479d87a9cb57b3a00c5b37e57)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 195ms (request req_01a1cc1479ec766fbd69a7ea934d1555)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 224ms (request req_01a1cc147a057130adf0028de5a82a75)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 223ms (request req_01a1cc147a0f7741b9f8573cace4e9b1)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 271ms (request req_01a1cc147a3574c8bdb11e4abc9779ca)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 282ms (request req_01a1cc147a207817ba3edbe05b87ed48)
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with The Blue Tent: stopped, partner_has=0.87, partner_spares=0.22, asker_has=0.93, asker_spares=0.83
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with All You Need Is Love: stopped, partner_has=0.91, partner_spares=0.27, asker_has=0.93, asker_spares=0.79
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with Lil Fridge: passed, partner_has=0.78, partner_spares=0.72, asker_has=0.92, asker_spares=0.80
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with NFC Least: stopped, partner_has=0.84, partner_spares=0.14, asker_has=0.93, asker_spares=0.81
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with Puka Deez...: passed, partner_has=0.91, partner_spares=0.77, asker_has=0.90, asker_spares=0.81
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with To Infinity and Bijan: stopped, partner_has=0.68, partner_spares=0.76, asker_has=0.90, asker_spares=0.79
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with Return of T Mac: stopped, partner_has=0.86, partner_spares=0.20, asker_has=0.91, asker_spares=0.83
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with Maye d'force B with U: stopped, partner_has=0.89, partner_spares=0.66, asker_has=0.92, asker_spares=0.79
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with behold the lamb: stopped, partner_has=0.34, partner_spares=0.22, asker_has=0.92, asker_spares=0.77
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with Unsolicited Dak Picks: passed, partner_has=0.89, partner_spares=0.81, asker_has=0.93, asker_spares=0.78
+INFO:     analyzer.finder_search: Partner filter of Bo Girds with Teehee: stopped, partner_has=0.64, partner_spares=0.50, asker_has=0.86, asker_spares=0.78
+INFO:     analyzer.jev_waves: Jev wave 2 (targets): 3 requests, about 7916 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 70ms (request req_01a1cc147d7072928941762aab0b4f8f)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 77ms (request req_01a1cc147d6c78c6aede31be9f0a2484)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 82ms (request req_01a1cc147d697174b431e33b49ab9667)
+INFO:     analyzer.finder_search: Finder target questions with Lil Fridge: Caleb Williams=0.24, Travis Kelce=0.13, Stefon Diggs=0.41, Derrick Henry=0.30, Christian McCaffrey=0.50, Courtland Sutton=0.22, Jakobi Meyers=0.28, J.K. Dobbins=0.19, Tyler Allgeier=0.21, Khalil Shakir=0.27, Bryce Young=0.49, Jaxon Smith-Njigba=0.61, Audric Estime=0.13, Blake Corum=0.26, Fernando Mendoza=0.11, Mike Washington Jr.=0.14, Trey McBride=0.69, Kyren Williams=0.34, Kenneth Walker III=0.45, Aaron Rodgers=0.20
+INFO:     analyzer.finder_search: Finder targets with Lil Fridge: the asker gives ['Trey McBride']; the partner gives ['Jaxon Smith-Njigba']
+INFO:     analyzer.finder_search: Finder target questions with Puka Deez...: Woody Marks=0.18, Emeka Egbuka=0.29, Denzel Boston=0.32, Matthew Stafford=0.46, George Kittle=0.15, Josh Allen=0.74, Mike Gesicki=0.13, DK Metcalf=0.24, Chuba Hubbard=0.28, Pat Freiermuth=0.12, James Cook III=0.37, Puka Nacua=0.59, Audric Estime=0.13, Blake Corum=0.26, Fernando Mendoza=0.08, Mike Washington Jr.=0.13, Trey McBride=0.56, Kyren Williams=0.40, Kenneth Walker III=0.49, Aaron Rodgers=0.11
+INFO:     analyzer.finder_search: Finder targets with Puka Deez...: the asker gives []; the partner gives ['Josh Allen']
+INFO:     analyzer.finder_search: Finder target questions with Unsolicited Dak Picks: Kimani Vidal=0.16, Ollie Gordon II=0.23, Caleb Douglas=0.20, Dak Prescott=0.50, Josh Jacobs=0.17, Jonathan Taylor=0.34, Juwan Johnson=0.09, Rachaad White=0.19, Josh Downs=0.23, Tank Dell=0.14, C.J. Stroud=0.48, Audric Estime=0.19, Blake Corum=0.48, Fernando Mendoza=0.10, Mike Washington Jr.=0.23, Trey McBride=0.92, Kyren Williams=0.63, Kenneth Walker III=0.73, Aaron Rodgers=0.18
+INFO:     analyzer.finder_search: Finder targets with Unsolicited Dak Picks: the asker gives ['Trey McBride', 'Kenneth Walker III', 'Kyren Williams']; the partner gives []
+INFO:     analyzer.finder_search: Finder offers of Bo Girds: 1
+INFO:     analyzer.finder_search: Finder offer 6:8130-3:9488: Bo Girds gives Trey McBride (TE, ARI); Lil Fridge gives Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 1 requests, about 1457 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 46ms (request req_01a1cc14814a7c0982ea82abeffefc39)
+INFO:     analyzer.finder_search: Finder shortlist 6:8130-3:9488: score=0.039 fair=0.43 needs={6: 0.45, 3: 0.2}
+INFO:     analyzer.trade_news: News of player 8130 from the cache
+INFO:     analyzer.trade_news: News of player 9488 from the cache
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3722 input_tokens=3734
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 66ms (request req_01a1cc149399794ba7f8e0bea7379af4)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=455 faithful.6.1=0.01 no
+INFO:     analyzer.routes: Press of find for cpc: time=9.2s cost=$0.0130 claude_calls=1
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/10 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:60825 - "POST /clients/cpc/personal/current HTTP/1.1" 200 OK

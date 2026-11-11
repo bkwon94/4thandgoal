@@ -81,6 +81,7 @@ describe("menuPages", () => {
 });
 
 describe("shellProps of cpc", () => {
+  // The front door of cpc is off, so the menu is [menu] items. The client build tests prove the 4 items with it on (AT-48).
   it("keeps the items and the labels of the CPC menu, with the short labels of the dock (AT-9, AT-10)", () => {
     // The report item shows once the season publishes a report, so this test leaves it out.
     const items = shellProps().menu.items.filter((item) => item.kind !== "midseason");

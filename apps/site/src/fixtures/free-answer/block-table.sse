@@ -1,0 +1,70 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01XRCzEb7U3nkeTfbx7mwkVq","toolName":"standings"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01XRCzEb7U3nkeTfbx7mwkVq","inputTextDelta":""}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01XRCzEb7U3nkeTfbx7mwkVq","toolName":"standings","input":{}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01XRCzEb7U3nkeTfbx7mwkVq","output":{"through_week":9,"how_records_count":"Each week is two games: the head-to-head game and a game against the league median score. So a record over 9 weeks has 18 games.","teams":[{"rank":1,"team":"All You Need Is Love","record":"12-6","head_to_head_record":"7-2","points_for":956.56,"points_for_rank":8,"points_against":931.95},{"rank":2,"team":"Bo Girds","record":"11-7","head_to_head_record":"4-5","points_for":1035.69,"points_for_rank":1,"points_against":968.36},{"rank":3,"team":"Puka Deez...","record":"11-7","head_to_head_record":"5-4","points_for":1030.45,"points_for_rank":2,"points_against":949.86},{"rank":4,"team":"Lil Fridge","record":"11-7","head_to_head_record":"6-3","points_for":1004.64,"points_for_rank":4,"points_against":890.62},{"rank":5,"team":"The Blue Tent","record":"11-7","head_to_head_record":"5-4","points_for":1003.87,"points_for_rank":5,"points_against":931.67},{"rank":6,"team":"Return of T Mac","record":"11-7","head_to_head_record":"6-3","points_for":976.58,"points_for_rank":7,"points_against":940.78},{"rank":7,"team":"Maye d'force B with U","record":"10-8","head_to_head_record":"5-4","points_for":1007.36,"points_for_rank":3,"points_against":792.23},{"rank":8,"team":"Teehee","record":"8-10","head_to_head_record":"4-5","points_for":986.61,"points_for_rank":6,"points_against":935.85},{"rank":9,"team":"To Infinity and Bijan","record":"8-10","head_to_head_record":"4-5","points_for":852.17,"points_for_rank":11,"points_against":1011.92},{"rank":10,"team":"Unsolicited Dak Picks","record":"6-12","head_to_head_record":"3-6","points_for":858.23,"points_for_rank":9,"points_against":1000.31},{"rank":11,"team":"behold the lamb","record":"6-12","head_to_head_record":"3-6","points_for":858.13,"points_for_rank":10,"points_against":973.82},{"rank":12,"team":"NFC Least","record":"3-15","head_to_head_record":"2-7","points_for":787.76,"points_for_rank":12,"points_against":1030.68}]}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":"Bo Girds are","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" ","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":"11","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":"-7 and r","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":"ank 2n","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":"d, and","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" Teehee are","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" 8-10 and rank","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" 8th. Both are","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" 4-5 in head-","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":"to-head games. Bo","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" Girds have scored the","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" most points in","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" the league, and","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" the","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" table shows the","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-delta","delta":" rest.","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"text-end","id":"f88c6bb9-5d3b-447c-9a0d-f6233d7568b9"}
+
+data: {"type":"data-block","id":"block","data":{"kind":"table","title":"Bo Girds vs Teehee","columns":["Stat","Bo Girds","Teehee"],"rows":[["Rank","2","8"],["Record","11-7","8-10"],["Head-to-head","4-5","4-5"],["Points for","1035.69","986.61"],["Points against","968.36","935.85"]]}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

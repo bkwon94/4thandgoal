@@ -1,0 +1,8 @@
+articles 150 ms after the tap on Clear: 0
+browser dialogs: 0
+role=dialog or alertdialog elements 150 ms after the tap: 0
+Suggestions row after Clear:
+1. More
+2. Sell high or buy low | Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season
+3. Waiver targets | Free agents for the WR2 slot
+4. Weak spots | QB ranks 7th of 12

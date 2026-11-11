@@ -12,7 +12,10 @@ from zoneinfo import ZoneInfo
 import pytest
 from conftest import save_chart_read, strip_trend_numbers, with_carries, with_free_agents
 from cpc import cpc_client, four_week
+from fakes import no_news
 
+from analyzer.finder_pick import offer_sheet
+from analyzer.finder_search import ShortlistOffer
 from analyzer.measures import (
     CONSOLIDATION,
     EXPECTED,
@@ -40,10 +43,11 @@ from analyzer.trade import (
     check_trade,
 )
 from analyzer.trade_facts import trade_fact_sheet
+from analyzer.trade_news import NewsFeed
 from analyzer.tunables import EXPECTED_MEASURE_ON, SUPERSTAR_RANK
 from league.chart import STAND_IN_WEEKS, chart_values_before, match_chart
 from league.history import carry_share, points_per_game, red_zone, snap_share, target_share
-from league.lineup import best_lineup, bye_covers
+from league.lineup import best_lineup, bye_covers, cannot_play_now
 from league.models import ChartRead, ExpectedGame, ExpectedPoints, week_lines
 from league.parse import parse_week
 from league.paths import returns_path
@@ -754,6 +758,36 @@ def test_a_trade_that_drops_a_sides_rb_depth_from_three_to_one_gives_a_depth_fac
     assert sheet["2.depth.wr"].text == "For All You Need Is Love, the WRs in the top 36 go from 4 to 6."
     assert sheet["12.depth.rb"].text == "For Amon-Ra Dawg Your Team, the RBs in the top 36 go from 4 to 6."
     assert sheet["12.depth.wr"].text == "For Amon-Ra Dawg Your Team, the WRs in the top 36 go from 5 to 3."
+
+
+# Bo Girds holds Lamar Jackson QB5, Out with no return week, and Tyler Shough QB17 on its bench. Malik Washington
+# sits on its bench. Roster 8 starts Jared Goff QB2.
+LAMAR, MALIK_WASHINGTON, GOFF = "4881", "11610", "3163"
+
+
+def test_the_depth_fact_counts_the_players_who_can_play_now_when_a_player_above_the_line_cannot(snap):
+    # Lamar Jackson is in the top 24 but cannot play in the trade week, so the count of QBs who can play now differs.
+    assert cannot_play_now(snap, LAMAR)
+    facts = team_facts(_trade(6, [MALIK_WASHINGTON], 8, [GOFF]), snap)
+    assert facts["6.depth.qb"].text == ("For Bo Girds, the QBs in the top 24 go from 2 to 3. Of them, the QBs who can "
+                                        "play now go from 1 to 2.")
+    assert facts["6.depth.qb"].numbers == ["24", "2", "3", "1", "2"]
+    # Each QB of roster 8 can play now, so its depth fact keeps the one count.
+    assert facts["8.depth.qb"].text == "For Return of T Mac, the QBs in the top 24 go from 2 to 1."
+
+
+def test_the_pick_sheet_holds_the_weak_slots_now_of_the_asker_and_each_starter_who_cannot_play_now(snap):
+    # Lamar Jackson starts when he can play. He cannot play now, so Shough QB17 holds QB, past the weak rank of 12.
+    offer = ShortlistOffer(offer_id="o1", trade=_trade(6, [MALIK_WASHINGTON], 8, [GOFF]), fair=0.8,
+                           needs={6: 0.9, 8: 0.8}, score=0.576)
+    sheet = offer_sheet(offer, snap, NewsFeed(fetch=no_news))
+    assert sheet["6.now"].text == (
+        "For Bo Girds, the weak starting slots in week 6, of the players who can play: QB: Tyler Shough (QB17). "
+        "Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back "
+        "in week 14.")
+    assert sheet["6.now"].players == ["Tyler Shough", "Lamar Jackson"]
+    # The fact is of the asker only.
+    assert "8.now" not in sheet
 
 
 def test_a_position_whose_depth_count_does_not_change_gets_no_depth_fact(snap):
@@ -1859,12 +1893,14 @@ def test_schedule_without_its_sources_says_so(snap):
 # James Cook plays for BUF, with the bye in week 7 still left. His opponents are CHI, DEN, and MIA,
 # ranked 25, 7, and 6, a mean of 12.67. That is 7.67 softer, past the gap of 4.
 def test_schedule_names_the_playoff_opponents_of_the_players_each_side_gets(slow_snap):
+    # Of 32 defenses, rank 25 reads 8th fewest and rank 28 reads 5th fewest, so no high ordinal reads as soft.
+    assert len(slow_snap.points_allowed) == 32
     tenth, fifth = _reads(_trade(10, [SAQUON], 5, [COOK]), slow_snap)
     # The read names the opponents of the player each side gets.
     assert tenth[SCHEDULE].reason == (
-        "Cook faces CHI (25th most points to RBs), DEN (7th), and MIA (6th) in weeks 15 to 17.")
+        "Cook faces CHI (8th fewest points to RBs), DEN (7th most), and MIA (6th most) in weeks 15 to 17.")
     assert fifth[SCHEDULE].reason == (
-        "Barkley has his bye in week 10 and faces SEA (18th most points to RBs), HOU (28th), and SF (15th) "
+        "Barkley has his bye in week 10 and faces SEA (15th fewest points to RBs), HOU (5th fewest), and SF (15th most) "
         "in weeks 15 to 17.")
 
 
@@ -1873,7 +1909,7 @@ def test_schedule_names_a_bye_only_while_it_is_still_to_come(slow_snap):
     tenth, _ = _reads(_trade(10, [SAQUON], 5, [COOK]), _with_bye(slow_snap, "PHI", 5))
     # The BUF bye in week 7 is the week after the trade week, so the Week line names it and this read does not.
     assert tenth[SCHEDULE].reason == (
-        "Cook faces CHI (25th most points to RBs), DEN (7th), and MIA (6th) in weeks 15 to 17.")
+        "Cook faces CHI (8th fewest points to RBs), DEN (7th most), and MIA (6th most) in weeks 15 to 17.")
     # Moved to week 5, the PHI bye is behind the trade week, so the read of the side that gets Barkley names no bye.
     _, fifth = _reads(_trade(10, [SAQUON], 5, [COOK]), _with_bye(slow_snap, "PHI", 5))
     assert "bye" not in fifth[SCHEDULE].reason
@@ -1885,7 +1921,7 @@ def test_schedule_names_the_playoff_opponents_of_the_team_a_player_plays_for(slo
     schedules["BUF"] = schedules["PHI"].model_copy(update={"bye_week": 5})
     tenth, _ = _reads(_trade(10, [SAQUON], 5, [COOK]), slow_snap.model_copy(update={"schedules": schedules}))
     assert tenth[SCHEDULE].reason == (
-        "Cook faces SEA (18th most points to RBs), HOU (28th), and SF (15th) in weeks 15 to 17.")
+        "Cook faces SEA (15th fewest points to RBs), HOU (5th fewest), and SF (15th most) in weeks 15 to 17.")
 
 
 def test_the_same_trade_on_the_same_snapshot_gives_the_same_reads_every_time(slow_snap):

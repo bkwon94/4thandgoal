@@ -1,0 +1,3 @@
+Articles of the Thread, in order:
+Week recap: 1 links, 0 aria-expanded controls, text 815 chars
+Weak spots: 1 links, 0 aria-expanded controls, text 571 chars

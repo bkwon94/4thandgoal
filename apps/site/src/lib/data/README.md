@@ -5,6 +5,7 @@
 - One loader per published file: the week page file, the rankings file, the managers file, `waiver.json`, `midseason.json`, and `sim.json`.
 - Where each file sits under `public/`, and which week folders hold `waiver.json`.
 - The join of the managers file with the last week of the rankings file.
+- The teams of the latest week for the sheet of Your team on the front door, in `front-door-data.ts`.
 - Whether the waiver route and the managers route are on. `next.config.ts` builds each one only when its file exists.
 - The shared read of a published file in `published-file.ts`: the check of the schema version, then the parse.
 - The test of every published file against its schema, in `src/lib/data/published-files.test.ts`.

@@ -1,0 +1,3 @@
+Articles in the Thread after the rebuild: 0
+Thread keys of local storage after the open:
+cpc.thread = {"3":{"week":9,"entries":[]}}

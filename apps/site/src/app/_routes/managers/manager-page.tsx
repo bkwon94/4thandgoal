@@ -59,6 +59,7 @@ export default async function ManagerPage({ params }: Props) {
             manager={manager}
             avatar={avatarSrc(latestAvatars(managers.season), manager.roster_id)}
             teams={managers.managers.length}
+            through={managers.through}
             scene={managerScene(manager)}
           />
         </div>
