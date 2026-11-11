@@ -496,7 +496,14 @@ export function FrontDoor({
                   <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} wrap={empty} onMore={setMoreOpen} onPick={(key) => open(key)} />
                 </motion.div>
               ) : null}
-              <motion.div {...riseIn(off, { delay: 0.08 })}>
+              {/* The ask box glides on its own box too. The dock changes inside as it glides: the chips go from two lines
+                  to one row, and the dock gains its top pad and its bleed. The glide of the dock alone puts the ask box
+                  about 40 px up and 16 px right at the start, so it would rise before it falls (ticket 46). */}
+              <motion.div
+                {...riseIn(off, { delay: 0.08 })}
+                layout={off ? false : "position"}
+                transition={{ ...riseIn(off, { delay: 0.08 }).transition, layout: GLIDE }}
+              >
                 {/* Send holds busy while a question routes, so a second tap never sends it twice. */}
                 <AskBox onAsk={ask} pending={thread.some((entry) => entry.kind === "pending")} />
               </motion.div>
