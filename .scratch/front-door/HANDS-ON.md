@@ -33,6 +33,7 @@ After the triage, each issue that blocks becomes a ticket from 13 up. Then the e
 | H23 | Tap How you stack up (a Suggestion chip) needed two taps. | Not proven. Likely the H20 cause on the chips: with the keyboard open, the first tap blurs the field and the dock moves before the click. | Found 2026-11-11 | blocks: ticket 37 |
 | H24 | The second question says "That is a lot of questions at once. Try again in 7 seconds." | The API allows 10 requests per minute per address over every route, from the old analyzer. One question now makes 3 to 4 requests. | Brian agreed: cheap reads stop counting, the limit goes to 30 | blocks: ticket 38 |
 | H25 | No Suggestion card shows after most Answers. | Only a free answer has a Suggestion chip; personal and trade Answers have none. | Brian: fine as is | closed |
+| H26 | The copy says only "Ask about <team>" and "Ask about your team", so a manager does not know the league is fair game. | The empty-state heading and the placeholder name only the team. | Brian chose proposal A: a mute line "or any team in the league.", two tappable examples, placeholder "Ask about your team or the league" | blocks: ticket 39 |
 
 ## Follow-ups after the merge
 
