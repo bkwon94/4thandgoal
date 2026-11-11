@@ -1,5 +1,5 @@
 {
-  "about": "The route eval of the ask box (AT-17), from decision 09 of .scratch/front-door/. A question with source 'real' is one the commissioner asked. A question with source 'claude' is written by Claude. Expect is topic:<key>, team:<name>, free_answer, miss, refuse, or judgment. A judgment question has no fixed route and is not in the count. The questions ran on week 8 of the 2026 season.",
+  "about": "The route eval of the ask box (AT-17), from decision 09 of .scratch/front-door/. A question with source 'real' is one the commissioner asked. A question with source 'claude' is written by Claude. Expect is topic:<key>, team:<name>, free_answer, miss, refuse, or judgment. A judgment question has no fixed route and is not in the count. The questions ran on week 8 of the 2026 season. A question with turns asks after those earlier turns of its Thread, oldest first (H18).",
   "season": 2026,
   "week": 8,
   "teams": [
@@ -310,6 +310,102 @@
       "text": "how do i stack up",
       "source": "claude",
       "expect": "topic:stack_up"
+    },
+    {
+      "id": 50,
+      "text": "id rather not trade a WR",
+      "source": "claude",
+      "expect": "topic:trade_ideas",
+      "turns": [
+        {
+          "question": "any trade ideas for me",
+          "answer": "4 offers. Offer 1: Bo Girds gives Kenneth Walker III. Maye d'force B with U gives Jahmyr Gibbs. Offer 2: Bo Girds gives Zay Flowers. Teehee gives Jalen Hurts. Offer 3: Bo Girds gives Zay Flowers, Rhamondre Stevenson. London Cooking gives Jared Goff."
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "text": "keep Walker",
+      "source": "claude",
+      "expect": "topic:trade_ideas",
+      "turns": [
+        {
+          "question": "any trade ideas for me",
+          "answer": "4 offers. Offer 1: Bo Girds gives Kenneth Walker III. Maye d'force B with U gives Jahmyr Gibbs. Offer 2: Bo Girds gives Zay Flowers. Teehee gives Jalen Hurts. Offer 3: Bo Girds gives Zay Flowers, Rhamondre Stevenson. London Cooking gives Jared Goff."
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "text": "someone else",
+      "source": "claude",
+      "expect": "topic:trade_ideas",
+      "turns": [
+        {
+          "question": "Trade ideas",
+          "answer": "3 offers. Offer 1: Bo Girds gives Zay Flowers. The Blue Tent gives Dak Prescott. Offer 2: Bo Girds gives Kenneth Walker III. NFC Least gives Baker Mayfield. Offer 3: Bo Girds gives Jaylen Waddle. Lil Fridge gives Jordan Love."
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "text": "what about for a TE",
+      "source": "claude",
+      "expect": "topic:trade_ideas",
+      "turns": [
+        {
+          "question": "any trade ideas for me",
+          "answer": "4 offers. Offer 1: Bo Girds gives Kenneth Walker III. Maye d'force B with U gives Jahmyr Gibbs. Offer 2: Bo Girds gives Zay Flowers. Teehee gives Jalen Hurts. Offer 3: Bo Girds gives Zay Flowers, Rhamondre Stevenson. London Cooking gives Jared Goff."
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "text": "not a WR",
+      "source": "claude",
+      "expect": "topic:trade_ideas",
+      "turns": [
+        {
+          "question": "Trade ideas",
+          "answer": "3 offers. Offer 1: Bo Girds gives Zay Flowers. The Blue Tent gives Dak Prescott. Offer 2: Bo Girds gives Kenneth Walker III. NFC Least gives Baker Mayfield. Offer 3: Bo Girds gives Jaylen Waddle. Lil Fridge gives Jordan Love."
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "text": "what if i keep my RBs",
+      "source": "claude",
+      "expect": "topic:trade_ideas",
+      "turns": [
+        {
+          "question": "any trade ideas for me",
+          "answer": "4 offers. Offer 1: Bo Girds gives Kenneth Walker III. Maye d'force B with U gives Jahmyr Gibbs. Offer 2: Bo Girds gives Zay Flowers. Teehee gives Jalen Hurts. Offer 3: Bo Girds gives Zay Flowers, Rhamondre Stevenson. London Cooking gives Jared Goff."
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "text": "show me ones without flowers",
+      "source": "claude",
+      "expect": "topic:trade_ideas",
+      "turns": [
+        {
+          "question": "Trade ideas",
+          "answer": "3 offers. Offer 1: Bo Girds gives Zay Flowers. The Blue Tent gives Dak Prescott. Offer 2: Bo Girds gives Kenneth Walker III. NFC Least gives Baker Mayfield. Offer 3: Bo Girds gives Jaylen Waddle. Lil Fridge gives Jordan Love."
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "text": "what's the weather",
+      "source": "claude",
+      "expect": "miss",
+      "turns": [
+        {
+          "question": "any trade ideas for me",
+          "answer": "4 offers. Offer 1: Bo Girds gives Kenneth Walker III. Maye d'force B with U gives Jahmyr Gibbs. Offer 2: Bo Girds gives Zay Flowers. Teehee gives Jalen Hurts. Offer 3: Bo Girds gives Zay Flowers, Rhamondre Stevenson. London Cooking gives Jared Goff."
+        }
+      ]
     }
   ]
 }

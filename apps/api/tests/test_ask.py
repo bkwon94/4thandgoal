@@ -259,3 +259,11 @@ def test_the_trade_ideas_topic_covers_a_trade_away_of_one_named_player(api, jev)
     request = jev.requests[0]
     assert "trade away one named player" in request.state["topics"]["trade_ideas"]
     assert "trade away one named player" in request.questions["topic"].options["trade_ideas"]
+
+
+def test_the_trade_ideas_topic_covers_a_follow_up_that_refines_earlier_trade_ideas(api, jev):
+    # H18: "id rather not trade a WR" after trade ideas went to the free answer, so the Topic says it covers a follow-up.
+    _ask(api, "who am i playing sunday")
+    request = jev.requests[0]
+    assert "follow-up that refines earlier trade ideas" in request.state["topics"]["trade_ideas"]
+    assert "follow-up that refines earlier trade ideas" in request.questions["topic"].options["trade_ideas"]

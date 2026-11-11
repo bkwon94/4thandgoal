@@ -27,7 +27,9 @@ TOPICS = {
     "sell_high": "Players on a team to sell while their value is high, and players on other teams to buy while their "
                  "value is low.",
     "trade_ideas": "Trade offers a team could send to other teams, found to fill its weak spots, or ideas when the "
-                   "manager wants to trade away one named player.",
+                   "manager wants to trade away one named player. It also covers a follow-up that refines earlier "
+                   "trade ideas of the chat, such as 'not a WR', 'keep Walker', 'someone else', or 'what about for a "
+                   "TE'.",
     "trade_check": "A check of one trade that the manager names: is it fair, and who wins it.",
 }
 

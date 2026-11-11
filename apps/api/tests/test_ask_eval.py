@@ -1,6 +1,6 @@
 """
-The live route eval of the ask box (AT-17): the 49 questions of decision 09, H6, and H13 go to the real Jev through the
-route of ask.py, and the test fails below 41 hits of the 46 questions with an expected route. Run it with `pytest -m live -s`.
+The live route eval of the ask box (AT-17): the 57 questions of decision 09, H6, H13, and H18 go to the real Jev through
+the route of ask.py, and the test fails below 48 hits of the 54 questions with an expected route. Run it with `pytest -m live -s`.
 """
 import json
 from concurrent.futures import ThreadPoolExecutor
@@ -9,13 +9,15 @@ from pathlib import Path
 import pytest
 
 from cornerstone_api.ask import Route, route_question
+from cornerstone_api.chat_turns import Turn
 from league.jev import JEV
 from league.jev_port import JevError
 
 QUESTIONS = Path(__file__).parent / "fixtures" / "route-questions.json"
-# The spec asks for at least 35 of 40, a share of 87.5%. The bar keeps that share over the 46 scored questions, rounded
-# up to 41. It asserts no single probability.
-HITS_NEEDED = 41
+# The spec asks for at least 35 of 40, a share of 87.5%. The bar keeps that share over the 54 scored questions, rounded
+# up to 48. It asserts no single probability.
+SCORED = 54
+HITS_NEEDED = 48
 
 
 def _hit(expect: str, route: Route) -> bool:
@@ -39,13 +41,15 @@ def _shown(route: Route | str) -> str:
 
 
 @pytest.mark.live
-def test_the_route_eval_hits_at_least_41_of_46():
+def test_the_route_eval_hits_at_least_48_of_54():
     data = json.loads(QUESTIONS.read_text())
     teams = data["teams"]
 
     def ask(question: dict) -> Route | str:
         try:
-            return route_question(JEV, question["text"], teams, data["season"], data["week"])
+            # A follow-up case holds the earlier turns of its Thread, as the site sends them.
+            turns = [Turn(**turn) for turn in question.get("turns", [])]
+            return route_question(JEV, question["text"], teams, data["season"], data["week"], turns)
         except JevError as error:  # a failed request is an error row, never a hit
             return f"ERROR {error}"
 
@@ -69,5 +73,5 @@ def test_the_route_eval_hits_at_least_41_of_46():
     models = sorted({route.jev.model for route in routes if isinstance(route, Route)})
     print("\n".join(lines))
     print(f"\nHits: {hits} of {scored}. Model: {', '.join(models) or 'none'}.")
-    assert scored == 46
+    assert scored == SCORED
     assert hits >= HITS_NEEDED
