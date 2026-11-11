@@ -1,0 +1,62 @@
+# The pick sheets that the real code built in the live run of output.txt, saved by sheet_launcher.py (it wraps finder_pick.offer_sheet and records its return value).
+# 10 offer sheets. Part 1: the 6.now fact of each offer. Part 2: the full sheet of the first offer, with each fact id and text.
+
+6:9997-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+6:12501+9997-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+6:9487+9997-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+6:12501+9487-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+6:9487-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+6:12501+8130-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+6:8130+9487-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+6:12501-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+6:8130+9997-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+6:8130-9:11564 | 6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+
+# Full sheet of offer 6:9997-9:11564 (trade: {"season": 2026, "sides": [{"roster_id": 6, "gives": [{"player_id": "9997", "to": 9}]}, {"roster_id": 9, "gives": [{"player_id": "11564", "to": 6}]}], "asker": 6})
+trade.week: The trade is in week 10 of the 2026 season. Every stat runs through week 9.
+9997.ppg: Zay Flowers (WR, BAL) scored 13.3 points per game over 8 games before the trade. His Season rank is WR11, by total points this season. His Recent rank is WR39, by points per game over the last 4 weeks.
+9997.usage: Zay Flowers's snap share was 74 percent over the last 2 weeks before the trade, down from the 2 weeks before that.
+9997.targets: Zay Flowers's target share was 26 percent over the last 2 weeks before the trade, down from the 2 weeks before that.
+9997.redzone: Zay Flowers had 6 red-zone targets and 1 red-zone carry this season before the trade.
+9997.injury: Zay Flowers has no injury status now. He was on the NFL injury report in 4 weeks this season before the trade.
+11564.ppg: Drake Maye (QB, NE) scored 20.7 points per game over 9 games before the trade. His Season rank is QB4, by total points this season.
+11564.usage: Drake Maye's snap share was 90 percent over the last 2 weeks before the trade, down from the 2 weeks before that.
+11564.redzone: Drake Maye had 0 red-zone targets and 6 red-zone carries this season before the trade.
+11564.injury: Drake Maye has no injury status now.
+9997.nfl_team: Zay Flowers's NFL team, the Ravens, ranks 17th of 32 on offense: -0.84 expected points added per 100 plays over 9 games before the trade.
+11564.nfl_team: Drake Maye's NFL team, the Patriots, ranks 8th of 32 on offense: 6.55 expected points added per 100 plays over 9 games before the trade.
+9997.value: Zay Flowers is 36th on the chart of week 10, at 23.5.
+11564.value: Drake Maye is 48th on the chart of week 10, at 19.5.
+6.need: Bo Girds has 4 QB and 4 WR after the trade and 0 open roster spots.
+9.need: Maye d'force B with U has 1 QB and 5 WR after the trade and 0 open roster spots.
+6.week_line: Week 10: QBs in the top 24 who play go from 1 to 2. WRs in the top 36 who play go from 3 to 2. Maye plays at DET, the most points to QBs. Jackson is on IR. Week 11: QBs in the top 24 who play stay at 1. WRs in the top 36 who play go from 2 to 1. Golden, Mumpfield and Maye have a bye. Jackson is on IR.
+9.week_line: Week 10: QBs in the top 24 who play go from 2 to 1. WRs in the top 36 who play go from 2 to 3. Flowers plays LAC at home, 4th most points to WRs. Stribling is on IR. Week 11: QBs in the top 24 who play stay at 1. WRs in the top 36 who play go from 2 to 3. Flowers plays at CAR, 15th fewest points to WRs. Stribling is on IR.
+6.depth.qb: For Bo Girds, the QBs in the top 24 go from 2 to 3. Of them, the QBs who can play now go from 1 to 2.
+6.depth.wr: For Bo Girds, the WRs in the top 36 go from 3 to 2.
+9.depth.qb: For Maye d'force B with U, the QBs in the top 24 go from 2 to 1.
+9.depth.wr: For Maye d'force B with U, the WRs in the top 36 go from 2 to 3.
+9.strength: For Maye d'force B with U, the starters at RB1, RB2, WR1, and WR2 with a position rank of 24 or better go from 3 to 4.
+6.team: Bo Girds was 11-7, 2nd of 12, before the trade. Its race group is In, with 82% playoff odds after week 9.
+9.team: Maye d'force B with U was 10-8, 7th of 12, before the trade. Its race group is In, with 80% playoff odds after week 9.
+6.depth.rb: For Bo Girds, the RBs in the top 36 go from 4 to 4.
+9.depth.rb: For Maye d'force B with U, the RBs in the top 36 go from 4 to 4.
+9.bye: For Maye d'force B with U, D'Andre Swift and Jonah Coleman start after the trade and have a bye in week 10, the trade week.
+6.measure.fit: The roster fit measure for Bo Girds: You go from 2 QBs in the top 24 to 3 and go from 3 WRs in the top 36 to 2.
+6.measure.standing: The standing measure for Bo Girds: In a playoff spot, so you need points now, and this trade keeps your points about the same.
+6.measure.trend: The trend and usage measure for Bo Girds: Maye plays 90% of the snaps (down); Flowers plays 74% of the snaps (down), sees 26% of the targets (down), and averages -0.5 air yards per target.
+6.measure.schedule: The schedule measure for Bo Girds: Maye faces KC (4th fewest points to QBs), NYJ (15th fewest), and DEN (16th fewest) in weeks 15 to 17.
+9.measure.fit: The roster fit measure for Maye d'force B with U: You go from 2 QBs in the top 24 to 1 and go from 2 WRs in the top 36 to 3, and you get the better player.
+9.measure.standing: The standing measure for Maye d'force B with U: Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same.
+9.measure.trend: The trend and usage measure for Maye d'force B with U: Flowers plays 74% of the snaps (down), sees 26% of the targets (down), and averages -0.5 air yards per target; Maye plays 90% of the snaps (down).
+9.measure.injury: The injury measure for Maye d'force B with U: Flowers was on the injury report in 4 of 9 weeks.
+9.measure.schedule: The schedule measure for Maye d'force B with U: Flowers has his bye in week 13 and faces PIT (7th fewest points to WRs), CLE (10th fewest), and CIN (16th fewest) in weeks 15 to 17.
+9997.history: In 2023, Zay Flowers played for BAL and scored half PPR points per game as follows: 9.41 in weeks 1 to 8 over 8 games; 11.57 in weeks 9 to 17 over 8 games; no cold game. In 2024, Zay Flowers played for BAL and scored half PPR points per game as follows: 10.49 in weeks 1 to 8 over 8 games; 10.75 in weeks 9 to 17 over 8 games; 7.9 in cold games over 3 games. In 2025, Zay Flowers played for BAL and scored half PPR points per game as follows: 10.73 in weeks 1 to 8 over 7 games; 10.82 in weeks 9 to 17 over 9 games; 14.08 in cold games over 5 games. A cold game is outdoors at 40 degrees F or below.
+11564.history: In 2024, Drake Maye played for NE and scored half PPR points per game as follows: 13.49 in weeks 1 to 8 over 4 games; 15.4 in weeks 9 to 17 over 8 games; 11.69 in cold games over 4 games. In 2025, Drake Maye played for NE and scored half PPR points per game as follows: 21.59 in weeks 1 to 8 over 8 games; 20.37 in weeks 9 to 17 over 8 games; 21.38 in cold games over 6 games. A cold game is outdoors at 40 degrees F or below.
+NEWS.9997.1: Reported on 2026-11-06 by FantasyPros: Zay Flowers caught three of six targets for 6 yards and ran three times for 17 yards in the Ravens' 33-10 loss to the Jaguars on Thursday.
+NEWS.9997.2: Reported on 2026-11-06 by Rotowire: Flowers brought in three of six targets for six yards and rushed three times for 17 yards in the Ravens' 33-10 loss to the Jaguars on Thursday night.
+NEWS.11564.1: Reported on 2026-11-08 by Rotowire: Maye completed 21 of 38 passes for 299 yards with three touchdowns and three interceptions while adding one rush for three yards in the Patriots' 45-27 loss to the Packers on Sunday.
+NEWS.11564.2: Reported on 2026-11-08 by FantasyPros: Drake Maye completed 21-of-38 pass attempts for 299 yards, three touchdowns, and three interceptions while also rushing once for three yards in the Patriots' 45-27 Week 9 loss to the Packers.
+6.now: For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.
+JEV.fair: A quick yes or no read of a small model on "Is this trade close to fair for both teams: Bo Girds gives Zay Flowers and Maye d'force B with U gives Drake Maye?": unsure.
+JEV.need.6: A quick yes or no read of a small model on "Does Bo Girds fill a starting need in this trade, where it gets Drake Maye?": yes.
+JEV.need.9: A quick yes or no read of a small model on "Does Maye d'force B with U fill a starting need in this trade, where it gets Zay Flowers?": yes.

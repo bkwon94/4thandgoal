@@ -1,6 +1,6 @@
 [
   {
-    "at": "2026-11-11T01:19:23.853Z",
+    "at": "2026-11-11T19:23:09.223Z",
     "method": "GET",
     "path": "/clients/cpc/eggs/board",
     "status": 200,
@@ -140,7 +140,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -202,7 +202,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -264,7 +264,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -320,7 +320,7 @@
         },
         {
           "roster_id": 5,
-          "team": "London Cooking"
+          "team": "Puka Deez..."
         },
         {
           "roster_id": 7,
@@ -351,7 +351,7 @@
     }
   },
   {
-    "at": "2026-11-11T01:19:23.908Z",
+    "at": "2026-11-11T19:23:09.273Z",
     "method": "GET",
     "path": "/clients/cpc/eggs/board",
     "status": 200,
@@ -491,7 +491,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -553,7 +553,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -615,7 +615,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -671,7 +671,7 @@
         },
         {
           "roster_id": 5,
-          "team": "London Cooking"
+          "team": "Puka Deez..."
         },
         {
           "roster_id": 7,
@@ -702,7 +702,7 @@
     }
   },
   {
-    "at": "2026-11-11T01:19:25.995Z",
+    "at": "2026-11-11T19:23:09.490Z",
     "method": "POST",
     "path": "/clients/cpc/suggestions",
     "status": 200,
@@ -727,9 +727,9 @@
     },
     "response": {
       "picks": [
+        "sell_high",
         "power_rankings",
-        "week_recap",
-        "waiver_targets"
+        "week_recap"
       ],
       "facts": {
         "week_recap": "You scored 80.11, 12th of 12",
@@ -741,23 +741,26 @@
         "leaders_trades": "1 trade this week",
         "weak_spots": "QB ranks 7th of 12",
         "stack_up": "Grade A, QB ranks 7th of 12",
-        "waiver_targets": "19 free agents on the list",
-        "trade_ideas": "Offers for your QB, 7th of 12"
+        "waiver_targets": "Free agents for the WR2 slot",
+        "trade_ideas": "Offers for your WR2: Stefon Diggs (WR25)",
+        "sell_high": "Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season"
       },
       "lifts": {
-        "week_recap": 0.73,
+        "week_recap": 0.77,
         "last_matchup": 0.59,
-        "next_matchup": 0.29,
-        "power_rankings": 0.82,
-        "playoff_race": 0.17,
-        "your_season": 0.13,
-        "leaders_trades": 0.1,
-        "weak_spots": 0.22,
-        "stack_up": 0.22,
-        "waiver_targets": 0.27,
-        "trade_ideas": 0.28
+        "next_matchup": 0.34,
+        "power_rankings": 0.83,
+        "playoff_race": 0.13,
+        "your_season": 0.15,
+        "leaders_trades": 0.09,
+        "weak_spots": 0.17,
+        "stack_up": 0.21,
+        "waiver_targets": 0.45,
+        "trade_ideas": 0.5,
+        "sell_high": 0.87
       },
       "urgent": [
+        "sell_high",
         "power_rankings",
         "week_recap"
       ],
@@ -765,18 +768,19 @@
       "jev": {
         "model": "jev-1.14.0",
         "nouls": {
-          "lift_week_recap": 0.73,
+          "lift_week_recap": 0.77,
           "lift_last_matchup": 0.59,
-          "lift_next_matchup": 0.29,
-          "lift_power_rankings": 0.82,
-          "lift_playoff_race": 0.17,
-          "lift_your_season": 0.13,
-          "lift_leaders_trades": 0.1,
-          "lift_weak_spots": 0.22,
-          "lift_stack_up": 0.22,
-          "lift_waiver_targets": 0.27,
-          "lift_trade_ideas": 0.28,
-          "sell_high_clear": 0.68
+          "lift_next_matchup": 0.34,
+          "lift_power_rankings": 0.83,
+          "lift_playoff_race": 0.13,
+          "lift_your_season": 0.15,
+          "lift_leaders_trades": 0.09,
+          "lift_weak_spots": 0.17,
+          "lift_stack_up": 0.21,
+          "lift_waiver_targets": 0.45,
+          "lift_trade_ideas": 0.5,
+          "lift_sell_high": 0.87,
+          "sell_high_clear": 0.83
         },
         "choices": {
           "sell_high_player": {
@@ -784,15 +788,14 @@
             "travis_kelce": 0,
             "stefon_diggs": 0,
             "derrick_henry": 0,
-            "christian_mccaffrey": 0.1,
-            "courtland_sutton": 0.05,
+            "christian_mccaffrey": 0.08,
+            "courtland_sutton": 0.02,
             "jakobi_meyers": 0,
             "j_k_dobbins": 0,
-            "romeo_doubs": 0.32,
-            "tyler_allgeier": 0.52,
+            "romeo_doubs": 0.29,
+            "tyler_allgeier": 0.6,
             "khalil_shakir": 0.01,
             "bryce_young": 0,
-            "michael_mayer": 0,
             "jaxon_smith_njigba": 0
           }
         }
@@ -800,14 +803,15 @@
     }
   },
   {
-    "at": "2026-11-11T01:19:27.386Z",
+    "at": "2026-11-11T19:23:10.964Z",
     "method": "POST",
     "path": "/clients/cpc/ask",
     "status": 200,
     "request": {
       "question": "is my RB for their WR fair",
       "roster_id": 3,
-      "week": 8
+      "week": 8,
+      "turns": []
     },
     "response": {
       "route": "topic",
@@ -823,11 +827,11 @@
       "jev": {
         "model": "jev-1.14.0",
         "nouls": {
-          "fits_topic": 0.95,
-          "data_can_answer": 0.77,
+          "fits_topic": 0.93,
+          "data_can_answer": 0.81,
           "about_league": 0.99,
           "abuse": 0.01,
-          "names_team": 0.14
+          "names_team": 0.19
         },
         "choices": {
           "topic": {
@@ -846,25 +850,25 @@
             "trade_check": 1
           },
           "team": {
-            "the_blue_tent": 0.29,
-            "all_you_need_is_love": 0.05,
-            "lil_fridge": 0.05,
-            "nfc_least": 0.05,
-            "london_cooking": 0.04,
-            "bo_girds": 0.07,
-            "to_infinity_and_bijan": 0.14,
-            "return_of_t_mac": 0.05,
+            "the_blue_tent": 0.19,
+            "all_you_need_is_love": 0.06,
+            "lil_fridge": 0.06,
+            "nfc_least": 0.06,
+            "puka_deez": 0.11,
+            "bo_girds": 0.08,
+            "to_infinity_and_bijan": 0.13,
+            "return_of_t_mac": 0.06,
             "maye_d_force_b_with_u": 0.03,
             "behold_the_lamb": 0.05,
             "unsolicited_dak_picks": 0.08,
-            "teehee": 0.1
+            "teehee": 0.09
           }
         }
       }
     }
   },
   {
-    "at": "2026-11-11T01:19:27.485Z",
+    "at": "2026-11-11T19:23:11.105Z",
     "method": "POST",
     "path": "/clients/cpc/trade-check",
     "status": 200,
@@ -872,10 +876,10 @@
       "question": "is my RB for their WR fair",
       "roster_id": 3
     },
-    "response": "data: {\"type\": \"start\"}\n\ndata: {\"type\": \"data-picks\", \"data\": {\"model\": \"jev-1.14.0\", \"gives\": {\"named\": 0.05, \"player_id\": \"3198\", \"name\": \"Derrick Henry\", \"probability\": 0.68, \"roster_id\": 3, \"sure\": false}, \"gets\": {\"named\": 0.04, \"player_id\": \"6794\", \"name\": \"Justin Jefferson\", \"probability\": 0.16, \"roster_id\": 9, \"sure\": false}}}\n\ndata: {\"type\": \"data-answer\", \"data\": {\"kind\": \"form\", \"form\": {\"asker\": 3, \"partner\": null, \"gives\": [], \"gets\": []}}}\n\ndata: {\"type\": \"finish\"}\n\ndata: [DONE]\n\n"
+    "response": "data: {\"type\": \"start\"}\n\ndata: {\"type\": \"data-picks\", \"data\": {\"model\": \"jev-1.14.0\", \"gives\": {\"named\": 0.05, \"player_id\": \"3198\", \"name\": \"Derrick Henry\", \"probability\": 0.64, \"roster_id\": 3, \"sure\": false}, \"gets\": {\"named\": 0.03, \"player_id\": \"6794\", \"name\": \"Justin Jefferson\", \"probability\": 0.11, \"roster_id\": 9, \"sure\": false}}}\n\ndata: {\"type\": \"data-answer\", \"data\": {\"kind\": \"form\", \"form\": {\"asker\": 3, \"partner\": null, \"gives\": [], \"gets\": []}}}\n\ndata: {\"type\": \"finish\"}\n\ndata: [DONE]\n\n"
   },
   {
-    "at": "2026-11-11T01:19:31.609Z",
+    "at": "2026-11-11T19:23:16.324Z",
     "method": "GET",
     "path": "/clients/cpc/eggs/board",
     "status": 200,
@@ -1015,7 +1019,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -1077,7 +1081,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -1139,7 +1143,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -1195,7 +1199,7 @@
         },
         {
           "roster_id": 5,
-          "team": "London Cooking"
+          "team": "Puka Deez..."
         },
         {
           "roster_id": 7,
@@ -1226,7 +1230,7 @@
     }
   },
   {
-    "at": "2026-11-11T01:19:31.612Z",
+    "at": "2026-11-11T19:23:16.326Z",
     "method": "GET",
     "path": "/clients/cpc/teams?season=2026",
     "status": 200,
@@ -1268,13 +1272,6 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/11604.jpg"
             },
             {
-              "player_id": "11834",
-              "name": "Devaughn Vele",
-              "position": "WR",
-              "nfl_team": "NO",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11834.jpg"
-            },
-            {
               "player_id": "12489",
               "name": "RJ Harvey",
               "position": "RB",
@@ -1310,6 +1307,13 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/2216.jpg"
             },
             {
+              "player_id": "2505",
+              "name": "Darren Waller",
+              "position": "TE",
+              "nfl_team": "CAR",
+              "headshot": "https://sleepercdn.com/content/nfl/players/2505.jpg"
+            },
+            {
               "player_id": "5022",
               "name": "Dallas Goedert",
               "position": "TE",
@@ -1336,6 +1340,13 @@
               "position": "QB",
               "nfl_team": "SF",
               "headshot": "https://sleepercdn.com/content/nfl/players/8183.jpg"
+            },
+            {
+              "player_id": "IND",
+              "name": "Indianapolis Colts",
+              "position": "DEF",
+              "nfl_team": "IND",
+              "headshot": "https://sleepercdn.com/images/team_logos/nfl/ind.png"
             }
           ]
         },
@@ -1358,6 +1369,13 @@
               "position": "RB",
               "nfl_team": "CLE",
               "headshot": "https://sleepercdn.com/content/nfl/players/12469.jpg"
+            },
+            {
+              "player_id": "12491",
+              "name": "Corey Kiner",
+              "position": "RB",
+              "nfl_team": "NE",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12491.jpg"
             },
             {
               "player_id": "12517",
@@ -1536,13 +1554,6 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg"
             },
             {
-              "player_id": "9482",
-              "name": "Michael Mayer",
-              "position": "TE",
-              "nfl_team": "LV",
-              "headshot": "https://sleepercdn.com/content/nfl/players/9482.jpg"
-            },
-            {
               "player_id": "9488",
               "name": "Jaxon Smith-Njigba",
               "position": "WR",
@@ -1555,6 +1566,13 @@
               "position": "DEF",
               "nfl_team": "DEN",
               "headshot": "https://sleepercdn.com/images/team_logos/nfl/den.png"
+            },
+            {
+              "player_id": "GB",
+              "name": "Green Bay Packers",
+              "position": "DEF",
+              "nfl_team": "GB",
+              "headshot": "https://sleepercdn.com/images/team_logos/nfl/gb.png"
             }
           ]
         },
@@ -1673,9 +1691,9 @@
         },
         {
           "roster_id": 5,
-          "team": "London Cooking",
+          "team": "Puka Deez...",
           "manager": "DumpsterFiresRUs",
-          "avatar": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+          "avatar": "https://sleepercdn.com/uploads/937ea821d67176f1bcbd3d4a43ef5cb0.jpg",
           "players": [
             {
               "player_id": "12474",
@@ -1741,6 +1759,13 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/7594.jpg"
             },
             {
+              "player_id": "7600",
+              "name": "Pat Freiermuth",
+              "position": "TE",
+              "nfl_team": "PIT",
+              "headshot": "https://sleepercdn.com/content/nfl/players/7600.jpg"
+            },
+            {
               "player_id": "8138",
               "name": "James Cook III",
               "position": "RB",
@@ -1760,6 +1785,13 @@
               "position": "DEF",
               "nfl_team": "SEA",
               "headshot": "https://sleepercdn.com/images/team_logos/nfl/sea.png"
+            },
+            {
+              "player_id": "TB",
+              "name": "Tampa Bay Buccaneers",
+              "position": "DEF",
+              "nfl_team": "TB",
+              "headshot": "https://sleepercdn.com/images/team_logos/nfl/tb.png"
             }
           ]
         },
@@ -1770,6 +1802,13 @@
           "avatar": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
           "players": [
             {
+              "player_id": "11579",
+              "name": "Audric Estime",
+              "position": "RB",
+              "nfl_team": "NO",
+              "headshot": "https://sleepercdn.com/content/nfl/players/11579.jpg"
+            },
+            {
               "player_id": "11586",
               "name": "Blake Corum",
               "position": "RB",
@@ -1777,25 +1816,25 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/11586.jpg"
             },
             {
-              "player_id": "11610",
-              "name": "Malik Washington",
-              "position": "WR",
-              "nfl_team": "MIA",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11610.jpg"
-            },
-            {
-              "player_id": "12487",
-              "name": "Terrance Ferguson",
-              "position": "TE",
-              "nfl_team": "LAR",
-              "headshot": "https://sleepercdn.com/content/nfl/players/12487.jpg"
-            },
-            {
               "player_id": "12501",
               "name": "Matthew Golden",
               "position": "WR",
               "nfl_team": "GB",
               "headshot": "https://sleepercdn.com/content/nfl/players/12501.jpg"
+            },
+            {
+              "player_id": "12718",
+              "name": "Konata Mumpfield",
+              "position": "WR",
+              "nfl_team": "LAR",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12718.jpg"
+            },
+            {
+              "player_id": "13269",
+              "name": "Fernando Mendoza",
+              "position": "QB",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/13269.jpg"
             },
             {
               "player_id": "13301",
@@ -1817,13 +1856,6 @@
               "position": "QB",
               "nfl_team": "BAL",
               "headshot": "https://sleepercdn.com/content/nfl/players/4881.jpg"
-            },
-            {
-              "player_id": "6130",
-              "name": "Devin Singletary",
-              "position": "RB",
-              "nfl_team": "NYG",
-              "headshot": "https://sleepercdn.com/content/nfl/players/6130.jpg"
             },
             {
               "player_id": "8130",
@@ -1854,6 +1886,13 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg"
             },
             {
+              "player_id": "96",
+              "name": "Aaron Rodgers",
+              "position": "QB",
+              "nfl_team": "PIT",
+              "headshot": "https://sleepercdn.com/content/nfl/players/96.jpg"
+            },
+            {
               "player_id": "9997",
               "name": "Zay Flowers",
               "position": "WR",
@@ -1881,13 +1920,6 @@
               "position": "RB",
               "nfl_team": "NYJ",
               "headshot": "https://sleepercdn.com/content/nfl/players/11576.jpg"
-            },
-            {
-              "player_id": "11631",
-              "name": "Brian Thomas Jr.",
-              "position": "WR",
-              "nfl_team": "JAX",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11631.jpg"
             },
             {
               "player_id": "11632",
@@ -1960,6 +1992,13 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/7611.jpg"
             },
             {
+              "player_id": "8122",
+              "name": "Zonovan Knight",
+              "position": "RB",
+              "nfl_team": "ARI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/8122.jpg"
+            },
+            {
               "player_id": "8155",
               "name": "Breece Hall",
               "position": "RB",
@@ -1982,6 +2021,13 @@
           "avatar": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
           "players": [
             {
+              "player_id": "10218",
+              "name": "Xavier Hutchinson",
+              "position": "WR",
+              "nfl_team": "HOU",
+              "headshot": "https://sleepercdn.com/content/nfl/players/10218.jpg"
+            },
+            {
               "player_id": "11620",
               "name": "Rome Odunze",
               "position": "WR",
@@ -1989,11 +2035,11 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/11620.jpg"
             },
             {
-              "player_id": "11628",
-              "name": "Marvin Harrison Jr.",
+              "player_id": "12492",
+              "name": "Pat Bryant",
               "position": "WR",
-              "nfl_team": "HOU",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11628.jpg"
+              "nfl_team": "DEN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12492.jpg"
             },
             {
               "player_id": "13279",
@@ -2095,13 +2141,6 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/11564.jpg"
             },
             {
-              "player_id": "11637",
-              "name": "Keon Coleman",
-              "position": "WR",
-              "nfl_team": "BUF",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11637.jpg"
-            },
-            {
               "player_id": "11646",
               "name": "Jalen Coker",
               "position": "WR",
@@ -2109,11 +2148,25 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/11646.jpg"
             },
             {
+              "player_id": "12504",
+              "name": "Kaleb Johnson",
+              "position": "RB",
+              "nfl_team": "GB",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12504.jpg"
+            },
+            {
               "player_id": "12545",
               "name": "Tyler Shough",
               "position": "QB",
               "nfl_team": "NO",
               "headshot": "https://sleepercdn.com/content/nfl/players/12545.jpg"
+            },
+            {
+              "player_id": "12634",
+              "name": "Jordan Watkins",
+              "position": "WR",
+              "nfl_team": "SF",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12634.jpg"
             },
             {
               "player_id": "13337",
@@ -2163,13 +2216,6 @@
               "position": "WR",
               "nfl_team": "MIN",
               "headshot": "https://sleepercdn.com/content/nfl/players/6794.jpg"
-            },
-            {
-              "player_id": "7526",
-              "name": "Jaylen Waddle",
-              "position": "WR",
-              "nfl_team": "DEN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/7526.jpg"
             },
             {
               "player_id": "8131",
@@ -2314,13 +2360,6 @@
           "avatar": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
           "players": [
             {
-              "player_id": "11625",
-              "name": "Adonai Mitchell",
-              "position": "WR",
-              "nfl_team": "NYJ",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11625.jpg"
-            },
-            {
               "player_id": "11647",
               "name": "Kimani Vidal",
               "position": "RB",
@@ -2396,6 +2435,13 @@
               "position": "WR",
               "nfl_team": "KC",
               "headshot": "https://sleepercdn.com/content/nfl/players/9500.jpg"
+            },
+            {
+              "player_id": "9502",
+              "name": "Tank Dell",
+              "position": "WR",
+              "nfl_team": "HOU",
+              "headshot": "https://sleepercdn.com/content/nfl/players/9502.jpg"
             },
             {
               "player_id": "9758",
@@ -2511,11 +2557,11 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/8146.jpg"
             },
             {
-              "player_id": "CHI",
-              "name": "Chicago Bears",
+              "player_id": "BAL",
+              "name": "Baltimore Ravens",
               "position": "DEF",
-              "nfl_team": "CHI",
-              "headshot": "https://sleepercdn.com/images/team_logos/nfl/chi.png"
+              "nfl_team": "BAL",
+              "headshot": "https://sleepercdn.com/images/team_logos/nfl/bal.png"
             }
           ]
         }

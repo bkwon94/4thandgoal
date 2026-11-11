@@ -1,0 +1,15 @@
+The tap on Trade ideas was at about 1.58 s of the recording.
+Each article on each animation frame (only the changes): its steps, each as [state mark line], where "braille" is a frame of the braille spinner, and if its text is long (the whole Answer) or short.
+1.593 s: 
+2.646 s: Trade ideas busy true: [live braille Reading the league…] | text short
+4.754 s: Trade ideas busy true: [live braille Checking 11 teams for a fit…] | text short
+5.540 s: Trade ideas busy true: [live braille Checked 11 teams for a fit…] | text short
+5.588 s: Trade ideas busy true: [done braille Checked 11 teams for a fit] [live braille Building offers…] | text short
+5.757 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [live braille Building offers…] | text short
+6.375 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done braille Built 70 offers] [live braille Weighing the offers…] | text short
+6.555 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done ✔ Built 70 offers] [live braille Weighing the offers…] | text short
+7.441 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done ✔ Built 70 offers] [done braille Weighed 70 offers] [live braille Picking the best offers…] | text short
+7.621 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done ✔ Built 70 offers] [done ✔ Weighed 70 offers] [live braille Picking the best offers…] | text short
+41.404 s: Trade ideas busy true: [done ✔ Checked 11 teams for a fit] [done ✔ Built 70 offers] [done ✔ Weighed 70 offers] [live braille Picked the best 2…] | text short
+43.611 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 70 offers] [done ✔ Weighed 70 offers] [done braille Picked the best 2] | text long
+43.773 s: Trade ideas busy false: [done ✔ Checked 11 teams for a fit] [done ✔ Built 70 offers] [done ✔ Weighed 70 offers] [done ✔ Picked the best 2] | text long

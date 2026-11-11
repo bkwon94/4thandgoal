@@ -1,3 +1,4 @@
-The recording is the live run of AT-26 (tests.mjs AT-26): 375x812, light, Wednesday clock. Store Lil Fridge and the passphrase, open /, open Trade ideas from "More" or a chip, wait for the whole Answer.
-Frames come from the recording with ffmpeg at 1 fps (contact-sheet-1fps.png, frame n at n-1 s). Each frame-<time>-<state>.png is one frame of the recording.
-The step lines of the stream are in evidence/AT-26/api-calls.json (data-step parts).
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, screen recording recording-375-light.webm.
+1. Store Lil Fridge and the passphrase. Open /. Tap Trade ideas (from the row or More).
+2. Sample each article on each animation frame, with the page scrolled to its end, until the Answer ends, plus 3 s (steps-samples.txt). Viewport shot trade-end-375-light.
+3. frame-<time>-change-<n>.png are frames of the recording just after each change of the step lines or the text.

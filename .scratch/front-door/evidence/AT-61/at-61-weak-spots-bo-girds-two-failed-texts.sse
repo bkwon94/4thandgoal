@@ -1,0 +1,30 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"topic":"weak_spots","team":6,"fact":"QB ranks 7th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"7th of 12"},{"label":"Holes","value":"2"}],"rows":[{"label":"QB","value":"7th of 12","note":"thin · hole: Lamar Jackson","roster_id":null,"you":false},{"label":"RB","value":"5th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"5th of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"3rd of 12","note":"thin · hole: Malik Washington","roster_id":null,"you":false}]}}
+
+data: {"type":"data-key","data":{"key":"42630f5be75f72d1c3824f45032c40296bcb6be6e44867db5a09793ba425bc4e"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"failed"}}
+
+data: {"type":"data-miss","data":{"closest":["stack_up","waiver_targets","trade_ideas"]}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

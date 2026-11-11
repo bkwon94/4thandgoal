@@ -2,33 +2,9 @@ data: {"type":"start"}
 
 data: {"type":"data-block","data":{"topic":"weak_spots","team":3,"fact":"QB ranks 6th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"6th of 12"},{"label":"Holes","value":"1"}],"rows":[{"label":"QB","value":"6th of 12","note":"deep","roster_id":null,"you":false},{"label":"TE","value":"6th of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"6th of 12","note":"thin · hole: Jakobi Meyers","roster_id":null,"you":false},{"label":"RB","value":"3rd of 12","note":"fine","roster_id":null,"you":false}]}}
 
-data: {"type":"data-key","data":{"key":"eac85794d7f1ae452e141e9e101734f3254dc1b430e86e9f6b3ad8410ee098c7"}}
+data: {"type":"data-key","data":{"key":"cc434bbb96df9231be04b75cec0b3fdeacd6584aed3406b73df3116f355dc3ae"}}
 
 data: {"type":"start-step"}
-
-data: {"type":"text-start","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"Your ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"weakest ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"spot ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"is ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"QB, ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"which ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"ranks ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"6th ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"of ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-delta","delta":"12. ","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
-
-data: {"type":"text-end","id":"29ad5220-a8eb-4553-9bb4-a473ef9157fa"}
 
 data: {"type":"finish-step"}
 
@@ -40,33 +16,33 @@ data: {"type":"data-fix","data":{}}
 
 data: {"type":"start-step"}
 
-data: {"type":"text-start","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"Your ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"weakest ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"spot ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"is ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"QB, ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"which ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"ranks ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"6th ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"of ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-delta","delta":"12. ","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
-data: {"type":"text-end","id":"3db27d76-3e7a-40b8-9ff4-d56236d712da"}
-
 data: {"type":"finish-step"}
 
 data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"Your ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"weakest ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"spot ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"is ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"QB, ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"which ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"ranks ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"6th ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"of ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-delta","delta":"12. ","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
+
+data: {"type":"text-end","id":"560d3658-5952-4cfa-8c29-06e83b8459ad"}
 
 data: {"type":"data-check","id":"check","data":{"state":"checked"}}
 

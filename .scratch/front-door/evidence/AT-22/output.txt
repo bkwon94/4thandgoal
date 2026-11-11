@@ -1,8 +1,7 @@
 $ cd apps/api && uv run --exact --package cpc-api pytest -v tests/test_personal_topics.py::test_one_failed_claim_fades_the_text_and_streams_a_second_checked_text tests/test_personal_topics.py::test_a_second_failed_claim_ends_with_the_honest_miss_and_keeps_nothing
 ============================= test session starts ==============================
-platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/front-door/.venv/bin/python
-cachedir: .pytest_cache
-rootdir: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/front-door/apps/api
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- <front-door worktree at 99d00125>/.venv/bin/python
+rootdir: <front-door worktree at 99d00125>/apps/api
 configfile: pyproject.toml
 plugins: xdist-3.8.0, anyio-4.15.1
 collecting ... collected 2 items
@@ -10,98 +9,64 @@ collecting ... collected 2 items
 tests/test_personal_topics.py::test_one_failed_claim_fades_the_text_and_streams_a_second_checked_text PASSED [ 50%]
 tests/test_personal_topics.py::test_a_second_failed_claim_ends_with_the_honest_miss_and_keeps_nothing PASSED [100%]
 
-============================== 2 passed in 1.46s ===============================
+============================== 2 passed in 1.06s ===============================
+(exit 0)
 
-$ cd apps/api && EVIDENCE_STREAM_DIR=<scratchpad>/streams uv run --exact --package cpc-api pytest -v -s tests/test_zz_evidence_streams.py   # a temp test file of the round (never committed) with the same FakeJev runs; it saves each raw stream and prints its parts
+$ cd apps/api && uv run --exact --package cpc-api pytest -v -s tests/test_zz_at22_parts.py   # a temp test file of the round (never committed): the same FakeJev run, Checks([False, False, False]), which prints each part of the stream
 ============================= test session starts ==============================
-platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/front-door/.venv/bin/python
-cachedir: .pytest_cache
-rootdir: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/front-door/apps/api
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- <front-door worktree at 99d00125>/.venv/bin/python
+rootdir: <front-door worktree at 99d00125>/apps/api
 configfile: pyproject.toml
 plugins: xdist-3.8.0, anyio-4.15.1
-collecting ... collected 2 items
+collecting ... collected 1 item
 
-tests/test_zz_evidence_streams.py::test_at_21_one_failed_claim_stream 
-AT-21 parts of the stream:
-  start 
-  data-block {'topic': 'weak_spots', 'team': 3, 'fact': 'QB ranks 6th of 12', 'stats': [{'label': 'Weakest spot', 'value': 'QB'}, {'label': 'Rank', 'value': '6th of 12'}, {'label': 'Holes', 'value': '1'}], 'rows': [{'label': 'QB', 'value': '6th of 12', 'note': 'deep', 'roster_id': None, 'you': False}, {'label': 'TE', 'value': '6th of 12', 'note': 'fine', 'roster_id': None, 'you': False}, {'label': 'WR', 'value': '6th of 12', 'note': 'thin · hole: Jakobi Meyers', 'roster_id': None, 'you': False}, {'label': 'RB', 'value': '3rd of 12', 'note': 'fine', 'roster_id': None, 'you': False}]}
-  data-key {'key': 'eac85794d7f1ae452e141e9e101734f3254dc1b430e86e9f6b3ad8410ee098c7'}
-  start-step 
-  text-start 
-  text-delta Your 
-  text-delta weakest 
-  text-delta spot 
-  text-delta is 
-  text-delta QB, 
-  text-delta which 
-  text-delta ranks 
-  text-delta 6th 
-  text-delta of 
-  text-delta 12. 
-  text-end 
-  finish-step 
-  data-check {'state': 'checking'}
-  data-check {'state': 'fixing'}
-  data-fix {}
-  start-step 
-  text-start 
-  text-delta Your 
-  text-delta weakest 
-  text-delta spot 
-  text-delta is 
-  text-delta QB, 
-  text-delta which 
-  text-delta ranks 
-  text-delta 6th 
-  text-delta of 
-  text-delta 12. 
-  text-end 
-  finish-step 
-  data-check {'state': 'checking'}
-  data-check {'state': 'checked'}
-  finish 
-PASSED
-tests/test_zz_evidence_streams.py::test_at_22_two_failed_claims_stream 
+tests/test_zz_at22_parts.py::test_at_22_parts_of_the_stream 
 AT-22 parts of the stream:
   start 
-  data-block {'topic': 'weak_spots', 'team': 3, 'fact': 'QB ranks 6th of 12', 'stats': [{'label': 'Weakest spot', 'value': 'QB'}, {'label': 'Rank', 'value': '6th of 12'}, {'label': 'Holes', 'value': '1'}], 'rows': [{'label': 'QB', 'value': '6th of 12', 'note': 'deep', 'roster_id': None, 'you': False}, {'label': 'TE', 'value': '6th of 12', 'note': 'fine', 'roster_id': None, 'you': False}, {'label': 'WR', 'value': '6th of 12', 'note': 'thin · hole: Jakobi Meyers', 'roster_id': None, 'you': False}, {'label': 'RB', 'value': '3rd of 12', 'note': 'fine', 'roster_id': None, 'you': False}]}
-  data-key {'key': 'eac85794d7f1ae452e141e9e101734f3254dc1b430e86e9f6b3ad8410ee098c7'}
+  data-block {"data": {"topic": "weak_spots", "team": 3, "fact": "QB ranks 6th of 12", "stats": [{"label": "Weakest spot", "value": "QB"}, {"label": "Rank", "value": "6th of 12"}, {"label": "Holes", "value": "1"}], "rows": [{"label": "QB", "value": "6th of 12", "note": "deep", "roster_id": null, "you": false}, {"label": "TE", "value": "6th of 12", "note": "fine", "roster_id": null, "you": false}, {"label": "WR", "value": "6th of 12", "note": "thin \u00b7 hole: Jakobi Meyers", "roster_id": null, "you": false}, {"label": "RB", "value": "3rd of 12", "note": "fine", "roster_id": null, "you": false}]}}
+  data-key {"data": {"key": "cc434bbb96df9231be04b75cec0b3fdeacd6584aed3406b73df3116f355dc3ae"}}
   start-step 
-  text-start 
-  text-delta Your 
-  text-delta weakest 
-  text-delta spot 
-  text-delta is 
-  text-delta QB, 
-  text-delta which 
-  text-delta ranks 
-  text-delta 6th 
-  text-delta of 
-  text-delta 12. 
-  text-end 
   finish-step 
-  data-check {'state': 'checking'}
-  data-check {'state': 'fixing'}
-  data-fix {}
+  data-check {"id": "check", "data": {"state": "checking"}}
+  data-check {"id": "check", "data": {"state": "fixing"}}
+  data-fix {"data": {}}
   start-step 
-  text-start 
-  text-delta Your 
-  text-delta weakest 
-  text-delta spot 
-  text-delta is 
-  text-delta QB, 
-  text-delta which 
-  text-delta ranks 
-  text-delta 6th 
-  text-delta of 
-  text-delta 12. 
-  text-end 
   finish-step 
-  data-check {'state': 'checking'}
-  data-check {'state': 'failed'}
-  data-miss {'closest': ['stack_up', 'waiver_targets', 'trade_ideas']}
-  finish 
+  data-check {"id": "check", "data": {"state": "checking"}}
+  data-check {"id": "check", "data": {"state": "failed"}}
+  data-miss {"data": {"closest": ["stack_up", "waiver_targets", "trade_ideas"]}}
+  finish {"finishReason": "stop"}
+Text parts in the stream: 0
 Claude calls of the stand-in writer: 2
 PASSED
 
-============================== 2 passed in 1.42s ===============================
+============================== 1 passed in 0.71s ===============================
+(exit 0)
+
+# The temp test file:
+$ cat tests/test_zz_at22_parts.py
+"""
+A temp test of the AT-22 evidence round, never committed: the same FakeJev run as
+test_a_second_failed_claim_ends_with_the_honest_miss_and_keeps_nothing, which prints each part of the stream.
+"""
+import json
+
+from fakes import FakeJev
+import test_api
+from test_personal_topics import Checks, Writer, _api, _ask, _chunks
+
+repo = test_api.repo
+settings = test_api.settings
+sources = test_api.sources
+
+
+def test_at_22_parts_of_the_stream(settings, sources):
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([False, False, False]).answer), writer)
+    chunks = _chunks(_ask(api, "weak_spots"))
+    print("\nAT-22 parts of the stream:")
+    for chunk in chunks:
+        rest = {k: v for k, v in chunk.items() if k != "type"}
+        print(f"  {chunk['type']} {json.dumps(rest) if rest else ''}")
+    print(f"Text parts in the stream: {sum(1 for c in chunks if c['type'].startswith('text-'))}")
+    print(f"Claude calls of the stand-in writer: {writer.calls}")

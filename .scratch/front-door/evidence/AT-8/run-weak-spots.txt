@@ -1,0 +1,10 @@
+The row of Suggestions at open: More ;; Weak spots | QB ranks 7th of 12 ;; Playoff race | 86% playoff odds ;; Your last matchup | Lost 80.11 to 121.16
+First Suggestion: Weak spots: QB ranks 7th of 12
+The Suggestions loaded at about 1.71 s of the recording. The tap was at 31.72 s, 30 s later.
+
+The last article on each animation frame for 5 s from the tap (only the changes): busy, block, steps, stream words, text, status.
+31.737 s: (no article)
+31.886 s: busy true | no block | steps [live ⠋ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+31.911 s: busy true | no block | steps [live ⠙ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+31.921 s: busy false | block | steps - | words 0 (0 blurred) | text Your team has no holes in the lineup rig | status Checked
+32.736 s: busy null | block | steps - | words 0 (0 blurred) | text Your team has no holes in the lineup rig | status Checked

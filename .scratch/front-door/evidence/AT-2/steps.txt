@@ -1,4 +1,5 @@
-Driver: tests.mjs AT-2 (Playwright 1.64, Chromium), 375x812, clock fixed to Wednesday 2026-11-04 10:00 America/Los_Angeles.
-1. Fresh context. Store only the league passphrase. Open /. Shot sheet-375-<theme>.
-2. Tap Lil Fridge in the sheet. Wait for the Suggestions. Shot before-reload-375-<theme>.
-3. Reload. Count role=dialog elements. Shot after-reload-375-<theme>.
+Driver: site.mjs AT-2 (Playwright, Chromium), 375x812. The date of the page is shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles.
+The shift changes only Date. The timers and performance.now stay real, so the reload starts a fresh count.
+1. Fresh context. Store only the league passphrase. Open /. Wait 2 s. Shot sheet-375-<theme>.
+2. Tap Lil Fridge in the sheet. Wait for More and 3 chips in the row, then 7 s. Shot before-reload-375-<theme>.
+3. Reload. Wait for More and 3 chips, then 7 s. Count role=dialog elements and list the row (after-reload-dialogs-375-<theme>.txt). Shot after-reload-375-<theme>.

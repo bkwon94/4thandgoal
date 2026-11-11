@@ -1,6 +1,6 @@
 [
   {
-    "at": "2026-11-11T01:33:58.040Z",
+    "at": "2026-11-11T19:39:04.830Z",
     "method": "GET",
     "path": "/clients/cpc/eggs/board",
     "status": 200,
@@ -140,7 +140,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -202,7 +202,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -264,7 +264,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -320,7 +320,7 @@
         },
         {
           "roster_id": 5,
-          "team": "London Cooking"
+          "team": "Puka Deez..."
         },
         {
           "roster_id": 7,
@@ -351,7 +351,7 @@
     }
   },
   {
-    "at": "2026-11-11T01:33:58.106Z",
+    "at": "2026-11-11T19:39:04.874Z",
     "method": "GET",
     "path": "/clients/cpc/eggs/board",
     "status": 200,
@@ -491,7 +491,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -553,7 +553,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -615,7 +615,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -671,7 +671,7 @@
         },
         {
           "roster_id": 5,
-          "team": "London Cooking"
+          "team": "Puka Deez..."
         },
         {
           "roster_id": 7,
@@ -702,7 +702,7 @@
     }
   },
   {
-    "at": "2026-11-11T01:34:01.090Z",
+    "at": "2026-11-11T19:39:05.062Z",
     "method": "POST",
     "path": "/clients/cpc/suggestions",
     "status": 200,
@@ -727,9 +727,9 @@
     },
     "response": {
       "picks": [
+        "sell_high",
         "power_rankings",
-        "week_recap",
-        "waiver_targets"
+        "week_recap"
       ],
       "facts": {
         "week_recap": "You scored 80.11, 12th of 12",
@@ -741,23 +741,26 @@
         "leaders_trades": "1 trade this week",
         "weak_spots": "QB ranks 7th of 12",
         "stack_up": "Grade A, QB ranks 7th of 12",
-        "waiver_targets": "19 free agents on the list",
-        "trade_ideas": "Offers for your QB, 7th of 12"
+        "waiver_targets": "Free agents for the WR2 slot",
+        "trade_ideas": "Offers for your WR2: Stefon Diggs (WR25)",
+        "sell_high": "Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season"
       },
       "lifts": {
-        "week_recap": 0.74,
-        "last_matchup": 0.51,
-        "next_matchup": 0.33,
+        "week_recap": 0.77,
+        "last_matchup": 0.54,
+        "next_matchup": 0.32,
         "power_rankings": 0.83,
-        "playoff_race": 0.15,
-        "your_season": 0.14,
-        "leaders_trades": 0.1,
-        "weak_spots": 0.2,
-        "stack_up": 0.18,
-        "waiver_targets": 0.29,
-        "trade_ideas": 0.26
+        "playoff_race": 0.14,
+        "your_season": 0.15,
+        "leaders_trades": 0.07,
+        "weak_spots": 0.17,
+        "stack_up": 0.19,
+        "waiver_targets": 0.39,
+        "trade_ideas": 0.49,
+        "sell_high": 0.89
       },
       "urgent": [
+        "sell_high",
         "power_rankings",
         "week_recap"
       ],
@@ -765,18 +768,19 @@
       "jev": {
         "model": "jev-1.14.0",
         "nouls": {
-          "lift_week_recap": 0.74,
-          "lift_last_matchup": 0.51,
-          "lift_next_matchup": 0.33,
+          "lift_week_recap": 0.77,
+          "lift_last_matchup": 0.54,
+          "lift_next_matchup": 0.32,
           "lift_power_rankings": 0.83,
-          "lift_playoff_race": 0.15,
-          "lift_your_season": 0.14,
-          "lift_leaders_trades": 0.1,
-          "lift_weak_spots": 0.2,
-          "lift_stack_up": 0.18,
-          "lift_waiver_targets": 0.29,
-          "lift_trade_ideas": 0.26,
-          "sell_high_clear": 0.67
+          "lift_playoff_race": 0.14,
+          "lift_your_season": 0.15,
+          "lift_leaders_trades": 0.07,
+          "lift_weak_spots": 0.17,
+          "lift_stack_up": 0.19,
+          "lift_waiver_targets": 0.39,
+          "lift_trade_ideas": 0.49,
+          "lift_sell_high": 0.89,
+          "sell_high_clear": 0.84
         },
         "choices": {
           "sell_high_player": {
@@ -784,15 +788,14 @@
             "travis_kelce": 0,
             "stefon_diggs": 0,
             "derrick_henry": 0,
-            "christian_mccaffrey": 0.08,
-            "courtland_sutton": 0.06,
+            "christian_mccaffrey": 0.09,
+            "courtland_sutton": 0.02,
             "jakobi_meyers": 0,
             "j_k_dobbins": 0,
-            "romeo_doubs": 0.38,
-            "tyler_allgeier": 0.47,
+            "romeo_doubs": 0.33,
+            "tyler_allgeier": 0.55,
             "khalil_shakir": 0.01,
             "bryce_young": 0,
-            "michael_mayer": 0,
             "jaxon_smith_njigba": 0
           }
         }
@@ -800,14 +803,15 @@
     }
   },
   {
-    "at": "2026-11-11T01:34:02.423Z",
+    "at": "2026-11-11T19:39:06.398Z",
     "method": "POST",
     "path": "/clients/cpc/ask",
     "status": 200,
     "request": {
       "question": "highest scoring team this season",
       "roster_id": 3,
-      "week": 8
+      "week": 8,
+      "turns": []
     },
     "response": {
       "route": "cap",
@@ -823,11 +827,11 @@
       "jev": {
         "model": "jev-1.14.0",
         "nouls": {
-          "fits_topic": 0.6,
+          "fits_topic": 0.53,
           "data_can_answer": 0.98,
           "about_league": 1,
           "abuse": 0.01,
-          "names_team": 0.2
+          "names_team": 0.21
         },
         "choices": {
           "topic": {
@@ -835,8 +839,8 @@
             "last_matchup": 0,
             "next_matchup": 0,
             "power_rankings": 0.03,
-            "playoff_race": 0.32,
-            "your_season": 0.64,
+            "playoff_race": 0.34,
+            "your_season": 0.62,
             "leaders_trades": 0,
             "waiver_targets": 0,
             "stack_up": 0,
@@ -846,18 +850,18 @@
             "trade_check": 0
           },
           "team": {
-            "the_blue_tent": 0.26,
-            "all_you_need_is_love": 0.15,
-            "lil_fridge": 0.06,
+            "the_blue_tent": 0.28,
+            "all_you_need_is_love": 0.12,
+            "lil_fridge": 0.05,
             "nfc_least": 0.04,
-            "london_cooking": 0.04,
+            "puka_deez": 0.05,
             "bo_girds": 0.05,
             "to_infinity_and_bijan": 0.12,
             "return_of_t_mac": 0.04,
             "maye_d_force_b_with_u": 0.03,
-            "behold_the_lamb": 0.06,
-            "unsolicited_dak_picks": 0.06,
-            "teehee": 0.09
+            "behold_the_lamb": 0.05,
+            "unsolicited_dak_picks": 0.07,
+            "teehee": 0.1
           }
         }
       }

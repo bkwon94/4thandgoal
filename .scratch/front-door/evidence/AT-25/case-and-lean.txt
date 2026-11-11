@@ -1,24 +1,23 @@
-# From the data-answer part of the /clients/cpc/trade-check stream of AT-24 (evidence/AT-24/api-calls.json), the /analyze result of the Advisor.
-Question: is Courtland Sutton for Zay Flowers fair
+# The Lean, the Case, and the fairness of the data-answer part of the trade-check stream of AT-24 (evidence/AT-24/api-calls.json), from the live run of AT-24.
+# The site line of the fairness and the shown Case are in evidence/AT-25/answer-text-375-light.txt.
 
-lean: Send it
+Lean: Send it
 
-case:
-If you trust that Flowers' full season matters more than his last few weeks, this is a move you make. This week's chart is missing, so this read rests on the players' own facts. Flowers ranks WR11 on the season, and he has been a real weekly starter for you. Sutton sits back at WR54, and his Broncos are on a bye this week anyway, so you give up nothing right now. The risk is that Flowers' snaps and targets are sliding, and he keeps showing up on the injury report. Managers here chase recent points, so his slump is exactly why you can buy him this cheap, and I'd send it.
+Case:
+If you believe Zay Flowers's slow month is a dip and not the new normal, this is a trade you make right now. Flowers is still the WR11 on the season, while Sutton has been one of the weakest WRs you could start. The risk is real: his targets have dipped lately, and he has been on the injury report in 4 weeks this season. The upside comes fast, with a week 10 home game against LAC, a defense that gives up the 4th most points to WRs. Bo Girds is in a playoff spot too and may balk, but managers here chase recent points, so a slumped Flowers is as cheap as he will get, and you should send it.
 
-fairness: {
- "state": "lopsided",
- "gives_more": 6,
- "sides": [
-  {
-   "roster_id": 3,
-   "reason": "Lil Fridge gets a proven starting WR for a struggling one."
-  },
-  {
-   "roster_id": 6,
-   "reason": "Bo Girds gets a WR with rising snaps and a soft late schedule."
-  }
- ]
+Fairness:
+{
+  "state": "lopsided",
+  "gives_more": 6,
+  "sides": [
+    {
+      "roster_id": 3,
+      "reason": "Lil Fridge gets the WR11 on the season to start right away, bought during a slump."
+    },
+    {
+      "roster_id": 6,
+      "reason": "Bo Girds gets Sutton, whose snaps are rising and who has soft WR matchups in weeks 15 to 17."
+    }
+  ]
 }
-
-The site shows the fairness state as the line "It helps Lil Fridge more." (evidence/AT-24/page-text-375-light.txt), with gives_more = 6 (Bo Girds gives more).

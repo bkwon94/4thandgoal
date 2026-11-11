@@ -1,6 +1,6 @@
 [
   {
-    "at": "2026-11-11T01:04:40.870Z",
+    "at": "2026-11-11T20:48:00.655Z",
     "method": "GET",
     "path": "/clients/cpc/eggs/board",
     "status": 200,
@@ -140,7 +140,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -202,7 +202,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -264,7 +264,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -320,7 +320,7 @@
         },
         {
           "roster_id": 5,
-          "team": "London Cooking"
+          "team": "Puka Deez..."
         },
         {
           "roster_id": 7,
@@ -351,7 +351,7 @@
     }
   },
   {
-    "at": "2026-11-11T01:04:40.923Z",
+    "at": "2026-11-11T20:48:00.715Z",
     "method": "GET",
     "path": "/clients/cpc/eggs/board",
     "status": 200,
@@ -491,7 +491,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -553,7 +553,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -615,7 +615,7 @@
             },
             {
               "roster_id": 5,
-              "team": "London Cooking",
+              "team": "Puka Deez...",
               "letters": []
             },
             {
@@ -671,7 +671,7 @@
         },
         {
           "roster_id": 5,
-          "team": "London Cooking"
+          "team": "Puka Deez..."
         },
         {
           "roster_id": 7,
@@ -702,7 +702,7 @@
     }
   },
   {
-    "at": "2026-11-11T01:04:44.740Z",
+    "at": "2026-11-11T20:48:00.936Z",
     "method": "POST",
     "path": "/clients/cpc/suggestions",
     "status": 200,
@@ -741,22 +741,22 @@
         "leaders_trades": "1 trade this week",
         "weak_spots": "QB ranks 7th of 12",
         "stack_up": "Grade A, QB ranks 7th of 12",
-        "waiver_targets": "19 free agents on the list",
-        "trade_ideas": "Offers for your QB, 7th of 12",
+        "waiver_targets": "Free agents for the WR2 slot",
+        "trade_ideas": "Offers for your WR2: Stefon Diggs (WR25)",
         "sell_high": "Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season"
       },
       "lifts": {
-        "week_recap": 0.76,
-        "last_matchup": 0.48,
+        "week_recap": 0.77,
+        "last_matchup": 0.56,
         "next_matchup": 0.32,
         "power_rankings": 0.82,
-        "playoff_race": 0.17,
-        "your_season": 0.15,
-        "leaders_trades": 0.13,
-        "weak_spots": 0.23,
-        "stack_up": 0.23,
-        "waiver_targets": 0.32,
-        "trade_ideas": 0.3,
+        "playoff_race": 0.13,
+        "your_season": 0.12,
+        "leaders_trades": 0.07,
+        "weak_spots": 0.17,
+        "stack_up": 0.19,
+        "waiver_targets": 0.48,
+        "trade_ideas": 0.48,
         "sell_high": 0.89
       },
       "urgent": [
@@ -768,19 +768,19 @@
       "jev": {
         "model": "jev-1.14.0",
         "nouls": {
-          "lift_week_recap": 0.76,
-          "lift_last_matchup": 0.48,
+          "lift_week_recap": 0.77,
+          "lift_last_matchup": 0.56,
           "lift_next_matchup": 0.32,
           "lift_power_rankings": 0.82,
-          "lift_playoff_race": 0.17,
-          "lift_your_season": 0.15,
-          "lift_leaders_trades": 0.13,
-          "lift_weak_spots": 0.23,
-          "lift_stack_up": 0.23,
-          "lift_waiver_targets": 0.32,
-          "lift_trade_ideas": 0.3,
+          "lift_playoff_race": 0.13,
+          "lift_your_season": 0.12,
+          "lift_leaders_trades": 0.07,
+          "lift_weak_spots": 0.17,
+          "lift_stack_up": 0.19,
+          "lift_waiver_targets": 0.48,
+          "lift_trade_ideas": 0.48,
           "lift_sell_high": 0.89,
-          "sell_high_clear": 0.71
+          "sell_high_clear": 0.83
         },
         "choices": {
           "sell_high_player": {
@@ -788,15 +788,14 @@
             "travis_kelce": 0,
             "stefon_diggs": 0,
             "derrick_henry": 0,
-            "christian_mccaffrey": 0.06,
-            "courtland_sutton": 0.07,
+            "christian_mccaffrey": 0.09,
+            "courtland_sutton": 0.03,
             "jakobi_meyers": 0,
             "j_k_dobbins": 0,
-            "romeo_doubs": 0.38,
-            "tyler_allgeier": 0.49,
+            "romeo_doubs": 0.34,
+            "tyler_allgeier": 0.54,
             "khalil_shakir": 0,
             "bryce_young": 0,
-            "michael_mayer": 0,
             "jaxon_smith_njigba": 0
           }
         }
@@ -804,7 +803,7 @@
     }
   },
   {
-    "at": "2026-11-11T01:04:51.218Z",
+    "at": "2026-11-11T20:48:05.119Z",
     "method": "POST",
     "path": "/clients/cpc/personal",
     "status": 200,
@@ -812,7 +811,7 @@
       "topic": "weak_spots",
       "roster_id": 3,
       "team": null,
-      "id": "KGA2g1whYPi5Z1Un",
+      "id": "4ZF1ch2nJHWW8SCL",
       "messages": [
         {
           "parts": [
@@ -821,16 +820,16 @@
               "text": "Weak spots"
             }
           ],
-          "id": "CjWyMDr4so9TC4tp",
+          "id": "OomKZrN08yFiq3dg",
           "role": "user"
         }
       ],
       "trigger": "submit-message"
     },
-    "response": "data: {\"type\":\"start\"}\n\ndata: {\"type\":\"data-block\",\"data\":{\"topic\":\"weak_spots\",\"team\":3,\"fact\":\"QB ranks 7th of 12\",\"stats\":[{\"label\":\"Weakest spot\",\"value\":\"QB\"},{\"label\":\"Rank\",\"value\":\"7th of 12\"},{\"label\":\"Holes\",\"value\":\"0\"}],\"rows\":[{\"label\":\"QB\",\"value\":\"7th of 12\",\"note\":\"deep\",\"roster_id\":null,\"you\":false},{\"label\":\"RB\",\"value\":\"7th of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"TE\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"WR\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false}]}}\n\ndata: {\"type\":\"data-key\",\"data\":{\"key\":\"ac47c8f87b5dcb848a61753eae33ee8233ed4a9441c787cf5195a35331e4c9a7\"}}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"text-start\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"Your team has no true\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" holes right\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" now,\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" since\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" every starter is in\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"side the starter line. The we\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"akest spots are RB and\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Q\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"B, where\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" you\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" rank 7th\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" in\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" the league at\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" each\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\". At RB, Derr\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ick Henry is the soft\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"est star\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ter at 17th among\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" running\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" backs, and\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" that group\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" has no spare player\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\".\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Your FLEX spots l\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ean on Jakobi\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Meyers (30th at\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" WR) and Khalil\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Shakir (32nd\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"), which are close\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" to the line but still\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" inside it.\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"text-end\",\"id\":\"714554b7-5462-49b1-8044-1488dcf2041c\"}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checking\"}}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checked\"}}\n\ndata: {\"type\":\"finish\",\"finishReason\":\"stop\"}\n\ndata: [DONE]\n\n"
+    "response": "data: {\"type\":\"start\"}\n\ndata: {\"type\":\"data-block\",\"data\":{\"topic\":\"weak_spots\",\"team\":3,\"fact\":\"QB ranks 7th of 12\",\"stats\":[{\"label\":\"Weakest spot\",\"value\":\"QB\"},{\"label\":\"Rank\",\"value\":\"7th of 12\"},{\"label\":\"Holes\",\"value\":\"0\"}],\"rows\":[{\"label\":\"QB\",\"value\":\"7th of 12\",\"note\":\"deep\",\"roster_id\":null,\"you\":false},{\"label\":\"RB\",\"value\":\"6th of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"TE\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false},{\"label\":\"WR\",\"value\":\"3rd of 12\",\"note\":\"fine\",\"roster_id\":null,\"you\":false}]}}\n\ndata: {\"type\":\"data-key\",\"data\":{\"key\":\"095060a50e1c26e96b9579d2e2efd2b91a0efc63c6b49cea9a299a1d062df2ab\"}}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checking\"}}\n\ndata: {\"type\":\"text-start\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"Your team has no hol\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"es in the\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" lineup right\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" now. Every starter can play\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" today\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" and\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" s\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"its in\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"side the starter line,\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" and n\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"othing is open\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" in the weak slots\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\".\\n\\nYour weakest position\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" is RB, which \",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ranks 6th of 12\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\", with no spare player past\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" the starters.\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Next is QB at\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" 7th, where Bry\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ce Young is the\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" 8th Q\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"B and\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" you have\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" one spare player\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" beh\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ind him.\\n\\nWR and T\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"E are both \",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"3rd in\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" the league, so\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" those\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" sp\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ots are your strength\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\".\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"text-end\",\"id\":\"07445549-0905-4ca9-99d1-6a33a1eaa966\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checked\"}}\n\ndata: {\"type\":\"finish\",\"finishReason\":\"stop\"}\n\ndata: [DONE]\n\n"
   },
   {
-    "at": "2026-11-11T01:04:53.580Z",
+    "at": "2026-11-11T20:48:06.672Z",
     "method": "POST",
     "path": "/clients/cpc/personal/current",
     "status": 200,
@@ -840,16 +839,16 @@
           "topic": "weak_spots",
           "roster_id": 3,
           "team": null,
-          "key": "ac47c8f87b5dcb848a61753eae33ee8233ed4a9441c787cf5195a35331e4c9a7"
+          "key": "095060a50e1c26e96b9579d2e2efd2b91a0efc63c6b49cea9a299a1d062df2ab"
         }
       ]
     },
     "response": {
       "answers": [
         {
-          "key": "ac47c8f87b5dcb848a61753eae33ee8233ed4a9441c787cf5195a35331e4c9a7",
+          "key": "095060a50e1c26e96b9579d2e2efd2b91a0efc63c6b49cea9a299a1d062df2ab",
           "current": true,
-          "kept_at": "2026-11-10T20:04:51.214305-05:00"
+          "kept_at": "2026-11-11T15:48:05.116368-05:00"
         }
       ]
     }

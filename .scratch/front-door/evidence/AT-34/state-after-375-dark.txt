@@ -1,0 +1,4 @@
+data-stale element: ARTICLE data-stale="" opacity 1
+stale line: Your roster changed since Wednesday.
+buttons in the article: Refresh
+leaf elements with the text Checked in the article: 0

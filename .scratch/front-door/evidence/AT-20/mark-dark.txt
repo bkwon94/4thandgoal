@@ -1,7 +1,0 @@
-The color of the class text-ink: rgb(255, 255, 255). The color of text-mute: rgb(153, 153, 153).
-The last status line of the Answer, sampled every ~50 ms after the tap (only the changes):
-1 ms: (none) 
-4234 ms: Checking rgb(153, 153, 153)
-4285 ms: (none) 
-6321 ms: Checking rgb(153, 153, 153)
-6372 ms: Checked rgb(255, 255, 255)

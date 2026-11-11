@@ -1,3 +1,3 @@
-# The lines of the API log from the first request to the end of the second request (lines 30 to 31). A Jev call logs a typesafe_sdk line, and a Claude call logs an httpx line to api.anthropic.com.
-INFO:     127.0.0.1:51156 - "POST /clients/cpc/ask HTTP/1.1" 401 Unauthorized
-INFO:     127.0.0.1:51158 - "POST /clients/cpc/ask HTTP/1.1" 401 Unauthorized
+# API log (port 8092, 99d00125), lines 41 to 42: every line the API wrote for the two requests.
+INFO:     127.0.0.1:53538 - "POST /clients/cpc/ask HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53540 - "POST /clients/cpc/ask HTTP/1.1" 401 Unauthorized

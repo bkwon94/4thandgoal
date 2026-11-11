@@ -1,22 +1,26 @@
-# The seed. The Given says $19.90, but one free answer costs about $0.004 to $0.006 (see the cost lines of the log), so $19.90 needs more than 15 answers to pass $20.00. The seed sets the month to $19.997, still under the 80% mark of $20.00.
-$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "DELETE FROM spend WHERE roster_id IS NULL AND usd > 1"   # takes out the league seed of AT-38 and the first seed of this test
-$ sqlite3 <scratchpad>/ask/cpc.caps.sqlite "INSERT INTO spend (roster_id, day, month, usd, counts) VALUES (NULL, '2026-11-10', '2026-11', 19.6542647, 0)"
-league month before: $19.997   rows in alerts: 0
+$ sqlite3 <ask dir>/cpc.caps.sqlite "INSERT INTO spend (roster_id, day, month, usd, counts) VALUES (NULL, '2026-11-11', '2026-11', 19.988912, 0)"   # the seed
+# The seed. The Given says $19.90, but one free answer costs about $0.005 to $0.012 (see the cost lines of the log), so $19.90 needs many answers to pass $20.00. The seed sets the month to $19.9970, still under the 80% mark of $20.00 of the $25.00 budget. The month held $0.008088 from AT-29 before the seed.
+league month before: $19.9970   rows in alerts: 0
 
-# Answer 1, by Bo Girds (roster 6), so the team cap of Lil Fridge from AT-37 does not stop it:
-$ curl -s -X POST http://localhost:8080/clients/cpc/ask -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the most points against this season","roster_id":6,"week":8}'
+# Answer 1, by Bo Girds (roster 6):
+$ curl -s -X POST http://localhost:8092/clients/cpc/ask -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the most points against this season","roster_id":6,"week":8}'
 {'route': 'free', 'topic': None, 'team': None, 'line': None}
-$ curl -s -X POST http://localhost:8080/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the most points against this season","roster_id":6,"week":8}'   # only the check, error, and finish parts
+$ curl -s -X POST http://localhost:8092/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the most points against this season","roster_id":6,"week":8}'   # only the check, error, and finish parts
 data: {"type":"data-check","id":"check","data":{"state":"checking"}}
 data: {"type":"data-check","id":"check","data":{"state":"checked"}}
 data: {"type":"finish","finishReason":"stop"}
-league month after: $20.0007   rows in alerts: 1
+league month after: $20.0091   rows in alerts: 1
 
 # Answer 2, a later answer:
-$ curl -s -X POST http://localhost:8080/clients/cpc/ask -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the best head to head record","roster_id":6,"week":8}'
+$ curl -s -X POST http://localhost:8092/clients/cpc/ask -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the best head to head record","roster_id":6,"week":8}'
 {'route': 'free', 'topic': None, 'team': None, 'line': None}
-$ curl -s -X POST http://localhost:8080/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the best head to head record","roster_id":6,"week":8}'   # only the check, error, and finish parts
+$ curl -s -X POST http://localhost:8092/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"which team has the best head to head record","roster_id":6,"week":8}'   # only the check, error, and finish parts
 data: {"type":"data-check","id":"check","data":{"state":"checking"}}
 data: {"type":"data-check","id":"check","data":{"state":"checked"}}
 data: {"type":"finish","finishReason":"stop"}
-league month after: $20.0047   rows in alerts: 1
+league month after: $20.0144   rows in alerts: 1
+
+$ sqlite3 -header <ask dir>/cpc.caps.sqlite "SELECT * FROM alerts"
+month
+2026-11
+# Answer 1 is API log lines 111 to 120 of api-log.txt. Answer 2 is the lines after 120.

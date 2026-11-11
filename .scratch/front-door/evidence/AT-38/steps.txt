@@ -1,4 +1,4 @@
-Driver: tests.mjs AT-38-cpc and AT-38-norcal, 375x812, Wednesday clock. seed.txt holds the seed of the league cap.
-CPC: store Lil Fridge and the passphrase, open /, type "highest scoring team this season", tap Send, wait for the budget line. Shot cpc-375-<theme> in each theme (two live runs). cpc-api-calls-<theme>.json holds the route response with its cap line.
-NorCal: the NorCal site build (CLIENT=norcal), with the same API. Store team 1 (puurdygood) and the passphrase, open /, ask the same question, wait for Checked. Shot norcal-375-light. The dark shot opens / with the local storage of that run.
-api-log-cpc.txt and api-log-norcal.txt are the API log of each part.
+Driver: site.mjs AT-38-cpc and AT-38-norcal, 375x812, the date of the page shifted to Wednesday 2026-11-04. seed.txt holds the seed of the league cap.
+CPC: store Lil Fridge and the passphrase, open /, type "highest scoring team this season", tap Send, wait until no article is busy, then 4 s. Shot cpc-375-<theme> in each theme (two live runs). cpc-api-calls-<theme>.json holds the route response with its cap line. api-log-cpc-<theme>.txt is the API log of each run.
+NorCal: the NorCal site build (CLIENT=norcal, front_door = true), with the same API. Store roster 1 (puurdygood) and the passphrase, open /, ask the same question, wait until no article is busy, then 4 s. Shot norcal-375-light. The dark shot opens / with the local storage of that run. norcal-answer-text.txt is the text of the Answer. api-log-norcal.txt is the API log of the run.
+After the CPC runs, the seeded row left the store.

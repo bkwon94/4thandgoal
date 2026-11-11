@@ -1,4 +1,5 @@
-Driver: tests.mjs AT-31, 375x812, Wednesday clock, screen recording recording-375-light.webm.
-1. Build the Thread of AT-30: Week recap, then Weak spots.
-2. Tap the folded Week recap. Wait 2.5 s. Viewport shot opened. Measure its top and the header bottom.
-3. Tap it again. Wait 2.5 s. Viewport shot folded-again.
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, screen recording recording-375-light.webm.
+1. Build the Thread of AT-30: store Lil Fridge and the passphrase, open /, open Week recap, then Weak spots (kept from AT-20), wait for Checked.
+2. Type "week 1 results". Tap Send. Sample the positions and the animations on each animation frame for 6 s (measures.txt). Wait for Checked. Viewport shot after-send.
+3. Scroll up with 12 wheel steps of 250 px. Sample for 5 s. Viewport shots scrolled-up and scrolled-up-2 (300 px lower).
+4. frame-<time>-<label>.png are frames of the recording, from ffmpeg.

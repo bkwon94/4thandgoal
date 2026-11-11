@@ -1,0 +1,947 @@
+[
+  {
+    "at": "2026-11-11T19:23:24.841Z",
+    "method": "GET",
+    "path": "/clients/cpc/eggs/board",
+    "status": 200,
+    "request": null,
+    "response": {
+      "counts": {
+        "left": 0,
+        "found": 0,
+        "to_drop": 54
+      },
+      "weeks": [
+        {
+          "week": 9,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 10,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 11,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 12,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 13,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 14,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 15,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 16,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 17,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        }
+      ],
+      "words": [
+        {
+          "word": "CORNERSTONE",
+          "prize": 50,
+          "winner": null,
+          "managers": [
+            {
+              "roster_id": 1,
+              "team": "The Blue Tent",
+              "letters": []
+            },
+            {
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "letters": []
+            },
+            {
+              "roster_id": 3,
+              "team": "Lil Fridge",
+              "letters": []
+            },
+            {
+              "roster_id": 4,
+              "team": "NFC Least",
+              "letters": []
+            },
+            {
+              "roster_id": 5,
+              "team": "Puka Deez...",
+              "letters": []
+            },
+            {
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "letters": []
+            },
+            {
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "letters": []
+            },
+            {
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "letters": []
+            },
+            {
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "letters": []
+            },
+            {
+              "roster_id": 11,
+              "team": "Unsolicited Dak Picks",
+              "letters": []
+            },
+            {
+              "roster_id": 12,
+              "team": "Teehee",
+              "letters": []
+            }
+          ]
+        },
+        {
+          "word": "LANSDALE",
+          "prize": 30,
+          "winner": null,
+          "managers": [
+            {
+              "roster_id": 1,
+              "team": "The Blue Tent",
+              "letters": []
+            },
+            {
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "letters": []
+            },
+            {
+              "roster_id": 3,
+              "team": "Lil Fridge",
+              "letters": []
+            },
+            {
+              "roster_id": 4,
+              "team": "NFC Least",
+              "letters": []
+            },
+            {
+              "roster_id": 5,
+              "team": "Puka Deez...",
+              "letters": []
+            },
+            {
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "letters": []
+            },
+            {
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "letters": []
+            },
+            {
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "letters": []
+            },
+            {
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "letters": []
+            },
+            {
+              "roster_id": 11,
+              "team": "Unsolicited Dak Picks",
+              "letters": []
+            },
+            {
+              "roster_id": 12,
+              "team": "Teehee",
+              "letters": []
+            }
+          ]
+        },
+        {
+          "word": "EAGLES",
+          "prize": 20,
+          "winner": null,
+          "managers": [
+            {
+              "roster_id": 1,
+              "team": "The Blue Tent",
+              "letters": []
+            },
+            {
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "letters": []
+            },
+            {
+              "roster_id": 3,
+              "team": "Lil Fridge",
+              "letters": []
+            },
+            {
+              "roster_id": 4,
+              "team": "NFC Least",
+              "letters": []
+            },
+            {
+              "roster_id": 5,
+              "team": "Puka Deez...",
+              "letters": []
+            },
+            {
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "letters": []
+            },
+            {
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "letters": []
+            },
+            {
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "letters": []
+            },
+            {
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "letters": []
+            },
+            {
+              "roster_id": 11,
+              "team": "Unsolicited Dak Picks",
+              "letters": []
+            },
+            {
+              "roster_id": 12,
+              "team": "Teehee",
+              "letters": []
+            }
+          ]
+        }
+      ],
+      "latest": [],
+      "managers": [
+        {
+          "roster_id": 1,
+          "team": "The Blue Tent"
+        },
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love"
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge"
+        },
+        {
+          "roster_id": 4,
+          "team": "NFC Least"
+        },
+        {
+          "roster_id": 5,
+          "team": "Puka Deez..."
+        },
+        {
+          "roster_id": 7,
+          "team": "To Infinity and Bijan"
+        },
+        {
+          "roster_id": 8,
+          "team": "Return of T Mac"
+        },
+        {
+          "roster_id": 9,
+          "team": "Maye d'force B with U"
+        },
+        {
+          "roster_id": 10,
+          "team": "behold the lamb"
+        },
+        {
+          "roster_id": 11,
+          "team": "Unsolicited Dak Picks"
+        },
+        {
+          "roster_id": 12,
+          "team": "Teehee"
+        }
+      ],
+      "last_drop": null
+    }
+  },
+  {
+    "at": "2026-11-11T19:23:24.891Z",
+    "method": "GET",
+    "path": "/clients/cpc/eggs/board",
+    "status": 200,
+    "request": null,
+    "response": {
+      "counts": {
+        "left": 0,
+        "found": 0,
+        "to_drop": 54
+      },
+      "weeks": [
+        {
+          "week": 9,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 10,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 11,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 12,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 13,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 14,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 15,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 16,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        },
+        {
+          "week": 17,
+          "slots": [
+            "future",
+            "future",
+            "future",
+            "future",
+            "future",
+            "future"
+          ]
+        }
+      ],
+      "words": [
+        {
+          "word": "CORNERSTONE",
+          "prize": 50,
+          "winner": null,
+          "managers": [
+            {
+              "roster_id": 1,
+              "team": "The Blue Tent",
+              "letters": []
+            },
+            {
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "letters": []
+            },
+            {
+              "roster_id": 3,
+              "team": "Lil Fridge",
+              "letters": []
+            },
+            {
+              "roster_id": 4,
+              "team": "NFC Least",
+              "letters": []
+            },
+            {
+              "roster_id": 5,
+              "team": "Puka Deez...",
+              "letters": []
+            },
+            {
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "letters": []
+            },
+            {
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "letters": []
+            },
+            {
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "letters": []
+            },
+            {
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "letters": []
+            },
+            {
+              "roster_id": 11,
+              "team": "Unsolicited Dak Picks",
+              "letters": []
+            },
+            {
+              "roster_id": 12,
+              "team": "Teehee",
+              "letters": []
+            }
+          ]
+        },
+        {
+          "word": "LANSDALE",
+          "prize": 30,
+          "winner": null,
+          "managers": [
+            {
+              "roster_id": 1,
+              "team": "The Blue Tent",
+              "letters": []
+            },
+            {
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "letters": []
+            },
+            {
+              "roster_id": 3,
+              "team": "Lil Fridge",
+              "letters": []
+            },
+            {
+              "roster_id": 4,
+              "team": "NFC Least",
+              "letters": []
+            },
+            {
+              "roster_id": 5,
+              "team": "Puka Deez...",
+              "letters": []
+            },
+            {
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "letters": []
+            },
+            {
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "letters": []
+            },
+            {
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "letters": []
+            },
+            {
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "letters": []
+            },
+            {
+              "roster_id": 11,
+              "team": "Unsolicited Dak Picks",
+              "letters": []
+            },
+            {
+              "roster_id": 12,
+              "team": "Teehee",
+              "letters": []
+            }
+          ]
+        },
+        {
+          "word": "EAGLES",
+          "prize": 20,
+          "winner": null,
+          "managers": [
+            {
+              "roster_id": 1,
+              "team": "The Blue Tent",
+              "letters": []
+            },
+            {
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "letters": []
+            },
+            {
+              "roster_id": 3,
+              "team": "Lil Fridge",
+              "letters": []
+            },
+            {
+              "roster_id": 4,
+              "team": "NFC Least",
+              "letters": []
+            },
+            {
+              "roster_id": 5,
+              "team": "Puka Deez...",
+              "letters": []
+            },
+            {
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "letters": []
+            },
+            {
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "letters": []
+            },
+            {
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "letters": []
+            },
+            {
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "letters": []
+            },
+            {
+              "roster_id": 11,
+              "team": "Unsolicited Dak Picks",
+              "letters": []
+            },
+            {
+              "roster_id": 12,
+              "team": "Teehee",
+              "letters": []
+            }
+          ]
+        }
+      ],
+      "latest": [],
+      "managers": [
+        {
+          "roster_id": 1,
+          "team": "The Blue Tent"
+        },
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love"
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge"
+        },
+        {
+          "roster_id": 4,
+          "team": "NFC Least"
+        },
+        {
+          "roster_id": 5,
+          "team": "Puka Deez..."
+        },
+        {
+          "roster_id": 7,
+          "team": "To Infinity and Bijan"
+        },
+        {
+          "roster_id": 8,
+          "team": "Return of T Mac"
+        },
+        {
+          "roster_id": 9,
+          "team": "Maye d'force B with U"
+        },
+        {
+          "roster_id": 10,
+          "team": "behold the lamb"
+        },
+        {
+          "roster_id": 11,
+          "team": "Unsolicited Dak Picks"
+        },
+        {
+          "roster_id": 12,
+          "team": "Teehee"
+        }
+      ],
+      "last_drop": null
+    }
+  },
+  {
+    "at": "2026-11-11T19:23:25.095Z",
+    "method": "POST",
+    "path": "/clients/cpc/suggestions",
+    "status": 200,
+    "request": {
+      "roster_id": 6,
+      "order": [
+        "waiver_targets",
+        "weak_spots",
+        "power_rankings",
+        "week_recap",
+        "playoff_race",
+        "last_matchup",
+        "next_matchup",
+        "your_season",
+        "leaders_trades",
+        "stack_up",
+        "sell_high",
+        "trade_ideas",
+        "trade_check"
+      ],
+      "opened": {}
+    },
+    "response": {
+      "picks": [
+        "weak_spots",
+        "stack_up",
+        "waiver_targets"
+      ],
+      "facts": {
+        "week_recap": "You scored 88.2, 9th of 12",
+        "last_matchup": "Lost 88.2 to 118.89",
+        "next_matchup": "Next: Teehee, 8-8",
+        "power_rankings": "7th, down 4",
+        "playoff_race": "76% playoff odds",
+        "your_season": "9-7, 3rd of 12",
+        "leaders_trades": "Jacksonville Jaguars, 1st at DEF",
+        "weak_spots": "QB ranks 10th of 12",
+        "stack_up": "Grade B, QB ranks 10th of 12",
+        "waiver_targets": "Free agents for the QB slot",
+        "trade_ideas": "Offers for your QB: Aaron Rodgers (QB20)",
+        "sell_high": "Blake Corum: 13.7 a game over 4 weeks, 9.8 for the season"
+      },
+      "lifts": {
+        "week_recap": 0.33,
+        "last_matchup": 0.41,
+        "next_matchup": 0.17,
+        "power_rankings": 0.82,
+        "playoff_race": 0.42,
+        "your_season": 0.21,
+        "leaders_trades": 0.17,
+        "weak_spots": 0.91,
+        "stack_up": 0.87,
+        "waiver_targets": 0.87,
+        "trade_ideas": 0.76,
+        "sell_high": 0.84
+      },
+      "urgent": [
+        "weak_spots",
+        "stack_up",
+        "waiver_targets",
+        "sell_high",
+        "power_rankings",
+        "trade_ideas"
+      ],
+      "head_start": "weak_spots",
+      "jev": {
+        "model": "jev-1.14.0",
+        "nouls": {
+          "lift_week_recap": 0.33,
+          "lift_last_matchup": 0.41,
+          "lift_next_matchup": 0.17,
+          "lift_power_rankings": 0.82,
+          "lift_playoff_race": 0.42,
+          "lift_your_season": 0.21,
+          "lift_leaders_trades": 0.17,
+          "lift_weak_spots": 0.91,
+          "lift_stack_up": 0.87,
+          "lift_waiver_targets": 0.87,
+          "lift_trade_ideas": 0.76,
+          "lift_sell_high": 0.84,
+          "sell_high_clear": 0.72
+        },
+        "choices": {
+          "sell_high_player": {
+            "audric_estime": 0,
+            "blake_corum": 0.96,
+            "matthew_golden": 0.04,
+            "konata_mumpfield": 0,
+            "fernando_mendoza": 0,
+            "antonio_williams": 0,
+            "mike_washington_jr": 0,
+            "lamar_jackson": 0,
+            "trey_mcbride": 0,
+            "kyren_williams": 0,
+            "kenneth_walker_iii": 0,
+            "parker_washington": 0,
+            "aaron_rodgers": 0,
+            "zay_flowers": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "at": "2026-11-11T19:23:54.303Z",
+    "method": "POST",
+    "path": "/clients/cpc/trade-ideas",
+    "status": 200,
+    "request": {
+      "roster_id": 6,
+      "partner": null
+    },
+    "response": "data: {\"type\": \"start\"}\n\ndata: {\"type\": \"data-step\", \"data\": {\"line\": \"Checking 11 teams for a fit\", \"live\": true}}\n\ndata: {\"type\": \"data-step\", \"data\": {\"line\": \"Checked 11 teams for a fit\", \"live\": false}}\n\ndata: {\"type\": \"data-step\", \"data\": {\"line\": \"Building offers\", \"live\": true}}\n\ndata: {\"type\": \"data-step\", \"data\": {\"line\": \"Built 13 offers\", \"live\": false}}\n\ndata: {\"type\": \"data-step\", \"data\": {\"line\": \"Weighing the offers\", \"live\": true}}\n\ndata: {\"type\": \"data-step\", \"data\": {\"line\": \"Weighed 13 offers\", \"live\": false}}\n\ndata: {\"type\": \"data-step\", \"data\": {\"line\": \"Picking the best offers\", \"live\": true}}\n\ndata: {\"type\": \"data-step\", \"data\": {\"line\": \"Picked the best 2\", \"live\": false}}\n\ndata: {\"type\": \"data-key\", \"data\": {\"key\": \"38d47716ccacff0f768513055216c2565006a4a1f20d4286c4637076081bc341\", \"at\": \"2026-11-11T14:23:54.285002-05:00\"}}\n\ndata: {\"type\": \"data-answer\", \"data\": {\"kind\": \"ideas\", \"document\": {\"season\": 2026, \"trade_pair\": {\"asker\": {\"roster_id\": 6, \"team\": \"Bo Girds\"}, \"partner\": null}, \"trades\": [{\"offer_id\": \"6:9997-9:11564\", \"sides\": [{\"roster_id\": 6, \"team\": \"Bo Girds\", \"gives\": [{\"player_id\": \"9997\", \"name\": \"Zay Flowers\", \"position\": \"WR\", \"nfl_team\": \"BAL\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/9997.jpg\", \"season_rank\": \"WR11\", \"recent_rank\": \"WR39\", \"to\": 9}], \"gets\": [{\"player_id\": \"11564\", \"name\": \"Drake Maye\", \"position\": \"QB\", \"nfl_team\": \"NE\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/11564.jpg\", \"season_rank\": \"QB4\", \"recent_rank\": null, \"from\": 9}]}, {\"roster_id\": 9, \"team\": \"Maye d'force B with U\", \"gives\": [{\"player_id\": \"11564\", \"name\": \"Drake Maye\", \"position\": \"QB\", \"nfl_team\": \"NE\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/11564.jpg\", \"season_rank\": \"QB4\", \"recent_rank\": null, \"to\": 6}], \"gets\": [{\"player_id\": \"9997\", \"name\": \"Zay Flowers\", \"position\": \"WR\", \"nfl_team\": \"BAL\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/9997.jpg\", \"season_rank\": \"WR11\", \"recent_rank\": \"WR39\", \"from\": 6}]}], \"headline\": \"You sell a slumping Flowers for a top QB and fix your weakest starting slot.\", \"bullets\": [{\"text\": \"Aaron Rodgers is QB20 and Lamar Jackson is out, so Drake Maye is a real upgrade at the one slot that is weak now.\", \"mark\": \"for\", \"fact_id\": \"6.now\", \"fact_text\": \"For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.\"}, {\"text\": \"Flowers is trending down in snaps and targets, so this is a decent time to sell him.\", \"mark\": \"for\", \"fact_id\": \"9997.targets\", \"fact_text\": \"Zay Flowers's target share was 26 percent over the last 2 weeks before the trade, down from the 2 weeks before that.\"}, {\"text\": \"Flowers is worth more than Maye, and the other manager gets a WR for the one QB he gives up, so he should say yes.\", \"mark\": \"for\", \"fact_id\": \"9997.value\", \"fact_text\": \"Zay Flowers is 36th on the chart of week 10, at 23.5.\"}, {\"text\": \"You drop from three top-36 WRs to two, so your WR depth gets thinner.\", \"mark\": \"against\", \"fact_id\": \"6.depth.wr\", \"fact_text\": \"For Bo Girds, the WRs in the top 36 go from 3 to 2.\"}], \"fact_lines\": []}, {\"offer_id\": \"6:9487-9:11564\", \"sides\": [{\"roster_id\": 6, \"team\": \"Bo Girds\", \"gives\": [{\"player_id\": \"9487\", \"name\": \"Parker Washington\", \"position\": \"WR\", \"nfl_team\": \"JAX\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/9487.jpg\", \"season_rank\": \"WR16\", \"recent_rank\": \"WR45\", \"to\": 9}], \"gets\": [{\"player_id\": \"11564\", \"name\": \"Drake Maye\", \"position\": \"QB\", \"nfl_team\": \"NE\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/11564.jpg\", \"season_rank\": \"QB4\", \"recent_rank\": null, \"from\": 9}]}, {\"roster_id\": 9, \"team\": \"Maye d'force B with U\", \"gives\": [{\"player_id\": \"11564\", \"name\": \"Drake Maye\", \"position\": \"QB\", \"nfl_team\": \"NE\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/11564.jpg\", \"season_rank\": \"QB4\", \"recent_rank\": null, \"to\": 6}], \"gets\": [{\"player_id\": \"9487\", \"name\": \"Parker Washington\", \"position\": \"WR\", \"nfl_team\": \"JAX\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/9487.jpg\", \"season_rank\": \"WR16\", \"recent_rank\": \"WR45\", \"from\": 6}]}], \"headline\": \"Washington has cooled off lately, and Maye gives you a big QB upgrade.\", \"bullets\": [{\"text\": \"Rodgers is QB20 with Jackson out, so Maye lifts your lineup where it is weakest.\", \"mark\": \"for\", \"fact_id\": \"6.now\", \"fact_text\": \"For Bo Girds, the weak starting slots in week 10, of the players who can play: QB: Aaron Rodgers (QB20). Lamar Jackson is a starter who cannot play now. He is out with no return week on file, so he counts as back in week 14.\"}, {\"text\": \"Washington is WR16 on the season but only WR45 over the last four weeks, so you sell after the peak.\", \"mark\": \"for\", \"fact_id\": \"9487.ppg\", \"fact_text\": \"Parker Washington (WR, JAX) scored 11.8 points per game over 8 games before the trade. His Season rank is WR16, by total points this season. His Recent rank is WR45, by points per game over the last 4 weeks.\"}, {\"text\": \"Washington is worth more than Maye, so the other manager should be happy to take this.\", \"mark\": \"for\", \"fact_id\": \"9487.value\", \"fact_text\": \"Parker Washington is 31st on the chart of week 10, at 26.5.\"}, {\"text\": \"The Jaguars have the second-best offense, so Washington could keep getting chances.\", \"mark\": \"against\", \"fact_id\": \"9487.nfl_team\", \"fact_text\": \"Parker Washington's NFL team, the Jaguars, ranks 2nd of 32 on offense: 15.53 expected points added per 100 plays over 8 games before the trade.\"}], \"fact_lines\": []}], \"near\": [{\"offer_id\": \"6:12501+9487-9:11564\", \"sides\": [{\"roster_id\": 6, \"team\": \"Bo Girds\", \"gives\": [{\"player_id\": \"12501\", \"name\": \"Matthew Golden\", \"position\": \"WR\", \"nfl_team\": \"GB\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/12501.jpg\", \"season_rank\": \"WR5\", \"recent_rank\": null, \"to\": 9}, {\"player_id\": \"9487\", \"name\": \"Parker Washington\", \"position\": \"WR\", \"nfl_team\": \"JAX\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/9487.jpg\", \"season_rank\": \"WR16\", \"recent_rank\": \"WR45\", \"to\": 9}], \"gets\": [{\"player_id\": \"11564\", \"name\": \"Drake Maye\", \"position\": \"QB\", \"nfl_team\": \"NE\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/11564.jpg\", \"season_rank\": \"QB4\", \"recent_rank\": null, \"from\": 9}]}, {\"roster_id\": 9, \"team\": \"Maye d'force B with U\", \"gives\": [{\"player_id\": \"11564\", \"name\": \"Drake Maye\", \"position\": \"QB\", \"nfl_team\": \"NE\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/11564.jpg\", \"season_rank\": \"QB4\", \"recent_rank\": null, \"to\": 6}], \"gets\": [{\"player_id\": \"12501\", \"name\": \"Matthew Golden\", \"position\": \"WR\", \"nfl_team\": \"GB\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/12501.jpg\", \"season_rank\": \"WR5\", \"recent_rank\": null, \"from\": 6}, {\"player_id\": \"9487\", \"name\": \"Parker Washington\", \"position\": \"WR\", \"nfl_team\": \"JAX\", \"headshot\": \"https://sleepercdn.com/content/nfl/players/9487.jpg\", \"season_rank\": \"WR16\", \"recent_rank\": \"WR45\", \"from\": 6}]}], \"reason\": \"This leaves WR2 short, with Antonio Williams at WR73.\"}], \"empty\": null, \"as_of\": {\"chart_week\": 10, \"stats_through\": 9, \"completed_through\": 9, \"rosters_fetched\": \"2026-11-11T14:23:27.335344-05:00\", \"known_games\": {\"week\": 10, \"games\": 0, \"in_progress\": 0, \"pending\": {}}, \"no_chart\": false, \"no_chart_note\": null}, \"fallback\": false, \"missing\": [], \"stale\": []}}}\n\ndata: {\"type\": \"finish\"}\n\ndata: [DONE]\n\n"
+  },
+  {
+    "at": "2026-11-11T19:23:54.313Z",
+    "method": "POST",
+    "path": "/clients/cpc/personal/current",
+    "status": 200,
+    "request": {
+      "answers": [
+        {
+          "topic": "trade_ideas",
+          "roster_id": 6,
+          "team": null,
+          "key": "38d47716ccacff0f768513055216c2565006a4a1f20d4286c4637076081bc341"
+        }
+      ]
+    },
+    "response": {
+      "answers": [
+        {
+          "key": "38d47716ccacff0f768513055216c2565006a4a1f20d4286c4637076081bc341",
+          "current": true,
+          "kept_at": null
+        }
+      ]
+    }
+  },
+  {
+    "at": "2026-11-11T19:23:57.953Z",
+    "method": "POST",
+    "path": "/clients/cpc/ask",
+    "status": 200,
+    "request": {
+      "question": "week 1 results",
+      "roster_id": 6,
+      "week": 8,
+      "turns": [
+        {
+          "question": "Trade ideas",
+          "answer": "2 offers. Offer 1: Bo Girds gives Zay Flowers. Maye d'force B with U gives Drake Maye. Offer 2: Bo Girds gives Parker Washington. Maye d'force B with U gives Drake Maye. Idea 3: Bo Girds gives Matthew Golden, Parker Washington. Maye d'force B with U gives Drake Maye. Why not: This leaves WR2 short, with Antonio Williams at WR73."
+        }
+      ]
+    },
+    "response": {
+      "route": "free",
+      "line": null,
+      "topic": null,
+      "team": null,
+      "closest": [
+        "week_recap",
+        "last_matchup",
+        "your_season"
+      ],
+      "suggestion": null,
+      "jev": {
+        "model": "jev-1.14.0",
+        "nouls": {
+          "fits_topic": 0.11,
+          "data_can_answer": 0.87,
+          "about_league": 0.99,
+          "abuse": 0.01,
+          "names_team": 0.01
+        },
+        "choices": {
+          "topic": {
+            "week_recap": 0.95,
+            "last_matchup": 0.03,
+            "next_matchup": 0,
+            "power_rankings": 0,
+            "playoff_race": 0,
+            "your_season": 0.02,
+            "leaders_trades": 0,
+            "waiver_targets": 0,
+            "stack_up": 0,
+            "weak_spots": 0,
+            "sell_high": 0,
+            "trade_ideas": 0,
+            "trade_check": 0
+          },
+          "team": {
+            "the_blue_tent": 0.31,
+            "all_you_need_is_love": 0.05,
+            "lil_fridge": 0.02,
+            "nfc_least": 0.04,
+            "puka_deez": 0.02,
+            "bo_girds": 0.23,
+            "to_infinity_and_bijan": 0.04,
+            "return_of_t_mac": 0.03,
+            "maye_d_force_b_with_u": 0.14,
+            "behold_the_lamb": 0.02,
+            "unsolicited_dak_picks": 0.04,
+            "teehee": 0.06
+          }
+        }
+      }
+    }
+  },
+  {
+    "at": "2026-11-11T19:24:00.896Z",
+    "method": "POST",
+    "path": "/clients/cpc/ask/free",
+    "status": 200,
+    "request": {
+      "question": "week 1 results",
+      "roster_id": 6,
+      "week": 8,
+      "turns": [
+        {
+          "question": "Trade ideas",
+          "answer": "2 offers. Offer 1: Bo Girds gives Zay Flowers. Maye d'force B with U gives Drake Maye. Offer 2: Bo Girds gives Parker Washington. Maye d'force B with U gives Drake Maye. Idea 3: Bo Girds gives Matthew Golden, Parker Washington. Maye d'force B with U gives Drake Maye. Why not: This leaves WR2 short, with Antonio Williams at WR73."
+        }
+      ],
+      "id": "MVq5lk1aQxCsVia4",
+      "messages": [
+        {
+          "parts": [
+            {
+              "type": "text",
+              "text": "week 1 results"
+            }
+          ],
+          "id": "A1XWkdAtZ7m4OcL9",
+          "role": "user"
+        }
+      ],
+      "trigger": "submit-message"
+    },
+    "response": "data: {\"type\":\"start\"}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"tool-input-start\",\"toolCallId\":\"toolu_013YyLQtB6iWApXLgshdu73k\",\"toolName\":\"week_results\"}\n\ndata: {\"type\":\"tool-input-delta\",\"toolCallId\":\"toolu_013YyLQtB6iWApXLgshdu73k\",\"inputTextDelta\":\"\"}\n\ndata: {\"type\":\"tool-input-delta\",\"toolCallId\":\"toolu_013YyLQtB6iWApXLgshdu73k\",\"inputTextDelta\":\"{\\\"week\\\"\"}\n\ndata: {\"type\":\"tool-input-delta\",\"toolCallId\":\"toolu_013YyLQtB6iWApXLgshdu73k\",\"inputTextDelta\":\": 1}\"}\n\ndata: {\"type\":\"tool-input-available\",\"toolCallId\":\"toolu_013YyLQtB6iWApXLgshdu73k\",\"toolName\":\"week_results\",\"input\":{\"week\":1}}\n\ndata: {\"type\":\"tool-output-available\",\"toolCallId\":\"toolu_013YyLQtB6iWApXLgshdu73k\",\"output\":{\"week\":1,\"games\":[{\"teams\":[{\"team\":\"Lil Fridge\",\"score\":117.71},{\"team\":\"NFC Least\",\"score\":82.07}],\"winner\":\"Lil Fridge\"},{\"teams\":[{\"team\":\"All You Need Is Love\",\"score\":113.51},{\"team\":\"To Infinity and Bijan\",\"score\":109.21}],\"winner\":\"All You Need Is Love\"},{\"teams\":[{\"team\":\"Puka Deez...\",\"score\":100.51},{\"team\":\"Bo Girds\",\"score\":153.54}],\"winner\":\"Bo Girds\"},{\"teams\":[{\"team\":\"behold the lamb\",\"score\":79.21},{\"team\":\"Teehee\",\"score\":115.3}],\"winner\":\"Teehee\"},{\"teams\":[{\"team\":\"Maye d'force B with U\",\"score\":156.92},{\"team\":\"Unsolicited Dak Picks\",\"score\":96.2}],\"winner\":\"Maye d'force B with U\"},{\"teams\":[{\"team\":\"The Blue Tent\",\"score\":139.06},{\"team\":\"Return of T Mac\",\"score\":107.35}],\"winner\":\"The Blue Tent\"}],\"median_score\":111.36,\"beat_the_median\":[\"Maye d'force B with U\",\"Bo Girds\",\"The Blue Tent\",\"Lil Fridge\",\"Teehee\",\"All You Need Is Love\"],\"high_score\":{\"team\":\"Maye d'force B with U\",\"score\":156.92},\"low_score\":{\"team\":\"behold the lamb\",\"score\":79.21}}}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checking\"}}\n\ndata: {\"type\":\"text-start\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"In week 1, Bo\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Girds be\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"at Puka Deez...\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" 153.54 to 100\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\".51. The\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" high score was Maye d'\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"force B with U at 156.\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"92,\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" and the low was\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" behold the l\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"amb at 79.21.\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" The median score\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" was 111.36.\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"text-end\",\"id\":\"89b2e1ce-2615-4dec-b27f-bf01c816f1e0\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checked\"}}\n\ndata: {\"type\":\"finish\",\"finishReason\":\"stop\"}\n\ndata: [DONE]\n\n"
+  }
+]

@@ -1,0 +1,110 @@
+$ for i in 1..20: curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8092/clients/cpc/suggestions ... ; curl ... /clients/cpc/personal/current ... ; then one question to /clients/cpc/ask and its answer from /clients/cpc/ask/free   # the full commands follow
+# The API runs on 99d00125 with no CORNERSTONE_RATE_LIMIT_PER_MINUTE, so the limit is the default RATE_LIMIT_PER_MINUTE = 30 of apps/api/src/cornerstone_api/settings.py.
+# /suggestions body: {"roster_id":3,"order":["week_recap","last_matchup","next_matchup","power_rankings","playoff_race","your_season","leaders_trades","waiver_targets","stack_up","weak_spots","sell_high","trade_ideas","trade_check"],"opened":{}}
+# /personal/current body: {"answers":[{"topic":"weak_spots","roster_id":3,"key":"e8628f6ceeb4ee12593001d2c46c8eedf5576d3a62eb20d7e86c6618bc9c8dfe"}]}
+# Each read line: <n> <time> <path> <status>.
+start: 13:56:05
+1 13:56:12 POST /clients/cpc/suggestions 200
+2 13:56:12 POST /clients/cpc/personal/current 200
+3 13:56:12 POST /clients/cpc/suggestions 200
+4 13:56:12 POST /clients/cpc/personal/current 200
+5 13:56:13 POST /clients/cpc/suggestions 200
+6 13:56:13 POST /clients/cpc/personal/current 200
+7 13:56:13 POST /clients/cpc/suggestions 200
+8 13:56:13 POST /clients/cpc/personal/current 200
+9 13:56:13 POST /clients/cpc/suggestions 200
+10 13:56:13 POST /clients/cpc/personal/current 200
+11 13:56:13 POST /clients/cpc/suggestions 200
+12 13:56:14 POST /clients/cpc/personal/current 200
+13 13:56:14 POST /clients/cpc/suggestions 200
+14 13:56:14 POST /clients/cpc/personal/current 200
+15 13:56:14 POST /clients/cpc/suggestions 200
+16 13:56:14 POST /clients/cpc/personal/current 200
+17 13:56:14 POST /clients/cpc/suggestions 200
+18 13:56:14 POST /clients/cpc/personal/current 200
+19 13:56:14 POST /clients/cpc/suggestions 200
+20 13:56:14 POST /clients/cpc/personal/current 200
+21 13:56:15 POST /clients/cpc/suggestions 200
+22 13:56:15 POST /clients/cpc/personal/current 200
+23 13:56:15 POST /clients/cpc/suggestions 200
+24 13:56:15 POST /clients/cpc/personal/current 200
+25 13:56:15 POST /clients/cpc/suggestions 200
+26 13:56:15 POST /clients/cpc/personal/current 200
+27 13:56:15 POST /clients/cpc/suggestions 200
+28 13:56:15 POST /clients/cpc/personal/current 200
+29 13:56:16 POST /clients/cpc/suggestions 200
+30 13:56:16 POST /clients/cpc/personal/current 200
+31 13:56:16 POST /clients/cpc/suggestions 200
+32 13:56:16 POST /clients/cpc/personal/current 200
+33 13:56:16 POST /clients/cpc/suggestions 200
+34 13:56:16 POST /clients/cpc/personal/current 200
+35 13:56:17 POST /clients/cpc/suggestions 200
+36 13:56:17 POST /clients/cpc/personal/current 200
+37 13:56:17 POST /clients/cpc/suggestions 200
+38 13:56:17 POST /clients/cpc/personal/current 200
+39 13:56:17 POST /clients/cpc/suggestions 200
+40 13:56:17 POST /clients/cpc/personal/current 200
+
+# The question, request 41:
+$ curl -s -w '\nstatus %{http_code}\n' -X POST http://localhost:8092/clients/cpc/ask -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"what did Bo Nix score in week 6","roster_id":3,"week":8}'
+{'route': 'free', 'topic': None, 'team': None, 'line': None, 'closest': ['week_recap', 'leaders_trades', 'your_season']}
+status 200
+# Its Answer, request 42:
+$ curl -s -w '\nstatus %{http_code}\n' -X POST http://localhost:8092/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"what did Bo Nix score in week 6","roster_id":3,"week":8}'
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01FMgkaFLeBxeorJTxVUcbzk","toolName":"player_log"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01FMgkaFLeBxeorJTxVUcbzk","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01FMgkaFLeBxeorJTxVUcbzk","inputTextDelta":"{\"playe"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01FMgkaFLeBxeorJTxVUcbzk","inputTextDelta":"r\": \"Bo"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01FMgkaFLeBxeorJTxVUcbzk","inputTextDelta":" Nix\"}"}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01FMgkaFLeBxeorJTxVUcbzk","toolName":"player_log","input":{"player":"Bo Nix"}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01FMgkaFLeBxeorJTxVUcbzk","output":{"player":"Bo Nix","position":"QB","nfl_team":"DEN","season_points":118.22,"status":"healthy","can_play_now":true,"what_each_field_means":{"status":"The status of the player on the injury report now, such as \"out\" or \"on IR\". \"healthy\" means the report lists no status.","can_play_now":"False when the status keeps the player out now, such as out, on IR, or suspended. A player listed as questionable can still play."},"weeks":[{"week":1,"league_team":"Bo Girds","started":true,"fantasy_points":6.44,"pass_yards":131.0,"pass_tds":1.0,"interceptions":1.0,"rush_attempts":3.0,"rush_yards":2.0,"fumbles_lost":1.0},{"week":2,"league_team":"free agent","fantasy_points":15.12,"pass_yards":288.0,"pass_tds":1.0,"interceptions":1.0,"rush_attempts":5.0,"rush_yards":6.0},{"week":3,"league_team":"free agent","fantasy_points":25.14,"pass_yards":186.0,"pass_tds":2.0,"interceptions":1.0,"rush_attempts":4.0,"rush_yards":7.0,"rush_tds":1.0},{"week":4,"league_team":"free agent","fantasy_points":13.56,"pass_yards":214.0,"pass_tds":1.0,"rush_attempts":2.0,"rush_yards":10.0},{"week":5,"league_team":"free agent","fantasy_points":7.92,"pass_yards":123.0,"pass_tds":1.0,"rush_attempts":4.0,"rush_yards":10.0,"fumbles_lost":1.0},{"week":6,"league_team":"free agent","fantasy_points":4.48,"pass_yards":107.0,"rush_attempts":4.0,"rush_yards":2.0},{"week":7,"league_team":"Teehee","started":true,"fantasy_points":26.28,"pass_yards":222.0,"pass_tds":1.0,"rush_attempts":7.0,"rush_yards":74.0,"rush_tds":1.0},{"week":8,"league_team":"Teehee","started":false,"fantasy_points":19.28,"pass_yards":222.0,"pass_tds":2.0,"rush_attempts":3.0,"rush_yards":4.0}]}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-delta","delta":"Bo Nix scored","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-delta","delta":" 4.48 fantas","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-delta","delta":"y points in week 6. He","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-delta","delta":" had","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-delta","delta":" 107 pass","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-delta","delta":"ing yards and no","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-delta","delta":" touchdowns, and he","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-delta","delta":" was a free agent that","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-delta","delta":" week.","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"text-end","id":"ac62b4ac-1eff-4059-bbed-9e9829e1b51e"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+status 200
+end: 13:56:22

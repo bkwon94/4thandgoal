@@ -1,5 +1,7 @@
-$ ls docs/adr/0031-*.md
- docs/adr/0031-the-text-that-managers-type.md
+$ /bin/ls docs/adr/0031-*.md   # at 99d00125
+docs/adr/0031-the-evidence-goes-to-typesafe-and-a-flag-is-not-a-verdict.md
+docs/adr/0031-the-text-that-managers-type.md
+# Two files carry the number 0031. The second one is the ADR of the manager text that this test names. The first one comes from main (the evidence-flags spec).
 
 $ cat docs/adr/0031-the-text-that-managers-type.md
 # The text that managers type goes to two vendors, and the miss log stays on Fly

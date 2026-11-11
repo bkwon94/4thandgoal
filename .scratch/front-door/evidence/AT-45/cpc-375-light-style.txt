@@ -1,5 +1,10 @@
 {
-  "body": "spaceGrotesk, \"spaceGrotesk Fallback\"",
-  "h1": "spaceGrotesk, \"spaceGrotesk Fallback\"",
-  "accent": "#b8342a"
+  "body_font": "spaceGrotesk, \"spaceGrotesk Fallback\"",
+  "h1_font": "spaceGrotesk, \"spaceGrotesk Fallback\"",
+  "accent": "#b8342a",
+  "band": "#141414",
+  "header_background": "rgb(244, 244, 244)",
+  "header_text": "CORNERSTONE FANTASY FOOTBALL LEAGUE WK 08",
+  "body_background": "rgb(244, 244, 244)",
+  "h1_team_color": "rgb(20, 20, 20)"
 }

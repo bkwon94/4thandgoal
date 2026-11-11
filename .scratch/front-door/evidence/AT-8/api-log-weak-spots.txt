@@ -1,0 +1,19 @@
+# The API log from line 570, during this test.
+INFO:     127.0.0.1:51981 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51981 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51981 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 94ms (request req_01a1cc5d12b67851b241e938771e5d73)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 84ms (request req_01a1cc5d13107b38b084d9303adf842d)
+INFO:     127.0.0.1:51981 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     cornerstone_api.suggestions: The head start builds the personal Topic weak_spots on open
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 61ms (request req_01a1cc5d19f07f11a35496bc87a50809)
+INFO:     cornerstone_api.claude_stream: The personal Topic weak_spots ended as checked, with 1 texts, 1707 input tokens, 148 output tokens, and a cost of $0.0017
+INFO:     127.0.0.1:51983 - "OPTIONS /clients/cpc/personal HTTP/1.1" 200 OK
+INFO:     cornerstone_api.personal_topics: The personal Topic weak_spots came from the store, with no Claude call
+INFO:     127.0.0.1:51983 - "POST /clients/cpc/personal HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51983 - "OPTIONS /clients/cpc/personal/current HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52001 - "POST /clients/cpc/personal/current HTTP/1.1" 200 OK

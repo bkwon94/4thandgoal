@@ -1,0 +1,5 @@
+# The export of CPC built with front_door = false (apps/site/out of that build).
+$ grep -o "<meta name=\"robots\"[^>]*>" out/ask/index.html
+<meta name="robots" content="noindex"/>
+$ grep -o "<meta name=\"robots\"[^>]*>" out/index.html
+(no hit)

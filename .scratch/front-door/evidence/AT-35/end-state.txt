@@ -1,1 +1,71 @@
+The articles with the stale line, before the tap on Refresh:
+Weak spots data-stale=true: Weak spots Your roster changed since Wednesday. Refresh WEAKEST SPOT QB RANK 7th of 12 HOLES 0 QB deep 7th of 12 RB fine 6th of 12 TE fine 3rd of 12 WR fine 3rd of 12 Your team has no hole among its s
+
+The tap on Refresh was at about 136.72 s of the recording. The last article on each animation frame (only the changes):
+136.728 s: stale true | busy null | block | steps - | words 0 (0 blurred) | text Your team has no hole among its starters | status Your roster changed since Wednesday.
+136.759 s: stale false | busy true | no block | steps [live ⠋ Reading the league…] | words 0 (0 blurred) | text (no text) | status -
+136.778 s: stale false | busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status -
+136.857 s: stale false | busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status -
+136.941 s: stale false | busy true | block | steps [live ⠹ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.028 s: stale false | busy true | block | steps [live ⠸ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.109 s: stale false | busy true | block | steps [live ⠼ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.178 s: stale false | busy true | block | steps [live ⠴ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.258 s: stale false | busy true | block | steps [live ⠦ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.341 s: stale false | busy true | block | steps [live ⠧ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.428 s: stale false | busy true | block | steps [live ⠇ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.491 s: stale false | busy true | block | steps [live ⠏ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.578 s: stale false | busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.658 s: stale false | busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.741 s: stale false | busy true | block | steps [live ⠹ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.824 s: stale false | busy true | block | steps [live ⠸ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.908 s: stale false | busy true | block | steps [live ⠼ Writing…] | words 0 (0 blurred) | text (no text) | status -
+137.974 s: stale false | busy true | block | steps [live ⠴ Writing…] | words 0 (0 blurred) | text (no text) | status -
+138.059 s: stale false | busy true | block | steps [live ⠦ Writing…] | words 0 (0 blurred) | text (no text) | status -
+138.141 s: stale false | busy true | block | steps [live ⠧ Writing…] | words 0 (0 blurred) | text (no text) | status -
+138.224 s: stale false | busy true | block | steps [live ⠇ Writing…] | words 0 (0 blurred) | text (no text) | status -
+138.291 s: stale false | busy true | block | steps [live ⠏ Writing…] | words 0 (0 blurred) | text (no text) | status -
+138.374 s: stale false | busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status -
+138.458 s: stale false | busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status -
+138.544 s: stale false | busy true | block | steps [live ⠹ Writing…] | words 0 (0 blurred) | text (no text) | status -
+138.575 s: stale false | busy true | block | steps - | words 0 (0 blurred) | text (no text) | status Checking
+139.376 s: stale false | busy true | block | steps - | words 0 (0 blurred) | text Fixing a number… | status -
+142.494 s: stale false | busy true | block | steps - | words 0 (0 blurred) | text Fixing a number… | status Checking
+142.543 s: stale false | busy false | block | steps - | words 0 (0 blurred) | text Fixing a number… | status Checking
+143.296 s: stale false | busy false | block | steps - | words 65 (65 blurred) | text Your weakest spot is the second FLEX slo | status Checking
+Checked
+143.510 s: stale false | busy false | block | steps - | words 65 (65 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.542 s: stale false | busy false | block | steps - | words 65 (62 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.560 s: stale false | busy false | block | steps - | words 65 (60 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.576 s: stale false | busy false | block | steps - | words 65 (58 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.591 s: stale false | busy false | block | steps - | words 65 (56 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.610 s: stale false | busy false | block | steps - | words 65 (54 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.627 s: stale false | busy false | block | steps - | words 65 (52 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.644 s: stale false | busy false | block | steps - | words 65 (49 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.660 s: stale false | busy false | block | steps - | words 65 (47 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.675 s: stale false | busy false | block | steps - | words 65 (45 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.692 s: stale false | busy false | block | steps - | words 65 (43 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.710 s: stale false | busy false | block | steps - | words 65 (41 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.726 s: stale false | busy false | block | steps - | words 65 (39 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.744 s: stale false | busy false | block | steps - | words 65 (36 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.760 s: stale false | busy false | block | steps - | words 65 (34 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.775 s: stale false | busy false | block | steps - | words 65 (32 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.793 s: stale false | busy false | block | steps - | words 65 (30 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.810 s: stale false | busy false | block | steps - | words 65 (28 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.826 s: stale false | busy false | block | steps - | words 65 (26 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.841 s: stale false | busy false | block | steps - | words 65 (23 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.860 s: stale false | busy false | block | steps - | words 65 (21 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.876 s: stale false | busy false | block | steps - | words 65 (19 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.892 s: stale false | busy false | block | steps - | words 65 (17 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.910 s: stale false | busy false | block | steps - | words 65 (15 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.926 s: stale false | busy false | block | steps - | words 65 (13 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.941 s: stale false | busy false | block | steps - | words 65 (10 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.960 s: stale false | busy false | block | steps - | words 65 (8 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.977 s: stale false | busy false | block | steps - | words 65 (6 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+143.993 s: stale false | busy false | block | steps - | words 65 (4 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+144.010 s: stale false | busy false | block | steps - | words 65 (2 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+144.026 s: stale false | busy false | block | steps - | words 65 (0 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+144.094 s: stale false | busy null | block | steps - | words 0 (0 blurred) | text Your weakest spot is the second FLEX slo | status Checked
+
+At the end:
 articles with data-stale at the end: 0
+Weak spots data-stale=false opacity of the body 1: Weak spots WEAKEST SPOT QB RANK 6th of 12 HOLES 0 QB stacked 6th of 12 RB fine 6th of 12 TE fine 3rd of 12 WR fine 3rd of 12 Your weakest spot is the second FLEX slot, where Jakobi Meyers is a WR proj

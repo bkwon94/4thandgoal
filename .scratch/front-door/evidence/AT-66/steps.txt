@@ -1,0 +1,5 @@
+Driver: site.mjs AT-66, 375x812, the date of the page shifted to Wednesday 2026-11-04.
+1. Live run, light: store Bo Girds and the passphrase. Open /. Open Trade ideas. Wait until no article is busy.
+2. Type "id rather not trade a WR". Tap Send. Wait until no article is busy, then 4 s. Shot 375-light.
+3. Dark: open / with the local storage of the live run. Shot 375-dark. Each shot scrolls to the top of the page first, so the fixed header covers no part of the Thread.
+api-calls.json holds both streams and the route response of the typed question with its limit. answer-text-375-light.txt is the text of the second Answer.

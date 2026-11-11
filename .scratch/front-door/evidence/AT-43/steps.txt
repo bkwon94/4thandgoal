@@ -1,4 +1,5 @@
-Driver: tests.mjs AT-43, 375x812, Wednesday clock, screen recording recording-375-light.webm.
-1. Store Lil Fridge and the passphrase. Open / with an empty Thread. Wait 2 s.
-2. Tap the first Suggestion. Wait 4 s. Frames come from the recording with ffmpeg.
-Frames come from the recording with ffmpeg at 20 fps from 5.40 s (contact-sheet-20fps-from-5.40s.png, frame n at 5.40 + (n-1)/20 s).
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, two screen recordings.
+Run 1 (recording-375-light.webm, run.txt): store Lil Fridge and the passphrase. Open / with an empty Thread. Wait 6 s. Tap the first Suggestion of the row.
+Run 2 (recording-league-375-light.webm, run-league.txt): the same, but tap the first chip of the row that is a league Topic. The morph code of the site (a shared layoutId) is on the question of a league Answer only, so this run shows that case too.
+Each run samples the tapped chip and the question bubble on each animation frame for 1.5 s, waits 4 s, and takes a viewport shot end<run>-375-light.
+frame-<time>-<run>-<label>.png are frames of the recording, 40 ms apart from the tap, from ffmpeg.

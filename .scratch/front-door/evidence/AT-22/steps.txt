@@ -1,3 +1,0 @@
-Instrument: pytest of the API with FakeJev and a stand-in writer.
-1. output.txt holds the run of test_a_second_failed_claim_ends_with_the_honest_miss_and_keeps_nothing, and a temp test file with the same FakeJev run (Checks([False, False, False])) that saves the raw stream (at-22-weak-spots-two-failed-claims.sse) and prints each part of it under "AT-22 parts of the stream".
-2. Extra: the same replay as AT-21 (driver replay-test.mjs AT-22, no recording) plays this stream in the front door. end-375-light.png is the end state, and replay-text-changes.txt lists the text of the last article each time it changed.

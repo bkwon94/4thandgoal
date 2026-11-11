@@ -1,3 +1,3 @@
-Driver: tests.mjs AT-19 run (the same live run as AT-19 and AT-44), 375x812, light.
-1. Type "week 1 results". Tap Send.
-2. When an article has aria-busy=true and the first step shows, wait 0.8 s and take a viewport shot. visible-buttons-during-stream.txt lists every visible button at that moment.
+Driver: motion.mjs AT-19 (the same live run as AT-19), 375x812, light, Wednesday 2026-11-04 10:00 America/Los_Angeles.
+1. Store Lil Fridge and the passphrase. Open /. Type "week 1 results". Tap Send.
+2. When an article has aria-busy=true and its first step line shows, wait 0.4 s and take a viewport shot (during-stream-375-light.png). visible-buttons-during-stream.txt lists the state of the article and every visible button at that moment.

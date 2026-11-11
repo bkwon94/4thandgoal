@@ -1,32 +1,20 @@
-# The API log from line 1352, during this test.
-INFO:     127.0.0.1:54010 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54010 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54010 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
-INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
-WARNING:     league.chart: The site lists no chart for week 10, so the week gets no trade values
+# The API log from line 902, during this test.
+INFO:     127.0.0.1:60269 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60269 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60269 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
 INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
-INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 77ms (request req_01a1c83038a4748b86538971ab59b923)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 77ms (request req_01a1cc10669f702a92bc4471d5a977cb)
 INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
-INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 63ms (request req_01a1c83038f07356999766800c7d31e6)
-INFO:     127.0.0.1:54010 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54010 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 83ms (request req_01a1cc1066ee7cd89c3a83eb247b2b39)
+INFO:     127.0.0.1:60269 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60269 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
 INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
-INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 142ms (request req_01a1c8303e237d6b87340667bf537aae)
-INFO:     127.0.0.1:54012 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54012 - "OPTIONS /clients/cpc/trade-check HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54010 - "POST /clients/cpc/trade-check HTTP/1.1" 200 OK
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 106ms (request req_01a1cc106c7679c4929db51c5811c18b)
+INFO:     127.0.0.1:60271 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60271 - "OPTIONS /clients/cpc/trade-check HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60269 - "POST /clients/cpc/trade-check HTTP/1.1" 200 OK
 INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
-INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 91ms (request req_01a1c8303eb8769a96075fe811f088c1)
-INFO:     127.0.0.1:54010 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54010 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54012 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 120ms (request req_01a1cc106d247f688c20e953eea6c35a)
+INFO:     127.0.0.1:60281 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60279 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60281 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK

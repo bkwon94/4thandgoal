@@ -1,3 +1,3 @@
-Driver: tests.mjs AT-32, 375x812, Wednesday clock (the same day for both contexts).
+Driver: site.mjs AT-32, 375x812, the date of the page shifted to Wednesday 2026-11-04 in both contexts (the same day).
 1. Store Lil Fridge and the passphrase. Open Week recap, then Power rankings. Shot before.
-2. Close the context (the tab). Open a new context with the storage state of the first one. Open /. Shot after.
+2. Close the context (the tab). Open a new context with the storage state of the first one. Open /. Wait 5 s. Shot after.

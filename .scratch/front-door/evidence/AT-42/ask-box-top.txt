@@ -1,3 +1,28 @@
-Top of the ask box (px from the viewport top) before the send: 386
-Every 50 ms after the tap on Send (30 samples):
-398, 463, 528, 594, 638, 655, 662, 666, 667, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668, 668
+The tap on Send was at about 5.79 s of the recording.
+On each animation frame for 2 s from the tap (only the changes): the top and bottom of the ask box form, and the top and bottom of the question bubble, in px from the top of the viewport (812 px high).
+5.803 s: ask box top 452 bottom 506 | question none
+5.898 s: ask box top 452 bottom 506 | question top 129 bottom 161
+5.900 s: ask box top 452 bottom 506 | question top 126 bottom 158
+5.904 s: ask box top 453 bottom 507 | question top 125 bottom 157
+5.920 s: ask box top 454 bottom 508 | question top 124 bottom 156
+5.934 s: ask box top 469 bottom 523 | question top 123 bottom 155
+5.952 s: ask box top 489 bottom 543 | question top 122 bottom 155
+5.969 s: ask box top 516 bottom 570 | question top 122 bottom 154
+5.986 s: ask box top 545 bottom 599 | question top 122 bottom 154
+6.003 s: ask box top 577 bottom 631 | question top 129 bottom 161
+6.017 s: ask box top 589 bottom 643 | question top 127 bottom 159
+6.037 s: ask box top 603 bottom 657 | question top 126 bottom 158
+6.052 s: ask box top 619 bottom 673 | question top 124 bottom 157
+6.069 s: ask box top 630 bottom 684 | question top 124 bottom 156
+6.086 s: ask box top 639 bottom 693 | question top 123 bottom 155
+6.103 s: ask box top 646 bottom 700 | question top 122 bottom 154
+6.119 s: ask box top 651 bottom 705 | question top 122 bottom 154
+6.134 s: ask box top 655 bottom 709 | question top 122 bottom 154
+6.152 s: ask box top 658 bottom 712 | question top 121 bottom 154
+6.169 s: ask box top 661 bottom 715 | question top 121 bottom 153
+6.186 s: ask box top 663 bottom 717 | question top 121 bottom 153
+6.203 s: ask box top 664 bottom 718 | question top 121 bottom 153
+6.217 s: ask box top 665 bottom 719 | question top 121 bottom 153
+6.236 s: ask box top 666 bottom 720 | question top 121 bottom 153
+6.268 s: ask box top 667 bottom 721 | question top 121 bottom 153
+6.336 s: ask box top 668 bottom 722 | question top 121 bottom 153

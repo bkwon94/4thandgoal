@@ -1,5 +1,7 @@
-Driver: tests.mjs AT-34 and AT-34-after, 375x812, Wednesday clock.
-1. Store Lil Fridge and the passphrase. Open /. Open Weak spots (kept in the answer store). Wait for Checked. Shot before-375-<theme>. Keep the storage state.
-2. The roster seam of the evidence launcher of the API (scratchpad driver/launch_api.py): when its flag file exists, the live Sleeper rosters come back with one more player on roster 3, Lil Fridge. The flag names Sione Vaki (player 11729), a free agent.
-3. Open / in a new context with the kept storage state. Wait for the stale line. Shot after-375-<theme>. marks-after-375-<theme>.txt counts the "Checked" text on the page.
-api-calls-after-<theme>.json holds the key check request and response (/clients/cpc/personal/current).
+Driver: site.mjs AT-34 and AT-34-after, 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles.
+1. Store Lil Fridge and the passphrase. Open /. Open Weak spots (kept in the answer store from an earlier test of the round). Wait until no article is busy, then 4 s. Shot before-375-<theme>. Keep the storage state.
+2. The roster seam of the evidence launcher of the API (scratchpad driver/launch_api.py): when its flag file exists, the live Sleeper rosters come back with one more player on roster 3, Lil Fridge. The flag names Sione Vaki (player 11729), a free agent. The API keeps its live data 120 s, so step 3 ran more than 120 s after the last live fetch.
+3. Open / in a new context with the kept storage state. Wait for the stale line, then 3 s. Scroll the Weak spots Answer to the top. Viewport shot after-375-<theme>.
+state-after-375-<theme>.txt reads the last Weak spots article: its data-stale attribute and opacity, the stale line, its buttons, and the count of "Checked" text.
+api-calls-after-<theme>.json holds the key check request and response (/clients/cpc/personal/current). api-log-after.txt is the API log of step 3.
+The flag file was removed after step 3.

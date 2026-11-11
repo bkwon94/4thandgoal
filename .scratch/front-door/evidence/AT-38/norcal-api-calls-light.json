@@ -1,6 +1,6 @@
 [
   {
-    "at": "2026-11-11T01:36:37.119Z",
+    "at": "2026-11-11T19:40:34.884Z",
     "method": "POST",
     "path": "/clients/norcal/suggestions",
     "status": 200,
@@ -27,7 +27,7 @@
       "picks": [
         "weak_spots",
         "stack_up",
-        "trade_ideas"
+        "sell_high"
       ],
       "facts": {
         "week_recap": "You scored 145.78, 3rd of 12",
@@ -39,63 +39,59 @@
         "leaders_trades": "Kirk Cousins, 2nd at QB",
         "weak_spots": "QB ranks 12th of 12",
         "stack_up": "Grade A, QB ranks 12th of 12",
-        "waiver_targets": "22 free agents on the list",
-        "trade_ideas": "Offers for your QB, 12th of 12",
+        "waiver_targets": "Free agents to stash",
         "sell_high": "Christian McCaffrey: 25.1 a game over 4 weeks, 20.8 for the season"
       },
       "lifts": {
-        "week_recap": 0.1,
+        "week_recap": 0.09,
         "last_matchup": 0.05,
-        "next_matchup": 0.14,
-        "power_rankings": 0.12,
-        "playoff_race": 0.24,
-        "your_season": 0.12,
-        "leaders_trades": 0.32,
+        "next_matchup": 0.13,
+        "power_rankings": 0.1,
+        "playoff_race": 0.2,
+        "your_season": 0.09,
+        "leaders_trades": 0.4,
         "weak_spots": 0.96,
         "stack_up": 0.94,
-        "waiver_targets": 0.44,
-        "trade_ideas": 0.92,
-        "sell_high": 0.75
+        "waiver_targets": 0.31,
+        "sell_high": 0.77
       },
       "urgent": [
         "weak_spots",
         "stack_up",
-        "trade_ideas",
         "sell_high"
       ],
       "head_start": "weak_spots",
       "jev": {
         "model": "jev-1.14.0",
         "nouls": {
-          "lift_week_recap": 0.1,
+          "lift_week_recap": 0.09,
           "lift_last_matchup": 0.05,
-          "lift_next_matchup": 0.14,
-          "lift_power_rankings": 0.12,
-          "lift_playoff_race": 0.24,
-          "lift_your_season": 0.12,
-          "lift_leaders_trades": 0.32,
+          "lift_next_matchup": 0.13,
+          "lift_power_rankings": 0.1,
+          "lift_playoff_race": 0.2,
+          "lift_your_season": 0.09,
+          "lift_leaders_trades": 0.4,
           "lift_weak_spots": 0.96,
           "lift_stack_up": 0.94,
-          "lift_waiver_targets": 0.44,
-          "lift_trade_ideas": 0.92,
-          "lift_sell_high": 0.75,
-          "sell_high_clear": 0.76
+          "lift_waiver_targets": 0.31,
+          "lift_sell_high": 0.77,
+          "sell_high_clear": 0.86
         },
         "choices": {
           "sell_high_player": {
-            "kirk_cousins": 0.06,
-            "harold_fannin_jr": 0,
+            "kirk_cousins": 0.11,
+            "harold_fannin_jr": 0.01,
             "tetairoa_mcmillan": 0,
             "denzel_boston": 0,
-            "christian_mccaffrey": 0.55,
+            "christian_mccaffrey": 0.52,
             "aaron_jones_sr": 0,
             "kendrick_bourne": 0,
             "dj_moore": 0.11,
             "dalton_schultz": 0,
-            "kenny_gainwell": 0.23,
+            "kenny_gainwell": 0.15,
             "nico_collins": 0,
             "wan_dale_robinson": 0,
-            "rachaad_white": 0.05,
+            "rachaad_white": 0.1,
             "kyren_williams": 0,
             "brenton_strange": 0
           }
@@ -104,14 +100,15 @@
     }
   },
   {
-    "at": "2026-11-11T01:36:40.577Z",
+    "at": "2026-11-11T19:40:37.831Z",
     "method": "POST",
     "path": "/clients/norcal/ask",
     "status": 200,
     "request": {
       "question": "highest scoring team this season",
       "roster_id": 1,
-      "week": 8
+      "week": 8,
+      "turns": []
     },
     "response": {
       "route": "free",
@@ -127,20 +124,20 @@
       "jev": {
         "model": "jev-1.14.0",
         "nouls": {
-          "fits_topic": 0.6,
+          "fits_topic": 0.58,
           "data_can_answer": 0.98,
           "about_league": 1,
           "abuse": 0.01,
-          "names_team": 0.17
+          "names_team": 0.18
         },
         "choices": {
           "topic": {
             "week_recap": 0.01,
             "last_matchup": 0,
             "next_matchup": 0,
-            "power_rankings": 0.02,
+            "power_rankings": 0.03,
             "playoff_race": 0.32,
-            "your_season": 0.65,
+            "your_season": 0.64,
             "leaders_trades": 0,
             "waiver_targets": 0,
             "stack_up": 0,
@@ -150,16 +147,16 @@
             "trade_check": 0
           },
           "team": {
-            "puurdygood": 0.34,
-            "varsityblue2": 0.1,
+            "puurdygood": 0.31,
+            "varsityblue2": 0.12,
             "bobbuckstein": 0.03,
-            "the_mean_machine": 0.2,
+            "the_mean_machine": 0.21,
             "skol_daddy": 0.05,
-            "mitseeker5000": 0.05,
+            "mitseeker5000": 0.06,
             "bo_girds": 0.02,
             "hock_tua": 0.03,
             "kaiedmonds": 0.03,
-            "davlionman": 0.04,
+            "davlionman": 0.03,
             "breece_mode": 0.06,
             "the_dart_side": 0.05
           }
@@ -168,7 +165,7 @@
     }
   },
   {
-    "at": "2026-11-11T01:36:43.634Z",
+    "at": "2026-11-11T19:40:39.982Z",
     "method": "POST",
     "path": "/clients/norcal/ask/free",
     "status": 200,
@@ -176,7 +173,8 @@
       "question": "highest scoring team this season",
       "roster_id": 1,
       "week": 8,
-      "id": "B4p4cDVa3aCMQp8I",
+      "turns": [],
+      "id": "2MhhVLYm4Wt9yBwN",
       "messages": [
         {
           "parts": [
@@ -185,12 +183,12 @@
               "text": "highest scoring team this season"
             }
           ],
-          "id": "smhAlzYTw21XUeSf",
+          "id": "ofWxrsDklnYIGks3",
           "role": "user"
         }
       ],
       "trigger": "submit-message"
     },
-    "response": "data: {\"type\":\"start\"}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"tool-input-start\",\"toolCallId\":\"toolu_0113nQUVq6yNEyLnsiJVPD5w\",\"toolName\":\"standings\"}\n\ndata: {\"type\":\"tool-input-delta\",\"toolCallId\":\"toolu_0113nQUVq6yNEyLnsiJVPD5w\",\"inputTextDelta\":\"\"}\n\ndata: {\"type\":\"tool-input-available\",\"toolCallId\":\"toolu_0113nQUVq6yNEyLnsiJVPD5w\",\"toolName\":\"standings\",\"input\":{}}\n\ndata: {\"type\":\"tool-output-available\",\"toolCallId\":\"toolu_0113nQUVq6yNEyLnsiJVPD5w\",\"output\":{\"through_week\":8,\"how_records_count\":\"Each week is one head-to-head game.\",\"teams\":[{\"rank\":1,\"team\":\"Mitseeker5000\",\"record\":\"6-2\",\"head_to_head_record\":\"6-2\",\"points_for\":1130.34,\"points_for_rank\":1,\"points_against\":1063.3},{\"rank\":2,\"team\":\"puurdygood\",\"record\":\"5-3\",\"head_to_head_record\":\"5-3\",\"points_for\":1010.86,\"points_for_rank\":5,\"points_against\":978.84},{\"rank\":3,\"team\":\"kaiedmonds\",\"record\":\"5-3\",\"head_to_head_record\":\"5-3\",\"points_for\":1010.86,\"points_for_rank\":6,\"points_against\":980.3},{\"rank\":4,\"team\":\"Hock Tua 💦\",\"record\":\"5-3\",\"head_to_head_record\":\"5-3\",\"points_for\":1006.98,\"points_for_rank\":7,\"points_against\":1006.76},{\"rank\":5,\"team\":\"Davlionman\",\"record\":\"5-3\",\"head_to_head_record\":\"5-3\",\"points_for\":972.32,\"points_for_rank\":9,\"points_against\":991.78},{\"rank\":6,\"team\":\"Breece Mode\",\"record\":\"4-4\",\"head_to_head_record\":\"4-4\",\"points_for\":1055.74,\"points_for_rank\":3,\"points_against\":1012.4},{\"rank\":7,\"team\":\"BobBuckstein\",\"record\":\"4-4\",\"head_to_head_record\":\"4-4\",\"points_for\":1014.38,\"points_for_rank\":4,\"points_against\":904.24},{\"rank\":8,\"team\":\"Skol Daddy\",\"record\":\"3-5\",\"head_to_head_record\":\"3-5\",\"points_for\":1089.82,\"points_for_rank\":2,\"points_against\":1044.74},{\"rank\":9,\"team\":\"Bo Girds\",\"record\":\"3-5\",\"head_to_head_record\":\"3-5\",\"points_for\":983.36,\"points_for_rank\":8,\"points_against\":959.48},{\"rank\":10,\"team\":\"VarsityBlue2\",\"record\":\"3-5\",\"head_to_head_record\":\"3-5\",\"points_for\":927.22,\"points_for_rank\":10,\"points_against\":951.46},{\"rank\":11,\"team\":\"The Mean Machine\",\"record\":\"3-5\",\"head_to_head_record\":\"3-5\",\"points_for\":883.14,\"points_for_rank\":11,\"points_against\":993.38},{\"rank\":12,\"team\":\"The Dart Side\",\"record\":\"2-6\",\"head_to_head_record\":\"2-6\",\"points_for\":790.8,\"points_for_rank\":12,\"points_against\":989.14}]}}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"text-start\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"Mitseeker5000\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" has\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" sc\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ored the most points this\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" season.\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" They\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" have 1,130.34 \",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"points through week 8. Sk\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ol Daddy is second with\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" 1,089.82.\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Your team,\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" puurdygood, is f\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"ifth with 1,010.\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"86.\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"text-end\",\"id\":\"349543e9-48c0-4fa9-806b-0abaca922a9a\"}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checking\"}}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checked\"}}\n\ndata: {\"type\":\"data-suggestion\",\"data\":{\"topic\":\"your_season\",\"team\":null}}\n\ndata: {\"type\":\"finish\",\"finishReason\":\"stop\"}\n\ndata: [DONE]\n\n"
+    "response": "data: {\"type\":\"start\"}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"tool-input-start\",\"toolCallId\":\"toolu_01VRbK9aethdvDCEuaK2ZM3S\",\"toolName\":\"standings\"}\n\ndata: {\"type\":\"tool-input-delta\",\"toolCallId\":\"toolu_01VRbK9aethdvDCEuaK2ZM3S\",\"inputTextDelta\":\"\"}\n\ndata: {\"type\":\"tool-input-available\",\"toolCallId\":\"toolu_01VRbK9aethdvDCEuaK2ZM3S\",\"toolName\":\"standings\",\"input\":{}}\n\ndata: {\"type\":\"tool-output-available\",\"toolCallId\":\"toolu_01VRbK9aethdvDCEuaK2ZM3S\",\"output\":{\"through_week\":8,\"how_records_count\":\"Each week is one head-to-head game.\",\"what_each_field_means\":{\"rank\":\"The place of the team in the standings, by record, from 1 to 12. The teams are in this order.\",\"points_for\":\"The fantasy points that the team scored this season, through `through_week`.\",\"points_for_rank\":\"The place of the team by `points_for`, from 1, the most points of the league, to 12. A list of the highest scoring teams follows this field, not `rank`.\",\"teams_by_points_for\":\"The names of the teams in the order of `points_for_rank`, the most points first.\"},\"teams_by_points_for\":[\"Mitseeker5000\",\"Skol Daddy\",\"Breece Mode\",\"BobBuckstein\",\"puurdygood\",\"kaiedmonds\",\"Hock Tua 💦\",\"Bo Girds\",\"Davlionman\",\"VarsityBlue2\",\"The Mean Machine\",\"The Dart Side\"],\"teams\":[{\"rank\":1,\"team\":\"Mitseeker5000\",\"record\":\"6-2\",\"head_to_head_record\":\"6-2\",\"points_for\":1130.34,\"points_for_rank\":1,\"points_against\":1063.3},{\"rank\":2,\"team\":\"puurdygood\",\"record\":\"5-3\",\"head_to_head_record\":\"5-3\",\"points_for\":1010.86,\"points_for_rank\":5,\"points_against\":978.84},{\"rank\":3,\"team\":\"kaiedmonds\",\"record\":\"5-3\",\"head_to_head_record\":\"5-3\",\"points_for\":1010.86,\"points_for_rank\":6,\"points_against\":980.3},{\"rank\":4,\"team\":\"Hock Tua 💦\",\"record\":\"5-3\",\"head_to_head_record\":\"5-3\",\"points_for\":1006.98,\"points_for_rank\":7,\"points_against\":1006.76},{\"rank\":5,\"team\":\"Davlionman\",\"record\":\"5-3\",\"head_to_head_record\":\"5-3\",\"points_for\":972.32,\"points_for_rank\":9,\"points_against\":991.78},{\"rank\":6,\"team\":\"Breece Mode\",\"record\":\"4-4\",\"head_to_head_record\":\"4-4\",\"points_for\":1055.74,\"points_for_rank\":3,\"points_against\":1012.4},{\"rank\":7,\"team\":\"BobBuckstein\",\"record\":\"4-4\",\"head_to_head_record\":\"4-4\",\"points_for\":1014.38,\"points_for_rank\":4,\"points_against\":904.24},{\"rank\":8,\"team\":\"Skol Daddy\",\"record\":\"3-5\",\"head_to_head_record\":\"3-5\",\"points_for\":1089.82,\"points_for_rank\":2,\"points_against\":1044.74},{\"rank\":9,\"team\":\"Bo Girds\",\"record\":\"3-5\",\"head_to_head_record\":\"3-5\",\"points_for\":983.36,\"points_for_rank\":8,\"points_against\":959.48},{\"rank\":10,\"team\":\"VarsityBlue2\",\"record\":\"3-5\",\"head_to_head_record\":\"3-5\",\"points_for\":927.22,\"points_for_rank\":10,\"points_against\":951.46},{\"rank\":11,\"team\":\"The Mean Machine\",\"record\":\"3-5\",\"head_to_head_record\":\"3-5\",\"points_for\":883.14,\"points_for_rank\":11,\"points_against\":993.38},{\"rank\":12,\"team\":\"The Dart Side\",\"record\":\"2-6\",\"head_to_head_record\":\"2-6\",\"points_for\":790.8,\"points_for_rank\":12,\"points_against\":989.14}]}}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"start-step\"}\n\ndata: {\"type\":\"finish-step\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checking\"}}\n\ndata: {\"type\":\"text-start\",\"id\":\"3930a435-bf6d-444c-a956-ffc53f4ffc46\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\"Mitseeker5000\",\"id\":\"3930a435-bf6d-444c-a956-ffc53f4ffc46\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" has scored the most points this\",\"id\":\"3930a435-bf6d-444c-a956-ffc53f4ffc46\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" season, with\",\"id\":\"3930a435-bf6d-444c-a956-ffc53f4ffc46\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" 1,130.34 through\",\"id\":\"3930a435-bf6d-444c-a956-ffc53f4ffc46\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" week 8. Skol\",\"id\":\"3930a435-bf6d-444c-a956-ffc53f4ffc46\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\" Daddy is second with 1\",\"id\":\"3930a435-bf6d-444c-a956-ffc53f4ffc46\"}\n\ndata: {\"type\":\"text-delta\",\"delta\":\",089.82.\",\"id\":\"3930a435-bf6d-444c-a956-ffc53f4ffc46\"}\n\ndata: {\"type\":\"text-end\",\"id\":\"3930a435-bf6d-444c-a956-ffc53f4ffc46\"}\n\ndata: {\"type\":\"data-check\",\"id\":\"check\",\"data\":{\"state\":\"checked\"}}\n\ndata: {\"type\":\"data-suggestion\",\"data\":{\"topic\":\"your_season\",\"team\":null}}\n\ndata: {\"type\":\"finish\",\"finishReason\":\"stop\"}\n\ndata: [DONE]\n\n"
   }
 ]

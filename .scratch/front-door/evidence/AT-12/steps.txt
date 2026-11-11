@@ -1,1 +1,2 @@
-The same live run as AT-11 (tests.mjs AT-11). The files here are copies: 375-light.png is the live run, 375-dark.png opens / with the local storage of that run. api-calls.json holds the route response with its Jev answers (fits_topic) and the free answer stream, whose last data part is data-suggestion.
+The files of this test are copies of the live run of AT-11 (site.mjs AT-11). See AT-11/steps.txt.
+api-calls.json holds the route response with fits_topic and the free answer stream with its parts.

@@ -1,3 +1,4 @@
-Driver: tests.mjs AT-4, viewport <width>x900, Wednesday clock.
-1. Store Lil Fridge and the passphrase. Open /. Shot closed-<width>-<theme>.
-2. Tap More. Shot open-<width>-<theme>. row-<width>-<theme>.txt lists the buttons of the row and the items of More.
+Driver: site.mjs AT-4, viewport <width>x900, the date of the page shifted to Wednesday 2026-11-04.
+1. Store Lil Fridge and the passphrase. Open /. Wait for More and 3 chips, then 7 s. Shot closed-<width>-<theme>.
+2. Tap More. Wait 2 s. Shot open-<width>-<theme>.
+row-<width>-<theme>.txt lists the buttons of the row, the box of each button, and the items of More. api-calls.json holds the API calls of the 375 light run.

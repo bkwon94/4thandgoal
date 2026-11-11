@@ -1,2 +1,45 @@
-After the first tap: top of the Week recap article = 118 px, bottom of the Thread header = 118 px (viewport coordinates).
-After the second tap: aria-expanded of the Week recap button = false.
+The articles of the Thread before the send:
+Week recap: Week recap YOUR SCORE 80.11 PLACE 12th of 12 MEDIAN 99.6 Top Scorer Joe Burrow · All You Need Is Love 42.48 MVB · Most Valuable Benchwarmer Tony Pollard · Teehe
+Weak spots: Weak spots WEAKEST SPOT QB RANK 7th of 12 HOLES 0 QB deep 7th of 12 RB fine 6th of 12 TE fine 3rd of 12 WR fine 3rd of 12 Your team has no holes in the lineup r
+
+The tap on Send was at about 8.33 s of the recording. On each animation frame for 6 s (only the changes): scrollY, the bottom of the Thread header, the top of the new question article, and for each older article its top, its running animations (subtree), and its stream words.
+8.333 s: scrollY 673 | header bottom 113 | new question 'Weak spots' top 121 | older: Week recap top -552 anims 0 words 0
+8.383 s: scrollY 673 | header bottom 113 | new question 'week 1 results' top 727 | older: Week recap top -552 anims 0 words 0; Weak spots top 121 anims 0 words 0
+8.413 s: scrollY 675 | header bottom 113 | new question 'week 1 results' top 725 | older: Week recap top -554 anims 0 words 0; Weak spots top 119 anims 0 words 0
+8.429 s: scrollY 684 | header bottom 113 | new question 'week 1 results' top 716 | older: Week recap top -563 anims 0 words 0; Weak spots top 110 anims 0 words 0
+8.447 s: scrollY 702 | header bottom 113 | new question 'week 1 results' top 698 | older: Week recap top -581 anims 0 words 0; Weak spots top 92 anims 0 words 0
+8.465 s: scrollY 737 | header bottom 113 | new question 'week 1 results' top 663 | older: Week recap top -616 anims 0 words 0; Weak spots top 57 anims 0 words 0
+8.481 s: scrollY 803 | header bottom 113 | new question 'week 1 results' top 597 | older: Week recap top -682 anims 0 words 0; Weak spots top -9 anims 0 words 0
+8.496 s: scrollY 904 | header bottom 113 | new question 'week 1 results' top 496 | older: Week recap top -783 anims 0 words 0; Weak spots top -110 anims 0 words 0
+8.513 s: scrollY 994 | header bottom 113 | new question 'week 1 results' top 406 | older: Week recap top -873 anims 0 words 0; Weak spots top -200 anims 0 words 0
+8.532 s: scrollY 1058 | header bottom 113 | new question 'week 1 results' top 342 | older: Week recap top -937 anims 0 words 0; Weak spots top -264 anims 0 words 0
+8.546 s: scrollY 1104 | header bottom 113 | new question 'week 1 results' top 296 | older: Week recap top -983 anims 0 words 0; Weak spots top -310 anims 0 words 0
+8.566 s: scrollY 1139 | header bottom 113 | new question 'week 1 results' top 261 | older: Week recap top -1018 anims 0 words 0; Weak spots top -345 anims 0 words 0
+8.579 s: scrollY 1167 | header bottom 113 | new question 'week 1 results' top 233 | older: Week recap top -1046 anims 0 words 0; Weak spots top -373 anims 0 words 0
+8.599 s: scrollY 1189 | header bottom 113 | new question 'week 1 results' top 211 | older: Week recap top -1068 anims 0 words 0; Weak spots top -395 anims 0 words 0
+8.613 s: scrollY 1207 | header bottom 113 | new question 'week 1 results' top 193 | older: Week recap top -1086 anims 0 words 0; Weak spots top -413 anims 0 words 0
+8.630 s: scrollY 1223 | header bottom 113 | new question 'week 1 results' top 177 | older: Week recap top -1102 anims 0 words 0; Weak spots top -429 anims 0 words 0
+8.646 s: scrollY 1235 | header bottom 113 | new question 'week 1 results' top 165 | older: Week recap top -1114 anims 0 words 0; Weak spots top -441 anims 0 words 0
+8.665 s: scrollY 1245 | header bottom 113 | new question 'week 1 results' top 155 | older: Week recap top -1124 anims 0 words 0; Weak spots top -451 anims 0 words 0
+8.682 s: scrollY 1254 | header bottom 113 | new question 'week 1 results' top 146 | older: Week recap top -1133 anims 0 words 0; Weak spots top -460 anims 0 words 0
+8.695 s: scrollY 1261 | header bottom 113 | new question 'week 1 results' top 139 | older: Week recap top -1140 anims 0 words 0; Weak spots top -467 anims 0 words 0
+8.713 s: scrollY 1266 | header bottom 113 | new question 'week 1 results' top 134 | older: Week recap top -1145 anims 0 words 0; Weak spots top -472 anims 0 words 0
+8.728 s: scrollY 1271 | header bottom 113 | new question 'week 1 results' top 129 | older: Week recap top -1150 anims 0 words 0; Weak spots top -477 anims 0 words 0
+8.748 s: scrollY 1274 | header bottom 113 | new question 'week 1 results' top 126 | older: Week recap top -1153 anims 0 words 0; Weak spots top -480 anims 0 words 0
+8.765 s: scrollY 1277 | header bottom 113 | new question 'week 1 results' top 123 | older: Week recap top -1156 anims 0 words 0; Weak spots top -483 anims 0 words 0
+8.781 s: scrollY 1278 | header bottom 113 | new question 'week 1 results' top 122 | older: Week recap top -1157 anims 0 words 0; Weak spots top -484 anims 0 words 0
+8.799 s: scrollY 1279 | header bottom 113 | new question 'week 1 results' top 121 | older: Week recap top -1158 anims 0 words 0; Weak spots top -485 anims 0 words 0
+
+The scroll up started at about 16.38 s (12 wheel steps of 250 px). The same probe for 5 s:
+16.380 s: scrollY 1279 | header bottom 113 | new question 'week 1 results' top 121 | older: Week recap top -1158 anims 0 words 0; Weak spots top -485 anims 0 words 0
+16.396 s: scrollY 1029 | header bottom 113 | new question 'week 1 results' top 371 | older: Week recap top -908 anims 0 words 0; Weak spots top -235 anims 0 words 0
+16.530 s: scrollY 779 | header bottom 113 | new question 'week 1 results' top 621 | older: Week recap top -658 anims 0 words 0; Weak spots top 15 anims 0 words 0
+16.664 s: scrollY 529 | header bottom 113 | new question 'week 1 results' top 871 | older: Week recap top -408 anims 0 words 0; Weak spots top 265 anims 0 words 0
+16.797 s: scrollY 279 | header bottom 113 | new question 'week 1 results' top 1121 | older: Week recap top -158 anims 0 words 0; Weak spots top 515 anims 0 words 0
+16.930 s: scrollY 29 | header bottom 113 | new question 'week 1 results' top 1371 | older: Week recap top 92 anims 0 words 0; Weak spots top 765 anims 0 words 0
+17.068 s: scrollY 0 | header bottom 121 | new question 'week 1 results' top 1400 | older: Week recap top 121 anims 0 words 0; Weak spots top 794 anims 0 words 0
+
+The articles after the scroll up:
+Week recap: Week recap YOUR SCORE 80.11 PLACE 12th of 12 MEDIAN 99.6 Top Scorer Joe Burrow · All You Need Is Love 42.48 MVB · Most Valuable Benchwarmer Tony Pollard · Teehe
+Weak spots: Weak spots WEAKEST SPOT QB RANK 7th of 12 HOLES 0 QB deep 7th of 12 RB fine 6th of 12 TE fine 3rd of 12 WR fine 3rd of 12 Your team has no holes in the lineup r
+week 1 results: week 1 results ✔ Reading week 1 In week 1, Lil Fridge beat NFC Least 117.71 to 82.07. The high score was Maye d'force B with U at 156.92, beating Unsolicited Da

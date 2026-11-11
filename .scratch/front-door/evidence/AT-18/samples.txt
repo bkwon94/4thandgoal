@@ -1,0 +1,101 @@
+The tap on Weak spots was at about 1.66 s of the recording. The color of text-ink: rgb(20, 20, 20). The color of text-mute: rgb(102, 102, 102).
+The last article on each animation frame (only the changes), with the page scrolled to its end: busy, block, steps, stream words with the count that is blurred, text, status lines, and the color, filter, and transform of the mark.
+1.672 s: (no article)
+2.739 s: busy true | no block | steps [live ⠋ Reading the league…] | words 0 (0 blurred) | text (no text) | status - | mark -
+2.766 s: busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+2.848 s: busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+2.933 s: busy true | block | steps [live ⠹ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.015 s: busy true | block | steps [live ⠸ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.098 s: busy true | block | steps [live ⠼ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.182 s: busy true | block | steps [live ⠴ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.248 s: busy true | block | steps [live ⠦ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.332 s: busy true | block | steps [live ⠧ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.415 s: busy true | block | steps [live ⠇ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.495 s: busy true | block | steps [live ⠏ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.582 s: busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.665 s: busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.732 s: busy true | block | steps [live ⠹ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.813 s: busy true | block | steps [live ⠸ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.898 s: busy true | block | steps [live ⠼ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+3.965 s: busy true | block | steps [live ⠴ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+4.047 s: busy true | block | steps [live ⠦ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+4.129 s: busy true | block | steps [live ⠧ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+4.213 s: busy true | block | steps [live ⠇ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+4.296 s: busy true | block | steps [live ⠏ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+4.382 s: busy true | block | steps [live ⠋ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+4.464 s: busy true | block | steps [live ⠙ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+4.529 s: busy true | block | steps [live ⠹ Writing…] | words 0 (0 blurred) | text (no text) | status - | mark -
+4.563 s: busy true | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(2px) transform none
+4.582 s: busy true | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(1.97432px) transform none
+4.598 s: busy true | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(1.89072px) transform none
+4.612 s: busy true | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(1.74695px) transform none
+4.632 s: busy true | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(1.54293px) transform none
+4.647 s: busy false | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(1.29105px) transform none
+4.662 s: busy false | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(1.00862px) transform none
+4.682 s: busy false | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(0.726934px) transform none
+4.698 s: busy false | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(0.471006px) transform none
+4.713 s: busy false | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(0.263647px) transform none
+4.732 s: busy false | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(0.115515px) transform none
+4.748 s: busy false | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(0.0290102px) transform none
+4.764 s: busy false | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(3.40595e-05px) transform none
+4.779 s: busy false | block | steps - | words 0 (0 blurred) | text (no text) | status Checking | mark rgb(102, 102, 102) filter blur(0px) transform none
+5.369 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(0px) transform none
+5.382 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(0.0174702px) transform none
+5.398 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(0.0904206px) transform none
+5.413 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(0.224548px) transform none
+5.432 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(0.417675px) transform none
+5.446 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(0.663768px) transform none
+5.465 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(0.941423px) transform none
+5.482 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(1.22675px) transform none
+5.495 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(1.48903px) transform none
+5.513 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(1.70555px) transform none
+5.532 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(1.86319px) transform none
+5.548 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(1.96056px) transform none
+5.564 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(1.99896px) transform none
+5.582 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checking
+Checked | mark rgb(102, 102, 102) filter blur(2px) transform none
+5.596 s: busy false | block | steps - | words 81 (81 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.613 s: busy false | block | steps - | words 81 (78 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.632 s: busy false | block | steps - | words 81 (75 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.646 s: busy false | block | steps - | words 81 (72 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.664 s: busy false | block | steps - | words 81 (70 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.682 s: busy false | block | steps - | words 81 (67 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.697 s: busy false | block | steps - | words 81 (64 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.713 s: busy false | block | steps - | words 81 (62 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.732 s: busy false | block | steps - | words 81 (59 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.748 s: busy false | block | steps - | words 81 (56 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.763 s: busy false | block | steps - | words 81 (54 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.785 s: busy false | block | steps - | words 81 (51 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.796 s: busy false | block | steps - | words 81 (48 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.815 s: busy false | block | steps - | words 81 (45 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.830 s: busy false | block | steps - | words 81 (43 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.849 s: busy false | block | steps - | words 81 (40 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.866 s: busy false | block | steps - | words 81 (37 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.899 s: busy false | block | steps - | words 81 (35 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.903 s: busy false | block | steps - | words 81 (32 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.920 s: busy false | block | steps - | words 81 (29 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.930 s: busy false | block | steps - | words 81 (27 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.946 s: busy false | block | steps - | words 81 (24 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.963 s: busy false | block | steps - | words 81 (21 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.982 s: busy false | block | steps - | words 81 (19 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+5.997 s: busy false | block | steps - | words 81 (16 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+6.014 s: busy false | block | steps - | words 81 (13 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+6.031 s: busy false | block | steps - | words 81 (10 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+6.047 s: busy false | block | steps - | words 81 (8 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+6.064 s: busy false | block | steps - | words 81 (5 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+6.081 s: busy false | block | steps - | words 81 (2 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+6.096 s: busy false | block | steps - | words 81 (0 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none
+6.182 s: busy null | block | steps - | words 0 (0 blurred) | text Your team has no holes in the lineup rig | status Checked | mark rgb(20, 20, 20) filter blur(0px) transform none

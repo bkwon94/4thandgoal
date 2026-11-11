@@ -1,2 +1,2 @@
-Driver: tests.mjs AT-40, 375x812, Wednesday clock, with the team cap of AT-37 still in the store.
-1. Store Lil Fridge and the passphrase. Open /. Open Power rankings. Wait 2.5 s. Shot 375-<theme>.
+Driver: site.mjs AT-40, 375x812, the date of the page shifted to Wednesday 2026-11-04, with the team cap of AT-37 still in the store.
+1. Store Lil Fridge and the passphrase. Open /. Open Power rankings. Wait until no article is busy, then 4 s. Shot 375-<theme>.

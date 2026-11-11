@@ -1,4 +1,32 @@
 prefers-reduced-motion: reduce (Playwright reducedMotion).
-Top px / opacity of the ask box form every 50 ms after the tap on Send:
-644/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1, 668/1
-Elements with a CSS filter at the end: 0 []
+Before Send: ask box top 452 opacity 1.00 transform none filter none | answer none
+The tap on Send was at about 5.55 s of the recording.
+On each animation frame for 20 s from the tap (only the changes): the ask box form, the last article, and the count of elements inside the article with an opacity below 1, a transform, or a filter.
+5.557 s: ask box top 452 opacity 1.00 transform none filter none | answer none
+5.606 s: ask box top 453 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 3 below opacity 1 (min 0.00), 0 with a transform, 0 with a filter
+5.678 s: ask box top 453 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 4 below opacity 1 (min 0.00), 0 with a transform, 0 with a filter
+5.860 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 4 below opacity 1 (min 0.00), 0 with a transform, 0 with a filter
+5.977 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 4 below opacity 1 (min 0.02), 0 with a transform, 0 with a filter
+5.993 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 4 below opacity 1 (min 0.17), 0 with a transform, 0 with a filter
+6.009 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 4 below opacity 1 (min 0.30), 0 with a transform, 0 with a filter
+6.026 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 3 below opacity 1 (min 0.42), 0 with a transform, 0 with a filter
+6.042 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 3 below opacity 1 (min 0.52), 0 with a transform, 0 with a filter
+6.060 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 3 below opacity 1 (min 0.61), 0 with a transform, 0 with a filter
+6.077 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 3 below opacity 1 (min 0.68), 0 with a transform, 0 with a filter
+6.093 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 3 below opacity 1 (min 0.75), 0 with a transform, 0 with a filter
+6.110 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 3 below opacity 1 (min 0.80), 0 with a transform, 0 with a filter
+6.124 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 3 below opacity 1 (min 0.84), 0 with a transform, 0 with a filter
+6.144 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 3 below opacity 1 (min 0.87), 0 with a transform, 0 with a filter
+6.160 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 2 below opacity 1 (min 0.90), 0 with a transform, 0 with a filter
+6.177 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 2 below opacity 1 (min 0.92), 0 with a transform, 0 with a filter
+6.194 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 2 below opacity 1 (min 0.94), 0 with a transform, 0 with a filter
+6.209 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 2 below opacity 1 (min 0.95), 0 with a transform, 0 with a filter
+6.224 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 2 below opacity 1 (min 0.96), 0 with a transform, 0 with a filter
+6.244 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 2 below opacity 1 (min 0.97), 0 with a transform, 0 with a filter
+6.260 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 2 below opacity 1 (min 0.98), 0 with a transform, 0 with a filter
+6.293 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 2 below opacity 1 (min 0.99), 0 with a transform, 0 with a filter
+6.343 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 2 below opacity 1 (min 1.00), 0 with a transform, 0 with a filter
+6.374 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 1 below opacity 1 (min 1.00), 0 with a transform, 0 with a filter
+6.474 s: ask box top 668 opacity 1.00 transform none filter none | answer top 121 opacity 1.00; inner: 0 below opacity 1 (min -), 0 with a transform, 0 with a filter
+
+Elements with a CSS filter on the page at the end: 0 []

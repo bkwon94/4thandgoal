@@ -1,0 +1,9 @@
+Driver: site.mjs AT-60, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles.
+1. Live run at 375x812 light: store Bo Girds and the passphrase, open /, type "how can i improve my roster" in the ask box, tap Send. Wait until no article is busy, then 4 s. Shot 375-light.
+2. Each other width and theme opens / in a fresh context with the local storage of the live run, so the Thread shows the kept Answer with no new question.
+Each shot <width>-<theme> is a full-page shot that scrolls to the end and then to the top of the page, so the fixed header covers no part of the Thread.
+Each shot end-<width>-<theme> is a viewport shot after the page scrolls to its end, so the last lines of the Answer and its check mark show above the fixed ask box.
+Setup: before the live run, the free answers of the team leave the answer store, so a free answer runs with its tools.
+api-calls.json holds each API call of the live run with its full body (the route response, the stream parts). api-log.txt is the API log of the live run. answer-text-375-light.txt is the text of the Answer.
+The suggestions response named weak_spots as the head start, so the API log shows two Claude calls of weak_spots: the head start on open, and the typed question. The log has no read of a stored Answer.
+This is the third recording. The first two had no end shot that showed the end of the Answer above the fixed ask box. The run before each recording deletes the weak spots Answer of the team from the answer store.

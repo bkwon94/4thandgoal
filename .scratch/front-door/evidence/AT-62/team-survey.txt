@@ -1,0 +1,115 @@
+# How the team of AT-62 was found, on the live league (head 4b8c83a0, 2026-11-11). The script below loads the live league with the real code of the API
+# (cornerstone_api.personal_topics._load) and prints the weak spots data block of each roster: Live.facts("weak_spots", roster). It calls no Claude and no Jev.
+# Command: uv run --exact --package cpc-api python holes.py, in apps/api, with the env of the local API.
+# Each starter row lists (slot, player, can_play_now) for each starter with hole=true.
+
+Live league: week 10
+
+roster 1, The Blue Tent: RB ranks 10th of 12; stats [('Weakest spot', 'RB'), ('Rank', '10th of 12'), ('Holes', '2')]
+  row RB: 10th of 12 · thin · hole: Travis Etienne Jr.
+  row QB: 5th of 12 · fine
+  row TE: 2nd of 12 · fine
+  row WR: 2nd of 12 · thin · hole: Mike Evans
+  starters with hole=true: [('RB', 'Travis Etienne Jr.', False), ('WR', 'Mike Evans', False)]
+
+roster 2, All You Need Is Love: RB ranks 8th of 12; stats [('Weakest spot', 'RB'), ('Rank', '8th of 12'), ('Holes', '0')]
+  row RB: 8th of 12 · fine
+  row TE: 7th of 12 · fine
+  row WR: 5th of 12 · fine
+  row QB: 3rd of 12 · fine
+  starters with hole=true: []
+
+roster 3, Lil Fridge: QB ranks 7th of 12; stats [('Weakest spot', 'QB'), ('Rank', '7th of 12'), ('Holes', '0')]
+  row QB: 7th of 12 · deep
+  row RB: 6th of 12 · fine
+  row TE: 3rd of 12 · fine
+  row WR: 3rd of 12 · fine
+  starters with hole=true: []
+
+roster 4, NFC Least: QB ranks 12th of 12; stats [('Weakest spot', 'QB'), ('Rank', '12th of 12'), ('Holes', '2')]
+  row QB: 12th of 12 · fine
+  row TE: 12th of 12 · fine
+  row WR: 10th of 12 · fine
+  row RB: 2nd of 12 · thin · hole: David Montgomery, Cam Skattebo
+  starters with hole=true: [('FLEX', 'David Montgomery', False), ('FLEX', 'Cam Skattebo', False)]
+
+roster 5, Puka Deez...: WR ranks 12th of 12; stats [('Weakest spot', 'WR'), ('Rank', '12th of 12'), ('Holes', '1')]
+  row WR: 12th of 12 · thin · hole: Denzel Boston
+  row RB: 7th of 12 · fine
+  row QB: 1st of 12 · fine
+  row TE: 1st of 12 · fine
+  starters with hole=true: [('WR', 'Denzel Boston', True)]
+
+roster 6, Bo Girds: QB ranks 10th of 12; stats [('Weakest spot', 'QB'), ('Rank', '10th of 12'), ('Holes', '1')]
+  row QB: 10th of 12 · fine
+  row WR: 6th of 12 · fine
+  row RB: 4th of 12 · thin · hole: Blake Corum
+  row TE: 4th of 12 · fine
+  starters with hole=true: [('FLEX', 'Blake Corum', True)]
+
+roster 7, To Infinity and Bijan: RB ranks 12th of 12; stats [('Weakest spot', 'RB'), ('Rank', '12th of 12'), ('Holes', '2')]
+  row RB: 12th of 12 · thin · hole: Zonovan Knight
+  row TE: 10th of 12 · fine
+  row WR: 8th of 12 · thin · hole: KC Concepcion Jr.
+  row QB: 6th of 12 · deep
+  starters with hole=true: [('FLEX', 'KC Concepcion Jr.', True), ('FLEX', 'Zonovan Knight', False)]
+
+roster 8, Return of T Mac: QB ranks 11th of 12; stats [('Weakest spot', 'QB'), ('Rank', '11th of 12'), ('Holes', '1')]
+  row QB: 11th of 12 · fine
+  row TE: 9th of 12 · fine
+  row WR: 7th of 12 · thin · hole: Carnell Tate
+  row RB: 5th of 12 · fine
+  starters with hole=true: [('WR', 'Carnell Tate', False)]
+
+roster 9, Maye d'force B with U: QB ranks 9th of 12; stats [('Weakest spot', 'QB'), ('Rank', '9th of 12'), ('Holes', '1')]
+  row QB: 9th of 12 · deep
+  row WR: 9th of 12 · fine
+  row TE: 6th of 12 · fine
+  row RB: 1st of 12 · thin · hole: Alvin Kamara
+  starters with hole=true: [('FLEX', 'Alvin Kamara', True)]
+
+roster 10, behold the lamb: RB ranks 11th of 12; stats [('Weakest spot', 'RB'), ('Rank', '11th of 12'), ('Holes', '1')]
+  row RB: 11th of 12 · fine
+  row TE: 11th of 12 · fine
+  row QB: 4th of 12 · fine
+  row WR: 4th of 12 · thin · hole: Deebo Samuel Sr.
+  starters with hole=true: [('FLEX', 'Deebo Samuel Sr.', False)]
+
+roster 11, Unsolicited Dak Picks: WR ranks 11th of 12; stats [('Weakest spot', 'WR'), ('Rank', '11th of 12'), ('Holes', '2')]
+  row WR: 11th of 12 · thin · hole: George Pickens, A.J. Brown
+  row QB: 8th of 12 · fine
+  row TE: 8th of 12 · fine
+  row RB: 3rd of 12 · fine
+  starters with hole=true: [('WR', 'George Pickens', False), ('WR', 'A.J. Brown', False)]
+
+roster 12, Teehee: RB ranks 9th of 12; stats [('Weakest spot', 'RB'), ('Rank', '9th of 12'), ('Holes', '0')]
+  row RB: 9th of 12 · fine
+  row TE: 5th of 12 · deep
+  row QB: 2nd of 12 · fine
+  row WR: 1st of 12 · fine
+  starters with hole=true: []
+
+Choice: roster 8, Return of T Mac. It has one hole, in one starting slot: WR, Carnell Tate, who cannot play now.
+
+# holes.py:
+"""
+Print the weak spots data block of each CPC roster from the live league, with the real code of the API.
+It calls no Claude and no Jev: it reads only the facts that the /personal stream sends as its first data part.
+"""
+import json
+
+from cornerstone_api.app import app_from_env
+from cornerstone_api.personal_topics import LiveCache, _load
+
+app = app_from_env()
+served = app.state.served["cpc"]
+live = _load(served, 2026, LiveCache(60))
+print(f"Live league: week {live.snapshot.week}")
+for rid in sorted(live.snapshot.rosters):
+    facts = live.facts("weak_spots", rid)
+    block = facts.block
+    holes = [s for s in facts.slice["starters"] if s["hole"]]
+    print(f"\nroster {rid}, {live.snapshot.teams[rid].name}: {block['fact']}; stats {[(s['label'], s['value']) for s in block['stats']]}")
+    for row in block["rows"]:
+        print(f"  row {row['label']}: {row['value']} · {row['note']}")
+    print(f"  starters with hole=true: {[(s['slot'], s['player'], s['can_play_now']) for s in holes]}")

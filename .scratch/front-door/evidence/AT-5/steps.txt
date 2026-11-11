@@ -1,3 +1,0 @@
-Driver: tests.mjs AT-5, 375x812, clock fixed to Tuesday 2026-11-03 10:00 America/Los_Angeles.
-1. Store Lil Fridge and the passphrase. Open /. Wait 3 s. Shot 375-<theme>.
-api-calls-<theme>.json holds the Suggestions request and response with each lift Noul. row-375-<theme>.txt lists the row in order.

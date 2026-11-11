@@ -1,26 +1,27 @@
-# The store of the API in this round: CORNERSTONE_ASK_DIR=<scratchpad>/ask, outside the repo.
-$ ls -l <scratchpad>/ask
-total 160
--rw-r--r--  1 brian.kwon  wheel  20480 Nov 10 20:45 cpc-answers.sqlite
--rw-r--r--  1 brian.kwon  wheel  16384 Nov 10 20:45 cpc.caps.sqlite
--rw-r--r--  1 brian.kwon  wheel   8192 Nov 10 20:18 cpc.sqlite
--rw-r--r--  1 brian.kwon  wheel  12288 Nov 10 20:37 norcal-answers.sqlite
--rw-r--r--  1 brian.kwon  wheel  16384 Nov 10 20:37 norcal.caps.sqlite
--rw-r--r--  1 brian.kwon  wheel   8192 Nov 10 20:04 norcal.sqlite
-$ sqlite3 <scratchpad>/ask/cpc.sqlite "SELECT id, question, team, asked_at FROM misses"   # the miss log; row 1 is the entry of AT-14
-1|is CeeDee Lamb playing sunday|Lil Fridge|2026-11-10T20:04:31.707798-05:00
-2|is CeeDee Lamb playing sunday|Lil Fridge|2026-11-10T20:16:34.587894-05:00
-3|is CeeDee Lamb playing sunday|Lil Fridge|2026-11-10T20:17:29.347340-05:00
-4|write me a poem about my kicker|Lil Fridge|2026-11-10T20:17:58.649035-05:00
-5|who won the league last year|Lil Fridge|2026-11-10T20:18:11.386391-05:00
+$ git status --short --untracked-files=all   # in the detached worktree of 99d00125 that the API of this round ran from, after the API stopped
+# The store of the API in this round: CORNERSTONE_ASK_DIR=/private/tmp/claude-503/fd-ask, outside the repo. A live API rewrites clients/cpc/data/2026/history/week-09/, so the round put those files back with git checkout -- clients/ first.
+# The page-json runs of AT-51 and AT-56 left clients/cpc/build/2026/week-08/topics.json; the round moved it out before this run.
+(exit 0; no lines means no change and no untracked file)
+
+$ git ls-files | grep -i -E "\.sqlite|data/ask/|misses"
+(exit 1: 1 means no tracked file matches)
+
+$ ls -l /private/tmp/claude-503/fd-ask
+total 144
+-rw-r--r--  1 brian.kwon  wheel  12288 Nov 11 13:56 cpc-answers.sqlite
+-rw-r--r--  1 brian.kwon  wheel  16384 Nov 11 13:56 cpc.caps.sqlite
+-rw-r--r--  1 brian.kwon  wheel   8192 Nov 11 13:50 cpc.sqlite
+-rw-r--r--  1 brian.kwon  wheel  12288 Nov 11 13:49 norcal-answers.sqlite
+-rw-r--r--  1 brian.kwon  wheel  16384 Nov 11 13:49 norcal.caps.sqlite
+-rw-r--r--  1 brian.kwon  wheel   8192 Nov 11 13:49 norcal.sqlite
+$ sqlite3 -header -column /private/tmp/claude-503/fd-ask/cpc.sqlite "SELECT id, question, team, asked_at, closest FROM misses"   # the miss log; row 1 is the entry of AT-14
+id  question                       team        asked_at                          closest                                       
+--  -----------------------------  ----------  --------------------------------  ----------------------------------------------
+1   is CeeDee Lamb playing sunday  Lil Fridge  2026-11-11T13:50:46.534871-05:00  ["next_matchup", "week_recap", "last_matchup"]
+
 # On Fly, apps/api/fly.toml sets the store path:
+$ grep -n CORNERSTONE_ASK_DIR apps/api/fly.toml
 19:  CORNERSTONE_ASK_DIR = "/data/ask"
 # With no CORNERSTONE_ASK_DIR, a local run writes data/ask/ of the repo. .gitignore lists it:
+$ grep -n "data/ask" .gitignore
 25:data/ask/
-
-# Run after the API stopped. A live API rewrites clients/cpc/data/2026/history/week-09/ (a known issue), so the round put those files back first.
-$ git status --short --untracked-files=all | grep -v '^?? .scratch/front-door/evidence/'
-(no lines: no change and no untracked file outside the evidence of this round; 407 untracked evidence files)
-
-$ git ls-files | grep -i -E '\.sqlite|data/ask/'
-(exit 1: 1 means no tracked file matches)

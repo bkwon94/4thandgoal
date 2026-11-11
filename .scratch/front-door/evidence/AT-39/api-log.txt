@@ -1,20 +1,20 @@
-# API log lines 3295 to 3313, with the Sleeper and media fetch lines left out. The alert is the WARNING line of cornerstone_api.caps.
+# API log (port 8092, 99d00125), lines 111 to 129.
 INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
-INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 67ms (request req_01a1c83ebdef7695852b0586b2e87359)
-INFO:     127.0.0.1:55104 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55106 - "POST /clients/cpc/ask/free HTTP/1.1" 200 OK
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 108ms (request req_01a1cbf41bfe7354a64f419f4129c84d)
+INFO:     127.0.0.1:56359 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56369 - "POST /clients/cpc/ask/free HTTP/1.1" 200 OK
 INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
 INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
 INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
-INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 105ms (request req_01a1c83ed8d87d3c9eedb7e885f7d298)
-INFO:     cornerstone_api.claude_stream: The free answer ended as checked, with 1 tool calls, 1 texts, 3158 input tokens, 82 output tokens, and a cost of $0.0035
-WARNING:     cornerstone_api.caps: The league cpc used $20.00 of its $25.00 Claude budget for 2026-11, past 80%.
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 45ms (request req_01a1cbf425d97ac28b86ca461d1c5d63)
+INFO:     cornerstone_api.claude_stream: The free answer ended as checked, with 1 tool calls, 1 texts, 7545 input tokens, 60 output tokens, and a cost of $0.0118
+WARNING:     cornerstone_api.caps: The league cpc used $20.01 of its $25.00 Claude budget for 2026-11, past 80%.
 INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
-INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 80ms (request req_01a1c83edaa4769db793ccd9ba08eab1)
-INFO:     127.0.0.1:55112 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55114 - "POST /clients/cpc/ask/free HTTP/1.1" 200 OK
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 89ms (request req_01a1cbf42a3f714793c3db9902e7803b)
+INFO:     127.0.0.1:56388 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56392 - "POST /clients/cpc/ask/free HTTP/1.1" 200 OK
 INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
 INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
 INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
-INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 52ms (request req_01a1c83ef6667e588d9bf266a53f0f79)
-INFO:     cornerstone_api.claude_stream: The free answer ended as checked, with 1 tool calls, 1 texts, 3158 input tokens, 109 output tokens, and a cost of $0.0037
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 103ms (request req_01a1cbf4340474a1b7cec7a0d3445589)
+INFO:     cornerstone_api.claude_stream: The free answer ended as checked, with 1 tool calls, 1 texts, 7545 input tokens, 86 output tokens, and a cost of $0.0046

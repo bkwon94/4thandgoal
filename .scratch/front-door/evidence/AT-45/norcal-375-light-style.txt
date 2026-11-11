@@ -1,5 +1,10 @@
 {
-  "body": "spaceGrotesk, \"spaceGrotesk Fallback\"",
-  "h1": "spaceGrotesk, \"spaceGrotesk Fallback\"",
-  "accent": "#c2410c"
+  "body_font": "spaceGrotesk, \"spaceGrotesk Fallback\"",
+  "h1_font": "spaceGrotesk, \"spaceGrotesk Fallback\"",
+  "accent": "#c2410c",
+  "band": "#0a0a0a",
+  "header_background": "rgb(245, 243, 239)",
+  "header_text": "NORCAL APEX 6 WK 08",
+  "body_background": "rgb(245, 243, 239)",
+  "h1_team_color": "rgb(28, 25, 23)"
 }

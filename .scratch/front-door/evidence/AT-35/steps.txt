@@ -1,3 +1,5 @@
-Driver: tests.mjs AT-35, 375x812, Wednesday clock, screen recording recording-375-light.webm.
-1. Open / with the local storage of AT-34 (light), while the roster seam still adds the player. The stale line shows.
-2. Tap Refresh. Wait for Checked. Viewport shot end-375-light.
+Driver: motion.mjs (Playwright, Chromium), 375x812, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles, screen recording recording-375-light.webm.
+1. Store Lil Fridge and the passphrase. Open /. Tap Weak spots. Wait for Checked. This builds the Thread of AT-34.
+2. Write the flag file of the launcher, so the live roster of Lil Fridge gains the player 4046. Wait 125 s, past the 120 s window of the live league in the API. Read the team count. Reload /. Wait for "Your roster changed". Viewport shot stale-375-light.
+3. Tap Refresh. Sample the last article on each animation frame until it shows Checked with no data-stale, plus 3 s (end-state.txt). Viewport shot end-375-light. Read the team count again (team-count.txt). Remove the flag file.
+4. frame-<time>-<label>.png are frames of the recording, from ffmpeg.

@@ -1,3 +1,3 @@
-Driver: tests.mjs AT-45, viewport <width>x900, Wednesday clock, once per client build (CLIENT=cpc, then CLIENT=norcal).
-1. Store Your team (cpc: Lil Fridge, roster 3; norcal: puurdygood, roster 1) and the passphrase. Open /. Open Week recap, so the Thread holds one Answer.
-2. Shot <client>-<width>-<theme>. <client>-<width>-<theme>-style.txt holds the computed font family of the body and the h1, and the --color-accent value.
+Driver: site.mjs AT-45, viewport <width>x900, the date of the page shifted to Wednesday 2026-11-04, once per client build (CPC with Lil Fridge, NorCal with roster 1).
+1. Store Your team and the passphrase. Open /. Open Week recap, so the Thread holds one Answer. Wait until no article is busy, then 4 s. Shot <client>-<width>-<theme>.
+<client>-<width>-<theme>-style.txt holds the computed font of the body and the h1, the accent and band tokens, and the colors of the header and the body.

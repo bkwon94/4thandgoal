@@ -1,0 +1,13 @@
+# A search of the export (front_door = false) for a link to /ask/, in the HTML, the RSC text files, and the JS chunks.
+$ grep -rlE 'href="/ask/?"|"href":"/ask/?"|href:"/ask' out/
+(no hit)
+$ grep -rl '"/ask/"' out/
+ask/__next.!KGNsaWVudCk.ask.__PAGE__.txt
+ask/index.txt
+ask/__next._full.txt
+
+# Each hit of the second search is the pageHref prop of the /ask/ page itself, in its own RSC payload:
+$ grep -o '"pageHref":"/ask/"' out/ask/index.txt
+"pageHref":"/ask/"
+$ grep -c '"/ask/"' out/ask/index.txt
+1

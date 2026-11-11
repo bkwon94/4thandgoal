@@ -1,0 +1,15 @@
+# The nav links in out/index.html of two CPC builds, both with latest week 8 (week 9 hidden):
+# main: origin/main at 1d7bfc0d. front-door off: the front-door worktree at 99d00125 with front_door = false.
+# A python regex prints each <nav aria-label> and its <a href> links.
+== main
+Site menu: Home -> /, Week 8 -> /2026/week-08/, Power Rankings -> /rankings/, Managers -> /2026/managers/, Trade Analyzer -> /analyze/
+Weeks of the season: WK 06 -> /2026/week-06/, WK 07 -> /2026/week-07/, WK 08 -> /2026/week-08/
+Bottom menu: Home -> /, Week 8 -> /2026/week-08/, Rankings -> /rankings/, Managers -> /2026/managers/, Trade -> /analyze/
+== front-door-off
+Site menu: Home -> /, Week 8 -> /2026/week-08/, Power Rankings -> /rankings/, Managers -> /2026/managers/, Trade Analyzer -> /analyze/
+Weeks of the season: WK 06 -> /2026/week-06/, WK 07 -> /2026/week-07/, WK 08 -> /2026/week-08/
+Bottom menu: Home -> /, Week 8 -> /2026/week-08/, Rankings -> /rankings/, Managers -> /2026/managers/, Trade -> /analyze/
+
+# The visible text of out/index.html of both builds: each tag removed, blank lines and script lines dropped, then diff.
+$ diff <(text of main out/index.html) <(text of front-door-off out/index.html)
+lines of diff output: 0

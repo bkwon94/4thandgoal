@@ -1,4 +1,6 @@
-Driver: tests.mjs AT-10, 375x812, Wednesday clock.
-1. Store Lil Fridge and the passphrase. Open /. Type "how's Bo Girds doing" in the ask box. Tap Send.
-2. Wait for the Answer. Shot 375-light (live run). api-calls.json holds each API call of the live run with its full body. api-log.txt is the API log of the run.
-3. The dark shot opens / in a fresh context with the local storage of the live run, so the Thread shows the kept Answer with no new question.
+Driver: site.mjs AT-10, the date of the page shifted to Wednesday 2026-11-04 10:00 America/Los_Angeles.
+1. Live run at 375x812 light: store Lil Fridge and the passphrase, open /, type "how's Bo Girds doing" in the ask box, tap Send. Wait until no article is busy, then 4 s. Shot 375-light.
+2. Each other width and theme opens / in a fresh context with the local storage of the live run, so the Thread shows the kept Answer with no new question.
+Each shot is a full-page shot that scrolls to the end and then to the top of the page, so the fixed header covers no part of the Thread.
+Setup: before the live run, the free answers of the team leave the answer store, so a free answer runs with its tools.
+api-calls.json holds each API call of the live run with its full body (the route response, the stream parts). api-log.txt is the API log of the live run. answer-text-375-light.txt is the text of the Answer.
