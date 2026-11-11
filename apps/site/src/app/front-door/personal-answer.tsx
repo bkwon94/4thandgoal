@@ -11,6 +11,7 @@ import { RotateCwIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { AnswerBody } from "./answer-card";
 import type { AskTarget } from "./ask-api";
+import type { Turn } from "./chat-turns";
 import { FreeBody, Shimmer, useAnswerStream } from "./free-answer";
 import { shownText } from "./free-stream";
 import { QuestionBubble } from "./miss-card";
@@ -104,7 +105,7 @@ export const PersonalAnswerLive = forwardRef<
   Shared & {
     target: AskTarget;
     passphrase: string;
-    body: { topic: PersonalTopic; roster_id: number; team: number | null };
+    body: { topic: PersonalTopic; roster_id: number; team: number | null; turns?: Turn[] };
     onDone: (result: PersonalResult) => void;
     onMiss: (closest: string[]) => void;
     onCap: (cap: PersonalCap) => void;

@@ -11,6 +11,7 @@ import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { CheckIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { AskTarget } from "./ask-api";
+import type { Turn } from "./chat-turns";
 import { type CheckState, type FreeResult, type FreeView, isKept, newPace, pacedView, shownText, viewOf } from "./free-stream";
 import { QuestionBubble, Surface, TopicChip } from "./miss-card";
 import { QUICK, SLOW, SMOOTH, STAGGER, VERY_SLOW, fadeIn } from "./motion";
@@ -283,7 +284,7 @@ export const FreeAnswerLive = forwardRef<
   Shared & {
     target: AskTarget;
     passphrase: string;
-    body: { roster_id: number; week: number };
+    body: { roster_id: number; week: number; turns?: Turn[] };
     onDone: (result: FreeResult) => void;
     onMiss: (closest: string[]) => void;
     onError: () => void;

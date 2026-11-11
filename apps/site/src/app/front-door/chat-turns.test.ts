@@ -1,0 +1,105 @@
+/**
+ * Tests for the turns of the Thread that each typed question carries: the question and the shown answer text of each
+ * earlier item, oldest first, with the oldest cut first past the limit and no item in flight.
+ */
+import { describe, expect, it } from "vitest";
+import type { DoorAnswer } from "@/lib/data/front-door-data";
+import type { ThreadItem } from "./ask-thread";
+import { TURNS_MAX_CHARS, TURN_ANSWER_MAX, TURN_QUESTION_MAX, threadTurns, turnsBefore } from "./chat-turns";
+
+const LIL_FRIDGE = 3;
+const BO_GIRDS = 6;
+const teamName = (team: number) => (team === BO_GIRDS ? "Bo Girds" : undefined);
+const block = { topic: "weak_spots" as const, team: LIL_FRIDGE, fact: "RB is your weakest spot", stats: [], rows: [] };
+const recap: DoorAnswer = { topic: "week_recap", fact: "Bo Girds scored 150", stats: [], rows: [], text: ["Bo Girds won.", "The median was 110."], href: null };
+const answers: Record<number, DoorAnswer[]> = { [LIL_FRIDGE]: [recap] };
+
+const free = (question: string, text: string): ThreadItem => ({ kind: "free", question, result: { steps: ["Reading the standings"], text, suggestion: null } });
+
+describe("threadTurns", () => {
+  it("sends the question and the shown answer of each earlier turn, oldest first and newest last", () => {
+    const items: ThreadItem[] = [
+      free("who has the best roster", "Bo Girds has the best roster."),
+      free("who is second", "Lil Fridge is second."),
+    ];
+    expect(threadTurns(items, answers, teamName)).toEqual([
+      { question: "who has the best roster", answer: "Bo Girds has the best roster." },
+      { question: "who is second", answer: "Lil Fridge is second." },
+    ]);
+  });
+
+  it("sends the plain text only, with no data block, step line, or key", () => {
+    const items: ThreadItem[] = [
+      { kind: "personal", key: "weak_spots", team: LIL_FRIDGE, question: "where am i weak", result: { block, text: "RB is your weakest spot.", key: "k1" } },
+      { kind: "topic", key: "week_recap", team: LIL_FRIDGE, question: null },
+    ];
+    const turns = threadTurns(items, answers, teamName);
+    expect(turns).toEqual([
+      { question: "where am i weak", answer: "RB is your weakest spot." },
+      { question: "Week recap", answer: "Bo Girds won. The median was 110." },
+    ]);
+    for (const turn of turns) expect(Object.keys(turn).sort()).toEqual(["answer", "question"]);
+  });
+
+  it("names a tapped personal Topic by its name as the question", () => {
+    const items: ThreadItem[] = [{ kind: "personal", key: "stack_up", team: BO_GIRDS, question: null, result: { block, text: "Bo Girds ranks first.", key: "k2" } }];
+    const [turn] = threadTurns(items, answers, teamName);
+    expect(turn.question).toContain("Bo Girds");
+    expect(turn.answer).toBe("Bo Girds ranks first.");
+  });
+
+  it("leaves out each item in flight", () => {
+    const items: ThreadItem[] = [
+      { kind: "pending", question: "q" },
+      { kind: "passphrase", question: "q", wrong: false },
+      { kind: "free", question: "q", result: null },
+      { kind: "personal", key: "weak_spots", team: LIL_FRIDGE, question: "q", result: null },
+      { kind: "trade", mode: "check", question: "q", steps: ["Read both rosters"], answer: null },
+    ];
+    expect(threadTurns(items, answers, teamName)).toEqual([]);
+  });
+
+  it("keeps a miss and a note as a turn with their line", () => {
+    const items: ThreadItem[] = [
+      { kind: "miss", question: "who won last year", closest: ["playoff_race"] },
+      { kind: "note", question: "a poem", line: "Not a question here.", topic: null, team: null, retry: false },
+    ];
+    const turns = threadTurns(items, answers, teamName);
+    expect(turns.map((turn) => turn.question)).toEqual(["who won last year", "a poem"]);
+    expect(turns[1].answer).toBe("Not a question here.");
+    expect(turns[0].answer.length).toBeGreaterThan(0);
+  });
+
+  it("cuts each turn to the caps of the API", () => {
+    const items: ThreadItem[] = [free("q".repeat(TURN_QUESTION_MAX + 50), "a".repeat(TURN_ANSWER_MAX + 50))];
+    const [turn] = threadTurns(items, answers, teamName);
+    expect(turn.question.length).toBe(TURN_QUESTION_MAX);
+    expect(turn.answer.length).toBe(TURN_ANSWER_MAX);
+  });
+
+  it("drops the oldest turns first past the limit and keeps the newest last", () => {
+    const items: ThreadItem[] = Array.from({ length: 40 }, (_, i) => free(`question ${i}`, "x".repeat(TURN_ANSWER_MAX)));
+    const turns = threadTurns(items, answers, teamName);
+    const size = turns.reduce((sum, turn) => sum + turn.question.length + turn.answer.length, 0);
+    expect(size).toBeLessThanOrEqual(TURNS_MAX_CHARS);
+    expect(turns.length).toBeLessThan(40);
+    expect(turns.at(-1)?.question).toBe("question 39");
+    expect(turns.map((turn) => turn.question)).toEqual(Array.from({ length: turns.length }, (_, i) => `question ${40 - turns.length + i}`));
+  });
+});
+
+describe("turnsBefore", () => {
+  const entries = [
+    { ...free("first", "One."), id: 1 },
+    { ...free("second", "Two."), id: 2 },
+    { kind: "pending" as const, question: "third", id: 3 },
+  ];
+
+  it("sends only the turns before the item of the question", () => {
+    expect(turnsBefore(entries, 2, answers, teamName)).toEqual([{ question: "first", answer: "One." }]);
+  });
+
+  it("sends every turn for a new question with no place yet", () => {
+    expect(turnsBefore(entries, 99, answers, teamName).map((turn) => turn.question)).toEqual(["first", "second"]);
+  });
+});
