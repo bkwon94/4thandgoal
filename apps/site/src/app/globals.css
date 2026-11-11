@@ -451,6 +451,12 @@
       padding-bottom: 0;
     }
     }
+  /* While the on-screen keyboard is open, the dock tucks away, so the foot of a Thread sticks right above the keyboard.
+     --keyboard-inset is the part of the layout viewport that the keyboard covers (site/shell/keyboard.ts). The keyboard
+     covers the home bar too, so the foot needs no safe area. */
+  html[data-keyboard] {
+    --spacing-door-foot: var(--keyboard-inset, 0px);
+    }
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
@@ -1480,6 +1486,33 @@ html:not([data-hydrated]) [data-draw] {
     @media (prefers-reduced-transparency: reduce) {
         background-color: var(--color-card);
         backdrop-filter: none;
+    }
+}
+/* The dock tucks away while the on-screen keyboard is open, as the tab bar of a native app: it slides down
+   --distance-base and fades. The tuck takes --duration-quick, so the dock is gone before the keyboard rises. The return
+   takes --duration-fast on --ease-smooth-out. Visibility steps at the end of the tuck, so the tucked dock takes no tap.
+   Under reduced motion only the fade stays, on --duration-quick both ways. */
+@utility dock-tuck {
+    transition:
+        opacity 250ms cubic-bezier(0.22, 1, 0.36, 1),
+        translate 250ms cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 250ms;
+    &[data-tucked] {
+        opacity: 0;
+        translate: 0 8px;
+        visibility: hidden;
+        pointer-events: none;
+        transition-duration: 150ms;
+    }
+    /* The rule of reduced motion at the end of this file makes each transition instant. The dock keeps its fade, so
+       it does not blink away under the thumb, and the class wins over that rule. */
+    @media (prefers-reduced-motion: reduce) {
+        transition:
+            opacity 150ms ease-out,
+            visibility 150ms !important;
+        &[data-tucked] {
+            translate: none;
+        }
     }
 }
 /* The Send Halo: a ring and a glow of the accent that grow with --halo, from 0 for an empty field to 1 for a full one.

@@ -3,6 +3,8 @@
  * It stays on screen at every scroll. From the desktop tier up the pill bar of the top band takes its place.
  * The full labels of the pill bar do not fit on one row beside the brand at a tablet width, so the dock serves the tablet too.
  */
+"use client";
+
 import {
   ArrowLeftRightIcon,
   CalendarDaysIcon,
@@ -12,6 +14,7 @@ import {
   WalletIcon,
   type LucideIcon,
 } from "lucide-react";
+import { useKeyboardOpen } from "./keyboard";
 import type { NavItem, NavKind } from "./nav";
 
 /* The icon of each kind of destination. The label under the icon names the item, so each icon is decorative. */
@@ -33,13 +36,18 @@ type DockProps = {
 /* The dock holds five items, so the midseason report has no dock item. The pill bar lists it, and the home page links it. */
 export function Dock({ items: all, current }: DockProps) {
   const items = all.filter((item): item is NavItem & { kind: Exclude<NavKind, "midseason"> } => item.kind !== "midseason");
+  // While the on-screen keyboard is open, the dock tucks away, as the tab bar of a native app, so the field sits right
+  // above the keyboard. The tucked dock is inert, so a tab or a screen reader never lands on it.
+  const tucked = useKeyboardOpen();
   return (
     // The dock floats one step above the bottom edge and the safe area of the phone. The body keeps the same space free
     // under the page (globals.css), so the dock never covers the end of the page. On a phone on its side, each end
     // keeps clear of the notch.
     <nav
       aria-label="Bottom menu"
-      className="fixed right-[max(var(--spacing-sp-3),env(safe-area-inset-right))] left-[max(var(--spacing-sp-3),env(safe-area-inset-left))] bottom-[calc(var(--spacing-sp-3)+env(safe-area-inset-bottom))] z-40 rounded-card border border-rule bg-card p-sp-1 desktop:hidden"
+      data-tucked={tucked || undefined}
+      inert={tucked}
+      className="dock-tuck fixed right-[max(var(--spacing-sp-3),env(safe-area-inset-right))] left-[max(var(--spacing-sp-3),env(safe-area-inset-left))] bottom-[calc(var(--spacing-sp-3)+env(safe-area-inset-bottom))] z-40 rounded-card border border-rule bg-card p-sp-1 desktop:hidden"
     >
       <ul className="m-0 grid list-none auto-cols-fr grid-flow-col gap-sp-1 p-0">
         {items.map((item) => {

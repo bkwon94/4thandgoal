@@ -6,11 +6,14 @@
 
 import { type CSSProperties, useState } from "react";
 import { ArrowUpIcon } from "lucide-react";
+import { useKeyboardField } from "@cpc/design/shell/keyboard";
 import { haloOf } from "./motion";
 
 export function AskBox({ onAsk }: { onAsk?: (question: string) => void }) {
   const [value, setValue] = useState("");
   const question = value.trim();
+  // The field opens the keyboard on a phone, so the dock of the shell tucks away while it has the focus.
+  const keyboard = useKeyboardField();
   return (
     <form
       aria-label="Ask"
@@ -26,6 +29,8 @@ export function AskBox({ onAsk }: { onAsk?: (question: string) => void }) {
       <input
         value={value}
         onChange={(event) => setValue(event.target.value)}
+        onFocus={keyboard.onFocus}
+        onBlur={keyboard.onBlur}
         placeholder="Ask about your team"
         aria-label="Ask a question"
         enterKeyHint="send"
