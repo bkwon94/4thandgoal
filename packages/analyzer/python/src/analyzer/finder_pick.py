@@ -1,7 +1,7 @@
 """
 The Finder pick: one sheet per shortlist offer, then one Advisor call that picks up to 3 offers, each with a headline
-and 2 to 4 Bullets. A failed pick gets one repair call on its own sheet. With no pick left, the shortlist stands with
-fact lines.
+and 2 to 4 Bullets, and up to 3 near ideas, each with the reason it fell short. A failed pick gets one repair call on
+its own sheet. With no pick and no near idea left, the shortlist stands with fact lines.
 """
 import contextvars
 import logging
@@ -45,9 +45,15 @@ log = logging.getLogger(__name__)
 PROMPT_FILE = "finder_pick.md"
 REPAIR_PROMPT_FILE = "finder_pick_repair.md"
 MAX_PICKS = 3
+# The most near ideas of one press. An idea is an idea, so a list with offers always shows at least one.
+MAX_NEAR = 3
 MIN_BULLETS, MAX_BULLETS = 2, 4
-# The line of a press whose search kept no offer. No Claude call runs, so code writes it.
-NO_OFFER = "The search found no trade that works for both teams."
+# The lines of a press whose search kept no offer. No Claude call runs, so code writes them. NO_PARTNER is for a
+# search where no team passed the partner filter, and NO_OFFER for a search where the teams that passed gave no offer.
+NO_PARTNER = "No other team has a starter for your weak spots that it can spare, so no trade came up."
+NO_OFFER = "No team has a player who fits this ask, so no trade came up."
+# The line when each pick failed its repair and only near ideas stand, so the Advisor gave no none_line of its own.
+NO_CLEAR_PICK = "No offer on the list is a clear win, so these are ideas to weigh."
 # The Leans of a trade that the asker sends. A pick reads as one of them, so the analyzer read of a pick agrees.
 SEND_LEANS = ("Send it", "Lean yes", "Gut call")
 # The text of a fact that an earlier offer of the message gave in full. The id stays, so a Bullet may cite it.
@@ -67,11 +73,22 @@ class PickOut(BaseModel):
     bullets: list[Bullet] = Field(description=f"{MIN_BULLETS} to {MAX_BULLETS} Bullets")
 
 
+class NearOut(BaseModel):
+    """One near idea as the Advisor gives it: an offer of the shortlist that it would not send, the one reason it fell
+    short for the asker, and the one fact that the reason rests on, so the reason gets the guards of a Bullet."""
+
+    offer_id: str
+    reason: str
+    fact_id: str
+
+
 class FinderPickOut(BaseModel):
-    """The structured output of the pick call: up to 3 picks, or no pick and a plain line that says why."""
+    """The structured output of the pick call: up to 3 picks, up to 3 near ideas, and with no pick a plain line that
+    says why."""
 
     # The count is a description only, as with the Bullets: the guard checks it.
     picks: list[PickOut] = Field(description=f"Up to {MAX_PICKS} picks")
+    near: list[NearOut] = Field(description=f"Up to {MAX_NEAR} near ideas; at least 1 when there is no pick")
     none_line: str | None
 
 
@@ -87,6 +104,13 @@ class FinderPick(BaseModel):
     fact_lines: list[str]
 
 
+class NearIdea(BaseModel):
+    """One near idea of the finder document: its shortlist offer, and the reason of the Advisor that it fell short."""
+
+    offer: ShortlistOffer
+    reason: str
+
+
 class _PickSide(BaseModel):
     """The Bullets of one pick in the shape of a side, for the Jev checks. The Bullets advise the asker."""
 
@@ -95,9 +119,11 @@ class _PickSide(BaseModel):
 
 
 class FinderPicks(BaseModel):
-    """What a Finder press gives: the picks, the plain line when no pick stands, and whether the call fell back."""
+    """What a Finder press gives: the picks, the near ideas, the plain line when no pick stands, and whether the call
+    fell back."""
 
     picks: list[FinderPick]
+    near: list[NearIdea] = []
     none_line: str | None
     fallback: bool
 
@@ -135,9 +161,14 @@ def build_pick_prompt(shortlist: Shortlist, snapshot: Snapshot, sheets: dict[str
 def response_failures(out: FinderPickOut, shortlist: Shortlist) -> list[str]:
     """The guards that the whole response breaks. A failure here retries the whole pick call, because no single pick
     is at fault. An empty list means each pick goes on to its own guards."""
+    if len(out.near) > MAX_NEAR:
+        return [f"the response has {len(out.near)} near ideas; the most is {MAX_NEAR}"]
     if not out.picks:
         if not (out.none_line or "").strip():
             return ["a response with no pick needs a none_line in plain words"]
+        # An idea is an idea: the shortlist has offers, so the asker always sees at least one.
+        if not out.near:
+            return ["a response with no pick needs at least one near idea, the offer that came closest"]
         return inner_word_failures("none_line", out.none_line or "")
     if len(out.picks) > MAX_PICKS:
         return [f"the response has {len(out.picks)} picks; the most is {MAX_PICKS}"]
@@ -182,6 +213,41 @@ def check_picks(out: FinderPickOut, shortlist: Shortlist, snapshot: Snapshot,
             continue
         failures.append(pick_failures(label, pick, offers[pick.offer_id], snapshot, sheets[pick.offer_id]))
     return failures
+
+
+def near_failures(label: str, near: NearOut, offer: ShortlistOffer, snapshot: Snapshot,
+                  sheet: dict[str, Fact]) -> list[str]:
+    """Every guard that one near idea breaks, on the sheet of its offer. Its reason is checked as one Bullet that cites
+    its fact. An empty list means the near idea stands."""
+    bullet = Bullet(text=near.reason, mark="against", fact_id=near.fact_id)
+    failures, _ = bullet_failures(label, [bullet], sheet, TextGuard(offer.trade, snapshot, sheet),
+                                  sheet=f"the sheet of offer {offer.offer_id}", least=1, most=1)
+    # The reason is the one claim of the near idea, so its failures name the near idea alone.
+    return [failure.replace(f"{label} bullet 1", label, 1) for failure in failures]
+
+
+def standing_near(out: FinderPickOut, picked: set[str], shortlist: Shortlist, snapshot: Snapshot,
+                  sheets: dict[str, dict[str, Fact]]) -> list[NearOut]:
+    """The near ideas that stand, in their order. A near idea is no advice to send, so one that fails a guard gets no
+    repair: it drops, and the log says why. A near idea of a picked offer, a repeat, or an offer off the list drops."""
+    offers = {offer.offer_id: offer for offer in shortlist.shortlist}
+    stand, seen = [], set(picked)
+    for number, near in enumerate(out.near, start=1):
+        label = f"near {number}"
+        if near.offer_id not in offers:
+            failures = [f"{label}: offer {near.offer_id} is not on the shortlist"]
+        elif near.offer_id in seen:
+            failures = [f"{label}: offer {near.offer_id} is a pick or an earlier near idea"]
+        else:
+            failures = near_failures(label, near, offers[near.offer_id], snapshot, sheets[near.offer_id])
+        if failures:
+            # A failure can quote a trade value, so the log line masks every number after the label.
+            log.warning("finder %s dropped: %s", label,
+                        "; ".join(ANY_NUMBER.sub("#", fail.removeprefix(f"{label}: ")) for fail in failures))
+            continue
+        seen.add(near.offer_id)
+        stand.append(near)
+    return stand
 
 
 def build_repair_prompt(offer: ShortlistOffer, asker: int, snapshot: Snapshot, sheet: dict[str, Fact],
@@ -256,36 +322,46 @@ def _fact_lines(offer: ShortlistOffer, sheet: dict[str, Fact]) -> list[str]:
 def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev: Jev,
                 call: ClaudeCall = finder_pick_call, repair_call: ClaudeCall = finder_repair_call,
                 stage: Stage = quiet) -> FinderPicks:
-    """The picks of the Advisor from the shortlist. An empty shortlist makes no call and gives the NO_OFFER line.
+    """The picks and the near ideas of the Advisor from the shortlist. An empty shortlist makes no call and gives the
+    NO_PARTNER line when no team passed the partner filter, else the NO_OFFER line.
 
     A failure of the whole response retries the pick call once with the failures as feedback. A pick that fails its
-    own guards gets one repair call on its own sheet, and a pick that fails again drops. When no pick stands, after
-    two failed calls or after the repairs, each shortlist offer stands with its fact lines and the fallback flag.
+    own guards gets one repair call on its own sheet, and a pick that fails again drops. A near idea that fails its
+    guards drops with no repair. When no pick and no near idea stand, after two failed calls or after the repairs,
+    each shortlist offer stands with its fact lines and the fallback flag.
     `stage` gets one plain line when the picks stand. The default drops it.
     """
     if not shortlist.shortlist:
-        return FinderPicks(picks=[], none_line=NO_OFFER, fallback=False)
+        passed = any(read.passed for read in shortlist.partners)
+        return FinderPicks(picks=[], none_line=NO_OFFER if passed else NO_PARTNER, fallback=False)
     # A pick with no offer that stands sends no done line, so the site drops this live line with the Answer.
     stage("Picking the best offers", live=True)
     sheets = {offer.offer_id: offer_sheet(offer, snapshot, news) for offer in shortlist.shortlist}
     out = call_with_retry(
         call, lambda feedback: build_pick_prompt(shortlist, snapshot, sheets, feedback), FinderPickOut,
         lambda out: response_failures(out, shortlist), subject="finder pick", log_label="finder pick", logger=log)
-    if out is not None and not out.picks:
-        return FinderPicks(picks=[], none_line=out.none_line, fallback=False)
-    stand = [] if out is None else _repair_picks(out, check_picks(out, shortlist, snapshot, sheets), shortlist,
-                                                 snapshot, sheets, repair_call)
-    if not stand:
+    stand = [] if out is None or not out.picks else _repair_picks(
+        out, check_picks(out, shortlist, snapshot, sheets), shortlist, snapshot, sheets, repair_call)
+    near = [] if out is None else standing_near(out, {pick.offer_id for pick in stand}, shortlist, snapshot, sheets)
+    if not stand and not near:
         # A code answer never takes the place of advice, so the shortlist shows plain facts with no headline.
         return FinderPicks(picks=[FinderPick(offer=offer, headline=None, bullets=[],
                                              fact_lines=_fact_lines(offer, sheets[offer.offer_id]))
                                   for offer in shortlist.shortlist], none_line=None, fallback=True)
-    # The Jev checks run on each pick against its own sheet, as on the read of one trade. They only log, so no answer
-    # and no failure ever blocks a pick.
+    # The Jev checks run on each pick and on the reason of each near idea against its own sheet, as on the read of
+    # one trade. They only log, so no answer and no failure ever blocks a pick.
     for pick in stand:
         log_read_jev_checks([_PickSide(roster_id=shortlist.asker, bullets=pick.bullets)], sheets[pick.offer_id], jev)
-    stage(f"Picked the best {len(stand)}" if len(stand) > 1 else "Picked the best one")
+    for idea in near:
+        reason = Bullet(text=idea.reason, mark="against", fact_id=idea.fact_id)
+        log_read_jev_checks([_PickSide(roster_id=shortlist.asker, bullets=[reason])], sheets[idea.offer_id], jev)
+    if stand:
+        stage(f"Picked the best {len(stand)}" if len(stand) > 1 else "Picked the best one")
+    else:
+        # No offer is a clear win, so the done line names the ideas that the pick weighed.
+        stage(f"Kept {len(near)} ideas to weigh" if len(near) > 1 else "Kept one idea to weigh")
     offers = {offer.offer_id: offer for offer in shortlist.shortlist}
     picks = [FinderPick(offer=offers[pick.offer_id], headline=pick.headline, fact_lines=[],
                         bullets=read_bullets(pick.bullets, sheets[pick.offer_id])) for pick in stand]
-    return FinderPicks(picks=picks, none_line=None, fallback=False)
+    return FinderPicks(picks=picks, near=[NearIdea(offer=offers[idea.offer_id], reason=idea.reason) for idea in near],
+                       none_line=None if stand or out is None else out.none_line or NO_CLEAR_PICK, fallback=False)

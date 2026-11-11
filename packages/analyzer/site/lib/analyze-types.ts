@@ -21,4 +21,5 @@ export type KnownGames = z.infer<typeof schema.knownGamesSchema>;
 export type AsOf = z.infer<typeof schema.asOfSchema>;
 export type AnalyzeResponse = z.infer<typeof schema.analyzeResponseSchema>;
 export type FinderTrade = z.infer<typeof schema.finderTradeSchema>;
+export type NearIdea = z.infer<typeof schema.nearIdeaSchema>;
 export type FindResponse = z.infer<typeof schema.findResponseSchema>;

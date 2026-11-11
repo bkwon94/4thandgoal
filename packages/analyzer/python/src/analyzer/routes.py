@@ -318,7 +318,8 @@ def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
 def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -> dict:
     """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
 
-    Each trade holds its offer id, its sides, the headline, and the Bullets of the Advisor. A Bullet has the shape of
+    Each trade holds its offer id, its sides, the headline, and the Bullets of the Advisor. Each near idea holds its
+    offer id, its sides, and the reason it fell short. A Bullet has the shape of
     the analyze document, so the site renders the rows one way. After a fallback, each trade of the shortlist has no
     headline and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the press, so
     the page needs no words of its own. No trade holds a score.
@@ -333,11 +334,16 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
         }
         for pick in picks.picks
     ]
+    # The offers that the pick weighed and would not send, each with the reason it fell short. An idea is an idea, so
+    # a list with offers always shows one, even when no pick stands.
+    near = [{"offer_id": idea.offer.offer_id, "sides": _echoed_sides(idea.offer.trade, snapshot), "reason": idea.reason}
+            for idea in picks.near]
     return {
         # The site calls the analyze route per card, and that route needs the season with the pair and the sides.
         "season": pair.season,
         "trade_pair": {"asker": _team(snapshot, pair.asker), "partner": _team(snapshot, pair.partner)},
         "trades": trades,
+        "near": near,
         # The key is always there, so the document keeps one shape with a list and without one.
         "empty": None if trades else picks.none_line,
         "as_of": _as_of(snapshot),

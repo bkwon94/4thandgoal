@@ -332,7 +332,8 @@ def _find_one(
     # The repairs of the picks run in threads, so a lock guards the count.
     count_lock = threading.Lock()
     record: dict = {"number": number, "asker": asker.asker, "week": week, "partners_passed": None, "offers": None,
-                    "shortlist": None, "picks": None, "none_line": None, "fallback": None, "error": None}
+                    "shortlist": None, "picks": None, "near": None, "none_line": None, "fallback": None,
+                    "error": None}
 
     def counted_by(inner: ClaudeCall) -> ClaudeCall:
         def counted(system: str, user: str, output_model):
@@ -356,6 +357,8 @@ def _find_one(
             "picks": [{"offer_id": pick.offer.offer_id, "trade": _trade_names(pick.offer.trade, snapshot),
                        "headline": pick.headline, "bullets": [b.model_dump() for b in pick.bullets],
                        "fact_lines": pick.fact_lines} for pick in picks.picks],
+            "near": [{"offer_id": idea.offer.offer_id, "trade": _trade_names(idea.offer.trade, snapshot),
+                      "reason": idea.reason} for idea in picks.near],
             "none_line": picks.none_line, "fallback": picks.fallback}
     except (TradeNotFound, ValueError) as error:
         record["error"] = str(error)

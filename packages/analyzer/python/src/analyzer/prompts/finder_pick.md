@@ -38,7 +38,16 @@ in a certain direction of what they should do on a trade."
    - bullets: 2 to 4 Bullets, one claim each, in plain words. Aim for 3 Bullets, and never write more
      than 4. Say why the asker sends it and why the other manager says yes. The mark is for, against,
      or even for the asker. fact_id is the one ID on the sheet of that offer that the claim rests on.
-2. none_line: null when you give a pick. With no offer worth sending, give no pick, and say why in
+2. near: up to 3 other offers of the list that came close, best first, each once. A near idea is
+   an offer you would not send, so it is never one of your picks. The asker asked for ideas, and an
+   idea is an idea: show him what you weighed and why it fell short. With no pick, give at least one
+   near idea.
+   - offer_id: the offer ID, as the user message gives it.
+   - reason: one short sentence to the asker on the main reason the offer falls short, in plain
+     words, such as "You give up your RB1 for a quarterback who sits until your starter is back."
+     The rules of a Bullet hold for it.
+   - fact_id: the one ID on the sheet of that offer that the reason rests on.
+3. none_line: null when you give a pick. With no offer worth sending, give no pick, and say why in
    one plain sentence with no number and no name, such as "No offer on the list helps your lineup
    enough to send."
 

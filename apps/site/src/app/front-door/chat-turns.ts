@@ -53,10 +53,12 @@ function tradeFact(answer: TradeAnswer): string {
     case "form":
       return "Pick the players on the Trade page";
     case "ideas": {
-      const trades = answer.document.trades;
-      if (trades.length === 0) return "No offer found";
+      const { trades, near, empty } = answer.document;
+      // Each near idea keeps the number it shows with after the offers, so "the second one" points at one idea.
+      const ideas = near.slice(0, TURN_OFFERS_MAX).map((idea, i) => `Idea ${trades.length + i + 1}: ${sidesLine(idea.sides)} Why not: ${idea.reason}`);
+      if (trades.length === 0) return ideas.length === 0 ? "No offer found" : ["No clear offer.", ...(empty ? [empty] : []), ...ideas].join(" ");
       const offers = trades.slice(0, TURN_OFFERS_MAX).map((trade, i) => `Offer ${i + 1}: ${sidesLine(trade.sides)}`);
-      return [trades.length === 1 ? "1 offer." : `${trades.length} offers.`, ...offers].join(" ");
+      return [trades.length === 1 ? "1 offer." : `${trades.length} offers.`, ...offers, ...ideas].join(" ");
     }
     case "sell": {
       const names = answer.document.picks.map((pick) => pick.player.name);
