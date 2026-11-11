@@ -13,7 +13,8 @@ from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.stage import Stage, quiet
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_facts import shown_ranks
-from analyzer.trade_jev import TRADE_POSITIONS, YES_AT, trade_jev_questions, weak_starting_slots
+from analyzer.trade_jev import TRADE_POSITIONS, YES_AT, trade_jev_questions, weak_slot_rows, weak_starting_slots
+from league.history import season_rank
 from league.jev_port import Jev, NoulQuestion
 from league.lineup import above_the_line, lineup_now
 from league.ranks import OUT_STATUSES
@@ -70,6 +71,8 @@ ANCHOR_TARGET = {
 TARGET_AT = 0.6      # a player is a target at this probability or more
 TARGET_MAX = 4       # at most this many targets per side, by probability
 SHORTLIST_KEEP = 10  # the offers that Jev rates highest, by the product of the fair and the need answers
+# The wider pass of a search that built no offer: one 1-for-1 idea per partner, so the pick sheet stays small.
+WIDER_MAX = 12
 
 
 class Anchor(BaseModel):
@@ -122,6 +125,8 @@ class Shortlist(BaseModel):
     targets: dict[int, dict[str, list[str]]]
     offers: list[ProposedTrade]
     shortlist: list[ShortlistOffer]
+    # True when the targets built no offer and the offers come from the wider pass.
+    wider: bool = False
 
 
 
@@ -265,6 +270,83 @@ def build_offers(asker: int, partner: int, asker_targets: list[str], partner_tar
     return offers
 
 
+def _season_number(snapshot: Snapshot, pid: str) -> int | None:
+    """The Season rank of the player as a number, such as 12 for RB12, or None with no complete stats."""
+    ranked = season_rank(snapshot.stats, pid, snapshot.as_of.stats_through)
+    return None if ranked is None else ranked[0]
+
+
+def _weak_positions(snapshot: Snapshot, roster_id: int) -> set[str]:
+    """The positions of the weak slots of a team: the position of the weak starter, or of an empty slot. An empty
+    flex slot names no one position, so it adds none."""
+    positions = {row["position"] or row["slot"].rstrip("0123456789") for row in weak_slot_rows(snapshot, roster_id)}
+    return positions & set(TRADE_POSITIONS)
+
+
+def _wider_candidate(snapshot: Snapshot, owner: int, asker: int, limit: Limit | None, positions: set[str],
+                     near: int | None = None) -> str | None:
+    """The one player of `owner` that the wider pass puts in an idea, or None.
+
+    He is a pool player that the limit lets move, at one of `positions`. A player off the lineup now comes first,
+    because a team gives up a spare more easily. Then, with `near`, the Season rank nearest it, for a like-for-like
+    swap. Else the best Season rank. The id breaks a tie.
+    """
+    starters = {slot.player for slot in lineup_now(snapshot.rosters[owner], snapshot) if slot.player is not None}
+    fits = [pid for pid in snapshot.rosters[owner]
+            if snapshot.players[pid].position in positions and in_pool(snapshot, pid, owner)
+            and _allowed(snapshot, pid, owner, asker, limit)]
+
+    def order(pid: str) -> tuple:
+        rank = _season_number(snapshot, pid)
+        gap = (abs(rank - near) if near is not None else rank) if rank is not None else 10_000
+        return (near is None and pid in starters, gap, pid)
+
+    return min(fits, key=order, default=None)
+
+
+def wider_offers(asker: int, partners: list[int], snapshot: Snapshot, anchor: Anchor | None = None,
+                 limit: Limit | None = None) -> list[ProposedTrade]:
+    """The ideas of the wider pass: at most one 1-for-1 offer per partner, picked by a plain rule with no Jev question.
+
+    The pass runs only when the targets built no offer, so an ask always has ideas for the pick to weigh. It is a
+    candidate set for the pick to judge, not a filter that decides a trade. The rule of each partner:
+    - The asker gets the anchor of a "gets" search. Else a player at the position to get of the limit, or else at the
+      position of the anchor of a "gives" search, like for like, nearest his Season rank. Else a player at a weak slot
+      of the asker, or at any position when the asker has no weak slot.
+    - The asker gives the anchor of a "gives" search. Else his player at a weak slot of the partner, so each side
+      fills a need, or his spare at any position when none fits.
+    The limit and the anchor stay hard rules, and an offer that makes a handcuff drops, as in the normal search.
+    """
+    offers = []
+    for rid in partners:
+        if anchor is not None and anchor.side == "gives":
+            mine: str | None = anchor.player_id
+        else:
+            # With no fit at a weak slot of the partner, any position: an idea is an idea.
+            mine = (_wider_candidate(snapshot, asker, asker, limit, _weak_positions(snapshot, rid))
+                    or _wider_candidate(snapshot, asker, asker, limit, set(TRADE_POSITIONS)))
+        if anchor is not None and anchor.side == "gets":
+            theirs: str | None = anchor.player_id
+        elif limit is not None and limit.aim_position is not None:
+            theirs = _wider_candidate(snapshot, rid, asker, limit, {limit.aim_position})
+        elif anchor is not None:
+            position = snapshot.players[anchor.player_id].position
+            theirs = _wider_candidate(snapshot, rid, asker, limit, {position},
+                                      near=_season_number(snapshot, anchor.player_id))
+        else:
+            theirs = _wider_candidate(snapshot, rid, asker, limit,
+                                      _weak_positions(snapshot, asker) or set(TRADE_POSITIONS))
+        if mine is None or theirs is None:
+            log.info("Finder wider pass with %s: no idea", snapshot.teams[rid].name)
+            continue
+        # The anchor must be in the pool of his roster, as in the normal search.
+        if not (in_pool(snapshot, mine, asker) and in_pool(snapshot, theirs, rid)):
+            continue
+        offers += [trade for trade in build_offers(asker, rid, [mine], [theirs], snapshot)
+                   if (anchor is None or _holds(trade, anchor)) and _within(trade, snapshot, limit)]
+    return offers[:WIDER_MAX]
+
+
 def offer_id(trade: ProposedTrade) -> str:
     """A stable id of an offer: each side's roster id and its given player ids, such as "4:7569-12:10236+8146"."""
     return "-".join(f"{side.roster_id}:{'+'.join(sorted(side.player_ids))}" for side in trade.sides)
@@ -316,6 +398,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     the asker gets keeps the search to his roster, because only that roster can give him.
     With a `limit`, no offer sends a player that the manager keeps, and each offer brings back the position that he
     aims at (a hard rule, because the manager set it).
+    5. The wider pass: when the targets build no offer, `wider_offers` gives at most one plain idea per partner, so
+       the pick has ideas to weigh. It asks no target question, and it skips a partner whose filter request failed.
     `stage` gets one plain line after the partner filter, the offers, and the shortlist. The default drops them.
     """
     waves = waves or JevWaves(jev)
@@ -374,6 +458,17 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
         offers_by_partner[rid] = [trade for trade in built
                                   if (anchor is None or _holds(trade, anchor)) and _within(trade, snapshot, limit)]
     offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
+    wider = not offers
+    if wider:
+        # An idea is an idea: a search with no offer looks wider, so the manager sees what was weighed and why.
+        stage("Looking wider for ideas", live=True)
+        offers_by_partner = {}
+        for trade in wider_offers(asker, [read.roster_id for read in reads if not read.failed], snapshot,
+                                  anchor, limit):
+            offers_by_partner.setdefault(trade.sides[1].roster_id, []).append(trade)
+        offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
+        log.info("Finder wider pass of %s: %d", snapshot.teams[asker].name, len(offers))
+        stage("Looked wider for ideas")
     log.info("Finder offers of %s: %d", snapshot.teams[asker].name, len(offers))
     stage(f"Built {len(offers)} offers" if len(offers) != 1 else "Built one offer")
     stage("Weighing the offers", live=True)
@@ -401,4 +496,4 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     for offer in shortlist:
         log.info("Finder shortlist %s: score=%.3f fair=%.2f needs=%s", offer.offer_id, offer.score, offer.fair,
                  {rid: round(p, 2) for rid, p in offer.needs.items()})
-    return Shortlist(asker=asker, partners=reads, targets=targets, offers=offers, shortlist=shortlist)
+    return Shortlist(asker=asker, partners=reads, targets=targets, offers=offers, shortlist=shortlist, wider=wider)

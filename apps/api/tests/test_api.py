@@ -1588,10 +1588,14 @@ def test_a_find_with_no_partner_and_one_with_a_partner_have_two_cache_keys(setti
     assert finder_cache_key(2026, 2, None, snapshot) != finder_cache_key(2026, 2, 3, snapshot)
 
 
+# A limit that keeps every position, so the wider pass of a search with no offer builds no idea either.
+KEEP_ALL = {"keep_positions": ["QB", "RB", "WR", "TE"]}
+
+
 def test_an_empty_shortlist_gives_the_empty_line_and_makes_no_claude_call(settings, sources):
     picker = StubPicker()
     doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_partner)).post(
-        "/find", json=FIND, headers=HEADERS).json()
+        "/find", json=FIND | {"limit": KEEP_ALL}, headers=HEADERS).json()
     assert doc["trades"] == [] and doc["near"] == []
     # No team passed the partner filter, so the line says that no team fits, not that the pick found nothing.
     assert doc["empty"] == NO_PARTNER
@@ -1606,9 +1610,10 @@ def test_an_empty_shortlist_gives_the_empty_line_and_makes_no_claude_call(settin
 def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_call(settings, sources):
     picker = StubPicker()
     client = _find_client(settings, sources, picker, MovingClock(NOW), jev=FakeJev(answer=_no_partner))
-    first = client.post("/find", json=FIND, headers=HEADERS).json()
+    empty = FIND | {"limit": KEEP_ALL}
+    first = client.post("/find", json=empty, headers=HEADERS).json()
     assert first["trades"] == []
-    assert client.post("/find", json=FIND, headers=HEADERS).json() == first
+    assert client.post("/find", json=empty, headers=HEADERS).json() == first
     assert picker.calls == []
     assert json.loads((settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
 
@@ -2018,11 +2023,21 @@ def _no_target(key, question, state):
 def test_a_search_that_builds_no_offer_says_why_in_one_plain_line(settings, sources):
     picker = StubPicker()
     doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_target)).post(
-        "/find", json=FIND, headers=HEADERS).json()
+        "/find", json=FIND | {"limit": KEEP_ALL}, headers=HEADERS).json()
     assert doc["trades"] == [] and doc["near"] == []
     assert doc["empty"] == NO_OFFER
     assert "fits" in NO_OFFER
     assert picker.calls == []
+
+
+def test_a_search_with_no_offer_sends_the_ideas_of_the_wider_pass_to_the_pick(settings, sources):
+    picker = StubPicker()
+    doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_target)).post(
+        "/find", json=FIND, headers=HEADERS).json()
+    # The targets built no offer, so the wider pass gave the pick its ideas, and the empty line does not show.
+    assert len(picker.calls) >= 1
+    assert doc["trades"] or doc["near"]
+    assert doc["empty"] != NO_OFFER
 
 
 def _assert_the_shortlist_fallback(doc, user):
@@ -2318,7 +2333,8 @@ def test_the_document_version_is_26():
     # The pick sheet holds the lineup now of the asker, and an anchored search skips the partner filter, so no list
     # stored before either serves.
     # The finder document holds the near ideas, so no list stored before them serves.
-    assert cache_module.DOCUMENT_VERSION == 26
+    # A search with no offer runs the wider pass, so no empty list stored before it serves.
+    assert cache_module.DOCUMENT_VERSION == 27
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per
