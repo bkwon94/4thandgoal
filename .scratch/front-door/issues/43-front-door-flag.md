@@ -13,9 +13,16 @@ The flag is read at build time, through the generated client values, like the ot
 
 **Blocked by:** none
 
-**Status:** in-progress
+**Status:** in-review
 
-- [ ] `front_door = false` builds the home page and the menu of `main`, and the front door at `/ask/`, with `noindex`.
-- [ ] `front_door = true` builds the front door at `/` and the 4-item menu, and no `/ask/` page.
-- [ ] Both clients have `front_door = false`.
-- [ ] `check:export` and `check:floor` pass for both clients.
+- [x] `front_door = false` builds the home page and the menu of `main`, and the front door at `/ask/`, with `noindex`.
+- [x] `front_door = true` builds the front door at `/` and the 4-item menu, and no `/ask/` page.
+- [x] Both clients have `front_door = false`.
+- [x] `check:export` and `check:floor` pass for both clients.
+
+## Notes
+
+- The two menus: `[menu] items` stays the menu of main, and `[menu] front_door_items` holds the 4 items. With the flag on, the build takes `front_door_items`. NorCal has no `items`, so its menu off is Home, then the package list, as on main.
+- The front door page is `src/app/front-door/door-page.tsx`. `/` picks it or the Front page (`src/app/front-page.tsx`) by `clientValues.frontDoor`. The client build writes `(client)/ask/page.tsx` only with the flag off.
+- `check:export` checks the flag: off, `out/ask/index.html` has noindex and no page links to it; on, the export has no `/ask/` page.
+- The evidence steps of AT-1 and AT-50 open `/`. With the flag off, the front door is at `/ask/`.

@@ -10,7 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 
 import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { FIXING_LINE } from "./front-door/free-answer";
 import { MISS_LEAD } from "./front-door/miss-card";
-import HomePage from "./page";
+import HomePage from "./front-door/door-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
    runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a

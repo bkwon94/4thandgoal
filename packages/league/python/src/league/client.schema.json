@@ -18,6 +18,21 @@
           ],
           "default": null,
           "title": "Items"
+        },
+        "front_door_items": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/MenuItem"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Front Door Items"
         }
       },
       "title": "Menu",
@@ -153,6 +168,11 @@
     },
     "menu": {
       "$ref": "#/$defs/Menu"
+    },
+    "front_door": {
+      "default": false,
+      "title": "Front Door",
+      "type": "boolean"
     }
   },
   "required": [

@@ -76,7 +76,7 @@ describe("The 404 page (AT-32)", () => {
     render(<NotFound />);
     expect(screen.getByRole("banner")).toBeTruthy();
     const dock = screen.getByRole("navigation", { name: "Bottom menu" });
-    expect(within(dock).getAllByRole("link")).toHaveLength(4);
+    expect(within(dock).getAllByRole("link")).toHaveLength(5);
     expect(document.querySelector("[aria-current=page]")).toBeNull();
   });
 });

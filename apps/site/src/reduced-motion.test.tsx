@@ -1,12 +1,13 @@
 /**
- * Tests for the analyzer, the week page, the front door at /, the power rankings, the waiver page, and the manager page with the reduced-motion media query on. The content must show at rest at once.
+ * Tests for the analyzer, the week page, the Front page, the front door, the power rankings, the waiver page, and the manager page with the reduced-motion media query on. The content must show at rest at once.
  * matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top of the file.
  * jsdom ignores opacity, so this test proves the text is present. The browser capture 12-week-off-390.png proves no motion.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterAll, afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { apiTarget, analyzeResponse as fixtureJson } from "@cpc/analyzer/lib/fixtures/api";
-import HomePage from "@/app/page";
+import HomePage from "@/app/front-door/door-page";
+import FrontPage from "@/app/front-page";
 import WeekPage from "@/app/_routes/week/page";
 import type { AnalyzeResponse } from "@cpc/analyzer/lib/analyze-types";
 import type { Team } from "@cpc/analyzer/lib/api";
@@ -317,6 +318,12 @@ describe("Reduced motion on the static pages", () => {
     expect(main.getByText("The median game")).toBeTruthy();
     expect(main.getByText("Standings")).toBeTruthy();
     expect(main.getByText("Next week")).toBeTruthy();
+  });
+
+  it("shows every home page row at once", () => {
+    render(<FrontPage />);
+    expect(screen.getByRole("link", { name: /Week 6/ })).toBeTruthy();
+    expect(screen.getByText("Oct 15 – Oct 19, 2026")).toBeTruthy();
   });
 
   it("fades the sheet of Your team in on the front door, with no move and no blur (AT-46 of front-door)", async () => {
