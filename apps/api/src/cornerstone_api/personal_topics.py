@@ -5,7 +5,9 @@ its data block from code first, then the text of Claude over its slice, then the
 import hashlib
 import json
 import logging
-from collections.abc import AsyncIterator
+import threading
+import time
+from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -57,6 +59,10 @@ ROUTE = route_model("personal_topic")
 MODEL = f"anthropic:{ROUTE.model}"
 # A short Answer needs few tokens, but a cut Answer is worse than a long one, so the cap leaves room for the thinking.
 MAX_TOKENS = 16000
+# The seconds that one live league serves each request of a client before the API loads Sleeper again. The tap on a
+# Suggestion comes soon after the open, so it reads the league of the open and its kept Answer shows at once (AT-8).
+# A waiver claim or a trade reaches the key and the stale check within this window, half the window of the teams route.
+LIVE_CACHE_SECONDS = 120
 # The closest Topics of the honest miss of each personal Topic, after a second failed check.
 CLOSEST: dict[str, list[str]] = {
     "weak_spots": ["stack_up", "waiver_targets", "trade_ideas"],
@@ -115,15 +121,45 @@ class Live:
         return facts, answer_key(topic, subject == roster_id, facts, self.snapshot.rosters[subject])
 
 
-async def load_live(served: Any, season: int) -> Live:
-    """The live league for the client of `served`. Raises HTTPException 503 when the facts do not load."""
+class LiveCache:
+    """The last live league of one client per season, with the monotonic time of its load.
+
+    One lock covers the check and the load, so the open, its head start, and a quick tap make one load and not three.
+    A load that raises leaves the cache as it was, so the next request tries again.
+    """
+
+    def __init__(self, max_age_seconds: float, clock: Callable[[], float] = time.monotonic) -> None:
+        self.max_age_seconds = max_age_seconds
+        self.clock = clock
+        self._lock = threading.Lock()
+        self._entries: dict[int, tuple[float, Live]] = {}
+
+    def get_or_load(self, season: int, load: Callable[[], Live]) -> Live:
+        """The league of `season` from memory within the window. Past it, `load` runs and the cache keeps its league."""
+        with self._lock:
+            entry = self._entries.get(season)
+            if entry is not None and self.clock() - entry[0] < self.max_age_seconds:
+                return entry[1]
+            live = load()
+            self._entries[season] = (self.clock(), live)
+            return live
+
+
+def _load(served: Any, season: int) -> Live:
+    """The live league for the client of `served`, from a fresh snapshot. It raises ValueError as the snapshot does."""
+    snapshot = served.sources.snapshot(season)
+    grades, starters = live_grades(snapshot)
+    return Live(snapshot, grades, starters)
+
+
+async def load_live(served: Any, season: int, cache: LiveCache) -> Live:
+    """The live league for the client of `served`, from `cache` within its window. Raises HTTPException 503 when the
+    facts do not load."""
     try:
-        snapshot = await anyio.to_thread.run_sync(served.sources.snapshot, season)
-        grades, starters = await anyio.to_thread.run_sync(live_grades, snapshot)
+        return await anyio.to_thread.run_sync(cache.get_or_load, season, lambda: _load(served, season))
     except ValueError as error:
         logger.warning("The facts of a personal Topic did not load (%s)", error)
         raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
-    return Live(snapshot, grades, starters)
 
 
 async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: PersonalFacts, key: str, own: bool,
@@ -170,7 +206,7 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClie
                    request: Request) -> StreamingResponse:
     """The stream of one personal Topic for the team of the body. The facts come from the live snapshot, so the
     Answer follows each waiver claim and trade."""
-    live = await load_live(served, asker.season)
+    live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])
     snapshot = live.snapshot
     subject = body.roster_id if body.team is None else body.team
     if body.roster_id not in snapshot.rosters or subject not in snapshot.rosters:

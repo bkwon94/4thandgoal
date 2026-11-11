@@ -159,7 +159,7 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
     picks. When the top pick is a personal Topic, its Answer builds after the response. A failed Jev call is a 503."""
     if any(key not in TOPICS for key in [*body.order, *body.opened]) or len(set(body.order)) != len(body.order):
         raise HTTPException(status_code=422, detail="Unknown Topic.")
-    live = await load_live(served, asker.season)
+    live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])
     if body.roster_id not in live.snapshot.rosters:
         raise HTTPException(status_code=422, detail="Pick your team again.")
     facts = await anyio.to_thread.run_sync(league_facts, live, body.roster_id)
@@ -205,7 +205,7 @@ async def current(body: CurrentRequest, asker: ClientAsker, served: ServedClient
     """Whether the key of each Answer of the Thread is still the key of its data now. It costs nothing: no Claude call
     and no Jev call. A stale personal Answer gets the time that the store kept it, for the stale line. The store keeps
     no trade Answer, so the site keeps the time of its read from the stream."""
-    live = await load_live(served, asker.season)
+    live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])
     rosters = live.snapshot.rosters
     if any(item.roster_id not in rosters or (item.team is not None and item.team not in rosters)
            for item in body.answers):

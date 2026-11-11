@@ -39,6 +39,7 @@ from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.caps import Caps
 from cornerstone_api.miss_log import MissLog
+from cornerstone_api.personal_topics import LIVE_CACHE_SECONDS, LiveCache
 from cornerstone_api.settings import Settings, ask_dir, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
@@ -243,6 +244,8 @@ def create_app(
     app.state.kept = {client.slug: AnswerStore(ask_dir(settings) / f"{client.slug}-answers.sqlite") for client in clients}
     # A personal Topic runs the model of its agent, Claude Sonnet 5.5. A test sets a test model of Pydantic AI here.
     app.state.personal_model = None
+    # The live league of each client, so the tap on a Suggestion reads the league of the open and no Sleeper data.
+    app.state.live = {client.slug: LiveCache(LIVE_CACHE_SECONDS) for client in clients}
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)

@@ -16,6 +16,7 @@ from pydantic_ai.models.function import AgentInfo, FunctionModel
 from test_api import CLIENT, HEADERS, _cpc, _here
 
 from cornerstone_api.app import create_app
+from cornerstone_api.personal_topics import LIVE_CACHE_SECONDS, LiveCache
 from league.jev_port import JevError, NoulQuestion
 from league.numbers import ordinal
 from league.provider.sleeper import load_raw
@@ -366,3 +367,48 @@ def test_an_honest_miss_and_an_error_cost_the_league_but_do_not_count(settings, 
     _chunks(_ask(down, "stack_up"))
     caps, now = _caps(down)
     assert caps.month_usd(now) > after_miss and caps.answers_today(LIL_FRIDGE, now) == 0
+
+
+class Fetches:
+    """The Sleeper fetch of the recorded data, with a count of its calls, so a test sees each live load."""
+
+    def __init__(self, raw_dir: Path):
+        self.raw_dir = raw_dir
+        self.calls = 0
+
+    def fetch(self, league_id: str):
+        self.calls += 1
+        return load_raw(self.raw_dir), test_api.FETCHED
+
+
+def test_a_kept_answer_within_the_live_window_reads_no_sleeper_data(settings, sources, fixture_raw_dir):
+    # AT-8: the tap on a kept Answer must not wait on a second live load, so the site shows no step line before it.
+    fetches = Fetches(fixture_raw_dir)
+    writer = Writer()
+    api = _api(settings, dataclasses.replace(sources, fetch_sleeper=fetches.fetch),
+               FakeJev(answer=Checks([True]).answer), writer)
+    _ask(api, "weak_spots")
+    loads = fetches.calls
+    assert loads > 0
+    tap = _chunks(_ask(api, "weak_spots"))
+    assert fetches.calls == loads
+    assert writer.calls == 1
+    # A kept Answer sends no tool part, so the site has no step to show before the text.
+    assert not any(c["type"].startswith("tool-") for c in tap)
+
+
+def test_past_the_live_window_a_tap_loads_the_league_again(settings, sources, fixture_raw_dir):
+    # A waiver claim or a trade must reach the key, so the cached league lasts only its window.
+    fetches = Fetches(fixture_raw_dir)
+    api = _api(settings, dataclasses.replace(sources, fetch_sleeper=fetches.fetch),
+               FakeJev(answer=Checks([True]).answer), Writer())
+    now = [0.0]
+    api.app.state.live["cpc"] = LiveCache(LIVE_CACHE_SECONDS, clock=lambda: now[0])
+    _ask(api, "weak_spots")
+    loads = fetches.calls
+    now[0] = LIVE_CACHE_SECONDS - 1
+    _ask(api, "weak_spots")
+    assert fetches.calls == loads
+    now[0] = LIVE_CACHE_SECONDS
+    _ask(api, "weak_spots")
+    assert fetches.calls == 2 * loads
