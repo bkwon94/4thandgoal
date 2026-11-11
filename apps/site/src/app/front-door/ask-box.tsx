@@ -47,6 +47,9 @@ export function AskBox({ onAsk, pending = false }: { onAsk?: (question: string) 
         aria-label="Send"
         aria-busy={pending || undefined}
         disabled={!question || pending}
+        // The press keeps the focus in the field. A blur would close the keyboard and bring the dock back, the foot of
+        // the Thread would drop under the thumb, and the click would land on the page, so the first tap would send nothing.
+        onMouseDown={(event) => event.preventDefault()}
         style={{ "--halo": haloOf(value) } as CSSProperties}
         className="send-halo flex size-send flex-none items-center justify-center rounded-full bg-accent text-on-dark disabled:bg-raised disabled:text-mute"
       >

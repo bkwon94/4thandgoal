@@ -82,4 +82,14 @@ describe("AskBox and the dock", () => {
     fireEvent.submit(screen.getByRole("form", { name: "Ask" }));
     expect(dock().hasAttribute("data-tucked")).toBe(true);
   });
+
+  /* The press on Send must not take the focus from the field. A blur closes the keyboard, the foot of the Thread drops
+     under the thumb, and the click lands on the page, so the first tap would send nothing (ticket 34). */
+  it("keeps the focus in the ask box when the thumb presses Send", () => {
+    renderDoor();
+    act(() => field().focus());
+    fireEvent.change(field(), { target: { value: "Who should I start?" } });
+    // fireEvent returns false when a handler cancels the default, here the move of the focus to the button.
+    expect(fireEvent.mouseDown(screen.getByRole("button", { name: "Send" }))).toBe(false);
+  });
 });

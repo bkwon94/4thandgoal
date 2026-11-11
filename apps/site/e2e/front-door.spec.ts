@@ -1,8 +1,9 @@
 /**
  * The layout of the front door at / on the static export in out/ of the current CLIENT, in Chromium. It checks that
  * the 3 Suggestion chips show whole at each width, with no chip cut off at the edge of the row (AT-4 of front-door).
+ * It also checks that one tap on Send sends while the keyboard is open (ticket 34).
  */
-import { expect, test } from "@playwright/test";
+import { devices, expect, test } from "@playwright/test";
 import { join } from "node:path";
 import { serveDir } from "./serve";
 
@@ -39,3 +40,45 @@ for (const width of [375, 768, 1280]) {
     }
   });
 }
+
+/* The phone of the run: its viewport and touch. A group cannot pick the browser, so the project keeps its own. */
+const { defaultBrowserType: _browser, ...phone } = devices["iPhone 15"];
+
+test.describe("Send on a phone with the keyboard open", () => {
+  test.use(phone);
+
+  test("one tap on Send sends while the field has the focus (ticket 34)", async ({ page }) => {
+    // iOS keeps the layout viewport at full height and shrinks the visual viewport by the keyboard while a field has the
+    // focus. The fake keyboard is 336 px tall, and it closes on blur, as the real one does.
+    await page.addInitScript(() => {
+      const keyboard = () => (document.activeElement?.tagName === "INPUT" ? 336 : 0);
+      const view = {
+        get height() {
+          return innerHeight - keyboard();
+        },
+        offsetTop: 0,
+        addEventListener() {},
+        removeEventListener() {},
+      };
+      Object.defineProperty(window, "visualViewport", { get: () => view });
+    });
+    await page.goto(`${server.url}/`);
+    await page.getByRole("dialog").getByRole("button").first().tap();
+    const field = page.getByRole("textbox", { name: "Ask a question" });
+    const send = page.getByRole("button", { name: "Send" });
+    const thread = page.getByRole("region", { name: "Thread" });
+    // The first question gives the Thread an entry, so the ask box sticks to the foot, right above the keyboard.
+    await field.tap();
+    await field.fill("Who should I start?");
+    await send.tap();
+    await expect(field).toHaveValue("");
+    await expect(page.getByRole("button", { name: "Clear" })).toBeVisible();
+    // The second question is the case of the bug: the field has the focus, and the ask box sits above the keyboard.
+    await field.tap();
+    await field.fill("Who should I sit?");
+    await expect(field).toBeFocused();
+    await send.tap();
+    await expect(field, "one tap on Send sends the question").toHaveValue("");
+    await expect(thread.getByText("Who should I sit?")).toBeVisible();
+  });
+});
