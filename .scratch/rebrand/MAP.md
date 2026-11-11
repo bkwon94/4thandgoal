@@ -20,10 +20,11 @@ These came from the grill of 2026-11-11. Brian decided each one.
 - No old domain redirects, because no domain changes. `decisions/04-spec-the-old-domains.md`.
 - The Fly app keeps the name `cpcfantasy-api`. `decisions/07-grill-the-fly-app.md`.
 - The plugin is `4ag`, with the marketplace `4ag-local`. The verdict marker `<!-- cpc:agent -->` stays. `decisions/05-spec-the-plugin-name.md`.
+- The spec is `PRD.md`. The weekly build script finds the repo from its own path, and a runbook holds the folder move. `decisions/06-spec-rebrand.md`.
 
 ## NOT YET SPECIFIED
 
-- The spec. `decisions/06-spec-rebrand.md`.
+None.
 
 ## OUT OF SCOPE
 

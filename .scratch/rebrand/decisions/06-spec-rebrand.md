@@ -6,7 +6,7 @@ Map: `.scratch/rebrand/MAP.md`.
 
 **Blocked by:** 01, 02, 03, 05
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ Map: `.scratch/rebrand/MAP.md`.
 
 ## Decision
 
-None yet.
+The spec is `PRD.md`, written 2026-11-11. It waits on the approval of Brian.
