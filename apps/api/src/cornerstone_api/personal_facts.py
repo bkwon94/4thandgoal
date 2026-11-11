@@ -27,8 +27,10 @@ FACT_GROUPS: dict[str, tuple[str, ...]] = {
 PART_NAMES = {"projection": "Projection Ahead", "production": "Season Production", "trade_value": "Trade Value",
               "depth": "Depth And Holes"}
 
-# The buckets of the waiver board that list a player to add, in the order of the waiver page.
-WAIVER_BUCKETS = ("best_adds", "sneaky", "stashes", "trending")
+# The buckets of the waiver board that list a player to add. Trending comes first: it is Sleeper's own list of the
+# players most added in the last day, the crowd signal, so the Answer leans on it. A player in two buckets keeps the
+# first one of this order.
+WAIVER_BUCKETS = ("trending", "best_adds", "sneaky", "stashes")
 # What each depth word of the slot ranks means (GLOSSARY.md, "Depth"). The slice carries the meaning with the word, so
 # Claude and the Jev check read the same fact.
 DEPTH_MEANINGS = {
@@ -107,7 +109,9 @@ def _starters(snapshot: Snapshot, starters: list[Starter]) -> list[dict]:
 
 def _waiver_list(board: dict | None, snapshot: Snapshot) -> list[dict]:
     """The players of the waiver board who are still free agents. A player on a roster now cannot be added, so that
-    hard rule drops him."""
+    hard rule drops him. Sleeper projects no points in any week left for a player with a rest of season projection
+    of 0 or none, so that hard rule drops him too. The list gives no bid: the bid of the board is flat per position,
+    so it tells nothing about the player."""
     if board is None:
         return []
     rostered = {pid for players in snapshot.rosters.values() for pid in players}
@@ -116,13 +120,12 @@ def _waiver_list(board: dict | None, snapshot: Snapshot) -> list[dict]:
     for bucket in WAIVER_BUCKETS:
         for player in board["buckets"].get(bucket, []):
             pid = player["player_id"]
-            if pid in rostered or pid in seen:
+            if pid in rostered or pid in seen or not player.get("ros_projection"):
                 continue
             seen.add(pid)
-            price = player.get("price") or {}
             players.append({"name": player["name"], "position": player["position"], "nfl_team": player.get("team"),
                             "bucket": bucket, "week_projection": player.get("week_projection"),
-                            "rest_of_season_projection": player.get("ros_projection"), "bid": price.get("bid"),
+                            "rest_of_season_projection": player.get("ros_projection"),
                             "facts": [fact["text"] for fact in player.get("facts", [])]})
     return players
 
@@ -190,7 +193,7 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
                  "stats": [{"label": "Weakest spot", "value": worst.position},
                            {"label": "Rank", "value": _of(worst.rank, teams)},
                            {"label": "On the list", "value": str(len(free))}],
-                 "rows": [{"label": player["name"], "value": "" if player["bid"] is None else f"${player['bid']}",
+                 "rows": [{"label": player["name"], "value": "",
                            "note": " · ".join(part for part in (player["position"], player["nfl_team"]) if part),
                            "roster_id": None, "you": False} for player in free[:WAIVER_ROWS]]}
     return PersonalFacts(slice=slice_, block={"topic": topic, "team": roster_id, **block})

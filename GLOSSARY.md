@@ -787,11 +787,13 @@ _Avoid_: tier, group, tab (a tab is the page control that shows one bucket)
 
 **Top pickups**:
 The bucket of the pool players with the best board score, at QB, RB, WR, or TE only. K and DEF stay
-in the pool but never land in it. The code names it `best_adds`, and the waiver page tab says "Best".
+in the pool but never land in it. A top pickup needs a rest of season projection above 0. The code names it
+`best_adds`, and the waiver page tab says "Best".
 _Avoid_: best adds (that is the look-back of a manager page), top adds
 
 **Trending**:
-The bucket of the pool players at QB, RB, WR, or TE with the most Sleeper adds in the last day.
+The bucket of the pool players at QB, RB, WR, or TE with the most Sleeper adds in the last day. A trending
+player needs a rest of season projection above 0.
 _Avoid_: hot, buzz, most added
 
 **Drop candidate**:
@@ -808,7 +810,8 @@ _Avoid_: gap (that is the swing's difference between a win and a loss), edge
 
 **Sneaky add**:
 A healthy pool player at QB, RB, WR, or TE whose usage trend score is in the top quarter and whose
-projection score is in the bottom half, or who sits one depth chart slot below a player who is out. The
+projection score is in the bottom half, or for whom every player above him on the depth chart is out. An
+out backup under a healthy starter opens no role. A sneaky add needs a rest of season projection above 0. The
 bucket ranks by usage trend, with the shared cap. A player in the top pickups is not a sneaky add. The reason code
 is `usage_rise` or `behind_injury`.
 _Avoid_: sleeper, deep add. Sleeper is the league app.
