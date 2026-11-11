@@ -13,7 +13,7 @@ import test_api
 from fakes import FakeJev
 from fastapi.testclient import TestClient
 from test_api import HEADERS, _here
-from test_personal_topics import LIL_FRIDGE, Checks, Writer, _api, _ask, _chunks, _text
+from test_personal_topics import LIL_FRIDGE, Checks, Fetches, Writer, _api, _ask, _chunks, _text
 
 from analyzer.sell_facts import sheet_players
 from analyzer.trade_jev import weak_starting_slots
@@ -346,3 +346,19 @@ def test_the_key_check_needs_the_passphrase_and_a_known_team(settings, sources):
     item = {"topic": "weak_spots", "roster_id": LIL_FRIDGE, "team": None, "key": "x"}
     assert api.post(CURRENT, json={"answers": [item]}).status_code == 401
     assert api.post(CURRENT, json={"answers": [{**item, "roster_id": 99}]}, headers=HEADERS).status_code == 422
+
+
+def test_the_tap_after_the_open_reads_the_league_of_the_open_and_no_sleeper_data(settings, sources, fixture_raw_dir):
+    # AT-8: the open loads the league once, the head start builds on it, and the tap gets the kept Answer from it.
+    _publish_topics(settings)
+    fetches = Fetches(fixture_raw_dir)
+    writer = Writer()
+    api = _api(settings, dataclasses.replace(sources, fetch_sleeper=fetches.fetch), FakeJev(answer=Lifts().answer),
+               writer)
+    order = ["weak_spots", *(key for key in WEDNESDAY if key != "weak_spots")]
+    assert _suggest(api, order=order).json()["head_start"] == "weak_spots"
+    loads = fetches.calls
+    tap = _chunks(_ask(api, "weak_spots"))
+    assert fetches.calls == loads
+    assert writer.calls == 1
+    assert _text(tap) and not any(c["type"].startswith("tool-") for c in tap)
