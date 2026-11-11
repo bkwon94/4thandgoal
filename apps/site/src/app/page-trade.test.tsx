@@ -283,8 +283,8 @@ describe("sell high or buy low for Lil Fridge", () => {
   });
 });
 
-describe("the fold of an older trade Answer", () => {
-  it("folds a settled trade check to its question and its Lean when a new question lands, and opens it on a tap", async () => {
+describe("an older trade Answer in the Thread", () => {
+  it("keeps a settled trade check whole, with its Lean and its link, when a new question lands", async () => {
     routeTo("trade_check");
     streamOf("/trade-check", checkStream);
     render(<HomePage />);
@@ -292,14 +292,10 @@ describe("the fold of an older trade Answer", () => {
     await screen.findByRole("region", { name: "Trade check" });
     await openTopic("Week recap");
     const [trade] = await screen.findAllByRole("article", { name: SURE });
-    const fold = await within(trade).findByRole("button", { name: `${SURE}: Send it` });
-    expect(fold.getAttribute("aria-expanded")).toBe("false");
-    await waitFor(() => expect(within(trade).queryByRole("region", { name: "Trade check" })).toBeNull());
-
-    fireEvent.click(fold);
-    expect(fold.getAttribute("aria-expanded")).toBe("true");
-    expect(await within(trade).findByRole("region", { name: "Trade check" })).toBeTruthy();
+    await screen.findAllByRole("article", { name: "Week recap" });
+    expect(within(trade).getByRole("region", { name: "Trade check" }).textContent).toContain("Send it");
     expect(within(trade).getByRole("link", { name: "Open it on the Trade page" })).toBeTruthy();
+    expect(within(trade).queryByRole("button", { name: `${SURE}: Send it` })).toBeNull();
   });
 
   it("keeps a trade Answer in flight open, with its steps, under a newer question", async () => {

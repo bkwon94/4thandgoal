@@ -31,27 +31,24 @@ export const AnswerCard = forwardRef<
     );
 });
 
-/* The data block, the text, and the link of one Answer. The newest Answer shows it on a card that settles in. An
-   opened fold shows it flat, with no card and no settle, so a reread opens calm (decision 08). A live Answer puts its
-   streamed text in `children`, under the data block and above the link. */
+/* The data block, the text, and the link of one Answer, on a card that settles in. A live Answer puts its streamed
+   text in `children`, under the data block and above the link. */
 export function AnswerBody({
   answer,
   avatars,
-  flat = false,
   children,
 }: {
   // The body reads only the parts of an Answer that it shows, so a personal Answer from the API fits it too.
   answer: Pick<DoorAnswer, "stats" | "rows" | "text" | "href">;
   avatars: Record<number, string | null>;
-  flat?: boolean;
   children?: ReactNode;
 }) {
   const off = useMotionOff();
   return (
     /* The data block settles from a soft blur at 0.98 (decision 07). With motion off, it only fades in. */
     <motion.div
-      className={flat ? "flex flex-col gap-sp-4 pt-sp-1 pb-sp-5" : "door-sheen flex flex-col gap-sp-4 rounded-card border border-door-hair bg-card p-sp-4"}
-      initial={flat ? false : off ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: "blur(6px)" }}
+      className="door-sheen flex flex-col gap-sp-4 rounded-card border border-door-hair bg-card p-sp-4"
+      initial={off ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: "blur(6px)" }}
       animate={off ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={fadeIn(SLOW, 0.08)}
     >
@@ -75,7 +72,7 @@ export function AnswerBody({
         </ul>
       )}
       {answer.text.length > 0 && (
-        <motion.div className="flex flex-col gap-sp-3" {...(flat ? {} : riseIn(off, { delay: 0.2, text: true }))}>
+        <motion.div className="flex flex-col gap-sp-3" {...riseIn(off, { delay: 0.2, text: true })}>
           {answer.text.map((paragraph, index) => (
             <p key={index} className="m-0 text-body leading-body text-ink-2">
               {paragraph}
@@ -88,7 +85,7 @@ export function AnswerBody({
         <motion.a
           href={answer.href}
           className="press group -mx-sp-2 flex min-h-touch items-center gap-sp-2 self-start rounded-pill px-sp-2 text-body leading-tight font-semibold text-accent-ink no-underline"
-          initial={flat ? false : { opacity: 0 }}
+          initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={fadeIn(VERY_SLOW, 0.3)}
         >

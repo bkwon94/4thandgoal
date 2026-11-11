@@ -344,7 +344,6 @@ export function FrontDoor({
                   answers={answers}
                   avatars={avatars}
                   newest={newest}
-                  teamName={(id) => (id !== team.id ? teams.find((other) => other.id === id)?.name : undefined)}
                   renderOther={(entry, ref) => {
                     switch (entry.kind) {
                       case "pending":
