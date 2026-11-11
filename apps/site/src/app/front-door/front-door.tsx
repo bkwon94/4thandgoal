@@ -5,8 +5,8 @@
  */
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useIsPresent } from "framer-motion";
+import { type ComponentProps, Fragment, useEffect, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -19,7 +19,7 @@ import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem,
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
 import { CapCard, MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
 import { keepFocus, closeKeyboard } from "./keyboard-tap";
-import { GLIDE, riseIn } from "./motion";
+import { FAST, GLIDE, fadeIn, riseIn } from "./motion";
 import { PersonalAnswerCard, PersonalAnswerLive } from "./personal-answer";
 import { PERSONAL_LINES, isPersonal } from "./personal-stream";
 import { getOpened, markOpened } from "./opened-store";
@@ -39,6 +39,13 @@ const EXAMPLES = ["who has the best roster", "week 1 results"];
 /* The greeting changes with the hour, so the front door reads as a person and not a page. */
 function greeting(hour: number): string {
   return hour < 5 ? "Late night" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+}
+
+/* The dock of the chips and the ask box. A dock that leaves in the cross-fade of reduced motion hides from a screen
+   reader and takes no input, so the page holds one ask box. */
+function Dock(props: ComponentProps<typeof motion.div>) {
+  const present = useIsPresent();
+  return <motion.div {...props} aria-hidden={present ? undefined : true} inert={!present || undefined} />;
 }
 
 export function FrontDoor({
@@ -479,16 +486,22 @@ export function FrontDoor({
                 />
               </div>
             )}
-            <motion.div
+            {/* Under reduced motion the dock cross-fades: the old dock holds its place at the center out of the flow
+                while it fades out, and the new dock fades in at the foot. With motion on, the dock keeps one key, so
+                nothing leaves here (ticket 48). */}
+            <AnimatePresence initial={false} mode="popLayout">
+            <Dock
               // The ask box and the chips glide from the center of the empty Thread to the bottom on the first Answer,
               // in one move on the shared layout spring. With motion off, the dock jumps to its place, and only the
               // fades of its parts run. Only the position animates: the dock changes its height when "More" opens, and a
               // size animation would stretch the ask box and the chips on the way. With motion off, the dock mounts again
-              // at its new place, so each part fades in there and the ask box never jumps at full opacity (AT-46).
+              // at its new place, so each part fades in there and the ask box never jumps at full opacity (AT-46). The
+              // old dock fades out over the same moment, so the ask box never drops from full to none in one frame.
               key={off ? (empty ? "dock-center" : "dock-foot") : "dock"}
               layout={off ? false : "position"}
               transition={{ layout: GLIDE }}
               className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter bg-page/90 px-gutter pt-sp-3 pb-sp-3 backdrop-blur-md desktop:bottom-0"}`}
+              exit={off ? { opacity: 0, transition: fadeIn(FAST) } : undefined}
             >
               {!missed && (day === null || picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
@@ -505,7 +518,8 @@ export function FrontDoor({
                   {changeTeam}
                 </motion.div>
               )}
-            </motion.div>
+            </Dock>
+            </AnimatePresence>
           </div>
         )}
       </section>
