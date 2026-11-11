@@ -10,7 +10,8 @@ export type FreeStep = { line: string; done: boolean };
 /* The check of the text: "checking" after the last word, "fixing" before the rewrite, then "checked" or "failed". */
 export type CheckState = "checking" | "fixing" | "checked" | "failed";
 
-/* What the stream shows so far. `first` is the text before a rewrite, and `second` the text of the rewrite. */
+/* What the stream shows so far. `first` is the text before a rewrite, and `second` the text of the rewrite. Each text
+   is empty until its check passes. */
 export type FreeView = {
   steps: FreeStep[];
   first: string;
@@ -61,7 +62,9 @@ function dataOf<T>(part: Part, kind: string): T | null {
   return part.type === `data-${kind}` ? ((part as { data: unknown }).data as T) : null;
 }
 
-/* The view of the assistant message of the stream. The data part "fix" splits the first text from the rewrite. */
+/* The view of the assistant message of the stream. The data part "fix" splits the first text from the rewrite. A text
+   shows only once its check passes, so no word that the manager reads is ever pulled back (H10). The API sends a text
+   only after its check, and the view holds it back too, so a stream in the other order shows no early word. */
 export function viewOf(message: UIMessage | undefined): FreeView {
   const view: FreeView = { steps: [], first: "", second: null, check: null, suggestion: null, closest: null };
   for (const part of message?.parts ?? []) {
@@ -80,6 +83,8 @@ export function viewOf(message: UIMessage | undefined): FreeView {
       if (miss) view.closest = miss.closest;
     }
   }
+  if (view.second !== null || view.check !== "checked") view.first = "";
+  if (view.second !== null && view.check !== "checked") view.second = "";
   return view;
 }
 
@@ -98,7 +103,8 @@ export const newPace = (): Pace => ({ checkFirst: null, fixing: null, checkSecon
 
 /* The view that the manager sees at `now`. A fast check sends "checking" and its end in one read, so the end waits
    until "Checking" held for `hold` ms. The rewrite waits in the same way until the fixing line held for `hold` ms
-   (AT-20, AT-21). `pace` keeps the time that each held state first showed. `wake` is the time of the next change, or
+   (AT-20, AT-21). A held view shows no text, so the text shows with "Checked". `pace` keeps the time that each held
+   state first showed. `wake` is the time of the next change, or
    null when the view shows the stream as it is. */
 export function pacedView<V extends FreeView>(view: V, pace: Pace, now: number, hold: number): { view: V; wake: number | null } {
   const held = (key: keyof Pace) => {
@@ -108,7 +114,7 @@ export function pacedView<V extends FreeView>(view: V, pace: Pace, now: number, 
   if (view.check === null && view.second === null) return { view, wake: null };
   // "Checking" of the first text holds before its end shows: "Checked", or the fade to the fixing line.
   const firstWake = held("checkFirst");
-  if (firstWake !== null && (view.second !== null || view.check !== "checking")) return { view: { ...view, second: null, check: "checking" }, wake: firstWake };
+  if (firstWake !== null && (view.second !== null || view.check !== "checking")) return { view: { ...view, first: "", second: null, check: "checking" }, wake: firstWake };
   if (view.second === null) return { view, wake: null };
   // The fixing line holds before the rewrite shows.
   const fixingWake = held("fixing");
@@ -116,6 +122,6 @@ export function pacedView<V extends FreeView>(view: V, pace: Pace, now: number, 
   // "Checking" of the rewrite holds before "Checked" shows.
   if (view.check !== "checking" && view.check !== "checked") return { view, wake: null };
   const secondWake = held("checkSecond");
-  if (secondWake !== null && view.check === "checked") return { view: { ...view, check: "checking" }, wake: secondWake };
+  if (secondWake !== null && view.check === "checked") return { view: { ...view, second: "", check: "checking" }, wake: secondWake };
   return { view, wake: null };
 }

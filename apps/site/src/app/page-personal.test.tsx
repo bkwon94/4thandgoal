@@ -162,6 +162,22 @@ describe("the personal Topics of Lil Fridge", () => {
     expect(answer.textContent).toContain("Projection Ahead");
   });
 
+  it("never shows the failed first text, and shows the rewrite only with Checked (H10)", async () => {
+    const seen: { failed: boolean; early: boolean } = { failed: false, early: false };
+    const observer = new MutationObserver(() => {
+      const text = document.body.textContent ?? "";
+      if (text.includes("Your weakest part is Season Production")) seen.failed = true;
+      if (text.includes("Your worst part is Season Production") && !text.includes("Checked")) seen.early = true;
+    });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    onTestFinished(() => observer.disconnect());
+    streams.push(() => sse(recorded("stack-up-fixed")));
+    render(<HomePage />);
+    await tapInMore("How you stack up");
+    await articleWith("How you stack up", "Your worst part is Season Production");
+    expect(seen).toEqual({ failed: false, early: false });
+  });
+
   it("turns a second failed check into the honest miss with the closest Topics", async () => {
     streams.push(() => sse(recorded("weak-spots-miss")));
     render(<HomePage />);

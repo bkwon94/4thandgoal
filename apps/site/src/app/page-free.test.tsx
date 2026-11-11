@@ -62,6 +62,18 @@ function expectShown(element: HTMLElement) {
   }
 }
 
+/* Whether `text` ever shows on the page with no "Checked" mark, as a MutationObserver sees each change. */
+function watchEarly(text: string) {
+  const seen = { early: false };
+  const observer = new MutationObserver(() => {
+    const page = document.body.textContent ?? "";
+    if (page.includes(text) && !page.includes("Checked")) seen.early = true;
+  });
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  onTestFinished(() => observer.disconnect());
+  return seen;
+}
+
 async function articleWith(question: string, text: string) {
   await waitFor(() => expect(screen.getByRole("article", { name: question }).textContent).toContain(text), { timeout: 3000 });
   return screen.getByRole("article", { name: question });
@@ -173,6 +185,28 @@ describe("the free answer of Lil Fridge", () => {
     );
   });
 
+  it("never shows a failed first text, and shows no text before Checked (H10)", async () => {
+    const failed = watchFor("Through the weeks I could check");
+    const rewrite = watchEarly("In weeks 2 through 5");
+    freeWith("fix");
+    render(<HomePage />);
+    await ask("who spent the most FAAB on a waiver wire pickup");
+    await articleWith("who spent the most FAAB on a waiver wire pickup", "In weeks 2 through 5");
+    expect(failed.at).toBeNull();
+    expect(rewrite.early).toBe(false);
+  });
+
+  it("shows the text of a checked answer only with Checked, after the hold of Checking (H10)", async () => {
+    const text = watchEarly("you beat NFC Least");
+    const checking = watchFor("Checking");
+    freeWith("week-1");
+    render(<HomePage />);
+    await ask("week 1 results");
+    await articleWith("week 1 results", "you beat NFC Least");
+    expect(checking.at).not.toBeNull();
+    expect(text.early).toBe(false);
+  });
+
   it("shows the fixing line after a failed check, before the rewrite (AT-21)", async () => {
     const fixing = watchFor(FIXING_LINE);
     freeWith("fix");
@@ -192,9 +226,9 @@ describe("the free answer of Lil Fridge", () => {
     expect(topics.map((topic) => topic.textContent)).toEqual(["Your season", "Playoff race", "Power rankings"]);
   });
 
-  it("sharpens each new word from a blur and shows no stop control while it streams (AT-44, AT-55)", async () => {
+  it("holds the words until Checked, then sharpens each word from a blur, with no stop control (H10, AT-44, AT-55)", async () => {
     const lines = recorded("week-1").split("\n\n");
-    const cut = lines.findIndex((line) => line.includes('"text-end"'));
+    const cut = lines.findIndex((line) => line.includes('"state":"checked"'));
     let finish: () => void = () => {};
     routes.push({ route: "free", topic: null, team: null, closest: [], suggestion: null, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } });
     streams.push(() =>
@@ -213,16 +247,23 @@ describe("the free answer of Lil Fridge", () => {
     );
     render(<HomePage />);
     await ask("week 1 results");
+    // Each part up to the check is in, so the steps and "Checking" show, and no word of the text shows yet.
+    const held = await articleWith("week 1 results", "Checking");
+    expect(within(held).getByRole("list", { name: "Steps" })).toBeTruthy();
+    expect(held.querySelectorAll(".stream-word")).toHaveLength(0);
+    expect(held.textContent).not.toContain("you beat NFC Least");
+    expect(screen.queryByRole("button", { name: /stop|cancel/i })).toBeNull();
+    finish();
     const answer = await articleWith("week 1 results", "you beat NFC Least");
+    expect(answer.textContent).toContain("Checked");
     expect(answer.querySelectorAll(".stream-word").length).toBeGreaterThan(10);
-    // The words of one read sweep in one after another, so each new word plays its own blur and not one block.
+    // The whole text shows in one read, and its words sweep in one after another, so each word plays its own blur
+    // and not one block. The sweep takes no more than --duration-very-slow.
     const delays = [...answer.querySelectorAll<HTMLElement>(".stream-word")].map((word) => parseFloat(word.style.animationDelay || "0"));
     expect(delays.at(-1)!).toBeGreaterThan(delays[0]);
     expect([...delays].sort((a, b) => a - b)).toEqual(delays);
+    expect(delays.at(-1)! - delays[0]).toBeLessThanOrEqual(500);
     expect(screen.queryByRole("button", { name: /stop|cancel/i })).toBeNull();
-    expect(answer.textContent).not.toContain("Checked");
-    finish();
-    await articleWith("week 1 results", "Checked");
   });
 
   it("keeps the checked answer for the week, so a reload shows it with no new stream", async () => {

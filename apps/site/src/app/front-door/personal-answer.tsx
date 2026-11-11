@@ -1,6 +1,7 @@
 /**
- * A personal Topic in the Thread: the data block settles first from code, then the text sharpens word by word under it,
- * then the mark turns from "Checking" to "Checked" and the link to the full page shows. useChat reads the API stream.
+ * A personal Topic in the Thread: the data block settles first from code, then "Checking", then the checked text
+ * sharpens word by word under it as the mark turns to "Checked", and the link to the full page shows. useChat reads
+ * the API stream.
  */
 "use client";
 
