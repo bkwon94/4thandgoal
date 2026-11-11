@@ -41,7 +41,7 @@ from league.jev_port import JevError
 from league.live import RefreshResult
 from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from league.paths import client_dir, league_file
-from league.provider.raw import RawLeague
+from league.provider.raw import RawLeague, RawTrending
 from league.provider.sleeper import fetch_news, league_settings, load_raw
 from league.snapshot import SnapshotPlayer
 from league.tunables import TEAMS_CACHE_SECONDS
@@ -86,6 +86,13 @@ def _here(sources: Sources, settings: Settings) -> Sources:
     return dataclasses.replace(sources, client=cpc_client(at=settings.repo, models=VALUE_MODELS))
 
 
+def _recorded_trending() -> list[RawTrending]:
+    """The trending adds that the week 9 build recorded. The week 6 fixture has no trending file, and a test makes no
+    network call."""
+    path = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026" / "week-09" / "raw" / "trending.json"
+    return [RawTrending.model_validate(row) for row in json.loads(path.read_text())]
+
+
 @pytest.fixture
 def sources(fixture_raw_dir, chart_week6):
     return Sources(
@@ -93,7 +100,7 @@ def sources(fixture_raw_dir, chart_week6):
         fetch_nflverse=_no_network,
         fetch_history_week=_no_history_fetch,
         read_chart=lambda repo, season_start, week, lines, **_: chart_week6,
-        clock=lambda: NOW, client=CLIENT,
+        clock=lambda: NOW, client=CLIENT, fetch_trending=_recorded_trending,
     )
 
 

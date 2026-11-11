@@ -21,13 +21,14 @@ from league.models import (
 )
 from league.numbers import round_half_up
 from league.parse import player_name
+from league.projection import next_week, rest_of_season
 from league.provider.raw import RawWeek
 from league.ranks import OUT_STATUSES, in_pool
 from league.slow_sources import SlowSources
 from waiver.buckets import BucketInputs, sneaky_and_stashes
 from waiver.drops import drop_candidates
 from waiver.price import budget_left, price_players
-from waiver.projection import next_week, projections_ahead, rest_of_season
+from waiver.projection import projections_ahead
 from waiver.rank_score import rank_scores
 from waiver.tunables import BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, USAGE_WEEKS
 

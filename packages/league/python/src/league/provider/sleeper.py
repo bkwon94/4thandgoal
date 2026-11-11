@@ -20,6 +20,7 @@ from league.provider.raw import (
     RawPastWeek,
     RawState,
     RawTransaction,
+    RawTrending,
     RawWeek,
 )
 
@@ -123,6 +124,12 @@ def fetch_players(players_cache: Path, transport: httpx.BaseTransport | None = N
     """The players file, from the cache when it is less than a day old, else from Sleeper."""
     with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
         return _players(client, players_cache)
+
+
+def fetch_trending(transport: httpx.BaseTransport | None = None) -> list[RawTrending]:
+    """The top adds across all Sleeper leagues in the last day, as the weekly fetch saves them. A failure gives []."""
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
+        return [RawTrending.model_validate(row) for row in _trending(client)]
 
 
 def fetch_news(player_id: str, transport: httpx.BaseTransport | None = None) -> list[dict]:
