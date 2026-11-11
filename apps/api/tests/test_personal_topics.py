@@ -32,6 +32,8 @@ BO_GIRDS = 6
 INNER_NAMES = ("jev", "advisor", "finder", "rival", "brian")
 # The real waiver file of the latest published week of cpc.
 PUBLISHED_WAIVER = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "published" / "2026" / "week-08" / "waiver.json"
+# The real waiver file of cpc week 9. Its add buckets hold players with a rest of season projection of 0.
+WEEK_9_WAIVER = PUBLISHED_WAIVER.parents[1] / "week-09" / "waiver.json"
 
 
 class Checks:
@@ -220,11 +222,16 @@ def test_how_you_stack_up_shows_the_four_parts_of_the_roster_grade_with_their_ra
                                                               for row in block["rows"]]
 
 
-def _publish_waiver(settings) -> dict:
+def _publish_waiver(settings, source: Path = PUBLISHED_WAIVER) -> dict:
     folder = settings.repo / "published" / "2026" / "week-06"
     folder.mkdir(parents=True)
-    shutil.copy(PUBLISHED_WAIVER, folder / "waiver.json")
-    return json.loads(PUBLISHED_WAIVER.read_text())
+    shutil.copy(source, folder / "waiver.json")
+    return json.loads(source.read_text())
+
+
+def _prompt(messages: list[ModelMessage]) -> str:
+    return next(part.content for m in messages if isinstance(m, ModelRequest) for part in m.parts
+                if isinstance(part, UserPromptPart) and isinstance(part.content, str))
 
 
 def test_waiver_targets_read_the_published_waiver_list_and_drop_each_rostered_player(settings, sources,
@@ -243,6 +250,32 @@ def test_waiver_targets_read_the_published_waiver_list_and_drop_each_rostered_pl
     assert len(listed) < len(on_board) or not (set(on_board.values()) & rostered)
     assert [row["label"] for row in block["rows"]] == listed[:len(block["rows"])]
     assert set(facts) == {"team", "teams_in_league", "week", "slot_ranks", "starters", "waiver_list"}
+
+
+def test_waiver_targets_drop_each_player_with_no_rest_of_season_projection(settings, sources):
+    board = _publish_waiver(settings, WEEK_9_WAIVER)
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    _ask(api, "waiver_targets")
+    listed = {player["name"] for player in _facts(writer.requests[0])["waiver_list"]}
+    zero = {player["name"] for key, bucket in board["buckets"].items() if key != "drops" for player in bucket
+            if not player.get("ros_projection")}
+    assert zero, "the week 9 file holds players with a rest of season projection of 0"
+    assert listed and not listed & zero
+
+
+def test_waiver_targets_put_the_trending_bucket_first_and_give_no_bid(settings, sources):
+    board = _publish_waiver(settings, WEEK_9_WAIVER)
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    block = _block(_chunks(_ask(api, "waiver_targets")))
+    listed = _facts(writer.requests[0])["waiver_list"]
+    buckets = [player["bucket"] for player in listed]
+    trending = sum(1 for bucket in buckets if bucket == "trending")
+    assert board["buckets"]["trending"] and buckets[:trending] == ["trending"] * trending
+    assert all("bid" not in player for player in listed)
+    assert all("$" not in row["value"] for row in block["rows"])
+    assert "Quote no FAAB bid" in _prompt(writer.requests[0])
 
 
 def test_waiver_targets_with_no_published_waiver_list_say_so_in_the_block(settings, sources):

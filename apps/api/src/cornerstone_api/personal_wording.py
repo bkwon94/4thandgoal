@@ -27,8 +27,9 @@ TOPIC_ASKS = {
     "stack_up": "Say how the roster stacks up against the league: its grade, its best and its worst part, and its "
                 "best and its worst position.",
     "waiver_targets": "Name the players of `waiver_list` that fit the weak spots of the team, and say why each one "
-                      "fits. If `waiver_list` is empty, say that the waiver list of this week is not out, and name the "
-                      "positions to look at.",
+                      "fits. A player in the `trending` bucket is one that many Sleeper leagues add now, so lean on "
+                      "those players first. Quote no FAAB bid. If `waiver_list` is empty, say that the waiver list of "
+                      "this week is not out, and name the positions to look at.",
 }
 
 TOPIC_NAMES = {"weak_spots": "Weak spots", "stack_up": "How you stack up", "waiver_targets": "Waiver targets"}
