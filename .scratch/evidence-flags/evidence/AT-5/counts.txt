@@ -1,0 +1,28 @@
+# The script, counts.py:
+"""Count the EVIDENCE.md entries without `Files: none`, and the FLAGS.md entries.
+Usage: python3 counts.py <feature folder>."""
+import re
+import sys
+from pathlib import Path
+
+folder = Path(sys.argv[1])
+evidence = (folder / "EVIDENCE.md").read_text()
+entries = re.split(r"^## (?=AT-\d+)", evidence, flags=re.M)[1:]
+with_files = [e for e in entries if not re.search(r"^Files: none", e, flags=re.M)]
+none = [e.split(":", 1)[0] for e in entries if re.search(r"^Files: none", e, flags=re.M)]
+retired = [e.split("\n", 1)[0] for e in entries if "Retired" in e.split("\n", 1)[0]]
+flags = re.findall(r"^## AT-\d+, question \(\w\)", (folder / "FLAGS.md").read_text(), flags=re.M)
+print(f"EVIDENCE.md entries: {len(entries)}")
+print(f"entries with Files: none: {len(none)} {none}")
+print(f"entries with Retired in the title: {len(retired)} {retired}")
+print(f"entries that do not say Files: none: {len(with_files)}")
+print(f"FLAGS.md entries: {len(flags)} {flags}")
+
+# Its output:
+$ python3 -I counts.py "$T/.scratch/hero-slots"
+EVIDENCE.md entries: 45
+entries with Files: none: 4 ['AT-19', 'AT-20', 'AT-21', 'AT-22']
+entries with Retired in the title: 4 ['AT-19: Retired: The rankings scene', 'AT-20: Retired: The analyzer drift', 'AT-21: Retired: The analyzer settle', 'AT-22: Retired: The midseason scene']
+entries that do not say Files: none: 41
+FLAGS.md entries: 2 ['## AT-23, question (b)', '## AT-27, question (b)']
+exit: 0

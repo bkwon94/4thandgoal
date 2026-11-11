@@ -1,0 +1,8 @@
+$ rg -n 'in_flow' apps/pipeline/src/cornerstone/evidence_questions.py
+31:    in_flow: bool
+77:FACTS = Question(key="a", name="the facts", kind="fact", cut=0.7, in_flow=True, nouls=_fact_nouls,
+129:MOTION = Question(key="b", name="motion", kind="motion", cut=0.7, in_flow=True, nouls=_motion_nouls,
+166:CUT_TEXT = Question(key="c", name="cut-off text", kind="cut-text", cut=0.9, in_flow=False, nouls=_cut_text_nouls,
+221:OBSERVATION = Question(key="d", name="the Observation", kind="observation", cut=0.7, in_flow=True,
+228:def in_flow() -> tuple[Question, ...]:
+230:    return tuple(question for question in QUESTIONS if question.in_flow)

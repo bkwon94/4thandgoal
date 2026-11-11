@@ -1,0 +1,13 @@
+$ uv run --exact --package cornerstone pytest apps/pipeline/tests/test_evidence_flags.py -v -k test_a_state_over_32_mib_sends_the_shots_that_fit_in_the_order_of_files_and_logs_the_cut
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/aaecc628-e399-4c35-b1c5-763662abb3bc/scratchpad/evidence-flags-ev/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/aaecc628-e399-4c35-b1c5-763662abb3bc/scratchpad/evidence-flags-ev/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 18 items / 17 deselected / 1 selected
+
+apps/pipeline/tests/test_evidence_flags.py::test_a_state_over_32_mib_sends_the_shots_that_fit_in_the_order_of_files_and_logs_the_cut PASSED [100%]
+
+======================= 1 passed, 17 deselected in 2.15s =======================
+exit: 0

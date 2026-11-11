@@ -25,6 +25,16 @@ class NoulQuestion:
 
 
 @dataclass(frozen=True)
+class JevImage:
+    """A PNG image that a state holds, as bytes.
+
+    The port owns this type, so a caller never imports the SDK. The API takes 280 to 1568 px per side and never
+    resizes, so the caller cuts or scales a shot first.
+    """
+    png: bytes
+
+
+@dataclass(frozen=True)
 class JevResponse:
     """The answers of one request: the model id, the probability of yes by question key, and the input tokens."""
     model: str

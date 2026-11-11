@@ -1,0 +1,11 @@
+$ test -e "$T/.scratch/easter-eggs/FLAGS.md" && echo exists || echo absent
+absent
+$ /bin/ls "$T/.scratch/easter-eggs"
+ACCEPTANCE.md
+decisions
+evidence
+EVIDENCE.md
+issues
+MAP.md
+PRD.md
+VERDICTS.md

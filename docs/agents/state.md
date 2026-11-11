@@ -17,6 +17,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `clients` | both | 01 the root workspaces and the API app | none | |
 | `easter-eggs` | both | 01 one egg from the drop to the board | none | |
 | `egg-polish` | site | 01 The crack starts at the tap point | none | must merge before the first egg drop on Tuesday, 2026-11-10 |
+| `evidence-flags` | pipeline | 01 The Jev port carries an image | none | |
 | `fast-cycle` | both | 07 the midseason tests share one build | PR #13 | `fast-cycle` merges after PR #13 |
 | `faster-evidence` | both | 01 the rate limit setting and make api-evidence | none | |
 | `jev` | pipeline | 01 the weekly build saves one Jev check per blurb | none | |
