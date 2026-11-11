@@ -2188,7 +2188,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_24():
+def test_the_document_version_is_25():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -2208,7 +2208,9 @@ def test_the_document_version_is_24():
     # A player who cannot play now fills no slot of the Finder lineup, so no list stored under the old fill serves.
     # The finder key holds the anchor of a search around one player, so the key changes shape.
     # The finder key holds the limit of the manager, so the key changes shape again.
-    assert cache_module.DOCUMENT_VERSION == 24
+    # The pick sheet holds the lineup now of the asker, and an anchored search skips the partner filter, so no list
+    # stored before either serves.
+    assert cache_module.DOCUMENT_VERSION == 25
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

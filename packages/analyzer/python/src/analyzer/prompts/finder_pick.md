@@ -58,6 +58,10 @@ in a certain direction of what they should do on a trade."
   whose value fact says he is not on the chart stays in the trade: judge him on his own facts.
 - A fact whose ID ends with .nfl_team gives the offense of the NFL team of a player. A player on a bad
   offense is not a safe start, and a player on a good one gets more chances.
+- A fact whose ID ends with .now gives the weak starting slots of the asker in the trade week, of
+  the players who can play, and each starter who cannot play now with his return. The roster fit
+  and the standing facts read the season ahead, with a player due back at his projection. Weigh
+  both: the points now and the points after his return.
 - A fact whose ID starts with JEV. is a quick yes or no read from a small model. Weigh it, but you
   make the call.
 - A fact whose ID starts with NEWS. is a news report, not a sure fact. A Bullet that cites it names
