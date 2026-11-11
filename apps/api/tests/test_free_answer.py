@@ -21,12 +21,13 @@ from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.app import create_app
 from cornerstone_api.ask import FREE_ROUTE_SECONDS, FreeRoutes
 from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt
+from cornerstone_api.personal_facts import PART_NAMES, live_grades
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
 from league.history import load_saved_weeks
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
-from league.models import History
+from league.models import ChartValues, History
 from league.provider.sleeper import load_raw
 from league.standings_table import season_records
 
@@ -48,6 +49,8 @@ ROUTES = {
                        "close": ["last_matchup", "power_rankings"]},
     "how's Bo Girds doing": {"fits_topic": 0.6, "data_can_answer": 0.9, "about_league": 0.99, "names_team": 1.0,
                              "topic": "your_season", "team": "bo_girds"},
+    "who has the best roster": {"fits_topic": 0.43, "data_can_answer": 0.93, "about_league": 1.0, "topic": "stack_up",
+                                "close": ["power_rankings", "your_season"]},
     "who am i playing sunday": {"fits_topic": 0.94, "data_can_answer": 0.92, "about_league": 0.99,
                                 "topic": "next_matchup"},
 }
@@ -93,14 +96,16 @@ def repo(tmp_path, fixture_history_root, fixture_nflverse_dir):
     return tmp_path
 
 
-def _api(repo: Path, raw_dir: Path, jev: FakeJev, model: FunctionModel) -> TestClient:
+def _api(repo: Path, raw_dir: Path, jev: FakeJev, model: FunctionModel, chart: ChartValues | None = None) -> TestClient:
+    """The test app. With `chart`, the live snapshot of the roster grades reads it, and the trending list is empty."""
     settings = Settings(passphrases={"cpc": PASSPHRASE}, repo=repo, result_cache_dir=repo / "results",
                         commissioner_keys={"cpc": "commissioner-test"}, ask_dir=repo / "ask",
                         rate_limit_per_minute=600)
     client = cpc_client(at=repo, models=VALUE_MODELS)
     sources = Sources(client, fetch_sleeper=lambda league_id: (load_raw(raw_dir), NOW),
-                      fetch_nflverse=_no_network, fetch_history_week=_no_network, read_chart=_no_network,
-                      clock=lambda: NOW)
+                      fetch_nflverse=_no_network, fetch_history_week=_no_network,
+                      read_chart=_no_network if chart is None else lambda *args, **kwargs: chart,
+                      fetch_trending=list, clock=lambda: NOW)
     app = create_app(settings, [client], sources={"cpc": sources}, jev=jev)
     app.state.askers["cpc"].clock = lambda: NOW
     app.state.free_model = model
@@ -472,6 +477,38 @@ def test_a_kept_free_route_ends_after_its_time_limit(repo, fixture_raw_dir):
     clock[0] = FREE_ROUTE_SECONDS
     assert _free(api, "week 1 results").status_code == 409
     assert script.requests == []
+
+
+def _best_roster(result: dict, prompts: int) -> str:
+    top = result["teams"][0]
+    return f"{top['team']} has the best roster of the league, with grade {top['grade']}."
+
+
+def test_the_best_roster_reads_the_grade_of_every_team_in_one_call_best_first(repo, fixture_raw_dir, chart_week6):
+    # H13: "who has the best roster" graded only Bo Girds. One call now reads the roster grade of all 12 teams, from
+    # the live grade of the managers page that stack_up reads, best first.
+    checks = Checks([True])
+    script = Script("roster_grades", {}, _best_roster)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=_choice), script.model(), chart_week6)
+    chunks = _chunks(_ask(api, "who has the best roster"))
+    [output] = [c["output"] for c in chunks if c["type"] == "tool-output-available"]
+    grades, _ = live_grades(api.app.state.sources["cpc"].snapshot(2026))
+    teams = api.app.state.askers["cpc"].rosters()
+    rows = output["teams"]
+    assert [row["grade_rank"] for row in rows] == list(range(1, 13))
+    assert {row["team"] for row in rows} == set(teams.values())
+    by_name = {name: rid for rid, name in teams.items()}
+    for row in rows:
+        grade = grades[by_name[row["team"]]]
+        assert row["grade"] == grade.letter
+        assert [(part["part"], part["rank"]) for part in row["parts"]] == [
+            (PART_NAMES[part.key], part.rank) for part in grade.parts]
+    # The letters run best first, so the first team holds the best letter of the league.
+    assert [row["grade"] for row in rows] == sorted(row["grade"] for row in rows)
+    assert _text(chunks) == f"{rows[0]['team']} has the best roster of the league, with grade {rows[0]['grade']}."
+    # The meaning of each field rides in the result, so the check reads it beside the numbers.
+    assert set(output["what_each_field_means"]) == {"grade", "grade_rank", "parts"}
+    assert checks.seen[0]["tool_results"]["roster_grades"] == output
 
 
 def test_the_instructions_ask_for_facts_only_with_no_advice_rating_or_opinion():

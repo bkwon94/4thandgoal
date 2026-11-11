@@ -28,9 +28,13 @@ from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Rout
 from cornerstone_api.chat_turns import Turn, Turns, turn_messages, turns_instructions
 from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data, kept_text
 from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt, run_instructions
+from cornerstone_api.personal_facts import _ahead
+from cornerstone_api.personal_topics import LiveCache, _load
 from facts.writer import route_model
 from league.live import fetch_live_week
 from league.paths import history_root
+from league.season_inputs import SeasonInputs
+from managers.grade import roster_places
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +57,7 @@ READERS: dict[str, Callable[..., dict]] = {
     "season_moves": free_tools.season_moves,
     "team_roster": free_tools.team_roster,
     "player_log": free_tools.player_log,
+    "roster_grades": free_tools.roster_grades,
 }
 # The topic of the two rows of a kept free answer in the AnswerStore: the reads of the question, and the answer.
 READS_TOPIC = "free_reads"
@@ -123,6 +128,13 @@ def season_moves(ctx: RunContext[FreeDeps]) -> dict:
 def team_roster(ctx: RunContext[FreeDeps], team: str) -> dict:
     """The players on one team of the league now, with each player's fantasy points this season."""
     return _call(ctx, f"team_roster_{team}", "team_roster", team=team)
+
+
+@AGENT.tool
+def roster_grades(ctx: RunContext[FreeDeps]) -> dict:
+    """The roster grade of every team of the league now, best first: the letter, the place of the roster in the
+    league, and the rank of each of the four parts of the grade."""
+    return _call(ctx, "roster_grades", "roster_grades")
 
 
 @AGENT.tool
@@ -223,18 +235,29 @@ async def answer_stream(asker: Asker, route: Route, question: str, roster_id: in
     yield DoneChunk()
 
 
-def season_data(served: Any, season: int, week: int, teams: dict[int, str]) -> free_tools.SeasonData:
-    """The data of one answer for the client of `served`: the saved weeks 1 to `week`, and the live Sleeper fetch."""
+def season_data(served: Any, season: int, week: int, teams: dict[int, str],
+                live: LiveCache) -> free_tools.SeasonData:
+    """The data of one answer for the client of `served`: the saved weeks 1 to `week`, the live Sleeper fetch, and the
+    roster grades of the live league in `live`, the cache that stack_up reads."""
     client = served.client
 
     def fetch_raw():
         raw, _, _ = fetch_live_week(season, client, served.sources.fetch_sleeper)
         return raw
 
+    def fetch_grades() -> free_tools.LeagueGrades:
+        # The free answer reads the same cached live league as stack_up, so both give the same grade of a team. The
+        # loader and the projections ahead come from the personal Topics as they are, so no second loader exists.
+        league = live.get_or_load(season, lambda: _load(served, season, live))
+        snapshot = league.snapshot
+        inputs = SeasonInputs(history=snapshot.stats, snapshot=snapshot, projections_ahead=_ahead(snapshot),
+                              chart=snapshot.chart)
+        return free_tools.LeagueGrades(grades=league.grades, places=roster_places(inputs))
+
     return free_tools.SeasonData(season=season, week=week, teams=teams,
                                  history_root=history_root(client.folder, season),
                                  points_key=client.settings.points_key, median_game=client.settings.median_game,
-                                 fetch_raw=fetch_raw)
+                                 fetch_raw=fetch_raw, fetch_grades=fetch_grades)
 
 
 @router.post("/ask/free")
@@ -251,7 +274,8 @@ async def free(body: FreeRequest, asker: ClientAsker, served: ServedClient,
     if route is None:
         logger.info("A free answer had no free route from the ask route, so it makes no Claude call")
         raise HTTPException(status_code=409, detail="This question has no free answer. Ask again.")
-    deps = FreeDeps(data=season_data(served, asker.season, body.week, rosters))
+    deps = FreeDeps(data=season_data(served, asker.season, body.week, rosters,
+                                     request.app.state.live[request.path_params["slug"]]))
     instructions = turns_instructions(run_instructions(asker.season, body.week, rosters[body.roster_id], route.team),
                                       body.turns)
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]

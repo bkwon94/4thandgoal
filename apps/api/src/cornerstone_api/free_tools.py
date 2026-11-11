@@ -1,6 +1,6 @@
 """
-The data tools of a free answer: the standings, the results and the moves of any week, any roster, and the game log
-of any player, over the saved weeks of this season. Each tool gives plain JSON with names, never a raw id.
+The data tools of a free answer: the standings, the results and the moves of any week, any roster, the game log of any
+player, and the roster grade of each team. Each tool gives plain JSON with names, never a raw id.
 """
 import re
 from collections import defaultdict
@@ -10,12 +10,14 @@ from decimal import Decimal
 from functools import cached_property
 from pathlib import Path
 
+from cornerstone_api.personal_facts import PART_NAMES
 from league.history import load_saved_weeks
 from league.models import History, PastWeek
 from league.numbers import r2
 from league.parse import player_name
 from league.provider.raw import RawWeek
 from league.standings_table import season_records, standings_order, week_median
+from managers.grade import ManagerGrade
 
 # The stat keys of a game log line, by the plain name that the tool shows. A key missing from a line is a zero.
 GAME_STATS = {
@@ -27,6 +29,26 @@ GAME_STATS = {
 PLAYER_MATCHES = 5
 # A query word, such as "bijan" of "Bijan Robinson".
 WORD = re.compile(r"[a-z0-9']+")
+# What each field of the roster grades means. The meanings ride in the tool result, so Claude and the check of each
+# sentence read the same meaning beside the same numbers. A meaning only in the instructions never reaches the check.
+GRADE_MEANINGS = {
+    "grade": "The roster grade letter of the team, the same grade as the managers page. A is the best letter, then B, "
+             "C, and D. More than one team can hold the same letter.",
+    "grade_rank": "The place of the roster in the league by the score behind its letter: 1 is the best roster of the "
+                  "league and 12 is the weakest. No two teams share a place.",
+    "parts": "The four parts of the roster grade, each with the rank of the team on that part, from 1, the best of "
+             "the league, to 12. Projection Ahead reads the starters by the projections to the end of the regular "
+             "season. Season Production reads the best lineup by the points per game so far. Trade Value reads the "
+             "market value of the whole roster. Depth And Holes reads the spare starters and the empty starter slots.",
+}
+
+
+@dataclass(frozen=True)
+class LeagueGrades:
+    """The roster grade of each roster now, and its place in the league by the score of the grade, by roster id."""
+
+    grades: dict[int, ManagerGrade]
+    places: dict[int, int]
 
 
 @dataclass
@@ -44,6 +66,9 @@ class SeasonData:
     points_key: str
     median_game: bool
     fetch_raw: Callable[[], RawWeek]
+    # The live roster grades, as stack_up reads them. They load only when a tool reads them, because the live league
+    # costs a snapshot load.
+    fetch_grades: Callable[[], LeagueGrades] | None = None
     _raw: RawWeek | None = field(default=None, init=False, repr=False)
 
     @cached_property
@@ -229,3 +254,23 @@ def player_log(data: SeasonData, player: str) -> dict:
         weeks.append(row)
     return {"player": data.name(pid), "position": entry.get("position"), "nfl_team": entry.get("team"),
             "season_points": _season_points(data, pid), "weeks": weeks}
+
+
+def roster_grades(data: SeasonData) -> dict:
+    """The roster grade of each team now, best first: the letter, the place in the league, and the rank of each part,
+    with the meaning of each field."""
+    if data.fetch_grades is None:
+        return {"error": "The roster grades are not available."}
+    try:
+        league = data.fetch_grades()
+    except ValueError:
+        return {"error": "The roster grades did not load."}
+    order = sorted(league.places, key=lambda rid: league.places[rid])
+    return {
+        "what_each_field_means": GRADE_MEANINGS,
+        "teams": [
+            {"grade_rank": league.places[rid], "team": _team(data, rid), "grade": league.grades[rid].letter,
+             "parts": [{"part": PART_NAMES[part.key], "rank": part.rank} for part in league.grades[rid].parts]}
+            for rid in order
+        ],
+    }
