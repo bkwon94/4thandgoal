@@ -1,6 +1,6 @@
 """
-The free answer of the ask box: Claude Sonnet 5.5 reads this season's data with at most 4 tool calls, the text streams
-through VercelAIAdapter to useChat, and Jev checks each sentence against the tool results after the last word.
+The free answer of the ask box: Claude Sonnet 5.5 reads this season's data with at most 4 tool calls, Jev checks each
+sentence against the tool results after the last word, and only a checked text streams through VercelAIAdapter to useChat.
 """
 import hashlib
 import json
@@ -189,7 +189,7 @@ async def kept_stream(route: Route, teams: dict[int, str], text: str) -> AsyncIt
 async def answer_stream(asker: Asker, route: Route, question: str, roster_id: int, deps: FreeDeps,
                         instructions: str, model: Model | None = None,
                         store: AnswerStore | None = None) -> AsyncIterator[BaseChunk]:
-    """The whole stream of one free answer: the first text with its steps, the check, at most one rewrite, and the
+    """The whole stream of one free answer: the steps, the check, at most one rewrite, the text that passed, and the
     Suggestion of a half fit or the honest miss of a second failed check.
 
     The Suggestion names the roster of the team that the question names, or None for Your team. A test gives `model`,

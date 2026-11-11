@@ -114,7 +114,9 @@ def test_a_tap_on_weak_spots_streams_the_data_block_before_the_text_then_the_che
     assert _text(chunks) == f"Your weakest spot is {worst['label']}, which ranks {worst['value'].replace(' of ', ' of ')}."
     checks = [(i, c["data"]["state"]) for i, c in enumerate(chunks) if c["type"] == "data-check"]
     assert [state for _, state in checks] == ["checking", "checked"]
-    assert checks[0][0] > max(i for i, kind in enumerate(kinds) if kind == "text-delta")
+    # The text waits for its check, then comes whole before "checked" (H10).
+    texts = [i for i, kind in enumerate(kinds) if kind.startswith("text-")]
+    assert checks[0][0] < min(texts) and max(texts) < checks[1][0]
     assert kinds[-1] == "finish"
     assert writer.calls == 1
 
@@ -166,7 +168,10 @@ def test_one_failed_claim_fades_the_text_and_streams_a_second_checked_text(setti
     states = [c["data"]["state"] for c in chunks if c["type"] == "data-check"]
     assert states == ["checking", "fixing", "checking", "checked"]
     kinds = [c["type"] for c in chunks]
-    assert kinds.index("data-fix") < max(i for i, kind in enumerate(kinds) if kind == "text-delta")
+    # The failed first text never leaves the API: each text part comes after the fix part, before "checked" (H10).
+    texts = [i for i, kind in enumerate(kinds) if kind.startswith("text-")]
+    assert kinds.index("data-fix") < min(texts)
+    assert kinds.count("text-start") == 1
     assert writer.calls == 2
     # The rewrite reads the failed sentence, so Claude knows what to fix.
     rewrite = [part.content for part in writer.requests[1][-1].parts if isinstance(part, UserPromptPart)]
@@ -181,6 +186,7 @@ def test_a_second_failed_claim_ends_with_the_honest_miss_and_keeps_nothing(setti
     api = _api(settings, sources, FakeJev(answer=Checks([False, False, False]).answer), writer)
     chunks = _chunks(_ask(api, "weak_spots"))
     assert [c["data"]["state"] for c in chunks if c["type"] == "data-check"][-1] == "failed"
+    assert not any(c["type"].startswith("text-") for c in chunks)
     [miss] = [c["data"] for c in chunks if c["type"] == "data-miss"]
     assert miss["closest"] == ["stack_up", "waiver_targets", "trade_ideas"]
     _ask(api, "weak_spots")

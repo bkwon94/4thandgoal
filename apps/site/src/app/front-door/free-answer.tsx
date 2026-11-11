@@ -205,8 +205,8 @@ function CheckMark({ state, live }: { state: CheckState; live: boolean }) {
   );
 }
 
-/* The body of a free answer: the steps, the text, and the check. A failed check fades the first text out, and the
-   rewrite streams under the fixing line. */
+/* The body of a free answer: the steps, the text, and the check. The text shows only with "Checked", and its words
+   sweep in from a blur. A failed check shows the fixing line, and the checked rewrite takes its place. */
 export function FreeBody({ view, live }: { view: FreeView; live: boolean }) {
   const off = useMotionOff();
   const fixing = view.second !== null;
@@ -315,7 +315,7 @@ export const FreeAnswerLive = forwardRef<
     <article ref={ref} aria-label={question} aria-busy={busy} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
       <QuestionBubble question={question} />
       <Surface>
-        {view.steps.length === 0 && !view.first && (
+        {view.steps.length === 0 && !view.first && !view.check && (
           <p className="m-0 font-mono text-meta leading-tight">
             <Shimmer>Reading the league data…</Shimmer>
           </p>
