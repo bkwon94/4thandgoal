@@ -10,7 +10,7 @@ import { ArrowRightIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import type { TopicRow } from "@/lib/data/topics-schema";
-import { FAST, GLIDE, SLOW, VERY_SLOW, fadeIn, riseIn } from "./motion";
+import { SLOW, VERY_SLOW, bubbleIn, fadeIn, riseIn } from "./motion";
 
 export const AnswerCard = forwardRef<
   HTMLElement,
@@ -19,7 +19,7 @@ export const AnswerCard = forwardRef<
     const off = useMotionOff();
     // A tapped Suggestion shares its id with the question, so the chip morphs into the question on the shared layout
     // spring. The question then only fades, because the morph is its move. With motion off it only fades in.
-    const shared = morph && !off ? { layoutId: morph, initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { layout: GLIDE, opacity: fadeIn(FAST) } } : riseIn(off);
+    const shared = bubbleIn(off, morph);
     return (
       <article ref={ref} aria-label={name} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
         {/* The tap reads as the manager's question, on the right as in a chat. */}

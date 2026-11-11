@@ -26,6 +26,9 @@ type Shared = {
   name: string;
   href: string | null;
   avatars: Record<number, string | null>;
+  // The id that a tapped Suggestion shares with the question, so the chip morphs into it. A tap always opens the live
+  // card, so only the live card uses it.
+  morph?: string;
 };
 
 /* The card of one personal Answer: the data block, then the text and the check, then the link once the text is checked.
@@ -114,7 +117,7 @@ export const PersonalAnswerLive = forwardRef<
     onCap: (cap: PersonalCap) => void;
     onError: () => void;
   }
->(function PersonalAnswerLive({ name, href, avatars, target, passphrase, body, onDone, onMiss, onCap, onError }, ref) {
+>(function PersonalAnswerLive({ name, href, avatars, morph, target, passphrase, body, onDone, onMiss, onCap, onError }, ref) {
   // The API reads only the body, so the prompt of Claude comes from the facts and the typed question, if any.
   const { view, busy, kept } = useAnswerStream({
     target,
@@ -143,7 +146,7 @@ export const PersonalAnswerLive = forwardRef<
   });
   return (
     <article ref={ref} aria-label={name} aria-busy={busy} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
-      <QuestionBubble question={name} />
+      <QuestionBubble question={name} morph={morph} />
       {view.block ? (
         // A kept Answer of the API shows whole at once, with no stream of its words (AT-8).
         <PersonalBody block={view.block} view={view} live={!kept} href={href} avatars={avatars} />

@@ -21,6 +21,13 @@ export const MORE_SPRING: Transition = { type: "spring", bounce: 0.15, duration:
 /* The layoutId that a Suggestion chip and the question of its Answer share, so the chip morphs into the question. */
 export const morphId = (key: string) => `suggestion-${key}`;
 
+/* The props of a question bubble of the Thread. A tapped Suggestion shares its id `morph` with the question, so the chip
+   morphs into the question on the shared layout spring, and the question then only fades, because the morph is its
+   move. League, personal, and trade Topics all morph here. With motion off, or with no chip, the question rises in. */
+export function bubbleIn(off: boolean, morph?: string) {
+  return morph && !off ? { layoutId: morph, initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { layout: GLIDE, opacity: fadeIn(FAST) } } : riseIn(off);
+}
+
 /* The halo of the send button, from 0 for an empty field to 1 at 24 letters: about one short question. */
 export const haloOf = (question: string) => Math.min(1, question.trim().length / 24);
 
