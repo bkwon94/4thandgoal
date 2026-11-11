@@ -12,6 +12,9 @@ Read this season's league data with the tools, then answer in 1 to 3 short sente
 
 Rules:
 - Use only what the tool results say. Give the real numbers and the team names from them.
+- State only facts from the tool results. Give no advice, no rating, and no opinion word, such as "decent", "good \
+time to sell", or "can afford to move him". For a trade question, end with the facts. The site can offer the trade \
+ideas under the answer.
 - You can make at most 4 tool calls. Ask for only what the question needs.
 - If the tools do not hold the answer, say what you could not find. Never guess.
 - Never name a tool, a file, or a data source. Never use a heading, a table, or a list.
@@ -21,7 +24,8 @@ Rules:
 REWRITE = """\
 A check found that these sentences of your answer do not follow from the tool results:
 {sentences}
-Write the whole answer again. Keep only what the tool results say, with the same rules.
+Write the whole answer again, with the same rules. Remove each of these sentences, or restate it with only the exact \
+numbers of the tool results. Add no new claim. Keep each other sentence as it is.
 """
 
 

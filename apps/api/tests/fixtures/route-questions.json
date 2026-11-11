@@ -274,6 +274,18 @@
       "text": "league median average for season",
       "source": "real",
       "expect": "free_answer"
+    },
+    {
+      "id": 44,
+      "text": "i want to trade parker washington",
+      "source": "real",
+      "expect": "topic:trade_ideas"
+    },
+    {
+      "id": 45,
+      "text": "looking to move Zay Flowers",
+      "source": "claude",
+      "expect": "topic:trade_ideas"
     }
   ]
 }

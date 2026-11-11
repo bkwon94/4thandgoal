@@ -26,7 +26,8 @@ TOPICS = {
     "weak_spots": "The weak positions of a team's roster: thin depth, holes, and the lowest slot ranks.",
     "sell_high": "Players on a team to sell while their value is high, and players on other teams to buy while their "
                  "value is low.",
-    "trade_ideas": "Trade offers a team could send to other teams, found to fill its weak spots.",
+    "trade_ideas": "Trade offers a team could send to other teams, found to fill its weak spots, or ideas when the "
+                   "manager wants to trade away one named player.",
     "trade_check": "A check of one trade that the manager names: is it fair, and who wins it.",
 }
 
