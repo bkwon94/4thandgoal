@@ -8,10 +8,13 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1.
 
 **Blocked by:** 05
 
-**Status:** in-review
+**Status:** done
 
 - [x] The `facts` package holds the modules of decision 01.
 - [x] The `writer` and `verifier` prompts move into `facts`. The other rule prompts wait in place for the ticket of their package.
 - [x] `tone.md` and `vocabulary.md` are the default voice in `facts`. The client `prompts/` folder overrides only those two files, and CPC keeps its voice.
 - [x] A client with no `prompts/` folder builds with the default voice.
 - [x] The CPC golden diff is empty (AT-1).
+
+## Comments
+- Closed by the merge of PR #3.

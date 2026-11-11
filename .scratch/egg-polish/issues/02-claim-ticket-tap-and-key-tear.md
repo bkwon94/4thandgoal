@@ -8,7 +8,7 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-9, AT-10, and AT-13 to A
 
 **Blocked by:** None. It can start now.
 
-**Status:** in-review
+**Status:** done
 
 - [x] A hunt test reads the ticket with the letter, the egg word, and the team after the three steps.
 - [x] A hunt test taps a locked stub, reads the next missing step on it, and reads that the port got no claim.
@@ -18,3 +18,6 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-9, AT-10, and AT-13 to A
 - [x] A hunt test reads the error of a wrong passphrase and the stub back, then a second tear that claims.
 - [x] A hunt test reads the block on the ticket when the letter fits no egg word of the manager.
 - [x] The hunt test with motion off reads the stamp with no motion.
+
+## Comments
+- Closed by the merge of PR #23.

@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-36.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] Both fonts load with `next/font/local`, `display: "swap"`, and `preload: true`. JetBrains Mono has a Menlo or Courier New fallback face.
 - [x] Each font has its `OFL.txt` beside it.
@@ -16,3 +16,6 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-36.
 - [x] The ban on `next/font` narrows to `next/font/google` and the outside font hosts.
 - [ ] A real build of both clients, the fallback on iOS and Android, the cache headers of the Worker, and the layout shift are measured.
 - [x] The evidence of AT-36 is recorded in `EVIDENCE.md`.
+
+## Comments
+- Closed by the merge of PR #11.

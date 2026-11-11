@@ -8,9 +8,12 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1 and AT-12.
 
 **Blocked by:** 09
 
-**Status:** in-review
+**Status:** done
 
 - [x] The `rankings` package holds the modules of decision 01 and writes `rankings.json`.
 - [x] Its chapter comes through the chapter port.
 - [x] A fixture test with the median off counts one game a week in the standings and the odds, and the power form drops the median weight (AT-12).
 - [x] The CPC golden diff is empty (AT-1).
+
+## Comments
+- Closed by the merge of PR #3.

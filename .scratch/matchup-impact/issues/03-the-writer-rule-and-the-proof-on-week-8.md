@@ -8,7 +8,7 @@ Spec: `.scratch/matchup-impact/PRD.md`. Acceptance tests AT-9, AT-10, AT-11, AT-
 
 **Blocked by:** 01, 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] The writer prompt has the rule. It names the impact fact as the source of an odds number in a matchup blurb, and keeps rule 23 for the other prose blocks.
 - [x] The rule asks for a different shape in each recap, and for the upset in one sentence only.
@@ -18,3 +18,4 @@ Spec: `.scratch/matchup-impact/PRD.md`. Acceptance tests AT-9, AT-10, AT-11, AT-
 - [x] `make check` passes.
 
 ## Comments
+- Closed by the merge of PR #2.

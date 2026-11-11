@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-30 and AT-31.
 
 **Blocked by:** 04
 
-**Status:** in-review
+**Status:** done
 
 - [x] The index shows 12 cards for CPC in standings order.
 - [x] The manager page of To Infinity and Bijan shows the full name at 375 px.
@@ -19,3 +19,4 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-30 and AT-31.
 ## Comments
 
 - 2026-11-05: Brian chose ranks only for story 76. Roster shows the rank of each grade part and no weight, because the managers file has no weight field. A later pipeline spec can publish the weights.
+- Closed by the merge of PR #11.

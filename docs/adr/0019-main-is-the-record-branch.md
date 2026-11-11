@@ -14,6 +14,11 @@ Work lands in this order:
 The squash gives `main` one commit for each spec, so the history reads as a list of features.
 The ticket commits stay in the spec branch until it is deleted.
 
+## The tickets close with the merge
+
+The last commit of the spec branch sets each ticket to `done`, so the squash merge closes the tickets. No extra pull request is needed.
+A separate status pull request adds a step that nobody did, and 95 tickets stayed `in-review`.
+
 ## The `publish` exception
 
 The weekly `publish` must put a new week on `main` with no pull request, because the report ships

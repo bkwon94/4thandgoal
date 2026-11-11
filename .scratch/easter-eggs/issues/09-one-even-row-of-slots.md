@@ -8,8 +8,11 @@ Spec: `.scratch/easter-eggs/PRD.md`. Acceptance tests AT-34, AT-37, and AT-51.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] Each tile of a slot row has the same width, the filled tile too.
 - [x] A visible gap sits between two tiles.
 - [x] The row stays inside the padding of the end card and of each word card of the claim sheet at 340 px and 390 px.
+
+## Comments
+- Closed by the merge of PR #19.

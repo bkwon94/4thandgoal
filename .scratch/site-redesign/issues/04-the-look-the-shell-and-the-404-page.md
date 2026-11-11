@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-7, AT-8, AT-9, AT-10,
 
 **Blocked by:** 01, 02, 03
 
-**Status:** in-review
+**Status:** done
 
 - [x] The dock stays at the bottom at every scroll on a phone, with Home, Week N, Rankings, Managers, and Trade. Each label is 11px or more.
 - [x] The top band stays on screen at every scroll on a desktop, with the pill bar of full labels. The current destination is marked.
@@ -22,3 +22,4 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-7, AT-8, AT-9, AT-10,
 ## Comments
 
 - 2026-11-05: Brian accepts the change to `apps/pipeline/tests/test_client.py` under AT-41. The `layout` key left the shared client model, so two tests that read it changed. No pipeline code changed.
+- Closed by the merge of PR #11.

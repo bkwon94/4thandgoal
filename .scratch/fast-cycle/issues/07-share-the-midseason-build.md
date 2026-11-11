@@ -8,7 +8,7 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-8, AT-23, AT-24, and AT-
 
 **Blocked by:** 01, and the merge of PR #13 into `main`. `fast-cycle` merges `main` first.
 
-**Status:** in-review
+**Status:** done
 
 - [x] PR #13 has the state `MERGED` (AT-26).
 - [x] `make -C apps/pipeline test` passes the same count on `fast-cycle` and on `main`, and takes less time on `fast-cycle` (AT-23).
@@ -18,3 +18,4 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-8, AT-23, AT-24, and AT-
 ## Comments
 
 Blocked on 2026-11-06: the midseason tests live on `midseason-report`, and PR #13 is still open. Build this ticket with the second start of `cpc:implement`, after PR #13 merges and `fast-cycle` merges `main`.
+- Closed by the merge of PR #14.

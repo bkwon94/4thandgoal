@@ -8,9 +8,12 @@ Spec: `.scratch/egg-polish/PRD.md`. Acceptance tests AT-11 and AT-12.
 
 **Blocked by:** 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] A hunt test fires a pointer drag to the full length and reads one claim through the port.
 - [x] A hunt test fires a drag to half the length, releases, and reads no claim and the stub back on the ticket.
 - [x] A hunt test reads more popped holes at a longer drag, from the top hole down.
 - [x] A pointer cancel during a drag springs the stub back and sends nothing.
+
+## Comments
+- Closed by the merge of PR #23.

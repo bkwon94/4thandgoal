@@ -10,7 +10,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-3, AT-4, and AT-28.
 
 **Needs Brian:** manual steps 1, 2, 4, and 5 of the spec, and step 3 for `cpc.4thandgoal.app`. `cpc:implement` stops here and gives Brian the dashboard page, each value, and the check.
 
-**Status:** in-review
+**Status:** done
 
 - [x] One workflow deploys each client to its Worker with `wrangler-action` on each green push to `main`.
 - [x] The GitHub Pages deploy goes away.
@@ -20,3 +20,4 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-3, AT-4, and AT-28.
 
 ## Comments
 - 2026-11-04: The code part merged into `clients`. The boxes of AT-3, AT-4, and AT-28 need the live deploy and manual steps 3 and 4. The evidence stage records them.
+- Closed by the merge of PR #3.

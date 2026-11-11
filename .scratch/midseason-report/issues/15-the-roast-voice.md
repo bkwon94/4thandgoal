@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-40, AT-41, AT-52, 
 
 **Blocked by:** none.
 
-**Status:** in-review
+**Status:** done
 
 - [x] A build of CPC week 8 gives one prose block per chapter, each with 40 words or fewer, and the verifier passes each.
 - [x] No chapter in `midseason.json` has a `roast` field, and the site schema and page agree.
@@ -16,3 +16,6 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-40, AT-41, AT-52, 
 - [x] The config check rejects a `roast` value outside the four levels and names them.
 - [x] A blurb that cites a fact of another chapter passes the verifier and the publish.
 - [x] The prompt holds the four voices, the limits, the unit rule, the count rule, and the P4 Voice samples as examples.
+
+## Comments
+- Closed by the merge of PR #13.

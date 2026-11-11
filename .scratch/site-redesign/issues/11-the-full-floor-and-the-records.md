@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-34, AT-38, and AT-41.
 
 **Blocked by:** 05, 06, 07, 08, 09, 10
 
-**Status:** in-review
+**Status:** done
 
 - [x] The floor passes in CI for both clients, with its time in the log.
 - [x] `GLOSSARY.md` holds the term changes of the spec: Top band, Menu, Sheet, Chapter, Page, Hero, Shell, and Pill bar. Masthead, Menu button, Compact bar, and Black chapter are gone.
@@ -19,3 +19,4 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-34, AT-38, and AT-41.
 ## Comments
 
 - 2026-11-05: The CI check `Check` passed on PR #11 in 13 min 50 s, run https://github.com/bkwon94/4thandgoal/actions/runs/42122278427.
+- Closed by the merge of PR #11.

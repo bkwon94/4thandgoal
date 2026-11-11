@@ -8,7 +8,7 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, and 
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test on a small real folder proves the six file names of a route-only `steps.json`.
 - [x] The same test proves the light shot is light and the dark shot is dark.
@@ -17,3 +17,6 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, and 
 - [x] A test proves a bad verb and a bad key each stop the run with the file and the step named, and no PNG written.
 - [x] A real run on the week 8 page of CPC prints the time of the test and the total.
 - [x] `pnpm check:fast` of the site passes.
+
+## Comments
+- Closed by the merge of PR #12.

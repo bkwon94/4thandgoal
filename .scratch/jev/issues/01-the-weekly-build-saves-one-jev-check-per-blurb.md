@@ -10,7 +10,7 @@ Load the skill `typesafe:typesafe-ai` before you write the adapter or the questi
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The `Jev` port, its adapter, and `FakeJev` exist. `FakeJev` is annotated as the port, and no test patches the port.
 - [x] The league package is the only package that imports `typesafe_sdk`, and the layer rule maps the port to the provider layer.
@@ -19,3 +19,6 @@ Load the skill `typesafe:typesafe-ai` before you write the adapter or the questi
 - [x] A saved `verify.json` of the old shape still loads, and `page-json` on week 8 gives the same `page.json` as `main`.
 - [ ] The real rebuild of 2026 week 8 for cpc writes `sentences` and `jev` for every checked attempt in `verify.json`.
 - [ ] `make check` passes in the pipeline with `TYPESAFE_API_KEY` unset.
+
+## Comments
+- Closed by the merge of PR #24.

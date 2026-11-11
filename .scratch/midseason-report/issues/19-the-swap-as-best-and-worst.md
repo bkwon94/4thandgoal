@@ -8,10 +8,13 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-8, AT-59, and AT-6
 
 **Blocked by:** 18.
 
-**Status:** in-review
+**Status:** done
 
 - [x] `midseason.json` of CPC week 8 gives Bo Girds a best of 14-2 on the schedule of Maye d'force B with U.
 - [x] The luck card shows the worked example of All You Need Is Love: 9 of 11 teams outscored in week 3, and 4.27 wins in all.
 - [x] All You Need Is Love reads "+2.73" with "lucky" in the accent color, and The Blue Tent at −0.09 reads "even".
 - [x] The swap renders as text rows with no grid and no bar, and the word "All-play" shows nowhere on the page.
 - [x] A rule test covers the best and worst schedule with a tie.
+
+## Comments
+- Closed by the merge of PR #13.
