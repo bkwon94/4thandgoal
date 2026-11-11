@@ -1,15 +1,14 @@
-ACCEPTANCE.md: 435e1077d08073c93487a3d2d330d8f8aecec1e7
-EVIDENCE.md: 61ddddf58de206791bb288f8ac3415d947b43545
+ACCEPTANCE.md: 4ea85c7c75d4af18c135ee910ea8fe367fca885c
+EVIDENCE.md: 7899da32b8fc1dbdba91a05f3a0e99ee07ec2d18
 
 Test verdicts
-AT-1: PASS
-AT-2: FAIL Then line "The front door shows the Suggestions of Lil Fridge": both after-reload shots show an empty page with only the header and the dock, with no Suggestions.
+AT-1: FAIL The Then line needs a sheet that lists the 12 teams, but the 768 and 1280 px shots show only 11 rows, with the 12th team cut off, against the Observation.
+AT-2: PASS
 AT-3: PASS
-AT-4: FAIL Then line "3 Suggestion chips show": the closed 375 shots show only 2 chips in view, and the third chip is cut off at each width.
-AT-5: FAIL Then line "The first Suggestion is the week recap": the row files and shots show Power rankings first and Week recap second in both themes.
+AT-4: FAIL The Then line needs each chip with one number, but the row files and shots show facts with more than one number, such as "Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season" and "6th, down 5".
 AT-6: PASS
-AT-7: FAIL Then line "It still shows in More": both after-reload shots and both after-reload-more shots show an empty page with no Suggestions row and no More list.
-AT-8: FAIL Then line "with no stream and no tool step": frame-34.6s shows the step line "Reading the rosters…" after the tap, before the Answer shows.
+AT-7: PASS
+AT-8: FAIL The Then line needs no tool step, but run-weak-spots.txt and frame 31.92 s show the step "Reading the league…" after the tap, before the whole Answer.
 AT-9: PASS
 AT-10: PASS
 AT-11: PASS
@@ -21,13 +20,13 @@ AT-16: PASS
 AT-17: PASS
 AT-18: PASS
 AT-19: PASS
-AT-20: FAIL Then line "A checking mark shows, then turns into checked": no frame of either recording shows "Checking"; the text ends, the card goes blank, then it comes back blurred with "Checked".
-AT-21: FAIL Then line "Fixing a number… shows": no frame of the replay of the FakeJev stream shows "Fixing a number…"; the text area goes blank and the second text shows.
+AT-20: PASS
+AT-21: PASS
 AT-22: PASS
 AT-23: PASS
 AT-24: PASS
 AT-25: PASS
-AT-26: FAIL Then line "each for a weak spot of Lil Fridge": the weak spot fact is "QB ranks 7th of 12", but both offers trade away an RB and add only WRs.
+AT-26: PASS
 AT-27: PASS
 AT-28: PASS
 AT-29: PASS
@@ -45,12 +44,12 @@ AT-40: PASS
 AT-41: PASS
 AT-42: PASS
 AT-43: PASS
-AT-44: FAIL Then line "Each new word shows blurred, then sharp": the frames show the whole text blurred as one block, not word by word, then the card goes blank.
-AT-45: FAIL Then line "uses the fonts of its client": the style files give the same font, spaceGrotesk, for CPC and NorCal, so the files do not show a NorCal font.
-AT-46: FAIL Then line "fade in place, with no glide": the samples show the ask box move from 386 px to 644 px to 668 px with opacity 1 in every sample, so it moves and does not fade.
+AT-44: PASS
+AT-45: PASS
+AT-46: PASS
 AT-47: PASS
-AT-48: FAIL Then line "Home, Week 8, Power Rankings, and Managers, and nothing else": the 375 dock shows "Rankings", and the link files list three extra week links.
-AT-49: FAIL Then line "Each page renders as before the spec": the files hold no shots from before the spec, and the rankings page shows week 9.
+AT-48: PASS
+AT-49: PASS
 AT-50: PASS
 AT-51: PASS
 AT-52: PASS
@@ -59,4 +58,21 @@ AT-54: PASS
 AT-55: PASS
 AT-56: PASS
 AT-57: PASS
-AT-58: FAIL Then line "opens the Trade page with the form": the light shot of the Trade page shows only the hero, with no form.
+AT-58: PASS
+AT-59: PASS
+AT-60: PASS
+AT-61: PASS
+AT-62: PASS
+AT-63: PASS
+AT-64: PASS
+AT-65: PASS
+AT-66: PASS
+AT-67: PASS
+AT-68: PASS
+AT-69: PASS
+AT-70: PASS
+AT-71: PASS
+AT-72: FAIL The Then line needs each total to match the standings data, but standings-points-for.txt shows the week 8 standings at 901.65 for Maye d'force B with U and 885.88 for Teehee, while the Answer shows 900.65 and 885.98.
+AT-73: PASS
+AT-74: PASS
+AT-75: PASS
