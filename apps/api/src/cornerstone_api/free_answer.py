@@ -25,6 +25,7 @@ from analyzer.routes import ServedClient
 from cornerstone_api import free_tools
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Route
+from cornerstone_api.chat_turns import Turn, Turns, turn_messages, turns_instructions
 from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data, kept_text
 from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt, run_instructions
 from facts.writer import route_model
@@ -132,21 +133,26 @@ def player_log(ctx: RunContext[FreeDeps], player: str) -> dict:
 
 
 class FreeRequest(BaseModel):
-    """The body of a free answer, as the route of the ask box. useChat adds its own fields, such as the messages, and
-    the route reads none of them, so a client never writes the prompt of Claude."""
+    """The body of a free answer, as the route of the ask box, with the earlier turns of the Thread. useChat adds its
+    own fields, such as the messages, and the route reads none of them, so a client never writes the prompt of Claude.
+    Each turn is plain text under its cap, and Claude reads it as context only."""
 
     model_config = ConfigDict(extra="ignore")
 
     question: str = Field(min_length=1, max_length=QUESTION_MAX)
     roster_id: int
     week: int = Field(ge=1, le=WEEK_MAX)
+    turns: Turns = Field(default_factory=list)
 
 
-def question_key(question: str, instructions: str) -> str:
+def question_key(question: str, instructions: str, turns: list[Turn] | None = None) -> str:
     """The key of the reads of a question: its text, the run instructions with Your team, the week, and the team that
-    the question names, and the wording and the model that answer it."""
-    body = {"question": question, "run": instructions, "instructions": INSTRUCTIONS, "model": ROUTE.model,
-            "effort": ROUTE.effort}
+    the question names, the wording and the model that answer it, and the earlier turns of the Thread. A question with
+    no turns keeps the key it had with no turns field, and a follow-up never reads the answer of another chat."""
+    body: dict[str, Any] = {"question": question, "run": instructions, "instructions": INSTRUCTIONS,
+                            "model": ROUTE.model, "effort": ROUTE.effort}
+    if turns:
+        body["turns"] = [turn.model_dump() for turn in turns]
     return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
 
 
@@ -188,24 +194,26 @@ async def kept_stream(route: Route, teams: dict[int, str], text: str) -> AsyncIt
 
 async def answer_stream(asker: Asker, route: Route, question: str, roster_id: int, deps: FreeDeps,
                         instructions: str, model: Model | None = None,
-                        store: AnswerStore | None = None) -> AsyncIterator[BaseChunk]:
+                        store: AnswerStore | None = None, turns: list[Turn] | None = None) -> AsyncIterator[BaseChunk]:
     """The whole stream of one free answer: the first text with its steps, the check, at most one rewrite, and the
     Suggestion of a half fit or the honest miss of a second failed check.
 
     The Suggestion names the roster of the team that the question names, or None for Your team. A test gives `model`,
-    and the real app gives None, so the run takes the model of the agent. A checked answer goes to `store`.
+    and the real app gives None, so the run takes the model of the agent. A checked answer goes to `store`. Claude
+    reads the earlier `turns` of the Thread as messages before the question, and the check never reads them.
     """
     named = next((rid for rid, name in deps.data.teams.items() if name == route.team), None)
     your_team = deps.data.teams[roster_id]
     writer = Writer(label="free answer", agent=AGENT, prompt=question, deps=deps, instructions=instructions,
-                    model=model, rewrite=rewrite_prompt, tool_calls=lambda: deps.calls)
+                    model=model, rewrite=rewrite_prompt, tool_calls=lambda: deps.calls,
+                    history=turn_messages(turns or []))
     checker = Checker(question=question, your_team=your_team, results=deps.results, closest=route.closest)
     outcome = Outcome()
     yield StartChunk()
     async for chunk in checked_answer(asker, writer, checker, roster_id, outcome):
         yield chunk
     if outcome.end == "checked" and store is not None:
-        await anyio.to_thread.run_sync(keep, store, question_key(question, instructions), roster_id, deps,
+        await anyio.to_thread.run_sync(keep, store, question_key(question, instructions, turns), roster_id, deps,
                                        outcome.text, asker.clock())
     if outcome.end == "checked" and route.suggestion is not None:
         yield data("suggestion", {"topic": route.suggestion, "team": named})
@@ -244,10 +252,12 @@ async def free(body: FreeRequest, asker: ClientAsker, served: ServedClient,
         logger.info("A free answer had no free route from the ask route, so it makes no Claude call")
         raise HTTPException(status_code=409, detail="This question has no free answer. Ask again.")
     deps = FreeDeps(data=season_data(served, asker.season, body.week, rosters))
-    instructions = run_instructions(asker.season, body.week, rosters[body.roster_id], route.team)
+    instructions = turns_instructions(run_instructions(asker.season, body.week, rosters[body.roster_id], route.team),
+                                      body.turns)
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
     # A kept answer costs nothing, so it comes back before the caps, as a kept personal Answer does.
-    kept = await anyio.to_thread.run_sync(kept_answer, store, question_key(question, instructions), deps.data)
+    kept = await anyio.to_thread.run_sync(kept_answer, store, question_key(question, instructions, body.turns),
+                                          deps.data)
     if kept is not None:
         logger.info("A free answer came from the store, with no Claude call")
         return adapter(AGENT, question).streaming_response(kept_stream(route, rosters, kept["text"]))
@@ -257,5 +267,5 @@ async def free(body: FreeRequest, asker: ClientAsker, served: ServedClient,
         logger.info("A free answer stopped at the %s cap, with no Claude call", hit.cap)
         raise HTTPException(status_code=429, detail={"cap": hit.cap, "line": hit.line})
     stream = answer_stream(asker, route, question, body.roster_id, deps, instructions, request.app.state.free_model,
-                           store)
+                           store, body.turns)
     return adapter(AGENT, question).streaming_response(stream)

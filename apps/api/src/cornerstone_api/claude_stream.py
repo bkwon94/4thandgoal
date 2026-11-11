@@ -131,7 +131,8 @@ def usage_line(label: str, attempts: list[Attempt], end: str, tool_calls: int | 
 class Writer:
     """What one checked answer runs: the label of its log lines, its agent, its first prompt, its tool deps, its
     instructions, its model, and the rewrite prompt of the failed sentences. A test gives `model`, and the real app
-    gives None, so the run takes the model of the agent."""
+    gives None, so the run takes the model of the agent. `history` holds the earlier turns of the Thread as messages,
+    or nothing for a tapped Topic."""
 
     label: str
     agent: Agent[Any, str]
@@ -141,6 +142,7 @@ class Writer:
     model: Model | None
     rewrite: Callable[[list[str]], str]
     tool_calls: Callable[[], int] | None = None
+    history: list[ModelMessage] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -163,7 +165,8 @@ async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_
     cap, because an honest miss and an error do not count. A `roster_id` of None counts toward the league cap only.
     """
     attempts: list[Attempt] = []
-    history: list[ModelMessage] = []
+    # The first run reads the earlier turns of the Thread. The rewrite reads the whole first run, turns and all.
+    history: list[ModelMessage] = list(writer.history)
     prompt = writer.prompt
     for number in (1, 2):
         attempt = Attempt()

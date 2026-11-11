@@ -26,6 +26,7 @@ from cornerstone_api.ask_wording import (
     team_key,
 )
 from cornerstone_api.caps import Caps
+from cornerstone_api.chat_turns import Turn, Turns, with_turns
 from cornerstone_api.miss_log import MissLog
 from league.jev_port import Jev, JevError, JevResponse
 
@@ -97,12 +98,15 @@ def _ranked(probabilities: dict[str, float]) -> list[str]:
     return sorted(probabilities, key=lambda key: -probabilities[key])
 
 
-def route_question(jev: Jev, question: str, teams: list[str], season: int, week: int) -> Route:
+def route_question(jev: Jev, question: str, teams: list[str], season: int, week: int,
+                   turns: list[Turn] | None = None) -> Route:
     """One Jev request for `question` over the team names `teams` in week `week` of `season`, and its route.
 
+    The earlier `turns` of the Thread go in the state, so a follow-up routes like the whole question would.
     A failed request raises JevError.
     """
-    answers = jev.ask(route_state(question, teams, season, week), route_questions(teams))
+    state = with_turns(route_state(question, teams, season, week), turns or [])
+    answers = jev.ask(state, route_questions(teams))
     kind, topic, suggestion = decide(answers)
     team = None
     if kind != "refuse" and _level(answers.nouls[NAMES_TEAM]) == "yes":
@@ -168,12 +172,14 @@ ClientAsker = Annotated[Asker, Depends(client_asker)]
 
 
 class AskRequest(BaseModel):
-    """The body of the ask route: the question as the manager typed it, the roster id of Your team, and the latest week
-    that the site shows, because each Topic Answer of the site covers that week only."""
+    """The body of the ask route: the question as the manager typed it, the roster id of Your team, the latest week
+    that the site shows, because each Topic Answer of the site covers that week only, and the earlier turns of the
+    Thread, oldest first."""
 
     question: str = Field(min_length=1, max_length=QUESTION_MAX)
     roster_id: int
     week: int = Field(ge=1, le=WEEK_MAX)
+    turns: Turns = Field(default_factory=list)
 
 
 @router.post("/ask")
@@ -184,7 +190,7 @@ def ask(body: AskRequest, asker: ClientAsker) -> dict:
         raise HTTPException(status_code=422, detail="Pick your team again.")
     question = body.question.strip()
     try:
-        route = route_question(asker.jev, question, list(rosters.values()), asker.season, body.week)
+        route = route_question(asker.jev, question, list(rosters.values()), asker.season, body.week, body.turns)
     except JevError as error:
         logger.warning("The route of a question failed (%s)", type(error).__name__)
         raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
