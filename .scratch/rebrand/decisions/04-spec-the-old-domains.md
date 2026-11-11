@@ -6,7 +6,7 @@ Map: `.scratch/rebrand/MAP.md`.
 
 **Blocked by:** 03
 
-**Status:** open
+**Status:** wontfix
 
 ## Question
 
@@ -14,4 +14,4 @@ Map: `.scratch/rebrand/MAP.md`.
 
 ## Decision
 
-None yet.
+No domain changes, so no old domain redirects. Brian decided it on 2026-11-11 with decision 02.

@@ -6,7 +6,7 @@ Map: `.scratch/rebrand/MAP.md`.
 
 **Blocked by:** 03
 
-**Status:** open
+**Status:** wontfix
 
 ## Question
 
@@ -14,4 +14,4 @@ The Fly app is `cpcfantasy-api`, and Fly has no app rename. A new app needs a ne
 
 ## Decision
 
-None yet.
+The Fly app keeps the name `cpcfantasy-api`. The domain stays, and no manager sees the app name. Brian decided it on 2026-11-11 with decision 02.
