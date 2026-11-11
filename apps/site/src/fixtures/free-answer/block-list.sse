@@ -1,0 +1,68 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01JSSiVGNjuYUiKAuFiaqPDd","toolName":"team_roster"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01JSSiVGNjuYUiKAuFiaqPDd","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01JSSiVGNjuYUiKAuFiaqPDd","inputTextDelta":"{\"team\""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01JSSiVGNjuYUiKAuFiaqPDd","inputTextDelta":": \"Bo G"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01JSSiVGNjuYUiKAuFiaqPDd","inputTextDelta":"irds\"}"}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01JSSiVGNjuYUiKAuFiaqPDd","toolName":"team_roster","input":{"team":"Bo Girds"}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01JSSiVGNjuYUiKAuFiaqPDd","output":{"team":"Bo Girds","what_each_field_means":{"status":"The status of the player on the injury report now, such as \"out\" or \"on IR\". \"healthy\" means the report lists no status.","can_play_now":"False when the status keeps the player out now, such as out, on IR, or suspended. A player listed as questionable can still play."},"players":[{"player":"Kenneth Walker III","position":"RB","nfl_team":"KC","season_points":183.4,"status":"healthy","can_play_now":true},{"player":"Kyren Williams","position":"RB","nfl_team":"LAR","season_points":141.1,"status":"healthy","can_play_now":true},{"player":"Matthew Golden","position":"WR","nfl_team":"GB","season_points":137.4,"status":"healthy","can_play_now":true},{"player":"Trey McBride","position":"TE","nfl_team":"ARI","season_points":126.3,"status":"healthy","can_play_now":true},{"player":"Aaron Rodgers","position":"QB","nfl_team":"PIT","season_points":123.14,"status":"healthy","can_play_now":true},{"player":"Zay Flowers","position":"WR","nfl_team":"BAL","season_points":106.0,"status":"healthy","can_play_now":true},{"player":"Parker Washington","position":"WR","nfl_team":"JAX","season_points":95.1,"status":"healthy","can_play_now":true},{"player":"Blake Corum","position":"RB","nfl_team":"LAR","season_points":89.6,"status":"healthy","can_play_now":true},{"player":"Lamar Jackson","position":"QB","nfl_team":"BAL","season_points":80.08,"status":"on IR","can_play_now":false},{"player":"Jacksonville Jaguars","position":"DEF","nfl_team":"JAX","season_points":77.0,"status":"healthy","can_play_now":true},{"player":"Antonio Williams","position":"WR","nfl_team":"WAS","season_points":47.4,"status":"healthy","can_play_now":true},{"player":"Mike Washington Jr.","position":"RB","nfl_team":"LV","season_points":36.1,"status":"healthy","can_play_now":true},{"player":"Konata Mumpfield","position":"WR","nfl_team":"LAR","season_points":27.7,"status":"healthy","can_play_now":true},{"player":"Audric Estime","position":"RB","nfl_team":"NO","season_points":22.1,"status":"healthy","can_play_now":true},{"player":"Fernando Mendoza","position":"QB","nfl_team":"LV","season_points":2.22,"status":"healthy","can_play_now":true}]}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":"Here are your players ranked","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":" by season f","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":"antasy points, top","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":" 12 ","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":"of 15. Kon","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":"ata Mumpfield (","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":"27.7), Audric","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":" Estime (22.1) and","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":" Fernando Mendo","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":"za (2.22) are the","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":" three","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":" below","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-delta","delta":" the list.","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"text-end","id":"2d7691f7-dbd7-4982-8cc1-b260deb50712"}
+
+data: {"type":"data-block","id":"block","data":{"kind":"list","title":"Bo Girds by season points","rows":[{"rank":1,"name":"Kenneth Walker III","tag":"RB","value":"183.4"},{"rank":2,"name":"Kyren Williams","tag":"RB","value":"141.1"},{"rank":3,"name":"Matthew Golden","tag":"WR","value":"137.4"},{"rank":4,"name":"Trey McBride","tag":"TE","value":"126.3"},{"rank":5,"name":"Aaron Rodgers","tag":"QB","value":"123.14"},{"rank":6,"name":"Zay Flowers","tag":"WR","value":"106.0"},{"rank":7,"name":"Parker Washington","tag":"WR","value":"95.1"},{"rank":8,"name":"Blake Corum","tag":"RB","value":"89.6"},{"rank":9,"name":"Lamar Jackson","tag":"QB","value":"80.08","note":"On IR, can't play"},{"rank":10,"name":"Jacksonville Jaguars","tag":"DEF","value":"77.0"},{"rank":11,"name":"Antonio Williams","tag":"WR","value":"47.4"},{"rank":12,"name":"Mike Washington Jr.","tag":"RB","value":"36.1"}]}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

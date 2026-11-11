@@ -74,6 +74,7 @@ export const PersonalAnswerCard = forwardRef<HTMLElement, Shared & { result: Per
     const view: PersonalView = {
       steps: [],
       first: result.text,
+      answerBlock: null,
       second: null,
       // A stale read is no longer checked against the roster now, so it loses its mark.
       check: stale ? null : "checked",

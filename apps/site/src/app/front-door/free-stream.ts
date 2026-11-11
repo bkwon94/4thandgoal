@@ -3,6 +3,7 @@
  * texts, the check, and the Suggestion or the honest miss. It holds the plain line of each step, and no tool name shows.
  */
 import type { UIMessage } from "ai";
+import { type AnswerBlock, answerBlockOf } from "./answer-block";
 
 /* One tool call as a step: its plain line, and whether its result is in. */
 export type FreeStep = { line: string; done: boolean };
@@ -11,18 +12,21 @@ export type FreeStep = { line: string; done: boolean };
 export type CheckState = "checking" | "fixing" | "checked" | "failed";
 
 /* What the stream shows so far. `first` is the text before a rewrite, and `second` the text of the rewrite. Each text
-   is empty until its check passes. */
+   is empty until its check passes. `answerBlock` is the list, the table, or the player card of the text that shows, and
+   it waits for the check with its text. */
 export type FreeView = {
   steps: FreeStep[];
   first: string;
   second: string | null;
+  answerBlock: AnswerBlock | null;
   check: CheckState | null;
   suggestion: { topic: string; team: number | null } | null;
   closest: string[] | null;
 };
 
-/* The final free answer that the browser keeps: the steps, the checked text, and the Suggestion of a half fit. */
-export type FreeResult = { steps: string[]; text: string; suggestion: { topic: string; team: number | null } | null };
+/* The final free answer that the browser keeps: the steps, the checked text, its block, and the Suggestion of a half
+   fit. An answer kept before blocks has no block field. */
+export type FreeResult = { steps: string[]; text: string; suggestion: { topic: string; team: number | null } | null; block?: AnswerBlock | null };
 
 /* The plain line of one tool call, from its name and its input. A tool that this build does not know reads as the
    league data, so no internal name ever shows (AT-19). */
@@ -66,15 +70,20 @@ function dataOf<T>(part: Part, kind: string): T | null {
    shows only once its check passes, so no word that the manager reads is ever pulled back (H10). The API sends a text
    only after its check, and the view holds it back too, so a stream in the other order shows no early word. */
 export function viewOf(message: UIMessage | undefined): FreeView {
-  const view: FreeView = { steps: [], first: "", second: null, check: null, suggestion: null, closest: null };
+  const view: FreeView = { steps: [], first: "", second: null, answerBlock: null, check: null, suggestion: null, closest: null };
   for (const part of message?.parts ?? []) {
     const tool = toolOf(part);
     if (tool) view.steps.push({ line: stepLine(tool.name, tool.input), done: tool.done });
     else if (part.type === "text") {
       if (view.second === null) view.first += part.text;
       else view.second += part.text;
-    } else if (part.type === "data-fix") view.second = "";
-    else {
+    } else if (part.type === "data-fix") {
+      // The API sends only the block of a text that passed, but a block before the fix never shows with the rewrite.
+      view.second = "";
+      view.answerBlock = null;
+    } else if (part.type === "data-block") {
+      view.answerBlock = answerBlockOf((part as { data: unknown }).data);
+    } else {
       const check = dataOf<{ state: CheckState }>(part, "check");
       if (check) view.check = check.state;
       const suggestion = dataOf<{ topic: string; team: number | null }>(part, "suggestion");
@@ -85,6 +94,7 @@ export function viewOf(message: UIMessage | undefined): FreeView {
   }
   if (view.second !== null || view.check !== "checked") view.first = "";
   if (view.second !== null && view.check !== "checked") view.second = "";
+  if (view.check !== "checked") view.answerBlock = null;
   return view;
 }
 
@@ -114,14 +124,14 @@ export function pacedView<V extends FreeView>(view: V, pace: Pace, now: number, 
   if (view.check === null && view.second === null) return { view, wake: null };
   // "Checking" of the first text holds before its end shows: "Checked", or the fade to the fixing line.
   const firstWake = held("checkFirst");
-  if (firstWake !== null && (view.second !== null || view.check !== "checking")) return { view: { ...view, first: "", second: null, check: "checking" }, wake: firstWake };
+  if (firstWake !== null && (view.second !== null || view.check !== "checking")) return { view: { ...view, first: "", second: null, answerBlock: null, check: "checking" }, wake: firstWake };
   if (view.second === null) return { view, wake: null };
   // The fixing line holds before the rewrite shows.
   const fixingWake = held("fixing");
-  if (fixingWake !== null) return { view: { ...view, second: "", check: "fixing" }, wake: fixingWake };
+  if (fixingWake !== null) return { view: { ...view, second: "", answerBlock: null, check: "fixing" }, wake: fixingWake };
   // "Checking" of the rewrite holds before "Checked" shows.
   if (view.check !== "checking" && view.check !== "checked") return { view, wake: null };
   const secondWake = held("checkSecond");
-  if (secondWake !== null && view.check === "checked") return { view: { ...view, second: "", check: "checking" }, wake: secondWake };
+  if (secondWake !== null && view.check === "checked") return { view: { ...view, second: "", answerBlock: null, check: "checking" }, wake: secondWake };
   return { view, wake: null };
 }

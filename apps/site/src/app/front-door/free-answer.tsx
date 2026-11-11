@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { CheckIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { BlockView } from "./answer-block";
 import type { AskTarget } from "./ask-api";
 import type { Turn } from "./chat-turns";
 import { type CheckState, type FreeResult, type FreeView, isKept, newPace, pacedView, shownText, viewOf } from "./free-stream";
@@ -181,7 +182,7 @@ function CheckMark({ state, live }: { state: CheckState; live: boolean }) {
   );
 }
 
-/* The body of a free answer: the steps, the text, and the check. The steps wait until the check or the text comes,
+/* The body of a free answer: the steps, the text with its block, and the check. The steps wait until the check or the text comes,
    with `first` as the stand-in line before the first step. The text shows only with "Checked", and its words sweep in
    from a blur. A failed check shows the fixing line, and the checked rewrite takes its place. */
 export function FreeBody({ view, live, first }: { view: FreeView; live: boolean; first?: string }) {
@@ -194,13 +195,14 @@ export function FreeBody({ view, live, first }: { view: FreeView; live: boolean;
       <Steps steps={view.steps} live={waiting} first={first} />
       <AnimatePresence mode="wait" initial={false}>
         {fixing ? (
-          <motion.div key="second" className="flex flex-col gap-sp-2" {...(off ? {} : { initial: { opacity: 0 }, animate: { opacity: 1 } })} transition={fadeIn(QUICK)}>
+          <motion.div key="second" className="flex flex-col gap-sp-4" {...(off ? {} : { initial: { opacity: 0 }, animate: { opacity: 1 } })} transition={fadeIn(QUICK)}>
             {view.second === "" && (
               <p className="m-0 text-body leading-tight font-semibold">
                 <Shimmer>{FIXING_LINE}</Shimmer>
               </p>
             )}
             {view.second && <StreamText text={view.second} live={live} />}
+            {view.second && view.answerBlock && <BlockView block={view.answerBlock} live={live} />}
           </motion.div>
         ) : (
           view.first && (
@@ -208,8 +210,10 @@ export function FreeBody({ view, live, first }: { view: FreeView; live: boolean;
               key="first"
               exit={off ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
               transition={{ duration: QUICK, ease: SMOOTH }}
+              className="flex flex-col gap-sp-4"
             >
               <StreamText text={view.first} live={live} />
+              {view.answerBlock && <BlockView block={view.answerBlock} live={live} />}
             </motion.div>
           )
         )}
@@ -241,7 +245,7 @@ export const FreeAnswerCard = forwardRef<HTMLElement, Shared & { result: FreeRes
   { question, result, teamName, onPick },
   ref,
 ) {
-  const view: FreeView = { steps: result.steps.map((line) => ({ line, done: true })), first: result.text, second: null, check: "checked", suggestion: result.suggestion, closest: null };
+  const view: FreeView = { steps: result.steps.map((line) => ({ line, done: true })), first: result.text, second: null, answerBlock: result.block ?? null, check: "checked", suggestion: result.suggestion, closest: null };
   return (
     <AnimatePresence initial={false}>
       <article key="kept" ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
@@ -279,7 +283,7 @@ export const FreeAnswerLive = forwardRef<
     read: viewOf,
     settle: (ended) => {
       if (ended.check === "checked") {
-        onDone({ steps: ended.steps.map((step) => step.line), text: shownText(ended), suggestion: ended.suggestion });
+        onDone({ steps: ended.steps.map((step) => step.line), text: shownText(ended), suggestion: ended.suggestion, block: ended.answerBlock });
         return true;
       }
       if (ended.closest) {

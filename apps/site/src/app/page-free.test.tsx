@@ -301,3 +301,74 @@ describe("the free answer of Lil Fridge", () => {
     expect(within(note).getByRole("button", { name: "Ask again" })).toBeTruthy();
   });
 });
+
+describe("the block of a free answer (H27)", () => {
+  it("shows a lead line and a ranked list of the players of Bo Girds, after Checked", async () => {
+    const early = watchEarly("Kenneth Walker III");
+    freeWith("block-list");
+    render(<HomePage />);
+    await ask("order my players by performance");
+    const answer = await articleWith("order my players by performance", "Checked");
+    expect(answer.textContent).toContain("Here are your players ranked by season fantasy points");
+    const list = await within(answer).findByRole("list", { name: "Bo Girds by season points" });
+    const rows = within(list).getAllByRole("listitem");
+    expect(rows).toHaveLength(12);
+    expect(rows[0].textContent).toContain("1");
+    expect(rows[0].textContent).toContain("Kenneth Walker III");
+    expect(rows[0].textContent).toContain("RB");
+    expect(rows[0].textContent).toContain("183.4");
+    expect(rows[8].textContent).toContain("On IR, can't play");
+    // The block waits for the check with the text, so no row shows early (H10).
+    expect(early.early).toBe(false);
+    // The display tool never shows as a step.
+    expect(within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem")).toHaveLength(1);
+  });
+
+  it("shows a comparison of Bo Girds and Teehee as a table with its column names", async () => {
+    freeWith("block-table", { team: 6 });
+    render(<HomePage />);
+    await ask("compare Bo Girds and Teehee");
+    const answer = await articleWith("compare Bo Girds and Teehee", "Checked");
+    const table = await within(answer).findByRole("table", { name: "Bo Girds vs Teehee" });
+    expect(within(table).getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual(["Stat", "Bo Girds", "Teehee"]);
+    const [, first] = within(table).getAllByRole("row");
+    expect(within(first).getAllByRole("cell").map((cell) => cell.textContent)).toEqual(["Rank", "2", "8"]);
+  });
+
+  it("shows a player card that says Lamar Jackson cannot play now, and only the block of the checked rewrite", async () => {
+    freeWith("block-player");
+    render(<HomePage />);
+    await ask("how is Lamar Jackson doing");
+    const answer = await articleWith("how is Lamar Jackson doing", "Checked");
+    const card = await within(answer).findByRole("group", { name: "Lamar Jackson" });
+    expect(card.textContent).toContain("QB");
+    expect(card.textContent).toContain("BAL");
+    expect(card.textContent).toContain("Bo Girds");
+    expect(card.textContent).toContain("Can't play now");
+    expect(card.textContent).toContain("on IR");
+    expect(card.textContent).toContain("80.08");
+    expect(answer.querySelectorAll('[role="group"]')).toHaveLength(1);
+  });
+
+  it("keeps the block with the answer, so a reload shows it with no new stream", async () => {
+    freeWith("block-list");
+    const { unmount } = render(<HomePage />);
+    await ask("order my players by performance");
+    await articleWith("order my players by performance", "Checked");
+    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("Kenneth Walker III"));
+    unmount();
+    render(<HomePage />);
+    const kept = await articleWith("order my players by performance", "Kenneth Walker III");
+    expect(within(kept).getByRole("list", { name: "Bo Girds by season points" })).toBeTruthy();
+    expect(freeCalls()).toHaveLength(1);
+  });
+
+  it("shows a week 1 answer with no block as text alone", async () => {
+    freeWith("week-1");
+    render(<HomePage />);
+    await ask("week 1 results");
+    const answer = await articleWith("week 1 results", "Checked");
+    expect(answer.querySelector("[data-block]")).toBeNull();
+  });
+});
+

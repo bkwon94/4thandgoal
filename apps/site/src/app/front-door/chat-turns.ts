@@ -3,6 +3,7 @@
  * earlier item, oldest first and newest last. A follow-up such as "cant choose mine" then reads like the whole question.
  */
 import type { DoorAnswer } from "@/lib/data/front-door-data";
+import { blockText } from "./answer-block";
 import type { ThreadItem } from "./ask-thread";
 import { MISS_LEAD } from "./miss-card";
 import { personalName } from "./thread";
@@ -19,8 +20,9 @@ export const TURNS_MAX_CHARS = 32_000;
 export const TURN_QUESTION_MAX = 300;
 export const TURN_ANSWER_MAX = 2_000;
 
-/* The turn of one item, or null for an item in flight. A free and a personal answer give their whole checked text,
-   and a league Topic its text. Each other kind gives its one line, as the manager saw it. */
+/* The turn of one item, or null for an item in flight. A free and a personal answer give their whole checked text, a
+   free answer with the short text of its block, and a league Topic its text. Each other kind gives its one line, as
+   the manager saw it. */
 function turnOf(item: ThreadItem, answers: Record<number, DoorAnswer[]>, teamName: (team: number) => string | undefined): Turn | null {
   if (item.kind === "topic") {
     const answer = (answers[item.team] ?? []).find((candidate) => candidate.topic === item.key);
@@ -29,7 +31,11 @@ function turnOf(item: ThreadItem, answers: Record<number, DoorAnswer[]>, teamNam
   }
   const line = turnLine(item, teamName);
   if (!line) return null;
-  if (item.kind === "free" && item.result) return { question: line.name, answer: item.result.text };
+  // A free answer carries its block as short text after the lead, so "the second one" has a list to point at.
+  if (item.kind === "free" && item.result) {
+    const block = item.result.block;
+    return { question: line.name, answer: block ? `${item.result.text} ${blockText(block)}` : item.result.text };
+  }
   if (item.kind === "personal" && item.result) return { question: line.name, answer: item.result.text };
   return { question: line.name, answer: line.fact };
 }

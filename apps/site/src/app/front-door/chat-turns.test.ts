@@ -142,3 +142,24 @@ describe("turnsBefore", () => {
     expect(turnsBefore(entries, 99, answers, teamName).map((turn) => turn.question)).toEqual(["first", "second"]);
   });
 });
+
+describe("the block of a free answer as a turn (H27)", () => {
+  it("carries a list, a table, and a player card as short text after the lead, so a follow-up has context", () => {
+    const withBlock = (question: string, shown: NonNullable<Extract<ThreadItem, { kind: "free" }>["result"]>["block"]): ThreadItem => ({
+      kind: "free",
+      question,
+      result: { steps: [], text: "Here they are.", suggestion: null, block: shown },
+    });
+    const items: ThreadItem[] = [
+      withBlock("order my players", { kind: "list", title: "Season points", rows: [{ rank: 1, name: "Kenneth Walker III", tag: "RB", value: "183.4" }, { rank: 2, name: "Lamar Jackson", tag: "QB", value: "80.08", note: "On IR" }] }),
+      withBlock("compare", { kind: "table", title: "Bo Girds vs Teehee", columns: ["Stat", "Bo Girds", "Teehee"], rows: [["Record", "11-7", "8-10"]] }),
+      withBlock("lamar", { kind: "player", name: "Lamar Jackson", position: "QB", nfl_team: "BAL", fantasy_team: "Bo Girds", can_play_now: false, status: "on IR", stats: [{ label: "Season points", value: "80.08" }], note: "Out since week 4." }),
+    ];
+    expect(threadTurns(items, answers, teamName).map((turn) => turn.answer)).toEqual([
+      "Here they are. Season points: 1. Kenneth Walker III, RB, 183.4; 2. Lamar Jackson, QB, 80.08 (On IR).",
+      "Here they are. Bo Girds vs Teehee: Stat | Bo Girds | Teehee; Record | 11-7 | 8-10.",
+      "Here they are. Lamar Jackson, QB, BAL, Bo Girds, can't play now (on IR). Season points 80.08. Out since week 4.",
+    ]);
+  });
+});
+
