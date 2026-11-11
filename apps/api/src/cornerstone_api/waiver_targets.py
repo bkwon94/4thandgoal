@@ -234,16 +234,20 @@ def judge(jev: Jev, week: int, need: dict, players: list[dict]) -> Judged:
         raise JevError(f"{len(failed)} of {len(answers)} waiver reads failed")
     tokens = sum(answer.input_tokens or 0 for answer in answers.values() if answer is not None)
     scored = []
+    read = []
     for player in players:
         answer = answers[player["player_id"]]
         assert answer is not None
         add, stash = answer.nouls["add"], answer.nouls["stash"]
+        read.append(f"{player['name']} {add:.2f}/{stash:.2f}")
         if max(add, stash) > YES_AT:
             kind = "add this week" if add > YES_AT else "stash for later weeks"
             scored.append((max(add, stash), {**_shown(player), "kind": kind}))
     scored.sort(key=lambda item: (-item[0], item[1]["name"]))
     log.info("The waiver read: %d requests, %d input tokens, %d of %d kept", len(requests), tokens, len(scored),
              len(players))
+    # The add and the stash answer of each player read, so a run shows why a free agent stayed or left.
+    log.info("The waiver answers, add/stash: %s", "; ".join(read))
     return Judged(kept=[player for _, player in scored[:KEPT_MAX]], requests=len(requests), input_tokens=tokens)
 
 

@@ -28,21 +28,21 @@ TOPIC_ASKS = {
     "weak_spots": "Name the weakest positions of the team and each hole in its lineup, worst first.",
     "stack_up": "Say how the roster stacks up against the league: its grade, its best and its worst part, and its "
                 "best and its worst position.",
-    "waiver_targets": "Name the players of `kept_players`, best first, each with his reason in plain words from "
-                      "his facts, such as the player above him who is out, his carries or targets of the last week, "
-                      "and the slot of `team_need` he fills. `kind` says if he is an add this week or a stash for "
-                      "later weeks. Quote no FAAB bid. If `kept_players` is empty, say plainly that no free agent "
-                      "beats the starters of the team this week.",
+    "waiver_targets": "Name the first players of `kept_players`, at most 3, best first. Give each one short reason "
+                      "in plain words from his facts, such as the player above him who is out, his carries or targets "
+                      "of the last week, or the slot of `team_need` he fills, with at most one number. `kind` says if "
+                      "he is an add this week or a stash for later weeks. Quote no FAAB bid. If `kept_players` is "
+                      "empty, say plainly that no free agent beats the starters of the team this week.",
 }
 
 # The two Nouls of the Jev read of one free agent, in one request with one state: the team need and his facts. An add
 # and a stash are two judgments, so each has its own Noul, and code keeps a player when either is a yes.
 WAIVER_ADD = {
-    "text": "Would {player} score more for {team} in week {week} than a starter he could replace?",
-    "yes": "{player} would start for {team} in week {week}: he fills an empty slot, or his week projection, role, and "
-           "recent usage beat a weak starter in `team.starters`, or a starter on bye that week.",
-    "no": "Each starter of {team} in a slot that takes {player} is a better start in week {week}, or {player} does not "
-          "play that week."}
+    "text": "Would {player} be a better start for {team} in week {week} than its starter in a slot that takes him?",
+    "yes": "{player} has a real role on his NFL team in week {week}, and he would start for {team} over a weak "
+           "starter in `team.starters`, a starter on bye that week, or in an empty slot.",
+    "no": "{player} is a backup on his NFL team who plays few snaps, or each starter of {team} in a slot that takes "
+          "him is a better start in week {week}."}
 WAIVER_STASH = {
     "text": "Is {player} worth a bench spot on {team} now, for the weeks after week {week}?",
     "yes": "The role of {player} is growing or opens soon, such as the player above him out for weeks or a rise in his "
