@@ -219,3 +219,30 @@ describe("the ask box of Lil Fridge", () => {
     expect(REFUSE_LINE).not.toMatch(/front door/i);
   });
 });
+
+describe("the empty screen says the league is fair game", () => {
+  it("shows the mute line and the two examples under the heading", async () => {
+    render(<HomePage />);
+    const heading = await screen.findByRole("heading", { level: 1 });
+    expect(heading.textContent).toBe("Ask about Lil Fridge");
+    expect(screen.getByText("or any team in the league.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "who has the best roster" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "week 1 results" })).toBeTruthy();
+    expect(screen.getByRole("textbox", { name: "Ask a question" }).getAttribute("placeholder")).toBe("Ask about your team or the league");
+  });
+
+  it("asks the example on one tap, with the keyboard open, and closes the keyboard", async () => {
+    answerWith(route({ route: "topic", topic: "next_matchup" }));
+    render(<HomePage />);
+    const field = await screen.findByRole("textbox", { name: "Ask a question" });
+    field.focus();
+    const example = screen.getByRole("button", { name: "who has the best roster" });
+    // The press keeps the focus in the field, so the dock holds still until the click lands.
+    expect(fireEvent.mouseDown(example)).toBe(false);
+    fireEvent.click(example);
+    await waitFor(() => expect(askCalls()).toHaveLength(1));
+    expect(JSON.parse(askCalls()[0][1].body).question).toBe("who has the best roster");
+    expect(document.activeElement).not.toBe(field);
+    await articleWith("who has the best roster", "");
+  });
+});

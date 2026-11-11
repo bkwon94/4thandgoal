@@ -6,7 +6,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -18,6 +18,7 @@ import { turnsBefore } from "./chat-turns";
 import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem, ideasRequestOf, itemOfError, itemOfRoute, tradePartner, tradeRequestOf } from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
 import { CapCard, MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
+import { keepFocus, closeKeyboard } from "./keyboard-tap";
 import { GLIDE, riseIn } from "./motion";
 import { PersonalAnswerCard, PersonalAnswerLive } from "./personal-answer";
 import { PERSONAL_LINES, isPersonal } from "./personal-stream";
@@ -31,6 +32,9 @@ import { dayOrder, pickSuggestions, topicName } from "./topics";
 import { TradeCard } from "./trade-answer";
 import { type TradeRead, type TradeRequest, type TradeSteps, addStep, endSteps, noSteps, streamTrade } from "./trade-api";
 import { getYourTeam, setYourTeam } from "./your-team-store";
+
+/* The two questions the empty screen offers, so a manager sees that the league is fair game, not only Your team. */
+const EXAMPLES = ["who has the best roster", "week 1 results"];
 
 /* The greeting changes with the hour, so the front door reads as a person and not a page. */
 function greeting(hour: number): string {
@@ -322,6 +326,30 @@ export function FrontDoor({
                 <h1 className="m-0 text-score leading-tight font-bold tracking-tight tablet:text-headline">
                   <span className="text-mute">Ask about</span> <span className="text-door-name">{team.name}</span>
                 </h1>
+                <p className="m-0 text-lead leading-tight text-mute">or any team in the league.</p>
+                {/* Each example asks as a typed question does. The press keeps the focus in the field, so one tap works with
+                    the keyboard open. The ask runs first, then the keyboard closes and the Answer shows. */}
+                <p className="m-0 flex flex-wrap items-center gap-x-sp-1 text-body leading-tight text-mute">
+                  <span>Try</span>
+                  {EXAMPLES.map((example, index) => (
+                    <Fragment key={example}>
+                      {index > 0 && <span>or</span>}
+                      <button
+                        type="button"
+                        onMouseDown={keepFocus}
+                        onClick={() => {
+                          ask(example);
+                          closeKeyboard();
+                        }}
+                        className="press inline-flex min-h-touch items-center text-ink underline decoration-door-hair decoration-1 underline-offset-4 transition-colors duration-150 hover-fine:decoration-ink"
+                      >
+                        <span aria-hidden>&ldquo;</span>
+                        {example}
+                        <span aria-hidden>&rdquo;</span>
+                      </button>
+                    </Fragment>
+                  ))}
+                </p>
               </motion.div>
             ) : (
               <div className="flex flex-1 flex-col">

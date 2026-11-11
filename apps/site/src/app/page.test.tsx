@@ -62,7 +62,7 @@ describe("the front door of cpc", () => {
     const box = within(thread).getByRole("form", { name: "Ask" });
     const field = within(box).getByRole("textbox", { name: "Ask a question" });
     const send = within(box).getByRole("button", { name: "Send" }) as HTMLButtonElement;
-    expect(field.getAttribute("placeholder")).toBe("Ask about your team");
+    expect(field.getAttribute("placeholder")).toBe("Ask about your team or the league");
     expect(send.disabled).toBe(true);
     fireEvent.change(field, { target: { value: "who am i playing sunday" } });
     expect(send.disabled).toBe(false);
