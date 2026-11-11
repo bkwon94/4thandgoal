@@ -36,6 +36,8 @@ After the triage, each issue that blocks becomes a ticket from 13 up. Then the e
 | H26 | The copy says only "Ask about <team>" and "Ask about your team", so a manager does not know the league is fair game. | The empty-state heading and the placeholder name only the team. | Brian chose proposal A: a mute line "or any team in the league.", two tappable examples, placeholder "Ask about your team or the league" | blocks: ticket 39 |
 | H27 | A free answer to "order my players by performance" is one long paragraph. | A free answer can only return text. | Brian: Claude picks from a few components (list, table, player card), text stays the default | blocks: ticket 40 |
 | H28 | Blocks show only for exact asks. "tell me my top players" gives text (or the week, not the season); "can you compare my roster to Teehee" gives no table. | Two causes. The router sends "compare my roster to Teehee" to How you stack up, a personal Topic with no blocks. The free answer rules name 3 narrow cases, so Claude picks text for other phrasings. | Brian: a block must not need a specific ask | blocks: ticket 41 |
+| H29 | "who are the highest scoring teams this season" ends as "I can't answer that." | Not proven. Both texts failed the Jev check; the first text was right but had no list. | Found by the ticket 41 eval; Brian: fix it | blocks: ticket 42 |
+| H30 | The front door replaces the home page and the menu of both clients the moment the PR merges. | No flag. | Brian: a flag, off for both clients at merge, so the live sites keep the old home and menu; the front door is live at the hidden `/ask/` route for his tests; later he turns it on and removes `/ask/` | blocks: ticket 43 |
 
 ## Follow-ups after the merge
 
