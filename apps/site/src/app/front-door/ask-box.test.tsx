@@ -92,4 +92,17 @@ describe("AskBox and the dock", () => {
     // fireEvent returns false when a handler cancels the default, here the move of the focus to the button.
     expect(fireEvent.mouseDown(screen.getByRole("button", { name: "Send" }))).toBe(false);
   });
+
+  /* A sent question closes the keyboard, so the Answer shows. The blur comes after the submit, so the press of ticket 34
+     still sends on its first tap (ticket 37). */
+  it("closes the keyboard once a question goes", () => {
+    const onAsk = vi.fn();
+    render(<AskBox onAsk={onAsk} />);
+    act(() => field().focus());
+    fireEvent.change(field(), { target: { value: "Who should I start?" } });
+    fireEvent.submit(screen.getByRole("form", { name: "Ask" }));
+    expect(onAsk).toHaveBeenCalledWith("Who should I start?");
+    expect(document.activeElement).not.toBe(field());
+    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(false);
+  });
 });

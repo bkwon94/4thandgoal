@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useId } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { closeKeyboard, keepFocus } from "./keyboard-tap";
 import { FAST, GLIDE, MORE_SPRING, QUICK, SMOOTH, STAGGER, fadeIn, morphId, staggerOf } from "./motion";
 import { TOPICS, type Topic } from "./topics";
 
@@ -33,6 +34,11 @@ export function Suggestions({
 }) {
   const off = useMotionOff();
   const panelId = useId();
+  // A pick keeps the focus through the press, so the dock holds still until the click lands. Then the keyboard closes.
+  const pick = (key: string) => {
+    onPick(key);
+    closeKeyboard();
+  };
   const topics = (picks ?? []).map((key) => TOPICS.find((topic) => topic.key === key)).filter((topic): topic is Topic => !!topic);
   return (
     <div className="flex flex-col gap-sp-2">
@@ -55,6 +61,7 @@ export function Suggestions({
           type="button"
           aria-expanded={moreOpen}
           aria-controls={panelId}
+          onMouseDown={keepFocus}
           onClick={() => onMore(!moreOpen)}
           className={`press door-sheen flex min-h-touch flex-none ${wrap ? "" : "snap-start"} items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised`}
         >
@@ -90,7 +97,8 @@ export function Suggestions({
               // The chip and the question of its Answer share one id, so a tap morphs the chip into the question.
               layoutId={off ? undefined : morphId(topic.key)}
               aria-label={`${topic.name}: ${facts[topic.key]}`}
-              onClick={() => onPick(topic.key)}
+              onMouseDown={keepFocus}
+              onClick={() => pick(topic.key)}
               initial={off ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
               animate={off ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }}
@@ -141,7 +149,8 @@ export function Suggestions({
                       type="button"
                       disabled={!ready}
                       aria-label={ready ? `${topic.name}: ${fact}` : `${topic.name}: opens soon`}
-                      onClick={() => onPick(topic.key)}
+                      onMouseDown={keepFocus}
+                      onClick={() => pick(topic.key)}
                       className="press flex min-h-touch w-full flex-col items-start justify-center gap-sp-0 rounded-tile px-sp-3 py-sp-2 text-left transition-colors duration-150 hover-fine:enabled:bg-raised disabled:cursor-default"
                     >
                       {/* The name over its fact, as on a chip, so a long fact never cuts its number. */}

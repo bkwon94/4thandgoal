@@ -9,6 +9,7 @@ import { type CSSProperties, useState } from "react";
 import { ArrowUpIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useKeyboardField } from "@cpc/design/shell/keyboard";
+import { closeKeyboard, keepFocus } from "./keyboard-tap";
 import { haloOf } from "./motion";
 import { Spinner } from "./steps";
 
@@ -28,6 +29,9 @@ export function AskBox({ onAsk, pending = false }: { onAsk?: (question: string) 
         if (!question || !onAsk || pending) return;
         onAsk(question);
         setValue("");
+        // The question went, so the keyboard closes and the Answer shows. The blur comes after the submit, so the press
+        // of Send still keeps the focus until the click has sent.
+        closeKeyboard();
       }}
     >
       {/* 16px or more, so iOS does not zoom the page when the field takes the focus. */}
@@ -49,7 +53,7 @@ export function AskBox({ onAsk, pending = false }: { onAsk?: (question: string) 
         disabled={!question || pending}
         // The press keeps the focus in the field. A blur would close the keyboard and bring the dock back, the foot of
         // the Thread would drop under the thumb, and the click would land on the page, so the first tap would send nothing.
-        onMouseDown={(event) => event.preventDefault()}
+        onMouseDown={keepFocus}
         style={{ "--halo": haloOf(value) } as CSSProperties}
         className="send-halo flex size-send flex-none items-center justify-center rounded-full bg-accent text-on-dark disabled:bg-raised disabled:text-mute"
       >
