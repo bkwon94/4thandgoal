@@ -59,10 +59,11 @@ export type TradeEvents = {
   onCap: (line: string) => void;
 };
 
-/* The body of each route: the typed question of a trade check, or the partner that a question of trade ideas names. */
+/* The body of each route: the typed question of a trade check, or the partner that a question of trade ideas names
+   with the typed question. A tap of trade ideas sends no question. */
 export type TradeRequest =
   | { mode: "check"; question: string; roster_id: number }
-  | { mode: "ideas"; roster_id: number; partner: number | null }
+  | { mode: "ideas"; roster_id: number; partner: number | null; question?: string }
   | { mode: "sell"; roster_id: number };
 
 /* The path of the route of each mode, after /clients/<slug>/. */

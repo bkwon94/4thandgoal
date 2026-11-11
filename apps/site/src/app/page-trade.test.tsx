@@ -170,7 +170,16 @@ describe("the trade ideas of Lil Fridge", () => {
     render(<HomePage />);
     await ask("any trades with Bo Girds");
     await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
-    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({ roster_id: 3, partner: 6 });
+    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({ roster_id: 3, partner: 6, question: "any trades with Bo Girds" });
+  });
+
+  it("sends a typed question of trade ideas around one player, so the API can find him", async () => {
+    routeTo("trade_ideas");
+    streamOf("/trade-ideas", ideasStream);
+    render(<HomePage />);
+    await ask("trade ideas for kenneth walker");
+    await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
+    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({ roster_id: 3, partner: null, question: "trade ideas for kenneth walker" });
   });
 
   it("shows each plain step one by one before the whole Answer (AT-28)", async () => {

@@ -14,12 +14,14 @@ from fastapi.testclient import TestClient
 from test_api import CLIENT, HEADERS, StubAdvisor, StubPicker, StubRepair, _cpc, _here
 
 from analyzer.advisor import AdvisorOut, read_trade
+from analyzer.cache import finder_cache_key
 from analyzer.finder_pick import pick_trades
-from analyzer.finder_search import search
+from analyzer.finder_search import Anchor, search
 from analyzer.trade_news import NewsFeed
 from analyzer.values import AnalyzerValues
 from cornerstone_api.app import create_app
 from cornerstone_api.caps import TEAM_LINE
+from cornerstone_api.trade_topics import NO_ONE_PLAYER
 from cornerstone_api.trade_wording import GETS_NAMED, GETS_PLAYER, GIVES_NAMED, GIVES_PLAYER
 from facts.writer import ClaudeWriter
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
@@ -37,6 +39,11 @@ BO_GIRDS = 6
 SURE_TRADE = "is Khalil Shakir for Zay Flowers fair"
 VAGUE_TRADE = "is my RB for their WR fair"
 HALF_TRADE = "is Khalil Shakir for their WR fair"
+GIVE_IDEAS = "trade ideas for khalil shakir"
+GET_IDEAS = "trade ideas to get zay flowers"
+VAGUE_IDEAS = "any trade ideas for my team"
+SHAKIR = "8134"
+FLOWERS = "9997"
 # The words that site copy never holds (decision 08 and the copy rules of the spec).
 INNER_NAMES = ("jev", "advisor", "finder", "rival", "brian")
 
@@ -45,6 +52,9 @@ PICKS = {
     SURE_TRADE: {GIVES_NAMED: 0.97, GETS_NAMED: 0.96, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
     VAGUE_TRADE: {GIVES_NAMED: 0.08, GETS_NAMED: 0.06, GIVES_PLAYER: "Derrick Henry", GETS_PLAYER: "Zay Flowers"},
     HALF_TRADE: {GIVES_NAMED: 0.95, GETS_NAMED: 0.12, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
+    GIVE_IDEAS: {GIVES_NAMED: 0.96, GETS_NAMED: 0.05, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
+    GET_IDEAS: {GIVES_NAMED: 0.04, GETS_NAMED: 0.95, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
+    VAGUE_IDEAS: {GIVES_NAMED: 0.05, GETS_NAMED: 0.06, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
 }
 
 
@@ -359,3 +369,79 @@ def test_trade_ideas_with_a_partner_read_only_the_two_rosters(settings, sources,
     assert current(other, "trade_ideas", key["key"], BO_GIRDS)
     partner = _api(settings, dropped(sources, fixture_raw_dir, tmp_path, BO_GIRDS), jev, advisor)
     assert not current(partner, "trade_ideas", key["key"], BO_GIRDS)
+
+
+def _ideas(api, question: str | None = None):
+    body = {"roster_id": LIL_FRIDGE} if question is None else {"roster_id": LIL_FRIDGE, "question": question}
+    return _parts(api.post(IDEAS, json=body, headers=HEADERS))
+
+
+def _pick_requests(jev) -> list:
+    return [r for r in jev.requests if "manager_question" in r.state]
+
+
+def test_a_typed_question_of_trade_ideas_goes_with_one_jev_pick_over_the_real_rosters(api, jev):
+    parts = _ideas(api, GIVE_IDEAS)
+    [request] = _pick_requests(jev)
+    assert request.state["manager_question"] == GIVE_IDEAS
+    assert "trade ideas" in request.state["context"]
+    assert set(request.questions) == {GIVES_NAMED, GIVES_PLAYER, GETS_NAMED, GETS_PLAYER}
+    assert any(text.startswith("Khalil Shakir (WR") for text in request.questions[GIVES_PLAYER].options.values())
+    assert any(text.startswith("Zay Flowers (WR") for text in request.questions[GETS_PLAYER].options.values())
+    [picks] = _of(parts, "data-picks")
+    assert picks["gives"]["player_id"] == SHAKIR and picks["gives"]["sure"]
+
+
+def test_a_tap_of_trade_ideas_sends_no_question_and_asks_no_pick(api, jev):
+    _ideas(api)
+    assert _pick_requests(jev) == []
+
+
+def test_ideas_around_a_player_that_the_manager_gives_hold_him_on_the_side_of_your_team(api):
+    parts = _ideas(api, GIVE_IDEAS)
+    assert "Found Khalil Shakir" in [step["line"] for step in _of(parts, "data-step")]
+    [answer] = _of(parts, "data-answer")
+    trades = answer["document"]["trades"]
+    assert trades
+    for trade in trades:
+        mine = trade["sides"][0]
+        assert mine["roster_id"] == LIL_FRIDGE
+        assert SHAKIR in [player["player_id"] for player in mine["gives"]]
+
+
+def test_ideas_around_a_player_that_the_manager_gets_hold_him_on_the_side_of_his_team(api):
+    parts = _ideas(api, GET_IDEAS)
+    assert "Found Zay Flowers" in [step["line"] for step in _of(parts, "data-step")]
+    [answer] = _of(parts, "data-answer")
+    assert answer["document"]["trade_pair"]["partner"]["roster_id"] == BO_GIRDS
+    trades = answer["document"]["trades"]
+    assert trades
+    for trade in trades:
+        theirs = trade["sides"][1]
+        assert theirs["roster_id"] == BO_GIRDS
+        assert FLOWERS in [player["player_id"] for player in theirs["gives"]]
+
+
+def test_an_unsure_pick_falls_back_to_the_weakest_slot_search_with_a_step_that_says_so(api):
+    plain = _of(_ideas(api), "data-answer")
+    parts = _ideas(api, VAGUE_IDEAS)
+    lines = [step["line"] for step in _of(parts, "data-step")]
+    assert lines[0] == NO_ONE_PLAYER
+    assert not any(word in NO_ONE_PLAYER.lower() for word in INNER_NAMES)
+    # The fallback is the plain search, so it gives the same trades as a tap.
+    assert _of(parts, "data-answer") == plain
+
+
+def test_the_kept_answer_key_holds_the_anchor(settings, sources):
+    snapshot = _here(sources, settings).snapshot(2026)
+    plain = finder_cache_key(2026, LIL_FRIDGE, None, snapshot)
+    gives = finder_cache_key(2026, LIL_FRIDGE, None, snapshot, Anchor(player_id=SHAKIR, side="gives"))
+    gets = finder_cache_key(2026, LIL_FRIDGE, None, snapshot, Anchor(player_id=SHAKIR, side="gets"))
+    assert len({plain, gives, gets}) == 3
+
+
+def test_a_player_search_after_a_tap_never_serves_the_plain_list(api):
+    _ideas(api)
+    [answer] = _of(_ideas(api, GIVE_IDEAS), "data-answer")
+    assert all(SHAKIR in [player["player_id"] for player in trade["sides"][0]["gives"]]
+               for trade in answer["document"]["trades"])

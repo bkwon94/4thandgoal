@@ -10,6 +10,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import NamedTuple
 
+from analyzer.finder_search import Anchor
 from analyzer.trade import ProposedTrade
 from analyzer.week_line import chart_is_fresh, counted_status, last_game_status
 from league.ranks import due_back_week
@@ -25,7 +26,7 @@ STAT_FIELDS = ("gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 22
+DOCUMENT_VERSION = 23
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
@@ -169,10 +170,12 @@ def _rows_read(rows: dict[int, float], return_week: int, last_regular_week: int)
     return {week: points for week, points in rows.items() if return_week <= week <= last_regular_week}
 
 
-def finder_cache_key(season: int, asker: int, partner: int | None, snapshot: Snapshot) -> str:
+def finder_cache_key(season: int, asker: int, partner: int | None, snapshot: Snapshot,
+                     anchor: Anchor | None = None) -> str:
     """The hash of the ordered pair of rosters and the content of the snapshot that the finder reads.
 
     With no partner, the search reads every roster, so the content of every roster goes in.
+    The anchor of a search around one player goes in too, so a search around a player never serves the plain list.
 
     The pair keeps its order, so the asker is part of the key. The finder puts the asker's side first in each
     trade, and its rank breaks a tie by the asker's letter. So the document for A and B can differ from the one
@@ -185,6 +188,7 @@ def finder_cache_key(season: int, asker: int, partner: int | None, snapshot: Sna
         "kind": "find",
         "season": season,
         "rosters": [asker, partner],
+        "anchor": None if anchor is None else [anchor.player_id, anchor.side],
         "chart_week": as_of.chart_week,
         "stats_through": as_of.stats_through,
         "content": _content_hash(snapshot, [asker, partner] if partner is not None else sorted(snapshot.rosters)),

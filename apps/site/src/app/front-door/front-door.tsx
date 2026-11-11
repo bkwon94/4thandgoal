@@ -259,7 +259,7 @@ export function FrontDoor({
       if (mode === "sell") return void (await runTrade(id, question, { mode, roster_id: team.id }, passphrase, route.closest));
       if (mode === "ideas") {
         const partner = route.team !== null && route.team !== team.id ? route.team : null;
-        return void (await runTrade(id, question, { mode, roster_id: team.id, partner }, passphrase, route.closest));
+        return void (await runTrade(id, question, { mode, roster_id: team.id, partner, question }, passphrase, route.closest));
       }
       put(id, itemOfRoute(route, question, team.id, answers));
     } catch (error) {
