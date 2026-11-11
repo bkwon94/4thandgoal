@@ -53,7 +53,7 @@ Evidence: screenshots at 375, 768, and 1280 px in both themes, with "More" close
 AT-5: Tuesday puts the week recap first
 App: site
 Stories: 10
-Given: The clock is Tuesday of week 9, and no Topic of Lil Fridge is urgent.
+Given: The clock is Tuesday of week 9. Your team is a team of CPC whose Suggestions response gives no lift Noul above 0.7. The builder finds that team in the live data.
 When: The reader opens `/`.
 Then: The first Suggestion is the week recap.
 Evidence: a screenshot at 375 px in both themes, and the Suggestions response of the API with each lift Noul.
@@ -159,8 +159,8 @@ App: site
 Stories: 24, 25
 Given: The Thread of Lil Fridge is empty, and no weak spots Answer is kept.
 When: The reader taps the weak spots Topic.
-Then: The data block shows first, and the text streams under it after.
-Evidence: a screen recording at 375 px, with frames of the data block alone and of the text in the stream.
+Then: The data block shows first. The checked text then reveals under it, from a blur to sharp.
+Evidence: a screen recording at 375 px, with frames of the data block alone and of the text in its reveal.
 
 AT-19: Each tool call shows as a plain step
 App: site
@@ -487,7 +487,7 @@ App: site
 Stories: 58, 59, 64
 Given: The CPC site built with `front_door = false` in `clients/cpc/client.toml`.
 When: The reader opens `/`, the menu, and `/ask/`.
-Then: `/` shows the home page of `main`, and the menu shows the items of `main`, with Midseason Report and Trade Analyzer. `/ask/` shows the front door with `noindex`, and no page links to `/ask/`.
+Then: `/` shows the home page of `main`, and the menu shows the items of `main`, with Trade Analyzer. `/ask/` shows the front door with `noindex`, and no page links to `/ask/`.
 Evidence: screenshots of `/`, the open menu, and `/ask/` at 375, 768, and 1280 px in both themes, the `robots` meta of `out/ask/index.html`, and a search of `out/` for a link to `/ask/` with no hit.
 
 AT-60: A typed question to a personal Topic gets its own checked Answer
@@ -509,9 +509,9 @@ Evidence: the pytest output with the API log, and screenshots at 375 px in both 
 AT-62: A row with a hole never reads "fine"
 App: site
 Stories: 24
-Given: Your team is Bo Girds.
+Given: Your team is a team of CPC with a hole in one starting slot. The builder finds that team in the live data.
 When: The reader taps the weak spots Topic.
-Then: The QB row of the data block names Lamar Jackson as a hole, and its depth word is not "fine".
+Then: The row of that slot in the data block names its player as a hole, and its depth word is not "fine".
 Evidence: the weak spots slice of the API, and screenshots at 375 px in both themes.
 
 AT-63: Trade ideas around a named player keep that player on his side
@@ -557,9 +557,9 @@ Evidence: one live run: the API log with the count of offers built, kept, and ne
 AT-68: The trade pick reads a starter on IR as out now
 App: api
 Stories: 33
-Given: Bo Girds has Lamar Jackson on IR, and Fernando Mendoza plays QB.
+Given: Bo Girds has Lamar Jackson on IR, and another QB plays in his place.
 When: The trade ideas request for Bo Girds runs.
-Then: The pick sheet of each offer names Lamar Jackson as a starter who cannot play now, with his return week. No reason in the Answer says that Bo Girds does not need a QB.
+Then: The pick sheet of each offer names Lamar Jackson as a starter who cannot play now, with his return week, or with the default week when Sleeper gives none. No reason in the Answer says that Bo Girds does not need a QB.
 Evidence: one live run: the pick sheet of one offer with its `now` facts, and the Answer.
 
 AT-69: One tap on Send sends, and the keyboard closes
@@ -699,3 +699,4 @@ Out of scope "A Thread kept on the server": AT-57
 ## Revisions
 
 - 2026-11-11: Brian approved these changes. AT-17 sets the bar at 52 of the 59 questions with an expected route. AT-30 and AT-31 test the plain chat of ticket 18, with no fold. AT-48 applies only with `front_door = true` (ticket 43). The setup builds each site of the evidence with `front_door = true`. AT-59 tests the flag off. AT-60 to AT-75 test H13 to H30 of `HANDS-ON.md`, as tickets 26 to 43 built them. Both the CPC build and the NorCal build of the evidence set `front_door = true`. AT-13 says only "I can't answer that." (ticket 20). AT-21 holds each text until it passes the check, so a failed first text never shows (ticket 21). AT-66 counts a near idea as an idea (ticket 36). PRD stories 64 to 66 cover the flag, the answer blocks, and the rate limit, and AT-59, AT-70, and AT-72 to AT-74 trace to them.
+- 2026-11-11, after the evidence round: Brian approved these changes. AT-18 reads the reveal of the checked text, not a stream, as ticket 21 built. AT-5 and AT-62 take a team that the live data fits, because the live lifts and the live QB of Bo Girds changed. AT-59 drops Midseason Report, because the menu of `main` has none. AT-68 accepts the default return week when Sleeper gives none, and any QB in the place of Lamar Jackson.
