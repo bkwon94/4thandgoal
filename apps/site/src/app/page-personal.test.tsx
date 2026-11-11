@@ -186,13 +186,14 @@ describe("the personal Topics of Lil Fridge", () => {
     await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("questions today"));
   });
 
-  it("links waiver targets to the waiver page of the week that the client publishes", async () => {
+  it("shows no report link on waiver targets when the client omits the waiver package", async () => {
     streams.push(() => sse(recorded("waiver-targets")));
     render(<HomePage />);
     await tapInMore("Waiver targets");
     const answer = await articleWith("Waiver targets", "Checked");
     expect(answer.textContent).toContain("Sione Vaki");
-    expect(within(answer).getByRole("link", { name: /Read the full report/ }).getAttribute("href")).toBe("/2026/week-08/waiver/");
+    // The fixed copy of cpc holds a waiver file, but cpc builds no waiver page, so a link would give a 404.
+    expect(within(answer).queryByRole("link", { name: /Read the full report/ })).toBeNull();
   });
 
   it("never names an inner tool, a rival, or the commissioner by name in the cards", async () => {
@@ -222,13 +223,38 @@ describe("the links of the personal Topics", () => {
     return import("@/lib/data/front-door-data");
   }
 
-  it("give waiver targets the waiver page when the week has its waiver file", async () => {
-    const { loadFrontDoor } = await import("@/lib/data/front-door-data");
+  /* The client values of the build, with the package list set by the test. The fixed copy of cpc holds a waiver file,
+     so only the package list tells whether the client has the waiver page. */
+  async function dataWithPackages(packages: string[]) {
+    readFixtureSite("cpc");
+    vi.resetModules();
+    const values = await import("../generated/client-values");
+    vi.doMock("../generated/client-values", () => ({ clientValues: { ...values.clientValues, packages } }));
+    onTestFinished(() => vi.doUnmock("../generated/client-values"));
+    return import("@/lib/data/front-door-data");
+  }
+
+  it("give waiver targets the waiver page when the client takes the waiver package and the week has its file", async () => {
+    const { loadFrontDoor } = await dataWithPackages(["week", "managers", "waiver"]);
     expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE]).toEqual({
       weak_spots: `/2026/managers/${LIL_FRIDGE}/`,
       stack_up: `/2026/managers/${LIL_FRIDGE}/`,
       waiver_targets: "/2026/week-08/waiver/",
     });
+  });
+
+  it("give waiver targets no link when the client omits the waiver package, even with a waiver file", async () => {
+    const { loadFrontDoor } = await dataWithPackages(["week", "managers"]);
+    expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].waiver_targets).toBeNull();
+    expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].weak_spots).toBe(`/2026/managers/${LIL_FRIDGE}/`);
+  });
+
+  it("give the manager Topics no link when the client omits the managers package, even with a managers file", async () => {
+    const { loadFrontDoor } = await dataWithPackages(["week", "waiver"]);
+    const hrefs = loadFrontDoor()?.personalHrefs[LIL_FRIDGE];
+    expect(hrefs?.weak_spots).toBeNull();
+    expect(hrefs?.stack_up).toBeNull();
+    expect(hrefs?.waiver_targets).toBe("/2026/week-08/waiver/");
   });
 
   it("give waiver targets no link when the client publishes no waiver file", async () => {

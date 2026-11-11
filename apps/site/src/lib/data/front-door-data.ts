@@ -5,6 +5,7 @@
 import { existsSync } from "node:fs";
 import { gameId } from "@cpc/week/chapters/next-week";
 import { join } from "node:path";
+import { clientValues } from "../../generated/client-values";
 import { managerHref, managersHref, rankingsHref, waiverHref, weekHref } from "../routes";
 import { readPublished } from "./published-file";
 import { type LeagueTopic, type TopicAnswer, topicsFileSchema } from "./topics-schema";
@@ -69,10 +70,14 @@ function hrefOf(topic: LeagueTopic, ref: WeekRef, page: WeekPage, rosterId: numb
 }
 
 /* The page of each personal Topic, as the table of the spec names it. Waiver targets link to the waiver page of the week
-   only when the client publishes its waiver file, and the other two link to the manager page of the team. */
+   only when the client takes the waiver package and publishes its waiver file, and the other two link to the manager page
+   of the team only when the client takes the managers package. A client that omits a package has no route for it, even
+   with its file in the published data, so a link would give a 404. */
 function personalHrefsOf(ref: WeekRef, rosterId: number): Record<PersonalTopic, string | null> {
-  const manager = existsSync(publicFile(ref.season, "managers.json")) ? managerHref(ref.season, rosterId) : null;
-  const waiver = existsSync(publicFile(ref.season, ref.week, "waiver.json")) ? waiverHref(ref.season, ref.week) : null;
+  const hasManagers = clientValues.packages.includes("managers") && existsSync(publicFile(ref.season, "managers.json"));
+  const hasWaiver = clientValues.packages.includes("waiver") && existsSync(publicFile(ref.season, ref.week, "waiver.json"));
+  const manager = hasManagers ? managerHref(ref.season, rosterId) : null;
+  const waiver = hasWaiver ? waiverHref(ref.season, ref.week) : null;
   return { weak_spots: manager, stack_up: manager, waiver_targets: waiver };
 }
 
