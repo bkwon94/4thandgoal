@@ -1,14 +1,14 @@
-ACCEPTANCE.md: 4ea85c7c75d4af18c135ee910ea8fe367fca885c
-EVIDENCE.md: 7899da32b8fc1dbdba91a05f3a0e99ee07ec2d18
+ACCEPTANCE.md: aaf401b46ab81c396b082cb2204c2eaee4e1ca66
+EVIDENCE.md: 363990cda8729dab7bf6f0f5ea97cdf516210f50
 
 Test verdicts
-AT-1: FAIL The Then line needs a sheet that lists the 12 teams, but the 768 and 1280 px shots show only 11 rows, with the 12th team cut off, against the Observation.
+AT-1: PASS
 AT-2: PASS
 AT-3: PASS
-AT-4: FAIL The Then line needs each chip with one number, but the row files and shots show facts with more than one number, such as "Tyler Allgeier: 12.7 a game over 4 weeks, 8.8 for the season" and "6th, down 5".
+AT-4: PASS
 AT-6: PASS
 AT-7: PASS
-AT-8: FAIL The Then line needs no tool step, but run-weak-spots.txt and frame 31.92 s show the step "Reading the league…" after the tap, before the whole Answer.
+AT-8: PASS
 AT-9: PASS
 AT-10: PASS
 AT-11: PASS
@@ -72,7 +72,7 @@ AT-68: PASS
 AT-69: PASS
 AT-70: PASS
 AT-71: PASS
-AT-72: FAIL The Then line needs each total to match the standings data, but standings-points-for.txt shows the week 8 standings at 901.65 for Maye d'force B with U and 885.88 for Teehee, while the Answer shows 900.65 and 885.98.
+AT-72: PASS
 AT-73: PASS
 AT-74: PASS
 AT-75: PASS
