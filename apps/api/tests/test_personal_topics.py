@@ -735,3 +735,14 @@ def test_the_trending_list_serves_its_window_then_loads_again():
     now[0] = TRENDING_CACHE_SECONDS
     cache.trending(fetch)
     assert len(calls) == 2
+
+
+def test_a_row_with_a_hole_never_reads_a_depth_word_of_spare_players(settings, sources, fixture_raw_dir, tmp_path):
+    # Bo Girds has every QB on IR, so the QB row has a hole. The row reads "thin", the depth word of a hole, not "fine".
+    raw = _qbs_on_ir(fixture_raw_dir, tmp_path, BO_GIRDS)
+    on_ir = dataclasses.replace(sources, fetch_sleeper=lambda league_id: (load_raw(raw), test_api.FETCHED))
+    api = _api(settings, on_ir, FakeJev(answer=Checks([True]).answer), Writer())
+    rows = _block(_chunks(_ask(api, "weak_spots", roster_id=BO_GIRDS)))["rows"]
+    held = [row for row in rows if "hole:" in row["note"]]
+    assert held
+    assert all(row["note"].startswith("thin · hole:") for row in held)
