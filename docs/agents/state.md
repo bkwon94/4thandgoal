@@ -22,6 +22,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `front-door` | both | 01 `/` becomes the front door | none | |
 | `jev` | pipeline | 01 the weekly build saves one Jev check per blurb | none | |
 | `known-games` | pipeline | 08 the-site-renders-the-known-games-line | | |
+| `live-refetch` | both | 01 the live API rewrites the history of a patched week | none | |
 | `matchup-impact` | pipeline | 01 the impact fact, without the odds | none | |
 | `manager-pages` | site | 01 the past week keeps every rostered player | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
