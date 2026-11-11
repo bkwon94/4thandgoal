@@ -17,6 +17,7 @@ from test_personal_topics import LIL_FRIDGE, Checks, Fetches, Writer, _api, _ask
 
 from analyzer.sell_facts import sheet_players
 from analyzer.trade_jev import weak_starting_slots
+from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE
 from cornerstone_api.suggestion_wording import SELL_CHOICE, SELL_NOUL
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.provider.sleeper import load_raw
@@ -346,6 +347,41 @@ def test_the_key_check_needs_the_passphrase_and_a_known_team(settings, sources):
     item = {"topic": "weak_spots", "roster_id": LIL_FRIDGE, "team": None, "key": "x"}
     assert api.post(CURRENT, json={"answers": [item]}).status_code == 401
     assert api.post(CURRENT, json={"answers": [{**item, "roster_id": 99}]}, headers=HEADERS).status_code == 422
+
+
+def _read_item() -> dict:
+    return {"topic": "weak_spots", "roster_id": LIL_FRIDGE, "team": None, "key": "x"}
+
+
+def test_three_questions_in_a_row_with_their_reads_get_no_429_at_the_default_limit(settings, sources):
+    # H24: each question makes 2 reads and 2 counted requests. The 6 reads must not count toward the limit.
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    for _ in range(3):
+        assert _suggest(api).status_code == 200
+        assert api.post(CURRENT, json={"answers": [_read_item()]}, headers=HEADERS).status_code == 200
+        for _ in range(2):
+            assert api.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
+
+
+def test_the_31st_counted_request_in_a_minute_is_429_and_the_reads_still_answer(settings, sources):
+    assert RATE_LIMIT_PER_MINUTE == 30
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    for _ in range(30):
+        assert api.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
+    assert api.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 429
+    assert _suggest(api).status_code == 200
+    assert api.post(CURRENT, json={"answers": [_read_item()]}, headers=HEADERS).status_code == 200
+
+
+def test_a_read_with_a_wrong_passphrase_is_401_even_past_the_limit(settings, sources):
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    for _ in range(31):
+        api.get("/teams", params={"season": 2026}, headers=HEADERS)
+    wrong = {"X-League-Passphrase": "wrong"}
+    assert api.post(SUGGESTIONS, json={"roster_id": LIL_FRIDGE, "order": WEDNESDAY}, headers=wrong).status_code == 401
+    assert api.post(CURRENT, json={"answers": [_read_item()]}, headers=wrong).status_code == 401
 
 
 def test_the_tap_after_the_open_reads_the_league_of_the_open_and_no_sleeper_data(settings, sources, fixture_raw_dir):

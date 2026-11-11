@@ -8,9 +8,9 @@ Spec: `.scratch/front-door/PRD.md`. Source: H24 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** none
 
-**Status:** in-progress
+**Status:** in-review
 
-- [ ] `/suggestions` and `/personal/current` check the passphrase and do not count toward the limit.
-- [ ] `RATE_LIMIT_PER_MINUTE` is 30.
-- [ ] A test: 3 questions in a row, each with its reads, get no 429 at the default limit.
-- [ ] The 31st counted request in a minute still gets 429.
+- [x] `/suggestions` and `/personal/current` check the passphrase and do not count toward the limit.
+- [x] `RATE_LIMIT_PER_MINUTE` is 30.
+- [x] A test: 3 questions in a row, each with its reads, get no 429 at the default limit.
+- [x] The 31st counted request in a minute still gets 429.
