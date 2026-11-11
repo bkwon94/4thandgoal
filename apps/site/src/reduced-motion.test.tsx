@@ -389,7 +389,7 @@ function managerWithOdds(): Manager {
 
 describe("Reduced motion on the manager page", () => {
   it("shows the final grade letter and the final playoff percent at once", async () => {
-    render(<ManagerHero manager={managerWithOdds()} avatar="avatars/1.jpg" teams={12} />);
+    render(<ManagerHero manager={managerWithOdds()} avatar="avatars/1.jpg" teams={12} through={9} />);
     const numbers = screen.getByRole("group", { name: "Hero Numbers" });
     const odds = numbers.children[0].children[1] as HTMLElement;
     const grade = screen.getByRole("button", { name: /^Grade D/ });

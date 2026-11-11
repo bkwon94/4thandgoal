@@ -205,7 +205,11 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
                  "rows": _slot_rows(snapshot, grade, mine, teams, empty)}
     elif topic == "stack_up":
         best = _worst(grade)[-1]
-        block = {"fact": f"Grade {grade.letter}, {worst.position} ranks {_of(worst.rank, teams)}",
+        # The grade reads the live league, and the grade of the managers page reads the weekly build, so the two can
+        # differ. The slice and the block both say that this one is from today.
+        slice_["grade_as_of"] = "today"
+        block = {"as_of": "as of today",
+                 "fact": f"Grade {grade.letter}, {worst.position} ranks {_of(worst.rank, teams)}",
                  "stats": [{"label": "Grade", "value": grade.letter},
                            {"label": "Best spot", "value": f"{best.position} {ordinal(best.rank)}"},
                            {"label": "Weakest spot", "value": f"{worst.position} {ordinal(worst.rank)}"}],

@@ -40,6 +40,8 @@ GRADE_MEANINGS = {
              "the league, to 12. Projection Ahead reads the starters by the projections to the end of the regular "
              "season. Season Production reads the best lineup by the points per game so far. Trade Value reads the "
              "market value of the whole roster. Depth And Holes reads the spare starters and the empty starter slots.",
+    "as_of": "`as_of` says every grade here is from the live league today, so say \"as of today\". The grade of the "
+             "managers page is from the last week of the weekly build, so it can differ.",
 }
 
 
@@ -267,6 +269,7 @@ def roster_grades(data: SeasonData) -> dict:
         return {"error": "The roster grades did not load."}
     order = sorted(league.places, key=lambda rid: league.places[rid])
     return {
+        "as_of": "today",
         "what_each_field_means": GRADE_MEANINGS,
         "teams": [
             {"grade_rank": league.places[rid], "team": _team(data, rid), "grade": league.grades[rid].letter,

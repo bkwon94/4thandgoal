@@ -1,6 +1,6 @@
 data: {"type":"start"}
 
-data: {"type":"data-block","data":{"topic":"stack_up","team":3,"fact":"Grade A, QB ranks 7th of 12","stats":[{"label":"Grade","value":"A"},{"label":"Best spot","value":"WR 3rd"},{"label":"Weakest spot","value":"QB 7th"}],"rows":[{"label":"Projection Ahead","value":"3rd of 12","note":null,"roster_id":null,"you":false},{"label":"Season Production","value":"4th of 12","note":null,"roster_id":null,"you":false},{"label":"Trade Value","value":"3rd of 12","note":null,"roster_id":null,"you":false},{"label":"Depth And Holes","value":"2nd of 12","note":null,"roster_id":null,"you":false}]}}
+data: {"type":"data-block","data":{"topic":"stack_up","team":3,"as_of":"as of today","fact":"Grade A, QB ranks 7th of 12","stats":[{"label":"Grade","value":"A"},{"label":"Best spot","value":"WR 3rd"},{"label":"Weakest spot","value":"QB 7th"}],"rows":[{"label":"Projection Ahead","value":"3rd of 12","note":null,"roster_id":null,"you":false},{"label":"Season Production","value":"4th of 12","note":null,"roster_id":null,"you":false},{"label":"Trade Value","value":"3rd of 12","note":null,"roster_id":null,"you":false},{"label":"Depth And Holes","value":"2nd of 12","note":null,"roster_id":null,"you":false}]}}
 
 data: {"type":"data-key","data":{"key":"cd896e0423b43f9fb00e800bd46af8c4da7537e96b27b336b095d7d8b3d1d4c0"}}
 

@@ -240,6 +240,24 @@ def test_a_failed_check_logs_each_failed_sentence_with_its_noul(settings, source
 TYPED = "how can i improve my roster"
 
 
+def test_how_you_stack_up_says_the_grade_is_live_as_of_today(settings, sources):
+    # H19: the grade of this Topic reads the live league, and the grade of the managers page reads the weekly build, so
+    # the two can differ. The block and the slice both say "today", and the meaning of the field rides in the instructions.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    block = _block(_chunks(_ask(api, "stack_up")))
+    assert block["as_of"] == "as of today"
+    facts = _facts(writer.requests[0])
+    assert facts["grade_as_of"] == "today"
+    assert FACT_MEANINGS["grade_as_of"] in INSTRUCTIONS
+
+
+def test_the_other_personal_topics_have_no_as_of_label(settings, sources):
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    assert "as_of" not in _block(_chunks(_ask(api, "weak_spots")))
+
+
 def _prompt(messages: list[ModelMessage]) -> str:
     return next(part.content for m in messages if isinstance(m, ModelRequest) for part in m.parts
                 if isinstance(part, UserPromptPart) and isinstance(part.content, str))
@@ -305,7 +323,8 @@ def test_how_you_stack_up_shows_the_four_parts_of_the_roster_grade_with_their_ra
                                                        "Depth And Holes"]
     assert all(row["value"].endswith(" of 12") for row in block["rows"])
     facts = _facts(writer.requests[0])
-    assert set(facts) == {"team", "teams_in_league", "week", "grade", "part_ranks", "slot_ranks", "grade_read"}
+    assert set(facts) == {"team", "teams_in_league", "week", "grade", "part_ranks", "slot_ranks", "grade_read",
+                          "grade_as_of"}
     assert block["fact"].startswith(f"Grade {facts['grade']['letter']}")
     assert [part["rank"] for part in facts["part_ranks"]] == [int(row["value"][:-8].rstrip("stndrh"))
                                                               for row in block["rows"]]
