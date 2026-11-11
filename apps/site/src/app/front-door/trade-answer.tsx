@@ -245,7 +245,8 @@ function Near({ idea, asker, analyze, index }: { idea: NearIdea; asker: number; 
 function NearList({ near, label, asker, analyze, from }: { near: NearIdea[]; label: string; asker: number; analyze: string; from: number }) {
   const id = useId();
   return (
-    <div className="flex flex-col gap-sp-3">
+    // After the picks, a rule closes the picks off, so the label reads as the head of a second list.
+    <div className={`flex flex-col gap-sp-3 ${from > 0 ? "border-t border-rule pt-sp-4" : ""}`}>
       <span id={id}>
         <Caps>{label}</Caps>
       </span>
