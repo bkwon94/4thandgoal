@@ -6,7 +6,7 @@ import { copyFileSync, mkdirSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { FIXING_LINE } from "./front-door/free-answer";
 import { MISS_LEAD } from "./front-door/miss-card";
@@ -135,12 +135,20 @@ describe("the personal Topics of Lil Fridge", () => {
   });
 
   it("plays a kept Answer of the API at once, with its block and checked", async () => {
+    // A kept Answer never streams: no word plays its blur, and no "Checking" mark shows (AT-8).
+    let streamed = false;
+    const observer = new MutationObserver(() => {
+      if (document.body.textContent?.includes("Checking") || document.querySelector(".stream-word")) streamed = true;
+    });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    onTestFinished(() => observer.disconnect());
     streams.push(() => sse(recorded("weak-spots-kept")));
     render(<HomePage />);
     await tapInMore("Weak spots");
     const answer = await articleWith("Weak spots", "Checked");
     expect(answer.textContent).toContain("Weakest spot");
     expect(answer.textContent).toContain("Your team has no true holes.");
+    expect(streamed).toBe(false);
   });
 
   it("fades a failed first text, shows the fixing line, and keeps only the checked rewrite (AT-21)", async () => {
@@ -196,7 +204,8 @@ describe("the personal Topics of Lil Fridge", () => {
     }
     const text = (screen.getByRole("region", { name: "Thread" }).textContent ?? "").toLowerCase();
     for (const word of ["jev", "advisor", "finder", "rival", "brian"]) expect(text).not.toContain(word);
-  });
+    // Three streams play one after another, each with its held "Checking" and fixing line, so the test takes longer.
+  }, 15000);
 });
 
 describe("the links of the personal Topics", () => {

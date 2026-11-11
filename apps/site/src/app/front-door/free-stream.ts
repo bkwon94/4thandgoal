@@ -85,3 +85,37 @@ export function viewOf(message: UIMessage | undefined): FreeView {
 
 /* The text that the manager reads now: the rewrite once it starts, else the first text. */
 export const shownText = (view: FreeView) => (view.second ?? view.first).trim();
+
+/* A kept Answer of the API comes back whole: its text with no step of a model run before it, and its check. A live
+   run starts each text with a step. */
+export const isKept = (message: UIMessage | undefined) =>
+  !!message?.parts.some((part) => part.type === "text") && !message.parts.some((part) => part.type === "step-start");
+
+/* The time that each held state of a view first showed: "Checking" of the first text, the fixing line, and "Checking"
+   of the rewrite. */
+export type Pace = { checkFirst: number | null; fixing: number | null; checkSecond: number | null };
+export const newPace = (): Pace => ({ checkFirst: null, fixing: null, checkSecond: null });
+
+/* The view that the manager sees at `now`. A fast check sends "checking" and its end in one read, so the end waits
+   until "Checking" held for `hold` ms. The rewrite waits in the same way until the fixing line held for `hold` ms
+   (AT-20, AT-21). `pace` keeps the time that each held state first showed. `wake` is the time of the next change, or
+   null when the view shows the stream as it is. */
+export function pacedView<V extends FreeView>(view: V, pace: Pace, now: number, hold: number): { view: V; wake: number | null } {
+  const held = (key: keyof Pace) => {
+    pace[key] ??= now;
+    return now - pace[key] < hold ? pace[key] + hold : null;
+  };
+  if (view.check === null && view.second === null) return { view, wake: null };
+  // "Checking" of the first text holds before its end shows: "Checked", or the fade to the fixing line.
+  const firstWake = held("checkFirst");
+  if (firstWake !== null && (view.second !== null || view.check !== "checking")) return { view: { ...view, second: null, check: "checking" }, wake: firstWake };
+  if (view.second === null) return { view, wake: null };
+  // The fixing line holds before the rewrite shows.
+  const fixingWake = held("fixing");
+  if (fixingWake !== null) return { view: { ...view, second: "", check: "fixing" }, wake: fixingWake };
+  // "Checking" of the rewrite holds before "Checked" shows.
+  if (view.check !== "checking" && view.check !== "checked") return { view, wake: null };
+  const secondWake = held("checkSecond");
+  if (secondWake !== null && view.check === "checked") return { view: { ...view, check: "checking" }, wake: secondWake };
+  return { view, wake: null };
+}

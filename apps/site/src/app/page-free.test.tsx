@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { readFixtureSite } from "@/fixtures/sites";
 import { MISS_LEAD } from "./front-door/miss-card";
 import { FIXING_LINE } from "./front-door/free-answer";
@@ -40,6 +40,26 @@ async function ask(question: string) {
   const box = await screen.findByRole("form", { name: "Ask" });
   fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), { target: { value: question } });
   fireEvent.submit(box);
+}
+
+/* The time that `text` first shows on the page, as a MutationObserver sees each change, so a state that shows for one
+   render only is still seen. */
+function watchFor(text: string) {
+  const seen: { at: number | null } = { at: null };
+  const observer = new MutationObserver(() => {
+    if (seen.at === null && document.body.textContent?.includes(text)) seen.at = performance.now();
+  });
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  onTestFinished(() => observer.disconnect());
+  return seen;
+}
+
+/* No box from the element down fades from 0 or blurs, so the card shows as it ended. */
+function expectShown(element: HTMLElement) {
+  for (const box of [element, ...element.querySelectorAll<HTMLElement>("*")]) {
+    expect(box.style.opacity).not.toBe("0");
+    expect(box.style.filter).not.toMatch(/blur\((?!0)/);
+  }
 }
 
 async function articleWith(question: string, text: string) {
@@ -130,6 +150,36 @@ describe("the free answer of Lil Fridge", () => {
     expect(answer.textContent).toContain("In weeks 2 through 5, the most FAAB spent on one waiver pickup was 41");
     expect(answer.textContent).not.toContain("Through the weeks I could check");
     expect(answer.textContent).not.toContain(FIXING_LINE);
+  });
+
+  it("holds Checking on screen, then turns it to Checked, and the card never fades out on the hand-off (AT-20)", async () => {
+    const checking = watchFor("Checking");
+    const checked = watchFor("Checked");
+    freeWith("week-1");
+    render(<HomePage />);
+    await ask("week 1 results");
+    await articleWith("week 1 results", "Checked");
+    // The recorded stream sends "checking" and "checked" in one read, so only the hold shows "Checking".
+    expect(checking.at).not.toBeNull();
+    expect(checked.at! - checking.at!).toBeGreaterThanOrEqual(500);
+    // The kept card takes the place of the live card in the commit that saves the Thread. It shows as the live card
+    // ended, with no fade from 0 and no blur.
+    await waitFor(
+      () => {
+        expect(localStorage.getItem("cpc.thread")).toContain("you beat NFC Least");
+        expectShown(screen.getByRole("article", { name: "week 1 results" }));
+      },
+      { timeout: 3000 },
+    );
+  });
+
+  it("shows the fixing line after a failed check, before the rewrite (AT-21)", async () => {
+    const fixing = watchFor(FIXING_LINE);
+    freeWith("fix");
+    render(<HomePage />);
+    await ask("who spent the most FAAB on a waiver wire pickup");
+    await articleWith("who spent the most FAAB on a waiver wire pickup", "Checked");
+    expect(fixing.at).not.toBeNull();
   });
 
   it("gives a second failed check the honest miss, with neither text (AT-22)", async () => {

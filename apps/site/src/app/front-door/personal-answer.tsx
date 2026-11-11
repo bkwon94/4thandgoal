@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef } from "react";
 import { RotateCwIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -62,7 +62,9 @@ export function StaleLine({ line, onRefresh }: { line: string; onRefresh: () => 
 }
 
 /* A personal Answer that the browser kept. It shows as it ended, with no stream and no API call. A stale Answer, whose
-   roster changed since the API kept it, shows dimmed with no "Checked" mark, the stale line, and Refresh (AT-34). */
+   roster changed since the API kept it, shows dimmed with no "Checked" mark, the stale line, and Refresh (AT-34). It
+   takes the place of the live card when the stream ends, so its parts show at once with no fade, and the card never
+   goes blank (AT-20). A stale line that shows later still rises in. */
 export const PersonalAnswerCard = forwardRef<HTMLElement, Shared & { result: PersonalResult; stale?: { line: string; onRefresh: () => void } | null }>(
   function PersonalAnswerCard({ name, href, avatars, result, stale = null }, ref) {
     const view: PersonalView = {
@@ -78,16 +80,18 @@ export const PersonalAnswerCard = forwardRef<HTMLElement, Shared & { result: Per
       cap: null,
     };
     return (
-      <article ref={ref} aria-label={name} data-stale={stale ? "" : undefined} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
-        <QuestionBubble question={name} />
-        {/* The stale line comes before the read it warns about, so the manager sees it first. */}
-        {stale && <StaleLine line={stale.line} onRefresh={stale.onRefresh} />}
-        {/* The dim is an opacity change only, so reduced motion keeps it as is. The link to the full page shows only
-            under a "Checked" mark, so a stale read hides it too. */}
-        <div className={`flex flex-col transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${stale ? "opacity-60" : "opacity-100"}`}>
-          <PersonalBody block={result.block} view={view} live={false} href={href} avatars={avatars} />
-        </div>
-      </article>
+      <AnimatePresence initial={false}>
+        <article key="kept" ref={ref} aria-label={name} data-stale={stale ? "" : undefined} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
+          <QuestionBubble question={name} />
+          {/* The stale line comes before the read it warns about, so the manager sees it first. */}
+          {stale && <StaleLine line={stale.line} onRefresh={stale.onRefresh} />}
+          {/* The dim is an opacity change only, so reduced motion keeps it as is. The link to the full page shows only
+              under a "Checked" mark, so a stale read hides it too. */}
+          <div className={`flex flex-col transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${stale ? "opacity-60" : "opacity-100"}`}>
+            <PersonalBody block={result.block} view={view} live={false} href={href} avatars={avatars} />
+          </div>
+        </article>
+      </AnimatePresence>
     );
   },
 );
@@ -107,7 +111,7 @@ export const PersonalAnswerLive = forwardRef<
   }
 >(function PersonalAnswerLive({ name, href, avatars, target, passphrase, body, onDone, onMiss, onCap, onError }, ref) {
   // The API reads only the body, so the prompt of Claude comes from the facts.
-  const { view, busy } = useAnswerStream({
+  const { view, busy, kept } = useAnswerStream({
     target,
     passphrase,
     path: "personal",
@@ -135,7 +139,8 @@ export const PersonalAnswerLive = forwardRef<
     <article ref={ref} aria-label={name} aria-busy={busy} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={name} />
       {view.block ? (
-        <PersonalBody block={view.block} view={view} live href={href} avatars={avatars} />
+        // A kept Answer of the API shows whole at once, with no stream of its words (AT-8).
+        <PersonalBody block={view.block} view={view} live={!kept} href={href} avatars={avatars} />
       ) : (
         <p className="m-0 px-sp-1 font-mono text-meta leading-tight">
           <Shimmer>{READING_LINE}</Shimmer>

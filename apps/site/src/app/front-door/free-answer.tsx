@@ -7,18 +7,27 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { AnimatePresence, motion } from "framer-motion";
-import { forwardRef, useEffect, useMemo, useRef } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { CheckIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { AskTarget } from "./ask-api";
-import { type CheckState, type FreeResult, type FreeView, shownText, viewOf } from "./free-stream";
+import { type CheckState, type FreeResult, type FreeView, isKept, newPace, pacedView, shownText, viewOf } from "./free-stream";
 import { QuestionBubble, Surface, TopicChip } from "./miss-card";
-import { QUICK, SMOOTH, STAGGER, fadeIn } from "./motion";
+import { QUICK, SLOW, SMOOTH, STAGGER, fadeIn } from "./motion";
+
+/* The least time in ms that "Checking" and the fixing line hold on screen, so a fast check still reads as a check
+   (AT-20, AT-21): two of --duration-slow, long enough to read one short word. */
+export const HOLD_MS = 2 * SLOW * 1000;
+
+/* The wait in ms from "Checked" to the hand-off to the Thread. The mark, the last words, and the link of the full page
+   finish their fades first, so the kept card that takes the place of the live card shows the same frame (AT-20). */
+export const SETTLE_MS = 2 * SLOW * 1000;
 
 /* The stream of one live Answer of the API at `path` under /clients/<slug>/. It sends `text` once, and reads each
-   assistant message into a view with `read`. On the end it calls `settle` once with the view, or `onError` once on a
-   failed call. `settle` returns false when it has no end for the view, and a stream that then ends with no "Checked"
-   mark is an error, never a pass. */
+   assistant message into a view with `read`. The view holds "Checking" and the fixing line on screen for HOLD_MS. On
+   the end it calls `settle` once with the view, SETTLE_MS after "Checked" shows, or `onError` once on a failed call.
+   `settle` returns false when it has no end for the view, and a stream that then ends with no "Checked" mark is an
+   error, never a pass. `kept` is true for a kept Answer of the API, which shows whole at once with no hold. */
 export function useAnswerStream<V extends FreeView>({
   target,
   passphrase,
@@ -37,7 +46,7 @@ export function useAnswerStream<V extends FreeView>({
   read: (message: UIMessage | undefined) => V;
   settle: (view: V) => boolean;
   onError: () => void;
-}): { view: V; busy: boolean } {
+}): { view: V; busy: boolean; kept: boolean } {
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -57,21 +66,40 @@ export function useAnswerStream<V extends FreeView>({
     sent.current = true;
     void sendMessage({ text });
   }, [sendMessage, text]);
-  const view = read(messages.findLast((message) => message.role === "assistant"));
+  const message = messages.findLast((candidate) => candidate.role === "assistant");
+  const raw = read(message);
+  const kept = isKept(message);
+  // The pace keeps the time that each held state first showed. Each read of the time is in this render, so the view
+  // and the time of its next change agree.
+  const pace = useRef(newPace());
+  const checkedAt = useRef<number | null>(null);
+  const [, wakeUp] = useState(0);
+  const now = performance.now();
+  const { view, wake } = kept ? { view: raw, wake: null } : pacedView(raw, pace.current, now, HOLD_MS);
+  if (view.check === "checked") checkedAt.current ??= now;
+  // The time that the hand-off may run: at once for an end with no mark, else SETTLE_MS after "Checked" shows.
+  const settleAt = wake ?? (view.check === "checked" ? checkedAt.current! + SETTLE_MS : null);
+  useEffect(() => {
+    if (ended.current || settleAt === null || settleAt <= now) return;
+    const timer = setTimeout(() => wakeUp((count) => count + 1), settleAt - now);
+    return () => clearTimeout(timer);
+  });
   useEffect(() => {
     if (ended.current) return;
     if (error || status === "error") {
       ended.current = true;
       onError();
-    } else if (status === "ready" && sent.current && settle(view)) {
+    } else if (status !== "ready" || (settleAt !== null && settleAt > now)) {
+      // The stream runs, or a held state or the fades of "Checked" still show.
+    } else if (sent.current && settle(view)) {
       ended.current = true;
-    } else if (status === "ready" && messages.length > 1 && view.check !== "checked") {
+    } else if (messages.length > 1 && raw.check !== "checked") {
       // A stream that ends with no check is an error, never a pass.
       ended.current = true;
       onError();
     }
   });
-  return { view, busy: status !== "ready" };
+  return { view, busy: status !== "ready", kept };
 }
 
 /* The line while Claude writes again after a failed check (decision 11). */
@@ -211,20 +239,23 @@ function SuggestionChip({ suggestion, teamName, onPick }: { suggestion: FreeResu
   );
 }
 
-/* A free answer that the browser kept. It shows as it ended, with no stream and no API call. */
+/* A free answer that the browser kept. It shows as it ended, with no stream and no API call. It takes the place of
+   the live card when the stream ends, so its parts show at once with no fade, and the card never goes blank (AT-20). */
 export const FreeAnswerCard = forwardRef<HTMLElement, Shared & { result: FreeResult }>(function FreeAnswerCard(
   { question, result, teamName, onPick },
   ref,
 ) {
   const view: FreeView = { steps: result.steps.map((line) => ({ line, done: true })), first: result.text, second: null, check: "checked", suggestion: result.suggestion, closest: null };
   return (
-    <article ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
-      <QuestionBubble question={question} />
-      <Surface>
-        <FreeBody view={view} live={false} />
-        <SuggestionChip suggestion={result.suggestion} teamName={teamName} onPick={onPick} />
-      </Surface>
-    </article>
+    <AnimatePresence initial={false}>
+      <article key="kept" ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+        <QuestionBubble question={question} />
+        <Surface>
+          <FreeBody view={view} live={false} />
+          <SuggestionChip suggestion={result.suggestion} teamName={teamName} onPick={onPick} />
+        </Surface>
+      </article>
+    </AnimatePresence>
   );
 });
 
@@ -243,7 +274,7 @@ export const FreeAnswerLive = forwardRef<
 >(function FreeAnswerLive({ question, target, passphrase, body, teamName, onPick, onDone, onMiss, onError }, ref) {
   // The question goes in the body, so the prompt of Claude is the question.
   const fields = useMemo(() => ({ question, ...body }), [question, body]);
-  const { view, busy } = useAnswerStream({
+  const { view, busy, kept } = useAnswerStream({
     target,
     passphrase,
     path: "ask/free",
@@ -272,7 +303,8 @@ export const FreeAnswerLive = forwardRef<
             <Shimmer>Reading the league data…</Shimmer>
           </p>
         )}
-        <FreeBody view={view} live />
+        {/* A kept Answer of the API shows whole at once, with no stream of its words. */}
+        <FreeBody view={view} live={!kept} />
         {view.check === "checked" && <SuggestionChip suggestion={view.suggestion} teamName={teamName} onPick={onPick} />}
       </Surface>
     </article>
