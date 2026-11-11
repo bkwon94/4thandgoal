@@ -32,7 +32,8 @@ Do the stages in order. Each stage has a stop rule. When a stop rule fires, do n
 
 - Run each `git worktree` command in the main checkout. Commit only in a worktree, never on `main`.
 - Never use `--no-verify`. Never force-push. Never merge to `main`. Brian merges the PR.
-- Set a ticket to `in-review` after its merge into the Spec branch. Only Brian sets a ticket to `done`.
+- Set a ticket to `in-review` after its merge into the Spec branch. Before the push of stage 5, set each `in-review` ticket to `done` and remove the feature row from `docs/agents/state.md`, in one commit. A `blocked` ticket stays open. See [`pr.md`](pr.md#close-the-tickets).
+- The squash merge puts `done` on `main`. A PR that never merges never puts `done` on `main`.
 - Never write a Test verdict. Never change a line of `VERDICTS.md`: only the Judge writes it. See [`judge.md`](judge.md).
 - Never write the line `Test verdicts` in a PR comment. See [`pr.md`](pr.md#the-agent-marker).
 
