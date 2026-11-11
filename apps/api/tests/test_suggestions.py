@@ -16,7 +16,7 @@ from test_api import HEADERS, _here
 from test_personal_topics import LIL_FRIDGE, Checks, Writer, _api, _ask, _chunks, _text
 
 from analyzer.sell_facts import sheet_players
-from cornerstone_api.suggestion_wording import SELL_CHOICE
+from cornerstone_api.suggestion_wording import SELL_CHOICE, SELL_NOUL
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.provider.sleeper import load_raw
 
@@ -161,11 +161,54 @@ def test_a_sure_sell_high_pick_names_the_player_with_his_recent_run_and_his_seas
     assert f"scored {match[1]} points per game, against {match[2]} over the season" in trend
 
 
-def test_an_unsure_sell_high_pick_gives_no_fact_and_no_suggestion(settings, sources):
-    # The cutoff is the hard rule: with no option above 0.7, sell high has no fact this time.
+def _clear_sell(clear: float, lifts: dict[str, float] | None = None):
+    """The Jev answers of the lift Nouls, with `clear` as the answer of the sell high Noul."""
+    lift = Lifts(lifts).answer
+
+    def answer(key: str, question: NoulQuestion, state: dict) -> float:
+        return clear if key == SELL_NOUL else lift(key, question, state)
+
+    return answer
+
+
+def _spread_on(name: str):
+    """A Choice of sell high that puts 0.53 on the option of `name` and spreads the rest, as a live Choice does over
+    about 15 players."""
+
+    def choose(key: str, question: ChoiceQuestion, state: dict) -> dict[str, float]:
+        return {option: (0.53 if state["players"][option]["name"] == name else 0.47 / (len(question.options) - 1))
+                for option in question.options}
+
+    return choose
+
+
+def test_sell_high_asks_its_noul_in_the_same_request_as_its_choice(settings, sources):
     _publish_topics(settings)
-    api = _api(settings, sources, FakeJev(answer=Lifts({"sell_high": 0.99}).answer, choose=_sure_on(None)), Writer())
-    body = _suggest(api).json()
+    jev = FakeJev(answer=Lifts().answer, choose=_sure_on(None))
+    _suggest(_api(settings, sources, jev, Writer()))
+    request = _sell_request(jev)
+    assert set(request.questions) == {SELL_CHOICE, SELL_NOUL}
+    assert isinstance(request.questions[SELL_NOUL], NoulQuestion)
+
+
+def test_a_clear_sell_high_names_the_top_option_of_a_spread_choice(settings, sources):
+    # F1: the Choice spreads its weight over the roster, so its top is seldom above 0.7. The Noul carries the cutoff.
+    _publish_topics(settings)
+    snapshot = _here(sources, settings).snapshot(2026)
+    name = snapshot.players[sheet_players(snapshot, LIL_FRIDGE)[0]].name
+    jev = FakeJev(answer=_clear_sell(0.85), choose=_spread_on(name))
+    body = _suggest(_api(settings, sources, jev, Writer())).json()
+    assert body["facts"]["sell_high"].startswith(f"{name}: ")
+    assert body["jev"]["nouls"][SELL_NOUL] == 0.85
+
+
+def test_an_unsure_sell_high_noul_gives_no_fact_and_no_suggestion(settings, sources):
+    # The cutoff is the hard rule: with the Noul at or below 0.7, sell high has no fact, even with a sure Choice.
+    _publish_topics(settings)
+    snapshot = _here(sources, settings).snapshot(2026)
+    name = snapshot.players[sheet_players(snapshot, LIL_FRIDGE)[0]].name
+    jev = FakeJev(answer=_clear_sell(0.7, {"sell_high": 0.99}), choose=_sure_on(name))
+    body = _suggest(_api(settings, sources, jev, Writer())).json()
     assert "sell_high" not in body["facts"] and "sell_high" not in body["lifts"]
     assert "sell_high" not in body["picks"]
 

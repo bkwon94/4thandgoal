@@ -1,6 +1,7 @@
 """
 All the Jev wording of the Suggestions: the lift, one Noul per Topic over its fact, and the sell high pick, one Choice
-over the players of Your team with their facts side by side. Code reads each answer with the cutoffs of the route.
+over the players of Your team with their facts side by side and one Noul on whether any of them is a clear sell.
+Code reads each answer with the cutoffs of the route.
 """
 from cornerstone_api.ask_wording import TOPICS
 from league.jev_port import ChoiceQuestion, NoulQuestion
@@ -58,6 +59,8 @@ def lift_questions(facts: dict[str, str]) -> dict[str, NoulQuestion]:
 
 # The key of the sell high Choice in its request.
 SELL_CHOICE = "sell_high_player"
+# The key of the sell high Noul in the same request. A Choice always picks one, so the Noul says if any player fits.
+SELL_NOUL = "sell_high_clear"
 
 SELL_CONTEXT = ("A 12-team fantasy football league. The manager of one team wants to sell a player of the roster to "
                 "another manager while his price is up. Each player of the roster has his facts side by side: his "
@@ -72,9 +75,17 @@ def sell_state(team: str, week: int, players: dict[str, dict]) -> dict:
 
 
 def sell_questions(options: dict[str, str]) -> dict[str, ChoiceQuestion]:
-    """One Choice over the players of the roster. `options` holds the line of each player by his option key. A
-    Choice always picks one, so code reads it only when its top option is above the cutoff."""
+    """One Choice over the players of the roster, and one Noul on whether any of them is a clear sell. `options`
+    holds the line of each player by his option key. A Choice always picks one and spreads its weight over the
+    roster, so code reads its top option only when the Noul is above the cutoff."""
     return {
+        SELL_NOUL: NoulQuestion(
+            instructions="Does any player in `players` clearly outpace his season, at a price that another manager "
+                         "would pay now?",
+            yes="One player scores far above his season over the last weeks, and his trade value is high enough "
+                "now that another manager would pay more for him than his season is worth.",
+            no="Each player scores near his season over the last weeks or below it, or a hot run is too small for "
+               "another manager to pay more for him now."),
         SELL_CHOICE: ChoiceQuestion(
             instructions="Which player of `manager_team` has a recent run that most outpaces his season, so that "
                          "another manager would pay more for him now than his season is worth?",
