@@ -47,10 +47,16 @@ export function tradePartner(answer: TradeAnswer): number | null {
   }
 }
 
-/* The request that runs a trade Answer again for Refresh: the same question, the same partner, or Your team. */
+/* The request that runs a trade Answer again for Refresh: the same question, the same partner, or Your team. Trade
+   ideas send the typed question again, so ideas around one player stay around him. A tapped Topic holds its name as
+   its question, and sends no question. */
 export function tradeRequestOf(entry: { mode: TradeMode; question: string; answer: TradeAnswer }, rosterId: number): TradeRequest {
   if (entry.mode === "check") return { mode: "check", question: entry.question, roster_id: rosterId };
-  if (entry.mode === "ideas") return { mode: "ideas", roster_id: rosterId, partner: tradePartner(entry.answer) };
+  if (entry.mode === "ideas") {
+    const partner = tradePartner(entry.answer);
+    if (entry.question === topicName(TRADE_TOPIC_OF.ideas)) return { mode: "ideas", roster_id: rosterId, partner };
+    return { mode: "ideas", roster_id: rosterId, partner, question: entry.question };
+  }
   return { mode: "sell", roster_id: rosterId };
 }
 

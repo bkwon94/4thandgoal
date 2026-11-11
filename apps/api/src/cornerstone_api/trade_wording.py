@@ -1,6 +1,6 @@
 """
-All the wording of the Jev pick of a typed trade check: the state with the real rosters, and the 4 typed questions.
-The trade check in trade_topics.py reads the answers with code. Change a question here and run a live pick again.
+All the wording of the Jev pick of a typed trade check and of typed trade ideas: the state with the real rosters, and
+the 4 typed questions. trade_topics.py reads the answers with code. Change a question here and run a live pick again.
 """
 import re
 
@@ -8,6 +8,12 @@ from league.jev_port import ChoiceQuestion, NoulQuestion
 
 CONTEXT = ("A manager of this 12-team fantasy football league typed `manager_question` into the ask box of the league "
            "site. The manager asks about a trade of a player of `your_team` for a player of another team.")
+
+# The context of trade ideas around one player. The same 4 questions read it: the side whose Noul is sure names the
+# player and the direction, a player that the manager gives or a player that the manager gets.
+IDEAS_CONTEXT = ("A manager of this 12-team fantasy football league typed `manager_question` into the ask box of the "
+                 "league site. The manager asks for trade ideas built around one player: a player of `your_team` to "
+                 "give, or a player of another team to get.")
 
 GIVES_NAMED = "gives_named"
 GIVES_PLAYER = "gives_player"
@@ -59,7 +65,9 @@ def pick_questions(gives: dict[str, str], gets: dict[str, str]) -> dict[str, Nou
     }
 
 
-def pick_state(question: str, team: str, players: list[str], others: dict[str, list[str]]) -> dict:
-    """The state of one pick request: the question, Your team with its players, and each other team with its players."""
-    return {"context": CONTEXT, "manager_question": question, "your_team": {"name": team, "players": players},
+def pick_state(question: str, team: str, players: list[str], others: dict[str, list[str]],
+               context: str = CONTEXT) -> dict:
+    """The state of one pick request: the context, the question, Your team with its players, and each other team with
+    its players."""
+    return {"context": context, "manager_question": question, "your_team": {"name": team, "players": players},
             "other_teams": others}

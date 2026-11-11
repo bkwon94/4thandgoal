@@ -29,7 +29,7 @@ import { clearThread, getThread, saveThread } from "./thread-store";
 import { type KeyItem, type ServedSuggestions, checkCurrent, fetchSuggestions, staleLine } from "./suggestions-api";
 import { dayOrder, pickSuggestions, topicName } from "./topics";
 import { TradeCard } from "./trade-answer";
-import { type TradeRead, type TradeRequest, streamTrade } from "./trade-api";
+import { type TradeRead, type TradeRequest, type TradeSteps, addStep, endSteps, noSteps, streamTrade } from "./trade-api";
 import { getYourTeam, setYourTeam } from "./your-team-store";
 
 /* The greeting changes with the hour, so the front door reads as a person and not a page. */
@@ -169,15 +169,15 @@ export function FrontDoor({
   /* Run a trade Topic in the place of `id`: each step lands as it comes, then the whole Answer. A failure is an error
      line, never an Answer. Past a cap, the cap line takes the place of the Answer, with `closest` as its Topics. */
   const runTrade = async (id: number, question: string, request: TradeRequest, passphrase: string, closest: string[], append = false) => {
-    let steps: string[] = [];
+    let steps: TradeSteps = noSteps;
     let read: TradeRead | undefined;
     const show = (answer: Extract<ThreadItem, { kind: "trade" }>["answer"], first = false) =>
-      put(id, { kind: "trade", mode: request.mode, question, steps, answer, ...(read ? { read } : {}) }, first && append);
+      put(id, { kind: "trade", mode: request.mode, question, steps: answer ? endSteps(steps) : steps.lines, answer, ...(read ? { read } : {}) }, first && append);
     show(null, true);
     try {
       await streamTrade(askTarget, passphrase, request, {
-        onStep: (line) => {
-          steps = [...steps, line];
+        onStep: (line, live) => {
+          steps = addStep(steps, line, live);
           show(null);
         },
         onKey: (key) => {
@@ -259,7 +259,7 @@ export function FrontDoor({
       if (mode === "sell") return void (await runTrade(id, question, { mode, roster_id: team.id }, passphrase, route.closest));
       if (mode === "ideas") {
         const partner = route.team !== null && route.team !== team.id ? route.team : null;
-        return void (await runTrade(id, question, { mode, roster_id: team.id, partner }, passphrase, route.closest));
+        return void (await runTrade(id, question, { mode, roster_id: team.id, partner, question }, passphrase, route.closest));
       }
       put(id, itemOfRoute(route, question, team.id, answers));
     } catch (error) {

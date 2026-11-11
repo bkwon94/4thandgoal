@@ -4,6 +4,7 @@ Jev judgments narrow each list, in waves under the rate limits. Code builds the 
 """
 import logging
 from itertools import combinations
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -59,9 +60,23 @@ TARGET = {
     "text": "Would {team} want {player} from {owner}?",
     "yes": "{name} would start for {team} or fill a weak spot on its roster.",
     "no": "{name} would sit behind better players at his position on {team}."}
+# The target question of a search around one player, for each player who would come back to the team that gives the
+# anchor. It asks whether he fills the spot that the anchor leaves, so the offers do not aim at the weakest slot.
+ANCHOR_TARGET = {
+    "text": "Would {team} want {player} from {owner} to take the place of {anchor}?",
+    "yes": "{name} would fill the lineup spot that {anchor_name} leaves on {team}.",
+    "no": "{name} would not fill the spot of {anchor_name}: he plays another position, or he would sit behind better "
+          "players on {team}."}
 TARGET_AT = 0.6      # a player is a target at this probability or more
 TARGET_MAX = 4       # at most this many targets per side, by probability
 SHORTLIST_KEEP = 10  # the offers that Jev rates highest, by the product of the fair and the need answers
+
+
+class Anchor(BaseModel):
+    """The one player that a search of trade ideas is built around, and his side: the asker gives him, or gets him."""
+
+    player_id: str
+    side: Literal["gives", "gets"]
 
 
 class PartnerRead(BaseModel):
@@ -148,17 +163,27 @@ def _described(snapshot: Snapshot, pid: str) -> str:
     return f"{player.name} ({player.position}, {player.nfl_team or 'no team'})"
 
 
-def _target_questions(snapshot: Snapshot, asker: int, partner: int) -> dict[str, NoulQuestion]:
-    """One question per pool player of each side: "<roster id>.<player id>" asks if the other side wants him."""
+def _target_questions(snapshot: Snapshot, asker: int, partner: int,
+                      anchor: Anchor | None = None) -> dict[str, NoulQuestion]:
+    """One question per pool player of each side: "<roster id>.<player id>" asks if the other side wants him.
+
+    With an anchor, each player who would go to the team that gives the anchor gets the anchor target question.
+    """
     questions = {}
+    giver = None if anchor is None else asker if anchor.side == "gives" else partner
     for owner, team in ((partner, asker), (asker, partner)):
         fill = {"team": snapshot.teams[team].name, "owner": snapshot.teams[owner].name}
+        wording = TARGET
+        if anchor is not None and team == giver:
+            wording = ANCHOR_TARGET
+            fill |= {"anchor": _described(snapshot, anchor.player_id),
+                     "anchor_name": snapshot.players[anchor.player_id].name}
         for pid in snapshot.rosters[owner]:
             if not in_pool(snapshot, pid, owner):
                 continue
             words = {**fill, "player": _described(snapshot, pid), "name": snapshot.players[pid].name}
             questions[f"{owner}.{pid}"] = NoulQuestion(
-                TARGET["text"].format(**words), TARGET["yes"].format(**words), TARGET["no"].format(**words))
+                wording["text"].format(**words), wording["yes"].format(**words), wording["no"].format(**words))
     return questions
 
 
@@ -167,6 +192,19 @@ def _pick_targets(nouls: dict[str, float], owner: int) -> list[str]:
     rated = [(p, key.partition(".")[2]) for key, p in nouls.items()
              if key.partition(".")[0] == str(owner) and p >= TARGET_AT]
     return [pid for _, pid in sorted(rated, key=lambda item: (-item[0], item[1]))[:TARGET_MAX]]
+
+
+def _anchored(picked: list[str], anchor: str) -> list[str]:
+    """The targets of the side of the anchor: the anchor first, then the top picks of Jev, at most TARGET_MAX in all.
+
+    The manager named the anchor, so he is a target whatever the target answer of Jev says about him.
+    """
+    return [anchor] + [pid for pid in picked if pid != anchor][:TARGET_MAX - 1]
+
+
+def _holds(trade: ProposedTrade, anchor: Anchor) -> bool:
+    """True when the trade holds the anchor on his side: the first side for "gives", the second side for "gets"."""
+    return anchor.player_id in trade.sides[0 if anchor.side == "gives" else 1].player_ids
 
 
 def build_offers(asker: int, partner: int, asker_targets: list[str], partner_targets: list[str],
@@ -232,7 +270,7 @@ def _log_target_questions(snapshot: Snapshot, partner: int, keys: list[str], nou
 
 
 def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves: JevWaves | None = None,
-           stage: Stage = quiet) -> Shortlist:
+           stage: Stage = quiet, anchor: Anchor | None = None) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
     1. The partner filter: four Jev questions per partner. Only a partner with four yes answers goes on.
@@ -241,10 +279,17 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     4. The shortlist: Jev asks the fair and the need questions of each offer. The SHORTLIST_KEEP offers with the
        highest product stay.
     A failed Jev request drops what it would judge, and it logs. It never reads as a no and never stops the press.
+    With an `anchor`, he is a target of his side, and each offer holds him on that side (a hard rule). An anchor that
+    the asker gets keeps the search to his roster, because only that roster can give him.
     `stage` gets one plain line after the partner filter, the offers, and the shortlist. The default drops them.
     """
     waves = waves or JevWaves(jev)
+    if anchor is not None and anchor.side == "gets":
+        # A player who left each roster since the pick keeps the partner, and no offer can hold him.
+        partner = next((rid for rid, roster in snapshot.rosters.items() if anchor.player_id in roster), partner)
     partners = [partner] if partner is not None else sorted(rid for rid in snapshot.rosters if rid != asker)
+    stage(f"Checking {len(partners)} teams for a fit" if len(partners) > 1 else "Checking the other team for a fit",
+          live=True)
 
     filtered = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid),
                                                 _filter_questions(snapshot, asker, rid)) for rid in partners},
@@ -261,8 +306,9 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
                  ", ".join(f"{key}={p:.2f}" for key, p in answers.items()))
     passing = [read.roster_id for read in reads if read.passed]
     stage(f"Checked {len(partners)} teams for a fit" if len(partners) > 1 else "Checked the other team for a fit")
+    stage("Building offers", live=True)
 
-    target_questions = {rid: _target_questions(snapshot, asker, rid) for rid in passing}
+    target_questions = {rid: _target_questions(snapshot, asker, rid, anchor) for rid in passing}
     rated = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid), target_questions[rid])
                        for rid in passing}, "targets")
     targets: dict[int, dict[str, list[str]]] = {}
@@ -273,14 +319,21 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
         if response is None:
             continue
         sides = {"asker": _pick_targets(response.nouls, asker), "partner": _pick_targets(response.nouls, rid)}
+        if anchor is not None:
+            # A player out of the pool, such as a kicker, breaks a hard rule, so no offer can hold him.
+            owner, side = (asker, "asker") if anchor.side == "gives" else (rid, "partner")
+            if in_pool(snapshot, anchor.player_id, owner):
+                sides[side] = _anchored(sides[side], anchor.player_id)
         targets[rid] = sides
         log.info("Finder targets with %s: the asker gives %s; the partner gives %s", snapshot.teams[rid].name,
                  [snapshot.players[pid].name for pid in sides["asker"]],
                  [snapshot.players[pid].name for pid in sides["partner"]])
-        offers_by_partner[rid] = build_offers(asker, rid, sides["asker"], sides["partner"], snapshot)
+        built = build_offers(asker, rid, sides["asker"], sides["partner"], snapshot)
+        offers_by_partner[rid] = [trade for trade in built if anchor is None or _holds(trade, anchor)]
     offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
     log.info("Finder offers of %s: %d", snapshot.teams[asker].name, len(offers))
     stage(f"Built {len(offers)} offers" if len(offers) != 1 else "Built one offer")
+    stage("Weighing the offers", live=True)
     for trade in offers:
         _log_offer(snapshot, trade)
 

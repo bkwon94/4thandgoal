@@ -140,9 +140,11 @@ def pick_sells(roster_id: int, snapshot: Snapshot, *, jev: Jev, news: NewsFeed, 
 
     `stage` gets one plain line after the sheet, one after the guards pass, and one with the count of the picks.
     """
+    stage("Lining up your players", live=True)
     facts = sell_high_sheet(snapshot, roster_id, news)
     count = len(sheet_players(snapshot, roster_id))
     stage(f"Lined up your {count} players" if count != 1 else "Lined up your one player")
+    stage("Checking each number of the picks", live=True)
     out = call_with_retry(
         call, lambda feedback: build_sell_prompt(snapshot, roster_id, facts, feedback), SellHighOut,
         lambda out: check_sells(out, snapshot, roster_id, facts), subject="sell high pick", log_label="sell high",

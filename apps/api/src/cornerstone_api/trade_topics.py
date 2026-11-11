@@ -17,14 +17,18 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from analyzer import routes as analyzer_routes
+from analyzer.finder_search import Anchor
 from analyzer.routes import FindRequest, ServedClient
+from analyzer.stage import Stage
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from cornerstone_api.ask import QUESTION_MAX, YES, Asker, ClientAsker
 from cornerstone_api.trade_wording import (
+    CONTEXT,
     GETS_NAMED,
     GETS_PLAYER,
     GIVES_NAMED,
     GIVES_PLAYER,
+    IDEAS_CONTEXT,
     option_keys,
     pick_questions,
     pick_state,
@@ -39,6 +43,9 @@ router = APIRouter()
 
 # The line of a failed Jev pick or a failed press with no message of its own. A failed call is never a "no".
 RETRY_LINE = "The question did not go through. Ask again."
+# The step line of trade ideas when the typed question names no one player that Jev is sure of. The search then aims at
+# the weakest slot, as a tap does.
+NO_ONE_PLAYER = "Found no one player in the question, so these ideas aim at your weakest spot"
 # The header of the stream protocol of the AI SDK, so useChat can read the stream as it is.
 STREAM_HEADERS = {"x-vercel-ai-ui-message-stream": "v1", "Cache-Control": "no-cache"}
 
@@ -93,9 +100,11 @@ def _top(probabilities: dict[str, float]) -> tuple[str, float]:
     return key, probabilities[key]
 
 
-def pick_players(jev: Jev, question: str, teams: list[dict], asker: int) -> tuple[Pick, Pick, JevResponse]:
+def pick_players(jev: Jev, question: str, teams: list[dict], asker: int,
+                 context: str = CONTEXT) -> tuple[Pick, Pick, JevResponse]:
     """One Jev request for the player that the manager gives and the player that the manager gets, over the real
-    rosters of `teams`, as the teams route gives them. A failed request raises JevError."""
+    rosters of `teams`, as the teams route gives them. `context` says what the manager asks for: a trade check by
+    default, or trade ideas. A failed request raises JevError."""
     team_of = {player["player_id"]: team for team in teams for player in team["players"]}
     mine = next(team for team in teams if team["roster_id"] == asker)
     others = [team for team in teams if team["roster_id"] != asker]
@@ -108,7 +117,7 @@ def pick_players(jev: Jev, question: str, teams: list[dict], asker: int) -> tupl
     give_keys = option_keys({pid: _name(team_of[pid], pid) for pid in gives})
     get_keys = option_keys({pid: _name(team_of[pid], pid) for pid in gets})
     state = pick_state(question, mine["team"], list(gives.values()),
-                       {team["team"]: [line(player) for player in team["players"]] for team in others})
+                       {team["team"]: [line(player) for player in team["players"]] for team in others}, context)
     answers = jev.ask(state, pick_questions({give_keys[pid]: text for pid, text in gives.items()},
                                             {get_keys[pid]: text for pid, text in gets.items()}))
 
@@ -119,6 +128,19 @@ def pick_players(jev: Jev, question: str, teams: list[dict], asker: int) -> tupl
                     roster_id=team_of[pid]["roster_id"])
 
     return side(GIVES_NAMED, GIVES_PLAYER, give_keys), side(GETS_NAMED, GETS_PLAYER, get_keys), answers
+
+
+def ideas_anchor(gives: Pick, gets: Pick) -> tuple[Anchor, Pick] | None:
+    """The anchor of trade ideas from the two picks of one Jev request, and the pick of the anchor.
+
+    Exactly one sure side names the player and the direction. Two sure sides or none name no one player, so the
+    ideas aim at the weakest slot, as a tap does.
+    """
+    if gives.sure and not gets.sure:
+        return Anchor(player_id=gives.player_id, side="gives"), gives
+    if gets.sure and not gives.sure:
+        return Anchor(player_id=gets.player_id, side="gets"), gets
+    return None
 
 
 def _name(team: dict, player_id: str) -> str:
@@ -195,8 +217,13 @@ def capped_press(asker: Asker, roster_id: int, emit: Emit, press: Callable[[], d
                 asker.caps.record(roster_id, meter.usd, asker.clock(), counts=answered)
 
 
-def _step(emit: Emit) -> Callable[[str], None]:
-    return lambda line: emit("data-step", {"line": line})
+def _step(emit: Emit) -> Stage:
+    """The stage callback of a stream: each line goes out as a step part, with whether it is a live line."""
+
+    def step(line: str, *, live: bool = False) -> None:
+        emit("data-step", {"line": line, "live": live})
+
+    return step
 
 
 def _teams(asker: ClientAsker, served: analyzer_routes.Served, roster_id: int) -> list[dict]:
@@ -247,25 +274,46 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
 
 
 class TradeIdeasRequest(BaseModel):
-    """The body of trade ideas: the roster id of Your team, and the partner roster that a typed question names."""
+    """The body of trade ideas: the roster id of Your team, the partner roster that a typed question names, and the
+    typed question. A tap of the Suggestion sends no question."""
 
     roster_id: int
     partner: int | None = None
+    question: str | None = Field(default=None, min_length=1, max_length=QUESTION_MAX)
 
 
 @router.post("/trade-ideas")
 def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
                 served: ServedClient) -> StreamingResponse:
     """Trade ideas for Your team: the steps of the find press and its document. It runs in each client, whatever the
-    `finder` flag of the analyzer page says (spec, "The judgment Topics")."""
-    _teams(asker, served, body.roster_id)
+    `finder` flag of the analyzer page says (spec, "The judgment Topics").
+
+    A typed question goes first to one Jev pick of the player it names. With a sure pick, each offer holds him on his
+    side, and a player that the manager gets makes his team the partner. An unsure pick says so in a step line, and
+    the search aims at the weakest slot, as a tap does.
+    """
+    teams = _teams(asker, served, body.roster_id)
 
     def work(emit: Emit) -> None:
-        pair = FindRequest(season=asker.season, asker=body.roster_id, partner=body.partner)
+        step = _step(emit)
+        anchor, partner = None, body.partner
+        if body.question is not None:
+            gives, gets, answers = pick_players(asker.jev, body.question.strip(), teams, body.roster_id, IDEAS_CONTEXT)
+            emit("data-picks", {"model": answers.model, "gives": {**asdict(gives), "sure": gives.sure},
+                                "gets": {**asdict(gets), "sure": gets.sure}})
+            picked = ideas_anchor(gives, gets)
+            if picked is None:
+                step(NO_ONE_PLAYER)
+            else:
+                anchor, pick = picked
+                step(f"Found {pick.name}")
+                if anchor.side == "gets":
+                    partner = pick.roster_id
+        pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, anchor=anchor)
         document = capped_press(asker, body.roster_id, emit,
-                                lambda: analyzer_routes.find_trades(request, pair, served, _step(emit)))
+                                lambda: analyzer_routes.find_trades(request, pair, served, step))
         if document is not None:
-            _send_key(asker, served, emit, "trade_ideas", body.roster_id, body.partner)
+            _send_key(asker, served, emit, "trade_ideas", body.roster_id, partner)
             emit("data-answer", {"kind": "ideas", "document": document})
 
     return stream(work)

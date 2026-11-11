@@ -9,7 +9,15 @@ import pytest
 from cpc import cpc_client
 from fakes import FakeJev
 
-from analyzer.finder_search import SHORTLIST_KEEP, TARGET_MAX, _out_with_no_return, offer_id, search
+from analyzer.finder_search import (
+    SHORTLIST_KEEP,
+    TARGET_MAX,
+    Anchor,
+    _out_with_no_return,
+    in_pool,
+    offer_id,
+    search,
+)
 from analyzer.jev_waves import REQUESTS_PER_SECOND, JevWaves, WaveRequest, plan_waves
 from analyzer.measures import is_handcuff, trade_handcuffs
 from league.jev_port import JevError, NoulQuestion
@@ -171,6 +179,59 @@ def test_a_failed_jev_request_drops_the_partner_and_never_raises(snap):
     assert all(read.failed and not read.passed for read in found.partners)
     assert found.offers == [] and found.shortlist == []
 
+
+def _last_pool_player(snap, roster_id):
+    """The pool player of the roster with the last id in string order. A tie of the FakeJev answers breaks by the id, so
+    he is never one of the top targets on his own."""
+    return max(pid for pid in snap.rosters[roster_id] if in_pool(snap, pid, roster_id))
+
+
+def test_an_anchor_that_the_asker_gives_is_in_each_offer_on_the_asker_side(snap):
+    anchor = _last_pool_player(snap, ASKER)
+    found = search(ASKER, None, snap, FakeJev(), anchor=Anchor(player_id=anchor, side="gives"))
+    assert found.offers and found.shortlist
+    for trade in found.offers + [offer.trade for offer in found.shortlist]:
+        assert trade.sides[0].roster_id == ASKER and anchor in trade.sides[0].player_ids
+        assert all(anchor not in side.player_ids for side in trade.sides[1:])
+    # Each target list of the asker side stays at most TARGET_MAX, with the anchor in it.
+    assert all(anchor in sides["asker"] and len(sides["asker"]) <= TARGET_MAX for sides in found.targets.values())
+
+
+def test_an_anchor_that_the_asker_gets_keeps_the_search_to_his_roster_and_each_offer_holds_him(snap):
+    anchor = _last_pool_player(snap, PARTNER)
+    jev = FakeJev()
+    found = search(ASKER, None, snap, jev, anchor=Anchor(player_id=anchor, side="gets"))
+    # Only the roster of the anchor can give him, so the partner filter asks of that roster alone.
+    assert [r.state["teams"]["partner"]["roster_id"] for r in _filter_requests(jev)] == [PARTNER]
+    assert found.offers and found.shortlist
+    for trade in found.offers + [offer.trade for offer in found.shortlist]:
+        assert [side.roster_id for side in trade.sides] == [ASKER, PARTNER]
+        assert anchor in trade.sides[1].player_ids
+
+
+
+def test_an_anchored_search_asks_if_each_player_coming_back_would_take_the_place_of_the_anchor(snap):
+    anchor = _last_pool_player(snap, ASKER)
+    name = snap.players[anchor].name
+    jev = FakeJev()
+    search(ASKER, PARTNER, snap, jev, anchor=Anchor(player_id=anchor, side="gives"))
+    [request] = _target_requests(jev)
+    for key, question in request.questions.items():
+        owner = int(key.partition(".")[0])
+        # A player of the partner would come to the asker, so his question names the anchor he would replace.
+        assert (f"take the place of {name}" in question.instructions) == (owner == PARTNER), key
+    # A gets anchor turns it around: each player of the asker would go to the partner in his place.
+    other = _last_pool_player(snap, PARTNER)
+    jev = FakeJev()
+    search(ASKER, PARTNER, snap, jev, anchor=Anchor(player_id=other, side="gets"))
+    [request] = _target_requests(jev)
+    other_name = snap.players[other].name
+    assert all((f"take the place of {other_name}" in q.instructions) == key.startswith(f"{ASKER}.")
+               for key, q in request.questions.items())
+    # The plain search keeps the plain target question.
+    jev = FakeJev()
+    search(ASKER, PARTNER, snap, jev)
+    assert not any("take the place of" in q.instructions for r in _target_requests(jev) for q in r.questions.values())
 
 def _tiny(n):
     return {str(i): WaveRequest({"n": i}, {"q": NoulQuestion("Is it?", "yes", "no")}) for i in range(n)}
