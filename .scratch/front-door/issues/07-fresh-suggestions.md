@@ -8,9 +8,12 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-6, AT-8, AT-34, AT-35.
 
 **Blocked by:** 03, 06
 
-**Status:** in-review
+**Status:** done
 
 - [x] A lift Noul above 0.7 puts its Topic first (AT-6).
 - [x] The top personal Suggestion opens at once after 30 s, and the log shows the build on open (AT-8).
 - [x] A roster change dims the weak spots Answer with the stale line and no "checked" mark (AT-34).
 - [x] Refresh streams a fresh Answer with "checked" (AT-35).
+
+## Comments
+- Closes with the squash merge of the spec PR.

@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: row H5 of `.scratch/front-door/HANDS
 
 **Blocked by:** None
 
-**Status:** in-review
+**Status:** done
 
 - [x] A player with a rest of season projection of 0 lands in no add bucket: `best_adds`, `trending`, `sneaky`, or `stashes`.
 - [x] A player behind an out backup with a healthy starter above is not sneaky. A player with every player above him out is sneaky.
@@ -16,3 +16,6 @@ Spec: `.scratch/front-door/PRD.md`. Source: row H5 of `.scratch/front-door/HANDS
 - [x] The `trending` bucket comes first in `waiver_list`, and the prompt of the Topic says to lean on it.
 - [x] `waiver_list` holds no `bid`, the block shows no bid, and the prompt says to quote no FAAB bid.
 - [x] `schema_version` and the site types of `waiver.json` stay the same. The waiver page shows a bucket of fewer than 8 players.
+
+## Comments
+- Closes with the squash merge of the spec PR.

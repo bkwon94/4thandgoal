@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H16 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** 26
 
-**Status:** in-review
+**Status:** done
 
 ## Done
 
@@ -21,3 +21,6 @@ Spec: `.scratch/front-door/PRD.md`. Source: H16 of `.scratch/front-door/HANDS-ON
 - [x] Send holds busy with the spinner while a question routes.
 - [x] One `Shimmer` remains, for the fixing line of a free answer.
 - [x] The trade stream sends no check, so trade kinds show no "Checking" mark.
+
+## Comments
+- Closes with the squash merge of the spec PR.

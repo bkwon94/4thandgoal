@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H11 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** 03, 05, 06
 
-**Status:** in-review
+**Status:** done
 
 - [x] The site sends the turns of the Thread, newest last, and cuts the oldest past the limit.
 - [x] The API cuts a longer list from the oldest end, and each turn is plain text under its cap.
@@ -17,3 +17,6 @@ Spec: `.scratch/front-door/PRD.md`. Source: H11 of `.scratch/front-door/HANDS-ON
 - [x] The Jev check never reads the turns.
 - [x] A tapped personal Topic sends no turns and keeps its key and its kept Answer.
 - [x] On a local API, as CPC roster 6, "cant choose mine" after "who has the best roster" names the best other team.
+
+## Comments
+- Closes with the squash merge of the spec PR.

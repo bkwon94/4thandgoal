@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-1, AT-2, AT-47, AT-48, A
 
 **Blocked by:** none. Before this ticket, `cpc:implement` merges `main` into `front-door`, so the branch holds the merge of `manager-brain`.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The sheet lists the 12 teams of CPC, with no skip, no close, and no login (AT-1).
 - [x] A reload keeps Your team, and no sheet shows (AT-2).
@@ -16,3 +16,6 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-1, AT-2, AT-47, AT-48, A
 - [x] The week 8 report, the rankings, the managers, the midseason, and the Trade page render as before (AT-49).
 - [ ] The ask box sits fully above the bottom safe area in an iPhone viewport (AT-47).
 - [x] Each screen meets the DESIGN BAR of the map, in light and dark.
+
+## Comments
+- Closes with the squash merge of the spec PR.

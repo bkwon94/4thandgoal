@@ -13,7 +13,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: the live run of ticket 31, trade ide
 
 **Blocked by:** 31
 
-**Status:** in-review
+**Status:** done
 
 - [x] The pick sheet of a Bo Girds offer holds `6.now`, with the weak QB slot now and Lamar Jackson as a starter who cannot play now, with his return week.
 - [x] The depth fact reads "Of them, the QBs who can play now go from 1 to 2" when a QB above the line cannot play now.
@@ -21,3 +21,6 @@ Spec: `.scratch/front-door/PRD.md`. Source: the live run of ticket 31, trade ide
 - [x] An anchored search asks no partner filter question, and every partner goes on. The plain search keeps the filter.
 - [x] `DOCUMENT_VERSION` is 25.
 - [x] Live on port 8133: the tap and the follow-up for Bo Girds, and "trade ideas for kenneth walker", each run twice.
+
+## Comments
+- Closes with the squash merge of the spec PR.

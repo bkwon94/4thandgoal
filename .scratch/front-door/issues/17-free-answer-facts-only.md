@@ -8,9 +8,12 @@ Spec: `.scratch/front-door/PRD.md`. Source: H6 of `.scratch/front-door/HANDS-ON.
 
 **Blocked by:** 05
 
-**Status:** in-review
+**Status:** done
 
 - [x] `INSTRUCTIONS` of `free_wording.py` forbids advice, a rating, and an opinion word.
 - [x] `REWRITE` removes or restates each failed sentence and adds no new claim.
 - [x] A unit test reads the text of both prompts.
 - [x] A live free answer on the trade question and on 2 opinion questions passes the check, with at most one rewrite.
+
+## Comments
+- Closes with the squash merge of the spec PR.

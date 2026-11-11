@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-11, AT-12, AT-19, AT-20,
 
 **Blocked by:** 04
 
-**Status:** in-review
+**Status:** done
 
 - [x] The first commit pins `pydantic-ai`, `ai`, and `@ai-sdk/react` to a pair that the adapter supports.
 - [x] "highest scoring team this season" names the team with the most points for in weeks 1 to 8 (AT-11), with the top Topic chip under it (AT-12).
@@ -16,3 +16,6 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-11, AT-12, AT-19, AT-20,
 - [x] The mark turns from "checking" to "checked" in the ink color, with no bounce (AT-20).
 - [x] A pytest run with one failed claim shows the rewrite, and one with two shows the honest miss (AT-21, AT-22).
 - [x] Each new word shows blurred, then sharp (AT-44). No stop control shows (AT-55).
+
+## Comments
+- Closes with the squash merge of the spec PR.

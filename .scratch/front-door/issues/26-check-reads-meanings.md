@@ -14,7 +14,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H17 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** 25
 
-**Status:** in-review
+**Status:** done
 
 - [x] The check state of a personal Topic holds the fact meanings, from the same dict as the instructions.
 - [x] `weak_starting_slots` in the weak spots slice is a list of rows.
@@ -22,3 +22,6 @@ Spec: `.scratch/front-door/PRD.md`. Source: H17 of `.scratch/front-door/HANDS-ON
 - [x] A personal Topic that ends as a miss still shows its data block.
 - [x] Live: weak spots for Bo Girds passes the check on the first text in at least 4 of 5 runs.
 - [x] A typed question reaches the prompt and the check question of its personal Topic, and reads no stored Answer.
+
+## Comments
+- Closes with the squash merge of the spec PR.

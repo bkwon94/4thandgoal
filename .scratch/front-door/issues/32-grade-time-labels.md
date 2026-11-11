@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H19 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 ## Boxes
 
@@ -18,3 +18,5 @@ Spec: `.scratch/front-door/PRD.md`. Source: H19 of `.scratch/front-door/HANDS-ON
 - [x] The `roster_grades` tool result carries `as_of`, and `what_each_field_means` says what it means.
 - [x] Each part has a test that failed first and now passes.
 
+## Comments
+- Closes with the squash merge of the spec PR.

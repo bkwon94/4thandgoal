@@ -8,8 +8,11 @@ Spec: `.scratch/front-door/PRD.md`. Source: AT-8 in Judge round 1 of 2026-11-11.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] Red first: a test that taps a personal Topic whose Answer is kept and samples each frame. No frame shows a step line.
 - [x] A fresh Answer still shows its step lines during the wait (AT-65 stays true).
 - [x] The fix shows no step line until the stream sends a step, or holds the first step line for a short intent delay, so a fast kept Answer never shows one.
+
+## Comments
+- Closes with the squash merge of the spec PR.

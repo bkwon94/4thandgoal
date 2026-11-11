@@ -8,9 +8,12 @@ Spec: `.scratch/front-door/PRD.md`. Source: H9 of `.scratch/front-door/HANDS-ON.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The miss line reads "I can't answer that." and lists no cause.
 - [x] The refusal line reads "I can't answer that. Ask about your team, another team, or the league."
 - [x] The prompts of the personal Topics and the Suggestions drop the phrase "front door".
 - [x] A test checks that no rendered miss or refusal holds the words "front door".
+
+## Comments
+- Closes with the squash merge of the spec PR.

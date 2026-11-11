@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: row H5 of `.scratch/front-door/HANDS
 
 **Blocked by:** 15
 
-**Status:** in-review
+**Status:** done
 
 - [x] The candidates follow the hard rules and the cost cap only: no rostered player, a trade position, a projection above 0, and at most 48.
 - [x] The facts of each candidate say why he trends: the Sleeper adds, the depth chart place, each player above him out now, and the last 3 weeks.
@@ -19,3 +19,6 @@ Spec: `.scratch/front-door/PRD.md`. Source: row H5 of `.scratch/front-door/HANDS
 - [x] The key covers the candidate facts, so a roster change or a new injury gives a fresh Answer. A kept Answer keeps its block.
 - [x] The trending list stays 30 minutes per client.
 - [ ] Brian reads the live Answer for Bo Girds and one other team.
+
+## Comments
+- Closes with the squash merge of the spec PR.

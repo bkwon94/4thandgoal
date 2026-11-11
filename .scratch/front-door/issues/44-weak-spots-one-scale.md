@@ -13,7 +13,7 @@ Cause: `starters` takes the projected rank of the roster grade. `weak_starting_s
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] Red first: `test_weak_spots_slice_has_one_hole_scale` in `apps/api/tests/test_personal_topics.py`. Each weak row with a player names a player not in `starters`.
 - [x] `test_each_weak_starting_slot_of_weak_spots_is_a_row` reads the IR fixture. `test_weak_spots_read_a_starter_on_ir_as_out_now_as_trade_ideas_do` stays green.
@@ -26,3 +26,6 @@ Cause: `starters` takes the projected rank of the roster grade. `weak_starting_s
 - Raw Jev probes of the diagnosis: `/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/4d723efb-48cd-4a3b-af4f-6d2df841dc1d/scratchpad/weak-spots-checks.jsonl`.
 - The check reads `FACT_MEANINGS`, not `TOPIC_ASKS`. So `FACT_MEANINGS` holds `weakest_position` too: the position with the worst `rank` in `slot_ranks`. A probe on the live slice: "Your weakest position is QB, which ranks 7th of 12" went from 0.63 to 0.98, and the false "RB" claim went from 0.20 to 0.06.
 - Live after the fix: 3 of 5 runs pass on the first text, and 5 of 5 end as checked. The two first-text fails sit at 0.69 and 0.70. One drops "inside the starter count" from `depth_means`. One adds "so they are not a worry". Neither is the hole scale.
+
+## Comments
+- Closes with the squash merge of the spec PR.

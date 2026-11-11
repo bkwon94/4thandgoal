@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H18 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** 27, 30
 
-**Status:** in-review
+**Status:** done
 
 - [x] The Trade ideas wording covers a follow-up that refines the earlier ideas.
 - [x] The route eval holds at least 6 follow-ups, each after a trade ideas turn, and each routes to Trade ideas; the bar holds.
@@ -33,3 +33,6 @@ a WR: each sends Walker, Kyren Williams, or McBride for a QB. The pick kept none
 list helps your lineup enough to send, since each one gives up a top starter at a thin spot for a quarterback you do
 not need." The second run served that kept Answer under the key of the limit. The live box stays open: the rule holds,
 but no offer shows. Brian decides if the empty line is the right answer.
+
+## Comments
+- Closes with the squash merge of the spec PR.

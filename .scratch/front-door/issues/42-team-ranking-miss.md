@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H29 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** 41
 
-**Status:** in-review
+**Status:** done
 
 - [x] The cause, with the failed sentences and their nouls.
 - [x] Live: the question gives a list of the teams by points for, checked, in 3 of 3 runs.
@@ -33,3 +33,6 @@ The standings result now holds `what_each_field_means` and `teams_by_points_for`
 - Before: 2 of 3 live runs ended as the honest miss.
 - After: 3 of 3 live runs checked on the first text, with a list of 5 teams by points for.
 - Block eval: 19 of 20. Case 5 now gives a list.
+
+## Comments
+- Closes with the squash merge of the spec PR.

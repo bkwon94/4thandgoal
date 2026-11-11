@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-9, AT-10, AT-13, AT-14, 
 
 **Blocked by:** 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] "who am i playing sunday" opens the next matchup of Lil Fridge (AT-9).
 - [ ] "how's Bo Girds doing" answers with the 9-7 record of Bo Girds (AT-10).
@@ -18,3 +18,6 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-9, AT-10, AT-13, AT-14, 
 - [x] No header and a wrong header both get 401, with no Jev call (AT-41). The store has no Thread and no login table (AT-57).
 - [x] The live route eval of the 43 questions of decision 09 hits at least 35 of 40 (AT-17).
 - [x] ADR 0031 says what goes to TypeSafe and to Anthropic, that the miss log lives on Fly, and that each entry stays 90 days (AT-52).
+
+## Comments
+- Closes with the squash merge of the spec PR.

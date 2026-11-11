@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H20 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test proves one tap on the send arrow sends while the field has focus.
 - [x] On WebKit with a phone viewport and touch, one tap sends.
@@ -20,3 +20,6 @@ The press on Send blurs the field at `mousedown`. The blur drops `data-keyboard`
 ## Fix
 
 Send cancels the default of `mousedown`, so the field keeps the focus and the keyboard stays open. The same WebKit run then logs `mousedown`, `mouseup`, `click`, and `submit`, all on Send at y=262. Proof: `ask-box.test.tsx` (vitest) and `e2e/front-door.spec.ts` (floor project), both red before the fix.
+
+## Comments
+- Closes with the squash merge of the spec PR.

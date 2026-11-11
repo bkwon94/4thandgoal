@@ -8,10 +8,13 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-37, AT-38, AT-39, AT-40.
 
 **Blocked by:** 05
 
-**Status:** in-review
+**Status:** done
 
 - [x] At 25 Answers today, Lil Fridge sees "That's 25 questions today. Ask again tomorrow." with no Claude call (AT-37).
 - [x] CPC at $25.00 sees the league line, and NorCal at $0 still gets a free answer (AT-38).
 - [x] The pass of $20.00 logs one alert, and a later answer logs no second alert (AT-39).
 - [x] Past the team cap, the power rankings Answer still shows in full (AT-40).
 - [x] No cap line names a manager.
+
+## Comments
+- Closes with the squash merge of the spec PR.

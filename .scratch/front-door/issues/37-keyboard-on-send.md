@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H22 and H23 of `.scratch/front-door/
 
 **Blocked by:** 34
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test proves Send closes the keyboard after the question goes, and the first tap on Send still sends.
 - [x] A test proves a tap on a chip, on More, and on a row of More works on the first tap while the field has focus.
@@ -24,3 +24,6 @@ The cause is the cause of H20, on the chips. A press on a chip blurs the field a
 `keyboard-tap.ts` holds two moves. `keepFocus` cancels the default of `mousedown`, and `closeKeyboard` blurs the field. Send, the chips, More, and the rows of More use `keepFocus`. Send, a chip, and a row of More call `closeKeyboard` after the action runs. The same WebKit run then logs `mousedown`, `mouseup`, and `click` on the chip at y=191, and `focusout` last. Proof: `ask-box.test.tsx`, `suggestions.test.tsx` (vitest), and `e2e/front-door.spec.ts` (floor project), all red before the fix.
 
 The e2e test keeps a passphrase and fails the API calls. Without a passphrase, the card of the passphrase takes the focus after Send, so the test cannot show the keyboard close. The phone of the e2e test now runs with motion on, as a phone does.
+
+## Comments
+- Closes with the squash merge of the spec PR.

@@ -11,7 +11,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H12 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** 13
 
-**Status:** in-review
+**Status:** done
 
 - [x] Weak spots for Bo Girds names QB as the weakest spot, "QB empty now", with a hole at QB.
 - [x] The weak spots slice holds `weak_starting_slots` with "QB: empty", as `/find` reads it.
@@ -22,3 +22,6 @@ Follow-ups, not in this ticket:
 
 - A live snapshot on the Tuesday after the cutoff saves Sleeper week 9 into `clients/cpc/data/2026/history/week-09/`. That overwrites the hand-patched scores of rosters 5 and 10 (111.46 and 92.71 go back to 76.5 and 64.71).
 - The depth word of the slot ranks still comes from the grade, so a QB row can read "fine · hole: Lamar Jackson".
+
+## Comments
+- Closes with the squash merge of the spec PR.

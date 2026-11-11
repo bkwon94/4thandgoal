@@ -13,7 +13,7 @@ The flag is read at build time, through the generated client values, like the ot
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] `front_door = false` builds the home page and the menu of `main`, and the front door at `/ask/`, with `noindex`.
 - [x] `front_door = true` builds the front door at `/` and the 4-item menu, and no `/ask/` page.
@@ -26,3 +26,6 @@ The flag is read at build time, through the generated client values, like the ot
 - The front door page is `src/app/front-door/door-page.tsx`. `/` picks it or the Front page (`src/app/front-page.tsx`) by `clientValues.frontDoor`. The client build writes `(client)/ask/page.tsx` only with the flag off.
 - `check:export` checks the flag: off, `out/ask/index.html` has noindex and no page links to it; on, the export has no `/ask/` page.
 - The evidence steps of AT-1 and AT-50 open `/`. With the flag off, the front door is at `/ask/`.
+
+## Comments
+- Closes with the squash merge of the spec PR.

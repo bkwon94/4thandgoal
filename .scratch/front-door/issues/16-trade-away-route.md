@@ -8,10 +8,13 @@ Spec: `.scratch/front-door/PRD.md`. Source: H6 of `.scratch/front-door/HANDS-ON.
 
 **Blocked by:** 09
 
-**Status:** in-review
+**Status:** done
 
 - [x] The trade ideas Topic names a trade away of one named player.
 - [x] The route eval holds "i want to trade parker washington" and "looking to move Zay Flowers", each with `topic:trade_ideas`.
 - [x] `HITS_NEEDED` is 37 and the eval scores 42 questions.
 - [x] The live route eval passes, and both new questions route to trade ideas.
 - [ ] AT-17 in `ACCEPTANCE.md` names the new bar of 37 of 42, after the commissioner approves it.
+
+## Comments
+- Closes with the squash merge of the spec PR.

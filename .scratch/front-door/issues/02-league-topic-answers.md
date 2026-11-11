@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-4, AT-5, AT-7, AT-23, AT
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] The build of CPC 2026 week 8 writes an Answer of each of the 7 league Topics for each of the 12 teams (AT-51).
 - [ ] The `page.json` of week 8 is the same as on `main` (AT-56).
@@ -16,3 +16,6 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-4, AT-5, AT-7, AT-23, AT
 - [x] On Tuesday of week 9, with no urgent Topic, the week recap is first (AT-5).
 - [x] An opened Topic is gone from the 3 Suggestions after a reload, and stays in "More" (AT-7).
 - [x] "Read the full report" of the power rankings Answer opens `/rankings/` (AT-23). Each Topic links to the page in the table of the spec.
+
+## Comments
+- Closes with the squash merge of the spec PR.

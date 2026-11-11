@@ -8,9 +8,12 @@ Spec: `.scratch/front-door/PRD.md`. Source: H13 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The router sends "who has the best roster" and close forms to the free answer, not to stack_up; the route eval holds them.
 - [x] A free tool gives each team's roster grade and its parts, best first.
 - [x] Live: "who has the best roster" names a team and its grade, and passes the check.
 - [x] "how do i stack up" still routes to stack_up.
+
+## Comments
+- Closes with the squash merge of the spec PR.

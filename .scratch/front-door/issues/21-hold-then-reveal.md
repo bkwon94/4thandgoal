@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-8, AT-20, AT-21, AT-44. 
 
 **Blocked by:** 05, 06
 
-**Status:** in-review
+**Status:** done
 
 - [x] With a FakeJev that fails the first text, the stream holds no `text-delta` of the first text, and each text part comes after the fix part (AT-21).
 - [x] A text that passes comes after "checking" and before "checked", and the tool steps come before "checking" (AT-20).
@@ -16,3 +16,6 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-8, AT-20, AT-21, AT-44. 
 - [x] On the site, no text shows before "Checked", and a failed first text never shows, for a free answer and a personal Topic.
 - [x] The whole text sweeps in word by word in one read, in no more than 500 ms (AT-44).
 - [x] "Checking" and "Fixing a number…" still hold for 800 ms (AT-20, AT-21), and a kept Answer still shows at once (AT-8).
+
+## Comments
+- Closes with the squash merge of the spec PR.

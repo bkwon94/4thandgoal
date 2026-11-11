@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H21 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** 33
 
-**Status:** in-review
+**Status:** done
 
 - [x] The pick call returns up to 3 near ideas, each with an offer, a reason, and its one fact, in the same call.
 - [x] With no pick and a shortlist, the pick must give at least one near idea, or the call retries once.
@@ -34,3 +34,6 @@ The second run of each ask served the kept Answer.
 
 Open for Brian: the Walker ask built 0 offers this week, where ticket 27 built 4 to 41. The anchor target question now
 answers no for each player of each partner. That is the search, not the pick, so this ticket leaves it.
+
+## Comments
+- Closes with the squash merge of the spec PR.

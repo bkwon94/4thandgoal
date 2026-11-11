@@ -14,7 +14,7 @@ The block args are a Pydantic discriminated union, so a bad block fails validati
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] "order my players by performance" for Bo Girds gives a lead sentence and a list.
 - [x] "compare Bo Girds and Teehee" gives a table.
@@ -22,3 +22,6 @@ The block args are a Pydantic discriminated union, so a bad block fails validati
 - [x] "who won week 1" still gives text.
 - [x] A row that the tool results do not hold fails the check.
 - [x] Each component renders at 390 px with no horizontal scroll.
+
+## Comments
+- Closes with the squash merge of the spec PR.

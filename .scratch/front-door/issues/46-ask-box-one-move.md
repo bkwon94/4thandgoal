@@ -8,7 +8,10 @@ Spec: `.scratch/front-door/PRD.md`. Source: AT-42 in the evidence round of 2026-
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] Red first: a test that samples the top of the ask box each frame after the first send at 375 px. The top never moves up.
 - [x] The glide is one move from the center to the bottom.
+
+## Comments
+- Closes with the squash merge of the spec PR.

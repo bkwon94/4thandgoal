@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H15, H18, H21 of `.scratch/front-doo
 
 **Blocked by:** 35
 
-**Status:** in-review
+**Status:** done
 
 - [x] A search that builds 0 offers runs one wider pass in finder_search.py, with no Jev target question.
 - [x] The wider pass gives at most one 1-for-1 idea per partner, at most 12, by a plain rule.
@@ -46,3 +46,6 @@ The second run of each ask served the kept Answer.
 - The tap then "id rather not trade a WR" (limit `keep_positions: ["WR"]`): the targets built 1 this run, so no wider
   pass ran. The pick kept 0 and gave 1 near idea: McBride for Drake Maye, "You give up TE1 McBride and are left with no
   TE in the top 24, while you already have a QB in the top 24 to cover Jackson's absence."
+
+## Comments
+- Closes with the squash merge of the spec PR.

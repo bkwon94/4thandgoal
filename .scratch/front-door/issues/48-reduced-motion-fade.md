@@ -8,7 +8,10 @@ Spec: `.scratch/front-door/PRD.md`. Source: AT-46 in the evidence round of 2026-
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] Red first: a test under reduced motion that samples the opacity of the ask box each frame after the first send. The opacity never jumps from 1 to 0 in one frame.
 - [x] The ask box and the Answer fade by opacity only.
+
+## Comments
+- Closes with the squash merge of the spec PR.

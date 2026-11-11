@@ -8,8 +8,11 @@ Spec: `.scratch/front-door/PRD.md`. Source: AT-31 in the evidence round of 2026-
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] Red first: a test that sends a question into a Thread with two Answers at 375 px and reads the top of the question bubble against the bottom of the Thread header.
 - [x] The bubble top lands within 16 px under the header, after the motion ends.
 - [x] A short Thread, with too little content to scroll, does not jump.
+
+## Comments
+- Closes with the squash merge of the spec PR.

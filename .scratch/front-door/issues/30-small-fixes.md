@@ -11,7 +11,10 @@ Spec: `.scratch/front-door/PRD.md`. Source: the small fixes of `.handoff/front-d
 
 **Blocked by:** 29
 
-**Status:** in-review
+**Status:** done
 
 - [x] The QB row of Bo Girds reads a depth word other than "fine" while Lamar Jackson is a hole.
 - [x] A trade turn in the chat context names the players of each side.
+
+## Comments
+- Closes with the squash merge of the spec PR.

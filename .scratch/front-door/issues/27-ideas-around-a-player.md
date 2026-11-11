@@ -8,7 +8,7 @@ Spec: `.scratch/front-door/PRD.md`. Source: H15 (and the H6 follow-up) of `.scra
 
 **Blocked by:** 25
 
-**Status:** in-review
+**Status:** done
 
 - [x] `TradeIdeasRequest` takes an optional typed question; the site sends it for a typed route.
 - [x] Jev picks the named player and the direction from the real rosters, one request.
@@ -26,3 +26,6 @@ anchored search asks of each player who would come back "Would {team} want {play
 
 The run after option A: 4 offers, and one kept. Bo Girds gives Kenneth Walker III (RB) and gets Jahmyr Gibbs (RB) from
 Maye d'force B with U: "Walker for Gibbs is a swap of two top backs, and you get the one who is RB1 this season."
+
+## Comments
+- Closes with the squash merge of the spec PR.

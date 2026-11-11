@@ -8,10 +8,13 @@ Spec: `.scratch/front-door/PRD.md`. Source: H8 of `.scratch/front-door/HANDS-ON.
 
 **Blocked by:** None
 
-**Status:** in-review
+**Status:** done
 
 - [x] Focus on the ask box tucks the dock away, and the tucked dock is inert (vitest).
 - [x] Blur of the ask box brings the dock back (vitest).
 - [x] The foot of the Thread sits right above the keyboard: a Playwright run on an iPhone 13 viewport with a visual viewport 336 px shorter puts the foot bottom at the keyboard top.
 - [x] Under `prefers-reduced-motion: reduce`, the dock fades with no slide.
 - [ ] The commissioner checks it on a real iPhone.
+
+## Comments
+- Closes with the squash merge of the spec PR.

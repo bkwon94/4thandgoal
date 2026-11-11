@@ -8,8 +8,11 @@ Spec: `.scratch/front-door/PRD.md`. Source: H26 of `.scratch/front-door/HANDS-ON
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The empty screen shows the mute line and the two examples.
 - [x] A tap on an example asks that question, on the first tap, with the keyboard open or closed.
 - [x] The placeholder reads "Ask about your team or the league".
+
+## Comments
+- Closes with the squash merge of the spec PR.

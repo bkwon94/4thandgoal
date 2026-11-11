@@ -8,8 +8,11 @@ Spec: `.scratch/front-door/PRD.md`. Acceptance tests AT-27.
 
 **Blocked by:** 09
 
-**Status:** in-review
+**Status:** done
 
 - [x] The Answer names at least one player on the roster of Lil Fridge to sell, with the reason (AT-27).
 - [x] The route reuses the verifier and the Jev checks of the Advisor. No math screen picks the players.
 - [x] The steps show before the whole Answer, as in ticket 09.
+
+## Comments
+- Closes with the squash merge of the spec PR.

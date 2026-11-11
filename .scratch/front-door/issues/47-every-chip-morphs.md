@@ -8,7 +8,10 @@ Spec: `.scratch/front-door/PRD.md`. Source: AT-43 in the evidence round of 2026-
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] Red first: a test that taps a personal Topic chip and a trade Topic chip, and sees one shared surface move from the chip to the bubble.
 - [x] League, personal, and trade Topics use one morph path.
+
+## Comments
+- Closes with the squash merge of the spec PR.
