@@ -40,7 +40,7 @@ export function AskBox({ onAsk, pending = false }: { onAsk?: (question: string) 
         onChange={(event) => setValue(event.target.value)}
         onFocus={keyboard.onFocus}
         onBlur={keyboard.onBlur}
-        placeholder="Ask about your team"
+        placeholder="Ask about your team or the league"
         aria-label="Ask a question"
         enterKeyHint="send"
         autoComplete="off"
