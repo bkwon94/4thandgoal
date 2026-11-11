@@ -5,27 +5,24 @@
  */
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { forwardRef, useId, useState, type ReactNode } from "react";
-import { ArrowRightIcon, CheckIcon } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import { BulletRows } from "@cpc/analyzer/form/bullet-rows";
 import type { AnalyzeResponse, FindResponse, FinderTrade, Lean } from "@cpc/analyzer/lib/analyze-types";
 import { prefillQuery, type Prefill } from "@cpc/analyzer/lib/prefill";
 import { Headshot } from "@cpc/league/headshot";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { managerHref } from "@/lib/routes";
-import type { TradeMode } from "./ask-thread";
-import { FAST, QUICK, SLOW, STAGGER, VERY_SLOW, fadeIn, riseIn } from "./motion";
-import { QuestionBubble } from "./miss-card";
+import { FAST, SLOW, STAGGER, VERY_SLOW, fadeIn, riseIn } from "./motion";
+import { QuestionBubble, Surface } from "./miss-card";
 import { StaleLine } from "./personal-answer";
+import { type Step, Steps } from "./steps";
 import type { SellHigh, TradeAnswer, TradeForm } from "./trade-api";
 
 /* The Bullets that the check shows of Your side, and of each offer. The Trade page holds each one. */
 export const TOP_BULLETS = 3;
 export const TOP_OFFER_BULLETS = 2;
-
-/* The line before the first step, by Topic, so the card never sits empty while the first stage runs. */
-const FIRST_LINE: Record<TradeMode, string> = { check: "Reading your trade…", ideas: "Looking for trades…", sell: "Reading your roster…" };
 
 /* The five Leans from the no end to the yes end, as on the Trade page, so the lit step shows how strong the call is. */
 const SCALE: readonly Lean[] = ["Pass", "Lean no", "Gut call", "Lean yes", "Send it"];
@@ -41,50 +38,9 @@ const LEAN_COLOR: Record<Lean, string> = {
 /* The Trade page with the trade of `prefill` in its form. */
 const tradeHref = (base: string, prefill: Prefill) => `${base}${prefillQuery(prefill)}`;
 
-/* The line in flight, with the shimmer of transitions-dev: a band of the ink sweeps the mute text on a linear 2 s loop.
-   With motion off, it holds still in the mute ink. */
-function Shimmer({ children }: { children: string }) {
-  const off = useMotionOff();
-  if (off) return <span className="text-mute">{children}</span>;
-  return (
-    <motion.span
-      className="bg-clip-text text-transparent [background-image:linear-gradient(90deg,var(--color-mute)_0%,var(--color-mute)_40%,var(--color-ink)_50%,var(--color-mute)_60%,var(--color-mute)_100%)] [background-size:400%_100%]"
-      initial={{ backgroundPosition: "100% 0%" }}
-      animate={{ backgroundPosition: "0% 0%" }}
-      transition={{ duration: 2, ease: "linear", repeat: Infinity }}
-    >
-      {children}
-    </motion.span>
-  );
-}
-
-/* The steps while the trade judge works. Each step rises in from a blur as it lands. A done step takes a check in the
-   mute ink, and the newest step shimmers, so the list reads as work that moves (decision 06). */
-function Steps({ mode, steps }: { mode: TradeMode; steps: string[] }) {
-  const off = useMotionOff();
-  const lines = steps.length > 0 ? steps : [FIRST_LINE[mode]];
-  return (
-    <ol role="status" aria-label="Steps" className="m-0 flex list-none flex-col gap-sp-2 px-sp-1 py-sp-1">
-      {lines.map((line, index) => {
-        const current = index === lines.length - 1;
-        return (
-          <motion.li key={`${index}-${line}`} className="flex items-center gap-sp-2 text-body leading-tight font-semibold" {...riseIn(off, { text: true })}>
-            <span aria-hidden className="flex size-sp-4 flex-none items-center justify-center">
-              {current ? (
-                <span className="size-sp-1 rounded-full bg-ink" />
-              ) : (
-                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={fadeIn(QUICK)}>
-                  <CheckIcon className="size-sp-4 text-mute" strokeWidth={2.5} />
-                </motion.span>
-              )}
-            </span>
-            {current ? <Shimmer>{line}</Shimmer> : <span className="text-mute">{line}</span>}
-          </motion.li>
-        );
-      })}
-    </ol>
-  );
-}
+/* The steps of the trade judge as the one step pattern. Each line comes when its stage ends, so while the Answer is
+   not in, the newest line is the live one. Once the Answer lands, each line shows done. */
+const tradeSteps = (steps: string[], live: boolean): Step[] => steps.map((line, index) => ({ line, done: !live || index < steps.length - 1 }));
 
 /* The card of a whole Answer. It settles from a soft blur at 0.98, as the data block of a league Answer does
    (decision 07). With motion off, it only fades in. */
@@ -354,34 +310,31 @@ function FormBody({ form, analyze }: { form: TradeForm; analyze: string }) {
   );
 }
 
-/* One trade Answer of the Thread: the question, the steps while it works, then the whole Answer. The steps leave as the
-   Answer lands, on a quick fade, so the card takes their place. `analyze` is the path of the Trade page. A stale Answer,
-   whose rosters changed since its read, shows dimmed under the stale line and Refresh, as a stale personal Answer. */
+/* One trade Answer of the Thread: the question, the steps in their card while it works, then the whole Answer under
+   them. The steps stay above the Answer, so the manager sees the work behind it. `analyze` is the path of the Trade
+   page. A stale Answer, whose rosters changed since its read, shows dimmed under the stale line and Refresh, as a stale
+   personal Answer. */
 export const TradeCard = forwardRef<
   HTMLElement,
-  { question: string; mode: TradeMode; steps: string[]; answer: TradeAnswer | null; analyze: string; stale?: { line: string; onRefresh: () => void } | null }
->(function TradeCard({ question, mode, steps, answer, analyze, stale = null }, ref) {
+  { question: string; steps: string[]; answer: TradeAnswer | null; analyze: string; stale?: { line: string; onRefresh: () => void } | null }
+>(function TradeCard({ question, steps, answer, analyze, stale = null }, ref) {
   return (
     <article ref={ref} aria-label={question} aria-busy={answer === null} data-stale={stale ? "" : undefined} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={question} />
       {/* The stale line comes before the read it warns about, so the manager sees it first. */}
       {stale && <StaleLine line={stale.line} onRefresh={stale.onRefresh} />}
       {/* The dim is an opacity change only, so reduced motion keeps it as is. */}
-      <div className={`flex flex-col transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${stale ? "opacity-60" : "opacity-100"}`}>
-        <AnimatePresence mode="wait" initial={false}>
-          {answer === null ? (
-            <motion.div key="steps" exit={{ opacity: 0, transition: fadeIn(QUICK) }}>
-              <Steps mode={mode} steps={steps} />
-            </motion.div>
-          ) : (
-            <motion.div key="answer">
-              {answer.kind === "check" && <CheckBody doc={answer.document} analyze={analyze} />}
-              {answer.kind === "ideas" && <IdeasBody doc={answer.document} analyze={analyze} />}
-              {answer.kind === "form" && <FormBody form={answer.form} analyze={analyze} />}
-              {answer.kind === "sell" && <SellBody doc={answer.document} />}
-            </motion.div>
-          )}
-        </AnimatePresence>
+      <div className={`flex flex-col gap-sp-3 transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${stale ? "opacity-60" : "opacity-100"}`}>
+        {/* A tapped trade check opens the Trade page at once, with no step, so it shows no card of steps. */}
+        {(answer === null || steps.length > 0) && (
+          <Surface>
+            <Steps steps={tradeSteps(steps, answer === null)} live={answer === null} />
+          </Surface>
+        )}
+        {answer?.kind === "check" && <CheckBody doc={answer.document} analyze={analyze} />}
+        {answer?.kind === "ideas" && <IdeasBody doc={answer.document} analyze={analyze} />}
+        {answer?.kind === "form" && <FormBody form={answer.form} analyze={analyze} />}
+        {answer?.kind === "sell" && <SellBody doc={answer.document} />}
       </div>
     </article>
   );

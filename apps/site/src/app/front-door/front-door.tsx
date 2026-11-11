@@ -374,10 +374,10 @@ export function FrontDoor({
                           since !== undefined && answer && entry.read && passphrase
                             ? { line: staleLine(since ?? entry.read.at), onRefresh: () => void runTrade(entry.id, entry.question, tradeRequestOf({ ...entry, answer }, team.id), passphrase, picks.filter((pick) => !TRADE_TOPICS[pick])) }
                             : null;
-                        return <TradeCard ref={ref} question={entry.question} mode={entry.mode} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} stale={refresh} />;
+                        return <TradeCard ref={ref} question={entry.question} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} stale={refresh} />;
                       }
                       case "miss":
-                        return <MissCard ref={ref} question={entry.question} closest={entry.closest} onPick={(key) => open(key)} />;
+                        return <MissCard ref={ref} question={entry.question} closest={entry.closest} block={entry.block} avatars={avatars} onPick={(key) => open(key)} />;
                       case "cap":
                         return <CapCard ref={ref} question={entry.question} line={entry.line} closest={entry.closest} onPick={(key) => open(key)} />;
                       case "free": {
@@ -424,10 +424,10 @@ export function FrontDoor({
                             ref={ref}
                             target={askTarget}
                             passphrase={getPassphrase() ?? ""}
-                            // Only a typed question carries the turns. A tapped Topic keeps its kept Answer (AT-8).
-                            body={{ topic: entry.key, roster_id: team.id, team: entry.team === team.id ? null : entry.team, ...(entry.question !== null ? { turns: turnsOf(entry.id) } : {}) }}
+                            // Only a typed question carries the turns and its text. A tapped Topic keeps its kept Answer (AT-8).
+                            body={{ topic: entry.key, roster_id: team.id, team: entry.team === team.id ? null : entry.team, ...(entry.question !== null ? { turns: turnsOf(entry.id), question: entry.question } : {}) }}
                             onDone={(result) => put(entry.id, { ...entry, result })}
-                            onMiss={(closest) => put(entry.id, { kind: "miss", question: shared.name, closest })}
+                            onMiss={(closest, block) => put(entry.id, { kind: "miss", question: shared.name, closest, ...(block ? { block } : {}) })}
                             // Past a cap, the API writes the line and sends the closest Topics of this Topic.
                             onCap={(cap) => put(entry.id, { kind: "cap", question: shared.name, line: cap.line, closest: cap.closest })}
                             // A retry sends the name of the Topic through the route, which opens the same Topic again.
@@ -464,13 +464,15 @@ export function FrontDoor({
               transition={{ layout: GLIDE }}
               className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter bg-page/90 px-gutter pt-sp-3 pb-sp-3 backdrop-blur-md desktop:bottom-0"}`}
             >
-              {!missed && (picks.length > 0 || moreOpen) ? (
+              {!missed && (day === null || picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
-                  <Suggestions picks={picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} wrap={empty} onMore={setMoreOpen} onPick={(key) => open(key)} />
+                  {/* Until the browser reads the day, quiet placeholder chips hold the place of the chips. */}
+                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} wrap={empty} onMore={setMoreOpen} onPick={(key) => open(key)} />
                 </motion.div>
               ) : null}
               <motion.div {...riseIn(off, { delay: 0.08 })}>
-                <AskBox onAsk={ask} />
+                {/* Send holds busy while a question routes, so a second tap never sends it twice. */}
+                <AskBox onAsk={ask} pending={thread.some((entry) => entry.kind === "pending")} />
               </motion.div>
               {empty && (
                 <motion.div className="flex" {...riseIn(off, { delay: 0.16 })}>

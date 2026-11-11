@@ -20,6 +20,7 @@ from test_api import CLIENT, HEADERS, _cpc, _here
 
 from cornerstone_api.app import create_app
 from cornerstone_api.personal_topics import LIVE_CACHE_SECONDS, TRENDING_CACHE_SECONDS, LiveCache
+from cornerstone_api.personal_wording import FACT_MEANINGS, INSTRUCTIONS
 from cornerstone_api.settings import Settings
 from cornerstone_api.waiver_targets import TOP_BY_ADDS, TOP_BY_REST_PER_POSITION, TOP_BY_WEEK_PER_POSITION
 from league.jev_port import JevError, NoulQuestion
@@ -215,6 +216,66 @@ def test_a_second_failed_claim_ends_with_the_honest_miss_and_keeps_nothing(setti
     assert writer.calls == 4
 
 
+def test_the_check_reads_the_fact_meanings_of_the_instructions(settings, sources):
+    # H17: the check reads what `hole`, `can_play_now`, and `weak_starting_slots` mean, from the same dict as Claude.
+    writer = Writer()
+    checks = Checks([True])
+    api = _api(settings, sources, FakeJev(answer=checks.answer), writer)
+    _ask(api, "weak_spots")
+    assert checks.states[0]["tool_results"]["meanings"] == FACT_MEANINGS
+    assert {"hole", "can_play_now", "weak_starting_slots"} <= set(FACT_MEANINGS)
+    assert all(meaning in INSTRUCTIONS for meaning in FACT_MEANINGS.values())
+
+
+def test_a_failed_check_logs_each_failed_sentence_with_its_noul(settings, sources, caplog):
+    # H17: the log shows which sentence failed and how sure the check was.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([False, True]).answer), writer)
+    with caplog.at_level("INFO", logger="cornerstone_api.claude_stream"):
+        _ask(api, "weak_spots")
+    [line] = [r.getMessage() for r in caplog.records if "failed the check" in r.getMessage()]
+    assert "0.10" in line and "Your weakest spot is" in line
+
+
+TYPED = "how can i improve my roster"
+
+
+def _prompt(messages: list[ModelMessage]) -> str:
+    return next(part.content for m in messages if isinstance(m, ModelRequest) for part in m.parts
+                if isinstance(part, UserPromptPart) and isinstance(part.content, str))
+
+
+def test_a_typed_question_reaches_the_prompt_and_the_check_of_its_personal_topic(settings, sources):
+    # H17: a typed question that routes to weak spots gets an Answer to that question, checked against that question.
+    writer = Writer()
+    checks = Checks([True])
+    api = _api(settings, sources, FakeJev(answer=checks.answer), writer)
+    _ask(api, "weak_spots", question=TYPED)
+    assert TYPED in _prompt(writer.requests[0])
+    assert checks.states[0]["manager_question"] == TYPED
+
+
+def test_a_tap_reads_no_typed_question_and_checks_against_the_topic_name(settings, sources):
+    writer = Writer()
+    checks = Checks([True])
+    api = _api(settings, sources, FakeJev(answer=checks.answer), writer)
+    _ask(api, "weak_spots")
+    assert "The manager asks" not in _prompt(writer.requests[0])
+    assert checks.states[0]["manager_question"].startswith("Weak spots of ")
+
+
+def test_a_typed_question_reads_no_kept_answer_and_keeps_none(settings, sources):
+    # A tap keeps its Answer. A typed question never reads it and never replaces it, so each typed question gets its own.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    _ask(api, "weak_spots")
+    _ask(api, "weak_spots", question=TYPED)
+    _ask(api, "weak_spots", question="where am i weak")
+    assert writer.calls == 3
+    _ask(api, "weak_spots")
+    assert writer.calls == 3
+
+
 def test_a_failed_jev_check_ends_the_stream_with_an_error_and_keeps_nothing(settings, sources):
     class DownJev(FakeJev):
         def ask(self, state, questions):
@@ -280,6 +341,19 @@ def test_weak_spots_name_each_hole_of_the_lineup_in_the_slice(settings, sources)
         assert s["hole"] == (s["player"] is None or below or not s["can_play_now"])
 
 
+def test_each_weak_starting_slot_of_weak_spots_is_a_row(settings, sources):
+    # H17: a row names the slot, the player, his position, and his rank, so the check reads no "QB50" string.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    weak = []
+    for roster_id in range(1, 13):
+        _ask(api, "weak_spots", roster_id=roster_id)
+        weak += _facts(writer.requests[-1])["weak_starting_slots"]
+    assert any(row["player"] for row in weak)
+    assert all(set(row) == {"slot", "player", "position", "projected_rank_at_position", "can_play_now"}
+               for row in weak)
+
+
 def _qbs_on_ir(fixture_raw_dir: Path, tmp_path: Path, roster_id: int) -> Path:
     """A copy of the recorded raw week with each QB of `roster_id` on IR, as Sleeper gives a player on IR."""
     raw = tmp_path / "raw-qbs-on-ir"
@@ -303,7 +377,8 @@ def test_weak_spots_read_a_starter_on_ir_as_out_now_as_trade_ideas_do(settings, 
     api = _api(settings, on_ir, FakeJev(answer=Checks([True]).answer), writer)
     block = _block(_chunks(_ask(api, "weak_spots", roster_id=BO_GIRDS)))
     facts = _facts(writer.requests[0])
-    assert "QB: empty" in facts["weak_starting_slots"]
+    assert {"slot": "QB", "player": None, "position": None, "projected_rank_at_position": None,
+            "can_play_now": True} in facts["weak_starting_slots"]
     [qb] = [s for s in facts["starters"] if s["slot"] == "QB"]
     assert qb["can_play_now"] is False and qb["hole"] is True
     stats = {stat["label"]: stat["value"] for stat in block["stats"]}

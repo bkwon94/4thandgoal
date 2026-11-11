@@ -184,6 +184,12 @@ def roster_grades(inputs: SeasonInputs) -> dict[int, ManagerGrade]:
     return grades
 
 
+def roster_places(inputs: SeasonInputs) -> dict[int, int]:
+    """The place of each roster from 1 by the score of its grade, best first, by roster id. The score stays here, so a
+    reader that ranks the rosters gets the place and never the value. The roster id breaks a tie."""
+    return _ranks({rid: grade_score(parts) for rid, parts in roster_parts(inputs).items()})
+
+
 def roster_starters(inputs: SeasonInputs) -> dict[int, list[Starter]]:
     """The starters of the best lineup of each roster that the grade reads, by roster id, in the order of the slots.
 

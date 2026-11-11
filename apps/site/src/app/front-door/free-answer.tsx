@@ -15,6 +15,7 @@ import type { Turn } from "./chat-turns";
 import { type CheckState, type FreeResult, type FreeView, isKept, newPace, pacedView, shownText, viewOf } from "./free-stream";
 import { QuestionBubble, Surface, TopicChip } from "./miss-card";
 import { QUICK, SLOW, SMOOTH, STAGGER, VERY_SLOW, fadeIn } from "./motion";
+import { Steps } from "./steps";
 
 /* The least time in ms that "Checking" and the fixing line hold on screen, so a fast check still reads as a check
    (AT-20, AT-21): two of --duration-slow, long enough to read one short word. */
@@ -140,7 +141,7 @@ function StreamText({ text, live }: { text: string; live: boolean }) {
 
 /* A line of work in flight. A band of the ink sweeps the mute text on a linear loop of 2 s, as the shimmer text of
    transitions-dev. With motion off, the line holds still in the mute ink. */
-export function Shimmer({ children }: { children: string }) {
+function Shimmer({ children }: { children: string }) {
   const off = useMotionOff();
   if (off) return <span className="text-mute">{children}</span>;
   return (
@@ -152,32 +153,6 @@ export function Shimmer({ children }: { children: string }) {
     >
       {children}
     </motion.span>
-  );
-}
-
-/* The steps of the tool calls, one line each. Each step lands with a short rise as its call starts, and the step in
-   flight shimmers until its result is in, as the thinking states of transitions-dev. */
-function Steps({ steps, live }: { steps: FreeView["steps"]; live: boolean }) {
-  const off = useMotionOff();
-  if (steps.length === 0) return null;
-  return (
-    <ol aria-label="Steps" className="m-0 flex list-none flex-col gap-sp-1 p-0">
-      {steps.map((step, index) => {
-        const running = live && !step.done;
-        return (
-          <motion.li
-            key={index}
-            className="flex items-center gap-sp-2 font-mono text-meta leading-tight text-mute"
-            initial={off ? { opacity: 0 } : { opacity: 0, y: 4, filter: "blur(2px)" }}
-            animate={off ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={fadeIn(QUICK, Math.min(index, 6) * STAGGER)}
-          >
-            <span aria-hidden className={`size-1.5 flex-none rounded-full ${step.done ? "bg-mute" : "bg-ink"}`} />
-            {running ? <Shimmer>{`${step.line}…`}</Shimmer> : <span>{step.line}</span>}
-          </motion.li>
-        );
-      })}
-    </ol>
   );
 }
 
@@ -206,14 +181,17 @@ function CheckMark({ state, live }: { state: CheckState; live: boolean }) {
   );
 }
 
-/* The body of a free answer: the steps, the text, and the check. The text shows only with "Checked", and its words
-   sweep in from a blur. A failed check shows the fixing line, and the checked rewrite takes its place. */
-export function FreeBody({ view, live }: { view: FreeView; live: boolean }) {
+/* The body of a free answer: the steps, the text, and the check. The steps wait until the check or the text comes,
+   with `first` as the stand-in line before the first step. The text shows only with "Checked", and its words sweep in
+   from a blur. A failed check shows the fixing line, and the checked rewrite takes its place. */
+export function FreeBody({ view, live, first }: { view: FreeView; live: boolean; first?: string }) {
   const off = useMotionOff();
   const fixing = view.second !== null;
+  // The steps of the tool calls are done once the check or the text comes, so the wait ends there.
+  const waiting = live && view.check === null && !view.first && !fixing;
   return (
     <>
-      <Steps steps={view.steps} live={live} />
+      <Steps steps={view.steps} live={waiting} first={first} />
       <AnimatePresence mode="wait" initial={false}>
         {fixing ? (
           <motion.div key="second" className="flex flex-col gap-sp-2" {...(off ? {} : { initial: { opacity: 0 }, animate: { opacity: 1 } })} transition={fadeIn(QUICK)}>
@@ -316,11 +294,6 @@ export const FreeAnswerLive = forwardRef<
     <article ref={ref} aria-label={question} aria-busy={busy} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
       <QuestionBubble question={question} />
       <Surface>
-        {view.steps.length === 0 && !view.first && !view.check && (
-          <p className="m-0 font-mono text-meta leading-tight">
-            <Shimmer>Reading the league data…</Shimmer>
-          </p>
-        )}
         {/* A kept Answer of the API shows whole at once, with no stream of its words. */}
         <FreeBody view={view} live={!kept} />
         {view.check === "checked" && <SuggestionChip suggestion={view.suggestion} teamName={teamName} onPick={onPick} />}

@@ -10,7 +10,6 @@ import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 
 import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { FIXING_LINE } from "./front-door/free-answer";
 import { MISS_LEAD } from "./front-door/miss-card";
-import { READING_LINE } from "./front-door/personal-answer";
 import HomePage from "./page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
@@ -92,6 +91,8 @@ describe("the personal Topics of Lil Fridge", () => {
     expect(url).toMatch(/\/clients\/cpc\/personal$/);
     expect(new Headers(init.headers).get("X-League-Passphrase")).toBe(PASSPHRASE);
     expect(JSON.parse(init.body)).toMatchObject({ topic: "weak_spots", roster_id: LIL_FRIDGE, team: null });
+    // A tap sends no typed question, so the API may serve its kept Answer.
+    expect(JSON.parse(init.body)).not.toHaveProperty("question");
   });
 
   it("shows the data block alone first, then the text under it, then checked (AT-18, AT-20)", async () => {
@@ -113,11 +114,28 @@ describe("the personal Topics of Lil Fridge", () => {
     expect(within(answer).getByRole("link", { name: /Read the full report/ }).getAttribute("href")).toBe(`/2026/managers/${LIL_FRIDGE}/`);
   });
 
-  it("shows the reading line before the data block lands", async () => {
+  it("shows the first line as a live step before the data block lands", async () => {
     streams.push(() => sse(new ReadableStream<Uint8Array>({ start() {} })));
     render(<HomePage />);
     await tapInMore("Weak spots");
-    await articleWith("Weak spots", READING_LINE);
+    const answer = await articleWith("Weak spots", "Reading the league…");
+    const [step] = within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem");
+    expect(step.getAttribute("data-state")).toBe("live");
+  });
+
+  it("shows a live Writing step between the data block and the text, and drops it with the check", async () => {
+    const release = heldStream("weak-spots");
+    render(<HomePage />);
+    await tapInMore("Weak spots");
+    const answer = await articleWith("Weak spots", "Weakest spot");
+    const steps = () => within(answer).queryByRole("list", { name: "Steps" });
+    await waitFor(() => expect(steps()?.textContent).toContain("Writing…"));
+    // The step sits under the data block, where the text lands.
+    const text = answer.textContent ?? "";
+    expect(text.indexOf("Weakest spot")).toBeLessThan(text.indexOf("Writing…"));
+    release();
+    await articleWith("Weak spots", "Checked");
+    expect(answer.textContent).not.toContain("Writing");
   });
 
   it("keeps a checked Answer, so a reload shows it with no new stream (AT-29, story 36)", async () => {
@@ -185,6 +203,25 @@ describe("the personal Topics of Lil Fridge", () => {
     const miss = await articleWith("Weak spots", MISS_LEAD);
     const chips = within(within(miss).getByRole("group", { name: "Closest Topics" })).getAllByRole("button");
     expect(chips.map((chip) => chip.textContent)).toEqual(["How you stack up", "Waiver targets", "Trade ideas"]);
+  });
+
+  it("keeps the data block of an honest miss, with the miss line in the place of the text (H17)", async () => {
+    streams.push(() => sse(recorded("weak-spots-miss")));
+    const first = render(<HomePage />);
+    await tapInMore("Weak spots");
+    const miss = await articleWith("Weak spots", MISS_LEAD);
+    expect(miss.textContent).toContain("Weakest spot");
+    expect(miss.textContent).toContain("7th of 12");
+    const text = miss.textContent ?? "";
+    expect(text.indexOf("Weakest spot")).toBeLessThan(text.indexOf(MISS_LEAD));
+    expect(text).not.toContain("Checked");
+    // The miss stays in the Thread with its block, so a reload shows both with no new stream.
+    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("Weakest spot"));
+    first.unmount();
+    render(<HomePage />);
+    const kept = await articleWith("Weak spots", MISS_LEAD);
+    expect(kept.textContent).toContain("7th of 12");
+    expect(personalCalls()).toHaveLength(1);
   });
 
   it("shows the cap line with the closest Topics past the team cap, and hides the chips (AT-37)", async () => {

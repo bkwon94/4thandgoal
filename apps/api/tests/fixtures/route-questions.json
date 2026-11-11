@@ -286,6 +286,30 @@
       "text": "looking to move Zay Flowers",
       "source": "claude",
       "expect": "topic:trade_ideas"
+    },
+    {
+      "id": 46,
+      "text": "who has the best roster",
+      "source": "real",
+      "expect": "free_answer"
+    },
+    {
+      "id": 47,
+      "text": "best team on paper?",
+      "source": "claude",
+      "expect": "free_answer"
+    },
+    {
+      "id": 48,
+      "text": "rank the rosters in the league",
+      "source": "claude",
+      "expect": "free_answer"
+    },
+    {
+      "id": 49,
+      "text": "how do i stack up",
+      "source": "claude",
+      "expect": "topic:stack_up"
     }
   ]
 }

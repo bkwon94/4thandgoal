@@ -6,7 +6,7 @@ import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AskError, type AskAnswer } from "./ask-api";
 import type { TradeAnswer, TradeRead, TradeRequest } from "./trade-api";
 import type { FreeResult } from "./free-stream";
-import { type PersonalResult, type PersonalTopic, isPersonal } from "./personal-stream";
+import { type PersonalBlock, type PersonalResult, type PersonalTopic, isPersonal } from "./personal-stream";
 import { topicName } from "./topics";
 
 /* One item of the Thread. A topic item shows the league Answer of `team`, with the typed question or the Topic name as
@@ -15,12 +15,12 @@ import { topicName } from "./topics";
    trade Topic while it works, then its whole Answer with the key of the rosters it read. A trade Answer kept from before
    the key has none, so it never reads as stale. A free answer streams while its result is null, and keeps its
    checked result once the stream ends. A personal Topic of `team` streams the same way from the API, with its data
-   block first. */
+   block first. A miss of a personal Topic keeps that data block. */
 export type ThreadItem =
   | { kind: "topic"; key: string; team: number; question: string | null }
   | { kind: "pending"; question: string }
   | { kind: "passphrase"; question: string; wrong: boolean }
-  | { kind: "miss"; question: string; closest: string[] }
+  | { kind: "miss"; question: string; closest: string[]; block?: PersonalBlock }
   | { kind: "cap"; question: string; line: string; closest: string[] }
   | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean }
   | { kind: "trade"; mode: TradeMode; question: string; steps: string[]; answer: TradeAnswer | null; read?: TradeRead }

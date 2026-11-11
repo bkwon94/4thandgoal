@@ -1,6 +1,7 @@
 /**
  * The Suggestion chips above the ask box: "More" leads the row, then the 3 Suggestions of Your team, each with its Topic
- * name and one fact. "More" opens the list of all 13 Topics from its pill, so no Topic is ever out of reach.
+ * name and one fact. "More" opens the list of all 13 Topics from its pill, so no Topic is ever out of reach. Until the
+ * picks are in, 3 quiet placeholder chips hold their place.
  */
 "use client";
 
@@ -22,7 +23,8 @@ export function Suggestions({
   onMore,
   onPick,
 }: {
-  picks: string[];
+  // null until the browser reads the day, so the placeholder chips show in place of the chips.
+  picks: string[] | null;
   facts: Record<string, string>;
   moreOpen: boolean;
   wrap: boolean;
@@ -31,7 +33,7 @@ export function Suggestions({
 }) {
   const off = useMotionOff();
   const panelId = useId();
-  const topics = picks.map((key) => TOPICS.find((topic) => topic.key === key)).filter((topic): topic is Topic => !!topic);
+  const topics = (picks ?? []).map((key) => TOPICS.find((topic) => topic.key === key)).filter((topic): topic is Topic => !!topic);
   return (
     <div className="flex flex-col gap-sp-2">
       {/* With an empty Thread the row wraps, so all 3 chips show whole at each width and none hides past the edge (AT-4).
@@ -42,6 +44,7 @@ export function Suggestions({
       <div
         role="group"
         aria-label="Suggestions"
+        aria-busy={picks === null || undefined}
         className={
           wrap
             ? "flex flex-wrap gap-sp-2"
@@ -62,6 +65,22 @@ export function Suggestions({
             strokeWidth={2.25}
           />
         </button>
+        {picks === null && (
+          // The placeholders hold the size of a chip, with two still bars for the name and the fact. They do not pulse,
+          // so the dock stays quiet for the moment until the chips land.
+          <div aria-hidden className="contents">
+            {[0, 1, 2].map((index) => (
+              <div
+                key={index}
+                data-placeholder=""
+                className={`flex min-h-touch max-w-chip ${wrap ? "min-w-0 flex-[1_1_9rem]" : "w-36 flex-none"} flex-col justify-center gap-sp-1 rounded-tile border border-door-hair bg-card px-sp-4 py-sp-2 opacity-60`}
+              >
+                <span className="h-sp-3 w-3/4 rounded-pill bg-raised" />
+                <span className="h-sp-2 w-1/2 rounded-pill bg-raised" />
+              </div>
+            ))}
+          </div>
+        )}
         <AnimatePresence initial={false} mode="popLayout">
           {topics.map((topic, index) => (
             <motion.button

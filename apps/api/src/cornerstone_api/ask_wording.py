@@ -21,8 +21,8 @@ TOPICS = {
                    "the trend.",
     "leaders_trades": "The top players at each position this season, and the recent trades in the league.",
     "waiver_targets": "The free agents worth a waiver claim, fitted to the weak spots of a team.",
-    "stack_up": "How a team's roster compares with the 11 other teams: the four parts of the Roster grade and the rank "
-                "at each lineup slot.",
+    "stack_up": "How one team's roster compares with the 11 other teams: the four parts of its Roster grade and its "
+                "rank at each lineup slot. It reads one team only, and never ranks the rosters of all 12 teams.",
     "weak_spots": "The weak positions of a team's roster: thin depth, holes, and the lowest slot ranks.",
     "sell_high": "Players on a team to sell while their value is high, and players on other teams to buy while their "
                  "value is low.",
@@ -61,9 +61,9 @@ def data_sources(season: int) -> dict[str, str]:
     return {
         "league_data_this_season": f"Sleeper data of this league for the {season} season: every matchup and score "
                                    "each week, standings and records, record against the league median each week, "
-                                   "rosters, starting lineups and bench points, every transaction (trades, waiver "
-                                   "claims with their FAAB bids, adds, drops), power rankings, playoff odds, and the "
-                                   "weekly reports.",
+                                   "rosters, the roster grade of each team, starting lineups and bench points, every "
+                                   "transaction (trades, waiver claims with their FAAB bids, adds, drops), power "
+                                   "rankings, playoff odds, and the weekly reports.",
         "player_stats_this_season": f"Sleeper stat lines of the {season} NFL season, one per NFL player per fantasy "
                                     "week so far: fantasy points, passing, rushing, and receiving stats, and the "
                                     "league team that held him that week.",

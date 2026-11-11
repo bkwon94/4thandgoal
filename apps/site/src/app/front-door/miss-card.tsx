@@ -8,7 +8,10 @@ import { motion } from "framer-motion";
 import { forwardRef, useState, type ReactNode } from "react";
 import { ArrowUpIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { AnswerBody } from "./answer-card";
 import { FAST, SLOW, STAGGER, fadeIn, riseIn } from "./motion";
+import type { PersonalBlock } from "./personal-stream";
+import { Steps } from "./steps";
 import { TOPICS } from "./topics";
 
 /* What the site holds and what it does not, as the state of the route says it. One line serves each miss, so the site
@@ -76,20 +79,31 @@ function ClosestTopics({ closest, onPick }: { closest: string[]; onPick: (key: s
   );
 }
 
-/* The honest miss: the question, the line that says the site cannot answer, and the 3 closest Topics. */
-export const MissCard = forwardRef<HTMLElement, { question: string; closest: string[]; onPick: (key: string) => void }>(
-  function MissCard({ question, closest, onPick }, ref) {
-    return (
-      <article ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
-        <QuestionBubble question={question} />
-        <Surface>
-          <p className="m-0 text-body leading-tight font-semibold text-ink">{MISS_LEAD}</p>
-          <ClosestTopics closest={closest} onPick={onPick} />
-        </Surface>
-      </article>
-    );
-  },
-);
+/* The honest miss: the question, the line that says the site cannot answer, and the 3 closest Topics. The miss of a
+   personal Topic keeps its data block from code, so the line and the chips sit in the place of the text under it. */
+export const MissCard = forwardRef<
+  HTMLElement,
+  { question: string; closest: string[]; onPick: (key: string) => void; block?: PersonalBlock; avatars?: Record<number, string | null> }
+>(function MissCard({ question, closest, onPick, block, avatars = {} }, ref) {
+  const miss = (
+    <>
+      <p className="m-0 text-body leading-tight font-semibold text-ink">{MISS_LEAD}</p>
+      <ClosestTopics closest={closest} onPick={onPick} />
+    </>
+  );
+  return (
+    <article ref={ref} aria-label={question} className="flex scroll-mt-sp-6 flex-col gap-sp-3">
+      <QuestionBubble question={question} />
+      {block ? (
+        <AnswerBody answer={{ stats: block.stats, rows: block.rows, text: [], href: null }} avatars={avatars}>
+          <div className="flex flex-col gap-sp-3">{miss}</div>
+        </AnswerBody>
+      ) : (
+        <Surface>{miss}</Surface>
+      )}
+    </article>
+  );
+});
 
 /* The cap line: the question, the calm line of the API that says why and when the questions come back, and the
    closest Topics. It has the shape and the motion of the honest miss, because both say "not this one, try these".
@@ -153,27 +167,15 @@ export const NoteCard = forwardRef<
   );
 });
 
-/* The line while the API routes the question. It shimmers from the mute ink to the ink, and holds still with motion off. */
+/* The wait while the API routes the question: the first line as a live step in the card, as every kind of Answer
+   waits, so the card of the Answer takes its place with the same line. */
 export const PendingCard = forwardRef<HTMLElement, { question: string }>(function PendingCard({ question }, ref) {
-  const off = useMotionOff();
   return (
     <article ref={ref} aria-label={question} aria-busy="true" className="flex scroll-mt-sp-6 flex-col gap-sp-3">
       <QuestionBubble question={question} />
-      <motion.p role="status" className="m-0 px-sp-1 text-body leading-tight font-semibold" {...riseIn(off, { delay: 0.12 })}>
-        {off ? (
-          <span className="text-mute">Reading your question…</span>
-        ) : (
-          // The shimmer of transitions-dev: a band of the ink sweeps the mute text, on a linear loop of 2 s.
-          <motion.span
-            className="bg-clip-text text-transparent [background-image:linear-gradient(90deg,var(--color-mute)_0%,var(--color-mute)_40%,var(--color-ink)_50%,var(--color-mute)_60%,var(--color-mute)_100%)] [background-size:400%_100%]"
-            initial={{ backgroundPosition: "100% 0%" }}
-            animate={{ backgroundPosition: "0% 0%" }}
-            transition={{ duration: 2, ease: "linear", repeat: Infinity }}
-          >
-            Reading your question…
-          </motion.span>
-        )}
-      </motion.p>
+      <Surface>
+        <Steps steps={[]} live />
+      </Surface>
     </article>
   );
 });

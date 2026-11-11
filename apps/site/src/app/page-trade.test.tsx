@@ -187,20 +187,25 @@ describe("the trade ideas of Lil Fridge", () => {
     render(<HomePage />);
     await openTopic("Trade ideas");
     const article = await screen.findByRole("article", { name: "Trade ideas" });
-    const steps = () => within(within(article).getByRole("status", { name: "Steps" })).getAllByRole("listitem").map((step) => step.textContent);
-    expect(steps()).toEqual(["Looking for trades…"]);
+    const steps = () => within(within(article).getByRole("list", { name: "Steps" })).getAllByRole("listitem").map((step) => step.querySelector("[data-line]")?.textContent);
+    // Every kind waits on the same first line, and the newest step is the live one, with one ellipsis.
+    expect(steps()).toEqual(["Reading the league…"]);
     const lines = ideasStream.filter((part) => part.type === "data-step");
     await stream.send({ type: "start" });
     await stream.send(lines[0]);
-    await waitFor(() => expect(steps()).toEqual(["Checked 11 teams for a fit"]));
+    await waitFor(() => expect(steps()).toEqual(["Checked 11 teams for a fit…"]));
     await stream.send(lines[1]);
     await stream.send(lines[2]);
-    await waitFor(() => expect(steps()).toEqual(["Checked 11 teams for a fit", "Built 56 offers", "Weighed 56 offers"]));
+    await waitFor(() => expect(steps()).toEqual(["Checked 11 teams for a fit", "Built 56 offers", "Weighed 56 offers…"]));
     expect(screen.queryByRole("region", { name: "Trade ideas" })).toBeNull();
     for (const part of ideasStream.slice(ideasStream.indexOf(lines[2]) + 1)) await stream.send(part);
     await stream.end();
-    expect(await screen.findByRole("region", { name: "Trade ideas" })).toBeTruthy();
-    await waitFor(() => expect(within(article).queryByRole("status", { name: "Steps" })).toBeNull());
+    const region = await screen.findByRole("region", { name: "Trade ideas" });
+    // The steps stay above the Answer, each one done.
+    expect(steps()).toEqual(["Checked 11 teams for a fit", "Built 56 offers", "Weighed 56 offers", "Picked the best 2"]);
+    const list = within(article).getByRole("list", { name: "Steps" });
+    expect(list.compareDocumentPosition(region) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(list).getAllByRole("listitem").map((step) => step.getAttribute("data-state"))).toEqual(["done", "done", "done", "done"]);
   });
 
   it("names no inner tool and no manager word in any step or Answer", async () => {
@@ -260,12 +265,12 @@ describe("sell high or buy low for Lil Fridge", () => {
     render(<HomePage />);
     await openTopic("Sell high or buy low");
     const article = await screen.findByRole("article", { name: "Sell high or buy low" });
-    const steps = () => within(within(article).getByRole("status", { name: "Steps" })).getAllByRole("listitem").map((step) => step.textContent);
-    expect(steps()).toEqual(["Reading your roster…"]);
+    const steps = () => within(within(article).getByRole("list", { name: "Steps" })).getAllByRole("listitem").map((step) => step.querySelector("[data-line]")?.textContent);
+    expect(steps()).toEqual(["Reading the league…"]);
     const lines = sellStream.filter((part) => part.type === "data-step");
     await stream.send({ type: "start" });
     await stream.send(lines[0]);
-    await waitFor(() => expect(steps()).toEqual(["Lined up your 14 players"]));
+    await waitFor(() => expect(steps()).toEqual(["Lined up your 14 players…"]));
     expect(screen.queryByRole("region", { name: "Sell high or buy low" })).toBeNull();
     for (const part of sellStream.slice(sellStream.indexOf(lines[0]) + 1)) await stream.send(part);
     await stream.end();
@@ -315,7 +320,7 @@ describe("an older trade Answer in the Thread", () => {
     await stream.send({ type: "start" });
     await openTopic("Week recap");
     await screen.findAllByRole("article", { name: "Week recap" });
-    expect(within(article).getByRole("status", { name: "Steps" })).toBeTruthy();
+    expect(within(article).getByRole("list", { name: "Steps" })).toBeTruthy();
     expect(within(article).queryByRole("button", { expanded: false })).toBeNull();
     await stream.end();
   });
