@@ -1,0 +1,62 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"question":"What moves happened this week?","roster_id":6,"week":10}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T22:22:10Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-G.
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01MF9oXCMCgQqu4E4WcAhN9z","toolName":"moves_feed"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01MF9oXCMCgQqu4E4WcAhN9z","inputTextDelta":""}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01MF9oXCMCgQqu4E4WcAhN9z","toolName":"moves_feed","input":{}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01MF9oXCMCgQqu4E4WcAhN9z","output":{"week":10,"live_week":true,"what_each_field_means":{"week":"The fantasy week of the moves. The live week is the week now in play, which \"this week\" means.","moves_per_day":"The count of the moves on each day of the week, oldest day first, in the time zone of the league.","moves":"Each move of the week, newest first. `kind` is \"trade\", \"waiver\" for a waiver claim with its FAAB `bid`, or \"free_agent\" for a free agent add or a drop with no claim. A trade gives each team in `sides` with the players and the picks that it `got`. Another move gives its `team`, the players it `added`, and the players it `dropped`."},"moves_per_day":[{"day":"Wed Nov 11","moves":5},{"day":"Thu Nov 12","moves":1}],"moves":[{"kind":"free_agent","day":"Thu Nov 12","team":"Unsolicited Dak Picks","added":["Buffalo Bills"],"dropped":["New Orleans Saints"]},{"kind":"free_agent","day":"Wed Nov 11","team":"Puka Deez...","added":["Tutu Atwell"],"dropped":["Matthew Stafford"]},{"kind":"free_agent","day":"Wed Nov 11","team":"Bo Girds","added":["Aaron Rodgers"],"dropped":["Terrance Ferguson"]},{"kind":"free_agent","day":"Wed Nov 11","team":"To Infinity and Bijan","added":["Zonovan Knight"],"dropped":["Brian Thomas Jr."]},{"kind":"free_agent","day":"Wed Nov 11","team":"The Blue Tent","added":["Darren Waller"],"dropped":["Devaughn Vele"]},{"kind":"free_agent","day":"Wed Nov 11","team":"The Blue Tent","added":["Indianapolis Colts"],"dropped":[]}],"block_id":"moves_feed"}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":"This week has six mo","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":"ves, all free agent adds","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":" and","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":" drops, with no trades or","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":" waiver claims.","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":" Five were on Wedn","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":"esday and one on Thurs","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":"day.","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":" The","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":" mo","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-delta","delta":"ves are listed below.","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"text-end","id":"f6be6c4c-40c3-4307-887d-2fd7076c1a0e"}
+
+data: {"type":"data-block","id":"block","data":{"kind":"feed","title":"Week 10 moves","days":[{"day":"Wed Nov 11","moves":5},{"day":"Thu Nov 12","moves":1}],"rows":[{"kind":"free_agent","day":"Thu Nov 12","team":"Unsolicited Dak Picks","added":["Buffalo Bills"],"dropped":["New Orleans Saints"]},{"kind":"free_agent","day":"Wed Nov 11","team":"Puka Deez...","added":["Tutu Atwell"],"dropped":["Matthew Stafford"]},{"kind":"free_agent","day":"Wed Nov 11","team":"Bo Girds","added":["Aaron Rodgers"],"dropped":["Terrance Ferguson"]},{"kind":"free_agent","day":"Wed Nov 11","team":"To Infinity and Bijan","added":["Zonovan Knight"],"dropped":["Brian Thomas Jr."]},{"kind":"free_agent","day":"Wed Nov 11","team":"The Blue Tent","added":["Darren Waller"],"dropped":["Devaughn Vele"]},{"kind":"free_agent","day":"Wed Nov 11","team":"The Blue Tent","added":["Indianapolis Colts"],"dropped":[]}],"more":0}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T22:22:14Z UTC.

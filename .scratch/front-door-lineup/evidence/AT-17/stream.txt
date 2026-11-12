@@ -1,0 +1,126 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"topic":"start_sit","roster_id":6,"question":"Should I start Zay Flowers, Matthew Golden, or Parker Washington?"}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T22:16:43Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-C.
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":6,"week":10,"total":49.4,"swap_total":49.4,"rows":[{"slot":"WR","player":"Zay Flowers","player_id":"9997","position":"WR","nfl_team":"BAL","opponent":"LAC","kickoff":1794878100000,"projection":13.5,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Matthew Golden","player_id":"12501","position":"WR","nfl_team":"GB","opponent":"MIN","kickoff":1794765600000,"projection":12.9,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Parker Washington","player_id":"9487","position":"WR","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":12.5,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Blake Corum","player_id":"11586","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":10.5,"locked":false,"risk":null,"swap":null}],"cannot_play":[]}}
+
+data: {"type":"data-key","data":{"key":"22326f7ab4fcf044e3946fab694e1d6d282e7364c89a6831b8177c2b48b8b110"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"Start all three of","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" them. Your","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" l","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"ineup has Zay Fl","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"owers (","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"13.5 projected","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" points) and Matthew","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" Golden (12.9) at","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" W","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"R,","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" and Parker Washington (","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"12.5) at FLE","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"X.","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" Flowers plays Monday","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" night","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" against the Ch","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"argers, and","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" he","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" has a 28","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":".9% target share over","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" the last three weeks.","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" Golden has","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" a","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" 32.4% target share and","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" plays Min","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"nesota on","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" Sunday at 1:","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"00 PM. Washington","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" faces","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" Tennessee, wh","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"ose defense all","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"ows the most points to WR","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"s (","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"40","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":".7 a","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" game, 32n","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"d of 32), and his team","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" is projected for","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" 28.5 points. All","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" three be","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"at Antonio Williams","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" (6.3) and Kon","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"ata Mumpfield (","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"6.4) on your","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" bench.","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" Lamar Jackson","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" is","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" out on IR with","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":" a thumb inj","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-delta","delta":"ury.","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"text-end","id":"398f96cb-9946-4fd8-add4-1ef48b891cb9"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T22:16:47Z UTC.

@@ -1,0 +1,37 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -p no:xdist -s -q tests/test_start_sit.py::test_print_at12
+# Run at 2026-11-12T23:02:38Z on 2adcc0c4, in a detached worktree. test_print_at12 is a print-only test appended to test_start_sit.py for this run and never committed.
+# It uses the harness of the lock tests: the real API app over the recorded Sleeper week 10 of cpc and norcal (recorded 2026-11-12), the clock set by the 'now' of the sources, and the repo Jev fake that answers 0.95 for each named pair.
+
+# Recorded Sleeper scores query of week 10 (recorded 2026-11-12), the NYG and WAS game:
+{"game_id": "202611023", "away": "WAS", "home": "NYG", "start_time": 1794532500000, "status": "pre_game", "has_started": false}
+
+# The clock of the run: 2026-11-13T01:16:00+00:00 (before: 2026-11-12T12:53:00+00:00)
+
+# norcal Bo Girds (roster 7), Start or sit block, before kickoff. Jev answers 0.95 for McGowan over Ekeler and Raridon over Likely.
+{"slot": "QB", "player": "Trevor Lawrence", "nfl_team": "JAX", "opponent": "TEN", "kickoff": 1794765600000, "locked": false, "swap": null}
+{"slot": "RB", "player": "Kenneth Walker III", "nfl_team": "KC", "opponent": "ATL", "kickoff": 1794765600000, "locked": false, "swap": null}
+{"slot": "RB", "player": "Seth McGowan", "nfl_team": "IND", "opponent": "MIA", "kickoff": 1794765600000, "locked": false, "swap": {"over": "A. Ekeler", "over_projection": 8.4, "reason": null}}
+{"slot": "WR", "player": "CeeDee Lamb", "nfl_team": "DAL", "opponent": "SF", "kickoff": 1794777900000, "locked": false, "swap": null}
+{"slot": "WR", "player": "Zay Flowers", "nfl_team": "BAL", "opponent": "LAC", "kickoff": 1794878100000, "locked": false, "swap": null}
+{"slot": "TE", "player": "Eli Raridon", "nfl_team": "NE", "opponent": "DET", "kickoff": 1794753000000, "locked": false, "swap": {"over": "I. Likely", "over_projection": 12.5, "reason": null}}
+{"slot": "FLEX", "player": "Parker Washington", "nfl_team": "JAX", "opponent": "TEN", "kickoff": 1794765600000, "locked": false, "swap": null}
+{"slot": "FLEX", "player": "Tyler Higbee", "nfl_team": "LAR", "opponent": "ARI", "kickoff": 1794776700000, "locked": false, "swap": null}
+{"slot": "FLEX", "player": "Kaleb Johnson", "nfl_team": "GB", "opponent": "MIN", "kickoff": 1794765600000, "locked": false, "swap": null}
+Swaps: {'Seth McGowan': 'A. Ekeler', 'Eli Raridon': 'I. Likely'}
+
+# norcal Bo Girds (roster 7), Start or sit block, after kickoff. Jev answers 0.95 for McGowan over Ekeler and Raridon over Likely.
+{"slot": "QB", "player": "Trevor Lawrence", "nfl_team": "JAX", "opponent": "TEN", "kickoff": 1794765600000, "locked": false, "swap": null}
+{"slot": "RB", "player": "Kenneth Walker III", "nfl_team": "KC", "opponent": "ATL", "kickoff": 1794765600000, "locked": false, "swap": null}
+{"slot": "RB", "player": "Kaleb Johnson", "nfl_team": "GB", "opponent": "MIN", "kickoff": 1794765600000, "locked": false, "swap": null}
+{"slot": "WR", "player": "CeeDee Lamb", "nfl_team": "DAL", "opponent": "SF", "kickoff": 1794777900000, "locked": false, "swap": null}
+{"slot": "WR", "player": "Zay Flowers", "nfl_team": "BAL", "opponent": "LAC", "kickoff": 1794878100000, "locked": false, "swap": null}
+{"slot": "TE", "player": "Isaiah Likely", "nfl_team": "NYG", "opponent": "WAS", "kickoff": 1794532500000, "locked": true, "swap": null}
+{"slot": "FLEX", "player": "Parker Washington", "nfl_team": "JAX", "opponent": "TEN", "kickoff": 1794765600000, "locked": false, "swap": null}
+{"slot": "FLEX", "player": "Tyler Higbee", "nfl_team": "LAR", "opponent": "ARI", "kickoff": 1794776700000, "locked": false, "swap": null}
+{"slot": "FLEX", "player": "Austin Ekeler", "nfl_team": "WAS", "opponent": "NYG", "kickoff": 1794532500000, "locked": true, "swap": null}
+Swaps: {}
+
+# Recorded week 9 scores: every game has has_started true, and each is locked at a clock of 2026-09-01:
+15 games; all started: True ; all locked at 2026-09-01: True
+.
+1 passed in 2.79s

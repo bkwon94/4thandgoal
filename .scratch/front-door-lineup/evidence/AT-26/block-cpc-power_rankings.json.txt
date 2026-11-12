@@ -1,0 +1,91 @@
+$ jq '.teams["6"][] | select(.topic=="power_rankings") | .block' clients/cpc/published/2026/week-09/topics.json
+# Run at 2026-11-12T21:47:36Z UTC on 2adcc0c4, on topics.json version 2 rebuilt from the saved raw week 9 (see AT-40).
+{
+  "kind": "rank_movers",
+  "rows": [
+    {
+      "roster_id": 8,
+      "name": "Return of T Mac",
+      "rank": 1,
+      "move": 3,
+      "you": false
+    },
+    {
+      "roster_id": 1,
+      "name": "The Blue Tent",
+      "rank": 2,
+      "move": 3,
+      "you": false
+    },
+    {
+      "roster_id": 2,
+      "name": "All You Need Is Love",
+      "rank": 3,
+      "move": -2,
+      "you": false
+    },
+    {
+      "roster_id": 6,
+      "name": "Bo Girds",
+      "rank": 4,
+      "move": 3,
+      "you": true
+    },
+    {
+      "roster_id": 5,
+      "name": "London Cooking",
+      "rank": 5,
+      "move": 3,
+      "you": false
+    },
+    {
+      "roster_id": 12,
+      "name": "Teehee",
+      "rank": 6,
+      "move": -4,
+      "you": false
+    },
+    {
+      "roster_id": 9,
+      "name": "Maye d'force B with U",
+      "rank": 7,
+      "move": -4,
+      "you": false
+    },
+    {
+      "roster_id": 3,
+      "name": "Lil Fridge",
+      "rank": 8,
+      "move": -2,
+      "you": false
+    },
+    {
+      "roster_id": 7,
+      "name": "To Infinity and Bijan",
+      "rank": 9,
+      "move": 0,
+      "you": false
+    },
+    {
+      "roster_id": 11,
+      "name": "Unsolicited Dak Picks",
+      "rank": 10,
+      "move": 0,
+      "you": false
+    },
+    {
+      "roster_id": 4,
+      "name": "NFC Least",
+      "rank": 11,
+      "move": 1,
+      "you": false
+    },
+    {
+      "roster_id": 10,
+      "name": "behold the lamb",
+      "rank": 12,
+      "move": -1,
+      "you": false
+    }
+  ]
+}

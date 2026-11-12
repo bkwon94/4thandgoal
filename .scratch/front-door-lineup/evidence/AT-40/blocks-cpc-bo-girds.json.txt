@@ -1,0 +1,648 @@
+$ jq '.teams["6"] | map({topic, block})' clients/cpc/published/2026/week-09/topics.json
+# Run at 2026-11-12T22:54:35Z UTC on 2adcc0c4, on topics.json version 2 rebuilt from the saved raw week 9 (output.txt).
+[
+  {
+    "topic": "week_recap",
+    "block": {
+      "kind": "recap",
+      "score": 114.07,
+      "place": 3,
+      "teams": 12,
+      "opponent": "Teehee",
+      "opponent_score": 100.63,
+      "strip": [
+        {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "score": 144.03,
+          "you": false
+        },
+        {
+          "roster_id": 1,
+          "name": "The Blue Tent",
+          "score": 132.68,
+          "you": false
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "score": 114.07,
+          "you": true
+        },
+        {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "score": 111.46,
+          "you": false
+        },
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "score": 106.71,
+          "you": false
+        },
+        {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "score": 106.39,
+          "you": false
+        },
+        {
+          "roster_id": 12,
+          "name": "Teehee",
+          "score": 100.63,
+          "you": false
+        },
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "score": 95.09,
+          "you": false
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "score": 92.71,
+          "you": false
+        },
+        {
+          "roster_id": 4,
+          "name": "NFC Least",
+          "score": 86.79,
+          "you": false
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "score": 83.08,
+          "you": false
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "score": 64.65,
+          "you": false
+        }
+      ],
+      "median": 103.51,
+      "top": {
+        "name": "Kenneth Walker III",
+        "position": "RB",
+        "points": 34.3,
+        "projection": 20.07
+      },
+      "sentence": "Bo Girds held the lead over Teehee from Thursday all the way to Monday, and Kenneth Walker III and Matthew Golden each outscored the margin on his own."
+    }
+  },
+  {
+    "topic": "last_matchup",
+    "block": {
+      "kind": "matchup",
+      "final": true,
+      "you": {
+        "roster_id": 6,
+        "name": "Bo Girds",
+        "score": 114.07
+      },
+      "them": {
+        "roster_id": 12,
+        "name": "Teehee",
+        "score": 100.63
+      },
+      "odds": null,
+      "slots": [
+        {
+          "slot": "QB",
+          "you": {
+            "name": "Malik Willis",
+            "position": "QB",
+            "nfl_team": "MIA",
+            "points": 4.82
+          },
+          "them": {
+            "name": "Trevor Lawrence",
+            "position": "QB",
+            "nfl_team": "JAX",
+            "points": 13.58
+          }
+        },
+        {
+          "slot": "RB",
+          "you": {
+            "name": "Kenneth Walker III",
+            "position": "RB",
+            "nfl_team": "KC",
+            "points": 34.3
+          },
+          "them": {
+            "name": "Bhayshul Tuten",
+            "position": "RB",
+            "nfl_team": "JAX",
+            "points": 8.9
+          }
+        },
+        {
+          "slot": "RB",
+          "you": {
+            "name": "Kyren Williams",
+            "position": "RB",
+            "nfl_team": "LAR",
+            "points": 7.6
+          },
+          "them": {
+            "name": "Omarion Hampton",
+            "position": "RB",
+            "nfl_team": "LAC",
+            "points": 6.0
+          }
+        },
+        {
+          "slot": "WR",
+          "you": {
+            "name": "Parker Washington",
+            "position": "WR",
+            "nfl_team": "JAX",
+            "points": 13.1
+          },
+          "them": {
+            "name": "Tee Higgins",
+            "position": "WR",
+            "nfl_team": "CIN",
+            "points": 17.7
+          }
+        },
+        {
+          "slot": "WR",
+          "you": {
+            "name": "Zay Flowers",
+            "position": "WR",
+            "nfl_team": "BAL",
+            "points": 3.8
+          },
+          "them": {
+            "name": "Luther Burden III",
+            "position": "WR",
+            "nfl_team": "CHI",
+            "points": 17.2
+          }
+        },
+        {
+          "slot": "TE",
+          "you": {
+            "name": "Trey McBride",
+            "position": "TE",
+            "nfl_team": "ARI",
+            "points": 7.9
+          },
+          "them": {
+            "name": "Sam LaPorta",
+            "position": "TE",
+            "nfl_team": "DET",
+            "points": 5.2
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Matthew Golden",
+            "position": "WR",
+            "nfl_team": "GB",
+            "points": 27.4
+          },
+          "them": {
+            "name": "Amon-Ra St. Brown",
+            "position": "WR",
+            "nfl_team": "DET",
+            "points": 12.6
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Devin Singletary",
+            "position": "RB",
+            "nfl_team": "NYG",
+            "points": 4.9
+          },
+          "them": {
+            "name": "DJ Moore",
+            "position": "WR",
+            "nfl_team": "BUF",
+            "points": 5.1
+          }
+        },
+        {
+          "slot": "DEF",
+          "you": {
+            "name": "Jacksonville Jaguars",
+            "position": "DEF",
+            "nfl_team": "JAX",
+            "points": 10.25
+          },
+          "them": {
+            "name": "Chicago Bears",
+            "position": "DEF",
+            "nfl_team": "CHI",
+            "points": 14.35
+          }
+        }
+      ]
+    }
+  },
+  {
+    "topic": "next_matchup",
+    "block": {
+      "kind": "matchup",
+      "final": false,
+      "you": {
+        "roster_id": 6,
+        "name": "Bo Girds",
+        "score": 121.3
+      },
+      "them": {
+        "roster_id": 1,
+        "name": "The Blue Tent",
+        "score": 92.31
+      },
+      "odds": null,
+      "slots": [
+        {
+          "slot": "QB",
+          "you": {
+            "name": "Malik Willis",
+            "position": "QB",
+            "nfl_team": "MIA",
+            "points": 16.81
+          },
+          "them": {
+            "name": "Brock Purdy",
+            "position": "QB",
+            "nfl_team": "SF",
+            "points": 22.93
+          }
+        },
+        {
+          "slot": "RB",
+          "you": {
+            "name": "Kenneth Walker III",
+            "position": "RB",
+            "nfl_team": "KC",
+            "points": 19.24
+          },
+          "them": {
+            "name": "Jadarian Price",
+            "position": "RB",
+            "nfl_team": "SEA",
+            "points": 8.43
+          }
+        },
+        {
+          "slot": "RB",
+          "you": {
+            "name": "Kyren Williams",
+            "position": "RB",
+            "nfl_team": "LAR",
+            "points": 16.64
+          },
+          "them": {
+            "name": "Chris Rodriguez Jr.",
+            "position": "RB",
+            "nfl_team": "JAX",
+            "points": 6.08
+          }
+        },
+        {
+          "slot": "WR",
+          "you": {
+            "name": "Zay Flowers",
+            "position": "WR",
+            "nfl_team": "BAL",
+            "points": 13.39
+          },
+          "them": {
+            "name": "Christian Watson",
+            "position": "WR",
+            "nfl_team": "GB",
+            "points": 14.27
+          }
+        },
+        {
+          "slot": "WR",
+          "you": {
+            "name": "Parker Washington",
+            "position": "WR",
+            "nfl_team": "JAX",
+            "points": 13.26
+          },
+          "them": {
+            "name": "Rashee Rice",
+            "position": "WR",
+            "nfl_team": "KC",
+            "points": 12.37
+          }
+        },
+        {
+          "slot": "TE",
+          "you": {
+            "name": "Trey McBride",
+            "position": "TE",
+            "nfl_team": "ARI",
+            "points": 12.23
+          },
+          "them": {
+            "name": "Brock Bowers",
+            "position": "TE",
+            "nfl_team": "LV",
+            "points": 13.9
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Matthew Golden",
+            "position": "WR",
+            "nfl_team": "GB",
+            "points": 11.47
+          },
+          "them": {
+            "name": "Jordyn Tyson",
+            "position": "WR",
+            "nfl_team": "NO",
+            "points": 9.62
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Blake Corum",
+            "position": "RB",
+            "nfl_team": "LAR",
+            "points": 9.44
+          },
+          "them": {
+            "name": "Devaughn Vele",
+            "position": "WR",
+            "nfl_team": "NO",
+            "points": 4.71
+          }
+        },
+        {
+          "slot": "DEF",
+          "you": {
+            "name": "Jacksonville Jaguars",
+            "position": "DEF",
+            "nfl_team": "JAX",
+            "points": 8.82
+          },
+          "them": null
+        }
+      ]
+    }
+  },
+  {
+    "topic": "power_rankings",
+    "block": {
+      "kind": "rank_movers",
+      "rows": [
+        {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "rank": 1,
+          "move": 3,
+          "you": false
+        },
+        {
+          "roster_id": 1,
+          "name": "The Blue Tent",
+          "rank": 2,
+          "move": 3,
+          "you": false
+        },
+        {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "rank": 3,
+          "move": -2,
+          "you": false
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "rank": 4,
+          "move": 3,
+          "you": true
+        },
+        {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "rank": 5,
+          "move": 3,
+          "you": false
+        },
+        {
+          "roster_id": 12,
+          "name": "Teehee",
+          "rank": 6,
+          "move": -4,
+          "you": false
+        },
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "rank": 7,
+          "move": -4,
+          "you": false
+        },
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "rank": 8,
+          "move": -2,
+          "you": false
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "rank": 9,
+          "move": 0,
+          "you": false
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "rank": 10,
+          "move": 0,
+          "you": false
+        },
+        {
+          "roster_id": 4,
+          "name": "NFC Least",
+          "rank": 11,
+          "move": 1,
+          "you": false
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "rank": 12,
+          "move": -1,
+          "you": false
+        }
+      ]
+    }
+  },
+  {
+    "topic": "playoff_race",
+    "block": {
+      "kind": "ladder",
+      "playoff_teams": 6,
+      "rows": [
+        {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "rank": 1,
+          "record": "12-6",
+          "odds": 78,
+          "you": false
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "rank": 2,
+          "record": "11-7",
+          "odds": 82,
+          "you": true
+        },
+        {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "rank": 3,
+          "record": "11-7",
+          "odds": 80,
+          "you": false
+        },
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "rank": 4,
+          "record": "11-7",
+          "odds": 85,
+          "you": false
+        },
+        {
+          "roster_id": 1,
+          "name": "The Blue Tent",
+          "rank": 5,
+          "record": "11-7",
+          "odds": 76,
+          "you": false
+        },
+        {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "rank": 6,
+          "record": "11-7",
+          "odds": 62,
+          "you": false
+        },
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "rank": 7,
+          "record": "10-8",
+          "odds": 80,
+          "you": false
+        },
+        {
+          "roster_id": 12,
+          "name": "Teehee",
+          "rank": 8,
+          "record": "8-10",
+          "odds": 49,
+          "you": false
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "rank": 9,
+          "record": "8-10",
+          "odds": 6,
+          "you": false
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "rank": 10,
+          "record": "6-12",
+          "odds": 1,
+          "you": false
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "rank": 11,
+          "record": "6-12",
+          "odds": 2,
+          "you": false
+        },
+        {
+          "roster_id": 4,
+          "name": "NFC Least",
+          "rank": 12,
+          "record": "3-15",
+          "odds": 1,
+          "you": false
+        }
+      ]
+    }
+  },
+  {
+    "topic": "your_season",
+    "block": {
+      "kind": "schedule",
+      "playoff_teams": 6,
+      "teams": 12,
+      "rows": [
+        {
+          "week": 10,
+          "roster_id": 1,
+          "opponent": "The Blue Tent",
+          "rank": 5,
+          "record": "11-7"
+        },
+        {
+          "week": 11,
+          "roster_id": 9,
+          "opponent": "Maye d'force B with U",
+          "rank": 7,
+          "record": "10-8"
+        },
+        {
+          "week": 12,
+          "roster_id": 5,
+          "opponent": "London Cooking",
+          "rank": 3,
+          "record": "11-7"
+        },
+        {
+          "week": 13,
+          "roster_id": 4,
+          "opponent": "NFC Least",
+          "rank": 12,
+          "record": "3-15"
+        },
+        {
+          "week": 14,
+          "roster_id": 3,
+          "opponent": "Lil Fridge",
+          "rank": 4,
+          "record": "11-7"
+        }
+      ]
+    }
+  },
+  {
+    "topic": "leaders_trades",
+    "block": null
+  }
+]

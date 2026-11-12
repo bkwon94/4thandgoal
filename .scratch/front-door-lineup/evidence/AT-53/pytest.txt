@@ -1,0 +1,11 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -p no:xdist -v tests/test_start_sit.py::test_start_sit_calls_only_sleeper_and_the_kickoff_sources
+# Run at 2026-11-12T22:53:22Z UTC on 2adcc0c4.
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 1 item
+tests/test_start_sit.py::test_start_sit_calls_only_sleeper_and_the_kickoff_sources PASSED [100%]
+============================== 1 passed in 0.69s ===============================

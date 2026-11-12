@@ -1,0 +1,96 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"topic":"start_sit","roster_id":12}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T22:37:18Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-E.
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":12,"week":10,"total":114.0,"swap_total":114.0,"rows":[{"slot":"QB","player":"Trevor Lawrence","player_id":"7523","position":"QB","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":20.5,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Bhayshul Tuten","player_id":"12490","position":"RB","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":13.0,"locked":false,"risk":{"tag":"Q","body_part":"Ankle","practice":"No practice report yet","pivot":"Start B. Tuten if he is active. If he is ruled out, start O. Hampton."},"swap":null},{"slot":"RB","player":"Tony Pollard","player_id":"5967","position":"RB","nfl_team":"TEN","opponent":"JAX","kickoff":1794765600000,"projection":11.4,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Amon-Ra St. Brown","player_id":"7547","position":"WR","nfl_team":"DET","opponent":"NE","kickoff":1794753000000,"projection":15.9,"locked":false,"risk":{"tag":"Q","body_part":"Ribs","practice":"No practice report yet","pivot":"Start A. St. Brown if he is active."},"swap":null},{"slot":"WR","player":"Tee Higgins","player_id":"6801","position":"WR","nfl_team":"CIN","opponent":"PIT","kickoff":1794792000000,"projection":14.6,"locked":false,"risk":null,"swap":null},{"slot":"TE","player":"Sam LaPorta","player_id":"10859","position":"TE","nfl_team":"DET","opponent":"NE","kickoff":1794753000000,"projection":9.7,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Garrett Wilson","player_id":"8146","position":"WR","nfl_team":"NYJ","opponent":"BUF","kickoff":1794765600000,"projection":11.9,"locked":false,"risk":{"tag":"Q","body_part":"Concussion","practice":"No practice report yet","pivot":"Start G. Wilson if he is active. If he is ruled out, start D. Kincaid."},"swap":null},{"slot":"FLEX","player":"DJ Moore","player_id":"4983","position":"WR","nfl_team":"BUF","opponent":"NYJ","kickoff":1794765600000,"projection":10.4,"locked":false,"risk":null,"swap":null},{"slot":"DEF","player":"Baltimore Ravens","player_id":"BAL","position":"DEF","nfl_team":"BAL","opponent":"LAC","kickoff":1794878100000,"projection":6.6,"locked":false,"risk":null,"swap":null}],"cannot_play":[{"name":"B. Nix","status":"Bye","body_part":null},{"name":"L. Burden III","status":"Bye","body_part":"Undisclosed"},{"name":"K. Gainwell","status":"Bye","body_part":null}]}}
+
+data: {"type":"data-key","data":{"key":"8025354cbf31c8f62e244922365a28264b3675e0e5f70cbab0500847b72137ad"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"Your top","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" starters this","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" week are Trevor L","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"awrence at QB (20","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":".5 projected points","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"), Amon-Ra","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" St. Brown at W","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"R (15.9)","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" and Tee Higgins","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" at WR (14.6),","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" with","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" Bhayshul T","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"uten at RB (13.","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"0) and Tony P","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"ollard at RB (11.","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"4)","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" behind them. Bo","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" Nix, Luther Bur","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"den III and Kenny","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" Gainwell c","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"annot play because","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" they are on a","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" bye. Three star","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"ters are Questionable.","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" Start T","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"uten if he is active, and","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" if he is ruled out,","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" start Omarion Hamp","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"ton. Start St. Br","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":"own if he is active. Start","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" Garrett Wilson","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" if he is active, and if he","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" is ruled out, start","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":" Dalton Kincaid","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-delta","delta":".","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"text-end","id":"60ef368e-81bb-4cd7-8a49-090329f3ae0a"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T22:37:21Z UTC.

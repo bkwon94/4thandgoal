@@ -1,0 +1,80 @@
+{
+  "route": "/ask/",
+  "steps": [
+    {
+      "wait": "text=Which team is yours?"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[aria-label=\"Suggestions\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "fill": {
+        "selector": "input[aria-label=\"Ask a question\"]",
+        "value": "What moves happened this week?"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Send\"]"
+    },
+    {
+      "wait": "input[type=password]"
+    },
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Ask with this passphrase\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "wait": "article[aria-label=\"What moves happened this week?\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "this-week"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "fill": {
+        "selector": "input[aria-label=\"Ask a question\"]",
+        "value": "What moves happened in week 9?"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Send\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "wait": "article[aria-label=\"What moves happened in week 9?\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "week-9"
+    }
+  ]
+}

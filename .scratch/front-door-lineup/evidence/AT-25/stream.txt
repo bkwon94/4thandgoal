@@ -1,0 +1,12 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/next-matchup -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"roster_id":6}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T22:01:38Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-A.
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"matchup","final":false,"you":{"roster_id":6,"name":"Bo Girds","score":121.2},"them":{"roster_id":1,"name":"The Blue Tent","score":94.5},"odds":0.802,"slots":[{"slot":"QB","you":{"name":"Aaron Rodgers","position":"QB","nfl_team":"PIT","points":17.5},"them":{"name":"Brock Purdy","position":"QB","nfl_team":"SF","points":22.2}},{"slot":"RB","you":{"name":"Kenneth Walker III","position":"RB","nfl_team":"KC","points":20.1},"them":{"name":"Jadarian Price","position":"RB","nfl_team":"SEA","points":7.8}},{"slot":"RB","you":{"name":"Kyren Williams","position":"RB","nfl_team":"LAR","points":15.6},"them":{"name":"Chris Rodriguez Jr.","position":"RB","nfl_team":"JAX","points":7.4}},{"slot":"WR","you":{"name":"Zay Flowers","position":"WR","nfl_team":"BAL","points":13.5},"them":{"name":"Christian Watson","position":"WR","nfl_team":"GB","points":13.6}},{"slot":"WR","you":{"name":"Matthew Golden","position":"WR","nfl_team":"GB","points":12.9},"them":{"name":"Rashee Rice","position":"WR","nfl_team":"KC","points":11.7}},{"slot":"TE","you":{"name":"Trey McBride","position":"TE","nfl_team":"ARI","points":11.7},"them":{"name":"Brock Bowers","position":"TE","nfl_team":"LV","points":12.4}},{"slot":"FLEX","you":{"name":"Parker Washington","position":"WR","nfl_team":"JAX","points":12.4},"them":{"name":"Darren Waller","position":"TE","nfl_team":"CAR","points":7.4}},{"slot":"FLEX","you":{"name":"Blake Corum","position":"RB","nfl_team":"LAR","points":10.5},"them":{"name":"Jordyn Tyson","position":"WR","nfl_team":"NO","points":5.7}},{"slot":"DEF","you":{"name":"Jacksonville Jaguars","position":"DEF","nfl_team":"JAX","points":7.0},"them":{"name":"Indianapolis Colts","position":"DEF","nfl_team":"IND","points":6.3}}],"read_at":"2026-11-12T17:01:38.839681-05:00"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T22:01:39Z UTC.

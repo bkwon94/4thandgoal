@@ -1,0 +1,452 @@
+{
+  "route": "/ask/",
+  "steps": [
+    {
+      "wait": "text=Which team is yours?"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "click": "[role=dialog] button[aria-pressed]:not(:has-text(\"Bo Girds\"))"
+    },
+    {
+      "wait": "input[aria-label=\"Ask a question\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "fill": {
+        "selector": "input[aria-label=\"Ask a question\"]",
+        "value": "Week recap"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Send\"]"
+    },
+    {
+      "wait": "input[type=password]"
+    },
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Ask with this passphrase\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "click": "button[aria-label^=\"Your team:\"]"
+    },
+    {
+      "wait": "[role=dialog] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[aria-label=\"Suggestions\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Week recap:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Week recap:\"]"
+    },
+    {
+      "wait": "article[aria-label=\"Week recap\"] [data-block=\"recap\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "shot": "week-recap"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Your last matchup:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Your last matchup:\"]"
+    },
+    {
+      "wait": "article[aria-label=\"Your last matchup\"] [data-block=\"matchup\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "shot": "your-last-matchup"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Your next matchup:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Your next matchup:\"]"
+    },
+    {
+      "wait": "article[aria-label=\"Your next matchup\"] [data-block=\"matchup\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "shot": "your-next-matchup"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Power rankings:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Power rankings:\"]"
+    },
+    {
+      "wait": "article[aria-label=\"Power rankings\"] [data-block=\"rank_movers\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "shot": "power-rankings"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Playoff race:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Playoff race:\"]"
+    },
+    {
+      "wait": "article[aria-label=\"Playoff race\"] [data-block=\"ladder\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "shot": "playoff-race"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Your season:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Your season:\"]"
+    },
+    {
+      "wait": "article[aria-label=\"Your season\"] [data-block=\"schedule\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "shot": "your-season"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Position leaders and recent trades:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Position leaders and recent trades:\"]"
+    },
+    {
+      "wait": "article[aria-label=\"Position leaders and recent trades\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "shot": "position-leaders-and-recent"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Waiver targets:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Waiver targets:\"]"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "wait": "article[aria-label=\"Waiver targets\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "waiver-targets"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"How you stack up:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"How you stack up:\"]"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "wait": "article[aria-label=\"How you stack up\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "how-you-stack-up"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Weak spots:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Weak spots:\"]"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "wait": "article[aria-label=\"Weak spots\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "weak-spots"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Start or sit:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Start or sit:\"]"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "wait": "article[aria-label=\"Start or sit\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "start-or-sit"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Sell high or buy low:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Sell high or buy low:\"]"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "wait": "article[aria-label=\"Sell high or buy low\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "sell-high-or-buy"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Trade check:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Trade check:\"]"
+    },
+    {
+      "wait": 3000
+    },
+    {
+      "shot": "trade-check"
+    },
+    {
+      "click": "button:has-text(\"Clear\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Trade ideas:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Trade ideas:\"]"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "wait": "article[aria-label=\"Trade ideas\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "trade-ideas"
+    }
+  ],
+  "widths": [
+    375
+  ]
+}

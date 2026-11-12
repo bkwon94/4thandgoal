@@ -1,0 +1,128 @@
+$ curl -sN -X POST http://localhost:8080/clients/norcal/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"topic":"start_sit","roster_id":1}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T23:01:01Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-J.
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":1,"week":10,"total":131.5,"swap_total":131.1,"rows":[{"slot":"QB","player":"Kirk Cousins","player_id":"1166","position":"QB","nfl_team":"MIN","opponent":"GB","kickoff":1794765600000,"projection":17.4,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Christian McCaffrey","player_id":"4034","position":"RB","nfl_team":"SF","opponent":"DAL","kickoff":1794777900000,"projection":22.6,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Kyren Williams","player_id":"8150","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":17.1,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Tetairoa McMillan","player_id":"12526","position":"WR","nfl_team":"CAR","opponent":"NO","kickoff":1794765600000,"projection":15.5,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Nico Collins","player_id":"7569","position":"WR","nfl_team":"HOU","opponent":"CLE","kickoff":1794765600000,"projection":14.8,"locked":false,"risk":null,"swap":null},{"slot":"TE","player":"Harold Fannin Jr.","player_id":"12506","position":"TE","nfl_team":"CLE","opponent":"HOU","kickoff":1794765600000,"projection":10.5,"locked":false,"risk":{"tag":"Q","body_part":"Groin","practice":"No practice report yet","pivot":"Start H. Fannin Jr. if he is active. If he is ruled out, start B. Strange."},"swap":null},{"slot":"FLEX","player":"DJ Moore","player_id":"4983","position":"WR","nfl_team":"BUF","opponent":"NYJ","kickoff":1794765600000,"projection":12.3,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Rachaad White","player_id":"8136","position":"RB","nfl_team":"WAS","opponent":"NYG","kickoff":1794532500000,"projection":11.0,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Brenton Strange","player_id":"9480","position":"TE","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":9.9,"locked":false,"risk":null,"swap":{"over":"D. Boston","over_projection":10.3,"reason":null}}],"cannot_play":[{"name":"K. Bourne","status":"IR","body_part":"Lower Leg"},{"name":"K. Gainwell","status":"Bye","body_part":null}]}}
+
+data: {"type":"data-key","data":{"key":"578307f92accb2650b1a74e5d645dff0cddc05a8c42613985b781ae615dfb750"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"As of week","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" 10, your","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" top","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" starters are Christ","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ian McCaffrey at","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" R","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"B (22.6 projected","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" points","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"), Ky","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ren Williams at RB (","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"17.1), Kirk","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" Cousins at QB (","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"17.4),","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" and Tetairoa Mc","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"Millan (","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"15.5)","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" and Nico Collins (","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"14.8) at WR.","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" K","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"endrick Bourne is","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" out","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" on IR and Kenny","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" Gainwell is on a","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" bye, so ne","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ither can play.\n\nHarold","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" Fannin Jr.","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" is Questionable with","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" a groin iss","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ue at TE, so start him","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" if he is active. If he is","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" ruled out, start Br","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"enton Strange.\n\nThe","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" one Swap pu","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ts Brenton Strange","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" in your","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" fl","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ex over","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" Denzel Boston,","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" because Str","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ange's","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" Jacksonville team","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" is projected to win","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" by 10.5 against","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" Tennessee while Bo","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ston is","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" Questionable with","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":" a toe iss","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ue and C","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"leveland is projected to l","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-delta","delta":"ose by 4.5.","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"text-end","id":"e0c3fe70-e7fd-44d5-bbd9-43e63d561a4e"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":1,"week":10,"total":131.5,"swap_total":131.1,"rows":[{"slot":"QB","player":"Kirk Cousins","player_id":"1166","position":"QB","nfl_team":"MIN","opponent":"GB","kickoff":1794765600000,"projection":17.4,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Christian McCaffrey","player_id":"4034","position":"RB","nfl_team":"SF","opponent":"DAL","kickoff":1794777900000,"projection":22.6,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Kyren Williams","player_id":"8150","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":17.1,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Tetairoa McMillan","player_id":"12526","position":"WR","nfl_team":"CAR","opponent":"NO","kickoff":1794765600000,"projection":15.5,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Nico Collins","player_id":"7569","position":"WR","nfl_team":"HOU","opponent":"CLE","kickoff":1794765600000,"projection":14.8,"locked":false,"risk":null,"swap":null},{"slot":"TE","player":"Harold Fannin Jr.","player_id":"12506","position":"TE","nfl_team":"CLE","opponent":"HOU","kickoff":1794765600000,"projection":10.5,"locked":false,"risk":{"tag":"Q","body_part":"Groin","practice":"No practice report yet","pivot":"Start H. Fannin Jr. if he is active. If he is ruled out, start B. Strange."},"swap":null},{"slot":"FLEX","player":"DJ Moore","player_id":"4983","position":"WR","nfl_team":"BUF","opponent":"NYJ","kickoff":1794765600000,"projection":12.3,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Rachaad White","player_id":"8136","position":"RB","nfl_team":"WAS","opponent":"NYG","kickoff":1794532500000,"projection":11.0,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Brenton Strange","player_id":"9480","position":"TE","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":9.9,"locked":false,"risk":null,"swap":{"over":"D. Boston","over_projection":10.3,"reason":"The one Swap puts Brenton Strange in your flex over Denzel Boston, because Strange's Jacksonville team is projected to win by 10.5 against Tennessee while Boston is Questionable with a toe issue and Cleveland is projected to lose by 4.5."}}],"cannot_play":[{"name":"K. Bourne","status":"IR","body_part":"Lower Leg"},{"name":"K. Gainwell","status":"Bye","body_part":null}]}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T23:01:05Z UTC.

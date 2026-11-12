@@ -1,0 +1,44 @@
+$ jq '.teams["6"][] | select(.topic=="your_season") | .block' clients/cpc/published/2026/week-09/topics.json
+# Run at 2026-11-12T21:47:36Z UTC on 2adcc0c4, on topics.json version 2 rebuilt from the saved raw week 9 (see AT-40).
+{
+  "kind": "schedule",
+  "playoff_teams": 6,
+  "teams": 12,
+  "rows": [
+    {
+      "week": 10,
+      "roster_id": 1,
+      "opponent": "The Blue Tent",
+      "rank": 5,
+      "record": "11-7"
+    },
+    {
+      "week": 11,
+      "roster_id": 9,
+      "opponent": "Maye d'force B with U",
+      "rank": 7,
+      "record": "10-8"
+    },
+    {
+      "week": 12,
+      "roster_id": 5,
+      "opponent": "London Cooking",
+      "rank": 3,
+      "record": "11-7"
+    },
+    {
+      "week": 13,
+      "roster_id": 4,
+      "opponent": "NFC Least",
+      "rank": 12,
+      "record": "3-15"
+    },
+    {
+      "week": 14,
+      "roster_id": 3,
+      "opponent": "Lil Fridge",
+      "rank": 4,
+      "record": "11-7"
+    }
+  ]
+}

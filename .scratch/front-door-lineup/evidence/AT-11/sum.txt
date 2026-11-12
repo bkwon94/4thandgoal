@@ -1,0 +1,14 @@
+# The sum of the lineup with the Swaps, from the last data-block of evidence/AT-4/stream.txt (puurdygood, norcal roster 1, live week 10).
+# The rows of the block are the lineup with the Swaps: a Swap row holds the bench player who takes the slot.
+QB    Kirk Cousins               17.4
+RB    Christian McCaffrey        22.6
+RB    Kyren Williams             17.1
+WR    Tetairoa McMillan          15.5
+WR    Nico Collins               14.8
+TE    Harold Fannin Jr.          10.5
+FLEX  DJ Moore                   12.3
+FLEX  Rachaad White              11.0
+FLEX  Brenton Strange             9.9  (Swap over D. Boston, 10.3)
+Sum of the rows: 131.1
+Block total (by projection): 131.5; block swap_total (with the Swaps): 131.1
+Sum by projection, with each benched starter back in his slot: 131.5

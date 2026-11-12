@@ -1,0 +1,9 @@
+$ curl -s https://api.sleeper.app/schedule/nfl/regular/2026  # the bye week of each team: the regular week with no game of the team
+# Fetched at 2026-11-12T22:55:04Z UTC on 2adcc0c4. Live week 2026 week 10.
+PIT bye week(s): [9]
+KC bye week(s): [5]
+LAR bye week(s): [11]
+JAX bye week(s): [7]
+BAL bye week(s): [13]
+ARI bye week(s): [14]
+GB bye week(s): [11]

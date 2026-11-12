@@ -1,0 +1,16 @@
+$ curl -s -X POST https://sleeper.com/graphql -H 'Content-Type: application/json' -d '{"operationName":"batch_scores","variables":{},"query":"query batch_scores { scores(sport: \"nfl\", season_type: \"regular\", season: \"2026\", week: 10) { date game_id metadata season season_type sport status week start_time } }"}'
+# Run at 2026-11-12T17:31:20Z UTC, live week 2026 week 10.
+{"game_id":"202611023","away":"WAS","home":"NYG","start_time":1794532500000,"start_utc":"2026-11-13T01:15:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611011","away":"NE","home":"DET","start_time":1794753000000,"start_utc":"2026-11-15T14:30:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611002","away":"KC","home":"ATL","start_time":1794765600000,"start_utc":"2026-11-15T18:00:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611008","away":"HOU","home":"CLE","start_time":1794765600000,"start_utc":"2026-11-15T18:00:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611012","away":"MIN","home":"GB","start_time":1794765600000,"start_utc":"2026-11-15T18:00:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611014","away":"MIA","home":"IND","start_time":1794765600000,"start_utc":"2026-11-15T18:00:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611022","away":"CAR","home":"NO","start_time":1794765600000,"start_utc":"2026-11-15T18:00:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611024","away":"BUF","home":"NYJ","start_time":1794765600000,"start_utc":"2026-11-15T18:00:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611034","away":"JAX","home":"TEN","start_time":1794765600000,"start_utc":"2026-11-15T18:00:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611001","away":"LAR","home":"ARI","start_time":1794776700000,"start_utc":"2026-11-15T21:05:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611025","away":"SEA","home":"LV","start_time":1794776700000,"start_utc":"2026-11-15T21:05:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611009","away":"SF","home":"DAL","start_time":1794777900000,"start_utc":"2026-11-15T21:25:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611007","away":"PIT","home":"CIN","start_time":1794792000000,"start_utc":"2026-11-16T01:20:00Z","has_started":false,"status":"pre_game"}
+{"game_id":"202611003","away":"LAC","home":"BAL","start_time":1794878100000,"start_utc":"2026-11-17T01:15:00Z","has_started":false,"status":"pre_game"}

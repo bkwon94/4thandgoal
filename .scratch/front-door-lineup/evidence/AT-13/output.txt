@@ -1,0 +1,14 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -p no:xdist -v tests/test_suggestions.py::test_start_or_sit_leads_thursday_with_the_next_kickoff_as_its_fact tests/test_suggestions.py::test_start_or_sit_leads_sunday_before_the_early_games tests/test_suggestions.py::test_start_or_sit_is_third_on_wednesday_after_the_waiver_targets tests/test_suggestions.py::test_monday_keeps_the_order_of_today_with_start_or_sit_below_the_top_three
+# Run at 2026-11-12T22:53:15Z UTC on 2adcc0c4.
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 4 items
+tests/test_suggestions.py::test_start_or_sit_leads_thursday_with_the_next_kickoff_as_its_fact PASSED [ 25%]
+tests/test_suggestions.py::test_start_or_sit_leads_sunday_before_the_early_games PASSED [ 50%]
+tests/test_suggestions.py::test_start_or_sit_is_third_on_wednesday_after_the_waiver_targets PASSED [ 75%]
+tests/test_suggestions.py::test_monday_keeps_the_order_of_today_with_start_or_sit_below_the_top_three PASSED [100%]
+============================== 4 passed in 1.53s ===============================

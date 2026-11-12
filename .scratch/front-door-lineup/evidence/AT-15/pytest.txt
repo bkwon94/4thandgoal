@@ -1,0 +1,12 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -p no:xdist -v tests/test_suggestions.py::test_one_out_starter_and_two_q_starters_give_both_counts tests/test_suggestions.py::test_the_fact_counts_the_empty_slots_and_no_player_on_the_bench
+# Run at 2026-11-12T23:02:40Z on 2adcc0c4, in a detached worktree.
+# Each test runs the Suggestions route over the recorded Sleeper week 10 of cpc, with the Sleeper starters of Unsolicited Dak Picks (roster 11) set as named:
+#   first test: J. Jacobs (Out), A.J. Brown (Questionable), and George Pickens (Questionable) start; the fact must read "1 can't play, 2 Q".
+#   second test: two starter slots are empty and the three sit on the bench; the fact must read "2 can't play".
+============================= test session starts ==============================
+collecting ... collected 2 items
+
+tests/test_suggestions.py::test_one_out_starter_and_two_q_starters_give_both_counts PASSED [ 50%]
+tests/test_suggestions.py::test_the_fact_counts_the_empty_slots_and_no_player_on_the_bench PASSED [100%]
+
+============================== 2 passed in 0.99s ===============================

@@ -1,0 +1,333 @@
+$ pnpm --dir apps/site evidence front-door-lineup AT-<n>   # one runner command per test or per group, see the notes
+# Note: round 3 ran on 2026-11-12 from 21:49 to 22:49 UTC at 2adcc0c4. Each part used one local API process (make -C apps/api api-evidence) with its own fresh CORNERSTONE_ASK_DIR in the scratchpad (ask-r3-<part>).
+# Why the parts: the API caps a team at 25 Claude Answers a day (caps.py). No API log of any part has the line "stopped at the team cap". Every response in the API logs has the status 200.
+# The order of each test with a stream: curl first and save the stream, run the runner for that test at once so the page reads the kept Answer, then curl once more and compare the data-blocks of the two curls.
+# Part A: AT-1, AT-29, AT-30, AT-31, AT-32, AT-33, AT-25, then one runner command for the tests with no stream of their own. AT-25 ran twice: the second curl differed from the first only in read_at, both times.
+# Part B: AT-16. Part C: AT-17. Part D: AT-19 (AT-18 has no shots). Part F: AT-34. Part G: AT-35.
+# Part E: AT-2 (twice: the first second curl gave the total 134.0 against 134.1), AT-23, AT-4, AT-11, AT-7, AT-9. The agent stopped the AT-11 run: the lineup of Lil Fridge had no Swap row, so the toggle never showed.
+# Part H: AT-4 with Davlionman (norcal roster 10); its kept lineup had no Swap row. Part H3: AT-4 and AT-11 with puurdygood (norcal roster 1), whose lineup has a Swap row. The shots of AT-4 and AT-11 on disk come from part H3.
+# AT-42 has no step list in this round: its shots and its measure come from one extra run (evidence/AT-42/steps.txt).
+# Total of all runner commands: 1356.8 s (A) + 65.2 s (B) + 74.3 s (C) + 61.5 s (D) + 113.5 s (F) + 101.3 s (G) + 424.8 s (E) + 85.5 s (H) + 107.9 s (H3) = 2390.8 s (40 min) for 32 site tests with a steps.json. It counts the runs that ran again. The stopped AT-11 run printed no Total and is not in the sum.
+
+##### Part A
+
+##### 21:49:24 AT-1
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-1
+Running 1 test using 1 worker
+build cpc: 5.1 s
+AT-1 /ask/ cpc: 6 shots in 84.9 s
+Total: 1 test of front-door-lineup in 90.0 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.5m)
+  1 passed (1.5m)
+EXIT 0
+##### 21:51:04 AT-29
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-29
+Running 1 test using 1 worker
+build cpc: 4.3 s
+AT-29 /ask/ cpc: 6 shots in 88.8 s
+Total: 1 test of front-door-lineup in 93.1 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.6m)
+  1 passed (1.6m)
+EXIT 0
+##### 21:52:41 AT-30
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-30
+Running 1 test using 1 worker
+build cpc: 4.2 s
+AT-30 /ask/ cpc: 6 shots in 80.9 s
+Total: 1 test of front-door-lineup in 85.1 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.4m)
+  1 passed (1.4m)
+EXIT 0
+##### 21:54:12 AT-31
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-31
+Running 1 test using 1 worker
+build cpc: 5.1 s
+AT-31 /ask/ cpc: 6 shots in 79.8 s
+Total: 1 test of front-door-lineup in 84.9 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.4m)
+  1 passed (1.4m)
+EXIT 0
+##### 21:55:47 AT-32
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-32
+Running 1 test using 1 worker
+build cpc: 4.2 s
+AT-32 /ask/ cpc: 6 shots in 106.7 s
+Total: 1 test of front-door-lineup in 110.9 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.8m)
+  1 passed (1.9m)
+EXIT 0
+##### 21:57:53 AT-33
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-33
+Running 1 test using 1 worker
+build cpc: 4.3 s
+AT-33 /ask/ cpc: 6 shots in 117.7 s
+Total: 1 test of front-door-lineup in 122.0 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (2.0m)
+  1 passed (2.0m)
+EXIT 0
+##### 22:00:06 AT-25
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-25
+Running 1 test using 1 worker
+build cpc: 4.5 s
+AT-25 /ask/ cpc: 6 shots in 82.8 s
+Total: 1 test of front-door-lineup in 87.3 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.5m)
+  1 passed (1.5m)
+EXIT 0
+##### 22:01:39 AT-25
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-25
+Running 1 test using 1 worker
+build cpc: 4.2 s
+AT-25 /ask/ cpc: 6 shots in 82.5 s
+Total: 1 test of front-door-lineup in 86.7 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.4m)
+  1 passed (1.5m)
+EXIT 0
+##### 22:03:10 AT-21 AT-22 AT-24 AT-26 AT-27 AT-28 AT-36 AT-43 AT-44 AT-45 AT-47 AT-48 AT-49 AT-50
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-21 AT-22 AT-24 AT-26 AT-27 AT-28 AT-36 AT-43 AT-44 AT-45 AT-47 AT-48 AT-49 AT-50
+Running 1 test using 1 worker
+build cpc: 4.2 s
+AT-21 /ask/ cpc: 28 shots in 192.8 s
+AT-22 /ask/ cpc: 6 shots in 52.6 s
+AT-24 /ask/ cpc: 6 shots in 52.5 s
+AT-26 /ask/ cpc: 6 shots in 52.6 s
+AT-27 /ask/ cpc: 6 shots in 54.3 s
+AT-28 /ask/ cpc: 6 shots in 52.4 s
+AT-36 /ask/ cpc: 1 shot in 8.7 s
+AT-43 /ask/ cpc: 2 shots in 19.8 s
+AT-44 /ask/ cpc: 2 shots in 14.8 s
+AT-45 /ask/ cpc: 4 shots in 27.9 s
+AT-47 /ask/ cpc: 4 shots in 16.8 s
+AT-48 /ask/ cpc: 2 shots in 19.6 s
+AT-49 /2026/week-09/ cpc: 4 shots in 16.6 s
+AT-50 /ask/ cpc: 2 shots in 11.3 s
+Total: 14 tests of front-door-lineup in 596.8 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (9.9m)
+  Slow test file: [evidence] › e2e/evidence.spec.ts (9.9m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 passed (10.0m)
+EXIT 0
+
+##### Part B
+
+##### 22:15:16 AT-16
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-16
+Running 1 test using 1 worker
+build cpc: 4.8 s
+AT-16 /ask/ cpc: 6 shots in 60.5 s
+Total: 1 test of front-door-lineup in 65.2 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.1m)
+  1 passed (1.1m)
+EXIT 0
+
+##### Part C
+
+##### 22:16:47 AT-17
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-17
+Running 1 test using 1 worker
+build cpc: 4.4 s
+AT-17 /ask/ cpc: 6 shots in 69.9 s
+Total: 1 test of front-door-lineup in 74.3 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.2m)
+  1 passed (1.2m)
+EXIT 0
+
+##### Part D
+
+##### 22:18:28 AT-19
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-19
+Running 1 test using 1 worker
+build cpc: 4.3 s
+AT-19 /ask/ cpc: 6 shots in 57.2 s
+Total: 1 test of front-door-lineup in 61.5 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.0m)
+  1 passed (1.0m)
+EXIT 0
+
+##### Part F
+
+##### 22:19:57 AT-34
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-34
+Running 1 test using 1 worker
+build cpc: 4.3 s
+AT-34 /ask/ cpc: 12 shots in 109.1 s
+Total: 1 test of front-door-lineup in 113.5 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.9m)
+  1 passed (1.9m)
+EXIT 0
+
+##### Part G
+
+##### 22:22:18 AT-35
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-35
+Running 1 test using 1 worker
+build cpc: 7.5 s
+AT-35 /ask/ cpc: 12 shots in 93.7 s
+Total: 1 test of front-door-lineup in 101.3 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.7m)
+  1 passed (1.7m)
+EXIT 0
+
+##### Part E
+
+##### 22:26:58 AT-2
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-2
+Running 1 test using 1 worker
+build norcal: 5.2 s
+AT-2 /ask/ norcal: 6 shots in 85.2 s
+Total: 1 test of front-door-lineup in 90.4 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.5m)
+  1 passed (1.5m)
+EXIT 0
+##### 22:28:35 AT-2
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-2
+Running 1 test using 1 worker
+build norcal: 4.3 s
+AT-2 /ask/ norcal: 6 shots in 81.4 s
+Total: 1 test of front-door-lineup in 85.7 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.4m)
+  1 passed (1.4m)
+EXIT 0
+##### 22:30:07 AT-23
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-23
+Running 1 test using 1 worker
+build norcal: 3.8 s
+AT-23 /ask/ norcal: 6 shots in 52.5 s
+Total: 1 test of front-door-lineup in 56.3 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (56.3s)
+  1 passed (56.7s)
+EXIT 0
+##### 22:31:11 AT-4
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-4
+Running 1 test using 1 worker
+build cpc: 5.2 s
+AT-4 /ask/ cpc: 6 shots in 81.8 s
+Total: 1 test of front-door-lineup in 87.0 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.4m)
+  1 passed (1.5m)
+EXIT 0
+##### 22:32:43 AT-11
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-11
+Running 1 test using 1 worker
+build cpc: 4.1 s
+ ELIFECYCLE  Command failed.
+# AT-11 stopped by the agent at 22:35:43: the lineup of Lil Fridge has no Swap row now, so the toggle never shows.
+EXIT 143
+##### 22:35:47 AT-7
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-7
+Running 1 test using 1 worker
+build cpc: 4.1 s
+AT-7 /ask/ cpc: 6 shots in 81.2 s
+Total: 1 test of front-door-lineup in 85.3 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.4m)
+  1 passed (1.4m)
+EXIT 0
+##### 22:37:21 AT-9
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-9
+Running 1 test using 1 worker
+build cpc: 3.9 s
+AT-9 /ask/ cpc: 2 shots in 16.2 s
+Total: 1 test of front-door-lineup in 20.1 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (20.1s)
+  1 passed (20.5s)
+EXIT 0
+
+##### Part H
+
+##### 22:44:27 AT-4
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-4
+Running 1 test using 1 worker
+build norcal: 4.9 s
+AT-4 /ask/ norcal: 6 shots in 80.6 s
+Total: 1 test of front-door-lineup in 85.5 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.4m)
+  1 passed (1.4m)
+EXIT 0
+
+##### Part H3
+
+##### 22:46:48 AT-4
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-4
+Running 1 test using 1 worker
+build norcal: 3.7 s
+AT-4 /ask/ norcal: 6 shots in 82.4 s
+Total: 1 test of front-door-lineup in 86.1 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.4m)
+  1 passed (1.4m)
+EXIT 0
+##### 22:48:19 AT-11
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-11
+Running 1 test using 1 worker
+build norcal: 3.7 s
+AT-11 /ask/ norcal: 2 shots in 18.1 s
+Total: 1 test of front-door-lineup in 21.8 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (21.8s)
+  1 passed (22.2s)
+EXIT 0
+
+##### Part J (23:01 to 23:04 UTC, ask-r3-J): AT-4, AT-11, AT-43, AT-47 again with new step lists. The shots of these four tests on disk come from part J.
+
+##### 23:01:05 AT-4
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-4
+Running 1 test using 1 worker
+build norcal: 6.5 s
+AT-4 /ask/ norcal: 6 shots in 96.7 s
+Total: 1 test of front-door-lineup in 103.2 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (1.7m)
+  1 passed (1.7m)
+EXIT 0
+##### 23:02:51 AT-11
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-11
+Running 1 test using 1 worker
+build norcal: 3.7 s
+AT-11 /ask/ norcal: 4 shots in 26.6 s
+Total: 1 test of front-door-lineup in 30.2 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (30.2s)
+  1 passed (30.7s)
+EXIT 0
+##### 23:03:28 AT-43
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-43
+Running 1 test using 1 worker
+build cpc: 5.2 s
+AT-43 /ask/ cpc: 2 shots in 23.2 s
+Total: 1 test of front-door-lineup in 28.4 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (28.4s)
+  1 passed (28.8s)
+EXIT 0
+##### 23:03:58 AT-47
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+> node scripts/evidence.mjs front-door-lineup AT-47
+Running 1 test using 1 worker
+build cpc: 3.9 s
+AT-47 /ask/ cpc: 6 shots in 24.8 s
+Total: 1 test of front-door-lineup in 28.7 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of front-door-lineup (28.7s)
+  1 passed (29.1s)
+EXIT 0

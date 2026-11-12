@@ -1,0 +1,26 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -p no:xdist -v tests/test_start_sit.py::test_the_swap_candidates_resolve_by_the_highest_probability_and_fill_each_slot_once
+# Run at 2026-11-12T22:53:13Z UTC on 2adcc0c4.
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 1 item
+tests/test_start_sit.py::test_the_swap_candidates_resolve_by_the_highest_probability_and_fill_each_slot_once PASSED [100%]
+============================== 1 passed in 0.68s ===============================
+
+# The source of each test above, from apps/api/tests/test_start_sit.py at 2adcc0c4, so a reader sees what it asserts:
+
+def test_the_swap_candidates_resolve_by_the_highest_probability_and_fill_each_slot_once(settings, sources):
+    # AT-6, on the lineup of Bo Girds: Audric Estime and Mike Washington Jr. each beat Kyren Williams, the second RB, at
+    # 0.75 and 0.85. Konata Mumpfield beats Zay Flowers at 0.8 and Matthew Golden at 0.9.
+    block = _block(_api(settings, sources, jev=_edges({
+        ("Audric Estime", "Kyren Williams"): 0.75, ("Mike Washington Jr.", "Kyren Williams"): 0.85,
+        ("Konata Mumpfield", "Zay Flowers"): 0.8, ("Konata Mumpfield", "Matthew Golden"): 0.9})))
+    # The bench player at 0.85 takes the slot. The bench player who beats two starters fills only the slot at 0.9.
+    assert _swaps(block) == {"Mike Washington Jr.": "K. Williams", "Konata Mumpfield": "M. Golden"}
+    assert [row["player"] for row in block["rows"] if row["slot"] in {"RB", "WR"}] == [
+        "Kenneth Walker III", "Mike Washington Jr.", "Zay Flowers", "Konata Mumpfield"]
+
+

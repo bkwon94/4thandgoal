@@ -1,0 +1,68 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"question":"How does the Bears game look?","roster_id":6,"week":10}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T22:18:22Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-D.
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_013ygNA8mQTaXVviZi1Gurrx","toolName":"nfl_game"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_013ygNA8mQTaXVviZi1Gurrx","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_013ygNA8mQTaXVviZi1Gurrx","inputTextDelta":"{\"team\""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_013ygNA8mQTaXVviZi1Gurrx","inputTextDelta":": \"Bear"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_013ygNA8mQTaXVviZi1Gurrx","inputTextDelta":"s\"}"}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_013ygNA8mQTaXVviZi1Gurrx","toolName":"nfl_game","input":{"team":"Bears"}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_013ygNA8mQTaXVviZi1Gurrx","output":{"week":11,"live_week":10,"team":"Chicago Bears","opponent":"New Orleans Saints","what_each_field_means":{"week":"The NFL week of the game: the live week, or the next week when the team has a bye in the live week.","projected_points":"The NFL points that each team is projected to score. Each team scores the `pts_allow` of the Sleeper DEF projection of the other team. It is a projection, not a betting line.","expected_margin":"The projected points of `team` minus the projected points of `opponent`. Below 0, the opponent is ahead.","favorite":"The team with more projected points, or null for a tie.","defense_against_position":"The fantasy points per game that the defense of `opponent` allows to `position` this season, its place among the 32 defenses from 1, the fewest allowed, to 32, and the league average. Null `position` means all positions together.","pass_share":"The share of the plays of each NFL team this season that are passes: pass attempts over pass attempts and carries. `league` is the share of all 32 teams."},"projected_points":{"Chicago Bears":29.25,"New Orleans Saints":19.75},"expected_margin":9.5,"favorite":"Chicago Bears","defense_against_position":{"position":null,"defense":"New Orleans Saints","allowed_per_game":104.1,"place":29,"of":32,"league_average":92.6},"pass_share":{"Chicago Bears":0.507,"New Orleans Saints":0.603,"league":0.551},"block_id":"nfl_game_Bears"}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"25fb15c4-b959-40ab-94da-d9642fca8ab8"}
+
+data: {"type":"text-delta","delta":"The Bears are projected to","id":"25fb15c4-b959-40ab-94da-d9642fca8ab8"}
+
+data: {"type":"text-delta","delta":" beat the Saints 29","id":"25fb15c4-b959-40ab-94da-d9642fca8ab8"}
+
+data: {"type":"text-delta","delta":".25 to 19.75","id":"25fb15c4-b959-40ab-94da-d9642fca8ab8"}
+
+data: {"type":"text-delta","delta":" in week 11, a marg","id":"25fb15c4-b959-40ab-94da-d9642fca8ab8"}
+
+data: {"type":"text-delta","delta":"in of 9.5 points","id":"25fb15c4-b959-40ab-94da-d9642fca8ab8"}
+
+data: {"type":"text-delta","delta":".","id":"25fb15c4-b959-40ab-94da-d9642fca8ab8"}
+
+data: {"type":"text-end","id":"25fb15c4-b959-40ab-94da-d9642fca8ab8"}
+
+data: {"type":"data-block","id":"block","data":{"kind":"nfl_game","week":11,"title":"Week 11: Bears vs Saints","sides":[{"code":"CHI","name":"Bears","projected":29.25},{"code":"NO","name":"Saints","projected":19.75}],"margin":9.5,"strip":{"position":null,"lit":"NO","average":92.6,"defenses":[{"team":"MIN","allowed":69.8},{"team":"SEA","allowed":72.1},{"team":"JAX","allowed":81.0},{"team":"KC","allowed":82.6},{"team":"TB","allowed":83.3},{"team":"LAR","allowed":83.8},{"team":"CHI","allowed":84.5},{"team":"PIT","allowed":85.4},{"team":"NYG","allowed":86.6},{"team":"SF","allowed":86.9},{"team":"CLE","allowed":89.2},{"team":"GB","allowed":90.5},{"team":"NYJ","allowed":91.9},{"team":"CIN","allowed":93.8},{"team":"MIA","allowed":94.9},{"team":"NE","allowed":95.1},{"team":"BAL","allowed":95.6},{"team":"BUF","allowed":95.6},{"team":"DEN","allowed":95.7},{"team":"LAC","allowed":95.7},{"team":"HOU","allowed":96.4},{"team":"ATL","allowed":96.5},{"team":"PHI","allowed":96.7},{"team":"CAR","allowed":98.1},{"team":"IND","allowed":98.5},{"team":"ARI","allowed":98.6},{"team":"WAS","allowed":102.1},{"team":"DAL","allowed":102.9},{"team":"NO","allowed":104.1},{"team":"TEN","allowed":104.2},{"team":"DET","allowed":105.7},{"team":"LV","allowed":105.8}]},"pass_share":{"league":0.551,"sides":[{"code":"CHI","share":0.507},{"code":"NO","share":0.603}]}}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T22:18:28Z UTC.

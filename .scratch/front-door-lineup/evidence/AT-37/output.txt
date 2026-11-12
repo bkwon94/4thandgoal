@@ -1,0 +1,32 @@
+$ cd apps/site && pnpm exec vitest run src/app/page-free.test.tsx -t "AT-37" --reporter=verbose
+# Run at 2026-11-12T22:53:31Z UTC on 2adcc0c4.
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > sends the question, Your team, and the week with the passphrase to the free route of the client
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > waits on the one first line as a live step inside the card before the first tool call
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > names the team with the most points for, after the step of the standings, checked (AT-11, AT-20)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > shows the top Topic of a half fit as one chip under the answer, and the chip opens it (AT-12)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > answers a question about Bo Girds with the 9-7 record of Bo Girds (AT-10)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > shows each tool call of week 1 results as a plain step, and names no internal tool (AT-19)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > drops the first text after a failed check, and keeps the checked rewrite (AT-21)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > holds Checking on screen, then turns it to Checked, and the card never fades out on the hand-off (AT-20)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > never shows a failed first text, and shows no text before Checked (H10)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > shows the text of a checked answer only with Checked, after the hold of Checking (H10)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > shows the fixing line after a failed check, before the rewrite (AT-21)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > gives a second failed check the honest miss, with neither text (AT-22)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > holds the words until Checked, then sharpens each word from a blur, with no stop control (H10, AT-44, AT-55)
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > keeps the checked answer for the week, so a reload shows it with no new stream
+ ↓ src/app/page-free.test.tsx > the free answer of Lil Fridge > shows the retry line when the stream fails, never a pass
+ ↓ src/app/page-free.test.tsx > the block of a free answer (H27) > shows a lead line and a ranked list of the players of Bo Girds, after Checked
+ ↓ src/app/page-free.test.tsx > the block of a free answer (H27) > shows a comparison of Bo Girds and Teehee as a table with its column names
+ ↓ src/app/page-free.test.tsx > the block of a free answer (H27) > shows a player card that says Lamar Jackson cannot play now, and only the block of the checked rewrite
+ ↓ src/app/page-free.test.tsx > the block of a free answer (H27) > keeps the block with the answer, so a reload shows it with no new stream
+ ↓ src/app/page-free.test.tsx > the block of a free answer (H27) > shows a week 1 answer with no block as text alone
+ ↓ src/app/page-free.test.tsx > the transaction feed of a free answer (AT-35) > shows the moves of this week: a strip of the moves per day, one row per move with a dot for its kind
+ ↓ src/app/page-free.test.tsx > the transaction feed of a free answer (AT-35) > shows a trade row with what each side got, a waiver row with its bid, and the count past the rows
+ ↓ src/app/page-free.test.tsx > the transaction feed of a free answer (AT-35) > keeps the feed with the answer, so a reload shows it with no new stream
+ ↓ src/app/page-free.test.tsx > the text block of an Answer > renders bold, italic, a bullet list, and a numbered list as marks, live and kept (AT-36)
+ ✓ src/app/page-free.test.tsx > the text block of an Answer > shows a link, an image, a heading, and raw HTML as plain text, with no such element (AT-37) 981ms
+ Test Files  1 passed (1)
+      Tests  1 passed | 24 skipped (25)
+   Start at  17:53:32
+   Duration  2.11s (tests 48%, environment 25%, import 20%, transform 6%)

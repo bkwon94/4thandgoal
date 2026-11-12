@@ -1,0 +1,62 @@
+{
+  "route": "/ask/",
+  "steps": [
+    {
+      "wait": "text=Which team is yours?"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[aria-label=\"Suggestions\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "fill": {
+        "selector": "input[aria-label=\"Ask a question\"]",
+        "value": "Would trading Kyren Williams for Amon-Ra St. Brown help me?"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Send\"]"
+    },
+    {
+      "wait": "input[type=password]"
+    },
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Ask with this passphrase\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "wait": "article[aria-label=\"Would trading Kyren Williams for Amon-Ra St. Brown help me?\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "closed"
+    },
+    {
+      "click": "article[aria-label=\"Would trading Kyren Williams for Amon-Ra St. Brown help me?\"] [aria-expanded=\"false\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "open"
+    }
+  ]
+}

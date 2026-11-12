@@ -1,0 +1,102 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"question":"Start Kyren Williams or Amon-Ra St. Brown?","roster_id":6,"week":10}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T22:19:34Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-D.
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_012ZRL8qbE3Xdx26NnPZkEua","toolName":"player_log"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_012ZRL8qbE3Xdx26NnPZkEua","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_012ZRL8qbE3Xdx26NnPZkEua","inputTextDelta":"{\"playe"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_012ZRL8qbE3Xdx26NnPZkEua","inputTextDelta":"r\": \"Ky"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_012ZRL8qbE3Xdx26NnPZkEua","inputTextDelta":"ren Wil"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_012ZRL8qbE3Xdx26NnPZkEua","inputTextDelta":"liams\"}"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01GKUVjDgkCagVM943QxBNrd","toolName":"player_log"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01GKUVjDgkCagVM943QxBNrd","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01GKUVjDgkCagVM943QxBNrd","inputTextDelta":"{\"playe"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01GKUVjDgkCagVM943QxBNrd","inputTextDelta":"r\": \"Am"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01GKUVjDgkCagVM943QxBNrd","inputTextDelta":"on-Ra S"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01GKUVjDgkCagVM943QxBNrd","inputTextDelta":"t. Brow"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01GKUVjDgkCagVM943QxBNrd","inputTextDelta":"n\"}"}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_012ZRL8qbE3Xdx26NnPZkEua","toolName":"player_log","input":{"player":"Kyren Williams"}}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01GKUVjDgkCagVM943QxBNrd","toolName":"player_log","input":{"player":"Amon-Ra St. Brown"}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_012ZRL8qbE3Xdx26NnPZkEua","output":{"player":"Kyren Williams","position":"RB","nfl_team":"LAR","season_points":141.1,"status":"healthy","can_play_now":true,"what_each_field_means":{"status":"The status of the player on the injury report now, such as \"out\" or \"on IR\". \"healthy\" means the report lists no status.","can_play_now":"False when the status keeps the player out now, such as out, on IR, or suspended. A player listed as questionable can still play."},"weeks":[{"week":1,"league_team":"Teehee","started":true,"fantasy_points":14.0,"rush_attempts":11.0,"rush_yards":41.0,"rush_tds":1.0,"targets":3.0,"receptions":3.0,"rec_yards":24.0},{"week":2,"league_team":"Teehee","started":true,"fantasy_points":14.7,"rush_attempts":12.0,"rush_yards":85.0,"targets":2.0,"receptions":2.0,"rec_yards":12.0,"rec_tds":1.0,"fumbles_lost":1.0},{"week":3,"league_team":"Teehee","started":true,"fantasy_points":18.8,"rush_attempts":15.0,"rush_yards":88.0,"targets":7.0,"receptions":6.0,"rec_yards":70.0},{"week":4,"league_team":"Bo Girds","started":true,"fantasy_points":31.7,"rush_attempts":16.0,"rush_yards":80.0,"rush_tds":2.0,"targets":13.0,"receptions":10.0,"rec_yards":67.0},{"week":5,"league_team":"Bo Girds","started":true,"fantasy_points":16.6,"rush_attempts":16.0,"rush_yards":49.0,"rush_tds":1.0,"targets":8.0,"receptions":6.0,"rec_yards":27.0},{"week":6,"league_team":"Bo Girds","started":true,"fantasy_points":8.2,"rush_attempts":10.0,"rush_yards":50.0,"targets":6.0,"receptions":3.0,"rec_yards":17.0},{"week":7,"league_team":"Bo Girds","started":true,"fantasy_points":17.1,"rush_attempts":16.0,"rush_yards":99.0,"rush_tds":1.0,"targets":2.0,"receptions":2.0,"rec_yards":22.0,"fumbles_lost":1.0},{"week":8,"league_team":"Bo Girds","started":true,"fantasy_points":12.4,"rush_attempts":16.0,"rush_yards":56.0,"rush_tds":1.0,"targets":1.0,"receptions":1.0,"rec_yards":3.0},{"week":9,"league_team":"Bo Girds","started":true,"fantasy_points":7.6,"rush_attempts":15.0,"rush_yards":45.0,"targets":4.0,"receptions":3.0,"rec_yards":16.0}]}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01GKUVjDgkCagVM943QxBNrd","output":{"player":"Amon-Ra St. Brown","position":"WR","nfl_team":"DET","season_points":127.1,"status":"questionable","can_play_now":true,"what_each_field_means":{"status":"The status of the player on the injury report now, such as \"out\" or \"on IR\". \"healthy\" means the report lists no status.","can_play_now":"False when the status keeps the player out now, such as out, on IR, or suspended. A player listed as questionable can still play."},"weeks":[{"week":1,"league_team":"Bo Girds","started":true,"fantasy_points":23.7,"targets":14.0,"receptions":10.0,"rec_yards":67.0,"rec_tds":2.0},{"week":2,"league_team":"Bo Girds","started":true,"fantasy_points":30.7,"targets":13.0,"receptions":9.0,"rec_yards":142.0,"rec_tds":2.0},{"week":3,"league_team":"Bo Girds","started":true,"fantasy_points":9.9,"targets":8.0,"receptions":4.0,"rec_yards":19.0,"rec_tds":1.0},{"week":4,"league_team":"Teehee","started":true,"fantasy_points":11.5,"targets":11.0,"receptions":8.0,"rec_yards":75.0},{"week":5,"league_team":"Teehee","started":true,"fantasy_points":9.9,"targets":11.0,"receptions":6.0,"rec_yards":69.0},{"week":6,"league_team":"Teehee","started":false,"played":false},{"week":7,"league_team":"Teehee","started":true,"fantasy_points":19.7,"rush_attempts":1.0,"rush_yards":-1.0,"targets":11.0,"receptions":9.0,"rec_yards":153.0},{"week":8,"league_team":"Teehee","started":true,"fantasy_points":9.1,"rush_attempts":1.0,"rush_yards":10.0,"targets":8.0,"receptions":7.0,"rec_yards":46.0},{"week":9,"league_team":"Teehee","started":true,"fantasy_points":12.6,"targets":10.0,"receptions":8.0,"rec_yards":86.0}]}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"reasoning-start","id":"30e3710c-63f9-4310-93d9-192a0ddb077a","providerMetadata":{"pydantic_ai":{"signature":"","provider_name":"anthropic"}}}
+
+data: {"type":"reasoning-end","id":"30e3710c-63f9-4310-93d9-192a0ddb077a","providerMetadata":{"pydantic_ai":{"signature":"CAQS/QcKEAgTGAI4AUIIdGhpbmtpbmcSDCRUjJl8gZvRfC+2+RoMmhu/1eeIshE2lONrIjC55jhJnq0zwMfkxjlqs90mpCj/A41pKCPptKtFi6yEHKaCMc55QHDcssz5AYuIhsQqmgf7bKCmLDgknwahvU++Q0g6Q3NeGYglh1DQY8v4xLAy55yyrCpUb9ScxqWbdlWmFMh2aS+rm5hptmqlLjbvsQIhGKSMMMK6zpkijVN2YdGssIr9dXj76Mq9U62siSFvHo7KSKHL4zCB76VvUvhfreZ7TFWzi1GgItAq6nPMR80qEVyvr0nuurEWlJK03iXQljLCZQXu3ZWCjum1F0lJr6ETqZbHC50BBRQZ9CXhmIKDDnkL5hVlEDn8G2u4rkuS0uJhBs44C9bzadLh+qj8865YmSOmBXUDponJMKaVNxVP19v4pgky6RbEUlGf5P2LhqfD1+BD1pjizpZln/5h3eo89/xcOJFrXens/fOkCv97ufr07zO9wHUSXEKMgA53w7FsJ/rEDrJn+F3FljQWDloVaLRlKucDylKlPinlBAcq5vSMo1gBnMtld8xMYOYJDHlHjij5OSdXFyP0+An+jg+PhIiXk0wanitNBvwOokloHR06qZixLkFSnhmUUxjdaFydbX5tLAl5wD+z2Jhg0ag1JB+nrvogg/Q8L0YKiCSZIThc4NXRE58/9Iti7/Ahm4pIwi5vpIfsYXOIz+aL80n2TzUj8mIoFRvQuKF+KHIKzmbqCAWfgNecCd+SnbVPKCXXh8CgugMkIfLGWlRvd7ifnpNbFoM0W4PaYqV5v2Z27yC1S1yNNYXRhyY0uqH8i+EeKd95ySfU83xYfA7hvI1VqSTM0ur/I2SkmHxwNoNIHUqVyKVEDmqDpKhnz0zzH6EF5+mz+tbYcFQlvTsTfW0jyCvKoYyDei9krtF7kr5c/8jdXac5l6y741ff8JVARb5R2o/wb5iG5IWwyYxFIme2QOlcYRdMnlCkY5B9fWZBIr5gA5D5563SHCR2VvdAVWLBJ/TVpfJPTndMA5Hgrkwax7m6yQ92JJgKKiTw/BLRSSVoLEDSkoI9OnB72TXp0DNfQ6AJ81ezR++PNbqqkjh1CtZ7uW5zBwfupaul0uCm+fC9DEymxoUleQPRgG8BEiWgr6muX+ER4jjqyHwLMEz97NZwa32PfUXo22siSbSU3KogNR6xVKm/eGlC+fBCqgU4izEHiBI+vj+j5dHHJCLgfbiUrLyKsnRKeYVGmgc9eLJIjx8MI8plrzzEcOBMTix0ZOvtPwCdZqMpecdRRi/TE28gwscmrEY/g9Ofi2eLzCuP/At52IcAE1oswqVcwAOWsK1zc8Lr/9rZGAE=","provider_name":"anthropic"}}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":"In","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" week 9,","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" the log lists Kyren","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" Williams with Bo","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" Girds and Amon-","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":"Ra St. Brown with","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" Teehee. Williams","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" scored 7.6 points","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" in week 9 ","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":"and has 141.1 this","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" season. St. Brown has","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" 127.1 points this season","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":" and is listed as questionable","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-delta","delta":", but he can play.","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"text-end","id":"ba036a26-d560-4a57-ba61-1922361dd22d"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T22:19:43Z UTC.

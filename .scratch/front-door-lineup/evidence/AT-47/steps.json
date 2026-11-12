@@ -1,0 +1,53 @@
+{
+  "route": "/ask/",
+  "steps": [
+    {
+      "wait": "text=Which team is yours?"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[aria-label=\"Suggestions\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "header"
+    },
+    {
+      "click": "button[aria-label=\"Open the menu\"]"
+    },
+    {
+      "wait": "[aria-label=\"Pages\"]"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "shot": "sheet"
+    },
+    {
+      "click": "[aria-label=\"Pages\"] a[href*=\"/week-\"]"
+    },
+    {
+      "wait": "url"
+    },
+    {
+      "url": true
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "week"
+    }
+  ],
+  "widths": [
+    375
+  ]
+}

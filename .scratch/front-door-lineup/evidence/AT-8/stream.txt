@@ -1,0 +1,148 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"topic":"start_sit","roster_id":4}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T22:55:33Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-I.
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":4,"week":10,"total":90.2,"swap_total":90.2,"rows":[{"slot":"QB","player":"Kirk Cousins","player_id":"1166","position":"QB","nfl_team":"MIN","opponent":"GB","kickoff":1794765600000,"projection":14.4,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Chase Brown","player_id":"9224","position":"RB","nfl_team":"CIN","opponent":"PIT","kickoff":1794792000000,"projection":11.5,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Cam Skattebo","player_id":"12481","position":"RB","nfl_team":"NYG","opponent":"WAS","kickoff":1794532500000,"projection":11.2,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Tetairoa McMillan","player_id":"12526","position":"WR","nfl_team":"CAR","opponent":"NO","kickoff":1794765600000,"projection":12.7,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Jameson Williams","player_id":"8148","position":"WR","nfl_team":"DET","opponent":"NE","kickoff":1794753000000,"projection":10.6,"locked":false,"risk":null,"swap":null},{"slot":"TE","player":"Tyler Warren","player_id":"12518","position":"TE","nfl_team":"IND","opponent":"MIA","kickoff":1794765600000,"projection":9.8,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Hunter Henry","player_id":"3214","position":"TE","nfl_team":"NE","opponent":"DET","kickoff":1794753000000,"projection":8.1,"locked":false,"risk":{"tag":"Q","body_part":"Foot","practice":"No practice report yet","pivot":"Start H. Henry if he is active. If he is ruled out, start S. McGowan."},"swap":null},{"slot":"FLEX","player":"David Montgomery","player_id":"5892","position":"RB","nfl_team":"HOU","opponent":"CLE","kickoff":1794765600000,"projection":7.5,"locked":false,"risk":{"tag":"Q","body_part":"Groin","practice":"No practice report yet","pivot":"Start D. Montgomery if he is active. If he is ruled out, start S. McGowan."},"swap":null},{"slot":"DEF","player":"Kansas City Chiefs","player_id":"KC","position":"DEF","nfl_team":"KC","opponent":"ATL","kickoff":1794765600000,"projection":4.4,"locked":false,"risk":null,"swap":null}],"cannot_play":[{"name":"J. Croskey-Merritt","status":"IR","body_part":"Groin"},{"name":"M. Lemon","status":"Bye","body_part":null},{"name":"S. Barkley","status":"Bye","body_part":null},{"name":"D. Smith","status":"Out","body_part":"Hamstring"}]}}
+
+data: {"type":"data-key","data":{"key":"56154b19c4f34e9d1a13dc3f133a77138a8175a6bbb358832e4621455b015207"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"Your top","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" starters this week are Kir","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"k Cousins at QB","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" (14.4 ","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"projected points), Tetair","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"oa McMillan (","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"12.7)","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" and J","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ameson Williams (10.","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"6) at WR, Ch","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ase Brown (","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"11.5) and Cam","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" Skattebo (11.","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"2) at RB, and","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" Tyler Warren at T","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"E (9.8). Willi","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ams has the","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" second","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" softest W","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"R matchup in the league,","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" since","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" the","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" Pat","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"riots r","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ank 31st against","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" the","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" position. The Chiefs","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" def","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ense is in","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" at","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" DEF, and your","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" l","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ineup proj","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ects to","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" 90.2 points.","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"\n\nHunter Henry (","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"Questionable, foot) hol","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ds the FLEX spot","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" at 8.1 points","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":". If he is ruled out","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":", start Seth McGow","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"an. David Montgomery","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" (Questionable, groin","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":") also hol","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ds a FLEX spot","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" at 7.5 points.","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" If","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" he is ruled out, start","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" Seth McGowan.","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"\n\nFour","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" players","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" cannot play: Jac","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ory Croskey-Mer","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"ritt is on IR with","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" a groin injury, D","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":"eVonta Smith is","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" Out with a hamstring","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" injury, and","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" Makai Lemon and","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" Saquon Barkley","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-delta","delta":" are on their bye.","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"text-end","id":"24b8b274-da5c-4c1a-98c2-6c88b85576ea"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T22:55:38Z UTC.
