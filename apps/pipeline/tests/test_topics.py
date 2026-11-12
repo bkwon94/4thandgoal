@@ -319,6 +319,8 @@ def test_position_leaders_lists_one_leader_per_position_in_its_text_and_has_no_b
             assert top["team"] in item
         # The list takes the place of the rows, so the leaders show once.
         assert answer["rows"] == []
+        # The stats row counts as a block (finding D), so the Answer has none.
+        assert answer["stats"] == []
         assert answer["text"][1:] == [page["blurbs"]["position_leaders"]]
     # In cpc, Kenneth Walker III of Bo Girds led the backs with 34.3.
     cpc = next(a for a in _topics(tmp_path / "cpc", 2026, 9)["teams"]["6"] if a["topic"] == "leaders_trades")
