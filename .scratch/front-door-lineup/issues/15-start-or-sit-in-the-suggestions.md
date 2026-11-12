@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-13, AT-14, AT-15.
 
 **Blocked by:** 13
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A pytest shows the order on Thursday, Sunday, Wednesday, and Monday (AT-13).
 - [x] A pytest or a live run shows Start or sit first on a Tuesday with a hole in the lineup (AT-14).
