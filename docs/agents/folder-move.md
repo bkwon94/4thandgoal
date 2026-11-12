@@ -42,9 +42,13 @@ Check: `git worktree list` shows no listed worktree.
 
 ## 3. Move the folder
 
+If `~/repos/4thandgoal` exists, `mv` puts the repo inside it. The guard makes the command do nothing in that case.
+
 ```
-mv ~/repos/cpcfantasyfootball ~/repos/4thandgoal
+test ! -e ~/repos/4thandgoal && mv ~/repos/cpcfantasyfootball ~/repos/4thandgoal
 ```
+
+If the command prints nothing and the target exists, stop. Look at the target. Rename or remove it only if it is empty or stale. Then run the command again.
 
 Check: `git -C ~/repos/4thandgoal remote -v` shows `bkwon94/4thandgoal` for fetch and push.
 
@@ -62,9 +66,13 @@ Check: `git worktree list` shows `/Users/brian.kwon/repos/4thandgoal` and no lin
 
 This folder holds the memory and the sessions of the repo.
 
+If the new folder exists, `mv` puts the old folder inside it. The guard makes the command do nothing in that case.
+
 ```
-mv ~/.claude/projects/-Users-brian-kwon-repos-cpcfantasyfootball ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal
+test ! -e ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal && mv ~/.claude/projects/-Users-brian-kwon-repos-cpcfantasyfootball ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal
 ```
+
+If the command prints nothing and the new folder exists, stop. Look at the new folder. A session may have made it. Ask before you merge or remove it.
 
 Check: `ls ~/.claude/projects | grep -E 'cpcfantasyfootball|4thandgoal'` prints only the `4thandgoal` folder.
 
