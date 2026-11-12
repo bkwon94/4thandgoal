@@ -438,6 +438,7 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
             plan.append(["section", "archive", f"id:{section}"])
     return plan
 
+
 def _feature_tickets(root: Path, feature: str) -> list[Path]:
     """The tickets and decision tickets of a feature, also those in the site/ and pipeline/ subfolders of a shared
     feature."""
