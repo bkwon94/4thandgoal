@@ -10,7 +10,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-29.
 
 **Status:** ready-for-agent
 
-- [ ] Each of the six skills starts with the merge sweep.
-- [ ] Each row of the push table has a call in its skill, at its step.
-- [ ] Each skill tells the agent to name each missed push in the final report.
-- [ ] A grep of the skills for the script, laid beside the push table, shows no gap.
+- [x] Each of the six skills starts with the merge sweep.
+- [x] Each row of the push table has a call in its skill, at its step.
+- [x] Each skill tells the agent to name each missed push in the final report.
+- [x] A grep of the skills for the script, laid beside the push table, shows no gap.

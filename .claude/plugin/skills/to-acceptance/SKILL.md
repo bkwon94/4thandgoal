@@ -8,6 +8,14 @@ argument-hint: '<feature slug>'
 
 Write the acceptance tests of one spec as `.scratch/<slug>/ACCEPTANCE.md`. An acceptance test is a behavior that a reader checks on the finished work, with evidence. Another agent with none of this conversation records the evidence. Only the Judge, a fresh subagent that reads only this file and the evidence, gives a Test verdict. A FAIL from Brian overrides it (ADR 0026).
 
+## The queue
+
+Run each call at the root of the checkout or worktree. A failed call prints a warning and exits 0, so never stop on it. Name each missed push in the final report.
+
+Start with the merge sweep: `python3 scripts/queue.py sweep`.
+
+Then complete the wait task of the spec: `python3 scripts/queue.py wait <slug> approve-prd --done`.
+
 ## Before you start
 
 1. This skill calls no global skill. Check that `.scratch/<slug>/PRD.md` exists.
@@ -40,4 +48,4 @@ Only Brian changes an approved test. Show Brian each changed test. After Brian a
 
 ## The end
 
-Tell Brian that `4ag:to-tickets <slug>` is next.
+Run `python3 scripts/queue.py wait <slug> approve-acceptance`. Then tell Brian that `4ag:to-tickets <slug>` is next.

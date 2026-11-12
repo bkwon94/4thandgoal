@@ -10,6 +10,14 @@ Build one spec and open its PR. The Spec branch `<slug>` holds the work. Each ti
 
 The agent records the evidence of each acceptance test. The agent never gives a Test verdict, because the agent wrote the code. A fresh subagent, the Judge, gives each Test verdict.
 
+## The queue
+
+Run each call at the root of the checkout or worktree. A failed call prints a warning and exits 0, so never stop on it. Name each missed push in the final report.
+
+Start with the merge sweep: `python3 scripts/queue.py sweep`.
+
+Then pull the triage of Brian into the Spec worktree. See step 5 of [The Spec branch](build.md#the-spec-branch).
+
 ## Before you start
 
 1. Check that these global skills are in the available skill list: `tdd`, `code-review`, `resolving-merge-conflicts`, `agent-browser`. The `cpc` skills ship with this skill, so do not check them.

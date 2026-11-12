@@ -10,6 +10,14 @@ An idea arrives with fog: parts of the feature that are not specified yet. This 
 
 A decision ticket records a choice. It writes no product code. If you want to build something, you are at the edge of the map: that is the spec.
 
+## The queue
+
+Run each call at the root of the checkout or worktree. A failed call prints a warning and exits 0, so never stop on it. Name each missed push in the final report.
+
+Start with the merge sweep: `python3 scripts/queue.py sweep`.
+
+The steps below hold the other calls.
+
 ## Before you start
 
 1. Check that these global skills are in the available skill list: `grilling`, `domain-modeling`, `mattpocock-skills:research`, `prototype`. The `cpc` skills ship with this skill, so do not check them.
@@ -40,11 +48,11 @@ The outcome statement has two parts: what the feature does, and the goal that it
 6. Write `.scratch/<slug>/MAP.md` in the format of [`formats.md`](formats.md).
 7. Write one decision ticket for each fog item at `.scratch/<slug>/decisions/<NN>-<kind>-<slug>.md`. Number from `01`. See [`formats.md`](formats.md) for the kind and the format.
 8. Do not add a row to `docs/agents/state.md`. The tracker rule fails a row for a feature with no open ticket. `4ag:to-tickets` adds the row.
-9. Commit the map and the decision tickets on the Spec branch. Then stop. Stage 1 clears no decision ticket.
+9. Commit the map and the decision tickets on the Spec branch. Run `python3 scripts/queue.py push <path>` for each decision ticket. Then stop. Stage 1 clears no decision ticket.
 
 ## Stage 2: clear one decision ticket
 
-1. Work in the worktree of the Spec branch `<slug>`. Read `.scratch/<slug>/MAP.md`. Read the Kind, Blocked by, and Status lines of each decision ticket: `grep -H '^\*\*' .scratch/<slug>/decisions/*.md`.
+1. Work in the worktree of the Spec branch `<slug>`. Run `python3 scripts/queue.py pull <slug>` there, and commit each changed `Status:` line. Read `.scratch/<slug>/MAP.md`. Read the Kind, Blocked by, and Status lines of each decision ticket: `grep -H '^\*\*' .scratch/<slug>/decisions/*.md`.
 2. Choose the decision ticket that Brian names. Otherwise choose the lowest open number whose blockers are done. A `spec` ticket comes last.
 3. If no ticket is open except `spec` tickets, go to [`build-out.md`](build-out.md).
 4. Clear the ticket by its kind:
@@ -55,4 +63,4 @@ The outcome statement has two parts: what the feature does, and the goal that it
 6. Move the fog item from NOT YET SPECIFIED to DECISIONS SO FAR on the map, as one line with the gist and the ticket path.
 7. If the decision shows new fog, add it to the map and add a decision ticket for it. If it shows work past the destination, add it to OUT OF SCOPE with the reason.
 8. If a decision needs an ADR or a glossary term, write it with `domain-modeling` now.
-9. Commit the ticket, the map, and any record on the Spec branch. Then stop. Clear one decision ticket per session. A research ticket may run in the background while you clear the next one.
+9. Commit the ticket, the map, and any record on the Spec branch. Run `python3 scripts/queue.py push <path>` for the decision ticket. Then stop. Clear one decision ticket per session. A research ticket may run in the background while you clear the next one.

@@ -8,6 +8,12 @@ argument-hint: '<feature slug>'
 
 Write the spec of one feature as `.scratch/<slug>/PRD.md`. Do not interview Brian. Use what the map, the decision tickets, and this conversation already hold.
 
+## The queue
+
+Run each call at the root of the checkout or worktree. A failed call prints a warning and exits 0, so never stop on it. Name each missed push in the final report.
+
+Start with the merge sweep: `python3 scripts/queue.py sweep`.
+
 ## Before you start
 
 1. Check that the skill `to-spec` is in the available skill list. If it is missing, stop. Tell Brian its name. Do not guess its steps.
@@ -43,4 +49,4 @@ The Spec branch is the feature slug. A ticket branch of the spec is `<slug>-<NN>
 
 ## The end
 
-Tell Brian that `4ag:to-acceptance <slug>` is next.
+Run `python3 scripts/queue.py wait <slug> approve-prd`. Then tell Brian that `4ag:to-acceptance <slug>` is next.
