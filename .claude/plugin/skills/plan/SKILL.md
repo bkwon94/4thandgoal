@@ -6,7 +6,7 @@ argument-hint: '<outcome statement> | <feature slug> [decision ticket number]'
 
 # Plan
 
-An idea arrives with fog: parts of the feature that are not specified yet. This skill writes a map of the fog, turns each fog item into a decision ticket, and clears one decision ticket per session. When no fog is left, it hands off to `cpc:to-spec`, `cpc:to-acceptance`, and `cpc:to-tickets`.
+An idea arrives with fog: parts of the feature that are not specified yet. This skill writes a map of the fog, turns each fog item into a decision ticket, and clears one decision ticket per session. When no fog is left, it hands off to `4ag:to-spec`, `4ag:to-acceptance`, and `4ag:to-tickets`.
 
 A decision ticket records a choice. It writes no product code. If you want to build something, you are at the edge of the map: that is the spec.
 
@@ -20,9 +20,9 @@ A decision ticket records a choice. It writes no product code. If you want to bu
 
 | Command | Stage |
 | --- | --- |
-| `/cpc:plan <outcome statement>` | Stage 1: write the map. |
-| `/cpc:plan <feature slug>` | Stage 2: clear the next open decision ticket, or hand off. |
-| `/cpc:plan <feature slug> <NN>` | Stage 2, for the decision ticket that Brian names. |
+| `/4ag:plan <outcome statement>` | Stage 1: write the map. |
+| `/4ag:plan <feature slug>` | Stage 2: clear the next open decision ticket, or hand off. |
+| `/4ag:plan <feature slug> <NN>` | Stage 2, for the decision ticket that Brian names. |
 
 ## The human side
 
@@ -39,7 +39,7 @@ The outcome statement has two parts: what the feature does, and the goal that it
 5. If no fog is left, skip the map. Ask Brian to confirm. Then go to [`build-out.md`](build-out.md).
 6. Write `.scratch/<slug>/MAP.md` in the format of [`formats.md`](formats.md).
 7. Write one decision ticket for each fog item at `.scratch/<slug>/decisions/<NN>-<kind>-<slug>.md`. Number from `01`. See [`formats.md`](formats.md) for the kind and the format.
-8. Do not add a row to `docs/agents/state.md`. The tracker rule fails a row for a feature with no open ticket. `cpc:to-tickets` adds the row.
+8. Do not add a row to `docs/agents/state.md`. The tracker rule fails a row for a feature with no open ticket. `4ag:to-tickets` adds the row.
 9. Commit the map and the decision tickets on the Spec branch. Then stop. Stage 1 clears no decision ticket.
 
 ## Stage 2: clear one decision ticket

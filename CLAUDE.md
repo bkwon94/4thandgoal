@@ -1,4 +1,4 @@
-# cpcfantasyfootball
+# 4thandgoal
 
 This repo holds three apps. The site and the pipeline each have a CLAUDE.md with its own commands and rules. Read the one for the app you change.
 
@@ -34,12 +34,12 @@ The weekly `publish` is the one exception. It may push to `main`, and it may sta
 
 The repo plugin `cpc` takes an idea to a merged spec. Run its skills in this order. Brian approves the output of each of steps 2 to 4.
 
-1. `cpc:plan <outcome statement>` writes the map and the decision tickets. `cpc:plan <feature>` clears one decision ticket per session.
-2. `cpc:to-spec <feature>` writes `PRD.md`.
-3. `cpc:to-acceptance <feature>` writes `ACCEPTANCE.md`.
-4. `cpc:to-tickets <feature>` writes the tickets and the `state.md` row.
-5. `cpc:implement <feature>` builds each ticket on its ticket branch, merges it into the spec branch, records the evidence in `EVIDENCE.md`, has the Judge write `VERDICTS.md`, and opens one PR to `main`.
-6. Brian posts no comment unless he gives a FAIL. `cpc:review <PR number>` does one round of feedback per run. The check `verdict` passes when each test has PASS from the Judge and no FAIL from Brian, and Brian merges.
+1. `4ag:plan <outcome statement>` writes the map and the decision tickets. `4ag:plan <feature>` clears one decision ticket per session.
+2. `4ag:to-spec <feature>` writes `PRD.md`.
+3. `4ag:to-acceptance <feature>` writes `ACCEPTANCE.md`.
+4. `4ag:to-tickets <feature>` writes the tickets and the `state.md` row.
+5. `4ag:implement <feature>` builds each ticket on its ticket branch, merges it into the spec branch, records the evidence in `EVIDENCE.md`, has the Judge write `VERDICTS.md`, and opens one PR to `main`.
+6. Brian posts no comment unless he gives a FAIL. `4ag:review <PR number>` does one round of feedback per run. The check `verdict` passes when each test has PASS from the Judge and no FAIL from Brian, and Brian merges.
 
 ## Tracker
 

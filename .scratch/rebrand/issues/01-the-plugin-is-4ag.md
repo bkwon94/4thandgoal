@@ -10,9 +10,9 @@ Spec: `.scratch/rebrand/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, AT-6, 
 
 **Status:** ready-for-agent
 
-- [ ] `claude plugin validate .claude/plugin` and `claude plugin validate .` pass, with the names `4ag` and `4ag-local`.
-- [ ] `.claude/settings.json` enables `4ag@4ag-local` and names no `cpc-local`.
-- [ ] `git grep -nE 'cpc:(plan|implement|review|to-spec|to-acceptance|to-tickets)' -- ':!.scratch' ':!docs/adr'` prints nothing.
-- [ ] `CLAUDE.md` lists all six skills as `4ag:`, under the title `# 4thandgoal`.
-- [ ] The marker line of the `verdict` check is unchanged, and the `verdict` tests pass.
-- [ ] `make check-fast` passes in `scripts/`, `apps/pipeline/`, and `apps/api/`.
+- [x] `claude plugin validate .claude/plugin` and `claude plugin validate .` pass, with the names `4ag` and `4ag-local`.
+- [x] `.claude/settings.json` enables `4ag@4ag-local` and names no `cpc-local`.
+- [x] `git grep -nE 'cpc:(plan|implement|review|to-spec|to-acceptance|to-tickets)' -- ':!.scratch' ':!docs/adr'` prints nothing.
+- [x] `CLAUDE.md` lists all six skills as `4ag:`, under the title `# 4thandgoal`.
+- [x] The marker line of the `verdict` check is unchanged, and the `verdict` tests pass.
+- [x] `make check-fast` passes in `scripts/`, `apps/pipeline/`, and `apps/api/`.

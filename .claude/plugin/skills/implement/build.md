@@ -1,6 +1,6 @@
 # The build and the review
 
-Stages 1 and 2 of `cpc:implement`. The main checkout is the repo root on `main`. Run each `git worktree` command there.
+Stages 1 and 2 of `4ag:implement`. The main checkout is the repo root on `main`. Run each `git worktree` command there.
 
 ## The setup of a worktree
 
@@ -35,7 +35,7 @@ For each ticket `<NN>` of the frontier:
 The brief of the subagent:
 
 ```text
-Build ticket <NN> of the feature <slug> in the cpcfantasyfootball repo.
+Build ticket <NN> of the feature <slug> in the 4thandgoal repo.
 
 Work only in the worktree <absolute path of .claude/worktrees/<slug>-<NN>>, on the branch <slug>-<NN>.
 Read CLAUDE.md, the CLAUDE.md of each app you change, .scratch/<slug>/PRD.md, .scratch/<slug>/ACCEPTANCE.md,
@@ -95,7 +95,7 @@ If a subagent returns `STUCK`, or a ticket conflicts with the spec or an ADR:
 The brief of a fix subagent:
 
 ```text
-Fix the review findings of group <letter> of the feature <slug> in the cpcfantasyfootball repo.
+Fix the review findings of group <letter> of the feature <slug> in the 4thandgoal repo.
 
 Work only in the worktree <absolute path of .claude/worktrees/<slug>-fix-<letter>>, on the branch <slug>-fix-<letter>.
 Read CLAUDE.md, the CLAUDE.md of each app you change, and .scratch/<slug>/PRD.md.
