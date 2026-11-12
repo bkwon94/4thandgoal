@@ -28,7 +28,7 @@ import { Suggestions } from "./suggestions";
 import { TeamSheet } from "./team-sheet";
 import { type Entry, Thread, personalName } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
-import { type KeyItem, type ServedSuggestions, checkCurrent, fetchSuggestions, staleLine } from "./suggestions-api";
+import { type KeyItem, type ServedSuggestions, checkCurrent, fetchSuggestions, shownFacts, staleLine } from "./suggestions-api";
 import { dayOrder, pickSuggestions, topicName } from "./topics";
 import { TradeCard } from "./trade-answer";
 import { type TradeRead, type TradeRequest, type TradeSteps, addStep, endSteps, noSteps, streamTrade } from "./trade-api";
@@ -527,7 +527,7 @@ export function FrontDoor({
               {!missed && (day === null || picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
                   {/* Until the browser reads the day, quiet placeholder chips hold the place of the chips. */}
-                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
+                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...shownFacts(facts, servedNow?.kickoffs ?? {}) }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
                 </motion.div>
               ) : null}
               {/* The ask box glides on its own box too. The dock changes inside as it glides: the dock gains its top pad

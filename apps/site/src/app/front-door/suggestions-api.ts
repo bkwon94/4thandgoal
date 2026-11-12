@@ -4,13 +4,16 @@
  */
 import { z } from "zod";
 import { type AskTarget, postClient, readBody } from "./ask-api";
+import { kickoffText } from "./lineup-block";
 import { PERSONAL_TOPICS } from "./personal-stream";
 
-/* The Suggestions of Your team: the fact of each Topic, and the urgent Topics, most urgent first. The API sends more,
-   such as the lift of each Topic, for the log of a run. */
+/* The Suggestions of Your team: the fact of each Topic, the urgent Topics, most urgent first, and the kickoff in epoch
+   ms of each Topic whose fact is the next kickoff. The API sends more, such as the lift of each Topic, for the log of a
+   run. */
 export const suggestionsSchema = z.object({
   facts: z.record(z.string(), z.string()),
   urgent: z.array(z.string()),
+  kickoffs: z.record(z.string(), z.number()).default({}),
 });
 export type ServedSuggestions = z.infer<typeof suggestionsSchema>;
 
@@ -41,6 +44,12 @@ export function fetchSuggestions(
 /* Whether the key of each Answer is still the key of its data now. The check costs nothing. */
 export async function checkCurrent(target: AskTarget, passphrase: string, answers: KeyItem[]): Promise<KeyState[]> {
   return (await post(target, passphrase, "personal/current", { answers }, currentSchema)).answers;
+}
+
+/* The fact that a Suggestion shows: the kickoff fact in the time zone of the browser, such as "Next kickoff Sun 10:00
+   AM" in Los Angeles. The API writes the time in the league zone, so the opened Topics keep the fact of the API. */
+export function shownFacts(facts: Record<string, string>, kickoffs: Record<string, number>): Record<string, string> {
+  return { ...facts, ...Object.fromEntries(Object.entries(kickoffs).map(([key, ms]) => [key, `Next kickoff ${kickoffText(ms)}`])) };
 }
 
 /* The stale line of an Answer, with the day that the API kept it. An Answer with no kept time still says the roster

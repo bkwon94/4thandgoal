@@ -35,15 +35,16 @@ export const SUGGESTION_COUNT = 3;
 
 /* The Topics that lead each day, from Sunday (0) to Saturday (6). The rest follow in the order of TOPICS.
    Why: the fantasy week has a fixed rhythm. Monday night ends the games, Tuesday is the recap, Wednesday the waivers,
-   Thursday to Sunday the next game. The trade check has no weekly fact, so it leads no day and stays in "More". */
+   Thursday to Sunday the next game. Start or sit leads the game days, and sits third on Wednesday, after the claims.
+   The trade check has no weekly fact, so it leads no day and stays in "More". */
 const DAY_LEADS: Record<number, string[]> = {
-  0: ["next_matchup", "weak_spots", "playoff_race"],
+  0: ["start_sit", "next_matchup", "weak_spots", "playoff_race"],
   1: ["next_matchup", "playoff_race", "power_rankings"],
   2: ["week_recap", "last_matchup", "power_rankings", "playoff_race"],
-  3: ["waiver_targets", "weak_spots", "power_rankings", "week_recap", "playoff_race"],
-  4: ["next_matchup", "trade_ideas", "sell_high", "weak_spots", "playoff_race"],
-  5: ["next_matchup", "weak_spots", "playoff_race"],
-  6: ["next_matchup", "weak_spots", "playoff_race"],
+  3: ["waiver_targets", "weak_spots", "start_sit", "power_rankings", "week_recap", "playoff_race"],
+  4: ["start_sit", "next_matchup", "trade_ideas", "sell_high", "weak_spots", "playoff_race"],
+  5: ["start_sit", "next_matchup", "weak_spots", "playoff_race"],
+  6: ["start_sit", "next_matchup", "weak_spots", "playoff_race"],
 };
 
 /* The keys of all 14 Topics in the order of one day of the week. */
