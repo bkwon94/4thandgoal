@@ -18,7 +18,7 @@ from test_api import HEADERS, PASSPHRASE, _here
 
 from cornerstone_api.app import create_app
 from cornerstone_api.game_lock import ESPN_SCOREBOARD_URL, SLEEPER_GRAPHQL_URL
-from league.jev_port import NoulQuestion
+from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.provider.sleeper import load_raw
 
 repo = test_api.repo
@@ -71,19 +71,36 @@ class Calls:
 
 
 class Writer:
-    """A stand-in for Claude: one sentence that names the first starter of the facts, and a count of its calls."""
+    """A stand-in for Claude: the text of `text`, word by word, and a count of its calls."""
 
-    def __init__(self):
+    def __init__(self, text: str = "Start your lineup by projection."):
         self.calls = 0
+        self.text = text
 
     async def stream(self, messages: list[ModelMessage], info: AgentInfo) -> AsyncIterator[str]:
         self.calls += 1
-        for word in ["Start", "your", "lineup", "by", "projection."]:
+        for word in self.text.split():
             yield word + " "
 
 
 def _checks(key: str, question: NoulQuestion, state: dict) -> float:
     return 0.95
+
+
+class Edges:
+    """A stand-in for the Jev read of the Swaps: the probability of each bench player over each starter, by their two
+    names. A pair with no entry gets 0.5, so it keeps the starter. Each Swap question is in `asked`."""
+
+    def __init__(self, edges: dict[tuple[str, str], float] | None = None):
+        self.edges = edges or {}
+        self.asked: list[ChoiceQuestion] = []
+
+    def choose(self, key: str, question: ChoiceQuestion, state: dict) -> dict[str, float]:
+        self.asked.append(question)
+        bench, starter = question.options
+        names = {option: question.options[option].split(",")[0] for option in (bench, starter)}
+        p = self.edges.get((names[bench], names[starter]), 0.5)
+        return {bench: p, starter: 1 - p}
 
 
 def _sources(base, slug: str, now: datetime, calls: Calls | None = None, scores=sleeper_scores,
@@ -100,7 +117,7 @@ def _sources(base, slug: str, now: datetime, calls: Calls | None = None, scores=
 
 
 def _api(settings, sources, slug: str = "cpc", now: datetime = BEFORE_KICKOFF, writer: Writer | None = None,
-         **source_changes) -> TestClient:
+         jev: FakeJev | None = None, **source_changes) -> TestClient:
     """An app over cpc and norcal, each on its recorded week 10."""
     cpc = _sources(_here(sources, settings), "cpc", now, **source_changes)
     values = cpc.client.values.model_copy(
@@ -111,7 +128,7 @@ def _api(settings, sources, slug: str = "cpc", now: datetime = BEFORE_KICKOFF, w
     settings = dataclasses.replace(settings, passphrases={"cpc": PASSPHRASE,
                                                           "norcal": NORCAL_HEADERS["X-League-Passphrase"]})
     app = create_app(settings, [cpc.client, norcal.client], sources={"cpc": cpc, "norcal": norcal},
-                     jev=FakeJev(answer=_checks))
+                     jev=jev or FakeJev(answer=_checks, choose=Edges().choose))
     app.state.personal_model = FunctionModel(stream_function=(writer or Writer()).stream)
     return TestClient(app)
 
@@ -125,8 +142,9 @@ def _block(api: TestClient, slug: str = "cpc", roster_id: int | None = None) -> 
     response = api.post(PERSONAL.format(slug=slug), json={"topic": "start_sit", "roster_id": roster_id or BO_GIRDS[slug]},
                         headers=HEADERS if slug == "cpc" else NORCAL_HEADERS)
     assert response.status_code == 200, response.text
-    [block] = [c["data"] for c in _chunks(response) if c["type"] == "data-block"]
-    return block
+    # A lineup with a Swap sends its block again after the checked text, with the reason of each Swap. The site shows
+    # the last block.
+    return [c["data"] for c in _chunks(response) if c["type"] == "data-block"][-1]
 
 
 def test_the_cpc_lineup_lists_the_slots_in_the_sleeper_order_with_each_fact_of_a_row(settings, sources):
@@ -252,3 +270,135 @@ def test_start_sit_calls_only_sleeper_and_the_kickoff_sources(settings, sources)
     assert writer.calls == 1
     assert SLEEPER_GRAPHQL_URL.startswith("https://sleeper.com/")
     assert ESPN_SCOREBOARD_URL.startswith("https://site.api.espn.com/")
+
+
+def _swaps(block: dict) -> dict[str, str]:
+    """The Swaps of a lineup block: the starter that each Swap benches, by the name of the bench player who takes his
+    slot."""
+    return {row["player"]: row["swap"]["over"] for row in block["rows"] if row["swap"]}
+
+
+def _edges(edges: dict[tuple[str, str], float]) -> FakeJev:
+    return FakeJev(answer=_checks, choose=Edges(edges).choose)
+
+
+@pytest.mark.parametrize(("probability", "swaps"), [(0.70, {"Konata Mumpfield": "M. Golden"}), (0.69, {})])
+def test_a_bench_player_takes_the_slot_at_a_probability_of_0_70_and_not_at_0_69(settings, sources, probability, swaps):
+    # AT-5: Konata Mumpfield of the bench of Bo Girds over Matthew Golden, who starts at WR by projection. Each case
+    # runs in its own test, because a second tap of the same lineup reads the kept Answer of the first.
+    block = _block(_api(settings, sources, jev=_edges({("Konata Mumpfield", "Matthew Golden"): probability})))
+    assert _swaps(block) == swaps
+    if swaps:
+        [row] = [row for row in block["rows"] if row["player"] == "Konata Mumpfield"]
+        assert row["slot"] == "WR" and row["position"] == "WR" and row["nfl_team"] and row["kickoff"]
+        assert "Matthew Golden" not in {row["player"] for row in block["rows"]}
+    else:
+        assert "Matthew Golden" in {row["player"] for row in block["rows"]}
+
+
+def test_the_swap_candidates_resolve_by_the_highest_probability_and_fill_each_slot_once(settings, sources):
+    # AT-6, on the lineup of Bo Girds: Audric Estime and Mike Washington Jr. each beat Kyren Williams, the second RB, at
+    # 0.75 and 0.85. Konata Mumpfield beats Zay Flowers at 0.8 and Matthew Golden at 0.9.
+    block = _block(_api(settings, sources, jev=_edges({
+        ("Audric Estime", "Kyren Williams"): 0.75, ("Mike Washington Jr.", "Kyren Williams"): 0.85,
+        ("Konata Mumpfield", "Zay Flowers"): 0.8, ("Konata Mumpfield", "Matthew Golden"): 0.9})))
+    # The bench player at 0.85 takes the slot. The bench player who beats two starters fills only the slot at 0.9.
+    assert _swaps(block) == {"Mike Washington Jr.": "K. Williams", "Konata Mumpfield": "M. Golden"}
+    assert [row["player"] for row in block["rows"] if row["slot"] in {"RB", "WR"}] == [
+        "Kenneth Walker III", "Mike Washington Jr.", "Zay Flowers", "Konata Mumpfield"]
+
+
+def test_one_jev_request_reads_every_pair_of_a_bench_player_and_a_slot_he_can_fill(settings, sources):
+    # The pairs of Bo Girds: 2 bench RBs for 2 RB and 2 FLEX slots, 2 bench WRs for 2 WR and 2 FLEX slots, and the
+    # bench QB for the QB slot. Each Choice names the slot, and its options are the two players.
+    jev = _edges({})
+    _block(_api(settings, sources, jev=jev))
+    [read] = [request for request in jev.requests if "players" in request.state]
+    assert len(read.questions) == 2 * 4 + 2 * 4 + 1
+    assert {"Aaron Rodgers", "Fernando Mendoza", "Konata Mumpfield"} <= set(read.state["players"])
+    assert read.state["players"]["Konata Mumpfield"]["projection"] == 6.8
+    qb = next(q for q in read.questions.values() if "Fernando Mendoza" in str(q.options))
+    assert "as the QB of" in qb.instructions and len(qb.options) == 2
+
+
+def test_a_failed_jev_read_gives_the_honest_miss_with_no_lineup_and_no_swap(settings, sources):
+    # AT-20: a failed read is never "keep the starter", so no lineup shows and Claude writes nothing.
+    writer = Writer()
+    api = _api(settings, sources, writer=writer, jev=FakeJev(error=JevError("down")))
+    response = api.post(PERSONAL.format(slug="cpc"), json={"topic": "start_sit", "roster_id": BO_GIRDS["cpc"]},
+                        headers=HEADERS)
+    chunks = _chunks(response)
+    assert not any(c["type"] == "data-block" for c in chunks)
+    assert [c["data"] for c in chunks if c["type"] == "data-miss"] == [
+        {"closest": ["next_matchup", "weak_spots", "waiver_targets"]}]
+    assert not any(c["type"] == "error" for c in chunks)
+    assert writer.calls == 0
+
+
+def test_the_total_with_the_swaps_is_the_sum_of_the_projections_of_the_lineup_with_the_swaps(settings, sources):
+    # AT-11: the total by projection stays beside the total with the Swaps, so the toggle shows both.
+    block = _block(_api(settings, sources, jev=_edges({("Konata Mumpfield", "Matthew Golden"): 0.9})))
+    assert block["total"] == 121.7
+    assert block["swap_total"] == pytest.approx(sum(row["projection"] for row in block["rows"]), abs=0.05)
+    [row] = [row for row in block["rows"] if row["swap"]]
+    assert block["swap_total"] == pytest.approx(block["total"] - row["swap"]["over_projection"] + row["projection"],
+                                                abs=0.1)
+    assert block["swap_total"] == 115.6
+
+
+def test_a_lineup_with_no_swap_has_the_same_total_both_ways(settings, sources):
+    block = _block(_api(settings, sources))
+    assert _swaps(block) == {} and block["swap_total"] == block["total"]
+
+
+def test_each_swap_carries_the_checked_sentence_that_names_its_two_players_as_its_reason(settings, sources):
+    # AT-4: Claude writes the reason of each Swap from the two Fact sheets. The block comes again after the check, with
+    # the sentence that names both players, so the row opens with its reason. The kept Answer keeps the reason too.
+    reason = "Konata Mumpfield starts over Matthew Golden, because the read of his matchup is better this week."
+    # A name with a suffix, such as "Jr.", does not end the sentence.
+    suffix = "Mike Washington Jr. starts over Kyren Williams, because his role is larger this week."
+    writer = Writer(f"{suffix} {reason} Start the rest of your lineup by projection.")
+    api = _api(settings, sources, writer=writer, jev=_edges({("Konata Mumpfield", "Matthew Golden"): 0.9,
+                                                             ("Mike Washington Jr.", "Kyren Williams"): 0.85}))
+    response = api.post(PERSONAL.format(slug="cpc"), json={"topic": "start_sit", "roster_id": BO_GIRDS["cpc"]},
+                        headers=HEADERS)
+    chunks = _chunks(response)
+    blocks = [c["data"] for c in chunks if c["type"] == "data-block"]
+    assert [row["swap"]["reason"] for block in blocks for row in block["rows"] if row["swap"]] == [
+        None, None, suffix, reason]
+    # The reason comes after "checked", so it never shows a sentence that the check did not pass.
+    types = [c["type"] if c["type"] != "data-check" else c["data"]["state"] for c in chunks]
+    assert types.index("checked") < len(types) - 1 - types[::-1].index("data-block")
+    kept = _block(api)
+    assert writer.calls == 1
+    assert [row["swap"]["reason"] for row in kept["rows"] if row["swap"]] == [suffix, reason]
+
+
+def test_the_slice_of_claude_names_each_swap_and_the_total_with_the_swaps(settings, sources):
+    # Claude and the Jev check read the lineup with the Swaps, with the starter that each Swap benches.
+    seen: list[str] = []
+
+    class Reader(Writer):
+        async def stream(self, messages, info):
+            seen.append(str(messages))
+            async for word in super().stream(messages, info):
+                yield word
+
+    _block(_api(settings, sources, writer=Reader(), jev=_edges({("Konata Mumpfield", "Matthew Golden"): 0.9})))
+    [prompt] = seen
+    assert '\\"swap_over\\": \\"Matthew Golden\\"' in prompt or '"swap_over": "Matthew Golden"' in prompt
+    assert "projected_total_with_swaps" in prompt
+
+
+def test_a_locked_player_is_never_a_swap_and_never_loses_his_slot_to_one(settings, sources):
+    # After the Thursday kickoff, Austin Ekeler (WAS) and Isaiah Likely (NYG) of norcal are locked starters, and Antonio
+    # Williams (WAS) is a locked bench player of cpc. Jev would swap each of them at 0.95, but no pair with a locked
+    # player reaches Jev.
+    jev = _edges({("Seth McGowan", "Austin Ekeler"): 0.95, ("Eli Raridon", "Isaiah Likely"): 0.95})
+    norcal = _block(_api(settings, sources, "norcal", now=AFTER_THURSDAY, jev=jev), "norcal")
+    assert _swaps(norcal) == {}
+    asked = [str(q.options) for request in jev.requests for q in request.questions.values() if hasattr(q, "options")]
+    assert asked and not any("Austin Ekeler" in options or "Isaiah Likely" in options for options in asked)
+    cpc = _block(_api(settings, sources, now=AFTER_THURSDAY,
+                      jev=_edges({("Antonio Williams", "Matthew Golden"): 0.95})))
+    assert _swaps(cpc) == {}

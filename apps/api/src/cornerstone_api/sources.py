@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 
+from cornerstone_api.free_game import fetch_def_projections
 from cornerstone_api.game_lock import ScoresFetcher, fetch_espn_scoreboard, fetch_sleeper_scores
 from facts.writer import parse_call
 from league.chart import chart_values, claude_reader
@@ -49,6 +50,8 @@ class Sources:
     # The kickoffs of the game lock of Start or sit: the Sleeper `scores` query, and the ESPN scoreboard as its fallback.
     fetch_sleeper_scores: ScoresFetcher = fetch_sleeper_scores
     fetch_espn_scoreboard: ScoresFetcher = fetch_espn_scoreboard
+    # The Sleeper DEF projections of one week, which the NFL game card of a free answer reads.
+    fetch_def_projections: Callable[[int, int], list[dict]] = fetch_def_projections
     # One shared partial is safe as the default, because it holds no state that a call changes.
     read_chart: ChartReader = partial(chart_values, read=claude_reader(parse_call))  # noqa: RUF009
 

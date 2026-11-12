@@ -374,7 +374,9 @@ describe("Start or sit", () => {
     expect(rows.map((row) => row.getAttribute("data-slot"))).toEqual(["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "FLEX", "DEF"]);
     const kickoff = new Intl.DateTimeFormat(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" }).format(new Date(1794792000000));
     expect(rows[0].textContent).toBe(`QBAaron RodgersPIT vs CIN· ${kickoff}17.5`);
-    expect(answer.textContent).toContain("By projection 121.8");
+    // With no Swap, the header shows the total by projection, with no toggle.
+    expect(answer.textContent).toContain("By projection 121.7");
+    expect(within(answer).queryByRole("group", { name: "Lineup total" })).toBeNull();
   });
 
   it("names each player who cannot play in one line under the rows (AT-10)", async () => {
@@ -415,5 +417,62 @@ describe("Start or sit", () => {
     expect(row?.lastElementChild?.getAttribute("aria-hidden")).toBe("false");
     expect(rowsOf(answer).map((item) => item.textContent)).toEqual(before);
     expect(above.map((item) => item.querySelector("button")?.getAttribute("aria-expanded") ?? null)).toEqual(aboveState);
+  });
+
+  /* The total that the header shows now. The rolling digits are hidden from the reader of the screen, so the value is
+     on the label of the total. */
+  const totalOf = (answer: HTMLElement) => within(answer).getByRole("group", { name: "Lineup total" }).querySelector("[data-total]")?.getAttribute("data-total");
+
+  it("reads each Swap row as Swap over the benched starter, struck through, with the first Swap open with its reason (AT-4)", async () => {
+    streams.push(() => sse(recorded("start-sit-swap")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Swap over");
+    const rows = rowsOf(answer);
+    const [washington, mumpfield] = [rows[2], rows[4]];
+    expect(washington.textContent).toContain("Mike Washington Jr.");
+    expect(washington.textContent).toContain("Swap over K. Williams");
+    expect(washington.querySelector("s")?.textContent).toBe("K. Williams");
+    expect(mumpfield.querySelector("s")?.textContent).toBe("M. Golden");
+    // The first row with a Swap or a Q opens on arrival, and only that one.
+    const open = within(answer).getAllByRole("button", { expanded: true });
+    expect(open).toHaveLength(1);
+    expect(open[0].closest("li")).toBe(washington);
+    // The reason comes with the block after the check, and the open row shows it.
+    await waitFor(() => {
+      const detail = document.getElementById(open[0].getAttribute("aria-controls") ?? "");
+      expect(detail?.textContent).toContain("Mike Washington Jr. starts over Kyren Williams, because his role is larger this week.");
+    });
+    const text = (screen.getByRole("region", { name: "Thread" }).textContent ?? "").toLowerCase();
+    for (const word of ["jev", "advisor", "finder", "brian", "front door"]) expect(text).not.toContain(word);
+  });
+
+  it("toggles the total between By projection and With 2 Swaps, and the Swap total is the sum of the rows (AT-11)", async () => {
+    streams.push(() => sse(recorded("start-sit-swap")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Swap over");
+    const toggle = within(answer).getByRole("group", { name: "Lineup total" });
+    const swaps = within(toggle).getByRole("button", { name: "With 2 Swaps" });
+    const projection = within(toggle).getByRole("button", { name: "By projection" });
+    // The lineup shows the Swaps, so the total with the Swaps shows first.
+    expect(swaps.getAttribute("aria-pressed")).toBe("true");
+    expect(totalOf(answer)).toBe("104.7");
+    const sum = rowsOf(answer).reduce((total, row) => total + Number(row.querySelector("[data-projection]")?.getAttribute("data-projection")), 0);
+    expect(sum.toFixed(1)).toBe("104.7");
+    fireEvent.click(projection);
+    expect(projection.getAttribute("aria-pressed")).toBe("true");
+    expect(totalOf(answer)).toBe("121.7");
+    fireEvent.click(swaps);
+    expect(totalOf(answer)).toBe("104.7");
+  });
+
+  it("gives the honest miss with no lineup when the read of the Swaps fails (AT-20)", async () => {
+    streams.push(() => sse(recorded("start-sit-miss")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const miss = await articleWith("Start or sit", MISS_LEAD);
+    expect(within(miss).queryByRole("list", { name: "Week 10 lineup" })).toBeNull();
+    expect(miss.textContent).not.toContain("Swap");
   });
 });

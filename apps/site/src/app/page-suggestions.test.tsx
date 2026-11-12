@@ -230,6 +230,54 @@ describe("the trade Topics as Suggestions", () => {
   });
 });
 
+describe("Start or sit in the Suggestions", () => {
+  // The Thursday Suggestions of Lil Fridge with the Start or sit fact of the recorded live week 10, as the API test of
+  // the kickoff fact serves it: no starter who cannot play, no Q, and the next kickoff at 2026-11-15T18:00Z.
+  const KICKOFF = Date.UTC(2026, 10, 15, 18, 0);
+  const WITH_START_SIT = {
+    ...THURSDAY,
+    facts: { ...THURSDAY.facts, start_sit: "Next kickoff Sun 1:00 PM" },
+    kickoffs: { start_sit: KICKOFF },
+  };
+  const zone = process.env.TZ;
+
+  afterEach(() => {
+    process.env.TZ = zone;
+  });
+
+  it("leads Thursday to Sunday, sits third on Wednesday, and leaves Monday and Tuesday as they were (AT-13)", () => {
+    for (const day of [4, 5, 6, 0]) expect(dayOrder(day)[0]).toBe("start_sit");
+    expect(dayOrder(4)[1]).toBe("next_matchup");
+    expect(dayOrder(3).slice(0, 3)).toEqual(["waiver_targets", "weak_spots", "start_sit"]);
+    expect(dayOrder(1).slice(0, 3)).toEqual(["next_matchup", "playoff_race", "power_rankings"]);
+    expect(dayOrder(2).slice(0, 4)).toEqual(["week_recap", "last_matchup", "power_rankings", "playoff_race"]);
+  });
+
+  it("shows the next kickoff in the time zone of the browser (AT-15)", async () => {
+    // A browser in Los Angeles reads the 1:00 PM kickoff of New York as 10:00 AM.
+    process.env.TZ = "America/Los_Angeles";
+    onThursday();
+    fetchStub.mockImplementation(async (url: string) =>
+      String(url).endsWith("/suggestions") ? Response.json(WITH_START_SIT) : new Response("", { status: 404 }),
+    );
+    render(<HomePage />);
+    const chip = "Start or sit: Next kickoff Sun 10:00 AM";
+    await waitFor(async () => expect((await suggestionChips())[1].getAttribute("aria-label")).toBe(chip));
+    fireEvent.click(screen.getByRole("button", { name: chip }));
+    expect(screen.getByRole("button", { name: "Open Start or sit" }).textContent).toContain("Next kickoff Sun 10:00 AM");
+  });
+
+  it("shows a count fact as the API serves it", async () => {
+    onThursday();
+    const counts = { ...THURSDAY, facts: { ...THURSDAY.facts, start_sit: "1 can't play" }, kickoffs: {} };
+    fetchStub.mockImplementation(async (url: string) =>
+      String(url).endsWith("/suggestions") ? Response.json(counts) : new Response("", { status: 404 }),
+    );
+    render(<HomePage />);
+    await waitFor(async () => expect((await suggestionChips())[1].getAttribute("aria-label")).toBe("Start or sit: 1 can't play"));
+  });
+});
+
 describe("a stale personal Answer of the Thread", () => {
   it("shows dimmed with the stale line, Refresh, and no checked mark (AT-34)", async () => {
     onWednesday();

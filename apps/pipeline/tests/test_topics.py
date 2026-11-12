@@ -234,13 +234,66 @@ def test_the_power_rankings_block_lists_each_team_with_its_rank_and_its_move(tmp
     assert len(norcal["rows"]) == 12
 
 
+def test_the_cpc_ladder_block_lists_each_team_by_standing_with_its_odds_and_the_playoff_line(tmp_path):
+    """AT-27 and AT-40: one row per team of cpc week 9 by standing, with its playoff odds and its record. The playoff
+    line sits after the 6th row, as `settings.playoff_teams` of the raw league says."""
+    block = _block(tmp_path, "cpc", "playoff_race")
+    assert block["kind"] == "ladder"
+    assert [(r["rank"], r["name"], r["record"]) for r in block["rows"]] == [
+        (1, "All You Need Is Love", "12-6"), (2, "Bo Girds", "11-7"), (3, "London Cooking", "11-7"),
+        (4, "Lil Fridge", "11-7"), (5, "The Blue Tent", "11-7"), (6, "Return of T Mac", "11-7"),
+        (7, "Maye d'force B with U", "10-8"), (8, "Teehee", "8-10"), (9, "To Infinity and Bijan", "8-10"),
+        (10, "Unsolicited Dak Picks", "6-12"), (11, "behold the lamb", "6-12"), (12, "NFC Least", "3-15")]
+    league = json.loads((CPC / "data" / "2026" / "week-09" / "raw" / "league.json").read_text(encoding="utf-8"))
+    assert block["playoff_teams"] == league["settings"]["playoff_teams"] == 6
+    assert [r["name"] for r in block["rows"] if r["you"]] == ["Bo Girds"]
+    # The odds of each row are the playoff odds of the week in rankings.json.
+    rankings = json.loads((CPC / "published" / "2026" / "rankings.json").read_text(encoding="utf-8"))
+    odds = {r["roster_id"]: r["odds"]["playoff"] for w in rankings["weeks"] if w["week"] == 9 for r in w["rows"]}
+    assert {r["roster_id"]: r["odds"] for r in block["rows"]} == odds
+    assert all(0 <= r["odds"] <= 100 for r in block["rows"])
+    norcal = _block(tmp_path / "norcal", "norcal", "playoff_race")
+    assert (norcal["kind"], len(norcal["rows"]), norcal["playoff_teams"]) == ("ladder", 12, 6)
+
+
+def test_the_cpc_schedule_block_lists_the_opponents_of_weeks_10_to_14_by_their_standing(tmp_path):
+    """AT-28 and AT-40: Bo Girds meets one opponent each week from 10 to 14, each with its standing and its record
+    after week 9, against the playoff line of 6."""
+    block = _block(tmp_path, "cpc", "your_season")
+    assert block["kind"] == "schedule"
+    assert block["playoff_teams"] == 6
+    assert block["teams"] == 12
+    assert [(r["week"], r["opponent"], r["rank"], r["record"]) for r in block["rows"]] == [
+        (10, "The Blue Tent", 5, "11-7"), (11, "Maye d'force B with U", 7, "10-8"), (12, "London Cooking", 3, "11-7"),
+        (13, "NFC Least", 12, "3-15"), (14, "Lil Fridge", 4, "11-7")]
+    norcal = _block(tmp_path / "norcal", "norcal", "your_season")
+    assert norcal["kind"] == "schedule"
+    assert [r["week"] for r in norcal["rows"]] == [10, 11, 12, 13, 14]
+    assert norcal["rows"][0]["opponent"] == "Davlionman"
+
+
+def test_each_league_topic_but_leaders_and_trades_has_a_block_in_both_leagues(tmp_path):
+    """AT-40: with the raw week, six league Topics carry a block in cpc and in norcal, and Position leaders and recent
+    trades has none."""
+    for slug in ("cpc", "norcal"):
+        site = _published_week_9(tmp_path / slug, slug)
+        write_topics(site, 2026, 9, league_week=_week_9(slug))
+        topics = _topics(site, 2026, 9)
+        assert topics["schema_version"] == 2
+        for answers in topics["teams"].values():
+            kinds = {a["topic"]: (a["block"] or {}).get("kind") for a in answers}
+            assert kinds == {"week_recap": "recap", "last_matchup": "matchup", "next_matchup": "matchup",
+                             "power_rankings": "rank_movers", "playoff_race": "ladder", "your_season": "schedule",
+                             "leaders_trades": None}
+
+
 def test_the_matchup_topics_have_no_block_without_the_raw_week(tmp_path):
     """The matchup cards read the lineups of the raw week. With no raw week, those two Topics have no block, and the
-    blocks from the published files still come. Ticket 07 gives Playoff race and Your season their blocks."""
+    blocks from the published files still come. The schedule strip reads the pairs of the raw week too."""
     site = _published_week_9(tmp_path, "cpc")
     write_topics(site, 2026, 9)
     for answers in _topics(site, 2026, 9)["teams"].values():
         kinds = {a["topic"]: (a["block"] or {}).get("kind") for a in answers}
         assert kinds == {"week_recap": "recap", "last_matchup": None, "next_matchup": None,
-                         "power_rankings": "rank_movers", "playoff_race": None, "your_season": None,
+                         "power_rankings": "rank_movers", "playoff_race": "ladder", "your_season": None,
                          "leaders_trades": None}

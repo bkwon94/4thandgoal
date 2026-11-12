@@ -22,7 +22,7 @@ from pydantic_ai.models.anthropic import AnthropicModelSettings
 from pydantic_ai.ui.vercel_ai.response_types import BaseChunk, DoneChunk, FinishChunk, StartChunk
 
 from analyzer.routes import ServedClient
-from cornerstone_api import free_feed, free_tools
+from cornerstone_api import free_feed, free_game, free_tools
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Route
 from cornerstone_api.chat_turns import Turn, Turns, turn_messages, turns_instructions
@@ -60,6 +60,7 @@ READERS: dict[str, Callable[..., dict]] = {
     "player_log": free_tools.player_log,
     "roster_grades": free_tools.roster_grades,
     "moves_feed": free_feed.moves_feed,
+    "nfl_game": free_game.nfl_game,
 }
 # The display tool of a block. It reads no data, so it does not count toward the cap, and its calls never stream.
 DISPLAY_TOOL = "show_block"
@@ -173,6 +174,15 @@ def moves_feed(ctx: RunContext[FreeDeps], week: int | None = None) -> dict:
     for the live week, the week now in play, which "this week" means. The result has a ready feed block."""
     return _call(ctx, "moves_feed" if week is None else f"moves_feed_week_{week}", "moves_feed",
                  **({} if week is None else {"week": week}))
+
+
+@AGENT.tool
+def nfl_game(ctx: RunContext[FreeDeps], team: str, position: str | None = None) -> dict:
+    """The next game of one NFL team, such as "Bears": the projected points of each team and the expected margin, the
+    defense of the opponent against `position` (QB, RB, WR, or TE) among the 32 defenses, and the pass share of each
+    team against the league. Leave out `position` for all positions. The result has a ready NFL game card."""
+    return _call(ctx, f"nfl_game_{team}" + ("" if position is None else f"_{position}"), "nfl_game", team=team,
+                 **({} if position is None else {"position": position}))
 
 
 @AGENT.tool
@@ -325,7 +335,8 @@ def season_data(served: Any, season: int, week: int, teams: dict[int, str],
     return free_tools.SeasonData(season=season, week=week, teams=teams,
                                  history_root=history_root(client.folder, season),
                                  points_key=client.settings.points_key, median_game=client.settings.median_game,
-                                 fetch_raw=fetch_raw, fetch_grades=fetch_grades, tz=client.tz)
+                                 fetch_raw=fetch_raw, fetch_grades=fetch_grades, tz=client.tz,
+                                 fetch_def_projections=served.sources.fetch_def_projections)
 
 
 @router.post("/ask/free")

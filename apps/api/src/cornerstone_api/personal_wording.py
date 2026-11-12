@@ -1,10 +1,11 @@
 """
 All the wording of a personal Topic: the instructions of Claude, the prompt of one Topic over its slice, the line that
-asks for a rewrite, and the Jev read of a waiver target. The check of each sentence is the free answer check.
+asks for a rewrite, the Jev read of a waiver target, and the Jev read of a Swap. The check of each sentence is the free
+answer check.
 """
 import json
 
-from league.jev_port import NoulQuestion
+from league.jev_port import ChoiceQuestion, NoulQuestion
 
 # What each fact of the slices means. Claude reads them as rules of INSTRUCTIONS, and the Jev check reads them in its
 # state, so the writer and the check read the same meaning of each fact.
@@ -51,10 +52,13 @@ TOPIC_ASKS = {
                       "of the last week, or the slot of `team_need` he fills, with at most one number. `kind` says if "
                       "he is an add this week or a stash for later weeks. Quote no FAAB bid. If `kept_players` is "
                       "empty, say plainly that no free agent beats the starters of the team this week.",
-    "start_sit": "Say who starts this week. `lineup` is the best legal lineup by projection, one entry per slot in the "
+    "start_sit": "Say who starts this week. `lineup` is the best legal lineup by projection with each Swap of "
+                 "`swap_means` in place, one entry per slot in the "
                  "order of Sleeper, and each `projection` is in the points of the league. Name the top starters, each "
                  "player of `cannot_play` with his status, and the `pivot` of each Questionable starter. A `locked` "
-                 "player's game has started, so he cannot move.",
+                 "player's game has started, so he cannot move. For each Swap, the entry with `swap_over`, write one "
+                 "sentence that names both players by their full names and gives the reason from their two entries, "
+                 "such as the opponent or the stat line.",
 }
 
 # The two Nouls of the Jev read of one free agent, in one request with one state: the team need and his facts. An add
@@ -71,6 +75,18 @@ WAIVER_STASH = {
            "snaps and touches, so in later weeks he could start over a starter of {team}.",
     "no": "{player} is a backup behind a healthy starter with a small role, so in later weeks he would still sit "
           "behind the starters of {team}."}
+
+# The Choice of one pair of a bench player and a starter whose slot he can fill (decision ticket 07). Its two options are
+# the two players, and the state holds the Fact sheet of each by his name.
+SWAP_QUESTION = ("Which player will score more fantasy points this week in the scoring of this league, as the {slot} "
+                 "of {team} in week {week}?")
+SWAP_BENCH = "{player}, on the bench of {team}. His Fact sheet is `players.{player}`."
+SWAP_STARTER = "{player}, the {slot} of {team} by projection. His Fact sheet is `players.{player}`."
+# What a Swap means, in the slice of Start or sit, so Claude and the Jev check read the same meaning.
+SWAP_MEANING = ("An entry of `lineup` with `swap_over` is a Swap: its player starts in place of the player named in "
+                "`swap_over`, who has the higher projection and goes to the bench, because a read of the two Fact "
+                "sheets says its player will score more this week. `projected_total_with_swaps` is the projected "
+                "total of the lineup with the Swaps.")
 
 TOPIC_NAMES = {"weak_spots": "Weak spots", "stack_up": "How you stack up", "waiver_targets": "Waiver targets",
                "start_sit": "Start or sit"}
@@ -107,3 +123,13 @@ def waiver_questions(player: str, team: str, week: int) -> dict[str, NoulQuestio
     fill = {"player": player, "team": team, "week": week}
     return {key: NoulQuestion(q["text"].format(**fill), q["yes"].format(**fill), q["no"].format(**fill))
             for key, q in (("add", WAIVER_ADD), ("stash", WAIVER_STASH))}
+
+
+def swap_question(slot: str, team: str, week: int, bench: tuple[str, str],
+                  starter: tuple[str, str]) -> ChoiceQuestion:
+    """The Choice of one pair: `bench` and `starter` each hold the option key and the name of the player. The bench
+    player comes first, so a reader of the options finds him there."""
+    fill = {"slot": slot, "team": team}
+    return ChoiceQuestion(instructions=SWAP_QUESTION.format(week=week, **fill),
+                          options={bench[0]: SWAP_BENCH.format(player=bench[1], **fill),
+                                   starter[0]: SWAP_STARTER.format(player=starter[1], **fill)})

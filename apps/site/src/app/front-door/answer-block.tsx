@@ -8,19 +8,24 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { z } from "zod";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { ladderBlockSchema, ladderText } from "@/lib/data/blocks/ladder-schema";
 import { matchupBlockSchema, matchupText } from "@/lib/data/blocks/matchup-schema";
 import { rankMoversBlockSchema, rankMoversText } from "@/lib/data/blocks/rank-movers-schema";
 import { recapBlockSchema, recapText } from "@/lib/data/blocks/recap-schema";
+import { scheduleBlockSchema, scheduleText } from "@/lib/data/blocks/schedule-schema";
 import { FeedView, feedBlockSchema, feedText } from "./feed-block";
 import { ByeGridView, byeGridBlockSchema, byeGridText } from "./bye-grid";
 import { LineupView, lineupBlockSchema, lineupText } from "./lineup-block";
+import { NflGameView, nflGameBlockSchema, nflGameText } from "./nfl-game-card";
 import { VERY_SLOW, riseIn, staggerOf } from "./motion";
 import { MatchupCard } from "./matchup-card";
 import { RankMoverList } from "./rank-mover-list";
 import { RecapCard } from "./recap-card";
+import { ScheduleStrip } from "./schedule-strip";
 import { TradeBlockView, tradeBlockSchema, tradeBlockText } from "./trade-block";
 import { SlotRanksView, slotRanksBlockSchema, slotRanksText } from "./slot-rank-bars";
 import { SellListView, sellListSchema, sellListText } from "./sell-list";
+import { StandingsLadder } from "./standings-ladder";
 import { WaiverListView, waiverListSchema, waiverListText } from "./waiver-list";
 
 const listBlockSchema = z.object({
@@ -59,6 +64,9 @@ export const answerBlockSchema = z.discriminatedUnion("kind", [
   lineupBlockSchema,
   matchupBlockSchema,
   rankMoversBlockSchema,
+  ladderBlockSchema,
+  scheduleBlockSchema,
+  nflGameBlockSchema,
 ]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
@@ -95,6 +103,9 @@ export function blockText(block: AnswerBlock): string {
     case "lineup": return lineupText(block);
     case "matchup": return matchupText(block);
     case "rank_movers": return rankMoversText(block);
+    case "ladder": return ladderText(block);
+    case "schedule": return scheduleText(block);
+    case "nfl_game": return nflGameText(block);
   }
 }
 
@@ -247,5 +258,8 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
     case "lineup": return <LineupView block={block} />;
     case "matchup": return <MatchupCard block={block} live={live} />;
     case "rank_movers": return <RankMoverList block={block} live={live} />;
+    case "ladder": return <StandingsLadder block={block} live={live} />;
+    case "schedule": return <ScheduleStrip block={block} live={live} />;
+    case "nfl_game": return <NflGameView block={block} live={live} />;
   }
 }
