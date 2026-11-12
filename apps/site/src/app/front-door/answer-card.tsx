@@ -11,6 +11,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import type { TopicRow } from "@/lib/data/topics-schema";
 import { SLOW, VERY_SLOW, bubbleIn, fadeIn, riseIn } from "./motion";
+import { type AnswerBlock, BlockView } from "./answer-block";
 import { TextBlock } from "./text-block";
 
 export const AnswerCard = forwardRef<
@@ -33,7 +34,8 @@ export const AnswerCard = forwardRef<
 });
 
 /* The data block, the text, and the link of one Answer, on a card that settles in. A live Answer puts its streamed
-   text in `children`, under the data block and above the link. */
+   text in `children`, under the data block and above the link. An Answer with a block, such as the recap card, shows
+   the block in the place of its stats and rows, which stay in topics.json only for a reader of version 1. */
 export function AnswerBody({
   answer,
   avatars,
@@ -41,13 +43,16 @@ export function AnswerBody({
   children,
 }: {
   // The body reads only the parts of an Answer that it shows, so a personal Answer from the API fits it too.
-  answer: Pick<DoorAnswer, "stats" | "rows" | "text" | "href">;
+  answer: Pick<DoorAnswer, "stats" | "rows" | "text" | "href"> & { block?: AnswerBlock | null };
   avatars: Record<number, string | null>;
   // A quiet label under the stats that says when the numbers are from, such as "as of today".
   asOf?: string;
   children?: ReactNode;
 }) {
   const off = useMotionOff();
+  const block = answer.block ?? null;
+  const stats = block ? [] : answer.stats;
+  const rows = block ? [] : answer.rows;
   return (
     /* The data block settles from a soft blur at 0.98 (decision 07). With motion off, it only fades in. */
     <motion.div
@@ -56,11 +61,12 @@ export function AnswerBody({
       animate={off ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={fadeIn(SLOW, 0.08)}
     >
-      {answer.stats.length > 0 && (
+      {block && <BlockView block={block} live />}
+      {stats.length > 0 && (
         // Each stat takes the width of its own value, so three short stats share one row on a phone and a long value
         // such as "12th of 12" wraps to the next row whole.
         <dl className="m-0 flex flex-wrap gap-x-sp-6 gap-y-sp-3">
-          {answer.stats.map((stat) => (
+          {stats.map((stat) => (
             <div key={stat.label} className="flex min-w-0 flex-col gap-sp-1">
               <dt className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{stat.label}</dt>
               <dd className="m-0 text-stat leading-tight font-bold whitespace-nowrap tabular-nums">{stat.value}</dd>
@@ -69,9 +75,9 @@ export function AnswerBody({
         </dl>
       )}
       {asOf && <p className="m-0 font-mono text-meta leading-tight text-mute">{asOf}</p>}
-      {answer.rows.length > 0 && (
+      {rows.length > 0 && (
         <ul className="m-0 flex list-none flex-col border-t border-rule p-0">
-          {answer.rows.map((row, index) => (
+          {rows.map((row, index) => (
             <AnswerRow key={`${row.label}-${index}`} row={row} avatar={row.roster_id === null ? undefined : avatars[row.roster_id]} />
           ))}
         </ul>

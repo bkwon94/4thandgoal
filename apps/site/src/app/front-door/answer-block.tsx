@@ -8,7 +8,9 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { z } from "zod";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { recapBlockSchema, recapText } from "@/lib/data/blocks/recap-schema";
 import { VERY_SLOW, riseIn, staggerOf } from "./motion";
+import { RecapCard } from "./recap-card";
 
 const listBlockSchema = z.object({
   kind: z.literal("list"),
@@ -32,7 +34,12 @@ const playerBlockSchema = z.object({
    the shape. A new block joins with its schema here, its line in blockText, and its view in BlockView, and TypeScript
    flags a kind that misses either. A personal Topic sends its stats and rows on the same part as the kind "rows",
    which is outside this union, so it never reads as an answer block. */
-export const answerBlockSchema = z.discriminatedUnion("kind", [listBlockSchema, tableBlockSchema, playerBlockSchema]);
+export const answerBlockSchema = z.discriminatedUnion("kind", [
+  listBlockSchema,
+  tableBlockSchema,
+  playerBlockSchema,
+  recapBlockSchema,
+]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
 /* The block of a data part, or null for a part of another shape. */
@@ -53,6 +60,7 @@ export function blockText(block: AnswerBlock): string {
       const stats = block.stats.map((stat) => `${stat.label} ${stat.value}.`);
       return [`${head}, ${block.can_play_now ? "can play now" : "can't play now"} (${block.status}).`, ...stats, ...(block.note ? [block.note] : [])].join(" ");
     }
+    case "recap": return recapText(block);
   }
 }
 
@@ -190,5 +198,6 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
       return <TableView block={block} live={live} />;
     case "player":
       return <PlayerView block={block} live={live} />;
+    case "recap": return <RecapCard block={block} live={live} />;
   }
 }

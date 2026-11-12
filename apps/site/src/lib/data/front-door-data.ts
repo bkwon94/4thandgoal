@@ -30,8 +30,9 @@ export type FrontDoorData = {
 /* The 3 personal Topics, which the API answers live. Their pages come from the build, as the league Topics do. */
 type PersonalTopic = "weak_spots" | "stack_up" | "waiver_targets";
 
-/* The Topics file layout version this site reads. It counts apart from the page JSON version. */
-const TOPICS_VERSION = 1;
+/* The Topics file layout versions this site reads. They count apart from the page JSON version. Version 2 adds the
+   block of an Answer, and a week built before it still reads as version 1, with no block. */
+const TOPICS_VERSIONS = [1, 2] as const;
 
 const publicFile = (...parts: string[]) => join(process.cwd(), "public", ...parts);
 
@@ -102,7 +103,7 @@ export function loadFrontDoor(): FrontDoorData | null {
   });
   // A manager looks for a name, so the sheet lists the teams by name and not by rank.
   teams.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
-  const topics = readPublished(publicFile(ref.season, ref.week, "topics.json"), TOPICS_VERSION, topicsFileSchema);
+  const topics = readPublished(publicFile(ref.season, ref.week, "topics.json"), TOPICS_VERSIONS, topicsFileSchema);
   const answers: Record<number, DoorAnswer[]> = {};
   for (const [key, list] of Object.entries(topics?.teams ?? {})) {
     const rosterId = Number(key);
