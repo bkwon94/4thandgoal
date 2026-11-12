@@ -112,7 +112,7 @@ Brian then opens Todoist and sees every task that waits on him under the label `
 - **The title of a wait task** is one of `Approve PRD`, `Approve ACCEPTANCE`, `Approve tickets`, or `Merge PR #<N>`. The section names the feature, so the title does not.
 - **The description**, after the key line, has these lines in order: the app; the blockers as the ticket names them; a link; a summary. Each line is skipped when the ticket has no value for it.
 - **The link** is the GitHub URL of the file on `main`, only when the file exists on `main`. A file that exists only on a spec branch gets the line `On the spec branch <slug>.` A wait task for a PR links to the PR.
-- **The summary** is the first paragraph of the `## What to build` section, or else the first paragraph of the body, cut to 500 characters. Todoist is private, so a manager name in the summary is allowed (ADR 0021 forbids only public places).
+- **The summary** is the text of the inline `**What to build:**` line, or else the first paragraph of the body, cut to 500 characters. Todoist is private, so a manager name in the summary is allowed (ADR 0021 forbids only public places).
 - **The priority** is the Todoist default when the task is made. A push never sets or changes the priority or the order.
 - **The app label** comes from the subfolder of a shared feature, else from the App column of the row of the feature in `docs/agents/state.md`, else from the Apps line of the PRD. `both` gives `site` and `pipeline`. No match gives no app label.
 
@@ -125,14 +125,15 @@ Brian then opens Todoist and sees every task that waits on him under the label `
 - A failed `td` call prints one warning line that names the task, and the script exits 0. The skill then names each missed push in its final report.
 - `TODOIST_API_TOKEN` works as the login when the keychain is out of reach, such as in a sandbox.
 - Each subcommand has `--dry-run`, which prints the `td` commands it would run and sends nothing.
+- Each subcommand has `--root <dir>`, which reads and writes the tracker under that folder in place of the repo root. The acceptance tests use it with a throwaway feature in a temp folder, in the pattern of the `evidence-flags` tests.
 
 ### The subcommands
 
 - `push <path>`: makes the task of one ticket or one decision ticket match its file. It makes the section if it is missing. It writes the title, the description, the flow labels, and the status label by the ownership rules above. It moves the task with `td task move` when the section is wrong, because `td task update` cannot change the section. It completes a decision task when the decision ticket is `done`. It never completes a ticket task as `done`, because only the merge sweep does that. It completes a task with the label `wontfix` when the ticket is `wontfix`.
 - `pull <feature>`: reads the tasks of the feature from the queue and writes each triage status into the `Status:` line of its ticket. A task that Brian completed sets `wontfix`, unless a comment on the task holds the word `done`, which sets `done`. It keeps any text after the first word of the `Status:` line only when the first word does not change. The skill commits the result on the spec branch of the feature. A failed read changes no file.
 - `wait <feature> <kind> [N]`: makes a wait task with the label `ready-for-human`. The kinds are `approve-prd`, `approve-acceptance`, `approve-tickets`, and `merge-pr` with the PR number. A second form completes a wait task: `wait <feature> <kind> --done`.
-- `sweep`: for each open `Merge PR #N` task, it runs `gh pr view N --json state`. For a merged PR, it completes each ticket task of the feature, then the wait task, then archives the section if every task in it is complete. For a PR closed without a merge, it sets `blocked` on the wait task. An open PR changes nothing.
-- `import`: makes the labels of the flow and the `Ideas` section, runs `push` for each open ticket and open decision ticket, and makes the wait tasks of each live spec. It reads each feature from its live spec branch if one exists, else from the current checkout. A live spec branch is a local branch that has a `.scratch/<branch>/` folder and no merged PR, per `gh pr list --head <branch> --state merged`. A commit count against `main` does not work, because a squash merge leaves the branch commits off `main`. A second run changes nothing.
+- `sweep`: for each open `Merge PR #N` task, it runs `gh pr view N --json state`. For a merged PR, it completes each ticket task whose ticket is `done` on `main` after the merge, then the wait task. A ticket that is still open on `main`, such as a follow-up, keeps its task. It archives the section only if every task in it is complete. For a PR closed without a merge, it sets `blocked` on the wait task. An open PR changes nothing.
+- `import`: makes the labels of the flow, the `Ideas` section, and the Todoist filter "Waits on Brian" with the query `#4thandgoal & @ready-for-human`, runs `push` for each open ticket and open decision ticket, and makes the wait tasks of each live spec. It reads each feature from its live spec branch if one exists, else from the current checkout. A live spec branch is a local branch that has a `.scratch/<branch>/` folder and no merged PR, per `gh pr list --head <branch> --state merged`. A commit count against `main` does not work, because a squash merge leaves the branch commits off `main`. A second run changes nothing.
 
 ### The push points in the skills
 
@@ -199,3 +200,7 @@ Each skill adds one line per push point. The table comes from decision ticket 03
 - The completed-task read of Todoist covers at most 3 months per call. A pull reads only the tasks of one feature, so this limit does not matter in practice.
 - `td` does not retry a rate limit. One import of about 100 tasks is far under the cap of 1000 sync requests per 15 minutes.
 - On 2026-11-12, the local branches with a feature folder include `codex-flow`, `front-door-lineup`, and `midseason-report`. `midseason-report` merged as #13, so the import must skip it. The import reads the branches as they are on the day it runs.
+
+## Revisions
+
+- 2026-11-12: Brian approved four fixes with the acceptance tests. The summary reads the inline `**What to build:**` line. The merge sweep completes only the tasks of tickets that are `done` on `main`. Each subcommand gets `--root`. `import` makes the filter "Waits on Brian".
