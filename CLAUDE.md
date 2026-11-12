@@ -32,7 +32,7 @@ ADRs 0018 to 0021 and ADR 0026 set the flow. ADR 0026 supersedes ADR 0020. The s
 
 The weekly `publish` is the one exception. It may push to `main`, and it may stage only `clients/<slug>/published/<season>/`, `clients/<slug>/data/<season>/`, and `clients/<slug>/build/<season>/`.
 
-The repo plugin `cpc` takes an idea to a merged spec. Run its skills in this order. Brian approves the output of each of steps 2 to 4.
+The repo plugin `4ag` takes an idea to a merged spec. Run its skills in this order. Brian approves the output of each of steps 2 to 4.
 
 1. `4ag:plan <outcome statement>` writes the map and the decision tickets. `4ag:plan <feature>` clears one decision ticket per session.
 2. `4ag:to-spec <feature>` writes `PRD.md`.
