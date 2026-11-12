@@ -66,7 +66,7 @@ Check: `test -f ~/.agents/skills/research/SKILL.md && echo ok` prints `ok`.
 
 ## 5. Add the GitHub ruleset on `main`
 
-Why: the ruleset is the wall on `main` for every agent, in Claude and in Codex. It needs the check `verdict`. The Repository admin role on the bypass list lets the weekly `publish` still push.
+Why: the ruleset stops a push to `main` from any agent, in Claude and in Codex. It needs the check `verdict`. The Repository admin role on the bypass list lets the weekly `publish` still push.
 
 In the repo `bkwon94/4thandgoal`, open Settings, Rules, Rulesets, New branch ruleset. Set these values:
 
