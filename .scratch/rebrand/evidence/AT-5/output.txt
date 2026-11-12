@@ -1,0 +1,32 @@
+Spec worktree /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand at 434ba546.
+
+$ git grep -n cpcfantasyfootball -- ':!.scratch' ':!docs/adr' ':!apps/site/docs/runbook-site-host.md' ':!docs/agents/folder-move.md' ':!pnpm-lock.yaml' ':!uv.lock'
+[exit 1]
+
+$ git grep -n cpcfantasyfootball origin/main -- ':!.scratch' ':!docs/adr' ':!apps/site/docs/runbook-site-host.md' ':!docs/agents/folder-move.md' ':!pnpm-lock.yaml' ':!uv.lock' | wc -l
+      10
+[exit 0]
+
+$ grep -c cpcfantasyfootball pnpm-lock.yaml
+0
+[exit 1]
+
+The two excluded docs, to show why each one keeps the old name:
+
+$ git grep -n -B2 -A1 cpcfantasyfootball -- apps/site/docs/runbook-site-host.md
+apps/site/docs/runbook-site-host.md-68- ⛅️ wrangler 4.157.0
+apps/site/docs/runbook-site-host.md-69-────────────────────
+apps/site/docs/runbook-site-host.md:70:✨ Read 289 files from the assets directory /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients-14/apps/site/out
+apps/site/docs/runbook-site-host.md-71-Total Upload: 0.47 KiB / gzip: 0.32 KiB
+[exit 0]
+
+$ git grep -c cpcfantasyfootball -- docs/agents/folder-move.md
+docs/agents/folder-move.md:10
+[exit 0]
+
+$ head -3 docs/agents/folder-move.md
+# Folder move
+
+This runbook moves the repo folder from `~/repos/cpcfantasyfootball` to `~/repos/4thandgoal`.
+[exit 0]
+

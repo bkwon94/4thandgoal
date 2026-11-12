@@ -1055,6 +1055,10 @@ _Avoid_: League config, tenant, customer, instance, site
 The identity of one client: the color roles, the logo, and the copy. A brand gives a light set and a dark set of colors. It paints the look. It lives in `brand.toml`.
 _Avoid_: Theme, skin, style, palette, look
 
+**Product name**:
+The one name of the app across all clients. It names the domain, the repo, and the plugin. It is not the brand of a client.
+_Avoid_: Brand name, brand, app name, company name
+
 **Look**:
 The fonts, the radii, the layout, the components, and the motion that every client shares. Each brand paints the look with its colors.
 _Avoid_: Design system, shell, report look, style, skin

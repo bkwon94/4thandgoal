@@ -10,7 +10,7 @@ The skills speak in terms of five canonical triage roles. This file maps those r
 | `ready-for-human`          | `ready-for-human`    | Requires human implementation            |
 | `wontfix`                  | `wontfix`            | Will not be actioned                     |
 | none                       | `in-review`          | Merged into its spec branch. It exists only on a spec branch: the last commit before the push sets it to `done` |
-| none                       | `blocked`            | `cpc:implement` could not build it; the comment says why |
+| none                       | `blocked`            | `4ag:implement` could not build it; the comment says why |
 
 When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
 

@@ -1,6 +1,6 @@
 ---
 name: review
-description: Do one round of feedback on a spec PR of this repo. Read the open review comments, the Test verdicts of the Judge, and the latest Test verdicts comment of Brian, then make a correction commit or a reply for each, push, and post a summary. Use when Brian finishes a round of comments on a PR that cpc:implement opened.
+description: Do one round of feedback on a spec PR of this repo. Read the open review comments, the Test verdicts of the Judge, and the latest Test verdicts comment of Brian, then make a correction commit or a reply for each, push, and post a summary. Use when Brian finishes a round of comments on a PR that 4ag:implement opened.
 argument-hint: '<PR number>'
 ---
 
@@ -40,8 +40,8 @@ The agent never writes a Test verdict. The Judge, a fresh subagent, gives each T
 | A FAIL or BLOCKED from the Judge | A reply in the round comment that names the test and the reason of the Judge. Tell Brian. The agent gives the test no third round. |
 | A stale `VERDICTS.md` | A fresh Judge on each test, with [`../implement/judge.md`](../implement/judge.md), committed. |
 | A test with PASS | No action. A PASS stays valid after a correction commit. |
-| A change to an approved acceptance test | A reply that tells Brian to change the test with `cpc:to-acceptance`. No change. |
-| A decision for a blocked ticket | A reply that tells Brian to run `cpc:implement <slug>`. This skill builds no ticket. |
+| A change to an approved acceptance test | A reply that tells Brian to change the test with `4ag:to-acceptance`. No change. |
+| A decision for a blocked ticket | A reply that tells Brian to run `4ag:implement <slug>`. This skill builds no ticket. |
 
 ## The rules
 

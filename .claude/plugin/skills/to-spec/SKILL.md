@@ -1,6 +1,6 @@
 ---
 name: to-spec
-description: Write the spec of one feature of this repo as .scratch/<feature>/PRD.md, in our header format, from the map, the decision tickets, and the conversation. Use after cpc:plan clears the fog, or when Brian asks for a spec of a feature with no fog.
+description: Write the spec of one feature of this repo as .scratch/<feature>/PRD.md, in our header format, from the map, the decision tickets, and the conversation. Use after 4ag:plan clears the fog, or when Brian asks for a spec of a feature with no fog.
 argument-hint: '<feature slug>'
 ---
 
@@ -12,7 +12,7 @@ Write the spec of one feature as `.scratch/<slug>/PRD.md`. Do not interview Bria
 
 1. Check that the skill `to-spec` is in the available skill list. If it is missing, stop. Tell Brian its name. Do not guess its steps.
 2. Find the feature slug. If `.scratch/<slug>/MAP.md` exists, read it and every file in `decisions/`.
-3. If a decision ticket other than a `spec` ticket is still open, stop. Tell Brian to run `cpc:plan <slug>` first.
+3. If a decision ticket other than a `spec` ticket is still open, stop. Tell Brian to run `4ag:plan <slug>` first.
 
 ## Steps
 
@@ -36,11 +36,11 @@ Date: <today, YYYY-MM-DD>
 Apps: site, pipeline, or both. Name what each app does.
 Spec branch: `<slug>`.
 Source: the map `.scratch/<slug>/MAP.md` and decision tickets <NN> to <NN>, or the session of <date>. ADRs, if any.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: none yet. `4ag:to-tickets` writes them.
 ```
 
 The Spec branch is the feature slug. A ticket branch of the spec is `<slug>-<NN>` (ADR 0019).
 
 ## The end
 
-Tell Brian that `cpc:to-acceptance <slug>` is next.
+Tell Brian that `4ag:to-acceptance <slug>` is next.

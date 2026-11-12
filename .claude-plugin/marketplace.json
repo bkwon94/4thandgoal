@@ -1,12 +1,12 @@
 {
-  "name": "cpc-local",
-  "description": "The Claude Code marketplace of the cpcfantasyfootball repo.",
+  "name": "4ag-local",
+  "description": "The Claude Code marketplace of the 4thandgoal repo.",
   "owner": { "name": "Brian Kwon" },
   "plugins": [
     {
-      "name": "cpc",
+      "name": "4ag",
       "source": "./.claude/plugin",
-      "description": "The skills that know the flow, the tracker, and the check of the cpcfantasyfootball repo."
+      "description": "The skills that know the flow, the tracker, and the check of the 4thandgoal repo."
     }
   ]
 }

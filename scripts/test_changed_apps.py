@@ -43,7 +43,7 @@ def workspace(root: Path) -> None:
     site_member(root, "packages/waiver/site", "@cpc/waiver", ["@cpc/league"])
     python_member(root, "apps/pipeline", "cornerstone", ["cpc-facts", "cpc-waiver"])
     python_member(root, "apps/api", "cpc-api", ["cornerstone"])
-    site_member(root, "apps/site", "cpcfantasyfootball-site", ["@cpc/league", "@cpc/waiver"])
+    site_member(root, "apps/site", "4thandgoal-site", ["@cpc/league", "@cpc/waiver"])
 
 
 class TheAppSelection(unittest.TestCase):

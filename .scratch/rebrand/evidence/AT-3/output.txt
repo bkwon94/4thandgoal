@@ -1,0 +1,9 @@
+Spec worktree /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand at 434ba546.
+
+$ git grep -nE 'cpc:(plan|implement|review|to-spec|to-acceptance|to-tickets)' -- ':!.scratch' ':!docs/adr'
+[exit 1]
+
+$ git grep -nE 'cpc:(plan|implement|review|to-spec|to-acceptance|to-tickets)' origin/main -- ':!.scratch' ':!docs/adr' | wc -l
+      44
+[exit 0]
+

@@ -1,0 +1,18 @@
+Spec worktree /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand at 434ba546.
+
+$ git grep -c '@cpc/'  -- ':!.scratch' | awk -F: '{s+=$NF} END {print s}'
+608
+[exit 0]
+
+$ git grep -c 'cornerstone_api'  -- ':!.scratch' | awk -F: '{s+=$NF} END {print s}'
+127
+[exit 0]
+
+$ git grep -c '@cpc/' origin/main -- ':!.scratch' | awk -F: '{s+=$NF} END {print s}'
+608
+[exit 0]
+
+$ git grep -c 'cornerstone_api' origin/main -- ':!.scratch' | awk -F: '{s+=$NF} END {print s}'
+127
+[exit 0]
+

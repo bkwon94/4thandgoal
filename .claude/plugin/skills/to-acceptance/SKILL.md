@@ -1,6 +1,6 @@
 ---
 name: to-acceptance
-description: Write the acceptance tests AT-1, AT-2, and so on of one feature of this repo as .scratch/<feature>/ACCEPTANCE.md, each with its app and its evidence. Use after cpc:to-spec, before cpc:to-tickets.
+description: Write the acceptance tests AT-1, AT-2, and so on of one feature of this repo as .scratch/<feature>/ACCEPTANCE.md, each with its app and its evidence. Use after 4ag:to-spec, before 4ag:to-tickets.
 argument-hint: '<feature slug>'
 ---
 
@@ -11,7 +11,7 @@ Write the acceptance tests of one spec as `.scratch/<slug>/ACCEPTANCE.md`. An ac
 ## Before you start
 
 1. This skill calls no global skill. Check that `.scratch/<slug>/PRD.md` exists.
-2. If the spec is missing, stop. Tell Brian to run `cpc:to-spec <slug>` first.
+2. If the spec is missing, stop. Tell Brian to run `4ag:to-spec <slug>` first.
 3. Read the spec. Read this conversation for the example values, the limits, and the failure cases that Brian named.
 
 ## Steps
@@ -40,4 +40,4 @@ Only Brian changes an approved test. Show Brian each changed test. After Brian a
 
 ## The end
 
-Tell Brian that `cpc:to-tickets <slug>` is next.
+Tell Brian that `4ag:to-tickets <slug>` is next.

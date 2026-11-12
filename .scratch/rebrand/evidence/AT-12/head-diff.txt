@@ -1,0 +1,3 @@
+$ git diff --stat 6183edcb 434ba546
+ docs/agents/folder-move.md | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
