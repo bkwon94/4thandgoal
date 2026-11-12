@@ -203,16 +203,14 @@ def _leaders_trades(rid: int, page: dict) -> TopicAnswer:
     # A leader of Your team makes the fact. With none, the count of trades does.
     fact = (f"{mine[0][0]['player']}, {ordinal(mine[0][0]['rank'])} at {mine[0][1]}" if mine
             else f"{len(trades)} {'trade' if len(trades) == 1 else 'trades'} this week")
-    # The Topic has no block. Its text opens with a markdown list of the top scorer at each position, which the text
+    # The Topic has no block and no stats, because the stats row counts as a block. Its text opens with a markdown list of the top scorer at each position, which the text
     # block of the site draws as a list, so the list takes the place of the rows and the leaders show once.
     leaders = "\n".join(f"- **{group['position']}** {group['rows'][0]['player']}, "
                          f"{_points(group['rows'][0]['points'])}, {group['rows'][0]['team']}"
                          for group in page["leaders"] if group["rows"])
-    stats = [Stat(label="Trades", value=str(len(trades))),
-             Stat(label="Your leaders", value=str(len(mine)))]
     blurb = page["blurbs"].get("position_leaders")
     text = [part for part in (leaders, blurb) if part]
-    return TopicAnswer(topic="leaders_trades", fact=fact, stats=stats, text=text)
+    return TopicAnswer(topic="leaders_trades", fact=fact, text=text)
 
 
 def team_answers(rid: int, page: dict, rankings: dict | None, managers: dict | None,
