@@ -12,7 +12,7 @@ A decision ticket records a choice. It writes no product code. If you want to bu
 
 ## Before you start
 
-1. Check that these global skills are in the available skill list: `grilling`, `domain-modeling`, `mattpocock-skills:research`, `prototype`. The `cpc` skills ship with this skill, so do not check them.
+1. Check that these global skills are in the available skill list: `grilling`, `domain-modeling`, `research`, `prototype`. The `cpc` skills ship with this skill, so do not check them.
 2. If one is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps.
 3. Read `docs/agents/issue-tracker.md` and the Workflow section of `GLOSSARY.md`.
 
@@ -32,7 +32,7 @@ Grill and prototype tickets need Brian. Never answer a question for Brian. Wait 
 
 The outcome statement has two parts: what the feature does, and the goal that it serves. If one part is missing, ask for it first.
 
-1. Call the Skill tool for `grilling` and for `domain-modeling`. Settle the destination with Brian: the one spec this feature ends in.
+1. Load the skill `grilling` and the skill `domain-modeling`. Settle the destination with Brian: the one spec this feature ends in.
 2. Grill again, breadth first. Ask which app the feature touches: `site`, `pipeline`, or both. Ask which seam moves. Ask which term conflicts with `GLOSSARY.md`.
 3. Choose a feature slug of two to four lowercase words with hyphens. Check that `.scratch/<slug>/` does not exist.
 4. Make the Spec branch `<slug>` from `main` in its own worktree. Run this in the main checkout: `git worktree add .claude/worktrees/<slug> -b <slug> main`. Write every file of the feature there.
@@ -48,9 +48,9 @@ The outcome statement has two parts: what the feature does, and the goal that it
 2. Choose the decision ticket that Brian names. Otherwise choose the lowest open number whose blockers are done. A `spec` ticket comes last.
 3. If no ticket is open except `spec` tickets, go to [`build-out.md`](build-out.md).
 4. Clear the ticket by its kind:
-   - `grill`: call the Skill tool for `grilling` and for `domain-modeling`.
-   - `research`: call the Skill tool for `mattpocock-skills:research`. Tell it to write its findings beside the ticket, at `.scratch/<slug>/decisions/<NN>-research-<slug>.notes.md`.
-   - `prototype`: call the Skill tool for `prototype`. Record what the prototype answered, then delete the prototype code.
+   - `grill`: load the skill `grilling` and the skill `domain-modeling`.
+   - `research`: load the skill `research`. Tell it to write its findings beside the ticket, at `.scratch/<slug>/decisions/<NN>-research-<slug>.notes.md`.
+   - `prototype`: load the skill `prototype`. Record what the prototype answered, then delete the prototype code.
 5. Write the decision under `## Decision` of the ticket. Set its Status to `done`.
 6. Move the fog item from NOT YET SPECIFIED to DECISIONS SO FAR on the map, as one line with the gist and the ticket path.
 7. If the decision shows new fog, add it to the map and add a decision ticket for it. If it shows work past the destination, add it to OUT OF SCOPE with the reason.
