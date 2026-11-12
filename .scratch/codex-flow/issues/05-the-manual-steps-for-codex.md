@@ -8,7 +8,7 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-20 and AT-21.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The doc lists the four steps, each with exact values and a check.
 - [x] `gh api` shows a ruleset on `main` that needs `verdict`, with the Repository admin role on the bypass list.

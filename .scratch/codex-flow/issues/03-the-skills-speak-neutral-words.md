@@ -8,7 +8,7 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-7, AT-8, AT-13, AT-14, a
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A grep for "Skill tool" and "Agent tool" in the skills prints nothing.
 - [x] The section "The harness words" maps each phrase, the strong model, and the `research` name for both harnesses.
