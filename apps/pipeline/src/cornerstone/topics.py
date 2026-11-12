@@ -8,7 +8,15 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from cornerstone.topic_blocks import TopicBlock, last_matchup_block, next_matchup_block, rank_movers_block, recap_block
+from cornerstone.topic_blocks import (
+    TopicBlock,
+    ladder_block,
+    last_matchup_block,
+    next_matchup_block,
+    rank_movers_block,
+    recap_block,
+    schedule_block,
+)
 from league.files import write_bytes_atomic
 from league.models import Week
 from league.numbers import ordinal
@@ -162,10 +170,10 @@ def _playoff_race(rid: int, ranked: dict | None, page: dict) -> TopicAnswer | No
     near = with_odds[max(at - 1, 0):at + 2]
     rows = [Row(label=r["name"], value=f"{r['odds']['playoff']}%", note=f"Seed {r['odds']['seed']}",
                 roster_id=r["roster_id"], you=r is row) for r in near]
-    return TopicAnswer(topic="playoff_race", fact=fact, stats=stats, rows=rows)
+    return TopicAnswer(topic="playoff_race", fact=fact, stats=stats, rows=rows, block=ladder_block(rid, page, ranked))
 
 
-def _your_season(rid: int, page: dict, managers: dict | None) -> TopicAnswer | None:
+def _your_season(rid: int, page: dict, managers: dict | None, league_week: Week | None) -> TopicAnswer | None:
     entry = next((t for t in page["table"] if t["team"]["roster_id"] == rid), None)
     if entry is None:
         return None
@@ -184,7 +192,7 @@ def _your_season(rid: int, page: dict, managers: dict | None) -> TopicAnswer | N
         rows = [Row(label=p["name"], value=_points(p["points"]), note=f"{p['position']} · {p['per_game']:g} a game")
                 for p in manager["top_performers"][:3]]
     return TopicAnswer(topic="your_season", fact=f"{record}, {ordinal(standing['rank'])} of {count}", stats=stats,
-                       rows=rows, text=text)
+                       rows=rows, text=text, block=schedule_block(rid, page, league_week) if league_week else None)
 
 
 def _leaders_trades(rid: int, page: dict) -> TopicAnswer:
@@ -207,10 +215,10 @@ def _leaders_trades(rid: int, page: dict) -> TopicAnswer:
 def team_answers(rid: int, page: dict, rankings: dict | None, managers: dict | None,
                  league_week: Week | None = None) -> list[TopicAnswer]:
     """The league Answers of one team. A Topic with no data in the build, such as no next game, has no Answer.
-    The matchup cards read the lineups of the parsed raw `league_week`. With None, those Topics have no block."""
+    The matchup cards and the schedule strip read the parsed raw `league_week`. With None, those Topics have no block."""
     ranked = _rankings_week(rankings, page["week"])
     answers = [_week_recap(rid, page), _last_matchup(rid, page, league_week), _next_matchup(rid, page, league_week),
-               _power_rankings(rid, ranked), _playoff_race(rid, ranked, page), _your_season(rid, page, managers),
+               _power_rankings(rid, ranked), _playoff_race(rid, ranked, page), _your_season(rid, page, managers, league_week),
                _leaders_trades(rid, page)]
     return [answer for answer in answers if answer is not None]
 

@@ -10,7 +10,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-27, AT-28, AT-40.
 
 **Status:** ready-for-agent
 
-- [ ] The week 9 build of cpc writes a ladder `block` with 12 rows and the playoff line after the 6th (AT-27).
-- [ ] The week 9 build writes a schedule `block` for weeks 10 to 14 (AT-28).
-- [ ] Every league Topic except Position leaders and recent trades has a `block` in both leagues (AT-40).
+- [x] The week 9 build of cpc writes a ladder `block` with 12 rows and the playoff line after the 6th (AT-27).
+- [x] The week 9 build writes a schedule `block` for weeks 10 to 14 (AT-28).
+- [x] Every league Topic except Position leaders and recent trades has a `block` in both leagues (AT-40).
 - [ ] Site screenshots show the ladder and the strip (AT-27, AT-28).

@@ -96,8 +96,45 @@ class RankMoversBlock(BaseModel):
     rows: list[RankMover]
 
 
+class LadderRow(BaseModel):
+    """One team of the standings ladder: its standing, its record, and its playoff odds in percent. The odds are None
+    when the week has no odds for the team."""
+    roster_id: int
+    name: str
+    rank: int
+    record: str
+    odds: int | None
+    you: bool = False
+
+
+class LadderBlock(BaseModel):
+    """The standings ladder of Playoff race: one row per team, by standing. The playoff line sits after the row of
+    rank `playoff_teams`, the playoff spots of `settings.playoff_teams` in the league file."""
+    kind: Literal["ladder"] = "ladder"
+    playoff_teams: int
+    rows: list[LadderRow]
+
+
+class ScheduleRow(BaseModel):
+    """One week left of the schedule strip: the opponent of that week with its standing and its record now."""
+    week: int
+    roster_id: int
+    opponent: str
+    rank: int
+    record: str
+
+
+class ScheduleBlock(BaseModel):
+    """The schedule strip of Your season: one row per week left in the regular season. The site draws the ranks of
+    the opponents as a step path against the playoff line, the row of rank `playoff_teams`, out of `teams`."""
+    kind: Literal["schedule"] = "schedule"
+    playoff_teams: int
+    teams: int
+    rows: list[ScheduleRow]
+
+
 # The block of one league Topic. A new kind joins this union with its model above and its builder below.
-TopicBlock = RecapBlock | MatchupBlock | RankMoversBlock
+TopicBlock = RecapBlock | MatchupBlock | RankMoversBlock | LadderBlock | ScheduleBlock
 
 # A sentence ends at a stop followed by a space and a capital letter, so "III" or "49.5" never cut it short.
 _SENTENCE_END = re.compile(r"(?<=[.!?])\s+(?=[A-Z])")
@@ -210,3 +247,38 @@ def rank_movers_block(rid: int, ranked: dict) -> RankMoversBlock:
         RankMover(roster_id=r["roster_id"], name=r["name"], rank=r["rank"], move=r.get("movement"),
                   you=r["roster_id"] == rid)
         for r in sorted(ranked["rows"], key=lambda r: r["rank"])])
+
+
+def ladder_block(rid: int, page: dict, ranked: dict | None) -> LadderBlock:
+    """The standings ladder of one team, from the table of page.json and the odds of the week of rankings.json.
+    The table marks each team over the playoff line with `in_playoffs`, from `settings.playoff_teams`, so their count
+    is the playoff line."""
+    odds = {r["roster_id"]: r["odds"]["playoff"] for r in (ranked or {}).get("rows", []) if r.get("odds")}
+    standings = sorted((entry["standing"] for entry in page["table"]), key=lambda s: s["rank"])
+    names = {entry["team"]["roster_id"]: entry["team"]["name"] for entry in page["table"]}
+    return LadderBlock(
+        playoff_teams=sum(1 for s in standings if s["in_playoffs"]),
+        rows=[LadderRow(roster_id=s["roster_id"], name=names[s["roster_id"]], rank=s["rank"],
+                        record=f"{s['wins']}-{s['losses']}", odds=odds.get(s["roster_id"]), you=s["roster_id"] == rid)
+              for s in standings])
+
+
+def schedule_block(rid: int, page: dict, week: Week) -> ScheduleBlock | None:
+    """The schedule strip of one team, from the pairs of the next week and of the weeks after it in the parsed raw
+    `week`, and the standings of the table of page.json. A week with no game for the team, such as a bye, has no row.
+    None when no week is left."""
+    standings = {entry["team"]["roster_id"]: entry["standing"] for entry in page["table"]}
+    weeks = {week.week + 1: week.next_matchups, **week.schedule}
+    rows = []
+    for number in sorted(weeks):
+        pair = next((p for p in weeks[number] if rid in p), None)
+        if pair is None:
+            continue
+        other = pair[1] if pair[0] == rid else pair[0]
+        standing = standings[other]
+        rows.append(ScheduleRow(week=number, roster_id=other, opponent=week.teams[other].name, rank=standing["rank"],
+                                record=f"{standing['wins']}-{standing['losses']}"))
+    if not rows:
+        return None
+    return ScheduleBlock(playoff_teams=sum(1 for s in standings.values() if s["in_playoffs"]), teams=len(standings),
+                         rows=rows)
