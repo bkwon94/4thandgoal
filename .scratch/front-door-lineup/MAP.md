@@ -16,10 +16,10 @@ One spec: a live Start or sit Topic that gives a manager a lineup with each Swap
 - On the front door, the dock and the week pill leave. A header menu button opens a sheet of page rows, and the Suggestions row and the ask box sit on one flush bottom surface. Other pages keep the dock. `decisions/10-prototype-nav-place.md`.
 - The nine other blocks take "Rows and marks": the Ledger rows of decision 03, each block with one small mark, such as a tug bar, a step path, odds bars, bars from a center line, or a dot matrix. `decisions/04-prototype-topic-blocks.md`.
 - One block per Topic Answer, with optional text. Fifteen blocks: a waiver list and a sell list join the thirteen. The weekly build writes the blocks of six league Topics, and the API builds the rest, with the next matchup card live. The NFL game card shows only in a free answer. `decisions/05-grill-which-topic-shows-which-block.md`.
+- The win odds of one game come live from the projection gap and the league spread. The Lean closes the trade card. The slot rank bars show QB, RB, WR, and TE. The median tick shows only in a league that plays the median. `decisions/11-grill-block-data-gaps.md`.
 
 ## NOT YET SPECIFIED
 
-- Where do the win odds of one game, the trade grade, the FLEX and DEF ranks, and the median of norcal come from? `decisions/11-grill-block-data-gaps.md`.
 - What does Jev answer for a Swap? `decisions/07-spec-jev-swap-question.md`.
 - What is the Suggestion fact of Start or sit? `decisions/08-spec-start-sit-suggestion-fact.md`.
 - Which marks of markdown does the text block allow? `decisions/09-spec-text-block-marks.md`.
@@ -30,4 +30,5 @@ One spec: a live Start or sit Topic that gives a manager a lineup with each Swap
 - A second projection source, such as FantasyPros. It is a new feed and a separate decision.
 - A backtest of the free judgment over weeks 2 to 9. Brian judges by feel. Run it if the feel turns bad.
 - Betting lines and weather. They are not in our data.
+- A DEF rank in the roster grade. The manager pages and the grade weights use the grade, so the change belongs to its own spec.
 - A season score trend chart and a playoff odds bar. No Topic needs them yet.
