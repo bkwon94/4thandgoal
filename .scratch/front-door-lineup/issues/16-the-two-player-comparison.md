@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-16, AT-17, AT-18.
 
 **Blocked by:** 14
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] "Start <A> or <B>?" gives the comparison block and the pick (AT-16).
 - [x] A question with three WRs gives the lineup block for the WR and FLEX slots (AT-17).
