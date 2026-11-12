@@ -6,7 +6,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { type CSSProperties, Fragment, useEffect, useRef, useState } from "react";
+import { type CSSProperties, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -63,6 +63,8 @@ export function FrontDoor({
   const [day, setDay] = useState<number | null>(null);
   const [opened, setOpened] = useState<Record<string, string>>({});
   const [thread, setThread] = useState<Entry[]>([]);
+  // One source for the life of the page, so the live card of Your next matchup asks the API once per card.
+  const live = useMemo(() => ({ target: askTarget, passphrase: getPassphrase }), [askTarget]);
   const nextId = useRef(0);
   const [moreOpen, setMoreOpen] = useState(false);
   const newest = useRef<HTMLElement>(null);
@@ -400,6 +402,7 @@ export function FrontDoor({
                   answers={answers}
                   avatars={avatars}
                   newest={newest}
+                  live={live}
                   renderOther={(entry, ref, morph) => {
                     switch (entry.kind) {
                       case "pending":

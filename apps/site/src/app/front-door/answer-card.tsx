@@ -10,15 +10,19 @@ import { ArrowRightIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import type { TopicRow } from "@/lib/data/topics-schema";
-import { SLOW, VERY_SLOW, bubbleIn, fadeIn, riseIn } from "./motion";
+import { type LiveSource, readTimeLine, useLiveMatchup } from "./live-matchup";
+import { FAST, SLOW, VERY_SLOW, bubbleIn, fadeIn, riseIn } from "./motion";
 import { type AnswerBlock, BlockView } from "./answer-block";
 import { TextBlock } from "./text-block";
 
 export const AnswerCard = forwardRef<
   HTMLElement,
-  { name: string; answer: DoorAnswer; avatars: Record<number, string | null>; morph?: string }
->(function AnswerCard({ name, answer, avatars, morph }, ref) {
+  { name: string; answer: DoorAnswer; team: number; avatars: Record<number, string | null>; morph?: string; live?: LiveSource }
+>(function AnswerCard({ name, answer, team, avatars, morph, live }, ref) {
     const off = useMotionOff();
+    // Your next matchup swaps the card of the weekly build for the live card of the API when it comes. The text and the
+    // link stay from topics.json.
+    const card = useLiveMatchup(live, answer.topic, team);
     // A tapped Suggestion shares its id with the question, so the chip morphs into the question on the shared layout
     // spring. The question then only fades, because the morph is its move. With motion off it only fades in.
     const shared = bubbleIn(off, morph);
@@ -28,7 +32,12 @@ export const AnswerCard = forwardRef<
         <motion.p className="m-0 max-w-[85%] self-end rounded-hero rounded-br-letter bg-ink px-sp-4 py-sp-2 text-body leading-tight font-semibold text-card" {...shared}>
           {name}
         </motion.p>
-        <AnswerBody answer={answer} avatars={avatars} />
+        <AnswerBody
+          answer={card ? { ...answer, block: card } : answer}
+          avatars={avatars}
+          asOf={card?.read_at ? readTimeLine(card.read_at) : undefined}
+          swap={card?.read_at}
+        />
       </article>
     );
 });
@@ -40,6 +49,7 @@ export function AnswerBody({
   answer,
   avatars,
   asOf,
+  swap,
   children,
 }: {
   // The body reads only the parts of an Answer that it shows, so a personal Answer from the API fits it too.
@@ -47,6 +57,8 @@ export function AnswerBody({
   avatars: Record<number, string | null>;
   // A quiet label under the stats that says when the numbers are from, such as "as of today".
   asOf?: string;
+  // The key of a block that takes the place of the block shown first, such as the time of the read of a live card.
+  swap?: string;
   children?: ReactNode;
 }) {
   const off = useMotionOff();
@@ -61,7 +73,18 @@ export function AnswerBody({
       animate={off ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={fadeIn(SLOW, 0.08)}
     >
-      {block && <BlockView block={block} live />}
+      {block && (
+        // A swapped block changes its values in place, so it cross-blurs in at rest, with no second entrance of its
+        // parts. With motion off it only fades. The first block shows as it is, because the card itself settles in.
+        <motion.div
+          key={swap ?? "first"}
+          initial={swap === undefined ? false : off ? { opacity: 0.4 } : { opacity: 0.4, filter: "blur(2px)" }}
+          animate={off ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)" }}
+          transition={fadeIn(FAST)}
+        >
+          <BlockView block={block} live={swap === undefined} />
+        </motion.div>
+      )}
       {stats.length > 0 && (
         // Each stat takes the width of its own value, so three short stats share one row on a phone and a long value
         // such as "12th of 12" wraps to the next row whole.

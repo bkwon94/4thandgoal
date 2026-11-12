@@ -7,6 +7,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import liveStream from "./front-door/fixtures/next-matchup-stream.json";
 
 /* Bo Girds, the team of the acceptance tests, in each league. */
 const BO_GIRDS = { cpc: 6, norcal: 7 } as const;
@@ -89,6 +90,40 @@ describe("the matchup card", () => {
     expect(within(card).getByText("155.38")).toBeTruthy();
     const rows = within(within(card).getByRole("list", { name: "Slot by slot" })).getAllByRole("listitem");
     expect(rows.filter((row) => row.getAttribute("data-slot") === "FLEX")).toHaveLength(3);
+  });
+});
+
+/* The stream of the live card, as the API sent it over the live Sleeper week 10 of cpc. */
+const sse = (parts: unknown[]) => parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
+
+describe("the live card of Your next matchup", () => {
+  it("swaps in the projected totals and the win odds of the live week, with the time of the read (AT-25)", async () => {
+    const fetchStub = vi.fn(async (url: string) =>
+      String(url).endsWith("/next-matchup") ? new Response(sse(liveStream), { headers: { "Content-Type": "text/event-stream" } }) : new Response("", { status: 404 }),
+    );
+    vi.stubGlobal("fetch", fetchStub);
+    localStorage.setItem("cpc.passphrase", "cornerstone-test");
+    const Door = await doorOf("cpc");
+    render(<Door />);
+    await openBlock("Your next matchup", "matchup");
+    const answer = screen.getByRole("article", { name: "Your next matchup" });
+    await waitFor(() => expect(answer.textContent).toContain("121.7"));
+    const card = answer.querySelector<HTMLElement>('[data-block="matchup"]')!;
+    expect(card.textContent).toContain("92.9");
+    expect(within(card).getByRole("img", { name: "Your win odds, 82%" })).toBeTruthy();
+    expect(answer.textContent).toContain("Live projections as of");
+    const [url, init] = fetchStub.mock.calls.find(([each]) => String(each).endsWith("/next-matchup"))! as unknown as [string, RequestInit];
+    expect(url).toMatch(/\/clients\/cpc\/next-matchup$/);
+    expect(JSON.parse(String(init.body))).toEqual({ roster_id: BO_GIRDS.cpc });
+  });
+
+  it("keeps the card of the weekly build when the API sends no live card", async () => {
+    localStorage.setItem("cpc.passphrase", "cornerstone-test");
+    const Door = await doorOf("cpc");
+    render(<Door />);
+    const card = await openBlock("Your next matchup", "matchup");
+    expect(card.textContent).toContain("The Blue Tent");
+    expect(screen.getByRole("article", { name: "Your next matchup" }).textContent).not.toContain("Live projections");
   });
 });
 

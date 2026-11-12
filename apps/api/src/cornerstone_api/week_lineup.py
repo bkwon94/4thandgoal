@@ -82,6 +82,12 @@ class WeekLineup:
         """The sum of the projections of the starters."""
         return sum(row.player.projection or 0.0 for row in self.rows if row.player is not None)
 
+    @property
+    def shown_total(self) -> float:
+        """The sum of the projections that the rows show, each to one decimal, so a reader who adds the rows gets the
+        total of the header. The block, the facts of Claude, and the live matchup card all show this total."""
+        return round(sum(round(row.player.projection or 0.0, 1) for row in self.rows if row.player is not None), 1)
+
 
 def score(stats: dict[str, float], scoring: dict[str, float]) -> float:
     """The points of a stat line in the scoring of the league: each stat times its points, summed."""
