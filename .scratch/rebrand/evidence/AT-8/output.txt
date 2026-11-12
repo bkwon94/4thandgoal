@@ -1,0 +1,75 @@
+Worktree: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand-evidence, detached at 34477b17. pipefail is on, so each [exit] line is the exit code of make.
+scripts/ has no Makefile. The root target runs its tests in the section '==> scripts: check-fast'.
+
+$ make check-fast 2>&1 | grep -E '^==>|Ran [0-9]+ tests|^OK|FAILED|passed|failed|errors'
+==> scripts: check-fast
+Ran 45 tests in 0.914s
+OK
+==> site: check-fast
+ Test Files  131 passed (131)
+      Tests  1334 passed (1334)
+==> pipeline: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+49 passed in 3.38s
+==> api: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+5 passed in 0.22s
+==> packages/analyzer: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+30 passed in 2.43s
+==> packages/design: check-fast
+==> packages/eggs: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+37 passed in 0.47s
+==> packages/facts: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+15 passed in 1.44s
+==> packages/league: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+11 passed in 0.26s
+==> packages/managers: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+3 passed in 0.01s
+==> packages/midseason: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+132 passed in 1.64s
+==> packages/rankings: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+9 passed in 0.13s
+==> packages/sim: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+15 passed in 0.48s
+==> packages/waiver: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+67 passed, 1 deselected in 7.37s
+==> packages/week: check-fast
+All checks passed!
+0 errors, 0 warnings, 0 informations
+7 passed in 1.00s
+[exit 0]
+
+$ make -C apps/pipeline check-fast 2>&1 | tail -4
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cornerstone pytest -q tests/test_layers.py tests/test_rule_client.py tests/test_rule_ports.py tests/test_rule_publish.py tests/test_rule_readmes.py tests/test_rule_suppressions.py tests/test_rule_tracker.py
+.................................................                        [100%]
+49 passed in 2.40s
+[exit 0]
+
+$ make -C apps/api check-fast 2>&1 | tail -4
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-api pytest -q tests/test_rule_api.py
+.....                                                                    [100%]
+5 passed in 0.13s
+[exit 0]
+

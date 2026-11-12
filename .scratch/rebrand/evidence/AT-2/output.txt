@@ -1,0 +1,18 @@
+Spec worktree /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand at 434ba546.
+
+$ cat .claude/settings.json
+{
+  "extraKnownMarketplaces": {
+    "4ag-local": {
+      "source": {
+        "source": "directory",
+        "path": "./"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "4ag@4ag-local": true
+  }
+}
+[exit 0]
+

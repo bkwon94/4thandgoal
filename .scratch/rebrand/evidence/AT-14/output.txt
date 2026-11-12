@@ -1,0 +1,14 @@
+Spec worktree /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand at 434ba546.
+
+$ git grep -cF '4thandgoal.app' -- ':!.scratch' | awk -F: '{s+=$2} END {print s}'
+39
+[exit 0]
+
+$ git grep -cF '4thandgoal.app' origin/main -- ':!.scratch' | awk -F: '{s+=$NF} END {print s}'
+39
+[exit 0]
+
+$ grep -n '^app' apps/api/fly.toml
+5:app = "cpcfantasy-api"
+[exit 0]
+

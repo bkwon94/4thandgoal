@@ -1,0 +1,5 @@
+Spec worktree /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand at 434ba546.
+
+$ git diff origin/main --stat -- apps/site/src packages clients apps/api/src apps/pipeline/src
+[exit 0]
+

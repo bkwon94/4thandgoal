@@ -1,0 +1,15 @@
+Spec worktree /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand at 434ba546.
+
+$ grep -oE '4ag:(plan|to-spec|to-acceptance|to-tickets|implement|review)' CLAUDE.md | sort -u
+4ag:implement
+4ag:plan
+4ag:review
+4ag:to-acceptance
+4ag:to-spec
+4ag:to-tickets
+[exit 0]
+
+$ head -1 CLAUDE.md
+# 4thandgoal
+[exit 0]
+

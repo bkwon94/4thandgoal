@@ -1,0 +1,28 @@
+Worktree: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand-evidence, detached at 34477b17. Each [exit] line is the exit code of the whole pipe (pipefail is on).
+
+$ grep -n 'AGENT_MARKER =' scripts/verdict.py
+28:AGENT_MARKER = "<!-- cpc:agent -->"
+[exit 0]
+
+$ grep -n '4ag:review' scripts/verdict.py
+218:                f"fix {test_id} with `4ag:review`. Brian clears it with a newer Test verdicts comment with no FAIL "
+[exit 0]
+
+$ git diff origin/main --stat -- scripts/fixtures/verdict
+[exit 0]
+
+$ python3 -B -m unittest discover -s scripts -p 'test_verdict.py' -v 2>&1 | tail -12
+test_all_pass_passes (test_verdict.TheVerdictRule.test_all_pass_passes) ... ok
+test_an_unknown_test_fails (test_verdict.TheVerdictRule.test_an_unknown_test_fails) ... ok
+test_no_verdicts_file_fails (test_verdict.TheVerdictRule.test_no_verdicts_file_fails) ... ok
+test_one_blocked_fails (test_verdict.TheVerdictRule.test_one_blocked_fails) ... ok
+test_one_fail_fails (test_verdict.TheVerdictRule.test_one_fail_fails) ... ok
+test_two_lines_for_one_test_fail (test_verdict.TheVerdictRule.test_two_lines_for_one_test_fail) ... ok
+test_verdicts_with_no_heading_fail (test_verdict.TheVerdictRule.test_verdicts_with_no_heading_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.540s
+
+OK
+[exit 0]
+
