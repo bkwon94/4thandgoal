@@ -1,0 +1,13 @@
+Worktree: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand-evidence
+
+$ grep -n 'repos/' apps/pipeline/bin/cornerstone-build
+[exit 1]
+
+$ grep -n '^REPO_DIR=' apps/pipeline/bin/cornerstone-build
+50:REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+[exit 0]
+
+$ bash -c "$(grep '^REPO_DIR=' apps/pipeline/bin/cornerstone-build); echo \$REPO_DIR" /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand-evidence/apps/pipeline/bin/cornerstone-build
+/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand-evidence/apps/pipeline
+[exit 0]
+

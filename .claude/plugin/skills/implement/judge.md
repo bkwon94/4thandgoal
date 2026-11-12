@@ -1,6 +1,6 @@
 # The Judge
 
-Stage 4 of `cpc:implement`. A fresh subagent, the Judge, gives the Test verdict of each acceptance test `AT-<n>`. It writes `.scratch/<slug>/VERDICTS.md`. The check `verdict` reads that file (ADR 0026).
+Stage 4 of `4ag:implement`. A fresh subagent, the Judge, gives the Test verdict of each acceptance test `AT-<n>`. It writes `.scratch/<slug>/VERDICTS.md`. The check `verdict` reads that file (ADR 0026).
 
 The orchestrator built the work, so it never writes a Test verdict of its own in `VERDICTS.md`. It only copies the lines of the Judge. The Judge did not build the work. It reads only the acceptance tests and the evidence.
 
@@ -122,7 +122,7 @@ After the fix round, a test that does not have PASS stops stage 4. If the Judge 
 2. Open no PR.
 3. Tell Brian the test and the reason of the Judge, quoted from `VERDICTS.md`.
 
-Never change `ACCEPTANCE.md` to make a test pass. An acceptance test changes only with `cpc:to-acceptance` and Brian.
+Never change `ACCEPTANCE.md` to make a test pass. An acceptance test changes only with `4ag:to-acceptance` and Brian.
 
 A test that `evidence.md` skipped, because its ticket is `blocked`, gets no fix round. Its FAIL stays until the ticket builds. Then [`pr.md`](pr.md#a-second-start) runs the Judge on it.
 

@@ -1,0 +1,39 @@
+Shell: zsh 5.9. Folder: /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/b81630b7-b6f0-41b3-9090-ce5e273495bf/scratchpad/at12b.
+The repair command is the step 4 command of docs/agents/folder-move.md at 6183edcb. Only the folder names differ: old-name for cpcfantasyfootball, new-name for 4thandgoal.
+
+$ git clone -q /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand old-name
+[exit 0]
+
+$ git -C old-name worktree add -q .claude/worktrees/wt-a -b wt-a
+[exit 0]
+
+$ git -C old-name worktree list
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/b81630b7-b6f0-41b3-9090-ce5e273495bf/scratchpad/at12b/old-name                         6183edcb [rebrand]
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/b81630b7-b6f0-41b3-9090-ce5e273495bf/scratchpad/at12b/old-name/.claude/worktrees/wt-a  6183edcb [wt-a]
+[exit 0]
+
+$ mv old-name new-name
+[exit 0]
+
+$ git -C new-name worktree list
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/b81630b7-b6f0-41b3-9090-ce5e273495bf/scratchpad/at12b/new-name                         6183edcb [rebrand]
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/b81630b7-b6f0-41b3-9090-ce5e273495bf/scratchpad/at12b/old-name/.claude/worktrees/wt-a  6183edcb [wt-a] prunable
+[exit 0]
+
+$ cd new-name && { other=(${(f)"$(git worktree list --porcelain | awk '/^worktree /{print $2}' | grep -v -e /new-name -e /old-name)"}); git worktree repair .claude/worktrees/*(N) $other; }; cd ..
+repair: gitdir incorrect: .git/worktrees/wt-a/gitdir
+repair: .git file broken: /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/b81630b7-b6f0-41b3-9090-ce5e273495bf/scratchpad/at12b/new-name/.claude/worktrees/wt-a
+[exit 0]
+
+$ git -C new-name worktree list
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/b81630b7-b6f0-41b3-9090-ce5e273495bf/scratchpad/at12b/new-name                         6183edcb [rebrand]
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/b81630b7-b6f0-41b3-9090-ce5e273495bf/scratchpad/at12b/new-name/.claude/worktrees/wt-a  6183edcb [wt-a]
+[exit 0]
+
+$ git -C new-name/.claude/worktrees/wt-a status
+On branch wt-a
+nothing to commit, working tree clean
+[exit 0]
+
+$ test -e <scratchpad>/at12b; echo $?
+1  (1 means the rehearsal folder is gone)

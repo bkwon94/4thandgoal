@@ -1,6 +1,6 @@
 ---
 name: to-tickets
-description: Break the spec of one feature of this repo into tracer-bullet tickets at .scratch/<feature>/issues/<NN>-<slug>.md, and add its row to docs/agents/state.md. Use after cpc:to-acceptance.
+description: Break the spec of one feature of this repo into tracer-bullet tickets at .scratch/<feature>/issues/<NN>-<slug>.md, and add its row to docs/agents/state.md. Use after 4ag:to-acceptance.
 argument-hint: '<feature slug>'
 ---
 
@@ -11,7 +11,7 @@ Break one spec into tickets at `.scratch/<slug>/issues/<NN>-<slug>.md`, and add 
 ## Before you start
 
 1. Check that the skill `to-tickets` is in the available skill list. If it is missing, stop. Tell Brian its name. Do not guess its steps.
-2. Check that `.scratch/<slug>/PRD.md` and `.scratch/<slug>/ACCEPTANCE.md` exist. If one is missing, stop. Name the skill that writes it: `cpc:to-spec` or `cpc:to-acceptance`.
+2. Check that `.scratch/<slug>/PRD.md` and `.scratch/<slug>/ACCEPTANCE.md` exist. If one is missing, stop. Name the skill that writes it: `4ag:to-spec` or `4ag:to-acceptance`.
 3. Read both files, `docs/agents/issue-tracker.md`, and `docs/agents/state.md`.
 
 ## Steps

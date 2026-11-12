@@ -215,7 +215,7 @@ def brian_fails(comment: str | None, comment_path: str = "the Test verdicts comm
             test_id, word = f"AT-{match.group(1)}", match.group(2).upper()
             offenses.append(Offense(
                 comment_path, number, "verdict/brian-fail", f"{test_id} has {word} from Brian.",
-                f"fix {test_id} with `cpc:review`. Brian clears it with a newer Test verdicts comment with no FAIL "
+                f"fix {test_id} with `4ag:review`. Brian clears it with a newer Test verdicts comment with no FAIL "
                 f"for {test_id}.",
             ))
     return offenses

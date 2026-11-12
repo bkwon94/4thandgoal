@@ -1,0 +1,39 @@
+Spec worktree /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand at 434ba546.
+
+$ git diff origin/main --stat -- docs/adr .scratch
+ .scratch/rebrand/ACCEPTANCE.md                     | 178 ++++++++++++++++
+ .scratch/rebrand/MAP.md                            |  37 ++++
+ .scratch/rebrand/PRD.md                            |  97 +++++++++
+ .../decisions/01-research-name-candidates.md       |  22 ++
+ .../decisions/01-research-name-candidates.notes.md |  70 ++++++
+ .../rebrand/decisions/02-grill-the-product-name.md |  20 ++
+ .../rebrand/decisions/03-research-the-cutover.md   |  24 +++
+ .../decisions/03-research-the-cutover.notes.md     | 235 +++++++++++++++++++++
+ .../rebrand/decisions/04-spec-the-old-domains.md   |  17 ++
+ .../rebrand/decisions/05-spec-the-plugin-name.md   |  21 ++
+ .scratch/rebrand/decisions/06-spec-rebrand.md      |  17 ++
+ .scratch/rebrand/decisions/07-grill-the-fly-app.md |  17 ++
+ .scratch/rebrand/issues/01-the-plugin-is-4ag.md    |  18 ++
+ .../issues/02-no-repo-file-names-the-old-folder.md |  18 ++
+ .../issues/03-the-runbook-of-the-folder-move.md    |  16 ++
+ 15 files changed, 807 insertions(+)
+[exit 0]
+
+$ git diff origin/main --name-only -- docs/adr .scratch
+.scratch/rebrand/ACCEPTANCE.md
+.scratch/rebrand/MAP.md
+.scratch/rebrand/PRD.md
+.scratch/rebrand/decisions/01-research-name-candidates.md
+.scratch/rebrand/decisions/01-research-name-candidates.notes.md
+.scratch/rebrand/decisions/02-grill-the-product-name.md
+.scratch/rebrand/decisions/03-research-the-cutover.md
+.scratch/rebrand/decisions/03-research-the-cutover.notes.md
+.scratch/rebrand/decisions/04-spec-the-old-domains.md
+.scratch/rebrand/decisions/05-spec-the-plugin-name.md
+.scratch/rebrand/decisions/06-spec-rebrand.md
+.scratch/rebrand/decisions/07-grill-the-fly-app.md
+.scratch/rebrand/issues/01-the-plugin-is-4ag.md
+.scratch/rebrand/issues/02-no-repo-file-names-the-old-folder.md
+.scratch/rebrand/issues/03-the-runbook-of-the-folder-move.md
+[exit 0]
+

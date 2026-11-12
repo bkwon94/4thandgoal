@@ -1,6 +1,6 @@
 # The map and the decision ticket
 
-The formats that `cpc:plan` writes. `docs/agents/issue-tracker.md` holds the paths. `GLOSSARY.md` holds the words.
+The formats that `4ag:plan` writes. `docs/agents/issue-tracker.md` holds the paths. `GLOSSARY.md` holds the words.
 
 ## The map
 
@@ -38,7 +38,7 @@ Choose the kind that clears the fog item at the lowest cost.
 - `grill`: Brian decides it in a conversation. This is the default kind.
 - `research`: a fact outside the repo decides it, such as an API, a library, or the Sleeper data.
 - `prototype`: Brian must see it or run it before the decision, such as a layout or a state model.
-- `spec`: the choice is small. The spec records it when `cpc:to-spec` writes the spec. It needs no session of its own.
+- `spec`: the choice is small. The spec records it when `4ag:to-spec` writes the spec. It needs no session of its own.
 
 ## The decision ticket
 

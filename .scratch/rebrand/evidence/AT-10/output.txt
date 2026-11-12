@@ -1,0 +1,10 @@
+Spec worktree /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand at 434ba546.
+
+$ plutil -lint apps/pipeline/launchagents/com.briankwon.cornerstone-weekly.plist
+apps/pipeline/launchagents/com.briankwon.cornerstone-weekly.plist: OK
+[exit 0]
+
+$ grep -n 'repos/' apps/pipeline/launchagents/com.briankwon.cornerstone-weekly.plist
+12:		<string>/Users/brian.kwon/repos/4thandgoal/apps/pipeline/bin/cornerstone-build</string>
+[exit 0]
+

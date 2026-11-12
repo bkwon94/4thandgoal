@@ -1,6 +1,6 @@
 # The evidence
 
-Stage 3 of `cpc:implement`. Record the evidence of each acceptance test `AT-<n>` of `.scratch/<slug>/ACCEPTANCE.md`. The evidence uses real data and a real build, with no mock (ADR 0020).
+Stage 3 of `4ag:implement`. Record the evidence of each acceptance test `AT-<n>` of `.scratch/<slug>/ACCEPTANCE.md`. The evidence uses real data and a real build, with no mock (ADR 0020).
 
 The evidence states what the instrument showed. It holds no PASS, no FAIL, and no BLOCKED. Only the Judge gives a Test verdict, in stage 4 (ADR 0026).
 

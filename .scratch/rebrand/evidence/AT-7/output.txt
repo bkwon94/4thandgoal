@@ -1,0 +1,21 @@
+Worktree: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/rebrand-evidence, detached at 434ba546. Each [exit] line is the exit code of the whole pipe (pipefail is on). 'env node' runs the node binary on the PATH, not a shell function of the same name.
+
+$ env node -p "require('./apps/site/package.json').name"
+4thandgoal-site
+[exit 0]
+
+$ (cd apps/site && pnpm check:fast) 2>&1 | tail -12
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ Test Files  131 passed (131)
+      Tests  1334 passed (1334)
+   Start at  20:32:24
+   Duration  143.16s (tests 71%, environment 20%, import 9%)
+
+    Isolate  131 workers spawned · ~493ms startup each (spawn + environment, per file)
+             at least ~31.77s faster with isolate: false — reuses workers across files instead of one per file
+
+[exit 0]
+
