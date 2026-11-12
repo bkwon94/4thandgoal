@@ -1,0 +1,84 @@
+{
+  "results": [
+    {
+      "id": "21821000",
+      "name": "needs-triage",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821001",
+      "name": "needs-info",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821002",
+      "name": "ready-for-agent",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821003",
+      "name": "ready-for-human",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821004",
+      "name": "in-progress",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821005",
+      "name": "in-review",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821006",
+      "name": "blocked",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821007",
+      "name": "wontfix",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821008",
+      "name": "decision",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821009",
+      "name": "site",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821010",
+      "name": "pipeline",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821011",
+      "name": "api",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "21821012",
+      "name": "phone",
+      "color": "charcoal",
+      "isFavorite": false
+    }
+  ],
+  "nextCursor": null,
+  "sharedLabels": []
+}
