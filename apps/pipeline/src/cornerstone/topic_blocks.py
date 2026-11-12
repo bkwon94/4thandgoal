@@ -165,7 +165,7 @@ def last_matchup_block(rid: int, week: Week) -> MatchupBlock | None:
 
 
 def _projected(rid: int, week: Week, projections: dict[str, float]) -> tuple[float, list[tuple[str, MatchupPlayer]]]:
-    """The projected total and the starters of the best lineup of one current roster by the projections of a week.
+    """The projected total and the starters of the Week lineup of one current roster by the projections of a week.
     A player with no projection that week, such as a player on his bye, counts 0, so a bench player takes his slot."""
     positions = week.rosters.get(rid, {})
     points = {pid: projections.get(pid) or 0.0 for pid in positions}
@@ -179,7 +179,7 @@ def _projected(rid: int, week: Week, projections: dict[str, float]) -> tuple[flo
 
 
 def next_matchup_block(rid: int, week: Week) -> MatchupBlock | None:
-    """The matchup card of the next game of one team, with the projected scores of the best lineup of each current
+    """The matchup card of the next game of one team, with the projected scores of the Week lineup of each current
     roster for the next week, from the parsed raw week. None when the team has no next game or the week has no
     projections. The weekly build knows no win odds."""
     pair = next((p for p in week.next_matchups if rid in p), None)
