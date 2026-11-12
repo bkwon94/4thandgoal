@@ -20,7 +20,7 @@ from test_api import CLIENT, HEADERS, _cpc, _here
 
 from cornerstone_api.app import create_app
 from cornerstone_api.personal_topics import LIVE_CACHE_SECONDS, TRENDING_CACHE_SECONDS, LiveCache
-from cornerstone_api.personal_wording import FACT_MEANINGS, INSTRUCTIONS
+from cornerstone_api.personal_wording import FACT_MEANINGS, INSTRUCTIONS, TOPIC_ASKS
 from cornerstone_api.settings import Settings
 from cornerstone_api.waiver_targets import TOP_BY_ADDS, TOP_BY_REST_PER_POSITION, TOP_BY_WEEK_PER_POSITION
 from league.jev_port import JevError, NoulQuestion
@@ -226,6 +226,12 @@ def test_the_check_reads_the_fact_meanings_of_the_instructions(settings, sources
     assert checks.states[0]["tool_results"]["meanings"] == FACT_MEANINGS
     assert {"hole", "can_play_now", "weak_starting_slots"} <= set(FACT_MEANINGS)
     assert all(meaning in INSTRUCTIONS for meaning in FACT_MEANINGS.values())
+
+
+def test_the_instructions_say_nothing_about_a_thing_the_facts_do_not_have():
+    # B2: the check failed "No Swap entries came with your lineup" at 0.14 to 0.70, so the Answer became the honest miss.
+    assert "Say nothing about a thing that the facts do not have" in INSTRUCTIONS
+    assert "If the lineup has no Swap, no Questionable starter, or no `locked` player, say nothing" in TOPIC_ASKS["start_sit"]
 
 
 def test_a_failed_check_logs_each_failed_sentence_with_its_noul(settings, sources, caplog):

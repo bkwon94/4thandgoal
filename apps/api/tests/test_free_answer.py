@@ -555,6 +555,11 @@ def test_the_instructions_ask_for_facts_only_with_no_advice_rating_or_opinion():
     assert "Give no advice, no rating, and no opinion word" in INSTRUCTIONS
 
 
+def test_the_instructions_say_nothing_about_a_thing_the_tool_results_do_not_have():
+    # B2: a typed start question got sentences such as "No Swap entries came with your lineup", and the check failed them.
+    assert "Never say that a lineup or a player has no swap, no injury status, or no lock" in INSTRUCTIONS
+
+
 def test_an_abbreviation_inside_a_name_ends_no_sentence():
     # B3: the split cut "Amon-Ra St. Brown" at "St.", and the check failed each half alone.
     text = ("Start Amon-Ra St. Brown if he is active. KC Concepcion Jr. and T.J. Hockenson sit. "

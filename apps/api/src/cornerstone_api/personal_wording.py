@@ -37,6 +37,7 @@ Rules:
 """ + "".join(f"- {meaning}\n" for meaning in FACT_MEANINGS.values()) + """\
 - Use the depth words of `depth_means`, not your own.
 - Never do math on the numbers, and never guess what the facts do not say.
+- Say nothing about a thing that the facts do not have, such as a Swap, an injury status, or a lock.
 - Never name a tool, a file, a grade formula, or a data source. Never use a heading, a table, or a list.
 - Call the person who runs another team "the manager" of that team.
 """
@@ -58,7 +59,8 @@ TOPIC_ASKS = {
                  "player of `cannot_play` with his status, and the `pivot` of each Questionable starter. A `locked` "
                  "player's game has started, so he cannot move. For each Swap, the entry with `swap_over`, write one "
                  "sentence that names both players by their full names and gives the reason from their two entries, "
-                 "such as the opponent or the stat line.",
+                 "such as the opponent or the stat line. If the lineup has no Swap, no Questionable starter, or no "
+                 "`locked` player, say nothing about that thing.",
 }
 
 # The two Nouls of the Jev read of one free agent, in one request with one state: the team need and his facts. An add
