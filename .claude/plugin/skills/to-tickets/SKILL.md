@@ -14,10 +14,7 @@ Run each call at the root of the checkout or worktree. A failed call prints a wa
 
 Start with the merge sweep: `python3 scripts/queue.py sweep`.
 
-Then complete the wait task of the tests and open the next one:
-
-1. `python3 scripts/queue.py wait <slug> approve-acceptance --done`
-2. `python3 scripts/queue.py wait <slug> approve-tickets`
+Then complete the wait task of the tests: `python3 scripts/queue.py wait <slug> approve-acceptance --done`.
 
 ## Before you start
 
@@ -35,7 +32,8 @@ Then complete the wait task of the tests and open the next one:
 6. Change the Tickets line of the PRD header to the ticket numbers, such as "Tickets: 01 to 04, in `issues/`."
 7. Stage the new files with `git add`. The tracker rules read only the tracked files.
 8. Run `make check-fast` at the root. It must pass before the commit.
-9. After Brian approves, run `python3 scripts/queue.py push <path>` for each ticket. Then run `python3 scripts/queue.py wait <slug> approve-tickets --done`.
+9. Present the written tickets to Brian for approval. Then run `python3 scripts/queue.py wait <slug> approve-tickets`.
+10. After Brian approves the tickets, run `python3 scripts/queue.py push <path>` for each ticket. Then run `python3 scripts/queue.py wait <slug> approve-tickets --done`.
 
 ## The ticket
 
