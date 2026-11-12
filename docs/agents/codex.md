@@ -9,10 +9,10 @@ Do the steps in order. Run the check of each step before the next one. If a chec
 
 Why: Codex loads the project `.codex/config.toml` only for a trusted project. Without it, the profile `4ag` does not apply.
 
-Brian did this on 2026-11-12. `~/.codex/config.toml` holds these lines:
+`~/.codex/config.toml` holds these lines. Write the key as the absolute path of the main checkout, such as the output of `cd ~/repos/4thandgoal && pwd`. Codex matches the key exactly and does not expand `~`.
 
 ```
-[projects."/Users/brian.kwon/repos/4thandgoal"]
+[projects."<absolute path of the main checkout>"]
 trust_level = "trusted"
 ```
 
@@ -25,20 +25,20 @@ Why: Codex in a linked worktree cannot write its own gitdir, so it cannot commit
 **Warning: never start Codex in a worktree.** A session there cannot commit, and `4ag:implement` stops mid-build.
 
 ```
-cd /Users/brian.kwon/repos/4thandgoal && codex
+cd ~/repos/4thandgoal && codex
 ```
 
-Check: run `pwd` before you start Codex. It prints `/Users/brian.kwon/repos/4thandgoal`.
+Check: run `pwd` before you start Codex. It prints `~/repos/4thandgoal`.
 
 To call a skill, type `$` and the part of the name after the colon, such as `$plan`, then choose `4ag:plan` from the list. The list does not match `$4ag`. A full `$4ag:plan` typed and sent also loads the skill.
 
 A running Codex keeps the skill list that it read at its start. Quit Codex and start it again after a change to `.agents/skills/` or to `~/.codex/config.toml`.
 
-## 3. Copy the config before the merge of this spec
+## 3. Copy the config before the merge of a spec that adds it
 
 Why: the main checkout on `main` does not have `.codex/config.toml` or `.agents/skills/` until a spec that adds them merges. Codex reads the config of the folder where it starts.
 
-Do this only before that merge. Run it at the main checkout root. Replace `<branch>` with the spec branch, such as `codex-flow`.
+Do this only before the merge of a spec that changes `.codex/config.toml`, `.agents/skills/`, or an `AGENTS.md`. Run it at the main checkout root. Replace `<branch>` with the spec branch, such as `codex-flow`.
 
 ```
 mkdir -p .codex .agents/skills
@@ -48,11 +48,13 @@ for s in plan to-spec to-acceptance to-tickets implement review; do ln -s ../../
 
 Check: `codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*:' | wc -l` prints 6. The output is JSON, so the pattern matches the escaped newline.
 
-Remove the copies when the spec merges. Step 6 does this.
+Remove the copies after such a spec merges. Step 6 does this.
 
 ## 4. Add the skill `research`
 
 Why: `4ag:plan` checks for the skill `research`. In Codex, a skill counts when `~/.agents/skills/<name>/SKILL.md` exists. Codex lists it as `mattpocock-skills:research`, the same name as in Claude, because the link resolves into the Claude plugin cache and Codex keeps one entry for each real path.
+
+Run the `ln` one time only. A second run puts a link inside the target folder, and the check then reads a wrong path.
 
 The source is in the cache of the `mattpocock-skills` plugin. The path holds a version number. Change `1.3.1` if the plugin updates.
 
@@ -60,11 +62,11 @@ The source is in the cache of the `mattpocock-skills` plugin. The path holds a v
 mkdir -p ~/.agents/skills && ln -s ~/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/1.3.1/skills/engineering/research ~/.agents/skills/research
 ```
 
-Check: `test -f ~/.agents/skills/research/SKILL.md && echo ok` prints `ok`. Run the `ln` one time only: a second run puts a link inside the target folder.
+Check: `test -f ~/.agents/skills/research/SKILL.md && echo ok` prints `ok`.
 
 ## 5. Add the GitHub ruleset on `main`
 
-Why: the ruleset is the wall on `main` for every agent, in Claude and in Codex. It needs the check `verdict`. The Repository admin role on the bypass list lets the weekly `publish` still push.
+Why: the ruleset stops a push to `main` from any agent, in Claude and in Codex. It needs the check `verdict`. The Repository admin role on the bypass list lets the weekly `publish` still push.
 
 In the repo `bkwon94/4thandgoal`, open Settings, Rules, Rulesets, New branch ruleset. Set these values:
 
@@ -93,13 +95,13 @@ gh api repos/bkwon94/4thandgoal/rulesets/<id> --jq '.rules, .bypass_actors, .con
 
 The output holds the rules `deletion`, `non_fast_forward`, `required_status_checks`, and `pull_request`, and names `verdict` in `required_status_checks`. It shows the admin role, `actor_id` 5, with `bypass_mode` `always`. It shows `~DEFAULT_BRANCH` in `conditions.ref_name.include`.
 
-## 6. Remove the stale files after the merge
+## 6. Remove the stale files after such a spec merges
 
-Why: the merge brings tracked files at `AGENTS.md`, `apps/site/AGENTS.md`, and `.codex/config.toml`. The untracked files at those paths make `git pull` fail. The untracked `.agents/skills/` symlinks from step 3 also go.
+Why: the merge of such a spec brings tracked files at `AGENTS.md`, `apps/site/AGENTS.md`, and `.codex/config.toml`. The untracked files at those paths make `git pull` fail. The untracked `.agents/skills/` symlinks from step 3 also go.
 
-Do this at the main checkout root, after the spec merges and before `git pull`.
+Do this at the main checkout root, after such a spec merges and before `git pull`.
 
-**Warning: run this only after the merge, and only in the main checkout.** The commands delete untracked files. Before the merge, they remove the files that step 3 makes.
+**Warning: run this only after such a spec merges, and only in the main checkout.** The commands delete untracked files. Before the merge, they remove the files that step 3 makes.
 
 ```
 rm AGENTS.md apps/site/AGENTS.md .codex/config.toml
@@ -122,6 +124,6 @@ enabled = false
 enabled = false
 ```
 
-`cpc@cpc-local` is the old name of the same plugin, at the old folder `~/repos/cpcfantasyfootball`. Brian did this on 2026-11-12.
+`cpc@cpc-local` is the old name of the same plugin, at the old folder `~/repos/cpcfantasyfootball`.
 
 Check: in a checkout that holds `.agents/skills/`, `codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*:' | sort | uniq -c` shows each of the six skills with the count 1.
