@@ -10,9 +10,9 @@ Spec: `.scratch/rebrand/PRD.md`. Acceptance tests AT-5, AT-7, AT-8, AT-9, AT-10,
 
 **Status:** ready-for-agent
 
-- [ ] The `git grep` of AT-5 prints nothing, and the lock file holds no `cpcfantasyfootball`.
-- [ ] The site package name is `4thandgoal-site`, and `pnpm check:fast` passes in `apps/site`.
-- [ ] From a worktree, the `REPO_DIR` lines of the weekly build script print the `apps/pipeline` path of that worktree, and the script names no `repos/` path.
-- [ ] `plutil -lint` passes on the LaunchAgent, and each of its repo paths starts with `/Users/brian.kwon/repos/4thandgoal/`.
+- [x] The `git grep` of AT-5 prints nothing, and the lock file holds no `cpcfantasyfootball`.
+- [x] The site package name is `4thandgoal-site`, and `pnpm check:fast` passes in `apps/site`.
+- [x] From a worktree, the `REPO_DIR` lines of the weekly build script print the `apps/pipeline` path of that worktree, and the script names no `repos/` path.
+- [x] `plutil -lint` passes on the LaunchAgent, and each of its repo paths starts with `/Users/brian.kwon/repos/4thandgoal/`.
 - [ ] The guard commands of AT-13 to AT-16 show no change to pages, packages, clients, API code, the domain, the Fly app, the ADRs, or other features under `.scratch/`.
 - [ ] `make check-fast` passes in `scripts/`, `apps/pipeline/`, and `apps/api/`.

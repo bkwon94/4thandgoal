@@ -45,7 +45,9 @@ log "start"
 
 # The cd comes after the log setup, so a missing repo leaves a line in build.log.
 # The pipeline lives in apps/pipeline of the one repo, so uv finds its project and venv there.
-REPO_DIR="$HOME/repos/cpcfantasyfootball/apps/pipeline"
+# The path comes from the script's own path, one level up from bin/. launchd calls the script
+# by an absolute path, so the same lines work from any checkout or worktree.
+REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_DIR" || { log "cannot cd to $REPO_DIR"; exit 1; }
 
 # set +e so a failed build reaches the exit-code handling below instead of
