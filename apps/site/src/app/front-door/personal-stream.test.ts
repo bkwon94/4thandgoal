@@ -1,6 +1,6 @@
 /**
  * Tests for the data part of a personal Topic as the Thread reads it. The part is the one that the API recorded in a
- * live run of Weak spots, with and without the `kind` that the API now adds.
+ * live run of Weak spots, with and without the `kind` of the block.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
