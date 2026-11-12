@@ -21,7 +21,7 @@ A new Topic, Start or sit, gives Your team its Week lineup for the live week. Ea
 
 Each Topic Answer shows one block in the Ledger look: rows in a fixed order that open in place, and one small mark, such as a tug bar, a step path, or a dot matrix. The text is optional and allows a small set of markdown marks. Fifteen blocks serve the Topics and the free answers.
 
-The Suggestions take one row of about 48 px: the Topic names only. A first tap shows the fact in a strip, and a second tap opens the Topic. On the front door, the dock and the week pill leave. A menu button in the header opens a sheet of the pages, and the Suggestions row and the ask box sit on one flush surface at the bottom. The passphrase box stays above the keyboard.
+The Suggestions take one row of about 48 px: only a short name of each Topic. A first tap shows the fact in a strip, and a second tap opens the Topic. On the front door, the dock and the week pill leave. A menu button in the header opens a sheet of the pages, and the Suggestions row and the ask box sit on one flush surface at the bottom. The passphrase box stays above the keyboard.
 
 ## User Stories
 
@@ -104,7 +104,7 @@ The Suggestions take one row of about 48 px: the Topic names only. A first tap s
 ### The Suggestions row
 
 68. As a manager, I want the Suggestions in one row of about 48 px at 375 px wide, so that the Thread gets the screen.
-69. As a manager, I want each chip to show only the Topic name, so that the row stays short.
+69. As a manager, I want each chip to show only a short name of its Topic, so that the row stays short.
 70. As a manager, I want "More" to lead the row, so that I find the other Topics.
 71. As a manager, I want a first tap on a chip to show its fact in a full-width strip with "Open →", so that I see the fact before I open the Topic.
 72. As a manager, I want a second tap on the chip or the strip to open the Topic, so that I choose with intent.
@@ -232,7 +232,8 @@ All blocks take the Ledger look. Rows keep a fixed order. A row with detail show
 
 ### The Suggestions row (decision 02)
 
-- Each chip shows only the Topic name, in one row of about 48 px at 375 px wide, at every state of the Thread. "More" leads the row.
+- Each chip shows only a short name of its Topic, in one row of about 48 px at 375 px wide, at every state of the Thread. "More" leads the row.
+- The full Topic name shows in the strip, in "More", and in the question.
 - The first tap on a chip opens a full-width strip of about 44 px under the row, with the whole fact and "Open →". A second tap on the chip or on the strip opens the Topic. A tap on another chip cross-fades the strip to its fact with a soft blur.
 - The reveal is a tap, not a long press.
 - The morph from a chip into its question, the "More" panel, reduced motion, and both themes stay.

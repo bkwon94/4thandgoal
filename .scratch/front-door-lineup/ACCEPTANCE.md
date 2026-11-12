@@ -343,7 +343,7 @@ App: site
 Stories: 68, 69, 70
 Given: The front door of Bo Girds of cpc, with an empty Thread and with one Answer.
 When: The reader views the Suggestions at 375 px.
-Then: The row is one line of about 48 px, with "More" first and each chip showing only a Topic name.
+Then: The row is one line of about 48 px, with "More" first and each chip showing only a short name of its Topic.
 Evidence: site screenshots, and the height of the row in px at 375 px.
 
 AT-43: A first tap shows the fact, and a second tap opens the Topic

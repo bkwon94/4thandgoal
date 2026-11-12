@@ -4,7 +4,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-42, AT-43, AT-44.
 
 **App:** site
 
-**What to build:** At 375 px the Suggestions take one row of about 48 px, with "More" first and each chip showing only its Topic name. A first tap on a chip shows a full-width strip with the whole fact and "Open →". A second tap on the chip or the strip opens the Topic. A tap on another chip cross-fades the strip to its fact. The morph into the question, the "More" panel, reduced motion, and both themes stay.
+**What to build:** At 375 px the Suggestions take one row of about 48 px, with "More" first and each chip showing only a short name of its Topic. A first tap on a chip shows a full-width strip with the whole fact and "Open →". A second tap on the chip or the strip opens the Topic. A tap on another chip cross-fades the strip to its fact. The morph into the question, the "More" panel, reduced motion, and both themes stay.
 
 **Blocked by:** 03
 
