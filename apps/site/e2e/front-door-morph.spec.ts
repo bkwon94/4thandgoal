@@ -45,7 +45,11 @@ for (const name of ["Weak spots", "Sell high or buy low"]) {
     await openDoorWithChips(page);
     const chip = page.getByRole("group", { name: "Suggestions" }).getByRole("button", { name: new RegExp(`^${name}:`) });
     await expect(chip).toBeVisible();
-    // The entrance of the chips settles first, so the box of the chip is where the tap starts.
+    // The first tap shows the fact in the strip, and the second tap opens the Topic (decision 02). The strip grows the
+    // foot, so the entrance of the chips and the strip settle first, and the box of the chip is where the second tap starts.
+    await page.waitForTimeout(800);
+    await chip.click();
+    await expect(page.getByRole("button", { name: `Open ${name}`, exact: true })).toBeVisible();
     await page.waitForTimeout(800);
     const from = (await chip.boundingBox())!;
     await startSamples(page, () => {
