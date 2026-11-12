@@ -3,10 +3,9 @@ Checks that each package folder under src holds a README.md with the headings Kn
 Each README is under 25 lines, and the only CLAUDE.md or AGENTS.md is the one at the repo root. See ADR 0014.
 Each package under packages/ at the repo root holds a README.md with the same headings and length. See ADR 0023.
 """
-import subprocess
 from pathlib import Path
 
-from rule_report import Offense, clean_git_env, report
+from rule_report import Offense, report, tracked_files
 
 ROOT = Path(__file__).resolve().parent.parent
 # The repo root, which holds packages/.
@@ -115,14 +114,6 @@ def _package_readme_offenses(repo: Path) -> list[Offense]:
     return offenses
 
 
-def _tracked_files(root: Path) -> list[str]:
-    """The paths that git tracks, from the repo root. A staged file counts, so the hook sees a new one."""
-    result = subprocess.run(
-        ["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True, env=clean_git_env()
-    )
-    return result.stdout.splitlines()
-
-
 def _rules_file_offenses(tracked: list[str]) -> list[Offense]:
     # A nested CLAUDE.md or AGENTS.md loads by itself. The agent must choose to read the next level, so the folder holds a README.
     return [Offense(
@@ -171,7 +162,7 @@ def test_each_readme_is_under_25_lines():
 
 
 def test_no_claude_md_below_the_root():
-    offenses = _rules_file_offenses(_tracked_files(ROOT))
+    offenses = _rules_file_offenses(tracked_files(ROOT))
     assert not offenses, report(offenses)
 
 

@@ -6,19 +6,9 @@ import re
 import subprocess
 from pathlib import Path, PurePosixPath
 
-from rule_report import Offense, clean_git_env, report
+from rule_report import Offense, clean_git_env, repo_root, report
 
-
-def _repo_root() -> Path:
-    """The repo root, from git. The tracker and the state file sit there, not in apps/pipeline."""
-    result = subprocess.run(
-        ["git", "rev-parse", "--show-toplevel"],
-        cwd=Path(__file__).resolve().parent, check=True, capture_output=True, text=True, env=clean_git_env(),
-    )
-    return Path(result.stdout.strip())
-
-
-ROOT = _repo_root()
+ROOT = repo_root()
 APPS = {"site", "pipeline"}
 ADR = "docs/adr/0014-the-rules-are-checks.md"
 STATE = "docs/agents/state.md"

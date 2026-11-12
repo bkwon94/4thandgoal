@@ -2,22 +2,11 @@
 Checks that the Claude Code skills and the Codex skills share one source: each skill has a 4ag symlink, each CLAUDE.md holds
 only @AGENTS.md, and no skill file names a tool that only Claude Code has. See ADR 0014.
 """
-import subprocess
 from pathlib import Path
 
-from rule_report import Offense, clean_git_env, report
+from rule_report import Offense, repo_root, report, tracked_files
 
-
-def _repo_root() -> Path:
-    """The repo root, from git. The skills and the symlinks sit there, not in apps/pipeline."""
-    result = subprocess.run(
-        ["git", "rev-parse", "--show-toplevel"],
-        cwd=Path(__file__).resolve().parent, check=True, capture_output=True, text=True, env=clean_git_env(),
-    )
-    return Path(result.stdout.strip())
-
-
-ROOT = _repo_root()
+ROOT = repo_root()
 ADR = "docs/adr/0014-the-rules-are-checks.md"
 SKILLS = ".claude/plugin/skills"
 LINKS = ".agents/skills"
@@ -30,14 +19,6 @@ TOOL_FIX = "write the neutral word from the table in AGENTS.md, such as load the
 CLAUDE_ONLY_TOOLS = ("Skill tool", "Agent tool")
 
 SYMLINK_RULE = "each skill under .claude/plugin/skills has a tracked symlink .agents/skills/4ag-<name> that resolves to it"
-
-
-def _tracked_files(root: Path) -> list[str]:
-    """The paths that git tracks, from the repo root. A staged file counts, so the hook sees a new one."""
-    result = subprocess.run(
-        ["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True, env=clean_git_env()
-    )
-    return result.stdout.splitlines()
 
 
 def _skill_names(tracked: list[str]) -> list[str]:
@@ -65,7 +46,7 @@ def _symlink_offenses(root: Path, tracked: list[str]) -> list[Offense]:
     return offenses
 
 
-def _claude_md_offenses(root: Path, tracked: list[str]) -> list[Offense]:
+def _import_line_offenses(root: Path, tracked: list[str]) -> list[Offense]:
     # Codex reads AGENTS.md. A CLAUDE.md that holds only the import keeps one source for both harnesses.
     offenses: list[Offense] = []
     for path in tracked:
@@ -110,7 +91,7 @@ def _tool_word_offenses(root: Path, tracked: list[str]) -> list[Offense]:
 
 
 def test_each_skill_has_a_symlink_that_resolves_to_it():
-    offenses = _symlink_offenses(ROOT, _tracked_files(ROOT))
+    offenses = _symlink_offenses(ROOT, tracked_files(ROOT))
     assert not offenses, report(offenses)
 
 
@@ -136,7 +117,7 @@ def test_the_rule_finds_a_symlink_that_resolves_to_another_skill(tmp_path):
 
 
 def test_each_claude_md_holds_only_the_agents_import():
-    offenses = _claude_md_offenses(ROOT, _tracked_files(ROOT))
+    offenses = _import_line_offenses(ROOT, tracked_files(ROOT))
     assert not offenses, report(offenses)
 
 
@@ -144,18 +125,18 @@ def test_the_rule_finds_a_claude_md_with_an_extra_line(tmp_path):
     (tmp_path / "apps" / "site").mkdir(parents=True)
     (tmp_path / "CLAUDE.md").write_text("@AGENTS.md\n")
     (tmp_path / "apps" / "site" / "CLAUDE.md").write_text("@AGENTS.md\nExtra rule.\n")
-    offenses = _claude_md_offenses(tmp_path, ["CLAUDE.md", "apps/site/CLAUDE.md", "AGENTS.md"])
+    offenses = _import_line_offenses(tmp_path, ["CLAUDE.md", "apps/site/CLAUDE.md", "AGENTS.md"])
     assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
         ("apps/site/CLAUDE.md", 1, "harness/claude-md")]
 
 
 def test_the_rule_finds_a_claude_md_with_no_import(tmp_path):
     (tmp_path / "CLAUDE.md").write_text("Rules of the repo.\n")
-    assert [offense.rule_id for offense in _claude_md_offenses(tmp_path, ["CLAUDE.md"])] == ["harness/claude-md"]
+    assert [offense.rule_id for offense in _import_line_offenses(tmp_path, ["CLAUDE.md"])] == ["harness/claude-md"]
 
 
 def test_no_skill_file_names_a_claude_only_tool():
-    offenses = _tool_word_offenses(ROOT, _tracked_files(ROOT))
+    offenses = _tool_word_offenses(ROOT, tracked_files(ROOT))
     assert not offenses, report(offenses)
 
 
