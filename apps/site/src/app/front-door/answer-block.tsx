@@ -1,6 +1,6 @@
 /**
- * The block of a free answer: a ranked list, a small table, or a player card that Claude shows under its lead line,
- * in the style of the rows of the data block. It holds the shape of the `data-block` part and its short text for a turn.
+ * The block of an Answer: the schema union of every block kind, its short text for a turn, and its view.
+ * It holds the shape of the `data-block` part, which Claude shows under its lead line.
  */
 "use client";
 
