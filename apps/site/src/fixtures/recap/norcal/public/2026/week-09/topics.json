@@ -1,0 +1,4515 @@
+{
+  "schema_version": 2,
+  "season": 2026,
+  "week": 9,
+  "teams": {
+    "1": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 110.44, 8th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "110.44"
+          },
+          {
+            "label": "Place",
+            "value": "8th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 110.44,
+          "place": 8,
+          "teams": 12,
+          "opponent": "VarsityBlue2",
+          "opponent_score": 83.1,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": true
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Christian McCaffrey",
+            "position": "RB",
+            "points": 22.7,
+            "projection": 22.44
+          },
+          "sentence": "puurdygood trailed by 19.5 after the early Sunday games and still won going away, nudging its playoff odds to about 87% this week."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 110.44 to 83.1",
+        "stats": [],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "110.44",
+            "note": "Christian McCaffrey 22.7",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "83.1",
+            "note": "Dak Prescott 23.5",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": [
+          "puurdygood trailed by 19.5 after the early Sunday games and still won going away, nudging its playoff odds to about 87% this week. The new pickup Audric Estime posted 14.7, but trade add Saquon Barkley managed just 8.2. Ladd McConkey, another trade add, was blanked and is now listed Questionable, Xavier Worthy is now listed Out, and VarsityBlue2 watched its playoff odds sink this week."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: kaiedmonds, 5-4",
+        "stats": [],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "6-3",
+            "note": "Bye: Kenny Gainwell",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "5-4",
+            "note": "Bye: Caleb Williams, Kyle Monangai",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "4th, up 1",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "4th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 1"
+          },
+          {
+            "label": "Record",
+            "value": "6-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "3rd",
+            "note": "6-3",
+            "roster_id": 6,
+            "you": false
+          },
+          {
+            "label": "puurdygood",
+            "value": "4th",
+            "note": "6-3",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "Davlionman",
+            "value": "5th",
+            "note": "6-3",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": [
+          "puurdygood rises to 4th on a 2-game win streak. They project 131 a week from here, above their season pace."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "87% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "87%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "39%"
+          },
+          {
+            "label": "Seed",
+            "value": "1"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Hock Tua 💦",
+            "value": "87%",
+            "note": "Seed 1",
+            "roster_id": 8,
+            "you": false
+          },
+          {
+            "label": "puurdygood",
+            "value": "87%",
+            "note": "Seed 1",
+            "roster_id": 1,
+            "you": true
+          },
+          {
+            "label": "Davlionman",
+            "value": "79%",
+            "note": "Seed 3",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "6-3, 3rd of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "6-3"
+          },
+          {
+            "label": "Standing",
+            "value": "3rd of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1121.3"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Christian McCaffrey",
+            "value": "166.7",
+            "note": "RB · 20.8 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kyren Williams",
+            "value": "159.1",
+            "note": "RB · 17.7 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Tetairoa McMillan",
+            "value": "124.5",
+            "note": "WR · 15.6 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at RB and WR. Soft at QB."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "0 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "2": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 83.1, 12th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "83.1"
+          },
+          {
+            "label": "Place",
+            "value": "12th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 83.1,
+          "place": 12,
+          "teams": 12,
+          "opponent": "puurdygood",
+          "opponent_score": 110.44,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": true
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Dak Prescott",
+            "position": "QB",
+            "points": 23.5,
+            "projection": 19.67
+          },
+          "sentence": "puurdygood trailed by 19.5 after the early Sunday games and still won going away, nudging its playoff odds to about 87% this week."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 83.1 to 110.44",
+        "stats": [],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "110.44",
+            "note": "Christian McCaffrey 22.7",
+            "roster_id": 1,
+            "you": false
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "83.1",
+            "note": "Dak Prescott 23.5",
+            "roster_id": 2,
+            "you": true
+          }
+        ],
+        "text": [
+          "puurdygood trailed by 19.5 after the early Sunday games and still won going away, nudging its playoff odds to about 87% this week. The new pickup Audric Estime posted 14.7, but trade add Saquon Barkley managed just 8.2. Ladd McConkey, another trade add, was blanked and is now listed Questionable, Xavier Worthy is now listed Out, and VarsityBlue2 watched its playoff odds sink this week."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: The Dart Side, 2-7",
+        "stats": [],
+        "rows": [
+          {
+            "label": "VarsityBlue2",
+            "value": "3-6",
+            "note": "Bye: Saquon Barkley, RJ Harvey",
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "The Dart Side",
+            "value": "2-7",
+            "note": "Bye: Jaylen Waddle, Rome Odunze, Emeka Egbuka, Ted Hurst III",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "10th, down 1",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "10th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 1"
+          },
+          {
+            "label": "Record",
+            "value": "3-6"
+          }
+        ],
+        "rows": [
+          {
+            "label": "kaiedmonds",
+            "value": "9th",
+            "note": "5-4",
+            "roster_id": 9,
+            "you": false
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "10th",
+            "note": "3-6",
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "11th",
+            "note": "3-6",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "VarsityBlue2 slips to 10th with a 3-6 record. The offense has gone quiet, down to 98.43 a week lately. Playoff odds of 3% say the rest out loud."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "3% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "3%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "BobBuckstein",
+            "value": "40%",
+            "note": "Seed None",
+            "roster_id": 3,
+            "you": false
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "3%",
+            "note": "Seed None",
+            "roster_id": 2,
+            "you": true
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "2%",
+            "note": "Seed None",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "3-6, 10th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "3-6"
+          },
+          {
+            "label": "Standing",
+            "value": "10th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1010.32"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Dak Prescott",
+            "value": "160.14",
+            "note": "QB · 22.9 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "CeeDee Lamb",
+            "value": "155.5",
+            "note": "WR · 22.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Sam LaPorta",
+            "value": "93.1",
+            "note": "TE · 11.6 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at TE. Deep at TE. Soft at QB and RB."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "0 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "3": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 88.66, 11th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "88.66"
+          },
+          {
+            "label": "Place",
+            "value": "11th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 88.66,
+          "place": 11,
+          "teams": 12,
+          "opponent": "Skol Daddy",
+          "opponent_score": 136.24,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": true
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Jonah Coleman",
+            "position": "RB",
+            "points": 18.8,
+            "projection": 14.71
+          },
+          "sentence": "Skol Daddy flattened BobBuckstein 136.24 to 88.66 in an upset, and the lead never changed hands after Thursday."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 88.66 to 136.24",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Skol Daddy",
+            "value": "136.24",
+            "note": "Joe Burrow 35.54",
+            "roster_id": 5,
+            "you": false
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "88.66",
+            "note": "Jonah Coleman 18.8",
+            "roster_id": 3,
+            "you": true
+          }
+        ],
+        "text": [
+          "Skol Daddy flattened BobBuckstein 136.24 to 88.66 in an upset, and the lead never changed hands after Thursday. Adonai Mitchell put up a 0 for the losing side and dropped 2 passes along the way. The winners moved up in the standings, while the losing side slid down and saw its winning streak end."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Mitseeker5000, 6-3",
+        "stats": [],
+        "rows": [
+          {
+            "label": "BobBuckstein",
+            "value": "4-5",
+            "note": "Bye: Colston Loveland, Jonah Coleman",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "Mitseeker5000",
+            "value": "6-3",
+            "note": "Bye: D'Andre Swift",
+            "roster_id": 6,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "7th, down 5",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "7th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 5"
+          },
+          {
+            "label": "Record",
+            "value": "4-5"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "6th",
+            "note": "4-5",
+            "roster_id": 7,
+            "you": false
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "7th",
+            "note": "4-5",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "Breece Mode",
+            "value": "8th",
+            "note": "5-4",
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [
+          "BobBuckstein tumbles 5 places to 7th. Losing by 48 will do that. Playoff odds are 40%, and they project 137 a week from here."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "40% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "40%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "5%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "46%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": false
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "40%",
+            "note": "Seed None",
+            "roster_id": 3,
+            "you": true
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "3%",
+            "note": "Seed None",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "4-5, 9th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "4-5"
+          },
+          {
+            "label": "Standing",
+            "value": "9th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1103.04"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Amon-Ra St. Brown",
+            "value": "157.6",
+            "note": "WR · 19.7 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Ashton Jeanty",
+            "value": "139.3",
+            "note": "RB · 15.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Bhayshul Tuten",
+            "value": "127.2",
+            "note": "RB · 15.9 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at QB and RB. Soft at TE."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "0 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "4": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 104.78, 9th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "104.78"
+          },
+          {
+            "label": "Place",
+            "value": "9th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 104.78,
+          "place": 9,
+          "teams": 12,
+          "opponent": "Davlionman",
+          "opponent_score": 117.46,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": true
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Brock Purdy",
+            "position": "QB",
+            "points": 30.28,
+            "projection": 21.69
+          },
+          "sentence": "Davlionman beat The Mean Machine 117.46 to 104.78, a margin of 12.68."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 104.78 to 117.46",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Davlionman",
+            "value": "117.46",
+            "note": "C.J. Stroud 46.36",
+            "roster_id": 10,
+            "you": false
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "104.78",
+            "note": "Brock Purdy 30.28",
+            "roster_id": 4,
+            "you": true
+          }
+        ],
+        "text": [
+          "Davlionman beat The Mean Machine 117.46 to 104.78, a margin of 12.68."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Skol Daddy, 4-5",
+        "stats": [],
+        "rows": [
+          {
+            "label": "The Mean Machine",
+            "value": "3-6",
+            "note": "Bye: Makai Lemon, Darius Cooper",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "Skol Daddy",
+            "value": "4-5",
+            "note": "Bye: DeVonta Smith",
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "11th, no change",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "11th"
+          },
+          {
+            "label": "Move",
+            "value": "No change"
+          },
+          {
+            "label": "Record",
+            "value": "3-6"
+          }
+        ],
+        "rows": [
+          {
+            "label": "VarsityBlue2",
+            "value": "10th",
+            "note": "3-6",
+            "roster_id": 2,
+            "you": false
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "11th",
+            "note": "3-6",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "The Dart Side",
+            "value": "12th",
+            "note": "2-7",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [
+          "The Mean Machine stays 11th on a 2-game losing streak. Mean on paper, not much of a machine on the field."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "2% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "2%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "VarsityBlue2",
+            "value": "3%",
+            "note": "Seed None",
+            "roster_id": 2,
+            "you": false
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "2%",
+            "note": "Seed None",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "The Dart Side",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "3-6, 11th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "3-6"
+          },
+          {
+            "label": "Standing",
+            "value": "11th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "987.92"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Tee Higgins",
+            "value": "159.8",
+            "note": "WR · 20 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Jonathan Taylor",
+            "value": "153.6",
+            "note": "RB · 17.1 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Purdy",
+            "value": "128.56",
+            "note": "QB · 25.7 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Deep at QB. Soft at WR and TE. Thin at RB."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "0 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "5": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 136.24, 3rd of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "136.24"
+          },
+          {
+            "label": "Place",
+            "value": "3rd of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 136.24,
+          "place": 3,
+          "teams": 12,
+          "opponent": "BobBuckstein",
+          "opponent_score": 88.66,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": true
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Joe Burrow",
+            "position": "QB",
+            "points": 35.54,
+            "projection": 20.93
+          },
+          "sentence": "Skol Daddy flattened BobBuckstein 136.24 to 88.66 in an upset, and the lead never changed hands after Thursday."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 136.24 to 88.66",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Skol Daddy",
+            "value": "136.24",
+            "note": "Joe Burrow 35.54",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "88.66",
+            "note": "Jonah Coleman 18.8",
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": [
+          "Skol Daddy flattened BobBuckstein 136.24 to 88.66 in an upset, and the lead never changed hands after Thursday. Adonai Mitchell put up a 0 for the losing side and dropped 2 passes along the way. The winners moved up in the standings, while the losing side slid down and saw its winning streak end."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: The Mean Machine, 3-6",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Skol Daddy",
+            "value": "4-5",
+            "note": "Bye: DeVonta Smith",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "3-6",
+            "note": "Bye: Makai Lemon, Darius Cooper",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "1st, up 2",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "1st"
+          },
+          {
+            "label": "Move",
+            "value": "Up 2"
+          },
+          {
+            "label": "Record",
+            "value": "4-5"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Skol Daddy",
+            "value": "1st",
+            "note": "4-5",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "2nd",
+            "note": "6-3",
+            "roster_id": 8,
+            "you": false
+          }
+        ],
+        "text": [
+          "Skol Daddy takes the top spot at 4-5, a losing record wearing a crown. They jumped 2 places after a 48-point win. Playoff odds sit near a coin flip at 46%, with a projection of 127 a week from here."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "46% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "46%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "6%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Breece Mode",
+            "value": "49%",
+            "note": "Seed None",
+            "roster_id": 11,
+            "you": false
+          },
+          {
+            "label": "Skol Daddy",
+            "value": "46%",
+            "note": "Seed None",
+            "roster_id": 5,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "46%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "4-5, 7th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "4-5"
+          },
+          {
+            "label": "Standing",
+            "value": "7th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1226.06"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Josh Allen",
+            "value": "160.96",
+            "note": "QB · 32.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Ja'Marr Chase",
+            "value": "159.7",
+            "note": "WR · 20 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "146",
+            "note": "TE · 20.9 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at QB and TE. Soft at RB."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Brock Bowers, 1st at TE",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": true
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "6": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 121.4, 5th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "121.4"
+          },
+          {
+            "label": "Place",
+            "value": "5th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 121.4,
+          "place": 5,
+          "teams": 12,
+          "opponent": "Hock Tua 💦",
+          "opponent_score": 156.88,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": true
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Puka Nacua",
+            "position": "WR",
+            "points": 35.0,
+            "projection": 23.59
+          },
+          "sentence": "Hock Tua 💦 trailed by 28.22 after the early Sunday games, then dropped a season-high 156.88 to knock off Mitseeker5000 in an upset."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 121.4 to 156.88",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Hock Tua 💦",
+            "value": "156.88",
+            "note": "Matthew Golden 32.4",
+            "roster_id": 8,
+            "you": false
+          },
+          {
+            "label": "Mitseeker5000",
+            "value": "121.4",
+            "note": "Puka Nacua 35",
+            "roster_id": 6,
+            "you": true
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 trailed by 28.22 after the early Sunday games, then dropped a season-high 156.88 to knock off Mitseeker5000 in an upset. Puka Nacua and Patrick Mahomes are both now listed Questionable. Recent add Ryan Flournoy managed just 7.3, and the winners still climbed to 2nd while snapping the league leader's winning streak."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: BobBuckstein, 4-5",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "6-3",
+            "note": "Bye: D'Andre Swift",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "4-5",
+            "note": "Bye: Colston Loveland, Jonah Coleman",
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "3rd, down 2",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "3rd"
+          },
+          {
+            "label": "Move",
+            "value": "Down 2"
+          },
+          {
+            "label": "Record",
+            "value": "6-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Hock Tua 💦",
+            "value": "2nd",
+            "note": "6-3",
+            "roster_id": 8,
+            "you": false
+          },
+          {
+            "label": "Mitseeker5000",
+            "value": "3rd",
+            "note": "6-3",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "puurdygood",
+            "value": "4th",
+            "note": "6-3",
+            "roster_id": 1,
+            "you": false
+          }
+        ],
+        "text": [
+          "Mitseeker5000 slides to 3rd despite owning the standings. That 35-point loss dropped them 2 places. Scoring is down to 127.65 a week lately."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "92% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "92%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "50%"
+          },
+          {
+            "label": "Seed",
+            "value": "1"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "92%",
+            "note": "Seed 1",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "87%",
+            "note": "Seed 1",
+            "roster_id": 8,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "6-3, 1st of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "6-3"
+          },
+          {
+            "label": "Standing",
+            "value": "1st of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1251.74"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Puka Nacua",
+            "value": "173.6",
+            "note": "WR · 21.7 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Javonte Williams",
+            "value": "159.6",
+            "note": "RB · 17.7 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "D'Andre Swift",
+            "value": "153.8",
+            "note": "RB · 17.1 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at WR. Deep at QB."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Puka Nacua, 1st at WR",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "7": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 155.38, 2nd of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "155.38"
+          },
+          {
+            "label": "Place",
+            "value": "2nd of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 155.38,
+          "place": 2,
+          "teams": 12,
+          "opponent": "kaiedmonds",
+          "opponent_score": 128.06,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": true
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Kenneth Walker III",
+            "position": "RB",
+            "points": 36.3,
+            "projection": 21.77
+          },
+          "sentence": "Luther Burden III got hurt late in this one and is now listed Questionable."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 155.38 to 128.06",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "155.38",
+            "note": "Kenneth Walker III 36.3",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "128.06",
+            "note": "Christian Watson 30.1",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": [
+          "Luther Burden III got hurt late in this one and is now listed Questionable. CeeDee Lamb, a recent add by trade, outscored the margin on his own with 33.5, and Bo Girds saw its playoff odds climb to 46% this week. kaiedmonds slid from 3rd to 6th after losing in an upset."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Davlionman, 6-3",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "4-5",
+            "note": "Bye: Luther Burden III, J.K. Dobbins, Elijah Mitchell",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "Davlionman",
+            "value": "6-3",
+            "note": "Bye: Dallas Goedert",
+            "roster_id": 10,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "6th, up 4",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "6th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 4"
+          },
+          {
+            "label": "Record",
+            "value": "4-5"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Davlionman",
+            "value": "5th",
+            "note": "6-3",
+            "roster_id": 10,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "6th",
+            "note": "4-5",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "7th",
+            "note": "4-5",
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds jumps 4 places despite a 4-5 record. The move came after a 27-point win over the 3rd-place team. Playoff odds sit at 46%, with the easiest remaining schedule in the league ahead."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "46% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "46%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "6%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Skol Daddy",
+            "value": "46%",
+            "note": "Seed None",
+            "roster_id": 5,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "46%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": true
+          },
+          {
+            "label": "BobBuckstein",
+            "value": "40%",
+            "note": "Seed None",
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "4-5, 8th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "4-5"
+          },
+          {
+            "label": "Standing",
+            "value": "8th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1138.74"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Kenneth Walker III",
+            "value": "196.4",
+            "note": "RB · 24.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Luther Burden III",
+            "value": "136.3",
+            "note": "WR · 15.1 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Isaiah Likely",
+            "value": "128.8",
+            "note": "TE · 16.1 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at QB and WR. Deep at QB. Thin at RB."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Kenneth Walker III, 1st at RB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "8": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 156.88, 1st of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "156.88"
+          },
+          {
+            "label": "Place",
+            "value": "1st of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 156.88,
+          "place": 1,
+          "teams": 12,
+          "opponent": "Mitseeker5000",
+          "opponent_score": 121.4,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": true
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Matthew Golden",
+            "position": "WR",
+            "points": 32.4,
+            "projection": 14.89
+          },
+          "sentence": "Hock Tua 💦 trailed by 28.22 after the early Sunday games, then dropped a season-high 156.88 to knock off Mitseeker5000 in an upset."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 156.88 to 121.4",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Hock Tua 💦",
+            "value": "156.88",
+            "note": "Matthew Golden 32.4",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "Mitseeker5000",
+            "value": "121.4",
+            "note": "Puka Nacua 35",
+            "roster_id": 6,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 trailed by 28.22 after the early Sunday games, then dropped a season-high 156.88 to knock off Mitseeker5000 in an upset. Puka Nacua and Patrick Mahomes are both now listed Questionable. Recent add Ryan Flournoy managed just 7.3, and the winners still climbed to 2nd while snapping the league leader's winning streak."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Breece Mode, 5-4",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Hock Tua 💦",
+            "value": "6-3",
+            "note": "Bye: Bucky Irving, Courtland Sutton",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "Breece Mode",
+            "value": "5-4",
+            "note": null,
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "2nd, up 5",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "2nd"
+          },
+          {
+            "label": "Move",
+            "value": "Up 5"
+          },
+          {
+            "label": "Record",
+            "value": "6-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Skol Daddy",
+            "value": "1st",
+            "note": "4-5",
+            "roster_id": 5,
+            "you": false
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "2nd",
+            "note": "6-3",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "Mitseeker5000",
+            "value": "3rd",
+            "note": "6-3",
+            "roster_id": 6,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 rockets 5 places to 2nd. The jump came after a 35-point win over the 1st-place team. They took down the league leader, no small thing."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "87% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "87%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "41%"
+          },
+          {
+            "label": "Seed",
+            "value": "1"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Mitseeker5000",
+            "value": "92%",
+            "note": "Seed 1",
+            "roster_id": 6,
+            "you": false
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "87%",
+            "note": "Seed 1",
+            "roster_id": 8,
+            "you": true
+          },
+          {
+            "label": "puurdygood",
+            "value": "87%",
+            "note": "Seed 1",
+            "roster_id": 1,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "6-3, 2nd of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "6-3"
+          },
+          {
+            "label": "Standing",
+            "value": "2nd of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1163.86"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bijan Robinson",
+            "value": "180",
+            "note": "RB · 20 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Matthew Golden",
+            "value": "163.9",
+            "note": "WR · 18.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Trey McBride",
+            "value": "162.8",
+            "note": "TE · 18.1 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Middle of the league at every position."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Bucky Irving, 2nd at RB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "9": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 128.06, 4th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "128.06"
+          },
+          {
+            "label": "Place",
+            "value": "4th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 128.06,
+          "place": 4,
+          "teams": 12,
+          "opponent": "Bo Girds",
+          "opponent_score": 155.38,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": true
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Christian Watson",
+            "position": "WR",
+            "points": 30.1,
+            "projection": 15.94
+          },
+          "sentence": "Luther Burden III got hurt late in this one and is now listed Questionable."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 128.06 to 155.38",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "155.38",
+            "note": "Kenneth Walker III 36.3",
+            "roster_id": 7,
+            "you": false
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "128.06",
+            "note": "Christian Watson 30.1",
+            "roster_id": 9,
+            "you": true
+          }
+        ],
+        "text": [
+          "Luther Burden III got hurt late in this one and is now listed Questionable. CeeDee Lamb, a recent add by trade, outscored the margin on his own with 33.5, and Bo Girds saw its playoff odds climb to 46% this week. kaiedmonds slid from 3rd to 6th after losing in an upset."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: puurdygood, 6-3",
+        "stats": [],
+        "rows": [
+          {
+            "label": "kaiedmonds",
+            "value": "5-4",
+            "note": "Bye: Caleb Williams, Kyle Monangai",
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "puurdygood",
+            "value": "6-3",
+            "note": "Bye: Kenny Gainwell",
+            "roster_id": 1,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "9th, down 5",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "9th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 5"
+          },
+          {
+            "label": "Record",
+            "value": "5-4"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Breece Mode",
+            "value": "8th",
+            "note": "5-4",
+            "roster_id": 11,
+            "you": false
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "9th",
+            "note": "5-4",
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "10th",
+            "note": "3-6",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": [
+          "kaiedmonds crashes 5 places to 9th. A 27-point loss dropped them to 6th in the standings. They still hold the last playoff spot, somehow."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "68% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "68%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "17%"
+          },
+          {
+            "label": "Seed",
+            "value": "6"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Davlionman",
+            "value": "79%",
+            "note": "Seed 3",
+            "roster_id": 10,
+            "you": false
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "68%",
+            "note": "Seed 6",
+            "roster_id": 9,
+            "you": true
+          },
+          {
+            "label": "Breece Mode",
+            "value": "49%",
+            "note": "Seed None",
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "5-4, 6th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "5-4"
+          },
+          {
+            "label": "Standing",
+            "value": "6th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1138.92"
+          },
+          {
+            "label": "Roster grade",
+            "value": "A"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Christian Watson",
+            "value": "176.9",
+            "note": "WR · 19.7 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "James Cook III",
+            "value": "148.4",
+            "note": "RB · 18.5 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Chuba Hubbard",
+            "value": "146.6",
+            "note": "RB · 18.3 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at TE."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "0 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "10": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 117.46, 6th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "117.46"
+          },
+          {
+            "label": "Place",
+            "value": "6th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 117.46,
+          "place": 6,
+          "teams": 12,
+          "opponent": "The Mean Machine",
+          "opponent_score": 104.78,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": true
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "C.J. Stroud",
+            "position": "QB",
+            "points": 46.36,
+            "projection": 16.83
+          },
+          "sentence": "Davlionman beat The Mean Machine 117.46 to 104.78, a margin of 12.68."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 117.46 to 104.78",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Davlionman",
+            "value": "117.46",
+            "note": "C.J. Stroud 46.36",
+            "roster_id": 10,
+            "you": true
+          },
+          {
+            "label": "The Mean Machine",
+            "value": "104.78",
+            "note": "Brock Purdy 30.28",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "Davlionman beat The Mean Machine 117.46 to 104.78, a margin of 12.68."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Bo Girds, 4-5",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Davlionman",
+            "value": "6-3",
+            "note": "Bye: Dallas Goedert",
+            "roster_id": 10,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "4-5",
+            "note": "Bye: Luther Burden III, J.K. Dobbins, Elijah Mitchell",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "5th, up 1",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "5th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 1"
+          },
+          {
+            "label": "Record",
+            "value": "6-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "4th",
+            "note": "6-3",
+            "roster_id": 1,
+            "you": false
+          },
+          {
+            "label": "Davlionman",
+            "value": "5th",
+            "note": "6-3",
+            "roster_id": 10,
+            "you": true
+          },
+          {
+            "label": "Bo Girds",
+            "value": "6th",
+            "note": "4-5",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": [
+          "Davlionman edges up to 5th with a 6-3 record. The offense ranks just 9th in scoring, and the record keeps covering for it."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "79% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "79%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "27%"
+          },
+          {
+            "label": "Seed",
+            "value": "3"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "puurdygood",
+            "value": "87%",
+            "note": "Seed 1",
+            "roster_id": 1,
+            "you": false
+          },
+          {
+            "label": "Davlionman",
+            "value": "79%",
+            "note": "Seed 3",
+            "roster_id": 10,
+            "you": true
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "68%",
+            "note": "Seed 6",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "6-3, 4th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "6-3"
+          },
+          {
+            "label": "Standing",
+            "value": "4th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1089.78"
+          },
+          {
+            "label": "Roster grade",
+            "value": "B"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jahmyr Gibbs",
+            "value": "209.2",
+            "note": "RB · 26.2 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "C.J. Stroud",
+            "value": "133.48",
+            "note": "QB · 26.7 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Malik Nabers",
+            "value": "129.8",
+            "note": "WR · 16.2 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Strong at RB. Soft at WR."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "C.J. Stroud, 1st at QB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": true
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "11": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 115.86, 7th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "115.86"
+          },
+          {
+            "label": "Place",
+            "value": "7th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 115.86,
+          "place": 7,
+          "teams": 12,
+          "opponent": "The Dart Side",
+          "opponent_score": 91.2,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": true
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Jordan Love",
+            "position": "QB",
+            "points": 42.18,
+            "projection": 17.08
+          },
+          "sentence": "Jordan Love won it alone, putting up 42.18 to outscore the 24.66 margin on his own as Breece Mode beat The Dart Side."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 115.86 to 91.2",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Breece Mode",
+            "value": "115.86",
+            "note": "Jordan Love 42.18",
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "The Dart Side",
+            "value": "91.2",
+            "note": "Tyler Shough 21.7",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jordan Love won it alone, putting up 42.18 to outscore the 24.66 margin on his own as Breece Mode beat The Dart Side. The winners climbed to 5th in the standings, while the losers, who actually led after the early Sunday games, stayed stuck in 12th. Rhamondre Stevenson was hurt in this game and is now listed Out, and so are Jaylen Waddle and Michael Wilson."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Hock Tua 💦, 6-3",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Breece Mode",
+            "value": "5-4",
+            "note": null,
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "Hock Tua 💦",
+            "value": "6-3",
+            "note": "Bye: Bucky Irving, Courtland Sutton",
+            "roster_id": 8,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "8th, no change",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "8th"
+          },
+          {
+            "label": "Move",
+            "value": "No change"
+          },
+          {
+            "label": "Record",
+            "value": "5-4"
+          }
+        ],
+        "rows": [
+          {
+            "label": "BobBuckstein",
+            "value": "7th",
+            "note": "4-5",
+            "roster_id": 3,
+            "you": false
+          },
+          {
+            "label": "Breece Mode",
+            "value": "8th",
+            "note": "5-4",
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "kaiedmonds",
+            "value": "9th",
+            "note": "5-4",
+            "roster_id": 9,
+            "you": false
+          }
+        ],
+        "text": [
+          "Breece Mode holds at 8th, level with the last playoff spot. Scoring has sagged to 109.48 a week over the last 3 weeks. The hardest remaining schedule awaits, with playoff odds at 49%."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "49% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "49%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "8%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "+0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "kaiedmonds",
+            "value": "68%",
+            "note": "Seed 6",
+            "roster_id": 9,
+            "you": false
+          },
+          {
+            "label": "Breece Mode",
+            "value": "49%",
+            "note": "Seed None",
+            "roster_id": 11,
+            "you": true
+          },
+          {
+            "label": "Skol Daddy",
+            "value": "46%",
+            "note": "Seed None",
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "5-4, 5th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "5-4"
+          },
+          {
+            "label": "Standing",
+            "value": "5th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1171.6"
+          },
+          {
+            "label": "Roster grade",
+            "value": "C"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Jaxon Smith-Njigba",
+            "value": "232.06",
+            "note": "WR · 25.8 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Trevor Lawrence",
+            "value": "146.2",
+            "note": "QB · 24.4 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Derrick Henry",
+            "value": "142.28",
+            "note": "RB · 15.8 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Soft at QB and RB."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "Jordan Love, 2nd at QB",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "1"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ],
+    "12": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 91.2, 10th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "91.2"
+          },
+          {
+            "label": "Place",
+            "value": "10th of 12"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "46.36",
+            "note": "C.J. Stroud · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "27.34",
+            "note": "Bryce Young · The Dart Side",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "3.1",
+            "note": "D'Andre Swift · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "42.18",
+            "note": "Jordan Love · Breece Mode",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds won 155.38 to 128.06 in an upset of a team sitting well above them before the week. The winners never trailed, not once all week. CeeDee Lamb, a recent add by trade, scored 33.5 and outscored the margin on his own. Kenneth Walker III did the same with 36.3, 1st among started running backs. Luther Burden III was hurt in the 4th quarter with 3:48 left and is now listed Questionable. kaiedmonds tumbled from 3rd to 6th this week and now clings to the last playoff spot."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 91.2,
+          "place": 10,
+          "teams": 12,
+          "opponent": "Breece Mode",
+          "opponent_score": 115.86,
+          "strip": [
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "score": 156.88,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "score": 155.38,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "score": 136.24,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "score": 128.06,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "score": 121.4,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "score": 117.46,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "score": 115.86,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "score": 110.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "score": 104.78,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "score": 91.2,
+              "you": true
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "score": 88.66,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "score": 83.1,
+              "you": false
+            }
+          ],
+          "median": null,
+          "top": {
+            "name": "Tyler Shough",
+            "position": "QB",
+            "points": 21.7,
+            "projection": 15.99
+          },
+          "sentence": "Jordan Love won it alone, putting up 42.18 to outscore the 24.66 margin on his own as Breece Mode beat The Dart Side."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 91.2 to 115.86",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Breece Mode",
+            "value": "115.86",
+            "note": "Jordan Love 42.18",
+            "roster_id": 11,
+            "you": false
+          },
+          {
+            "label": "The Dart Side",
+            "value": "91.2",
+            "note": "Tyler Shough 21.7",
+            "roster_id": 12,
+            "you": true
+          }
+        ],
+        "text": [
+          "Jordan Love won it alone, putting up 42.18 to outscore the 24.66 margin on his own as Breece Mode beat The Dart Side. The winners climbed to 5th in the standings, while the losers, who actually led after the early Sunday games, stayed stuck in 12th. Rhamondre Stevenson was hurt in this game and is now listed Out, and so are Jaylen Waddle and Michael Wilson."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: VarsityBlue2, 3-6",
+        "stats": [],
+        "rows": [
+          {
+            "label": "The Dart Side",
+            "value": "2-7",
+            "note": "Bye: Jaylen Waddle, Rome Odunze, Emeka Egbuka, Ted Hurst III",
+            "roster_id": 12,
+            "you": true
+          },
+          {
+            "label": "VarsityBlue2",
+            "value": "3-6",
+            "note": "Bye: Saquon Barkley, RJ Harvey",
+            "roster_id": 2,
+            "you": false
+          }
+        ],
+        "text": [
+          "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "12th, no change",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "12th"
+          },
+          {
+            "label": "Move",
+            "value": "No change"
+          },
+          {
+            "label": "Record",
+            "value": "2-7"
+          }
+        ],
+        "rows": [
+          {
+            "label": "The Mean Machine",
+            "value": "11th",
+            "note": "3-6",
+            "roster_id": 4,
+            "you": false
+          },
+          {
+            "label": "The Dart Side",
+            "value": "12th",
+            "note": "2-7",
+            "roster_id": 12,
+            "you": true
+          }
+        ],
+        "text": [
+          "The Dart Side holds last place, 0-3 over the last 3 weeks. They have lost 3 straight and own playoff odds of 1%. Dark times indeed."
+        ],
+        "block": null
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "1% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "1%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "1%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-3"
+          }
+        ],
+        "rows": [
+          {
+            "label": "The Mean Machine",
+            "value": "2%",
+            "note": "Seed None",
+            "roster_id": 4,
+            "you": false
+          },
+          {
+            "label": "The Dart Side",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 12,
+            "you": true
+          }
+        ],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "your_season",
+        "fact": "2-7, 12th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "2-7"
+          },
+          {
+            "label": "Standing",
+            "value": "12th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "882"
+          },
+          {
+            "label": "Roster grade",
+            "value": "D"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Tyler Shough",
+            "value": "124.06",
+            "note": "QB · 20.7 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Michael Wilson",
+            "value": "120.68",
+            "note": "WR · 13.4 a game",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Chase Brown",
+            "value": "101.4",
+            "note": "RB · 12.7 a game",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "Deep at QB. Soft at TE. Thin at WR."
+        ],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "0 trades this week",
+        "stats": [
+          {
+            "label": "Trades",
+            "value": "0"
+          },
+          {
+            "label": "Your leaders",
+            "value": "0"
+          }
+        ],
+        "rows": [
+          {
+            "label": "C.J. Stroud",
+            "value": "46.36",
+            "note": "QB · Davlionman",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Kenneth Walker III",
+            "value": "36.3",
+            "note": "RB · Bo Girds",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Puka Nacua",
+            "value": "35",
+            "note": "WR · Mitseeker5000",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Brock Bowers",
+            "value": "22.3",
+            "note": "TE · Skol Daddy",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "C.J. Stroud put up 46.36 to lead every started quarterback for Davlionman, with Jordan Love close behind at 42.18 for Breece Mode. Bo Girds had Kenneth Walker III atop the running backs at 36.3, plus CeeDee Lamb with the biggest share of his team's targets and air yards among started receivers. Hock Tua 💦 lined up Bucky Irving and Bijan Robinson right behind Walker, and Matthew Golden chipped in 32.4 at receiver. Puka Nacua still topped every started receiver, for Mitseeker5000."
+        ],
+        "block": null
+      }
+    ]
+  }
+}

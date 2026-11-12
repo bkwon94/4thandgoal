@@ -45,7 +45,7 @@ def test_the_build_writes_an_answer_of_each_league_topic_for_each_team(tmp_path,
               nflverse=fixture_nflverse(tmp_path_factory.mktemp("nflverse")), research=no_claims, jev=FakeJev(),
               client=cpc_client(at=repo))
     topics = _topics(repo / "build", 2026, 6)
-    assert topics["schema_version"] == 1
+    assert topics["schema_version"] == 2
     assert (topics["season"], topics["week"]) == (2026, 6)
     assert sorted(topics["teams"], key=int) == [str(n) for n in range(1, 13)]
     for answers in topics["teams"].values():
@@ -97,3 +97,64 @@ def test_a_league_answer_reuses_the_blurbs_and_the_data_of_the_week(tmp_path):
     assert answers["week_recap"]["fact"] == "You scored 80.11, 12th of 12"
     assert answers["week_recap"]["text"] == [page["blurbs"]["motw"]]
     assert answers["leaders_trades"]["text"] == [page["blurbs"]["position_leaders"]]
+
+
+# Bo Girds, the team of the acceptance tests of the recap card, in each league.
+BO_GIRDS = {"cpc": "6", "norcal": "7"}
+
+
+def _published_week_9(tmp_path: Path, slug: str) -> Path:
+    """A site folder with the published page.json of week 9 of one client and the two season files beside it."""
+    published = client_dir(ROOT, slug) / "published" / "2026"
+    week = tmp_path / "2026" / "week-09"
+    week.mkdir(parents=True)
+    shutil.copy(published / "week-09" / "page.json", week / "page.json")
+    for name in ("rankings.json", "managers.json"):
+        shutil.copy(published / name, tmp_path / "2026" / name)
+    return tmp_path
+
+
+def _recap_block(tmp_path: Path, slug: str) -> dict:
+    site = _published_week_9(tmp_path, slug)
+    write_topics(site, 2026, 9)
+    topics = _topics(site, 2026, 9)
+    assert topics["schema_version"] == 2
+    answers = {a["topic"]: a for a in topics["teams"][BO_GIRDS[slug]]}
+    return answers["week_recap"]["block"]
+
+
+def test_the_cpc_recap_block_holds_the_score_the_place_the_strip_and_the_median(tmp_path):
+    """AT-22 and AT-40: Bo Girds scored 114.07 in week 9 of cpc, 3rd of 12, over a median of 103.51."""
+    block = _recap_block(tmp_path, "cpc")
+    assert block["kind"] == "recap"
+    assert (block["score"], block["place"], block["teams"]) == (114.07, 3, 12)
+    assert block["median"] == 103.51
+    assert (block["opponent"], block["opponent_score"]) == ("Teehee", 100.63)
+    # The strip has one mark per team, high to low, and the mark of Your team carries `you`.
+    assert len(block["strip"]) == 12
+    assert [m["score"] for m in block["strip"]] == sorted((m["score"] for m in block["strip"]), reverse=True)
+    assert [m["name"] for m in block["strip"] if m["you"]] == ["Bo Girds"]
+    assert block["top"] == {"name": "Kenneth Walker III", "position": "RB", "points": 34.3, "projection": 20.07}
+    # The sentence is the first sentence of the recap of the game of Your team.
+    page = json.loads((CPC / "published" / "2026" / "week-09" / "page.json").read_text(encoding="utf-8"))
+    recap = next(m["recap"] for m in page["matchups"] if m["id"] == 6)
+    assert recap.startswith(block["sentence"])
+    assert block["sentence"].endswith(".") and len(block["sentence"]) < len(recap)
+
+
+def test_the_norcal_recap_block_has_no_median(tmp_path):
+    """AT-23 and AT-40: norcal plays no median game, so its recap block has no median."""
+    block = _recap_block(tmp_path, "norcal")
+    assert (block["score"], block["opponent"], block["opponent_score"]) == (155.38, "kaiedmonds", 128.06)
+    assert block["median"] is None
+    assert len(block["strip"]) == 12
+
+
+def test_only_week_recap_carries_a_block_in_version_2(tmp_path):
+    """Tickets 06 and 07 give the other league Topics their blocks. Until then each has none."""
+    site = _published_week_9(tmp_path, "cpc")
+    write_topics(site, 2026, 9)
+    for answers in _topics(site, 2026, 9)["teams"].values():
+        blocks = {a["topic"]: a["block"] for a in answers}
+        assert blocks.pop("week_recap")["kind"] == "recap"
+        assert set(blocks.values()) == {None}

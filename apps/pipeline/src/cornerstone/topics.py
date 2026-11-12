@@ -1,6 +1,6 @@
 """
 Writes topics.json beside page.json: the Answer of each of the 7 league Topics of the front door for each team.
-It reads the published files of the build, page.json, rankings.json, and managers.json, and writes no new prose.
+An Answer may carry one block, the data of its card, from topic_blocks.py. It reads the published files of the build, page.json, rankings.json, and managers.json, and writes no new prose.
 """
 import json
 import logging
@@ -8,12 +8,14 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from cornerstone.topic_blocks import TopicBlock, recap_block
 from league.files import write_bytes_atomic
 from league.numbers import ordinal
 from league.paths import site_week_dir
 
 # The Topics file has its own version, so a change to it never breaks the reader of another file.
-TOPICS_SCHEMA_VERSION = 1
+# Version 2 adds the optional `block` of each Answer. The site still reads version 1, with no block.
+TOPICS_SCHEMA_VERSION = 2
 TOPICS_FILE = "topics.json"
 
 log = logging.getLogger(__name__)
@@ -37,12 +39,14 @@ class Row(BaseModel):
 
 class TopicAnswer(BaseModel):
     """The Answer of one league Topic for one team. The fact is the line of its Suggestion. The text holds the
-    blurbs of the week as they are, one paragraph each."""
+    blurbs of the week as they are, one paragraph each. The block is the data of the card of the Topic, or None for a
+    Topic with no card. The stats and the rows stay beside it for a reader of version 1."""
     topic: str
     fact: str
     stats: list[Stat] = []
     rows: list[Row] = []
     text: list[str] = []
+    block: TopicBlock | None = None
 
 
 class TopicsFile(BaseModel):
@@ -75,7 +79,7 @@ def _week_recap(rid: int, page: dict) -> TopicAnswer:
     blurbs = page["blurbs"]
     return TopicAnswer(topic="week_recap", fact=f"You scored {_points(mine)}, {place}", stats=stats, rows=rows,
                        # The awards show as rows, so the text is the matchup of the week alone and stays short.
-                       text=[blurbs["motw"]] if blurbs.get("motw") else [])
+                       text=[blurbs["motw"]] if blurbs.get("motw") else [], block=recap_block(rid, page))
 
 
 def _last_matchup(rid: int, page: dict) -> TopicAnswer | None:
