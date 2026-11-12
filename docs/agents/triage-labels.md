@@ -17,6 +17,9 @@ The skills speak in terms of five canonical triage roles. This file maps those r
 The queue is a Todoist project (ADR 0032). Each open task has one status label, and the label has the same
 name as the status. A push writes a flow status to the queue. A pull writes a triage status to git.
 
+The script `scripts/queue.py` writes and reads each label. It finds the ticket of a task by the key line, the first
+line of the task description: `4ag: <path of the ticket file>`. See "The queue" in `docs/agents/issue-tracker.md`.
+
 | Status               | Queue label       | Who sets it        | Task state |
 | -------------------- | ----------------- | ------------------ | ---------- |
 | `needs-triage`       | `needs-triage`    | Brian or a push    | open       |

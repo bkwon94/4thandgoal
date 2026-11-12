@@ -57,7 +57,7 @@ App: scripts
 Stories: 26, 27, 29, 30
 Given: the import of AT-1 is done
 When: the reader opens the task `12 Drop awards from the managers entry`.
-Then: its description has, in order, the key line, the app, the blockers, the link `https://github.com/bkwon94/4thandgoal/blob/main/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md`, and a summary of 500 characters or fewer that starts "the managers file still carries".
+Then: its description has, in order, the key line, the app, the blockers when the ticket names any, the link `https://github.com/bkwon94/4thandgoal/blob/main/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md`, and a summary of 500 characters or fewer that starts "the managers file still carries".
 Evidence: the JSON of the task.
 
 AT-6: A done ticket stays out of the queue
@@ -336,3 +336,4 @@ Out of scope "The `done` tickets on `main`": AT-6
 
 - 2026-11-12: Brian approved a move of AT-1, AT-3, and AT-5 from `rankings` to `manager-pages`. The audit set every `rankings` ticket to `done`, so no `rankings` task enters the queue. `manager-pages` keeps an open ticket in both its `site/` and `pipeline/` subfolders, so the tests check the same behavior.
 - 2026-11-12: Brian approved a change of AT-7 from 11 to 12 labels, to match the PRD revision. The `Ideas` section may hold the buy low idea that the approved audit moved there, because that task has no `4ag:` key line.
+- 2026-11-12: Brian approved a change of AT-5 to match PRD line 113: the description skips the blockers line when the ticket names no blocker.
