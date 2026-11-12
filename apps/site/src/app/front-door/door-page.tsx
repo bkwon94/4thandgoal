@@ -11,7 +11,7 @@ import { homeHref } from "@/lib/routes";
 import { shellProps } from "@/app/shell-props";
 import { FrontDoor } from "@/app/front-door/front-door";
 
-/* `pageHref` is the path of the page. At the hidden /ask/ it matches no menu item, so no item shows as current. */
+/* `pageHref` is the path of the page. The front door is Home, so the hidden /ask/ passes the Home path too, and the Home row shows the check. */
 export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: string }) {
   const door = loadFrontDoor();
   return (
