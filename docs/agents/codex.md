@@ -42,13 +42,13 @@ git show <branch>:.codex/config.toml > .codex/config.toml
 for s in plan to-spec to-acceptance to-tickets implement review; do ln -s ../../.claude/plugin/skills/$s .agents/skills/4ag-$s; done
 ```
 
-Check: `codex debug prompt-input "hi" | grep -c '^- 4ag:'` prints 6.
+Check: `codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*:' | wc -l` prints 6. The output is JSON, so the pattern matches the escaped newline.
 
 Remove the copies when the spec merges. Step 6 does this.
 
 ## 4. Add the skill `research`
 
-Why: `4ag:plan` loads `research` by its Codex name. Its Claude name is `mattpocock-skills:research`. The skill must sit in `~/.agents/skills/`.
+Why: `4ag:plan` checks for the skill `research`. In Codex, a skill counts when `~/.agents/skills/<name>/SKILL.md` exists. Codex lists it as `mattpocock-skills:research`, the same name as in Claude, because the link resolves into the Claude plugin cache and Codex keeps one entry for each real path.
 
 The source is in the cache of the `mattpocock-skills` plugin. The path holds a version number. Change `1.3.1` if the plugin updates.
 
@@ -56,7 +56,7 @@ The source is in the cache of the `mattpocock-skills` plugin. The path holds a v
 mkdir -p ~/.agents/skills && ln -s ~/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/1.3.1/skills/engineering/research ~/.agents/skills/research
 ```
 
-Check: `codex debug prompt-input "hi" | grep -c '^- research:'` prints 1.
+Check: `test -f ~/.agents/skills/research/SKILL.md && echo ok` prints `ok`. Run the `ln` one time only: a second run puts a link inside the target folder.
 
 ## 5. Add the GitHub ruleset on `main`
 
@@ -103,3 +103,21 @@ find .agents/skills -type l -exec rm {} + 2>/dev/null
 ```
 
 Check: `git status --short` shows none of these files. Then run `git pull`. It succeeds.
+
+## 7. Turn off the cached 4ag plugin in Codex
+
+Why: a cached copy of the plugin lists each `4ag:` skill a second time. Codex then loads neither skill for a plain `$4ag:<name>`, and the cached copy goes stale after each change to a skill. The `.agents/skills/` links of the repo replace it.
+
+In `~/.codex/config.toml`, set these two values:
+
+```
+[plugins."4ag@4ag-local"]
+enabled = false
+
+[plugins."cpc@cpc-local"]
+enabled = false
+```
+
+`cpc@cpc-local` is the old name of the same plugin, at the old folder `~/repos/cpcfantasyfootball`. Brian did this on 2026-11-12.
+
+Check: in a checkout that holds `.agents/skills/`, `codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*:' | sort | uniq -c` shows each of the six skills with the count 1.
