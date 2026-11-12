@@ -10,6 +10,6 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-51.
 
 **Status:** ready-for-agent
 
-- [ ] The passphrase field marks itself as a keyboard field, as the ask box does.
-- [ ] The miss card has a scroll margin as tall as the foot.
+- [x] The passphrase field marks itself as a keyboard field, as the ask box does.
+- [x] The miss card has a scroll margin as tall as the foot.
 - [ ] A screenshot from an iPhone, or a WebKit run that sets the keyboard height, shows the whole box above the foot (AT-51).

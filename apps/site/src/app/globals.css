@@ -101,6 +101,9 @@
     --spacing-door-lift: calc(var(--spacing-sp-6) * 3);
     /* The foot of a Thread with an Answer: the chips and the ask box stick above the dock and the home bar. */
     --spacing-door-foot: calc(var(--spacing-dock-space) + env(safe-area-inset-bottom));
+    /* The space that the foot covers above its bottom offset: its 12px pads, one row of chips, the gap, and the ask box.
+       A card adds it to the offset as its scroll margin, so a focused field in the card scrolls into view above the foot. */
+    --spacing-door-foot-clear: calc(var(--spacing-door-foot) + 3 * var(--spacing-sp-3) + var(--spacing-touch) + var(--spacing-ask));
     /* The Thread header sticks under the top band: one 44px row and 4px above and below. A new question scrolls to
        its top under both, so its bubble never hides behind them. */
     --spacing-door-head: calc(var(--spacing-touch) + 2 * var(--spacing-sp-1));

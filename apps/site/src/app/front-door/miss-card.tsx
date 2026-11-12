@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { forwardRef, useState, type ReactNode } from "react";
 import { ArrowUpIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { useKeyboardField } from "@cpc/design/shell/keyboard";
 import { AnswerBody } from "./answer-card";
 import { FAST, SLOW, STAGGER, bubbleIn, fadeIn } from "./motion";
 import type { PersonalBlock } from "./personal-stream";
@@ -186,8 +187,11 @@ export const PassphraseCard = forwardRef<HTMLElement, { question: string; wrong:
   function PassphraseCard({ question, wrong, onPassphrase }, ref) {
     const [value, setValue] = useState("");
     const typed = value.trim();
+    // The field opens the keyboard as the ask box does, so the foot of the Thread moves above the keyboard for it.
+    const keyboard = useKeyboardField();
+    // The scroll margin is as tall as the foot, so the focused field scrolls into view above the foot, not under it.
     return (
-      <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
+      <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head scroll-mb-door-foot-clear flex-col gap-sp-3">
         <QuestionBubble question={question} />
         <Surface>
           <p className="m-0 text-body leading-body text-ink-2">
@@ -211,6 +215,7 @@ export const PassphraseCard = forwardRef<HTMLElement, { question: string; wrong:
               // The manager just sent a question, so the field takes the focus and the next keys go to it.
               autoFocus
               enterKeyHint="send"
+              {...keyboard}
               className="min-w-0 flex-1 bg-transparent text-lead leading-tight text-ink outline-none placeholder:text-mute focus-visible:outline-none"
             />
             <button
