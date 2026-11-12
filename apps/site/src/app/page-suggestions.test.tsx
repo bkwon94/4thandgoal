@@ -8,7 +8,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFixtureSite } from "@/fixtures/sites";
 import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
-import { dayOrder } from "./front-door/topics";
+import { TOPICS, dayOrder } from "./front-door/topics";
 import HomePage from "./front-door/door-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
@@ -165,8 +165,11 @@ describe("the layout of the Suggestions row", () => {
       expect(row.className).not.toContain("flex-wrap");
       const [more, ...chips] = await suggestionChips();
       expect(more.textContent).toBe("More");
-      // Each chip shows only its Topic name: no number of a fact shows on the row.
-      for (const each of chips) expect(each.textContent).toBe(each.getAttribute("aria-label")!.split(":")[0]);
+      // Each chip shows only a short name of its Topic: no number of a fact shows on the row.
+      for (const each of chips) {
+        const topic = TOPICS.find((one) => one.name === each.getAttribute("aria-label")!.split(":")[0])!;
+        expect(each.textContent).toBe(topic.chip);
+      }
     };
     await oneRow();
     openChip(chip);

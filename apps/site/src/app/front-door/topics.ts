@@ -6,24 +6,27 @@
 /* The kind says who builds the Answer: the weekly build, the API live, or the trade judge. */
 export type TopicKind = "league" | "personal" | "judgment";
 
-export type Topic = { key: string; name: string; kind: TopicKind };
+/* The chip is the short name on a Suggestion chip. "More" and 3 whole names do not fit 375 px, so a chip shows one or
+   two words. The 3 widest chips must fit beside "More" at 375 px, about 190 px of text. The full name shows in "More",
+   in the strip, in the question, and to a screen reader (decision 02). */
+export type Topic = { key: string; name: string; chip: string; kind: TopicKind };
 
 /* The order of the table of the spec. "More" lists the Topics in this order. */
 export const TOPICS: readonly Topic[] = [
-  { key: "week_recap", name: "Week recap", kind: "league" },
-  { key: "last_matchup", name: "Your last matchup", kind: "league" },
-  { key: "next_matchup", name: "Your next matchup", kind: "league" },
-  { key: "power_rankings", name: "Power rankings", kind: "league" },
-  { key: "playoff_race", name: "Playoff race", kind: "league" },
-  { key: "your_season", name: "Your season", kind: "league" },
-  { key: "leaders_trades", name: "Position leaders and recent trades", kind: "league" },
-  { key: "waiver_targets", name: "Waiver targets", kind: "personal" },
-  { key: "stack_up", name: "How you stack up", kind: "personal" },
-  { key: "weak_spots", name: "Weak spots", kind: "personal" },
-  { key: "start_sit", name: "Start or sit", kind: "personal" },
-  { key: "sell_high", name: "Sell high or buy low", kind: "judgment" },
-  { key: "trade_ideas", name: "Trade ideas", kind: "judgment" },
-  { key: "trade_check", name: "Trade check", kind: "judgment" },
+  { key: "week_recap", name: "Week recap", chip: "Recap", kind: "league" },
+  { key: "last_matchup", name: "Your last matchup", chip: "Result", kind: "league" },
+  { key: "next_matchup", name: "Your next matchup", chip: "Next game", kind: "league" },
+  { key: "power_rankings", name: "Power rankings", chip: "Ranks", kind: "league" },
+  { key: "playoff_race", name: "Playoff race", chip: "Playoffs", kind: "league" },
+  { key: "your_season", name: "Your season", chip: "Season", kind: "league" },
+  { key: "leaders_trades", name: "Position leaders and recent trades", chip: "Leaders", kind: "league" },
+  { key: "waiver_targets", name: "Waiver targets", chip: "Waivers", kind: "personal" },
+  { key: "stack_up", name: "How you stack up", chip: "Roster", kind: "personal" },
+  { key: "weak_spots", name: "Weak spots", chip: "Holes", kind: "personal" },
+  { key: "start_sit", name: "Start or sit", chip: "Start/sit", kind: "personal" },
+  { key: "sell_high", name: "Sell high or buy low", chip: "Sell high", kind: "judgment" },
+  { key: "trade_ideas", name: "Trade ideas", chip: "Trades", kind: "judgment" },
+  { key: "trade_check", name: "Trade check", chip: "Check", kind: "judgment" },
 ];
 
 /* The name of a Topic by its key. A key of no known Topic shows as itself, so a new Topic of the API still reads. */

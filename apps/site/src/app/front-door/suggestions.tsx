@@ -1,8 +1,8 @@
 /**
- * The Suggestion chips above the ask box: "More" leads one row, then the 3 Suggestions of Your team, each with only its
- * Topic name. A first tap on a chip shows its fact in a strip under the row, and a second tap opens the Topic. "More"
- * opens the list of all 14 Topics from its pill, so no Topic is ever out of reach. Until the picks are in, 3 quiet
- * placeholder chips hold their place.
+ * The Suggestion chips above the ask box: "More" leads one row, then the 3 Suggestions of Your team, each with only a
+ * short name of its Topic. A first tap on a chip shows the full name and the fact in a strip under the row, and a second
+ * tap opens the Topic. "More" opens the list of all 14 Topics from its pill, so no Topic is ever out of reach. Until the
+ * picks are in, 3 quiet placeholder chips hold their place.
  */
 "use client";
 
@@ -64,9 +64,9 @@ export function Suggestions({
     // No gap here: the strip and the panel each carry their own 8px above, so a shut strip adds no height to the foot.
     <div className="flex flex-col">
       {/* The row is one line at every state of the Thread, so the Thread gets the screen (decision 02). A chip shows
-          only its Topic name, and "More" and 3 chips always fit the row: a row that scrolls sideways hides a chip past
-          its edge, and decision 02 chose a whole row over one that scrolls. So a chip shrinks, and a long name cuts with
-          an ellipsis, on a phone too narrow for 3 whole names. The bleed keeps the last chip clear of the gutter. The
+          only a short name of its Topic, so "More" and 3 chips fit 375 px: a row that scrolls sideways hides a chip past
+          its edge. A chip can still shrink and cut its name with an ellipsis, but only as a guard for a very long name.
+          The bleed keeps the last chip clear of the gutter. The
           4px pad above and below gives the press scale and the focus ring room in the scroll box, and the negative
           margin keeps the row one 44px chip high, so --spacing-door-foot-clear holds. */}
       <div
@@ -84,7 +84,7 @@ export function Suggestions({
             setShown(null);
             onMore(!moreOpen);
           }}
-          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-3 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-2 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
         >
           <span>More</span>
           <ChevronDownIcon
@@ -126,10 +126,10 @@ export function Suggestions({
               animate={off ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }}
               transition={off ? fadeIn(FAST, index * STAGGER) : { ...CHIP_GLIDE, layout: GLIDE, opacity: fadeIn(FAST, index * STAGGER) }}
-              className="press door-sheen flex min-h-touch max-w-chip min-w-0 flex-initial snap-start items-center rounded-pill border border-door-hair bg-card px-sp-3 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+              className="press door-sheen flex min-h-touch max-w-chip min-w-0 flex-initial snap-start items-center rounded-pill border border-door-hair bg-card px-sp-2 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
             >
               <span aria-hidden className="max-w-full truncate text-body leading-tight font-semibold text-ink">
-                {topic.name}
+                {topic.chip}
               </span>
             </SuggestionChip>
           ))}
@@ -164,15 +164,17 @@ export function Suggestions({
                       (Text swap soft). The old fact leaves the flow, so the strip never grows for the overlap. */}
                   <span className="relative min-w-0 flex-1">
                     <AnimatePresence initial={false} mode="popLayout">
+                      {/* The chip shows a short name, so the strip shows the full name of the Topic over its fact. */}
                       <motion.span
                         key={strip.key}
                         initial={off ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
                         animate={off ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)" }}
                         exit={off ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
                         transition={{ duration: QUICK, ease: "easeInOut" }}
-                        className="block font-mono text-meta leading-tight text-ink tabular-nums"
+                        className="block text-meta leading-tight text-ink"
                       >
-                        {facts[strip.key]}
+                        <span className="font-semibold">{strip.name}</span>{" "}
+                        <span className="font-mono tabular-nums">{facts[strip.key]}</span>
                       </motion.span>
                     </AnimatePresence>
                   </span>

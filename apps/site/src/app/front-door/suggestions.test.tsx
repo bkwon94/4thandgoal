@@ -1,7 +1,8 @@
 /**
  * Tests for the Suggestion chips of the dock: quiet placeholder chips hold the place of the chips until the browser
- * reads the day, so the dock never jumps when the chips land. A chip shows only its Topic name: a first tap shows its
- * fact in the strip, and a second tap opens the Topic (decision 02). A press keeps the focus in the ask box (ticket 37).
+ * reads the day, so the dock never jumps when the chips land. A chip shows only a short name of its Topic: a first tap
+ * shows the full name and the fact in the strip, and a second tap opens the Topic (decision 02). A press keeps the focus
+ * in the ask box (ticket 37).
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -14,15 +15,15 @@ const props = { facts: {}, moreOpen: false, onMore: () => {}, onPick: () => {} }
 const FACTS = { week_recap: "You scored 80.11, 12th of 12", power_rankings: "6th, down 5" };
 
 describe("Suggestions", () => {
-  it("shows each chip with only its Topic name, in one row with More first (AT-42)", () => {
+  it("shows each chip with only a short name of its Topic, in one row with More first (AT-42)", () => {
     render(<Suggestions picks={["week_recap", "power_rankings"]} {...props} facts={FACTS} />);
     const group = screen.getByRole("group", { name: "Suggestions" });
     expect(group.className).toContain("flex-nowrap");
     expect(group.className).not.toContain("flex-wrap");
     const [more, ...chips] = within(group).getAllByRole("button");
     expect(more.textContent).toBe("More");
-    expect(chips.map((chip) => chip.textContent)).toEqual(["Week recap", "Power rankings"]);
-    // A screen reader still hears the fact with the name.
+    expect(chips.map((chip) => chip.textContent)).toEqual(["Recap", "Ranks"]);
+    // A screen reader still hears the full name of the Topic and its fact.
     expect(chips[0].getAttribute("aria-label")).toBe("Week recap: You scored 80.11, 12th of 12");
   });
 
@@ -35,6 +36,7 @@ describe("Suggestions", () => {
     expect(onPick).not.toHaveBeenCalled();
     expect(chip.getAttribute("aria-expanded")).toBe("true");
     const strip = screen.getByRole("button", { name: "Open Week recap" });
+    expect(strip.textContent).toContain("Week recap");
     expect(strip.textContent).toContain("You scored 80.11, 12th of 12");
     expect(strip.textContent).toContain("Open →");
     expect(chip.getAttribute("aria-controls")).toBe(strip.closest("[id]")!.id);
