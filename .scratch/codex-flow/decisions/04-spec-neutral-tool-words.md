@@ -6,7 +6,7 @@ Map: `.scratch/codex-flow/MAP.md`.
 
 **Blocked by:** 02, 03
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ The skill text says "call the Skill tool" and "start one subagent with the Agent
 
 ## Decision
 
-None yet.
+The spec records it under Implementation Decisions, and Brian approved the spec on 2026-11-11. The skill text says "load the skill `<name>`" and "start a fresh subagent", with "with the strong model" for the Judge. A section "The harness words" in the root `AGENTS.md` maps each phrase to the tool of each harness.

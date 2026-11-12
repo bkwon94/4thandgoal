@@ -18,11 +18,12 @@ One spec: the six 4ag skills and the repo rules run in Codex and in Claude, from
 - The global skills stay global, and Brian adds `research` to `~/.agents/skills/`. `decisions/01-grill-destination-and-seams.md`.
 - Codex starts each builder and the Judge with `spawn_agent` and `fork_turns: "none"`. The Judge uses `gpt-6-astra`, and at most 6 children run at a time. `decisions/03-research-codex-fresh-agent.md`.
 - The project `.codex/config.toml` holds the profile `4ag`, with write on `.git` and the network. The GitHub ruleset on `main` keeps agents off it, as a manual step for Brian. `decisions/05-grill-codex-permission-profile.md`.
+- The skills say "load the skill" and "start a fresh subagent", and the root `AGENTS.md` maps each phrase to each harness. `decisions/04-spec-neutral-tool-words.md`.
 - The proof is a smoke run of each skill in Codex, and one real small spec that Codex runs from the spec branch before the merge. `decisions/01-grill-destination-and-seams.md`.
 
 ## NOT YET SPECIFIED
 
-- Which neutral words replace "the Skill tool" and "the Agent tool" in the skill text? `decisions/04-spec-neutral-tool-words.md`.
+None.
 
 ## OUT OF SCOPE
 
