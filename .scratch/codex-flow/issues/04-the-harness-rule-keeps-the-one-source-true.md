@@ -8,7 +8,7 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-9, AT-10, and AT-11.
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] In a scratch copy with the `4ag-review` symlink removed, `make check-fast` fails and names it.
 - [x] In a scratch copy with an extra line in the site `CLAUDE.md`, the check fails and names the file.
