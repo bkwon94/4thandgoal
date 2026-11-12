@@ -200,6 +200,16 @@ def test_a_projection_is_the_stat_line_scored_with_the_cpc_scoring(settings, sou
     assert row["projection"] == pytest.approx(line["pts_half_ppr"], abs=0.1)
 
 
+def test_every_recorded_sleeper_projection_row_is_a_rotowire_row():
+    # The PRD reads the week projections of Rotowire (`company: rotowire`). The default Sleeper projections give only
+    # Rotowire rows, so the lineup and the DEF projections read them with no filter on `company`.
+    paths = [RECORDED / f"{slug}-week-10" / "projections.json" for slug in BO_GIRDS]
+    paths += sorted(DEF_PROJECTIONS.glob("sleeper-def-projections-week-*.json"))
+    for path in paths:
+        rows = json.loads(path.read_text())
+        assert rows and {row["company"] for row in rows} == {"rotowire"}, path
+
+
 def test_a_questionable_starter_shows_his_body_part_no_practice_report_and_the_pivot(settings, sources):
     # AT-7 and AT-8: Jared Goff of cpc roster 7 is Questionable (chest), Sleeper has no practice report yet, and Patrick
     # Mahomes is the QB of his bench.
