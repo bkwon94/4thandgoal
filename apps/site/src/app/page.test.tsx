@@ -141,7 +141,7 @@ async function suggestionChips() {
 describe("the Suggestions of Lil Fridge", () => {
   afterEach(() => vi.useRealTimers());
 
-  it("show 3 Suggestions, each with a Topic name and one number, and More lists all 13 Topics (AT-4)", async () => {
+  it("show 3 Suggestions, each with a Topic name and one number, and More lists all 14 Topics (AT-4)", async () => {
     onDay("2026-11-11T12:00:00");
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
@@ -163,6 +163,7 @@ describe("the Suggestions of Lil Fridge", () => {
       "Waiver targets",
       "How you stack up",
       "Weak spots",
+      "Start or sit",
       "Sell high or buy low",
       "Trade ideas",
       "Trade check",

@@ -1,7 +1,7 @@
 /**
  * The Suggestion chips above the ask box: "More" leads one row, then the 3 Suggestions of Your team, each with only its
  * Topic name. A first tap on a chip shows its fact in a strip under the row, and a second tap opens the Topic. "More"
- * opens the list of all 13 Topics from its pill, so no Topic is ever out of reach. Until the picks are in, 3 quiet
+ * opens the list of all 14 Topics from its pill, so no Topic is ever out of reach. Until the picks are in, 3 quiet
  * placeholder chips hold their place.
  */
 "use client";

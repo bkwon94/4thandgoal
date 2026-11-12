@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 
+from cornerstone_api.game_lock import ScoresFetcher, fetch_espn_scoreboard, fetch_sleeper_scores
 from facts.writer import parse_call
 from league.chart import chart_values, claude_reader
 from league.client import Client
@@ -45,6 +46,9 @@ class Sources:
     fetch_past: Callable[[str], bytes] | None = None
     # The top adds across all Sleeper leagues in the last day. The waiver targets read it as the crowd signal.
     fetch_trending: Callable[[], list[RawTrending]] = fetch_trending
+    # The kickoffs of the game lock of Start or sit: the Sleeper `scores` query, and the ESPN scoreboard as its fallback.
+    fetch_sleeper_scores: ScoresFetcher = fetch_sleeper_scores
+    fetch_espn_scoreboard: ScoresFetcher = fetch_espn_scoreboard
     # One shared partial is safe as the default, because it holds no state that a call changes.
     read_chart: ChartReader = partial(chart_values, read=claude_reader(parse_call))  # noqa: RUF009
 

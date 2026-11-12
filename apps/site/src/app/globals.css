@@ -113,7 +113,7 @@
     /* The scroll-padding-top of html already keeps the top band clear, less its 1px rule. A scroll adds this margin to
        it, so the margin holds only the rule, the Thread header, and one step. */
     --spacing-door-under-head: calc(1px + var(--spacing-door-head) + var(--spacing-sp-2));
-    /* The list of all 13 Topics under "More" scrolls inside half the view, so the ask box stays on screen. */
+    /* The list of all 14 Topics under "More" scrolls inside half the view, so the ask box stays on screen. */
     --spacing-more: 50dvh;
     /* The ask box: a 44px send button in a 4px inset, so the whole box is a full tap target. */
     --spacing-send: var(--spacing-touch);

@@ -11,6 +11,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { recapBlockSchema, recapText } from "@/lib/data/blocks/recap-schema";
 import { FeedView, feedBlockSchema, feedText } from "./feed-block";
 import { ByeGridView, byeGridBlockSchema, byeGridText } from "./bye-grid";
+import { LineupView, lineupBlockSchema, lineupText } from "./lineup-block";
 import { VERY_SLOW, riseIn, staggerOf } from "./motion";
 import { RecapCard } from "./recap-card";
 import { TradeBlockView, tradeBlockSchema, tradeBlockText } from "./trade-block";
@@ -51,6 +52,7 @@ export const answerBlockSchema = z.discriminatedUnion("kind", [
   byeGridBlockSchema,
   waiverListSchema,
   sellListSchema,
+  lineupBlockSchema,
 ]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
@@ -84,6 +86,7 @@ export function blockText(block: AnswerBlock): string {
       return waiverListText(block);
     case "sell_list":
       return sellListText(block);
+    case "lineup": return lineupText(block);
   }
 }
 
@@ -233,5 +236,6 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
       return <WaiverListView block={block} live={live} />;
     case "sell_list":
       return <SellListView block={block} live={live} />;
+    case "lineup": return <LineupView block={block} />;
   }
 }

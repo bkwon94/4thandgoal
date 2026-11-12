@@ -7,9 +7,10 @@ import { z } from "zod";
 import { type TopicRow, type TopicStat, topicRowSchema, topicStatSchema } from "@/lib/data/topics-schema";
 import { type AnswerBlock, answerBlockSchema } from "./answer-block";
 import { type FreeView, viewOf } from "./free-stream";
+import { lineupBlockSchema } from "./lineup-block";
 
-/* The 3 personal Topics, which the API builds live for one team. */
-export const PERSONAL_TOPICS = ["weak_spots", "stack_up", "waiver_targets"] as const;
+/* The 4 personal Topics, which the API builds live for one team. */
+export const PERSONAL_TOPICS = ["weak_spots", "stack_up", "waiver_targets", "start_sit"] as const;
 export type PersonalTopic = (typeof PERSONAL_TOPICS)[number];
 export const isPersonal = (key: string): key is PersonalTopic => (PERSONAL_TOPICS as readonly string[]).includes(key);
 
@@ -19,6 +20,7 @@ export const PERSONAL_LINES: Record<PersonalTopic, string> = {
   weak_spots: "Where your lineup is soft",
   stack_up: "Your roster against the league",
   waiver_targets: "Adds that fit your weak spots",
+  start_sit: "Your lineup for this week",
 };
 
 /* The Topic, the team, and the fact that each data block of a personal Topic carries, whatever its kind. */
@@ -37,8 +39,13 @@ const rowsBlockSchema = personalHeadSchema.extend({
   block: answerBlockSchema.optional(),
 });
 
-/* The data block of a personal Topic: the stats and rows, or one block of the block contract, such as the waiver list. */
-export const personalBlockSchema = z.union([rowsBlockSchema, z.intersection(answerBlockSchema, personalHeadSchema)]);
+/* The data block of a personal Topic: the stats and rows, the lineup of Start or sit, or one block of the block
+   contract, such as the waiver list. The lineup carries no fact, so it has its own branch. */
+export const personalBlockSchema = z.union([
+  rowsBlockSchema,
+  lineupBlockSchema,
+  z.intersection(answerBlockSchema, personalHeadSchema),
+]);
 export type PersonalBlock = z.infer<typeof personalBlockSchema>;
 
 /* The stats and the rows that a data block shows on the card, and the block of the block contract that shows under
