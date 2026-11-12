@@ -24,11 +24,13 @@ Check: `launchctl list | grep cornerstone` prints nothing.
 
 A worktree of an open spec stays. The move step repairs it.
 
-First, list each worktree whose branch is merged into `main`. This command removes nothing.
+First, list each worktree whose branch is merged into `origin/main`. The command fetches first, so the test sees the latest `main`. It removes nothing.
 
 ```
-cd ~/repos/cpcfantasyfootball && for wt in .claude/worktrees/*; do b=$(git -C "$wt" branch --show-current); [ -n "$b" ] || continue; if git merge-base --is-ancestor "$b" main || [ -n "$(gh pr list --state merged --head "$b" --json number --jq '.[0].number')" ]; then echo "$wt $b"; fi; done
+cd ~/repos/cpcfantasyfootball && git fetch origin && for wt in .claude/worktrees/*(N); do b=$(git -C "$wt" branch --show-current); [ -n "$b" ] || continue; if git merge-base --is-ancestor "$b" origin/main || [ -n "$(gh pr list --state merged --head "$b" --json number --jq '.[0].number')" ]; then echo "$wt $b"; fi; done
 ```
+
+The `(N)` makes an empty glob match nothing. Without it, zsh stops with "no matches found" when `.claude/worktrees/` is empty.
 
 A squash merge leaves the branch out of `main`. The `gh pr list` test finds those branches.
 
@@ -42,9 +44,13 @@ Check: `git worktree list` shows no listed worktree.
 
 ## 3. Move the folder
 
+If `~/repos/4thandgoal` exists, `mv` puts the repo inside it. The guard makes the command do nothing in that case.
+
 ```
-mv ~/repos/cpcfantasyfootball ~/repos/4thandgoal
+test ! -e ~/repos/4thandgoal && mv ~/repos/cpcfantasyfootball ~/repos/4thandgoal
 ```
+
+If the command prints nothing and the target exists, stop. Look at the target. Rename or remove it only if it is empty or stale. Then run the command again.
 
 Check: `git -C ~/repos/4thandgoal remote -v` shows `bkwon94/4thandgoal` for fetch and push.
 
@@ -52,9 +58,14 @@ Check: `git -C ~/repos/4thandgoal remote -v` shows `bkwon94/4thandgoal` for fetc
 
 Pass the path of each remaining worktree. Include a worktree outside the repo, such as one in `/private/tmp`.
 
+First, set `other` to the path of each outside worktree. Set it to nothing if there is none. Find them in the output of `git worktree list` before the move.
+
 ```
-cd ~/repos/4thandgoal && git worktree repair .claude/worktrees/* <other worktree path>
+other=/private/tmp/example-worktree
+cd ~/repos/4thandgoal && git worktree repair .claude/worktrees/*(N) $other
 ```
+
+The `(N)` makes an empty glob match nothing. Without it, zsh stops with "no matches found" when `.claude/worktrees/` is empty. The value `/private/tmp/example-worktree` is an example. Replace it.
 
 Check: `git worktree list` shows `/Users/brian.kwon/repos/4thandgoal` and no line with `prunable`.
 
@@ -62,21 +73,30 @@ Check: `git worktree list` shows `/Users/brian.kwon/repos/4thandgoal` and no lin
 
 This folder holds the memory and the sessions of the repo.
 
+If the new folder exists, `mv` puts the old folder inside it. The guard makes the command do nothing in that case.
+
 ```
-mv ~/.claude/projects/-Users-brian-kwon-repos-cpcfantasyfootball ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal
+test ! -e ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal && mv ~/.claude/projects/-Users-brian-kwon-repos-cpcfantasyfootball ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal
 ```
 
-Check: `ls ~/.claude/projects | grep -E 'cpcfantasyfootball|4thandgoal'` prints only the `4thandgoal` folder.
+If the command prints nothing and the new folder exists, stop. Look at the new folder. A session may have made it. Ask before you merge or remove it.
+
+Check: `test ! -e ~/.claude/projects/-Users-brian-kwon-repos-cpcfantasyfootball && test -d ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal && echo ok` prints `ok`.
+
+Claude keeps one more project folder for each worktree, named `-Users-brian-kwon-repos-cpcfantasyfootball--claude-worktrees-<name>`. Those folders stay where they are. The sessions of a worktree do not carry over.
 
 ## 6. Set the marketplace and the plugin
 
-In `~/.claude/settings.json`, make these three changes:
+The command copies `~/.claude/settings.json` to `~/.claude/settings.json.bak`. Then it replaces the old path with the new path in the file. This also changes the old path in the two `autoMode` lines.
+
+```
+cp ~/.claude/settings.json ~/.claude/settings.json.bak && sed -i '' 's#/Users/brian.kwon/repos/cpcfantasyfootball#/Users/brian.kwon/repos/4thandgoal#g' ~/.claude/settings.json
+```
+
+Then open the file and make these two changes by hand. The old marketplace name is not a path, so the command leaves it.
 
 1. Rename the marketplace key to `4ag-local`.
-2. Set its path to `/Users/brian.kwon/repos/4thandgoal`.
-3. Set the plugin to `4ag@4ag-local`.
-
-Also change the old path in the two `autoMode` lines.
+2. Set the plugin to `4ag@4ag-local`.
 
 Check: `grep -n cpcfantasyfootball ~/.claude/settings.json` prints nothing.
 
@@ -88,7 +108,7 @@ The old venv holds the old path.
 cd ~/repos/4thandgoal && rm -rf .venv && uv sync --all-packages && pnpm install
 ```
 
-Check: `.venv/bin/python -c "import sys; print(sys.prefix)"` prints a path under `/Users/brian.kwon/repos/4thandgoal`.
+Check: `.venv/bin/python -c "import sys; print(sys.prefix)"` prints a path under `/Users/brian.kwon/repos/4thandgoal`. Then `pnpm --dir apps/site exec node -e 1` prints nothing and exits with 0.
 
 ## 8. Copy and load the LaunchAgent
 
@@ -100,7 +120,11 @@ Check: `launchctl list | grep cornerstone` shows the job.
 
 ## 9. Prove the plugin loads
 
-Open a new Claude session in `~/repos/4thandgoal`. Call one `4ag:` skill.
+```
+cd ~/repos/4thandgoal && claude
+```
+
+In the new session, call one `4ag:` skill.
 
 Check: `/plugin` lists `4ag@4ag-local` as enabled.
 
