@@ -1,6 +1,6 @@
 """
 Checks that each package folder under src holds a README.md with the headings Knows, Ports, and Does not do.
-Each README is under 25 lines, and the only CLAUDE.md is the one at the repo root. See ADR 0014.
+Each README is under 25 lines, and the only CLAUDE.md or AGENTS.md is the one at the repo root. See ADR 0014.
 Each package under packages/ at the repo root holds a README.md with the same headings and length. See ADR 0023.
 """
 import subprocess
@@ -21,7 +21,9 @@ MISSING_RULE = "each folder under src that holds an __init__.py holds a README.m
 HEADINGS_RULE = "a package README has a one-line title, then the headings Knows, Ports, and Does not do, in that order"
 HEADINGS_FIX = "give the README a title on line 1, then exactly ## Knows, ## Ports, and ## Does not do, in that order."
 LENGTH_RULE = "a package README is under 25 lines"
-CLAUDE_MD_RULE = "the only CLAUDE.md is the one at the repo root"
+CLAUDE_MD_RULE = "the only CLAUDE.md or AGENTS.md is the one at the repo root"
+# Both files carry the rules of a folder, so the rule treats them the same.
+RULES_FILES = ("CLAUDE.md", "AGENTS.md")
 
 
 def _package_folders(root: Path) -> list[Path]:
@@ -122,16 +124,16 @@ def _tracked_files(root: Path) -> list[str]:
 
 
 def _claude_md_offenses(tracked: list[str]) -> list[Offense]:
-    # A nested CLAUDE.md loads by itself. The agent must choose to read the next level, so the folder holds a README.
+    # A nested CLAUDE.md or AGENTS.md loads by itself. The agent must choose to read the next level, so the folder holds a README.
     return [Offense(
         path=path,
         line=1,
         rule_id="readme/no-claude-md",
-        what=f"{path} is a CLAUDE.md below the repo root.",
+        what=f"{path} is a {Path(path).name} below the repo root.",
         rule=CLAUDE_MD_RULE,
         adr=ADR,
-        fix="move the text to the README.md of the folder, and remove the CLAUDE.md.",
-    ) for path in tracked if Path(path).name == "CLAUDE.md" and path != "CLAUDE.md"]
+        fix=f"move the text to the README.md of the folder, and remove the {Path(path).name}.",
+    ) for path in tracked if Path(path).name in RULES_FILES and path != Path(path).name]
 
 
 def test_each_package_of_the_repo_has_a_readme_with_the_three_headings():
@@ -202,6 +204,12 @@ def test_the_rule_finds_a_claude_md_below_the_root():
     offenses = _claude_md_offenses(["CLAUDE.md", "src/cornerstone/CLAUDE.md"])
     assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
         ("src/cornerstone/CLAUDE.md", 1, "readme/no-claude-md")]
+
+
+def test_the_rule_finds_an_agents_md_below_the_root():
+    offenses = _claude_md_offenses(["AGENTS.md", "src/cornerstone/AGENTS.md"])
+    assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
+        ("src/cornerstone/AGENTS.md", 1, "readme/no-claude-md")]
 
 
 def test_the_rule_finds_a_readme_with_no_ports_heading(tmp_path):

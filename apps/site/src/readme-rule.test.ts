@@ -2,7 +2,7 @@
  * Holds each package folder to the rule of ADR 0016: a README of under 25 lines with the headings Knows, Ports, and Does not do.
  * A package folder is each folder directly under src/components/, when it exists, and src/lib/, plus src/lib/ and src/hooks/ when it exists.
  * Each package under packages/ is a package folder too (ADR 0023), with each folder directly under its site side.
- * No tracked CLAUDE.md sits below the root, except one at the top of each app in apps/.
+ * No tracked CLAUDE.md or AGENTS.md sits below the root, except one at the top of each app in apps/.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -20,9 +20,11 @@ const HEADINGS = ["## Knows", "## Ports", "## Does not do"];
 const MAX_LINES = 24;
 
 const RULE = `each package folder holds a README of under ${MAX_LINES + 1} lines with the headings Knows, Ports, and Does not do`;
-const CLAUDE_MD_RULE = "no CLAUDE.md sits below the repo root, except one at the top of each app";
-/* Each app keeps a short CLAUDE.md with its own commands, so apps/<app>/CLAUDE.md is allowed. See .scratch/one/PRD.md. */
-const APP_CLAUDE_MD = /^apps\/[^/]+\/CLAUDE\.md$/;
+const CLAUDE_MD_RULE = "no CLAUDE.md or AGENTS.md sits below the repo root, except one of each at the top of each app";
+/* Each app keeps its own commands in an AGENTS.md and a CLAUDE.md that imports it, so apps/<app>/ may hold both. See .scratch/one/PRD.md. */
+/* Both files carry the rules of a folder, so the rule treats them the same. */
+const RULES_FILES = ["CLAUDE.md", "AGENTS.md"];
+const APP_CLAUDE_MD = /^apps\/[^/]+\/(CLAUDE|AGENTS)\.md$/;
 const ADR = "docs/adr/0016-the-rules-are-checks.md";
 
 function subfolders(dir: string): string[] {
@@ -89,15 +91,15 @@ function offenses(path: string, source: string | null): Offense[] {
 /* The paths come from git ls-files, so a CLAUDE.md in node_modules or in an ignored folder does not count. */
 function claudeMdOffenses(paths: string[]): Offense[] {
   return paths
-    .filter((path) => basename(path) === "CLAUDE.md" && path !== "CLAUDE.md" && !APP_CLAUDE_MD.test(path))
+    .filter((path) => RULES_FILES.includes(basename(path)) && path !== basename(path) && !APP_CLAUDE_MD.test(path))
     .map((path) => ({
       path,
       line: 1,
       ruleId: "readme/no-claude-md",
-      what: `${path} is a tracked CLAUDE.md below the root.`,
+      what: `${path} is a tracked ${basename(path)} below the root.`,
       rule: CLAUDE_MD_RULE,
       adr: ADR,
-      fix: "move the text into the README.md of the folder and delete the CLAUDE.md.",
+      fix: `move the text into the README.md of the folder and delete the ${basename(path)}`,
     }));
 }
 
@@ -148,6 +150,15 @@ describe("the readme rule", () => {
       ".scratch/notes-on-CLAUDE.md",
     ]);
     expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "apps/site/src/lib/CLAUDE.md", ruleId: "readme/no-claude-md" }]);
+  });
+
+  it("finds one offense in an AGENTS.md below the root", () => {
+    const found = claudeMdOffenses([
+      "AGENTS.md",
+      "apps/pipeline/AGENTS.md",
+      "apps/site/src/lib/AGENTS.md",
+    ]);
+    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "apps/site/src/lib/AGENTS.md", ruleId: "readme/no-claude-md" }]);
   });
 
   it("finds one offense in a folder on disk with one source file and no README", () => {
