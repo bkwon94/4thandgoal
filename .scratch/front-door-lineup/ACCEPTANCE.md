@@ -101,10 +101,10 @@ Evidence: two screenshots at 375 px and the sum written out.
 AT-12: A started game locks its players
 App: api
 Stories: 16
-Given: The live week, after the Thursday kickoff, and a roster of either league with a player in that game. Name the manager and the player.
-When: The reader opens Start or sit.
-Then: That player is neither a Swap nor a starter that a Swap replaces.
-Evidence: the stream, and the `start_time` and `has_started` of that game from the Sleeper `scores` query.
+Given: The recorded Sleeper week 10 of norcal, with the clock set after the `start_time` of the Thursday game. A roster has a player in that game, and Jev would swap him. Name the manager and the player.
+When: The reader opens Start or sit, before and after that `start_time`.
+Then: After the `start_time`, that player is neither a Swap nor a starter that a Swap replaces.
+Evidence: the lineup block before and after the `start_time`, the `start_time` and `has_started` of that game from the recorded `scores` query, and the lock tests.
 
 AT-13: Start or sit follows the order of the day
 App: api
@@ -531,4 +531,4 @@ Out of scope "The top five leaders at each position": no test. Reason: AT-21 che
 
 ## Revisions
 
-None yet.
+- 2026-11-12, AT-12: the Given line used the live week after the Thursday kickoff, so the test waited for a game. Brian chose a direct run now: the recorded week 10 with the clock set after the `start_time`. The lock reads the clock and the `has_started` flag, so the run proves the same rule.
