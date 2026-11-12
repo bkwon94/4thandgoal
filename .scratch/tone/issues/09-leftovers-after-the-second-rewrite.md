@@ -11,7 +11,7 @@ Spec: `.scratch/tone/PRD.md`. This ticket amends "The voice" and the rankings ch
 
 **Blocked by:** None. Main holds tickets 01 to 07.
 
-**Status:** ready-for-human
+**Status:** done
 
 - [x] The matchup-of-the-week note reaches the game changer chapter and, when it applies, the awards chapter, with tests.
 - [x] The ", and that's X" closer is a banned pattern in the prompt, with a test.
@@ -123,3 +123,7 @@ Brian approves the new tail of the example that ended ', and that's an upset'.
   > Infinity is a stretch for an offense averaging 77.06 a week lately.
   > Pukancun on 3 stays last at 1-11, 5 games below the cut.
   > At least the scoring is up to 93.93 a week lately.
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 80a8a7bb.
+Proof: Commit "Fix the four tone habits left after the second rewrite" and fix 958c1ee are on `main`, and week 6 is published with the "in an upset" closer. Only the box "Brian publishes" was open, and weeks 6 to 9 are live.
+Read 1 file: .scratch/todoist-queue/audit.md.

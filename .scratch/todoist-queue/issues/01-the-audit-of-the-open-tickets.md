@@ -8,11 +8,18 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-26 and AT-27.
 
 **Blocked by:** none
 
-**Status:** ready-for-human
+**Status:** in-review
 
-- [ ] `audit.md` lists each open ticket of `main` once, under its feature, with a result.
-- [ ] Each `done` line names a commit that exists in `git log`.
-- [ ] Brian approved each line of `audit.md`.
-- [ ] Each `Status:` line matches its approved line, with a close comment.
-- [ ] `docs/agents/state.md` lists each feature with an open ticket, and `make check-fast` passes.
-- [ ] No ticket has the status `triage`, `built`, `accepted`, or `backlog`.
+- [x] `audit.md` lists each open ticket of `main` once, under its feature, with a result.
+- [x] Each `done` line names a commit that exists in `git log`.
+- [x] Brian approved each line of `audit.md`.
+- [x] Each `Status:` line matches its approved line, with a close comment.
+- [x] `docs/agents/state.md` lists each feature with an open ticket, and `make check-fast` passes.
+- [x] No ticket has the status `triage`, `built`, `accepted`, or `backlog`.
+
+## Comments
+
+Built on the spec branch `todoist-queue` on 2026-11-12. Three audit agents wrote `audit.md`, and Brian approved it with the changes under its Approved heading.
+Proof: 71 tickets audited, 44 done, 21 wontfix, 6 open; each named commit passed `git cat-file -e`.
+Later: ticket 06 adds buy low from `front-door` 12 to the Ideas section after the import makes it.
+Read 3 files: .scratch/todoist-queue/audit.md, docs/agents/state.md, docs/agents/issue-tracker.md.

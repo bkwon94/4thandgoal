@@ -4,7 +4,13 @@
 
 **Blocked by:** None
 
-**Status:** triage
+**Status:** wontfix
 
 - [ ] The header takes two lines at most at 390, 768, and 1280.
 - [ ] Every team name stays on one line at 768 and 1280.
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12.
+Proof: The redesign 0a8b8868 replaced the rankings table with the Ladder, and no "Playoff %" column header exists in `apps/site/src` or `packages`.
+Read 1 file: .scratch/todoist-queue/audit.md.

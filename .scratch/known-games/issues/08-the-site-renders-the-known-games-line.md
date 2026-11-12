@@ -11,7 +11,7 @@ types gain the block, and a document without the block still renders.
 
 **Blocked by:** 02 (The known-games week).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A document with 13 games read, 2 in progress, and snaps pending for 9 renders the full line.
 - [ ] A document with zero games read renders "Stats through week 6".
@@ -19,3 +19,9 @@ types gain the block, and a document without the block still renders.
 - [ ] A document with no known-games block renders as today.
 - [ ] The finder page shows the same line.
 - [ ] The line passes the site's lint and the page test that pins no blurb text.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 631f2395.
+Proof: The merge "known-games-08: the as-of line shows the known games" is on `main`, and `analyze-result.test.tsx` pins the exact line "Stats through week 6, plus 13 week 7 games, 2 in progress · Snaps pending for 9 games".
+Read 1 file: .scratch/todoist-queue/audit.md.

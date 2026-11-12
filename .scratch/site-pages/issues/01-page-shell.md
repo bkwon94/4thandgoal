@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] One shared component, named for the glossary term page column, renders the three-track grid from the tablet tier and the main with the card gap. It takes an optional rail and the page content.
 - [x] The week page renders through the shell with its rail. The week page tests pass unchanged: the nine chapters, the rail, the in-view mark, and the footer.
@@ -15,3 +15,9 @@
 - [x] The glossary term page column still matches what the shell does. No new glossary term.
 - [x] A browser check at 768 and 1280 shows the home page as three white cards with the card gap, the rankings page as one dark card on the grey body, and the week page unchanged. At 390 each page is unchanged.
 - [x] `pnpm test`, `pnpm typecheck`, and `pnpm build` pass.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in dd18742a.
+Proof: The commit "Add the page column shell and the card look on every page" merged in 94f52bea and then in 6486cff5 on `main`.
+Read 1 file: .scratch/todoist-queue/audit.md.

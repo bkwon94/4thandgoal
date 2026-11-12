@@ -6,7 +6,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** in-progress, branch `grade-limits`
+**Status:** done
 
 - [x] `GRADES_PER_MINUTE = 5` and `GRADES_PER_DAY = 20` in `src/cornerstone/tunables.py`, with the reason.
 - [x] The analyze route counts a grade after the result cache misses and before the Claude call.
@@ -17,3 +17,9 @@
 - [ ] Site follow-up, separate: show "Try again in N hours" when `Retry-After` is over an hour.
 - [x] `uv run pytest -q` passes with no failed test.
 - [ ] Deploy needs Brian's `fly deploy`.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 59f8dcce.
+Proof: `GRADES_PER_MINUTE = 5` and `GRADES_PER_DAY = 20` are in `packages/analyzer/python/src/analyzer/tunables.py`, and site-speed 590268f8 did the "Try again in N hours" follow-up; the API now deploys on green.
+Read 1 file: .scratch/todoist-queue/audit.md.

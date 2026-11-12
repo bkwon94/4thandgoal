@@ -6,8 +6,14 @@ Also: the drop fact reads "projects 1 points a week higher" at a margin of 1.0. 
 
 **Blocked by:** None (can start immediately). Found on the real week 6 board, 2026-10-24.
 
-**Status:** needs-triage
+**Status:** wontfix
 
 - [ ] Two players at one position with different board scores get different prices on the fresh week 6 raw.
 - [ ] The rule is one tunable with a reason comment, and the PRD price bullet records it.
 - [ ] The drop fact says "point" at a margin of 1 and "points" otherwise.
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12. Brian dropped it, because it fixes no real bug and changes nothing that a manager sees.
+Proof: `price.py` still sets the floor from the last win at the position, and `drops.py` still writes "{n} points a week higher" at a margin of 1; front-door ticket 15 says a real price waits for a later waiver spec.
+Read 1 file: .scratch/todoist-queue/audit.md.

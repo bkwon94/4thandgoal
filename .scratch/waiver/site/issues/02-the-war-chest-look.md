@@ -17,7 +17,7 @@ global stylesheet as tokens. Motion goes through the one reduced-motion switch.
 
 **Blocked by:** 01 The route behind the flag.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] The ring renders twelve bars in budget order from the fixture, none red with no pick.
 - [x] The tabs switch the bucket, and the sheet keeps its player across a switch.
@@ -28,3 +28,9 @@ global stylesheet as tokens. Motion goes through the one reduced-motion switch.
 - [x] The reduced-motion test shows the drift off; a hidden tab stops it.
 - [x] No two field slots overlap at 390 pixels, checked in a test on the layout table.
 - [x] A missing headshot swaps to the default once.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 6b9265bb.
+Proof: "Merge waiver-02: the War chest look" is on `main`, and every box is checked.
+Read 1 file: .scratch/todoist-queue/audit.md.

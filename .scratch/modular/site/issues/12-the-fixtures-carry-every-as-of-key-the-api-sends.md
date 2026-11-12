@@ -4,8 +4,14 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** wontfix
 
 - [ ] Both fixtures hold `no_chart` and `no_chart_note` as the API sends them.
 - [ ] The schema header names the API commit the fixtures come from.
 - [ ] `pnpm test` passes.
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12. Brian dropped it, because it fixes no real bug and changes nothing that a manager sees.
+Proof: Both fixtures now hold `no_chart` and `no_chart_note`, but the null test still uses a hand edit and the schema header names no API commit.
+Read 1 file: .scratch/todoist-queue/audit.md.

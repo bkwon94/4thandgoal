@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 (The page shell and the card look on every page)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] The form and every state of the fetch render inside one chapter, so from the tablet tier they sit in one white card on the grey body.
 - [x] From the tablet tier the two pickers and the two lists sit in a two-column grid: the pickers in row one, the lists in row two, each team in its own column. The document order stays picker, picker, list, list.
@@ -16,3 +16,9 @@
 - [x] The analyzer test checks both pickers before both lists in document order and the grade button after the lists, and every state of the form as today.
 - [x] A browser check at 768 and 1280, after a passphrase, shows the two columns with a team picked on each side and the lists under the pickers. At 390 the form is unchanged.
 - [x] `pnpm test`, `pnpm typecheck`, and `pnpm build` pass.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 230ba6e8.
+Proof: The commit "Put the analyzer form in one chapter with two team columns" merged in 69c1c4af and 6486cff5.
+Read 1 file: .scratch/todoist-queue/audit.md.

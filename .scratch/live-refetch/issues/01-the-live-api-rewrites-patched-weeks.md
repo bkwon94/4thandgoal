@@ -6,7 +6,13 @@
 
 **Blocked by:** none. Found 2026-11-10 in the live runs of the front-door review fixes. The behavior is older than front-door: the trade analyzer takes the same snapshot.
 
-**Status:** needs-triage
+**Status:** wontfix
 
 - [ ] A live snapshot leaves the patched scores of cpc week 9 rosters 5 and 10 as they are.
 - [ ] A free answer about week 9 on the deployed API gives the patched scores.
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12. Brian dropped it, because it fixes no real bug and changes nothing that a manager sees.
+Proof: No commit after acab9e52 adds a patch file or a write guard in `packages/league`. The risk may have shrunk now that week 9 is no longer the latest week, so Brian must decide if it still matters.
+Read 1 file: .scratch/todoist-queue/audit.md.

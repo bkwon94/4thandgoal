@@ -4,10 +4,16 @@
 
 **Blocked by:** None
 
-**Status:** triage
+**Status:** wontfix
 
 - [ ] Decide the new words for the analyzer terms with Brian.
 - [ ] Change each "black card" comment to "dark chapter".
 - [ ] Change the analyzer terms to the agreed words.
 - [ ] Leave ADR 0007 as it is.
 - [ ] `pnpm typecheck` and `pnpm test` pass.
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12.
+Proof: `GLOSSARY.md` now lists "dark chapter" under _Avoid_ and defines "Swap card" as a term, so the rename this ticket asks for goes against the glossary; the three named component files are gone.
+Read 1 file: .scratch/todoist-queue/audit.md.

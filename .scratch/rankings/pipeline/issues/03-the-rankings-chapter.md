@@ -6,7 +6,7 @@ Spec: `.scratch/rankings/pipeline/PRD.md`, sections "The facts and the chapter" 
 
 **Blocked by:** 02 The season file. Tone tickets 01 to 03 should land first so the blurb writes in the new voice; they do not block the code.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The sheet has twelve `PR.` facts, each with the team and every ordinal in its numbers list.
 - [ ] The chapter `rankings` holds every team and the four facts per team, in a sheet test.
@@ -23,3 +23,7 @@ Spec: `.scratch/rankings/pipeline/PRD.md`, sections "The facts and the chapter" 
   - Rank 1: "Lil Fridge holds 1st at 10-2 and leads the league in scoring." `PR.3`, `S.1`. "The form has cooled, though, at 113.91 per week over the last 3 weeks." `H.3.trend`
   - Rank 2: "London Cooking stays 2nd and has won 4 straight." `PR.5`, `H.5.streak`. "At 9-3, they sit 3 games above the cut." `S.2`
 - Before the publish, run `make rankings WEEK=6` again on main so `facts.json` and `blurbs.json` hold the chapter; the review runs restored them.
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 2e6a4bf7.
+Proof: The merge of `rankings-chapter` holds 24a14a34 "Add the rankings chapter with one blurb per team".
+Read 1 file: .scratch/todoist-queue/audit.md.
