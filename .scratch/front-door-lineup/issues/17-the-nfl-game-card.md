@@ -10,5 +10,5 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-19.
 
 **Status:** ready-for-agent
 
-- [ ] "How does the Bears game look?" gives the NFL game card, and its margin equals the gap of the two DEF projections (AT-19).
+- [x] "How does the Bears game look?" gives the NFL game card, and its margin equals the gap of the two DEF projections (AT-19).
 - [ ] Site screenshots show the card.

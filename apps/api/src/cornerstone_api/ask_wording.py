@@ -59,6 +59,8 @@ def about_topics(season: int, week: int) -> dict[str, str]:
         "no_move_list": "No Topic lists the moves of the league one by one, such as the adds, the drops, the waiver "
                         "claims, and the trades of this week. A question that asks what moves happened needs another "
                         "answer.",
+        "no_nfl_game": "No Topic shows one NFL game, such as the Bears game or the Packers game. A question about how "
+                       "an NFL game looks needs another answer.",
     }
 
 
@@ -73,6 +75,9 @@ def data_sources(season: int) -> dict[str, str]:
         "player_stats_this_season": f"Sleeper stat lines of the {season} NFL season, one per NFL player per fantasy "
                                     "week so far: fantasy points, passing, rushing, and receiving stats, and the "
                                     "league team that held him that week.",
+        "nfl_games": "Sleeper projections of each NFL game of this week and the next: the projected points of each "
+                     "NFL team, the expected margin, the fantasy points that each defense allows by position, and the "
+                     "pass share of each NFL team. It holds no betting line, no spread, and no over under.",
         "not_available": "Injury news, live game status, betting odds, news articles, expert opinions, and any season "
                          f"before {season}.",
     }
@@ -94,8 +99,8 @@ NOULS = {
            "a fact outside the Topics."),
     DATA_CAN_ANSWER: NoulQuestion(
         instructions="Can the data in `data_sources` answer `manager_question`?",
-        yes="The data in `data_sources.league_data_this_season` or `data_sources.player_stats_this_season` holds the "
-            "facts that answer the question.",
+        yes="The data in `data_sources.league_data_this_season`, `data_sources.player_stats_this_season`, or "
+            "`data_sources.nfl_games` holds the facts that answer the question.",
         no="The answer needs facts from `data_sources.not_available`, or facts that no source holds."),
     ABOUT_LEAGUE: NoulQuestion(
         instructions="Is `manager_question` about this fantasy league or about NFL football?",

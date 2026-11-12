@@ -1,0 +1,38 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"read-0","toolName":"nfl_game"}
+
+data: {"type":"tool-input-delta","toolCallId":"read-0","inputTextDelta":"{\"team\": \"Bears\", \"position\": \"WR\"}"}
+
+data: {"type":"tool-input-available","toolCallId":"read-0","toolName":"nfl_game","input":{"team":"Bears","position":"WR"}}
+
+data: {"type":"tool-output-available","toolCallId":"read-0","output":{"week":11,"live_week":10,"team":"Chicago Bears","opponent":"New Orleans Saints","what_each_field_means":{"week":"The NFL week of the game: the live week, or the next week when the team has a bye in the live week.","projected_points":"The NFL points that each team is projected to score. Each team scores the `pts_allow` of the Sleeper DEF projection of the other team. It is a projection, not a betting line.","expected_margin":"The projected points of `team` minus the projected points of `opponent`. Below 0, the opponent is ahead.","favorite":"The team with more projected points, or null for a tie.","defense_against_position":"The fantasy points per game that the defense of `opponent` allows to `position` this season, its place among the 32 defenses from 1, the fewest allowed, to 32, and the league average. Null `position` means all positions together.","pass_share":"The share of the plays of each NFL team this season that are passes: pass attempts over pass attempts and carries. `league` is the share of all 32 teams."},"projected_points":{"Chicago Bears":22.75,"New Orleans Saints":22.75},"expected_margin":0.0,"favorite":null,"defense_against_position":{"position":"WR","defense":"New Orleans Saints","allowed_per_game":29.8,"place":14,"of":32,"league_average":31.7},"pass_share":{"Chicago Bears":0.495,"New Orleans Saints":0.615,"league":0.552},"block_id":"nfl_game_Bears_WR"}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"bfa42517-f234-4280-a020-dee148c29091"}
+
+data: {"type":"text-delta","delta":"Here is the Bears game of week 11.","id":"bfa42517-f234-4280-a020-dee148c29091"}
+
+data: {"type":"text-end","id":"bfa42517-f234-4280-a020-dee148c29091"}
+
+data: {"type":"data-block","id":"block","data":{"kind":"nfl_game","week":11,"title":"Week 11: Bears vs Saints","sides":[{"code":"CHI","name":"Bears","projected":22.75},{"code":"NO","name":"Saints","projected":22.75}],"margin":0.0,"strip":{"position":"WR","lit":"NO","average":31.7,"defenses":[{"team":"SEA","allowed":23.3},{"team":"KC","allowed":24.9},{"team":"MIA","allowed":25.4},{"team":"MIN","allowed":25.9},{"team":"LAR","allowed":26.8},{"team":"IND","allowed":27.4},{"team":"DEN","allowed":27.9},{"team":"TB","allowed":28.0},{"team":"NYJ","allowed":28.5},{"team":"PIT","allowed":28.7},{"team":"SF","allowed":29.1},{"team":"CLE","allowed":29.3},{"team":"CAR","allowed":29.8},{"team":"NO","allowed":29.8},{"team":"LAC","allowed":30.3},{"team":"CHI","allowed":30.5},{"team":"NYG","allowed":31.3},{"team":"CIN","allowed":32.9},{"team":"ARI","allowed":33.5},{"team":"WAS","allowed":33.6},{"team":"LV","allowed":33.8},{"team":"NE","allowed":33.8},{"team":"ATL","allowed":34.4},{"team":"GB","allowed":34.8},{"team":"BAL","allowed":35.0},{"team":"DAL","allowed":35.6},{"team":"JAX","allowed":36.9},{"team":"BUF","allowed":37.1},{"team":"HOU","allowed":37.3},{"team":"DET","allowed":37.7},{"team":"PHI","allowed":39.4},{"team":"TEN","allowed":40.7}]},"pass_share":{"league":0.552,"sides":[{"code":"CHI","share":0.495},{"code":"NO","share":0.615}]}}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
