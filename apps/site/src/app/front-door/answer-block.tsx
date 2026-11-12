@@ -28,8 +28,10 @@ const playerBlockSchema = z.object({
   note: z.string().optional(),
 });
 
-/* The block of the `data-block` part of a free answer, as the API checks it. The kind picks the shape. A personal Topic
-   sends its own data block on the same part, and it has no kind, so it never reads as an answer block. */
+/* The block contract of the site: one union over `kind`, for the `data-block` part of the API stream. The kind picks
+   the shape. A new block joins with its schema here, its line in blockText, and its view in BlockView, and TypeScript
+   flags a kind that misses either. A personal Topic sends its stats and rows on the same part as the kind "rows",
+   which is outside this union, so it never reads as an answer block. */
 export const answerBlockSchema = z.discriminatedUnion("kind", [listBlockSchema, tableBlockSchema, playerBlockSchema]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 

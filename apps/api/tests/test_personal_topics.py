@@ -313,6 +313,39 @@ def _block(chunks: list[dict]) -> dict:
     return block
 
 
+@pytest.mark.parametrize("topic", ["weak_spots", "stack_up", "waiver_targets"])
+def test_the_data_part_of_each_personal_topic_carries_a_kind(settings, sources, topic):
+    # The block contract of the front door: every data block on the stream names its kind, so the site picks its view
+    # from the kind alone. The stats and rows of a personal Topic are the kind "rows".
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    block = _block(_chunks(_ask(api, topic)))
+    assert block["kind"] == "rows"
+    assert block["topic"] == topic and {"stats", "rows", "fact"} <= set(block)
+
+
+class MarkedWriter(Writer):
+    """A stand-in for Claude that writes its text with the marks of the text block: bold, italic, and both lists."""
+
+    async def stream(self, messages: list[ModelMessage], info: AgentInfo) -> AsyncIterator[str]:
+        self.calls += 1
+        self.requests.append(messages)
+        yield ("Your **weakest** spot is *TE*.\n\n- Start __Trey McBride__.\n* Sit _Blake Corum_.\n\n"
+               "1. Check the TE slot.\n2) Check the snake_case_name and 5 * 3 * 2.")
+
+
+def test_the_jev_check_reads_the_text_with_no_markdown_marks(settings, sources):
+    # The text block shows the marks, so Jev reads the same plain sentences that the manager reads (decision 09).
+    # The manager still gets the text with its marks.
+    writer = MarkedWriter()
+    checks = Checks([True])
+    api = _api(settings, sources, FakeJev(answer=checks.answer), writer)
+    chunks = _chunks(_ask(api, "weak_spots"))
+    assert checks.states[0]["answer"] == ["Your weakest spot is TE.", "Start Trey McBride.", "Sit Blake Corum.",
+                                          "Check the TE slot.", "Check the snake_case_name and 5 * 3 * 2."]
+    assert _text(chunks).startswith("Your **weakest** spot is *TE*.")
+
+
 def test_how_you_stack_up_shows_the_four_parts_of_the_roster_grade_with_their_ranks(settings, sources):
     # The Topic reads the roster grade of the managers page, with no new formula: its letter, its four part ranks,
     # and its slot ranks. Claude gets the parts and the slots, and nothing else of the grade.

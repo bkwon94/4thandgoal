@@ -29,7 +29,7 @@ from pydantic_ai.ui.vercel_ai.response_types import (
 
 from cornerstone_api.ask import YES, Asker
 from cornerstone_api.caps import sonnet_cost
-from cornerstone_api.free_wording import check_questions, check_state, sentence_key, sentences
+from cornerstone_api.free_wording import check_questions, check_state, plain_text, sentence_key, sentences
 from league.jev_port import Jev, JevError
 
 logger = logging.getLogger(__name__)
@@ -131,7 +131,8 @@ def check(jev: Jev, question: str, your_team: str, text: str, results: dict[str,
     A sentence passes only above the yes cutoff, so an unsure sentence gets the rewrite and the manager never reads a
     number that the data does not hold.
     """
-    parts = sentences(text) + list(rows or [])
+    # The site shows the marks of the text block, so Jev reads the text as the manager reads it, with no marks.
+    parts = sentences(plain_text(text)) + list(rows or [])
     if not parts:
         return []
     answers = jev.ask(check_state(question, your_team, parts, results, has_block=bool(rows)), check_questions(parts))

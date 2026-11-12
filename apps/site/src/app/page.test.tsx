@@ -391,3 +391,24 @@ describe("the Thread of Lil Fridge", () => {
     expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
   });
 });
+
+describe("a version 1 topics.json", () => {
+  it("renders each league Topic Answer as before, with its stats, rows, and text, and no block (AT-41)", async () => {
+    // The fixed copy of week 8 of cpc is a file of version 1, written before any Topic had a block.
+    const file = JSON.parse(readFileSync(join(__dirname, "..", "fixtures", "sites", "cpc", "public", "2026", "week-08", "topics.json"), "utf8"));
+    expect(file.schema_version).toBe(1);
+    const answers: { topic: string; stats: unknown[]; rows: { label: string; value: string }[]; text: string[] }[] = file.teams["3"];
+    expect(answers.some((answer) => "block" in answer)).toBe(false);
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    fireEvent.click((await suggestionChips())[0]);
+    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Your last matchup/ }));
+    const answer = await screen.findByRole("article", { name: "Your last matchup" });
+    const want = answers.find((item) => item.topic === "last_matchup")!;
+    const rows = within(answer).getAllByRole("listitem");
+    expect(rows.map((row) => row.textContent)).toEqual(want.rows.map((row) => expect.stringContaining(row.label)));
+    expect(rows[1].textContent).toContain(want.rows[1].value);
+    expect(answer.textContent).toContain(want.text[0]);
+    expect(answer.querySelector("[data-block]")).toBeNull();
+  });
+});
