@@ -14,4 +14,4 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-13, AT-14, AT-15, and
 - [ ] A real `pull` on the throwaway feature writes `needs-info` from a label change.
 - [ ] A real `pull` writes `wontfix` from a completed task with no comment.
 - [ ] A real `pull` writes `done` from a completed task with the comment "done in #34".
-- [ ] A real `pull` with an invalid token leaves `git status` of the temp root clean.
+- [x] A real `pull` with an invalid token leaves `git status` of the temp root clean.
