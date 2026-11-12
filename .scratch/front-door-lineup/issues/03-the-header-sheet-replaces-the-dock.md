@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-45, AT-46, AT-47,
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The front door at 375 px has no dock and no week pill, and the menu button opens the sheet with the five rows and notes of the spec (AT-45, AT-47).
 - [x] Each of the four close ways closes the sheet, and the focus returns to the button (AT-46).
