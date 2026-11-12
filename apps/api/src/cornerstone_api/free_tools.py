@@ -102,6 +102,9 @@ class SeasonData:
     # The live roster grades, as stack_up reads them. They load only when a tool reads them, because the live league
     # costs a snapshot load.
     fetch_grades: Callable[[], LeagueGrades] | None = None
+    # The Sleeper DEF projections of one week of a season, which the NFL game card reads. None in a test that reads no
+    # NFL game.
+    fetch_def_projections: Callable[[int, int], list[dict]] | None = None
     # The time zone of the league, so a day of the moves reads as the managers read it.
     tz: ZoneInfo = UTC_ZONE
     _raw: RawWeek | None = field(default=None, init=False, repr=False)

@@ -16,6 +16,7 @@ import { scheduleBlockSchema, scheduleText } from "@/lib/data/blocks/schedule-sc
 import { FeedView, feedBlockSchema, feedText } from "./feed-block";
 import { ByeGridView, byeGridBlockSchema, byeGridText } from "./bye-grid";
 import { LineupView, lineupBlockSchema, lineupText } from "./lineup-block";
+import { NflGameView, nflGameBlockSchema, nflGameText } from "./nfl-game-card";
 import { VERY_SLOW, riseIn, staggerOf } from "./motion";
 import { MatchupCard } from "./matchup-card";
 import { RankMoverList } from "./rank-mover-list";
@@ -65,6 +66,7 @@ export const answerBlockSchema = z.discriminatedUnion("kind", [
   rankMoversBlockSchema,
   ladderBlockSchema,
   scheduleBlockSchema,
+  nflGameBlockSchema,
 ]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
@@ -103,6 +105,7 @@ export function blockText(block: AnswerBlock): string {
     case "rank_movers": return rankMoversText(block);
     case "ladder": return ladderText(block);
     case "schedule": return scheduleText(block);
+    case "nfl_game": return nflGameText(block);
   }
 }
 
@@ -257,5 +260,6 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
     case "rank_movers": return <RankMoverList block={block} live={live} />;
     case "ladder": return <StandingsLadder block={block} live={live} />;
     case "schedule": return <ScheduleStrip block={block} live={live} />;
+    case "nfl_game": return <NflGameView block={block} live={live} />;
   }
 }

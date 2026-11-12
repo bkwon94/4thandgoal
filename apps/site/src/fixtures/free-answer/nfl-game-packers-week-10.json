@@ -1,0 +1,166 @@
+{
+  "kind": "nfl_game",
+  "week": 10,
+  "title": "Week 10: Packers vs Vikings",
+  "sides": [
+    {
+      "code": "GB",
+      "name": "Packers",
+      "projected": 22.5
+    },
+    {
+      "code": "MIN",
+      "name": "Vikings",
+      "projected": 19.5
+    }
+  ],
+  "margin": 3.0,
+  "strip": {
+    "position": "RB",
+    "lit": "MIN",
+    "average": 21.7,
+    "defenses": [
+      {
+        "team": "TB",
+        "allowed": 15.6
+      },
+      {
+        "team": "DET",
+        "allowed": 17.7
+      },
+      {
+        "team": "JAX",
+        "allowed": 17.7
+      },
+      {
+        "team": "MIN",
+        "allowed": 18.9
+      },
+      {
+        "team": "NE",
+        "allowed": 18.9
+      },
+      {
+        "team": "LAR",
+        "allowed": 19.1
+      },
+      {
+        "team": "NYG",
+        "allowed": 19.1
+      },
+      {
+        "team": "KC",
+        "allowed": 19.5
+      },
+      {
+        "team": "WAS",
+        "allowed": 19.6
+      },
+      {
+        "team": "BAL",
+        "allowed": 19.9
+      },
+      {
+        "team": "PHI",
+        "allowed": 19.9
+      },
+      {
+        "team": "CHI",
+        "allowed": 20.2
+      },
+      {
+        "team": "PIT",
+        "allowed": 20.2
+      },
+      {
+        "team": "SEA",
+        "allowed": 20.5
+      },
+      {
+        "team": "CIN",
+        "allowed": 20.7
+      },
+      {
+        "team": "SF",
+        "allowed": 20.7
+      },
+      {
+        "team": "ARI",
+        "allowed": 20.8
+      },
+      {
+        "team": "CLE",
+        "allowed": 21.3
+      },
+      {
+        "team": "TEN",
+        "allowed": 21.6
+      },
+      {
+        "team": "HOU",
+        "allowed": 21.8
+      },
+      {
+        "team": "LAC",
+        "allowed": 22.5
+      },
+      {
+        "team": "DEN",
+        "allowed": 23.2
+      },
+      {
+        "team": "MIA",
+        "allowed": 24.0
+      },
+      {
+        "team": "BUF",
+        "allowed": 24.5
+      },
+      {
+        "team": "ATL",
+        "allowed": 24.7
+      },
+      {
+        "team": "NYJ",
+        "allowed": 24.7
+      },
+      {
+        "team": "GB",
+        "allowed": 25.2
+      },
+      {
+        "team": "IND",
+        "allowed": 25.3
+      },
+      {
+        "team": "DAL",
+        "allowed": 25.8
+      },
+      {
+        "team": "LV",
+        "allowed": 25.9
+      },
+      {
+        "team": "CAR",
+        "allowed": 27.6
+      },
+      {
+        "team": "NO",
+        "allowed": 27.9
+      }
+    ]
+  },
+  "pass_share": {
+    "league": 0.551,
+    "sides": [
+      {
+        "code": "GB",
+        "share": 0.628
+      },
+      {
+        "code": "MIN",
+        "share": 0.516
+      }
+    ]
+  }
+}

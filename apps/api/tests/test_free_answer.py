@@ -25,6 +25,7 @@ from pydantic_ai.messages import (
     UserPromptPart,
 )
 from pydantic_ai.models.function import AgentInfo, DeltaToolCall, DeltaToolCalls, FunctionModel
+from test_nfl_game import CPC_HISTORY, RAW_WEEK_10, def_projections
 
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.app import create_app
@@ -66,6 +67,8 @@ ROUTES = {
                                 "close": ["power_rankings", "your_season"]},
     "who am i playing sunday": {"fits_topic": 0.94, "data_can_answer": 0.92, "about_league": 0.99,
                                 "topic": "next_matchup"},
+    "How does the Bears game look?": {"fits_topic": 0.2, "data_can_answer": 0.9, "about_league": 1.0,
+                                      "topic": "next_matchup", "close": ["start_sit"]},
     "What moves happened this week?": {"fits_topic": 0.12, "data_can_answer": 0.95, "about_league": 1.0,
                                        "topic": "position_leaders", "close": ["week_recap"]},
 }
@@ -111,8 +114,10 @@ def repo(tmp_path, fixture_history_root, fixture_nflverse_dir):
     return tmp_path
 
 
-def _api(repo: Path, raw_dir: Path, jev: FakeJev, model: FunctionModel, chart: ChartValues | None = None) -> TestClient:
-    """The test app. With `chart`, the live snapshot of the roster grades reads it, and the trending list is empty."""
+def _api(repo: Path, raw_dir: Path, jev: FakeJev, model: FunctionModel, chart: ChartValues | None = None,
+         def_projections=_no_network) -> TestClient:
+    """The test app. With `chart`, the live snapshot of the roster grades reads it, and the trending list is empty.
+    `def_projections` gives the Sleeper DEF projections of a week."""
     settings = Settings(passphrases={"cpc": PASSPHRASE}, repo=repo, result_cache_dir=repo / "results",
                         commissioner_keys={"cpc": "commissioner-test"}, ask_dir=repo / "ask",
                         rate_limit_per_minute=600)
@@ -120,7 +125,7 @@ def _api(repo: Path, raw_dir: Path, jev: FakeJev, model: FunctionModel, chart: C
     sources = Sources(client, fetch_sleeper=lambda league_id: (load_raw(raw_dir), NOW),
                       fetch_nflverse=_no_network, fetch_history_week=_no_network,
                       read_chart=_no_network if chart is None else lambda *args, **kwargs: chart,
-                      fetch_trending=list, clock=lambda: NOW)
+                      fetch_trending=list, clock=lambda: NOW, fetch_def_projections=def_projections)
     app = create_app(settings, [client], sources={"cpc": sources}, jev=jev)
     app.state.askers["cpc"].clock = lambda: NOW
     app.state.free_model = model
@@ -890,3 +895,35 @@ def test_the_feed_of_a_saved_week_reads_its_saved_moves_and_a_week_with_none_say
     assert saved["week"] == 5 and saved["live_week"] is False
     assert sum(day["moves"] for day in saved["moves_per_day"]) == len(saved["moves"]) > 0
     assert _output(api, "moves_feed", {"week": 12})["error"] == "Week 12 has no saved moves. The live week is week 6."
+
+
+@pytest.fixture
+def cpc_week_10(tmp_path, fixture_nflverse_dir):
+    """A repo with the saved weeks 1 to 9 of cpc, and the raw dir of the live cpc week 10, recorded on 2026-11-12."""
+    (tmp_path / "data" / "2026").mkdir(parents=True)
+    (tmp_path / "data" / "2026" / "history").symlink_to(CPC_HISTORY)
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
+    for cached in (tmp_path / "data" / "cache" / "nflverse").iterdir():
+        os.utime(cached)
+    return tmp_path, RAW_WEEK_10
+
+
+def test_a_question_about_the_bears_game_shows_the_nfl_game_card_with_the_gap_of_the_two_def_projections(cpc_week_10):
+    # AT-19: the Bears have a bye in week 10, so the card is their week 11 game, and code builds it from Sleeper.
+    repo, raw_dir = cpc_week_10
+    script = Blocks([("nfl_game", {"team": "Bears"})],
+                    lambda results, prompts: {"kind": "ready", "block_id": results["nfl_game"]["block_id"]},
+                    "Here is the Bears game of week 11.")
+    checks = RowChecks()
+    api = _api(repo, raw_dir, FakeJev(answer=checks.answer, choose=_choice), script.model(),
+               def_projections=def_projections)
+    chunks = _chunks(_ask(api, "How does the Bears game look?"))
+    [card] = _blocks(chunks)
+    assert card["kind"] == "nfl_game" and card["week"] == 11
+    bears, saints = (next(row for row in def_projections(2026, 11) if row["player_id"] == team) for team in ("CHI", "NO"))
+    assert card["margin"] == saints["stats"]["pts_allow"] - bears["stats"]["pts_allow"]
+    assert len(card["strip"]["defenses"]) == 32 and card["strip"]["lit"] == "NO"
+    assert len(card["pass_share"]["sides"]) == 2 and card["pass_share"]["league"] is not None
+    assert checks.seen[0]["tool_results"]["nfl_game_Bears"]["expected_margin"] == card["margin"]
+    assert _text(chunks) == "Here is the Bears game of week 11."
+    assert not any(word in json.dumps(card) for word in INTERNAL)
