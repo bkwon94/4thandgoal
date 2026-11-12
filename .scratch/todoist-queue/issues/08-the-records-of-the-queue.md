@@ -8,7 +8,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-30 and AT-31.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] ADR 0032 exists, says it amends ADR 0021, and appears in `docs/adr/README.md` if that file lists the ADRs.
 - [x] `docs/agents/issue-tracker.md` names the queue, its labels, the key line, and the script.
