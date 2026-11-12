@@ -21,8 +21,8 @@ const MAX_LINES = 24;
 
 const RULE = `each package folder holds a README of under ${MAX_LINES + 1} lines with the headings Knows, Ports, and Does not do`;
 const RULES_FILE_RULE = "no CLAUDE.md or AGENTS.md sits below the repo root, except one of each at the top of each app";
-/* Each app keeps its own commands in an AGENTS.md and a CLAUDE.md that imports it, so apps/<app>/ may hold both. See .scratch/one/PRD.md. */
-/* Both files carry the rules of a folder, so the rule treats them the same. */
+/* Each app keeps its own commands in an AGENTS.md and a CLAUDE.md that imports it, so apps/<app>/ may hold both. See .scratch/one/PRD.md.
+ * Both files carry the rules of a folder, so the rule treats them the same. */
 const RULES_FILES = ["CLAUDE.md", "AGENTS.md"];
 const APP_RULES_FILE = /^apps\/[^/]+\/(CLAUDE|AGENTS)\.md$/;
 const ADR = "docs/adr/0016-the-rules-are-checks.md";
@@ -99,7 +99,7 @@ function rulesFileOffenses(paths: string[]): Offense[] {
       what: `${path} is a tracked ${basename(path)} below the root.`,
       rule: RULES_FILE_RULE,
       adr: ADR,
-      fix: `move the text into the README.md of the folder and delete the ${basename(path)}`,
+      fix: `move the text into the README.md of the folder and delete the ${basename(path)}.`,
     }));
 }
 
