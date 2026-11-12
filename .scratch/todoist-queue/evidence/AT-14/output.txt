@@ -1,0 +1,31 @@
+# Given: td completes the task of 01-zz-ready.md, with no comment.
+
+$ td comment list id:6j23xRjQqWW8r3cG --json
+{
+  "results": [],
+  "nextCursor": null
+}
+[exit code: 0]
+
+$ td task complete id:6j23xRjQqWW8r3cG
+Completed: 01 ZZ ready (id:6j23xRjQqWW8r3cG)
+[exit code: 0]
+# When:
+
+$ python3 scripts/queue.py pull zz-queue-check --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+pull .scratch/zz-queue-check/issues/01-zz-ready.md: needs-info -> wontfix
+1 file written.
+[exit code: 0]
+
+$ git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" diff
+diff --git a/.scratch/zz-queue-check/issues/01-zz-ready.md b/.scratch/zz-queue-check/issues/01-zz-ready.md
+index 5c2a3df..1613be4 100644
+--- a/.scratch/zz-queue-check/issues/01-zz-ready.md
++++ b/.scratch/zz-queue-check/issues/01-zz-ready.md
+@@ -4,4 +4,4 @@
+ 
+ **Blocked by:** none
+ 
+-**Status:** ready-for-agent
++**Status:** wontfix
+[exit code: 0]

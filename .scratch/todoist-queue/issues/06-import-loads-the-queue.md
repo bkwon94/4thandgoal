@@ -11,8 +11,8 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 **Status:** in-review
 
 - [x] The unit tests check the plan of `import`, including the choice of the live spec branches.
-- [ ] The real import loads `12 Drop awards from the managers entry` in the section `manager-pages` with `ready-for-agent`, `pipeline`, and the full description.
-- [ ] Both `manager-pages` subfolders share one section, with the labels `site` and `pipeline`.
+- [x] The real import loads `12 Drop awards from the managers entry` in the section `manager-pages` with `ready-for-agent`, `pipeline`, and the full description.
+- [x] Both `manager-pages` subfolders share one section, with the labels `site` and `pipeline`.
 - [x] The `codex-flow` ticket 01 shows `in-review` and "On the spec branch codex-flow." with no link.
 - [x] No task names a `done` ticket of `front-door`.
 - [x] Each label, `Ideas`, and the filter exist once after a second import.

@@ -12,9 +12,9 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-8, AT-9, AT-10, AT-11
 
 - [ ] The unit tests check the plan of `push` with real ticket files and saved real `td` JSON, with no mock and no network.
 - [x] A second `push` of the same file plans zero writes.
-- [ ] A real `push` on the throwaway feature gives each decision ticket its label by kind.
-- [ ] A triage label from Brian, his extra label, and his priority survive a real `push`.
-- [ ] A flow status replaces a triage label in a real `push`.
+- [x] A real `push` on the throwaway feature gives each decision ticket its label by kind.
+- [x] A triage label from Brian, his extra label, and his priority survive a real `push`.
+- [x] A flow status replaces a triage label in a real `push`.
 - [x] A real `push` with an invalid token exits 0 with one warning line that names the ticket.
 - [x] `--dry-run` sends nothing, and the task count stays the same.
 - [x] A new comment in the file adds no Todoist comment and does not change the description.

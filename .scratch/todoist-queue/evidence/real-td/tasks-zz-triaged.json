@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "id": "6j23xQ28wGxwGxHp",
+      "content": "Decision 01: Does the grill ZZ question need Brian?",
+      "description": "4ag: .scratch/zz-queue-check/decisions/01-grill-zz-question.md\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/decisions/01-grill-zz-question.md\nA throwaway grill for the acceptance tests of the queue.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j23xPvRxhmXMwfG",
+      "parentId": null,
+      "labels": [
+        "decision",
+        "ready-for-human"
+      ],
+      "url": "https://app.todoist.com/app/task/decision-01-does-the-grill-zz-question-need-brian-6j23xQ28wGxwGxHp",
+      "responsibleUid": null,
+      "isUncompletable": false
+    },
+    {
+      "id": "6j23xQGHrHggjX5p",
+      "content": "Decision 02: What does the research ZZ question find?",
+      "description": "4ag: .scratch/zz-queue-check/decisions/02-research-zz-question.md\nBlocked by: 01\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/decisions/02-research-zz-question.md\nA throwaway research question for the acceptance tests of the queue.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j23xPvRxhmXMwfG",
+      "parentId": null,
+      "labels": [
+        "decision",
+        "ready-for-agent"
+      ],
+      "url": "https://app.todoist.com/app/task/decision-02-what-does-the-research-zz-question-find-6j23xQGHrHggjX5p",
+      "responsibleUid": null,
+      "isUncompletable": false
+    },
+    {
+      "id": "6j23xRjQqWW8r3cG",
+      "content": "01 ZZ ready",
+      "description": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/01-zz-ready.md\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+      "priority": 4,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j23xPvRxhmXMwfG",
+      "parentId": null,
+      "labels": [
+        "in-review",
+        "phone"
+      ],
+      "url": "https://app.todoist.com/app/task/01-zz-ready-6j23xRjQqWW8r3cG",
+      "responsibleUid": null,
+      "isUncompletable": false
+    }
+  ]
+}

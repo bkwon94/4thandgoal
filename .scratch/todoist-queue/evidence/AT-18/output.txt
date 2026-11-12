@@ -1,0 +1,167 @@
+# Given: the tasks of all three zz tickets are open. td reopens the task of 01, which AT-15 completed.
+
+$ td task uncomplete id:6j23xRjQqWW8r3cG
+Reopened: 01 ZZ ready (id:6j23xRjQqWW8r3cG)
+[exit code: 0]
+# Given: a push never makes the task of a done ticket, so td makes the task of 03-zz-done.md with its key line.
+
+$ td task add '03 ZZ done' --project 4thandgoal --section zz-queue-check --labels ready-for-agent --description '4ag: .scratch/zz-queue-check/issues/03-zz-done.md
+A throwaway ticket for the acceptance tests of the queue. It names no real work.'
+Created: 03 ZZ done
+ID: 6j23xw75GH2m4XMG
+[exit code: 0]
+
+$ git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" log --oneline main; git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" status --short; for f in 01-zz-ready 02-zz-blocked 03-zz-done; do git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" show main:.scratch/zz-queue-check/issues/$f.md | grep Status; done
+fc5df1a zz feature
+**Status:** ready-for-agent
+**Status:** blocked
+**Status:** done
+[exit code: 0]
+
+$ python3 scripts/queue.py wait zz-queue-check merge-pr 34 --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+td task add 'Merge PR #34' --project id:6j222rQrr58wHx9G --section id:6j23xPvRxhmXMwfG --labels ready-for-human --description '4ag: zz-queue-check/wait/merge-pr
+https://github.com/bkwon94/4thandgoal/pull/34'
+1 command sent.
+[exit code: 0]
+
+$ gh pr view 34 --repo bkwon94/4thandgoal --json state
+{"state":"MERGED"}
+[exit code: 0]
+# Before the sweep:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/") or startswith("4ag: zz-queue-check/")) | {id, content, labels, sectionId, key: (.description | split("\n") | first)}]'
+[
+  {
+    "id": "6j23xQ28wGxwGxHp",
+    "content": "Decision 01: Does the grill ZZ question need Brian?",
+    "labels": [
+      "decision",
+      "ready-for-human"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: .scratch/zz-queue-check/decisions/01-grill-zz-question.md"
+  },
+  {
+    "id": "6j23xQGHrHggjX5p",
+    "content": "Decision 02: What does the research ZZ question find?",
+    "labels": [
+      "decision",
+      "ready-for-agent"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: .scratch/zz-queue-check/decisions/02-research-zz-question.md"
+  },
+  {
+    "id": "6j23xmWg29GC37Rp",
+    "content": "02 ZZ blocked",
+    "labels": [
+      "blocked"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: .scratch/zz-queue-check/issues/02-zz-blocked.md"
+  },
+  {
+    "id": "6j23xRjQqWW8r3cG",
+    "content": "01 ZZ ready",
+    "labels": [
+      "needs-info",
+      "phone"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md"
+  },
+  {
+    "id": "6j23xw75GH2m4XMG",
+    "content": "03 ZZ done",
+    "labels": [
+      "ready-for-agent"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: .scratch/zz-queue-check/issues/03-zz-done.md"
+  },
+  {
+    "id": "6j23xwPRqjpJP89G",
+    "content": "Merge PR #34",
+    "labels": [
+      "ready-for-human"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: zz-queue-check/wait/merge-pr"
+  }
+]
+[exit code: 0]
+# When:
+
+$ python3 scripts/queue.py sweep --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+warning: git fetch origin main failed: fatal: 'origin' does not appear to be a git repository fatal: Could not read from remote repository. Please make sure you have the correct access rights and the repository exists.. The sweep reads the last fetched main.
+td task complete id:6j23xw75GH2m4XMG
+td task complete id:6j23xwPRqjpJP89G
+2 commands sent.
+[exit code: 0]
+# After the sweep, the open tasks:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/") or startswith("4ag: zz-queue-check/")) | {id, content, labels, sectionId, key: (.description | split("\n") | first)}]'
+[
+  {
+    "id": "6j23xQ28wGxwGxHp",
+    "content": "Decision 01: Does the grill ZZ question need Brian?",
+    "labels": [
+      "decision",
+      "ready-for-human"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: .scratch/zz-queue-check/decisions/01-grill-zz-question.md"
+  },
+  {
+    "id": "6j23xQGHrHggjX5p",
+    "content": "Decision 02: What does the research ZZ question find?",
+    "labels": [
+      "decision",
+      "ready-for-agent"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: .scratch/zz-queue-check/decisions/02-research-zz-question.md"
+  },
+  {
+    "id": "6j23xmWg29GC37Rp",
+    "content": "02 ZZ blocked",
+    "labels": [
+      "blocked"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: .scratch/zz-queue-check/issues/02-zz-blocked.md"
+  },
+  {
+    "id": "6j23xRjQqWW8r3cG",
+    "content": "01 ZZ ready",
+    "labels": [
+      "needs-info",
+      "phone"
+    ],
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "key": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md"
+  }
+]
+[exit code: 0]
+# After the sweep, the completed tasks of the section:
+
+$ td completed list --project 4thandgoal --since 2026-11-11 --until 2026-11-14 --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/03-") or startswith("4ag: zz-queue-check/wait/merge-pr")) | {id, content, labels, key: (.description | split("\n") | first)}]'
+[
+  {
+    "id": "6j23xwPRqjpJP89G",
+    "content": "Merge PR #34",
+    "labels": [
+      "ready-for-human"
+    ],
+    "key": "4ag: zz-queue-check/wait/merge-pr"
+  },
+  {
+    "id": "6j23xw75GH2m4XMG",
+    "content": "03 ZZ done",
+    "labels": [
+      "ready-for-agent"
+    ],
+    "key": "4ag: .scratch/zz-queue-check/issues/03-zz-done.md"
+  }
+]
+[exit code: 0]

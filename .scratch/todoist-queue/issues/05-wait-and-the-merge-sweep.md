@@ -11,7 +11,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-17, AT-18, AT-19, AT-
 **Status:** in-review
 
 - [x] The unit tests check the plan of `wait` and `sweep` with saved real `td` and `gh` JSON, including an open PR.
-- [ ] A real `wait` makes `Approve PRD` with `ready-for-human`, and `--done` completes it.
-- [ ] A real `sweep` with the merged PR #34 completes the task of the done zz ticket and the wait task, and leaves the blocked zz ticket open.
-- [ ] A real `sweep` archives the zz section once every task in it is complete.
-- [ ] A real `sweep` with the closed PR #16 gives its wait task `blocked`.
+- [x] A real `wait` makes `Approve PRD` with `ready-for-human`, and `--done` completes it.
+- [x] A real `sweep` with the merged PR #34 completes the task of the done zz ticket and the wait task, and leaves the blocked zz ticket open.
+- [x] A real `sweep` archives the zz section once every task in it is complete.
+- [x] A real `sweep` with the closed PR #16 gives its wait task `blocked`.

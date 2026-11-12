@@ -1,0 +1,178 @@
+# Given: 01-zz-ready.md and 02-zz-blocked.md change to done, in a commit on main of the temp root.
+# The section also holds the two open decision tasks of AT-8. So the two decision files also change to done in the same commit. Else the section keeps two open tasks.
+
+$ cd "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" && sed -i '' 's/^\*\*Status:\*\* .*/**Status:** done/' .scratch/zz-queue-check/issues/01-zz-ready.md .scratch/zz-queue-check/issues/02-zz-blocked.md .scratch/zz-queue-check/decisions/01-grill-zz-question.md .scratch/zz-queue-check/decisions/02-research-zz-question.md && git diff && git -c user.name=zz -c user.email=zz@example.invalid commit -q -am 'zz tickets done' && git log --oneline main && git status --short
+diff --git a/.scratch/zz-queue-check/decisions/01-grill-zz-question.md b/.scratch/zz-queue-check/decisions/01-grill-zz-question.md
+index 1670813..0d658b2 100644
+--- a/.scratch/zz-queue-check/decisions/01-grill-zz-question.md
++++ b/.scratch/zz-queue-check/decisions/01-grill-zz-question.md
+@@ -4,7 +4,7 @@
+ 
+ **Blocked by:** none
+ 
+-**Status:** open
++**Status:** done
+ 
+ ## Question
+ 
+diff --git a/.scratch/zz-queue-check/decisions/02-research-zz-question.md b/.scratch/zz-queue-check/decisions/02-research-zz-question.md
+index 82a2500..4a2a9c3 100644
+--- a/.scratch/zz-queue-check/decisions/02-research-zz-question.md
++++ b/.scratch/zz-queue-check/decisions/02-research-zz-question.md
+@@ -4,7 +4,7 @@
+ 
+ **Blocked by:** 01
+ 
+-**Status:** open
++**Status:** done
+ 
+ ## Question
+ 
+diff --git a/.scratch/zz-queue-check/issues/01-zz-ready.md b/.scratch/zz-queue-check/issues/01-zz-ready.md
+index 5c2a3df..7e0fb09 100644
+--- a/.scratch/zz-queue-check/issues/01-zz-ready.md
++++ b/.scratch/zz-queue-check/issues/01-zz-ready.md
+@@ -4,4 +4,4 @@
+ 
+ **Blocked by:** none
+ 
+-**Status:** ready-for-agent
++**Status:** done
+diff --git a/.scratch/zz-queue-check/issues/02-zz-blocked.md b/.scratch/zz-queue-check/issues/02-zz-blocked.md
+index f101098..3c62028 100644
+--- a/.scratch/zz-queue-check/issues/02-zz-blocked.md
++++ b/.scratch/zz-queue-check/issues/02-zz-blocked.md
+@@ -4,4 +4,4 @@
+ 
+ **Blocked by:** none
+ 
+-**Status:** blocked
++**Status:** done
+0f1384f zz tickets done
+fc5df1a zz feature
+[exit code: 0]
+
+$ python3 scripts/queue.py wait zz-queue-check merge-pr 34 --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+td task add 'Merge PR #34' --project id:6j222rQrr58wHx9G --section id:6j23xPvRxhmXMwfG --labels ready-for-human --description '4ag: zz-queue-check/wait/merge-pr
+https://github.com/bkwon94/4thandgoal/pull/34'
+1 command sent.
+[exit code: 0]
+# Before the sweep:
+
+$ td section list 4thandgoal
+6j23MVCCH6GG33Qp  Ideas
+6j23MVFvmP3pXp9G  codex-flow
+6j23MVhF6HM9FRwp  front-door-lineup
+6j23MX6W842H5FGG  manager-pages
+6j23MXCJF4XHX95G  modular
+6j23MXRfvWVF8fWG  readme-module-navigation
+6j23MXhp23FMM8fp  site-pages
+6j23MXq7P8gc8vVp  todoist-queue
+6j23McXGPmCm5HwG  tone
+6j23McgvMHwC6V2G  week-8-fixes
+6j23w26gX28gv4hp  perf optimization
+6j23xPvRxhmXMwfG  zz-queue-check
+
+[exit code: 0]
+
+$ td section list 4thandgoal --json --all --full | jq '.results[] | select(.name == "zz-queue-check")'
+{
+  "id": "6j23xPvRxhmXMwfG",
+  "userId": "61452253",
+  "projectId": "6j222rQrr58wHx9G",
+  "addedAt": "2026-11-12T22:22:09.353Z",
+  "updatedAt": "2026-11-12T22:22:09.353Z",
+  "archivedAt": null,
+  "name": "zz-queue-check",
+  "description": null,
+  "sectionOrder": 13,
+  "orderKey": "aE5Bc",
+  "isArchived": false,
+  "isDeleted": false,
+  "isCollapsed": false,
+  "url": "https://app.todoist.com/app/section/zz-queue-check-6j23xPvRxhmXMwfG"
+}
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/") or startswith("4ag: zz-queue-check/")) | {id, content, labels, key: (.description | split("\n") | first)}]'
+[
+  {
+    "id": "6j23xQ28wGxwGxHp",
+    "content": "Decision 01: Does the grill ZZ question need Brian?",
+    "labels": [
+      "decision",
+      "ready-for-human"
+    ],
+    "key": "4ag: .scratch/zz-queue-check/decisions/01-grill-zz-question.md"
+  },
+  {
+    "id": "6j23xQGHrHggjX5p",
+    "content": "Decision 02: What does the research ZZ question find?",
+    "labels": [
+      "decision",
+      "ready-for-agent"
+    ],
+    "key": "4ag: .scratch/zz-queue-check/decisions/02-research-zz-question.md"
+  },
+  {
+    "id": "6j23xmWg29GC37Rp",
+    "content": "02 ZZ blocked",
+    "labels": [
+      "blocked"
+    ],
+    "key": "4ag: .scratch/zz-queue-check/issues/02-zz-blocked.md"
+  },
+  {
+    "id": "6j23xRjQqWW8r3cG",
+    "content": "01 ZZ ready",
+    "labels": [
+      "needs-info",
+      "phone"
+    ],
+    "key": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md"
+  },
+  {
+    "id": "6j2423W8qCJC2jcG",
+    "content": "Merge PR #34",
+    "labels": [
+      "ready-for-human"
+    ],
+    "key": "4ag: zz-queue-check/wait/merge-pr"
+  }
+]
+[exit code: 0]
+# When:
+
+$ python3 scripts/queue.py sweep --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+warning: git fetch origin main failed: fatal: 'origin' does not appear to be a git repository fatal: Could not read from remote repository. Please make sure you have the correct access rights and the repository exists.. The sweep reads the last fetched main.
+td task complete id:6j23xQ28wGxwGxHp
+td task complete id:6j23xQGHrHggjX5p
+td task complete id:6j23xmWg29GC37Rp
+td task complete id:6j23xRjQqWW8r3cG
+td task complete id:6j2423W8qCJC2jcG
+td section archive id:6j23xPvRxhmXMwfG
+6 commands sent.
+[exit code: 0]
+# After the sweep:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/") or startswith("4ag: zz-queue-check/")) | {id, content, labels, key: (.description | split("\n") | first)}]'
+[]
+[exit code: 0]
+
+$ td section list 4thandgoal
+6j23MVCCH6GG33Qp  Ideas
+6j23MVFvmP3pXp9G  codex-flow
+6j23MVhF6HM9FRwp  front-door-lineup
+6j23MX6W842H5FGG  manager-pages
+6j23MXCJF4XHX95G  modular
+6j23MXRfvWVF8fWG  readme-module-navigation
+6j23MXhp23FMM8fp  site-pages
+6j23MXq7P8gc8vVp  todoist-queue
+6j23McXGPmCm5HwG  tone
+6j23McgvMHwC6V2G  week-8-fixes
+6j23w26gX28gv4hp  perf optimization
+
+[exit code: 0]
+
+$ td section list 4thandgoal --json --all --full | jq '.results[] | select(.name == "zz-queue-check")'
+[exit code: 0]

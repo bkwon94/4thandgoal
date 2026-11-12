@@ -1,0 +1,90 @@
+# Given: the throwaway feature has no wait task.
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: zz-queue-check/wait/"))]'
+[]
+[exit code: 0]
+# When: the first run.
+
+$ python3 scripts/queue.py wait zz-queue-check approve-prd --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+td task add 'Approve PRD' --project id:6j222rQrr58wHx9G --section id:6j23xPvRxhmXMwfG --labels ready-for-human --description '4ag: zz-queue-check/wait/approve-prd'
+1 command sent.
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: zz-queue-check/wait/"))]'
+[
+  {
+    "id": "6j23xr485XXCfH2G",
+    "content": "Approve PRD",
+    "description": "4ag: zz-queue-check/wait/approve-prd",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "ready-for-human"
+    ],
+    "url": "https://app.todoist.com/app/task/approve-prd-6j23xr485XXCfH2G",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+# When: the second run, with --done.
+
+$ python3 scripts/queue.py wait zz-queue-check approve-prd --done --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+td task complete id:6j23xr485XXCfH2G
+1 command sent.
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: zz-queue-check/wait/"))]'
+[]
+[exit code: 0]
+
+$ td completed list --project 4thandgoal --since 2026-11-11 --until 2026-11-14 --json --all | jq '[.results[] | select(.id == "6j23xr485XXCfH2G")]'
+[
+  {
+    "id": "6j23xr485XXCfH2G",
+    "content": "Approve PRD",
+    "description": "4ag: zz-queue-check/wait/approve-prd",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "ready-for-human"
+    ],
+    "url": "https://app.todoist.com/app/task/approve-prd-6j23xr485XXCfH2G",
+    "responsibleUid": null,
+    "responsibleName": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+
+$ td task view id:6j23xr485XXCfH2G --json
+{
+  "id": "6j23xr485XXCfH2G",
+  "content": "Approve PRD",
+  "description": "4ag: zz-queue-check/wait/approve-prd",
+  "priority": 1,
+  "due": null,
+  "deadline": null,
+  "duration": null,
+  "projectId": "6j222rQrr58wHx9G",
+  "sectionId": "6j23xPvRxhmXMwfG",
+  "parentId": null,
+  "labels": [
+    "ready-for-human"
+  ],
+  "url": "https://app.todoist.com/app/task/approve-prd-6j23xr485XXCfH2G",
+  "responsibleUid": null,
+  "isUncompletable": false,
+  "webUrl": "https://app.todoist.com/app/task/6j23xr485XXCfH2G"
+}
+[exit code: 0]

@@ -1,0 +1,172 @@
+$ python3 -B .scratch/todoist-queue/evidence/AT-27/compare.py
+match  .scratch/site-pages/issues/01-page-shell.md: approved done; file has `**Status:** done`
+match  .scratch/site-pages/issues/02-home-page.md: approved done; file has `**Status:** done`
+match  .scratch/site-pages/issues/03-rankings-table.md: approved done; file has `**Status:** done`
+match  .scratch/site-pages/issues/04-analyzer-form.md: approved done; file has `**Status:** done`
+match  .scratch/site-pages/issues/05-result-cards.md: approved done; file has `**Status:** done`
+match  .scratch/site-pages/issues/07-black-card-sweep.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/site-pages/issues/08-motion-off-hydration.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/site-pages/issues/09-home-test-class-name.md: approved ready-for-agent; file has `**Status:** ready-for-agent`
+match  .scratch/site-pages/issues/10-playoff-header-wrap.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/site-report/issues/01-type-scale-measure-and-cards.md: approved done; file has `**Status:** done`
+match  .scratch/site-report/issues/02-hero-composition.md: approved done; file has `**Status:** done`
+match  .scratch/site-report/issues/03-grid-chapters.md: approved done; file has `**Status:** done`
+match  .scratch/site-report/issues/04-wide-chapters.md: approved done; file has `**Status:** done`
+match  .scratch/site-report/issues/05-chapter-rail.md: approved done; file has `**Status:** done`
+match  .scratch/site-report/issues/06-week-footer.md: approved done; file has `**Status:** done`
+match  .scratch/site-report/issues/07-accessibility-and-browser-pass.md: approved done; file has `**Status:** done`
+match  .scratch/site-api/issues/10-prompt-caching.md: approved done; file has `**Status:** done`
+match  .scratch/site-api/issues/13-word-ban-gaps.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/site-api/issues/14-ruff-config.md: approved done; file has `**Status:** done`
+match  .scratch/site-api/issues/15-suggested-counters.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/site-api/issues/16-clamp-one-step.md: approved done; file has `**Status:** done`
+match  .scratch/site-api/issues/17-grade-limits.md: approved done; file has `**Status:** done`
+match  .scratch/site-api/issues/21-team-name-once-per-blurb.md: approved done; file has `**Status:** done`
+match  .scratch/site-foundation/issues/01-tiers-and-page-column.md: approved done; file has `**Status:** done`
+match  .scratch/site-foundation/issues/02-destinations-and-menu-sheet.md: approved done; file has `**Status:** done`
+match  .scratch/site-foundation/issues/03-desktop-row-and-past-weeks-popover.md: approved done; file has `**Status:** done`
+match  .scratch/site-foundation/issues/04-compact-bar.md: approved done; file has `**Status:** done`
+match  .scratch/site-foundation/issues/05-accessibility-and-browser-pass.md: approved done; file has `**Status:** done`
+match  .scratch/site-speed/issues/01-teams-prefetch-and-skeleton.md: approved done; file has `**Status:** done`
+match  .scratch/site-speed/issues/03-lock-the-form-during-a-grade.md: approved done; file has `**Status:** done`
+match  .scratch/rankings/pipeline/issues/01-the-formula.md: approved done; file has `**Status:** done`
+match  .scratch/rankings/pipeline/issues/02-season-file-command-publish.md: approved done; file has `**Status:** done`
+match  .scratch/rankings/pipeline/issues/03-the-rankings-chapter.md: approved done; file has `**Status:** done`
+match  .scratch/rankings/pipeline/issues/04-streaks-margins-in-the-formula.md: approved done; file has `**Status:** done`
+match  .scratch/rankings/site/issues/01-reader-and-route.md: approved done; file has `**Status:** done`
+match  .scratch/rankings/site/issues/02-expandable-blurb-row.md: approved done; file has `**Status:** done`
+match  .scratch/rankings/site/issues/03-home-chapter.md: approved done; file has `**Status:** done`
+match  .scratch/waiver/pipeline/issues/09-usage-floor-for-ranked-buckets.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/waiver/pipeline/issues/10-price-flat-per-position.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/waiver/pipeline/issues/11-behind-injury-needs-a-starter.md: approved done; file has `**Status:** done`
+match  .scratch/waiver/site/issues/01-the-route-behind-the-flag.md: approved done; file has `**Status:** done`
+match  .scratch/waiver/site/issues/02-the-war-chest-look.md: approved done; file has `**Status:** done`
+match  .scratch/next-week-byes/pipeline/issues/06-two-chapters-fell-to-templates-in-the-week-7-rebuild.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/next-week-byes/site/issues/01-byes-on-the-next-week-games.md: approved done; file has `**Status:** done`
+match  .scratch/next-week-byes/site/issues/02-bye-facts-and-the-next-week-range.md: approved done; file has `**Status:** done`
+match  .scratch/next-week-byes/site/issues/03-roast-as-the-default-register.md: approved done; file has `**Status:** done`
+match  .scratch/next-week-byes/site/issues/04-the-bye-line-in-the-game-card.md: approved done; file has `**Status:** done`
+match  .scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md: approved ready-for-agent; file has `**Status:** ready-for-agent`
+match  .scratch/manager-pages/pipeline/issues/13-grade-test-gaps.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/manager-pages/site/issues/01-the-past-week-keeps-every-rostered-player.md: approved done; file has `**Status:** done`
+match  .scratch/manager-pages/site/issues/02-the-managers-file-and-publish.md: approved done; file has `**Status:** done`
+match  .scratch/manager-pages/site/issues/11-the-bench-sentence-and-the-odds-change-words.md: approved ready-for-human; file has `**Status:** ready-for-human`
+match  .scratch/modular/pipeline/issues/20-remove-the-chart-parameter-of-context.md: approved ready-for-agent; file has `**Status:** ready-for-agent`
+match  .scratch/modular/site/issues/12-the-fixtures-carry-every-as-of-key-the-api-sends.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/win-win/site/issues/06-shared-api-call-hook.md: approved done; file has `**Status:** done`
+match  .scratch/agent-habits/site/issues/03-close-the-site-tickets-whose-merge-main-proves.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/analyzer-multi-team/issues/10-headshot-strip-gap.md: approved done; file has `**Status:** done`
+match  .scratch/analyzer-multi-team/issues/11-to-tag-truncates.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/analyzer-multi-team/issues/12-finder-and-waiver-pickers.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/analyzer-multi-team/issues/13-cli-parsed-side-type.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/front-door/issues/12-buy-low.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/known-games/issues/08-the-site-renders-the-known-games-line.md: approved done; file has `**Status:** done`
+match  .scratch/known-games/issues/10-followups-from-the-final-review.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/live-refetch/issues/01-the-live-api-rewrites-patched-weeks.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/one/issues/11-rename-the-pipeline-chapter-to-prose-block.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/tone/issues/09-leftovers-after-the-second-rewrite.md: approved done; file has `**Status:** done`
+match  .scratch/tone/issues/10-remove-names-is-case-sensitive.md: approved ready-for-agent; file has `**Status:** ready-for-agent`
+match  .scratch/tone/issues/11-facts-command.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/trade-grade-v3/issues/05-rebuild-week-6.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/week-8-fixes/issues/07-the-readmes-name-the-module-an-agent-needs.md: approved wontfix; file has `**Status:** wontfix`
+match  .scratch/week-8-fixes/issues/08-the-scoring-component-fact-names-the-component.md: approved ready-for-agent; file has `**Status:** ready-for-agent`
+
+71 tickets, 0 mismatches. Status counts on todoist-queue: {'done': 44, 'wontfix': 21, 'ready-for-agent': 5, 'ready-for-human': 1}
+[exit code: 0]
+
+$ git diff 17f45a15 HEAD -- docs/agents/state.md
+diff --git a/docs/agents/state.md b/docs/agents/state.md
+index 6a735dbb..e4e75a8b 100644
+--- a/docs/agents/state.md
++++ b/docs/agents/state.md
+@@ -11,37 +11,13 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
+ 
+ | Feature | App | Next ticket | Blocked by | Hold |
+ | --- | --- | --- | --- | --- |
+-| `agent-habits` | site | 03 close the site tickets whose merge main proves | none | |
+-| `analyzer-multi-team` | site | 10 the headshot strip gap | none | |
+-| `front-door` | both | 12 buy low targets from other rosters | none | |
+-| `known-games` | pipeline | 08 the-site-renders-the-known-games-line | | |
+-| `live-refetch` | both | 01 the live API rewrites the history of a patched week | none | |
+-| `manager-pages` | site | 01 the past week keeps every rostered player | none | |
++| `manager-pages` | site | 11 the bench sentence and the odds change words | none | |
+ | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
+-| `modular` | site | 12 the fixtures carry every as-of key | none | |
+ | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |
+-| `one` | both | 11 rename the pipeline chapter to prose block | none | |
+-| `next-week-byes` | site | 01 byes on the next-week games | the pipeline tracker | |
+-| `next-week-byes` | pipeline | 06 two-chapters-fell-to-templates-in-the-week-7-rebuild | | |
+-| `rankings` | site | 01 the reader and the route | none | |
+-| `rankings` | pipeline | 01 the-formula | | |
+-| `site-api` | pipeline | 10 prompt-caching | | |
+-| `site-foundation` | site | 01 the tiers and the page column | none | |
+-| `site-pages` | site | 01 the page shell | none | |
+-| `site-report` | site | 01 the type scale, the measure, and the cards | none | |
+-| `site-speed` | site | 01 the teams prefetch and the skeleton | none | |
+-| `tone` | pipeline | 09 leftovers-after-the-second-rewrite | | |
+-| `trade-grade-v3` | pipeline | 05 rebuild-week-6 | | Brian's review and the publish of week 6 |
+-| `waiver` | site | 01 the route behind the flag | pipeline 01 the week file | |
+-| `waiver` | pipeline | 09 usage-floor-for-ranked-buckets | | |
+-| `week-8-fixes` | pipeline | 07 the-readmes-name-the-module-an-agent-needs | | |
+-| `win-win` | site | 06 the shared API call hook | none | |
+-
+-## Notes
+-
+-- No merge on `main` proves known-games 08, so its Status stays open until Brian decides.
+-- `main` holds the merge of branch `tone-09`, but tone 09 reads ready-for-human, so Brian decides its Status.
+-- trade-grade-v3 05 may be done, because `main` holds the week 6 report, so Brian decides its Status.
++| `site-pages` | site | 09 the home page test reads a class name | none | |
++| `todoist-queue` | both | 02 the tracker rule rejects an odd status | none | |
++| `tone` | pipeline | 10 remove-names-is-case-sensitive | | |
++| `week-8-fixes` | pipeline | 08 the-scoring-component-fact-names-the-component | | |
+ 
+ ## Holds
+ 
+[exit code: 0]
+
+$ cat docs/agents/state.md
+# Where the work sits
+
+One row for each feature under `.scratch/` with an open ticket. The next ticket is the lowest open
+number. The close comment of a ticket updates this file in the same commit. Two rule tests keep it true:
+`apps/site/src/tracker-rule.test.ts` and `apps/pipeline/tests/test_rule_tracker.py`.
+
+The App column is `site`, `pipeline`, or `both`. A shared feature has a `site/` and a `pipeline/` subfolder.
+It gets one row for each subfolder with an open ticket. The App of that row names the subfolder, and the
+number in Next ticket is a ticket in `.scratch/<feature>/<app>/issues/`. So the row `waiver`, `pipeline`, 09
+names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has one row.
+
+| Feature | App | Next ticket | Blocked by | Hold |
+| --- | --- | --- | --- | --- |
+| `manager-pages` | site | 11 the bench sentence and the odds change words | none | |
+| `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
+| `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |
+| `site-pages` | site | 09 the home page test reads a class name | none | |
+| `todoist-queue` | both | 02 the tracker rule rejects an odd status | none | |
+| `tone` | pipeline | 10 remove-names-is-case-sensitive | | |
+| `week-8-fixes` | pipeline | 08 the-scoring-component-fact-names-the-component | | |
+
+## Holds
+
+- `verdict` is not yet a required check on `main`, so nothing blocks the merge of a spec PR with a FAIL. Brian adds it in Settings, Rules: a ruleset for `main` with `verdict` required, and the Repository admin role on the bypass list, so `publish` can still push to `main`.
+- Brian runs one `make publish` by hand under the hook before the week 9 publish.
+[exit code: 0]
+# The features with an open ticket on todoist-queue: the first word of the Status line, with no trailing punctuation, is not done or wontfix.
+
+$ for f in $(git ls-files '.scratch/*/issues/*.md'); do s=$(grep -m1 -E '^(\*\*)?Status:' $f | sed -E 's/^(\*\*)?Status:(\*\*)?[[:space:]]*//' | awk '{print $1}' | sed -E 's/[.,;:]+$//'); case $s in done|wontfix) ;; *) echo "$(echo $f | cut -d/ -f2-3 | sed 's#/issues##')  [$s]";; esac; done | sort | uniq -c
+   1 manager-pages/pipeline  [ready-for-agent]
+   1 manager-pages/site  [ready-for-human]
+   1 modular/pipeline  [ready-for-agent]
+   1 site-pages  [ready-for-agent]
+   8 todoist-queue  [in-review]
+   1 tone  [ready-for-agent]
+   1 week-8-fixes  [ready-for-agent]
+[exit code: 0]
+# The grep for the four odd strings as the first word of a Status line:
+
+$ git grep -n -i -E '^(\*\*)?Status:(\*\*)?[[:space:]]*(triage|built|accepted|backlog)\b' -- '.scratch/*/issues/*.md'
+[exit code: 1]
+
+$ git grep -n -i -E '^(\*\*)?Status:(\*\*)?[[:space:]]*(triage|built|accepted|backlog)\b' -- '.scratch/*/issues/*.md' | wc -l
+       0
+[exit code: 0]

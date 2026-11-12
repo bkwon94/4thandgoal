@@ -1,0 +1,94 @@
+# Given: the first push makes the task of 02-zz-blocked.md.
+
+$ python3 scripts/queue.py push "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/02-zz-blocked.md --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+td task add '02 ZZ blocked' --project id:6j222rQrr58wHx9G --section id:6j23xPvRxhmXMwfG --labels blocked --description '4ag: .scratch/zz-queue-check/issues/02-zz-blocked.md
+https://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/02-zz-blocked.md
+A throwaway ticket for the acceptance tests of the queue. It names no real work.'
+1 command sent.
+[exit code: 0]
+# Given: the file gets a new line under ## Comments.
+
+$ printf '\n## Comments\n\nA throwaway comment for AT-32. It must not reach Todoist.\n' >> "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/02-zz-blocked.md
+[exit code: 0]
+
+$ git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" diff
+diff --git a/.scratch/zz-queue-check/issues/02-zz-blocked.md b/.scratch/zz-queue-check/issues/02-zz-blocked.md
+index f101098..bc483ac 100644
+--- a/.scratch/zz-queue-check/issues/02-zz-blocked.md
++++ b/.scratch/zz-queue-check/issues/02-zz-blocked.md
+@@ -5,3 +5,7 @@
+ **Blocked by:** none
+ 
+ **Status:** blocked
++
++## Comments
++
++A throwaway comment for AT-32. It must not reach Todoist.
+[exit code: 0]
+# Before the push:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/02-"))]'
+[
+  {
+    "id": "6j23xmWg29GC37Rp",
+    "content": "02 ZZ blocked",
+    "description": "4ag: .scratch/zz-queue-check/issues/02-zz-blocked.md\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/02-zz-blocked.md\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "blocked"
+    ],
+    "url": "https://app.todoist.com/app/task/02-zz-blocked-6j23xmWg29GC37Rp",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+
+$ td comment list id:6j23xmWg29GC37Rp --json
+{
+  "results": [],
+  "nextCursor": null
+}
+[exit code: 0]
+# When: the push of AT-22 runs without the invalid token.
+
+$ python3 scripts/queue.py push "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/02-zz-blocked.md --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+0 commands sent.
+[exit code: 0]
+# After the push:
+
+$ td comment list id:6j23xmWg29GC37Rp --json
+{
+  "results": [],
+  "nextCursor": null
+}
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/02-"))]'
+[
+  {
+    "id": "6j23xmWg29GC37Rp",
+    "content": "02 ZZ blocked",
+    "description": "4ag: .scratch/zz-queue-check/issues/02-zz-blocked.md\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/02-zz-blocked.md\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "blocked"
+    ],
+    "url": "https://app.todoist.com/app/task/02-zz-blocked-6j23xmWg29GC37Rp",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]

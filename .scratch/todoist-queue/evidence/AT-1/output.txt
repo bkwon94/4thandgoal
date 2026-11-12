@@ -1,0 +1,40 @@
+$ python3 scripts/queue.py import --dry-run
+td section create --name pick-reason --project id:6j222rQrr58wHx9G
+td task add '01 The pick label names a signal the pick does not lead' --project id:6j222rQrr58wHx9G --section pick-reason --labels needs-triage,pipeline --description '4ag: .scratch/pick-reason/issues/01-the-pick-label-names-a-signal-the-pick-does-not-lead.md
+App: pipeline
+On the spec branch pick-reason.
+[The summary line is trimmed here, because it names league managers and the repo is public.]'
+td task update id:6j23MXf3jVmGQ9xG --labels blocked,site,pipeline
+td task update id:6j23McQ9XgPc84PG --labels in-review,site,pipeline
+td task update id:6j23McQPcqCFjf7p --labels in-review,site,pipeline
+5 commands planned, none sent.
+[exit code: 0]
+
+$ grep -n 'Status' .scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md
+7:**Status:** ready-for-agent
+[exit code: 0]
+# The JSON of the task. The same JSON sits in task.json.
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.content == "12 Drop awards from the managers entry")]'
+[
+  {
+    "id": "6j23MX6xpGQQ8pjp",
+    "content": "12 Drop awards from the managers entry",
+    "description": "4ag: .scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md\nApp: pipeline\n[4thandgoal/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md at main · bkwon94/4thandgoal](https://github.com/bkwon94/4thandgoal/blob/main/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md)\nthe managers file still carries `awards` per entry, and `saved_awards` still reads every `facts.json`. The site does not read `awards` on a manager. It builds the four season numbers from `weeks`. Drop `awards` from the entry and bump `MANAGERS_SCHEMA_VERSION`, with the site types in the same step. Both repos.",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23MX6W842H5FGG",
+    "parentId": null,
+    "labels": [
+      "pipeline",
+      "ready-for-agent"
+    ],
+    "url": "https://app.todoist.com/app/task/12-drop-awards-from-the-managers-entry-6j23MX6xpGQQ8pjp",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]

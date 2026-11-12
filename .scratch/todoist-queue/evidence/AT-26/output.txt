@@ -1,0 +1,170 @@
+$ python3 -B .scratch/todoist-queue/evidence/AT-26/check.py
+Open tickets of main at 17f45a15: 71
+  .scratch/agent-habits/site/issues/03-close-the-site-tickets-whose-merge-main-proves.md
+  .scratch/analyzer-multi-team/issues/10-headshot-strip-gap.md
+  .scratch/analyzer-multi-team/issues/11-to-tag-truncates.md
+  .scratch/analyzer-multi-team/issues/12-finder-and-waiver-pickers.md
+  .scratch/analyzer-multi-team/issues/13-cli-parsed-side-type.md
+  .scratch/front-door/issues/12-buy-low.md
+  .scratch/known-games/issues/08-the-site-renders-the-known-games-line.md
+  .scratch/known-games/issues/10-followups-from-the-final-review.md
+  .scratch/live-refetch/issues/01-the-live-api-rewrites-patched-weeks.md
+  .scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md
+  .scratch/manager-pages/pipeline/issues/13-grade-test-gaps.md
+  .scratch/manager-pages/site/issues/01-the-past-week-keeps-every-rostered-player.md
+  .scratch/manager-pages/site/issues/02-the-managers-file-and-publish.md
+  .scratch/manager-pages/site/issues/11-the-bench-sentence-and-the-odds-change-words.md
+  .scratch/modular/pipeline/issues/20-remove-the-chart-parameter-of-context.md
+  .scratch/modular/site/issues/12-the-fixtures-carry-every-as-of-key-the-api-sends.md
+  .scratch/next-week-byes/pipeline/issues/06-two-chapters-fell-to-templates-in-the-week-7-rebuild.md
+  .scratch/next-week-byes/site/issues/01-byes-on-the-next-week-games.md
+  .scratch/next-week-byes/site/issues/02-bye-facts-and-the-next-week-range.md
+  .scratch/next-week-byes/site/issues/03-roast-as-the-default-register.md
+  .scratch/next-week-byes/site/issues/04-the-bye-line-in-the-game-card.md
+  .scratch/one/issues/11-rename-the-pipeline-chapter-to-prose-block.md
+  .scratch/rankings/pipeline/issues/01-the-formula.md
+  .scratch/rankings/pipeline/issues/02-season-file-command-publish.md
+  .scratch/rankings/pipeline/issues/03-the-rankings-chapter.md
+  .scratch/rankings/pipeline/issues/04-streaks-margins-in-the-formula.md
+  .scratch/rankings/site/issues/01-reader-and-route.md
+  .scratch/rankings/site/issues/02-expandable-blurb-row.md
+  .scratch/rankings/site/issues/03-home-chapter.md
+  .scratch/site-api/issues/10-prompt-caching.md
+  .scratch/site-api/issues/13-word-ban-gaps.md
+  .scratch/site-api/issues/14-ruff-config.md
+  .scratch/site-api/issues/15-suggested-counters.md
+  .scratch/site-api/issues/16-clamp-one-step.md
+  .scratch/site-api/issues/17-grade-limits.md
+  .scratch/site-api/issues/21-team-name-once-per-blurb.md
+  .scratch/site-foundation/issues/01-tiers-and-page-column.md
+  .scratch/site-foundation/issues/02-destinations-and-menu-sheet.md
+  .scratch/site-foundation/issues/03-desktop-row-and-past-weeks-popover.md
+  .scratch/site-foundation/issues/04-compact-bar.md
+  .scratch/site-foundation/issues/05-accessibility-and-browser-pass.md
+  .scratch/site-pages/issues/01-page-shell.md
+  .scratch/site-pages/issues/02-home-page.md
+  .scratch/site-pages/issues/03-rankings-table.md
+  .scratch/site-pages/issues/04-analyzer-form.md
+  .scratch/site-pages/issues/05-result-cards.md
+  .scratch/site-pages/issues/07-black-card-sweep.md
+  .scratch/site-pages/issues/08-motion-off-hydration.md
+  .scratch/site-pages/issues/09-home-test-class-name.md
+  .scratch/site-pages/issues/10-playoff-header-wrap.md
+  .scratch/site-report/issues/01-type-scale-measure-and-cards.md
+  .scratch/site-report/issues/02-hero-composition.md
+  .scratch/site-report/issues/03-grid-chapters.md
+  .scratch/site-report/issues/04-wide-chapters.md
+  .scratch/site-report/issues/05-chapter-rail.md
+  .scratch/site-report/issues/06-week-footer.md
+  .scratch/site-report/issues/07-accessibility-and-browser-pass.md
+  .scratch/site-speed/issues/01-teams-prefetch-and-skeleton.md
+  .scratch/site-speed/issues/03-lock-the-form-during-a-grade.md
+  .scratch/tone/issues/09-leftovers-after-the-second-rewrite.md
+  .scratch/tone/issues/10-remove-names-is-case-sensitive.md
+  .scratch/tone/issues/11-facts-command.md
+  .scratch/trade-grade-v3/issues/05-rebuild-week-6.md
+  .scratch/waiver/pipeline/issues/09-usage-floor-for-ranked-buckets.md
+  .scratch/waiver/pipeline/issues/10-price-flat-per-position.md
+  .scratch/waiver/pipeline/issues/11-behind-injury-needs-a-starter.md
+  .scratch/waiver/site/issues/01-the-route-behind-the-flag.md
+  .scratch/waiver/site/issues/02-the-war-chest-look.md
+  .scratch/week-8-fixes/issues/07-the-readmes-name-the-module-an-agent-needs.md
+  .scratch/week-8-fixes/issues/08-the-scoring-component-fact-names-the-component.md
+  .scratch/win-win/site/issues/06-shared-api-call-hook.md
+
+Audit lines: 71
+Open tickets with no audit line: []
+Tickets with more than one audit line: []
+Audit lines for a ticket that is not open on main: []
+Audit lines under the wrong feature heading: []
+done or open lines with no commit or label: []
+Results: {'done': 45, 'wontfix': 9, 'open': 17}
+wontfix lines with no reason: []
+
+git cat-file -e on each commit of a done line (43) and each other named hash (79 in all):
+  003d45bb exists (done line)
+  011f46d0 exists
+  04f80802 exists (done line)
+  071b6021 exists
+  0a8b8868 exists (done line)
+  15e288c6 exists (done line)
+  15f11610 exists (done line)
+  1d7bfc0d exists
+  1fc76869 exists
+  22311557 exists (done line)
+  230ba6e8 exists (done line)
+  24a14a34 exists
+  28fd4d8e exists
+  2dcfda4c exists
+  2e6a4bf7 exists (done line)
+  322dfbac exists (done line)
+  3d6dff1c exists
+  442e8d58 exists (done line)
+  47a53dd4 exists
+  49aeb86c exists (done line)
+  49c735f9 exists
+  4bae5201 exists
+  4e2015b6 exists (done line)
+  4e9c6b87 exists (done line)
+  52763926 exists (done line)
+  590268f8 exists (done line)
+  59f8dcce exists (done line)
+  5b935d74 exists
+  5fcfd7ae exists
+  601be8e3 exists
+  62b61cca exists (done line)
+  631f2395 exists (done line)
+  6486cff5 exists
+  69c1c4af exists
+  6a480aec exists
+  6b0e1faf exists (done line)
+  6b9265bb exists (done line)
+  746a5d0 exists (done line)
+  746a5d01 exists
+  77173fb4 exists
+  78f58d42 exists (done line)
+  7bc3743e exists
+  7d82a17e exists
+  80a8a7bb exists (done line)
+  8159f80b exists (done line)
+  841abd72 exists
+  84d3fabb exists
+  911899bf exists (done line)
+  94f52bea exists
+  958c1ee exists
+  95d57c8d exists
+  9d9ecc86 exists (done line)
+  9e09d472 exists (done line)
+  a1cf4831 exists (done line)
+  a5559600 exists
+  a68024d exists (done line)
+  a6cd647d exists (done line)
+  a98dd105 exists
+  acab9e52 exists
+  b117cd7e exists
+  b799b889 exists
+  ba2fb98a exists
+  be975af5 exists (done line)
+  c133eb89 exists
+  c393978f exists
+  c6f2db70 exists
+  c80b0073 exists (done line)
+  ce1e0abf exists (done line)
+  da7ee83f exists
+  db0fbf3 exists (done line)
+  dc564361 exists (done line)
+  dd18742a exists (done line)
+  e164732c exists (done line)
+  e753f56e exists (done line)
+  e8211e22 exists (done line)
+  eb429ecf exists (done line)
+  ed455b93 exists (done line)
+  ed7c1d80 exists (done line)
+  f1c3f09e exists (done line)
+Missing commits: []
+[exit code: 0]
+
+$ git rev-parse --short main; git merge-base main todoist-queue
+17f45a15
+17f45a15d1c324e36beefd0da29b77fe56b7ef91
+[exit code: 0]

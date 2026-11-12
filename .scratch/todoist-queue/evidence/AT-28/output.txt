@@ -1,0 +1,107 @@
+# The rules run in a detached worktree of HEAD f0461df6, because a background make check uses the .venv of the Spec worktree.
+
+$ git -C /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/todoist-queue-flags rev-parse --short HEAD
+f0461df6
+[exit code: 0]
+# Given: a planted ticket at **Status:** backlog, staged and never committed.
+
+$ cd /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/todoist-queue-flags && mkdir -p .scratch/zz-rule/issues && printf '# 01: ZZ\n\n**Status:** backlog\n' > .scratch/zz-rule/issues/01-zz.md && git add .scratch/zz-rule/issues/01-zz.md && git status --short
+A  .scratch/zz-rule/issues/01-zz.md
+[exit code: 0]
+# When: the tracker rule of the pipeline.
+
+$ cd /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/todoist-queue-flags/apps/pipeline && uv run --exact --package cornerstone pytest -q tests/test_rule_tracker.py
+Uninstalled 8 packages in 52ms
+F.......F                                                                [100%]
+=================================== FAILURES ===================================
+_______________________ test_each_open_feature_has_a_row _______________________
+
+    def test_each_open_feature_has_a_row():
+        offenses = _missing_row_offenses(ROOT, _tracked_scratch_files(ROOT), ROOT / STATE)
+>       assert not offenses, report(offenses)
+E       AssertionError: 1 offense.
+E         
+E         docs/agents/state.md:1  tracker/state-file
+E           The feature zz-rule has an open ticket and no row.
+E           Rule: each feature with an open ticket has a row in docs/agents/state.md (docs/adr/0014-the-rules-are-checks.md).
+E           Fix: add a row to `docs/agents/state.md`.
+E       assert not [Offense(path='docs/agents/state.md', line=1, rule_id='tracker/state-file', what='The feature zz-rule has an open tick...row in docs/agents/state.md', adr='docs/adr/0014-the-rules-are-checks.md', fix='add a row to `docs/agents/state.md`.')]
+
+tests/test_rule_tracker.py:184: AssertionError
+________________ test_each_ticket_has_one_of_the_nine_statuses _________________
+
+    def test_each_ticket_has_one_of_the_nine_statuses():
+        offenses = _odd_status_offenses(ROOT, _tracked_scratch_files(ROOT))
+>       assert not offenses, report(offenses)
+E       AssertionError: 1 offense.
+E         
+E         .scratch/zz-rule/issues/01-zz.md:3  tracker/status
+E           The ticket has the status backlog, and it is not one of the nine statuses.
+E           Rule: the first word of the Status line of a ticket is one of the nine statuses (docs/adr/0014-the-rules-are-checks.md).
+E           Fix: set the first word of the Status line to one of: blocked, done, in-progress, in-review, needs-info, needs-triage, ready-for-agent, ready-for-human, wontfix.
+E       assert not [Offense(path='.scratch/zz-rule/issues/01-zz.md', line=3, rule_id='tracker/status', what='The ticket has the status ba... one of: blocked, done, in-progress, in-review, needs-info, needs-triage, ready-for-agent, ready-for-human, wontfix.')]
+
+tests/test_rule_tracker.py:276: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_rule_tracker.py::test_each_open_feature_has_a_row - Asserti...
+FAILED tests/test_rule_tracker.py::test_each_ticket_has_one_of_the_nine_statuses
+2 failed, 7 passed in 0.28s
+[exit code: 1]
+# When: the tracker rule of the site.
+
+$ cd /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/todoist-queue-flags && pnpm --dir apps/site exec vitest run src/tracker-rule.test.ts
+
+ RUN  v5.0.5 /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/todoist-queue-flags/apps/site
+
+ ❯ src/tracker-rule.test.ts (10 tests | 2 failed) 123ms
+   ❯ the tracker rule (10)
+     × finds one row in the state file for each feature with an open ticket, and no other row 27ms
+     × gives each tracked ticket one of the nine statuses 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/tracker-rule.test.ts > the tracker rule > finds one row in the state file for each feature with an open ticket, and no other row
+Error: 1 offense.
+
+docs/agents/state.md:1  tracker/state-file
+  zz-rule has the open ticket 01-zz, and the state file has no row for it.
+  Rule: each feature with an open ticket has one row in docs/agents/state.md, and no other feature has a row (docs/adr/0016-the-rules-are-checks.md).
+  Fix: add a row to docs/agents/state.md.
+ ❯ src/tracker-rule.test.ts:160:33
+    158|   it("finds one row in the state file for each feature with an open ti…
+    159|     const found = offenses(trackedTickets(ROOT), readFileSync(join(ROO…
+    160|     if (found.length > 0) throw new Error(report(found));
+       |                                 ^
+    161|   });
+    162|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/tracker-rule.test.ts > the tracker rule > gives each tracked ticket one of the nine statuses
+Error: 1 offense.
+
+.scratch/zz-rule/issues/01-zz.md:3  tracker/status
+  The ticket has the status backlog, and it is not one of the nine statuses.
+  Rule: the first word of the Status line of a ticket is one of the nine statuses (docs/adr/0016-the-rules-are-checks.md).
+  Fix: set the first word of the Status line to one of: needs-triage, needs-info, ready-for-agent, ready-for-human, in-progress, in-review, blocked, done, wontfix.
+ ❯ src/tracker-rule.test.ts:216:33
+    214|   it("gives each tracked ticket one of the nine statuses", () => {
+    215|     const found = statusOffenses(trackedTickets(ROOT));
+    216|     if (found.length > 0) throw new Error(report(found));
+       |                                 ^
+    217|   });
+    218|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 8 passed (10)
+   Start at  17:28:53
+   Duration  688ms (environment 74%, tests 20%, transform 3%, import 2%)
+
+[exit code: 1]
+# The removal of the planted file:
+
+$ cd /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/todoist-queue-flags && git rm -q --cached .scratch/zz-rule/issues/01-zz.md && rm -r .scratch/zz-rule && git status --short
+[exit code: 0]

@@ -1,0 +1,38 @@
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.content == "12 Drop awards from the managers entry")]'
+[
+  {
+    "id": "6j23MX6xpGQQ8pjp",
+    "content": "12 Drop awards from the managers entry",
+    "description": "4ag: .scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md\nApp: pipeline\n[4thandgoal/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md at main · bkwon94/4thandgoal](https://github.com/bkwon94/4thandgoal/blob/main/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md)\nthe managers file still carries `awards` per entry, and `saved_awards` still reads every `facts.json`. The site does not read `awards` on a manager. It builds the four season numbers from `weeks`. Drop `awards` from the entry and bump `MANAGERS_SCHEMA_VERSION`, with the site types in the same step. Both repos.",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23MX6W842H5FGG",
+    "parentId": null,
+    "labels": [
+      "pipeline",
+      "ready-for-agent"
+    ],
+    "url": "https://app.todoist.com/app/task/12-drop-awards-from-the-managers-entry-6j23MX6xpGQQ8pjp",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq -r '.results[] | select(.content == "12 Drop awards from the managers entry") | .description'
+4ag: .scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md
+App: pipeline
+[4thandgoal/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md at main · bkwon94/4thandgoal](https://github.com/bkwon94/4thandgoal/blob/main/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md)
+the managers file still carries `awards` per entry, and `saved_awards` still reads every `facts.json`. The site does not read `awards` on a manager. It builds the four season numbers from `weeks`. Drop `awards` from the entry and bump `MANAGERS_SCHEMA_VERSION`, with the site types in the same step. Both repos.
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq -r '.results[] | select(.content == "12 Drop awards from the managers entry") | .description | split("\n") | last | length'
+311
+[exit code: 0]
+
+$ grep -n 'Blocked by' .scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md
+5:**Blocked by:** None (can start immediately)
+[exit code: 0]

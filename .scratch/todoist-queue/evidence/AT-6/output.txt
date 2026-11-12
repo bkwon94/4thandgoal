@@ -1,0 +1,18 @@
+$ git show main:.scratch/front-door/issues/ --name-only | head -3; for f in $(git ls-tree --name-only main .scratch/front-door/issues/ | grep '/01-'); do echo $f; git show main:$f | grep -n Status; done
+tree main:.scratch/front-door/issues/
+
+01-the-front-door-shell.md
+.scratch/front-door/issues/01-the-front-door-shell.md
+11:**Status:** done
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '.results | length'
+42
+[exit code: 0]
+
+$ td completed list --project 4thandgoal --since 2026-08-14 --until 2026-11-13 --json --all | jq '.results | length'
+0
+[exit code: 0]
+
+$ { td task list --project 4thandgoal --json --all; td completed list --project 4thandgoal --since 2026-08-14 --until 2026-11-13 --json --all; } | jq -r '.results[] | select(.description | contains(".scratch/front-door/issues/01-")) | .content'
+[exit code: 0]
