@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-25.
 
 **Blocked by:** 06
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The stream of Your next matchup carries a matchup card with the projected totals of the live week and a read time within the minute of the request (AT-25).
 - [x] The team with the higher projected total has odds above 50% (AT-25).
