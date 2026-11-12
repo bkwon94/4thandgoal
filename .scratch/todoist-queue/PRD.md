@@ -204,3 +204,4 @@ Each skill adds one line per push point. The table comes from decision ticket 03
 ## Revisions
 
 - 2026-11-12: Brian approved four fixes with the acceptance tests. The summary reads the inline `**What to build:**` line. The merge sweep completes only the tasks of tickets that are `done` on `main`. Each subcommand gets `--root`. `import` makes the filter "Waits on Brian".
+- 2026-11-12: Brian approved a narrower ownership rule from ticket 03. A triage status in the file replaces a flow label in the queue, because only a skill sets a flow label. A triage label from Brian in the queue still wins over a triage status in the file. The script owns 12 labels: the 7 statuses of the flow, `wontfix`, `decision`, `site`, `pipeline`, and `api`. A `spec` decision maps to `ready-for-agent`.
