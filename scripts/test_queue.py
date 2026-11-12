@@ -5,6 +5,8 @@ The tickets sit in scripts/fixtures/queue/root/, and the `td` output sits in scr
 import contextlib
 import importlib.util
 import io
+import json
+import os
 import shutil
 import subprocess
 import sys
@@ -35,6 +37,21 @@ def queue(tasks: str = "tasks-empty.json", sections: str = "sections-empty.json"
           labels: str = "labels-empty.json") -> Queue:
     """The queue as four real reads of `td` show it."""
     return Queue.from_json(td_json("project-list.json"), td_json(sections), td_json(tasks), td_json(labels))
+
+
+@contextlib.contextmanager
+def environment(**values: str):
+    """Set environment variables for the length of a block, then put back the old values."""
+    old = {name: os.environ.get(name) for name in values}
+    os.environ.update(values)
+    try:
+        yield
+    finally:
+        for name, value in old.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
 
 
 def option(command: list[str], flag: str) -> str:
@@ -172,6 +189,88 @@ class APushOfATicketWithATask(unittest.TestCase):
                 for command in self.push(path, state):
                     self.assertNotIn("--priority", command)
                     self.assertNotIn("--order", command)
+
+
+class APullOfTheTriageOfBrian(unittest.TestCase):
+    """The plan of a pull: each ticket of the feature whose Status line the queue changes, and its status."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name) / "root"
+        shutil.copytree(ROOT, self.root)
+        self.ticket = self.root / ZZ / "issues/01-zz-ready.md"
+
+    def status_line(self, line: str) -> None:
+        text = self.ticket.read_text()
+        self.ticket.write_text(text.replace("**Status:** ready-for-agent", line))
+
+    def pull(self, tasks: str, completed: str = "completed-empty.json", comments: str = "comments-none.json"):
+        return queue_script.plan_pull(self.root, "zz-queue-check", queue(tasks=tasks), json.loads(td_json(completed)),
+                                      lambda task_id: json.loads(td_json(comments)))
+
+    def write(self, plan: list[tuple[str, str]], dry_run: bool = False) -> list[str]:
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            queue_script.write_statuses(self.root, plan, dry_run)
+        return out.getvalue().splitlines()
+
+    def test_a_triage_label_from_brian_becomes_the_status(self):
+        self.assertEqual(self.pull("tasks-zz-triaged.json"), [(f"{ZZ}/issues/01-zz-ready.md", "ready-for-human")])
+
+    def test_a_task_that_brian_completed_pulls_as_wontfix(self):
+        self.assertEqual(self.pull("tasks-empty.json", "completed-zz-01.json"),
+                         [(f"{ZZ}/issues/01-zz-ready.md", "wontfix")])
+
+    def test_a_completed_task_with_a_done_comment_pulls_as_done(self):
+        self.assertEqual(self.pull("tasks-empty.json", "completed-zz-01.json", "comments-done.json"),
+                         [(f"{ZZ}/issues/01-zz-ready.md", "done")])
+
+    def test_an_open_task_wins_over_an_old_completion_of_the_same_ticket(self):
+        self.assertEqual(self.pull("tasks-zz-triaged.json", "completed-zz-01.json"),
+                         [(f"{ZZ}/issues/01-zz-ready.md", "ready-for-human")])
+
+    def test_a_closed_ticket_keeps_its_status(self):
+        # A done ticket keeps its status label until the merge sweep, and only the flow reopens a closed ticket.
+        for line in ("**Status:** done", "**Status:** wontfix"):
+            with self.subTest(line):
+                self.status_line(line)
+                self.assertEqual(self.pull("tasks-zz-triaged.json"), [])
+                self.assertEqual(self.pull("tasks-empty.json", "completed-zz-01.json"), [])
+                self.ticket.write_text(self.ticket.read_text().replace(line, "**Status:** ready-for-agent"))
+
+    def test_a_same_first_word_changes_nothing_and_keeps_the_text_after_it(self):
+        self.status_line("**Status:** ready-for-human, since Brian asked on 2026-11-12")
+        self.assertEqual(self.pull("tasks-zz-triaged.json"), [])
+
+    def test_a_flow_label_and_a_decision_ticket_change_nothing(self):
+        # 02 is blocked in the file and in the queue. Brian set both decision tasks to a triage label.
+        plan = self.pull("tasks-zz-triaged.json")
+        self.assertNotIn("02-zz-blocked.md", str(plan))
+        self.assertNotIn("decisions", str(plan))
+
+    def test_a_write_replaces_the_first_word_and_drops_the_text_after_it(self):
+        self.status_line("**Status:** ready-for-agent (after the audit)")
+        lines = self.write([(f"{ZZ}/issues/01-zz-ready.md", "needs-info")])
+        self.assertIn("**Status:** needs-info\n", self.ticket.read_text())
+        self.assertNotIn("after the audit", self.ticket.read_text())
+        self.assertEqual(lines, [f"pull {ZZ}/issues/01-zz-ready.md: ready-for-agent -> needs-info", "1 file written."])
+
+    def test_a_dry_run_writes_no_file(self):
+        before = self.ticket.read_text()
+        lines = self.write([(f"{ZZ}/issues/01-zz-ready.md", "needs-info")], dry_run=True)
+        self.assertEqual(self.ticket.read_text(), before)
+        self.assertEqual(lines[-1], "1 file planned, none written.")
+
+    def test_a_failed_read_changes_no_file_and_warns_with_exit_0(self):
+        before = self.ticket.read_text()
+        out = io.StringIO()
+        with environment(QUEUE_TD_BIN=str(self.root / "no-td")), contextlib.redirect_stdout(out):
+            code = queue_script.main(["pull", "zz-queue-check", "--root", str(self.root)])
+        self.assertEqual(code, 0)
+        self.assertEqual(self.ticket.read_text(), before)
+        self.assertEqual(len(out.getvalue().splitlines()), 1)
+        self.assertTrue(out.getvalue().startswith("warning: the queue pull of zz-queue-check failed: NO_TD"))
 
 
 class TheAppLabel(unittest.TestCase):

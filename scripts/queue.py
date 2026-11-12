@@ -12,7 +12,9 @@ import shlex
 import subprocess
 import sys
 from dataclasses import dataclass
+from datetime import date, timedelta
 from pathlib import Path
+from typing import Callable
 
 PROJECT = "4thandgoal"
 REPO = "bkwon94/4thandgoal"
@@ -189,8 +191,13 @@ class Queue:
 
         No Todoist filter reads a description, so the match is local, on the one read of the open tasks.
         """
-        line = f"4ag: {key}"
-        return next((task for task in self.tasks if (task.get("description") or "").split("\n")[0] == line), None)
+        return task_of(self.tasks, key)
+
+
+def task_of(tasks: list[dict], key: str) -> dict | None:
+    """The task whose description starts with the key line of the ticket, `4ag: <key>`."""
+    line = f"4ag: {key}"
+    return next((task for task in tasks if (task.get("description") or "").split("\n")[0] == line), None)
 
 
 def project_id(projects: dict) -> str:
@@ -390,6 +397,61 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
             plan.append(["section", "archive", f"id:{section}"])
     return plan
 
+def _feature_tickets(root: Path, feature: str) -> list[Path]:
+    """The tickets and decision tickets of a feature, also those in the site/ and pipeline/ subfolders of a shared
+    feature."""
+    folder = root / ".scratch" / feature
+    return sorted(path for path in folder.rglob("*.md") if path.parent.name in ("issues", "decisions"))
+
+
+def plan_pull(root: Path, feature: str, queue: Queue, completed: dict,
+              comments: Callable[[str], dict]) -> list[tuple[str, str]]:
+    """The tickets of the feature whose Status line the queue changes, as (key, status) pairs.
+
+    The queue owns the triage, so a triage label from Brian becomes the status of a ticket. A closed ticket keeps its
+    status, because only the flow closes a ticket.
+    """
+    plan = []
+    for path in _feature_tickets(root, feature):
+        key = path.relative_to(root).as_posix()
+        status = (_first(STATUS_LINE, path.read_text()) or "").rstrip(".,;:")
+        if status in ("done", "wontfix"):
+            continue
+        task = queue.task(key)
+        if task is None:
+            # An open task of the same ticket wins over a completed one, because Brian reopened it.
+            done = task_of(completed["results"], key)
+            if done is not None:
+                plan.append((key, "done" if _says_done(comments(done["id"])) else "wontfix"))
+            continue
+        # A decision ticket has no triage status in its file, only open, done, or wontfix.
+        if path.parent.name == "decisions":
+            continue
+        label = next((label for label in task["labels"] if label in TRIAGE_STATUSES), None)
+        if label and label != status:
+            plan.append((key, label))
+    return plan
+
+
+def _says_done(comments: dict) -> bool:
+    """Whether a comment on a task holds the word done, as in "done in #34"."""
+    return any(re.search(r"\bdone\b", comment.get("content") or "", re.IGNORECASE) for comment in comments["results"])
+
+
+def write_statuses(root: Path, plan: list[tuple[str, str]], dry_run: bool) -> None:
+    """Print each planned status, and write it into the Status line of its ticket unless this is a dry run.
+
+    The new status replaces the whole line, because the text after the first word belongs to the old status.
+    """
+    for key, status in plan:
+        path = root / key
+        text = path.read_text()
+        print(f"pull {key}: {(_first(STATUS_LINE, text) or 'none').rstrip('.,;:')} -> {status}")
+        if not dry_run:
+            path.write_text(re.sub(r"^\*\*Status:\*\*.*$", f"**Status:** {status}", text, count=1, flags=re.MULTILINE))
+    print(f"{len(plan)} file{'' if len(plan) == 1 else 's'}{' planned, none written' if dry_run else ' written'}.")
+
+
 class TdError(Exception):
     """A failed `td` call. Every failure of `td` exits 1, so the JSON error line on stderr names the cause."""
 
@@ -509,6 +571,25 @@ def sweep(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     return "sweep", plan_sweep(args.root, queue, {number: read_pr_state(number) for number in merge_prs(queue)})
 
 
+# The completed-task read of `td` covers at most 93 days per call.
+COMPLETED_DAYS = 90
+
+
+def pull(args: argparse.Namespace) -> tuple[str, list[tuple[str, str]]]:
+    """Every read comes before the first write, so a failed read changes no file."""
+    args.target = args.feature
+    args.run = lambda plan, dry_run: write_statuses(args.root, plan, dry_run)
+    queue_id = project_id(run_td(["project", "list", "--search", PROJECT]))
+    project = f"id:{queue_id}"
+    queue = Queue(queue_id, {}, run_td(["task", "list", "--project", project, "--all"])["results"], set())
+    today = date.today()
+    completed = run_td(["completed", "list", "--project", project, "--since",
+                        (today - timedelta(days=COMPLETED_DAYS)).isoformat(), "--until",
+                        (today + timedelta(days=1)).isoformat(), "--all"])
+    return args.feature, plan_pull(args.root, args.feature, queue, completed,
+                                   lambda task_id: run_td(["comment", "list", f"id:{task_id}", "--all"]))
+
+
 def main(argv: list[str]) -> int:
     # Each subcommand shares --dry-run and --root, and returns its target and its plan.
     shared = argparse.ArgumentParser(add_help=False)
@@ -528,13 +609,18 @@ def main(argv: list[str]) -> int:
     wait_parser.set_defaults(plan=wait)
     sweep_parser = subcommands.add_parser("sweep", parents=[shared], help="close the tasks of each merged spec PR")
     sweep_parser.set_defaults(plan=sweep)
+    pull_parser = subcommands.add_parser("pull", parents=[shared],
+                                         help="write the triage in the queue into the Status lines of a feature")
+    pull_parser.add_argument("feature", help="the feature slug, the folder under .scratch/")
+    pull_parser.set_defaults(plan=pull)
     args = parser.parse_args(argv)
     if args.subcommand == "wait" and args.kind == "merge-pr" and args.number is None and not args.done:
         wait_parser.error("merge-pr needs the number of the PR")
 
     try:
         _, plan = args.plan(args)
-        run_plan(plan, args.dry_run)
+        # A subcommand that writes files in place of `td` commands sets its own runner.
+        getattr(args, "run", run_plan)(plan, args.dry_run)
     except TdError as error:
         return report_failure(args.subcommand, getattr(args, "target", args.subcommand), error)
     return 0
