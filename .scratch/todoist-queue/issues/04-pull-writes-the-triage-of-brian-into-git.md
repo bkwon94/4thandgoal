@@ -8,7 +8,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-13, AT-14, AT-15, and
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] The unit tests check the plan of `pull` with saved real `td` JSON for a label change, a completion, and a completion with a `done` comment.
 - [ ] A real `pull` on the throwaway feature writes `needs-info` from a label change.
