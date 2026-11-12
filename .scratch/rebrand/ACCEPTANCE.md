@@ -46,8 +46,8 @@ AT-5: No file names the old folder
 App: both
 Stories: 1, 8, 11, 13
 Given: the Spec branch `rebrand` with every ticket merged
-When: the agent runs `git grep -n cpcfantasyfootball -- ':!.scratch' ':!docs/adr' ':!apps/site/docs/runbook-site-host.md' ':!pnpm-lock.yaml' ':!uv.lock'`.
-Then: the command prints nothing. The excluded runbook line is wrangler output that the doc quotes, so it stays.
+When: the agent runs `git grep -n cpcfantasyfootball -- ':!.scratch' ':!docs/adr' ':!apps/site/docs/runbook-site-host.md' ':!docs/agents/folder-move.md' ':!pnpm-lock.yaml' ':!uv.lock'`.
+Then: the command prints nothing. The excluded runbook line is wrangler output that the doc quotes, so it stays. The runbook of the folder move names the old folder, because it moves it.
 Evidence: the command and its output, the same command on `main` with its line count, and `grep -c cpcfantasyfootball pnpm-lock.yaml`, which prints `0`.
 
 AT-6: The verdict check keeps its marker and names 4ag review
@@ -118,7 +118,7 @@ AT-14: The domain and the Fly app stay
 App: both
 Stories: 22, 23
 Given: the Spec branch `rebrand` with every ticket merged
-When: the agent runs `git grep -c '4thandgoal.app' -- ':!.scratch' | awk -F: '{s+=$2} END {print s}'` on the Spec branch and on `main`, and `grep -n '^app' apps/api/fly.toml`.
+When: the agent runs `git grep -cF '4thandgoal.app' -- ':!.scratch' | awk -F: '{s+=$2} END {print s}'` on the Spec branch and on `main`, and `grep -n '^app' apps/api/fly.toml`.
 Then: the two counts are equal, and `fly.toml` has `app = "cpcfantasy-api"`.
 Evidence: the three commands and their output.
 
@@ -175,4 +175,4 @@ Out of scope "A product brand on the page": AT-13
 
 ## Revisions
 
-None yet.
+- 2026-11-11, Brian approved: AT-5 also excludes `docs/agents/folder-move.md`, because the runbook must name the old folder. AT-14 counts with `git grep -cF`, because the `.` of `4thandgoal.app` matched `4thandgoal/apps/` in the new LaunchAgent path.
