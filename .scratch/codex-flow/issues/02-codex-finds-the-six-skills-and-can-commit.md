@@ -10,9 +10,9 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-16, AT
 
 **Status:** ready-for-agent
 
-- [ ] `codex debug prompt-input "hi"` names the six `4ag:` skills, each with a path under the plugin skills folder.
-- [ ] A Codex session log for `$4ag:implement` injects the repo skill and no user skill.
-- [ ] `.agents/skills/` holds exactly six symlinks, and each resolves to the skill of the same name.
+- [x] `codex debug prompt-input "hi"` names the six `4ag:` skills, each with a path under the plugin skills folder.
+- [x] A Codex session log for `$4ag:implement` injects the repo skill and no user skill.
+- [x] `.agents/skills/` holds exactly six symlinks, and each resolves to the skill of the same name.
 - [ ] A default Codex session commits in a probe worktree and `gh api` prints `4thandgoal`, with any trust step recorded.
-- [ ] No Codex plugin manifest exists, and no skill file moves.
-- [ ] `make check-fast` passes.
+- [x] No Codex plugin manifest exists, and no skill file moves.
+- [x] `make check-fast` passes.

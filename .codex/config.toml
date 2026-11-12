@@ -1,0 +1,32 @@
+# The project config of Codex for this repo. It makes the permission profile "4ag" the default and adds the scrolltide MCP server.
+# Why: the default sandbox keeps .git read-only and the network off, so 4ag:implement cannot commit a ticket or call gh.
+# The profile grants write on the .git of the main checkout, which every worktree of this repo shares.
+# A profile path must be absolute, start with "~/", or start with ":", so the grant names the main checkout under "~/".
+# Start Codex at the main checkout root, so each worktree under .claude/worktrees/ is inside the workspace.
+# A session started in a linked worktree keeps the gitdir of that worktree read-only, so it cannot commit there.
+# Codex loads this file only when the main checkout root is a trusted project in ~/.codex/config.toml.
+# The GitHub ruleset on main, the skill text, and the prek hook keep agents off main, not this sandbox (ADR 0019).
+
+default_permissions = "4ag"
+approval_policy = "never"
+
+[permissions.4ag]
+extends = ":workspace"
+
+[permissions.4ag.filesystem]
+"~/repos/4thandgoal/.git" = "write"
+# The prek hook runs "make check-fast" on each commit. prek writes its log under its home, uv writes its cache,
+# and "pnpm install" in a fresh worktree writes the pnpm store. Without these grants the hook fails in the sandbox.
+"~/.cache/prek" = "write"
+"~/.cache/uv" = "write"
+"~/Library/pnpm/store" = "write"
+
+[permissions.4ag.filesystem.":workspace_roots"]
+"." = "write"
+".git" = "write"
+
+[permissions.4ag.network]
+enabled = true
+
+[mcp_servers.scrolltide]
+url = "https://www.scrolltide.co/api/mcp"
