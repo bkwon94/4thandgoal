@@ -10,7 +10,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-30 and AT-31.
 
 **Status:** ready-for-agent
 
-- [ ] ADR 0032 exists, says it amends ADR 0021, and appears in `docs/adr/README.md` if that file lists the ADRs.
-- [ ] `docs/agents/issue-tracker.md` names the queue, its labels, the key line, and the script.
-- [ ] `docs/agents/triage-labels.md` gives the queue label of each status.
-- [ ] A grep of `.github/` and the Makefiles finds `td` and the script only in the `scripts-check` target.
+- [x] ADR 0032 exists, says it amends ADR 0021, and appears in `docs/adr/README.md` if that file lists the ADRs.
+- [x] `docs/agents/issue-tracker.md` names the queue, its labels, the key line, and the script.
+- [x] `docs/agents/triage-labels.md` gives the queue label of each status.
+- [x] A grep of `.github/` and the Makefiles finds `td` and the script only in the `scripts-check` target.

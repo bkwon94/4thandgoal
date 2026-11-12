@@ -50,6 +50,32 @@ A feature after the One spec has this shape. Each part is a file or folder under
 
 A new feature uses one folder for both apps. It does not get `site/` and `pipeline/` subfolders.
 
+## The queue
+
+The queue is the private Todoist project `4thandgoal`. It is a view and a triage tool. The tracker in
+`.scratch/` stays the record (ADR 0032, which amends ADR 0021).
+
+**What each place owns.**
+
+- The tracker owns the body, the blockers, the comments, and the `Status:` line. Only a merge sets `done`.
+- The queue owns priority, order, the triage statuses, and new ideas.
+- On a conflict, git wins for content and done-ness. The queue wins for the rest.
+
+**The shape.** One section holds one feature. One top-level task holds one open ticket, one open decision
+ticket, or one wait task. The `Ideas` section holds new ideas.
+
+**The labels.** Each open task has one status label: `needs-triage`, `needs-info`, `ready-for-agent`,
+`ready-for-human`, `in-progress`, `in-review`, or `blocked`. A `done` task is complete and has no status label.
+A `wontfix` task is complete and has the label `wontfix`. `triage-labels.md` maps each status to its label.
+
+**The key line.** The first line of the task description is `4ag: <path>`. A ticket or a decision ticket uses
+its file path from the repo root, such as `4ag: .scratch/<feature>/issues/03-<slug>.md`. A wait task uses
+`4ag: <feature>/wait/<kind>`. A push finds the task by this line. Git holds no Todoist ID.
+
+**The script.** `scripts/queue.py` is the only code that calls `td`. It has the subcommands `push`, `pull`,
+`wait`, `sweep`, and `import`. A skill runs it as `python3 scripts/queue.py <subcommand>`. A failed `td` call
+prints one warning and exits 0. CI never calls `td`.
+
 ## The state file
 
 `docs/agents/state.md` has one row for each feature with an open ticket. The columns are Feature, App, Next
