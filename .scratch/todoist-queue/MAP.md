@@ -20,10 +20,11 @@ Git stays the record, and the Todoist project `4thandgoal` becomes the queue tha
 - `td` cannot search a description, so the sync reads the project once and matches locally. Each call needs the nvm PATH and a timeout. `decisions/02-research-td-facts.md`.
 - Each `4ag` skill pushes at the steps in a fixed table. Wait tasks mark an approval or a merge. A sweep at the start of each skill closes the tasks of a merged PR. `decisions/03-grill-push-points.md`.
 - One stdlib script, `scripts/queue.py`, with the subcommands push, pull, wait, sweep, and import. Each skill calls it. `decisions/04-grill-tool-shape.md`.
+- A task has a title from the H1, a description with the key, app, blockers, link, and summary, and no priority set by a push. `decisions/05-spec-task-content.md`.
 
 ## NOT YET SPECIFIED
 
-- What are the title, the description, the link, the priority, and the app label of a task? `decisions/05-spec-task-content.md`.
+None.
 
 ## OUT OF SCOPE
 
