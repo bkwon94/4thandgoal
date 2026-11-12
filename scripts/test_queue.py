@@ -576,7 +576,7 @@ class TheImport(unittest.TestCase):
         # Todoist stores a bare URL in a description as a markdown link with the title of the page.
         imported = queue(tasks="tasks-imported.json", sections="sections-imported.json", labels="labels-imported.json")
         ticket = load_ticket(self.root, self.root / ".scratch/site-pages/issues/09-home-test-class-name.md")
-        self.assertIn("](https://github.com/", imported.task(ticket.key)["description"])
+        self.assertIn("](https://github.com/", queue_script.task_of(imported.tasks, ticket.key)["description"])
         self.assertEqual(plan_push(ticket, imported), [])
 
     def test_a_second_import_plans_zero_writes(self):

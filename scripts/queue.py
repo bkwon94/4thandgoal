@@ -226,18 +226,19 @@ class Queue:
             labels={label["name"] for label in labels["results"]} | set(labels.get("sharedLabels") or []),
         )
 
-    def task(self, key: str) -> dict | None:
-        """The open task whose description starts with the key line of the ticket.
 
-        No Todoist filter reads a description, so the match is local, on the one read of the open tasks.
-        """
-        return task_of(self.tasks, key)
+def _key(task: dict) -> str | None:
+    """The key of a task, from the first line of its description, such as `4ag: <path>`."""
+    line = (task.get("description") or "").split("\n")[0]
+    return line[len("4ag: "):] if line.startswith("4ag: ") else None
 
 
 def task_of(tasks: list[dict], key: str) -> dict | None:
-    """The task whose description starts with the key line of the ticket, `4ag: <key>`."""
-    line = f"4ag: {key}"
-    return next((task for task in tasks if (task.get("description") or "").split("\n")[0] == line), None)
+    """The task whose description starts with the key line of the ticket, `4ag: <key>`.
+
+    No Todoist filter reads a description, so the match is local, on the one read of the tasks.
+    """
+    return next((task for task in tasks if _key(task) == key), None)
 
 
 def project_id(projects: dict) -> str:
@@ -253,7 +254,7 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
 
     No command sets the priority or the order, because the queue owns them.
     """
-    task = queue.task(ticket.key)
+    task = task_of(queue.tasks, ticket.key)
     closed = ticket.status in CLOSED_STATUSES
     if task is None:
         # A closed ticket never enters the queue.
@@ -367,12 +368,6 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
 MERGE_PR_TITLE = re.compile(r"^Merge PR #(\d+)$")
 
 
-def _key(task: dict) -> str | None:
-    """The key of a task, from the first line of its description, such as `4ag: <path>`."""
-    line = (task.get("description") or "").split("\n")[0]
-    return line[len("4ag: "):] if line.startswith("4ag: ") else None
-
-
 def _wait_feature(task: dict) -> str | None:
     """The feature of an open `Merge PR #N` wait task, or None for any other task."""
     key = _key(task) or ""
@@ -467,7 +462,7 @@ def plan_pull(root: Path, feature: str, queue: Queue, completed: dict,
         status = (_first(STATUS_LINE, path.read_text()) or "").rstrip(".,;:")
         if status in CLOSED_STATUSES:
             continue
-        task = queue.task(key)
+        task = task_of(queue.tasks, key)
         if task is None:
             # An open task of the same ticket wins over a completed one, because Brian reopened it.
             done = task_of(completed["results"], key)
