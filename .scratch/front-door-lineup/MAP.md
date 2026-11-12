@@ -14,10 +14,11 @@ One spec: a live Start or sit Topic that gives a manager a lineup with each Swap
 - The game lock reads `start_time` and `has_started` of the Sleeper GraphQL `scores` query, with ESPN as the fallback. `decisions/06-research-game-lock.md`.
 - The Start or sit blocks take the Ledger look: slot-order rows that open in place for a Swap or a Q, paired fact bars for the comparison, and the game card of variant C with a tug bar and a strip of 32 defenses. `decisions/03-prototype-lineup-blocks.md`.
 - On the front door, the dock and the week pill leave. A header menu button opens a sheet of page rows, and the Suggestions row and the ask box sit on one flush bottom surface. Other pages keep the dock. `decisions/10-prototype-nav-place.md`.
+- The nine other blocks take "Rows and marks": the Ledger rows of decision 03, each block with one small mark, such as a tug bar, a step path, odds bars, bars from a center line, or a dot matrix. `decisions/04-prototype-topic-blocks.md`.
 
 ## NOT YET SPECIFIED
 
-- What do the blocks of the other Topics look like, in the Ledger look of decision 03? `decisions/04-prototype-topic-blocks.md`.
+- Where do the win odds of one game, the trade grade, the FLEX and DEF ranks, and the median of norcal come from? `decisions/11-grill-block-data-gaps.md`.
 - Which Topic Answer shows which block? `decisions/05-grill-which-topic-shows-which-block.md`.
 - What does Jev answer for a Swap? `decisions/07-spec-jev-swap-question.md`.
 - What is the Suggestion fact of Start or sit? `decisions/08-spec-start-sit-suggestion-fact.md`.
