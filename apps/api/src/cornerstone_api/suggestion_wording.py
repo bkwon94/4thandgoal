@@ -18,10 +18,15 @@ TOPIC_NAMES = {
     "waiver_targets": "Waiver targets",
     "stack_up": "How you stack up",
     "weak_spots": "Weak spots",
+    "start_sit": "Start or sit",
     "sell_high": "Sell high or buy low",
     "trade_ideas": "Trade ideas",
     "trade_check": "Trade check",
 }
+
+# What each Topic covers, as the lift reads it: the Topics of the ask box, and Start or sit, which the Suggestions show.
+ABOUT = {**TOPICS, "start_sit": "The lineup of a team for the live week: who starts in each slot by projection, the "
+                                "starters who cannot play, and the Questionable starters."}
 
 CONTEXT = ("A 12-team fantasy football league site shows a few Suggestions to the manager of one "
            "team. Each Suggestion is one Topic with one fact about that team from this week's league data. The games of "
@@ -38,7 +43,7 @@ def lift_state(team: str, week: int, facts: dict[str, str]) -> dict:
         "context": CONTEXT,
         "manager_team": team,
         "next_week": week,
-        "topics": {key: {"name": TOPIC_NAMES[key], "about": TOPICS[key], "fact": fact} for key, fact in facts.items()},
+        "topics": {key: {"name": TOPIC_NAMES[key], "about": ABOUT[key], "fact": fact} for key, fact in facts.items()},
     }
 
 

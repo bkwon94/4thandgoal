@@ -10,6 +10,6 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-13, AT-14, AT-15.
 
 **Status:** ready-for-agent
 
-- [ ] A pytest shows the order on Thursday, Sunday, Wednesday, and Monday (AT-13).
-- [ ] A pytest or a live run shows Start or sit first on a Tuesday with a hole in the lineup (AT-14).
-- [ ] The fact reads "N can't play, M Q" or "Next kickoff <day> <time>", and the Suggestions make no Jev call (AT-15).
+- [x] A pytest shows the order on Thursday, Sunday, Wednesday, and Monday (AT-13).
+- [x] A pytest or a live run shows Start or sit first on a Tuesday with a hole in the lineup (AT-14).
+- [x] The fact reads "N can't play, M Q" or "Next kickoff <day> <time>", and the Suggestions make no Jev call (AT-15).
