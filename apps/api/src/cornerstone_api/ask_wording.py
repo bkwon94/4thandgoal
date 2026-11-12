@@ -56,6 +56,9 @@ def about_topics(season: int, week: int) -> dict[str, str]:
                             "season. An older week needs another answer.",
         "any_team": "Each Topic answers for the manager's own team, or for the one team of the league that the "
                     "question names.",
+        "no_move_list": "No Topic lists the moves of the league one by one, such as the adds, the drops, the waiver "
+                        "claims, and the trades of this week. A question that asks what moves happened needs another "
+                        "answer.",
     }
 
 

@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 import { z } from "zod";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { recapBlockSchema, recapText } from "@/lib/data/blocks/recap-schema";
+import { FeedView, feedBlockSchema, feedText } from "./feed-block";
 import { VERY_SLOW, riseIn, staggerOf } from "./motion";
 import { RecapCard } from "./recap-card";
 import { TradeBlockView, tradeBlockSchema, tradeBlockText } from "./trade-block";
@@ -41,6 +42,7 @@ export const answerBlockSchema = z.discriminatedUnion("kind", [
   playerBlockSchema,
   recapBlockSchema,
   tradeBlockSchema,
+  feedBlockSchema,
 ]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
@@ -65,6 +67,7 @@ export function blockText(block: AnswerBlock): string {
     case "recap": return recapText(block);
     case "trade":
       return tradeBlockText(block);
+    case "feed": return feedText(block);
   }
 }
 
@@ -205,5 +208,6 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
     case "recap": return <RecapCard block={block} live={live} />;
     case "trade":
       return <TradeBlockView block={block} live={live} />;
+    case "feed": return <FeedView block={block} live={live} />;
   }
 }

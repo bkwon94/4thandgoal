@@ -25,6 +25,9 @@ show_block once, after one short lead sentence:
   - The answer sets 2 teams or 2 players side by side: kind "table".
   - The answer is about one NFL player: kind "player".
   - Any other answer, such as one fact, a score, a record, or one game, is text only.
+  - The answer is the moves of a week: the "ready" block of moves_feed, by its `block_id`.
+- A tool result with a `block_id` holds a ready block that code built from that data. To show it, call show_block \
+with kind "ready" and that `block_id`, and copy nothing into it.
 - A question about the top or best players or teams with no time, such as "my top players", means this season. The \
 lead sentence then says "this season".
 - With a block, the lead sentence says what the block shows, and the block holds the rest. Copy each value of the \

@@ -22,12 +22,12 @@ from pydantic_ai.models.anthropic import AnthropicModelSettings
 from pydantic_ai.ui.vercel_ai.response_types import BaseChunk, DoneChunk, FinishChunk, StartChunk
 
 from analyzer.routes import ServedClient
-from cornerstone_api import free_tools
+from cornerstone_api import free_feed, free_tools
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Route
 from cornerstone_api.chat_turns import Turn, Turns, turn_messages, turns_instructions
 from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data, kept_text
-from cornerstone_api.free_blocks import BLOCK, Block, row_sentences
+from cornerstone_api.free_blocks import BLOCK, Block, ReadyBlock, row_sentences
 from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt, run_instructions
 from cornerstone_api.personal_facts import _ahead
 from cornerstone_api.personal_topics import LiveCache, _load
@@ -59,11 +59,15 @@ READERS: dict[str, Callable[..., dict]] = {
     "team_roster": free_tools.team_roster,
     "player_log": free_tools.player_log,
     "roster_grades": free_tools.roster_grades,
+    "moves_feed": free_feed.moves_feed,
 }
 # The display tool of a block. It reads no data, so it does not count toward the cap, and its calls never stream.
 DISPLAY_TOOL = "show_block"
 # The tool result of a second call of the display tool. An answer shows one block at most.
 ONE_BLOCK = {"error": "This answer already shows a block. Finish with the text."}
+# The tool result of a ready block that no data tool of the answer built.
+NO_READY_BLOCK = {"error": "No tool result of this answer has that block_id. Show a block of your own, or finish "
+                           "with the text."}
 # The topic of the two rows of a kept free answer in the AnswerStore: the reads of the question, and the answer.
 READS_TOPIC = "free_reads"
 ANSWER_TOPIC = "free"
@@ -81,6 +85,8 @@ class FreeDeps:
     # The block of the run, and the prompt count of the run that showed it, so the rewrite can show its own block.
     block: Block | None = None
     block_run: int = 0
+    # The block that each data tool built, by the `block_id` of its result, which the display tool can show whole.
+    ready: dict[str, dict] = field(default_factory=dict)
     run: int = 0
     lock: threading.Lock = field(default_factory=threading.Lock)
 
@@ -102,11 +108,24 @@ def _call(ctx: RunContext[FreeDeps], name: str, tool: str, **args: Any) -> dict:
         if ctx.deps.calls >= TOOL_CALLS_MAX:
             return LIMIT_RESULT
         ctx.deps.calls += 1
-    result = READERS[tool](ctx.deps.data, **args)
+    result, block = read(ctx.deps.data, name, tool, args)
     with ctx.deps.lock:
         ctx.deps.results[name] = result
         ctx.deps.reads[name] = (tool, args)
+        if block is not None:
+            ctx.deps.ready[name] = block
     return result
+
+
+def read(data: free_tools.SeasonData, name: str, tool: str, args: dict) -> tuple[dict, dict | None]:
+    """The result of one read, and the block that its tool built, if any. The block leaves the result, and the result
+    names it by `block_id`, so Claude shows it with no copy of its values. Any kind of block passes, so a tool that
+    builds a new kind needs no change here."""
+    result = READERS[tool](data, **args)
+    block = result.pop("block", None)
+    if block is not None:
+        result["block_id"] = name
+    return result, block
 
 
 @AGENT.tool
@@ -148,6 +167,15 @@ def roster_grades(ctx: RunContext[FreeDeps]) -> dict:
 
 
 @AGENT.tool
+def moves_feed(ctx: RunContext[FreeDeps], week: int | None = None) -> dict:
+    """The moves of one fantasy week, newest first, with the day of each and the count of each day: the trades with
+    what each team got, the waiver claims with their FAAB bids, the free agent adds, and their drops. Leave out `week`
+    for the live week, the week now in play, which "this week" means. The result has a ready feed block."""
+    return _call(ctx, "moves_feed" if week is None else f"moves_feed_week_{week}", "moves_feed",
+                 **({} if week is None else {"week": week}))
+
+
+@AGENT.tool
 def player_log(ctx: RunContext[FreeDeps], player: str) -> dict:
     """The game log of one NFL player this season: fantasy points and main stats each week, the league team that held
     him, his injury status now, and whether he can play now."""
@@ -157,10 +185,13 @@ def player_log(ctx: RunContext[FreeDeps], player: str) -> dict:
 @AGENT.tool(name=DISPLAY_TOOL)
 def show_block(ctx: RunContext[FreeDeps], block: Block) -> dict:
     """Show one block under the lead sentence: a ranked "list", a comparison "table" of at most 4 columns and 12 rows,
-    or a "player" card. Copy every value from the tool results of your earlier calls. Call it once at most."""
+    or a "player" card, with every value copied from the tool results of your earlier calls. Or show the "ready" block
+    of a tool result by its `block_id`. Call it once at most."""
     with ctx.deps.lock:
         if ctx.deps.block is not None and ctx.deps.block_run == ctx.deps.run:
             return ONE_BLOCK
+        if isinstance(block, ReadyBlock) and block.block_id not in ctx.deps.ready:
+            return NO_READY_BLOCK
         ctx.deps.block, ctx.deps.block_run = block, ctx.deps.run
     return {"shown": True}
 
@@ -171,6 +202,8 @@ def shown_block(deps: FreeDeps) -> tuple[dict, list[str]] | None:
     deps.run += 1
     if deps.block is None:
         return None
+    if isinstance(deps.block, ReadyBlock):
+        return deps.ready[deps.block.block_id], row_sentences(deps.block)
     return BLOCK.dump_python(deps.block, mode="json", exclude_none=True), row_sentences(deps.block)
 
 
@@ -221,7 +254,7 @@ def kept_answer(store: AnswerStore, base: str, data: free_tools.SeasonData) -> d
     reads = store.get(base)
     if reads is None:
         return None
-    results = {name: READERS[tool](data, **args) for name, tool, args in reads["reads"]}
+    results = {name: read(data, name, tool, args)[0] for name, tool, args in reads["reads"]}
     return store.get(answer_key(base, results))
 
 
@@ -292,7 +325,7 @@ def season_data(served: Any, season: int, week: int, teams: dict[int, str],
     return free_tools.SeasonData(season=season, week=week, teams=teams,
                                  history_root=history_root(client.folder, season),
                                  points_key=client.settings.points_key, median_game=client.settings.median_game,
-                                 fetch_raw=fetch_raw, fetch_grades=fetch_grades)
+                                 fetch_raw=fetch_raw, fetch_grades=fetch_grades, tz=client.tz)
 
 
 @router.post("/ask/free")

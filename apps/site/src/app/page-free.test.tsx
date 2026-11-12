@@ -373,6 +373,64 @@ describe("the block of a free answer (H27)", () => {
 });
 
 
+describe("the transaction feed of a free answer (AT-35)", () => {
+  it("shows the moves of this week: a strip of the moves per day, one row per move with a dot for its kind", async () => {
+    const early = watchEarly("Tutu Atwell");
+    freeWith("moves-feed");
+    render(<HomePage />);
+    await ask("What moves happened this week?");
+    const answer = await articleWith("What moves happened this week?", "Checked");
+    expect(within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem")[0].textContent).toContain("Reading the moves of this week");
+    expect(within(answer).getByRole("img", { name: "Moves per day. Wed Nov 11: 5." })).toBeTruthy();
+    const feed = within(answer).getByRole("list", { name: "Week 10 moves" });
+    const rows = within(feed).getAllByRole("listitem");
+    expect(rows).toHaveLength(5);
+    // Newest first, each row names its kind, its team, and what it added and dropped.
+    expect(rows[0].textContent).toContain("Free agent");
+    expect(rows[0].textContent).toContain("Puka Deez");
+    expect(rows[0].textContent).toContain("Tutu Atwell");
+    expect(rows[0].textContent).toContain("Matthew Stafford");
+    expect(rows[1].textContent).toContain("Bo Girds");
+    expect(within(answer).getByRole("list", { name: "Kinds of move" }).textContent).toBe("Free agent");
+    expect(early.early).toBe(false);
+  });
+
+  it("shows a trade row with what each side got, a waiver row with its bid, and the count past the rows", async () => {
+    freeWith("moves-feed-week-6");
+    render(<HomePage />);
+    await ask("What moves happened in week 6?");
+    const answer = await articleWith("What moves happened in week 6?", "Checked");
+    const strip = within(answer).getByRole("img", { name: /^Moves per day\. Wed Oct 14: 17, Thu Oct 15: 2, / });
+    expect(strip.getAttribute("aria-label")).toContain("Mon Oct 19: 0");
+    const rows = within(within(answer).getByRole("list", { name: "Week 6 moves" })).getAllByRole("listitem");
+    expect(rows).toHaveLength(20);
+    const trade = rows.find((row) => row.textContent?.startsWith("Trade"))!;
+    expect(trade.textContent).toContain("To Infinity and Bijan got");
+    expect(trade.textContent).toContain("Malik Nabers, Jared Goff");
+    expect(trade.textContent).toContain("Return of T Mac got");
+    expect(trade.textContent).toContain("Bijan Robinson");
+    expect(rows[0].textContent).toContain("Waiver claim");
+    expect(rows[0].textContent).toContain("Terrance Ferguson");
+    expect(rows[0].textContent).toContain("$0");
+    expect(answer.textContent).toContain("36 more moves this week");
+    expect(within(answer).getByRole("list", { name: "Kinds of move" }).textContent).toBe("TradeWaiver claimFree agent");
+  });
+
+  it("keeps the feed with the answer, so a reload shows it with no new stream", async () => {
+    freeWith("moves-feed");
+    const { unmount } = render(<HomePage />);
+    await ask("What moves happened this week?");
+    await articleWith("What moves happened this week?", "Checked");
+    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("Tutu Atwell"));
+    unmount();
+    render(<HomePage />);
+    const kept = await articleWith("What moves happened this week?", "Tutu Atwell");
+    expect(within(kept).getByRole("list", { name: "Week 10 moves" })).toBeTruthy();
+    expect(freeCalls()).toHaveLength(1);
+  });
+});
+
+
 /* A free answer whose checked text is `text`, in the parts that the API streams for a live run: one step, the text,
    then the check. */
 function textWith(text: string) {
