@@ -9,8 +9,11 @@ from pathlib import Path
 import pytest
 import test_api
 import test_start_sit
+from fakes import FakeJev
 from test_api import HEADERS
-from test_start_sit import BEFORE_KICKOFF, BO_GIRDS, sleeper_scores
+from test_start_sit import BEFORE_KICKOFF, BO_GIRDS, _edges, sleeper_scores
+
+from league.jev_port import JevError
 
 repo = test_api.repo
 settings = test_api.settings
@@ -51,9 +54,9 @@ def test_the_stream_carries_the_matchup_card_of_the_live_week_with_its_read_time
     assert card["you"]["roster_id"] == BO_GIRDS["cpc"] and card["them"]["roster_id"] == THE_BLUE_TENT
     # The test clock is the time of the request, so the read is within the minute of it.
     assert datetime.fromisoformat(card["read_at"]) == BEFORE_KICKOFF
-    # The projected total of Your team is the total of the lineup of Start or sit, from the same scoring.
+    # The projected total of Your team is the total of the lineup of Start or sit with its Swaps, from the same scoring.
     lineup = test_start_sit._block(api)
-    assert card["you"]["score"] == lineup["total"]
+    assert card["you"]["score"] == lineup["swap_total"]
     assert [slot["you"]["name"] for slot in card["slots"]] == [row["player"] for row in lineup["rows"]]
     assert [slot["slot"] for slot in card["slots"]] == ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "FLEX", "DEF"]
 
@@ -91,3 +94,28 @@ def test_a_starter_on_a_bye_lowers_the_projected_total_and_the_odds(with_sim, so
     assert best["name"] not in {slot["you"]["name"] for slot in after["slots"] if slot["you"]}
     assert after["you"]["score"] < before["you"]["score"]
     assert after["odds"] < before["odds"]
+
+
+def test_a_swap_moves_your_slot_your_projected_total_and_the_odds(with_sim, sources):
+    # Story 38: Konata Mumpfield of the bench of Bo Girds takes the WR slot of Matthew Golden at 0.9, as in Start or sit.
+    before = _card(test_start_sit._api(with_sim, sources))
+    jev = _edges({("Konata Mumpfield", "Matthew Golden"): 0.9})
+    api = test_start_sit._api(with_sim, sources, jev=jev)
+    after = _card(api)
+    # The card makes one Jev request.
+    assert len([request for request in jev.requests if "players" in request.state]) == 1
+    names = {slot["you"]["name"] for slot in after["slots"] if slot["you"]}
+    assert "Konata Mumpfield" in names and "Matthew Golden" not in names
+    assert (before["you"]["score"], after["you"]["score"]) == (121.7, 115.6)
+    assert after["you"]["score"] == test_start_sit._block(api)["swap_total"]
+    assert after["odds"] < before["odds"]
+    # The other team stays by projection.
+    assert after["them"] == before["them"]
+
+
+def test_a_failed_jev_read_gives_the_card_by_projection(with_sim, sources):
+    # A failed Swap read never breaks the card: Your side falls back to the lineup by projection.
+    api = test_start_sit._api(with_sim, sources, jev=FakeJev(error=JevError("down")))
+    card = _card(api)
+    assert card["you"]["score"] == 121.7 and card["odds"] is not None
+    assert "Matthew Golden" in {slot["you"]["name"] for slot in card["slots"] if slot["you"]}

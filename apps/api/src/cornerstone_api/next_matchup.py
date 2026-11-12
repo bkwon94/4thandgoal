@@ -1,12 +1,14 @@
 """
-The live matchup card of Your next matchup: the lineup by projection of each side for the live Sleeper week, as Start or
-sit reads it, and the win odds from the gap of the two totals. The rest of the Topic still comes from topics.json.
+The live matchup card of Your next matchup: Your lineup of Start or sit with its Swaps and the lineup by projection of
+the other team for the live Sleeper week, and the win odds from the gap of the two totals. The rest is from topics.json.
 """
 import json
+import logging
 import math
 from collections.abc import AsyncIterator
 from pathlib import Path
 
+import anyio
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict
@@ -18,7 +20,10 @@ from cornerstone_api.claude_stream import adapter, data
 from cornerstone_api.personal_topics import AGENT, load_week
 from cornerstone_api.start_sit import LiveWeek
 from cornerstone_api.week_lineup import WeekLineup, week_lineup
+from league.jev_port import Jev, JevError
 from league.matchup_card import MatchupBlock, MatchupPlayer, MatchupTeam, matchup_slots, starting_slots
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -62,6 +67,26 @@ def _side(lineup: WeekLineup) -> list[tuple[str, MatchupPlayer]]:
             for row in lineup.rows if row.player is not None]
 
 
+def _your_side(week: LiveWeek, jev: Jev, roster_id: int) -> tuple[list[tuple[str, MatchupPlayer]], float]:
+    """The slots and the total of Your side: the lineup of Start or sit with its Jev Swaps, from one Jev request.
+
+    A failed Jev request falls back to the lineup by projection. The card is a part of a Topic Answer, so it still
+    shows, and no miss card takes its place. The card carries no field for the fall back, so only the log says so.
+    """
+    try:
+        block = week.judged(jev, roster_id).block
+    except JevError as error:
+        logger.warning("The Swap read of the live matchup card failed (%s), so Your side is by projection",
+                       type(error).__name__)
+        lineup = week_lineup(week.raw, roster_id, week.kickoffs, week.now)
+        return _side(lineup), lineup.shown_total
+    # Each row of the block shows the player of the lineup with the Swaps, and `swap_total` is its shown total.
+    slots = [(row["slot"], MatchupPlayer(name=row["player"], position=row["position"], nfl_team=row["nfl_team"],
+                                         points=row["projection"] or 0.0))
+             for row in block["rows"] if row["player"] is not None]
+    return slots, block["swap_total"]
+
+
 def opponent(week: LiveWeek, roster_id: int) -> int | None:
     """The roster that meets `roster_id` in the live week: the other roster of its Sleeper matchup, or None."""
     mine = next((m for m in week.raw.matchups if m.roster_id == roster_id), None)
@@ -71,22 +96,24 @@ def opponent(week: LiveWeek, roster_id: int) -> int | None:
                  if m.matchup_id == mine.matchup_id and m.roster_id != roster_id), None)
 
 
-def matchup_card(week: LiveWeek, roster_id: int, spread: float | None) -> MatchupBlock | None:
+def matchup_card(week: LiveWeek, roster_id: int, spread: float | None, jev: Jev) -> MatchupBlock | None:
     """The live card of the next game of `roster_id`, or None when the team has no game in the live week.
 
-    Each side is the lineup by projection of Start or sit, so a bye, an OUT player, or a Swap moves the totals and the
-    odds. The odds are None when the season has no sim spread yet.
+    Your side is the lineup of Start or sit with its Jev Swaps, so a bye, an OUT player, or a Swap moves Your total and
+    the odds. The other team is the lineup by projection, so its bye and its OUT players move its total too. The card
+    makes one Jev request, and a failed request gives Your side by projection. The odds are None with no sim spread.
     """
     other = opponent(week, roster_id)
     if other is None:
         return None
-    mine, theirs = (week_lineup(week.raw, rid, week.kickoffs, week.now) for rid in (roster_id, other))
-    you = MatchupTeam(roster_id=roster_id, name=week.team_name(roster_id), score=mine.shown_total)
+    mine, total = _your_side(week, jev, roster_id)
+    theirs = week_lineup(week.raw, other, week.kickoffs, week.now)
+    you = MatchupTeam(roster_id=roster_id, name=week.team_name(roster_id), score=total)
     them = MatchupTeam(roster_id=other, name=week.team_name(other), score=theirs.shown_total)
     return MatchupBlock(
         final=False, you=you, them=them,
         odds=None if spread is None else round(win_odds(you.score, them.score, spread), 3),
-        slots=matchup_slots(starting_slots(week.raw.league.roster_positions), _side(mine), _side(theirs)),
+        slots=matchup_slots(starting_slots(week.raw.league.roster_positions), mine, _side(theirs)),
         read_at=week.now.isoformat())
 
 
@@ -100,11 +127,12 @@ async def _stream(card: MatchupBlock | None) -> AsyncIterator[BaseChunk]:
 
 @router.post("/next-matchup")
 async def next_matchup(body: NextMatchupRequest, asker: ClientAsker, served: ServedClient) -> StreamingResponse:
-    """The stream of the live card of Your next matchup: one data block from code, with no Claude call. A team with no
-    game in the live week gets a stream with no block, so the site keeps the card of topics.json."""
+    """The stream of the live card of Your next matchup: one data block from code, with one Jev read of the Swaps and
+    no Claude call. A team with no game in the live week gets a stream with no block, so the site keeps the card of
+    topics.json."""
     week = await load_week(served, asker.season)
     if body.roster_id not in week.rosters:
         raise HTTPException(status_code=422, detail="Pick your team again.")
     spread = league_spread(served.sources.client.folder, asker.season)
-    card = matchup_card(week, body.roster_id, spread)
+    card = await anyio.to_thread.run_sync(matchup_card, week, body.roster_id, spread, asker.jev)
     return adapter(AGENT, "").streaming_response(_stream(card))
