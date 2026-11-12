@@ -471,8 +471,26 @@ def run_build(
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
     _write_season_files(client, season, week, raw_path, raw, bundle, blurbs)
     # The Topic Answers read the page and both season files, so they come last.
-    write_topics_or_warn(site_dir, season, week)
+    write_topics_or_warn(site_dir, season, week, _league_week(client, week, raw))
     return page
+
+
+def _league_week(client: Client, week: int, raw: RawWeek | None) -> Week | None:
+    """The parsed raw week that the matchup cards of the Topics read, or None when the week has no raw data or a
+    raw week that does not parse. None only drops those two blocks, so it logs a warning and stops nothing."""
+    if raw is None:
+        return None
+    try:
+        return parse_week(raw, week=week, team_count=client.settings.team_count,
+                          points_key=client.settings.points_key)
+    except ValueError as err:
+        log.warning("The matchup cards of week %d have no lineups: %s", week, err)
+        return None
+
+
+def _saved_league_week(client: Client, season: int, week: int) -> Week | None:
+    """The parsed raw week of a saved week for the matchup cards of the Topics, or None with no raw data."""
+    return _league_week(client, week, _raw_for_season_files(client, season, week))
 
 
 def _write_season_files(client: Client, season: int, week: int, raw_path: Path, raw: RawWeek, bundle: Bundle,
@@ -697,7 +715,7 @@ def run_rewrite(
         _write_rankings_or_warn(season, week, bundle, blurbs[chapter],
                                 lambda: _season_history(client, season, week), client)
     # The Topic Answers quote the blurbs, so a rewrite writes them again.
-    write_topics_or_warn(site_dir, season, week)
+    write_topics_or_warn(site_dir, season, week, _saved_league_week(client, season, week))
     return page
 
 
@@ -705,7 +723,7 @@ def run_page_json(repo: Path, season: int, week: int, *, client: Client) -> Path
     """Write page.json for a saved week from its facts and blurbs. It calls no writer and no network."""
     bundle, blurbs = _load_saved_week(client, season, week)
     page = render_page_json(bundle, blurbs, build_dir(client.folder))
-    write_topics_or_warn(build_dir(client.folder), season, week)
+    write_topics_or_warn(build_dir(client.folder), season, week, _saved_league_week(client, season, week))
     return page
 
 
@@ -740,7 +758,7 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client
         inputs = _season_inputs(season, week, _raw_for_season_files(client, season, week), season_history, client)
         _write_managers(season, week, bundle.data.teams, inputs, client)
     # The Topic Answers read both season files, so they come after them.
-    write_topics_or_warn(build_dir(client.folder), season, week)
+    write_topics_or_warn(build_dir(client.folder), season, week, _saved_league_week(client, season, week))
     return out
 
 
