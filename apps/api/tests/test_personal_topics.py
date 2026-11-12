@@ -314,15 +314,17 @@ def _block(chunks: list[dict]) -> dict:
     return block
 
 
-@pytest.mark.parametrize("topic", ["weak_spots", "stack_up", "waiver_targets"])
-def test_the_data_part_of_each_personal_topic_carries_a_kind(settings, sources, topic):
+@pytest.mark.parametrize(("topic", "kind"), [("weak_spots", "rows"), ("stack_up", "rows"),
+                                             ("waiver_targets", "waiver_list")])
+def test_the_data_part_of_each_personal_topic_carries_a_kind(settings, sources, topic, kind):
     # The block contract of the front door: every data block on the stream names its kind, so the site picks its view
-    # from the kind alone. The stats and rows of a personal Topic are the kind "rows".
+    # from the kind alone. The stats and rows of a personal Topic are the kind "rows", and the waiver targets show the
+    # waiver list.
     writer = Writer()
     api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
     block = _block(_chunks(_ask(api, topic)))
-    assert block["kind"] == "rows"
-    assert block["topic"] == topic and {"stats", "rows", "fact"} <= set(block)
+    assert block["kind"] == kind
+    assert block["topic"] == topic and {"rows", "fact"} <= set(block)
 
 
 class MarkedWriter(Writer):
@@ -715,7 +717,7 @@ def test_the_answer_reads_the_kept_players_only_best_first_and_the_block_lists_t
     chunks = _chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=reads.answer), writer),
                           "waiver_targets", roster_id=BO_GIRDS))
     block = _block(chunks)
-    assert [row["label"] for row in block["rows"]] == [COREY_KINER, "Kyler Murray"]
+    assert [row["name"] for row in block["rows"]] == [COREY_KINER, "Kyler Murray"]
     assert block["fact"] == "2 free agents worth a claim"
     facts = _facts(writer.requests[0])
     assert set(facts) == {"team", "teams_in_league", "week", "team_need", "kept_players"}
@@ -723,7 +725,40 @@ def test_the_answer_reads_the_kept_players_only_best_first_and_the_block_lists_t
                                                                      ("Kyler Murray", "stash for later weeks")]
     assert not any(name in json.dumps(facts) for name in WEAK_ADDS)
     assert "Quote no FAAB bid" in _prompt(writer.requests[0])
-    assert all("$" not in row["value"] for row in block["rows"])
+    assert "$" not in json.dumps(block["rows"])
+
+
+def _slot_he_fills(need: dict, player: dict) -> str:
+    """The slot of a free agent as a manager reads it off the need: an empty slot that takes him, else the starter with
+    the lowest week projection that he outprojects, else the bench."""
+    if player["empty_slots_he_fits"]:
+        return player["empty_slots_he_fits"][0]
+    beaten = [s for s in need["starters"] if s["player"] is not None and player["position"] in s["allows"]
+              and player["week_projection"] > s["week_projection"]]
+    return min(beaten, key=lambda s: (s["week_projection"], s["slot"]))["slot"] if beaten else "Bench"
+
+
+def test_waiver_targets_stream_the_waiver_list_with_the_slot_and_the_why_of_each_kept_player(week_9_repo, sources):
+    # AT-29: one row per free agent that the read kept, with the position, the NFL team, the projection, and the slot
+    # he fills, and the why that opens in place.
+    reads = Reads(add={COREY_KINER: 0.92}, stash={"Kyler Murray": 0.81})
+    block = _block(_chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=reads.answer), Writer()),
+                                "waiver_targets", roster_id=BO_GIRDS)))
+    assert block["kind"] == "waiver_list"
+    assert block["topic"] == "waiver_targets" and block["team"] == BO_GIRDS
+    assert block["fact"] == "2 free agents worth a claim" and block["empty"] is None
+    assert [row["name"] for row in block["rows"]] == [COREY_KINER, "Kyler Murray"]
+    for row in block["rows"]:
+        read = reads.players[row["name"]]
+        assert (row["position"], row["nfl_team"]) == (read["position"], read["nfl_team"])
+        assert row["projection"] == read["week_projection"]
+        assert row["slot"] == _slot_he_fills(reads.need, read)
+        assert row["why"] and all(isinstance(line, str) and line for line in row["why"])
+        assert not any(name in line.lower() for line in row["why"] for name in INNER_NAMES)
+    kiner, murray = block["rows"]
+    assert (kiner["kind"], murray["kind"]) == ("add", "stash")
+    # The why of Kiner says his role is open: both backs above him on the chart are out.
+    assert any("depth chart" in line for line in kiner["why"])
 
 
 def test_with_no_player_above_the_yes_line_the_answer_says_no_free_agent_beats_the_starters(week_9_repo, sources):
@@ -732,7 +767,7 @@ def test_with_no_player_above_the_yes_line_the_answer_says_no_free_agent_beats_t
                           "waiver_targets", roster_id=BO_GIRDS))
     block = _block(chunks)
     assert block["fact"] == "No free agent beats the starters this week"
-    assert block["rows"] == []
+    assert block["rows"] == [] and block["empty"] == "No free agent beats the starters this week"
     assert _facts(writer.requests[0])["kept_players"] == []
     assert "no free agent beats the starters" in _prompt(writer.requests[0])
     # It is a real Answer, checked and kept, not the honest miss.
@@ -747,7 +782,7 @@ def test_a_kept_waiver_answer_comes_back_with_its_block_and_no_jev_read(week_9_r
     first = _chunks(_ask(api, "waiver_targets", roster_id=BO_GIRDS))
     # The first tap reads each free agent, and its block lists the player that the read kept.
     assert _reads(jev)
-    assert [row["label"] for row in _block(first)["rows"]] == [COREY_KINER]
+    assert [row["name"] for row in _block(first)["rows"]] == [COREY_KINER]
     asked = len(jev.requests)
     second = _chunks(_ask(api, "waiver_targets", roster_id=BO_GIRDS))
     assert len(jev.requests) == asked

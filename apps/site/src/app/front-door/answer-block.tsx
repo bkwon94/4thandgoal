@@ -15,6 +15,8 @@ import { VERY_SLOW, riseIn, staggerOf } from "./motion";
 import { RecapCard } from "./recap-card";
 import { TradeBlockView, tradeBlockSchema, tradeBlockText } from "./trade-block";
 import { SlotRanksView, slotRanksBlockSchema, slotRanksText } from "./slot-rank-bars";
+import { SellListView, sellListSchema, sellListText } from "./sell-list";
+import { WaiverListView, waiverListSchema, waiverListText } from "./waiver-list";
 
 const listBlockSchema = z.object({
   kind: z.literal("list"),
@@ -47,6 +49,8 @@ export const answerBlockSchema = z.discriminatedUnion("kind", [
   feedBlockSchema,
   slotRanksBlockSchema,
   byeGridBlockSchema,
+  waiverListSchema,
+  sellListSchema,
 ]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
@@ -76,6 +80,10 @@ export function blockText(block: AnswerBlock): string {
       return slotRanksText(block);
     case "bye_grid":
       return byeGridText(block);
+    case "waiver_list":
+      return waiverListText(block);
+    case "sell_list":
+      return sellListText(block);
   }
 }
 
@@ -221,5 +229,9 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
       return <SlotRanksView block={block} live={live} />;
     case "bye_grid":
       return <ByeGridView block={block} live={live} />;
+    case "waiver_list":
+      return <WaiverListView block={block} live={live} />;
+    case "sell_list":
+      return <SellListView block={block} live={live} />;
   }
 }

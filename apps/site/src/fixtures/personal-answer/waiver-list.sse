@@ -1,0 +1,82 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"waiver_list","topic":"waiver_targets","team":6,"fact":"2 free agents worth a claim","read":34,"rows":[{"name":"J.J. McCarthy","position":"QB","nfl_team":"NYG","projection":16.95,"slot":"QB","kind":"add","why":["Worth a claim this week.","Status now: Questionable.","Projects 16.9 this week, over Malik Willis at 16.8 in your QB slot.","120.8 projected points for the rest of the season."]},{"name":"Shedeur Sanders","position":"QB","nfl_team":"CLE","projection":0.0,"slot":"Bench","kind":"stash","why":["A stash for later weeks.","Every player above him on the depth chart is out.","68,664 adds across Sleeper in the last day.","86.7 projected points for the rest of the season."]}],"empty":null}}
+
+data: {"type":"data-key","data":{"key":"2ed19d11dad048880a9621a5a00fa3186fd66c30b4e6a54a52e7b1d3ebfc5191"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":"J.J. McCarth","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":"y is the top add this week:","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" he is","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" the Q","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":"B1 for the","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" Giants and proj","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":"ects for","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" 16.95,","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" just","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" above Malik Willis at","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" 16.81, who is your","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" weak spot at QB.","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" He is questionable, though","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":", so check his status before the","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" games. Shedeur","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" Sanders is a","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" stash for later weeks.","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" De","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":"shaun Watson is out","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" ","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":"ahead of him in","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" Cleveland, and","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" Sanders played","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" 100 perc","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":"ent of the snaps in week","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" 9,","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" but","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" he","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" has","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-delta","delta":" no projection for this week.","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"text-end","id":"34deb7f6-c4c5-4ab8-8dc9-4ddf81da1a1e"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

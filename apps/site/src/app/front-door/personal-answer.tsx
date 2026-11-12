@@ -18,7 +18,7 @@ import { shownText } from "./free-stream";
 import { QuestionBubble, Surface } from "./miss-card";
 import { riseIn } from "./motion";
 import { Steps, useIntentDelay } from "./steps";
-import { type PersonalBlock, type PersonalCap, type PersonalResult, type PersonalTopic, type PersonalView, personalViewOf } from "./personal-stream";
+import { type PersonalBlock, type PersonalCap, type PersonalResult, type PersonalTopic, type PersonalView, personalViewOf, shownBlock } from "./personal-stream";
 
 /* The step between the data block and the text, while Claude writes the text. */
 export const WRITING_LINE = "Writing";
@@ -36,11 +36,10 @@ type Shared = {
    Under the data block, the Writing step waits until the check comes, so the card never sits still. */
 function PersonalBody({ block, view, live, href, avatars }: { block: PersonalBlock; view: PersonalView; live: boolean; href: string | null; avatars: Shared["avatars"] }) {
   const checked = view.check === "checked";
-  // A Topic Answer shows one block at most, so a Topic with its own block shows it in place of the stats and the rows.
-  const shown = block.block ? { stats: [], rows: [] } : { stats: block.stats, rows: block.rows };
+  const { stats, rows, asOf, answerBlock } = shownBlock(block);
   return (
-    <AnswerBody answer={{ ...shown, text: [], href: checked ? href : null }} avatars={avatars} asOf={block.as_of}>
-      {block.block && <BlockView block={block.block} live={live} />}
+    <AnswerBody answer={{ stats, rows, text: [], href: checked ? href : null }} avatars={avatars} asOf={asOf}>
+      {answerBlock && <BlockView block={answerBlock} live={live} />}
       <div className="flex flex-col gap-sp-3">
         <FreeBody view={view} live={live} first={WRITING_LINE} />
       </div>

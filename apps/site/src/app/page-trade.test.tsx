@@ -303,9 +303,32 @@ describe("sell high or buy low for Lil Fridge", () => {
     expect(picks.map((pick) => pick.getAttribute("aria-label"))).toEqual(["Sell Romeo Doubs", "Sell Tyler Allgeier"]);
     expect(picks[0].textContent).toContain("WR · NE");
     expect(picks[0].textContent).toContain("his hot last four weeks still make him look good to another manager");
-    // Each pick shows its top 2 Bullets. The manager page of Your team is the full report.
-    expect(sell.querySelectorAll("[data-bullet-text]")).toHaveLength(4);
+    // The manager page of Your team is the full report.
     expect(within(sell).getByRole("link", { name: "Open your manager page" }).getAttribute("href")).toBe("/2026/managers/3/");
+  });
+
+  it("shows the sell list: each row with the player, his ranks, and the headline, and a tap opens the bullets (AT-32)", async () => {
+    streamOf("/sell-high", sellStream);
+    render(<HomePage />);
+    await openTopic("Sell high or buy low");
+    const sell = await screen.findByRole("region", { name: "Sell high or buy low" });
+    expect(sell.querySelector('[data-block="sell_list"]')).not.toBeNull();
+    const [first, second] = within(sell).getAllByRole("listitem", { name: /^Sell / });
+    const toggle = within(first).getByRole("button", { name: /Romeo Doubs/ });
+    expect(toggle.textContent).toContain("Season WR54");
+    expect(toggle.textContent).toContain("Recent WR26");
+    expect(toggle.textContent).toContain("his hot last four weeks still make him look good to another manager");
+    // The row starts closed, so the bullets wait in place under it.
+    const panel = document.getElementById(toggle.getAttribute("aria-controls") ?? "")!;
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(panel.hasAttribute("hidden")).toBe(true);
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    await waitFor(() => expect(panel.hasAttribute("hidden")).toBe(false));
+    const bullets = within(panel).getAllByRole("listitem");
+    expect(bullets[0].textContent).toContain("He is out now and not due back until week 14");
+    // The other row does not open with it.
+    expect(within(second).getByRole("button", { name: /Tyler Allgeier/ }).getAttribute("aria-expanded")).toBe("false");
   });
 
   it("sends a typed sell high question for Your team", async () => {
@@ -337,11 +360,15 @@ describe("sell high or buy low for Lil Fridge", () => {
   it("shows the plain line of a roster with no clear sell", async () => {
     const line = "No player on your roster is priced above what he gives you.";
     const answer = sellStream.find((part) => part.type === "data-answer")!;
+    const block = sellStream.find((part) => part.type === "data-block")!;
     const empty = { ...answer, data: { ...answer.data, document: { ...answer.data!.document, picks: [], empty: line } } };
-    streamOf("/sell-high", [{ type: "start" }, empty, { type: "finish" }]);
+    const emptyBlock = { ...block, data: { ...block.data, rows: [], empty: line } };
+    streamOf("/sell-high", [{ type: "start" }, emptyBlock, empty, { type: "finish" }]);
     render(<HomePage />);
     await openTopic("Sell high or buy low");
-    expect((await screen.findByRole("region", { name: "Sell high or buy low" })).textContent).toContain(line);
+    const sell = await screen.findByRole("region", { name: "Sell high or buy low" });
+    expect(sell.querySelector('[data-block="sell_list"]')?.textContent).toContain(line);
+    expect(within(sell).queryAllByRole("listitem", { name: /^Sell / })).toHaveLength(0);
   });
 
   it("names no inner tool and no manager word in any step or Answer", async () => {

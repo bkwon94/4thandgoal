@@ -7,7 +7,7 @@ from typing import Literal
 
 from analyzer.trade_jev import weak_slot_rows, weak_starting_slots
 from cornerstone_api.grade_blocks import bye_grid, slot_rank_bars
-from cornerstone_api.waiver_targets import waiver_facts
+from cornerstone_api.waiver_targets import WAIVER_LIST_KIND, waiver_facts, waiver_rows
 from league.lineup import cannot_play_now, lineup_now
 from league.numbers import ordinal
 from league.provider.raw import RawTrending
@@ -166,10 +166,8 @@ def _waiver_block(need: dict, read: int) -> dict:
     """The block of the waiver targets before the Jev read: the first weak slot and the count of free agents to read.
     The Suggestion shows its fact, so the fact costs no Jev call."""
     slot = _weak_slot(need)
-    return {"fact": f"Free agents for the {slot} slot" if slot else "Free agents to stash",
-            "stats": [{"label": "Weak slot", "value": slot or "None"},
-                      {"label": "Free agents read", "value": str(read)}],
-            "rows": []}
+    return {"kind": WAIVER_LIST_KIND, "fact": f"Free agents for the {slot} slot" if slot else "Free agents to stash",
+            "read": read, "rows": [], "empty": None}
 
 
 def judged_waiver(facts: PersonalFacts, kept: list[dict]) -> PersonalFacts:
@@ -177,17 +175,11 @@ def judged_waiver(facts: PersonalFacts, kept: list[dict]) -> PersonalFacts:
     and the block lists the kept players. With no kept player, the block says so plainly."""
     slice_ = {key: value for key, value in facts.slice.items() if key != "candidates"}
     read = len(facts.slice["candidates"])
-    slot = _weak_slot(facts.slice["team_need"])
     count = len(kept)
-    fact = (f"{count} free {'agent' if count == 1 else 'agents'} worth a claim" if kept
-            else "No free agent beats the starters this week")
-    block = {**facts.block, "fact": fact,
-             "stats": [{"label": "Weak slot", "value": slot or "None"},
-                       {"label": "Free agents read", "value": str(read)},
-                       {"label": "Worth a claim", "value": str(count)}],
-             "rows": [{"label": player["name"], "value": "",
-                       "note": " · ".join(part for part in (player["position"], player["nfl_team"]) if part),
-                       "roster_id": None, "you": False} for player in kept]}
+    empty = "No free agent beats the starters this week"
+    fact = f"{count} free {'agent' if count == 1 else 'agents'} worth a claim" if kept else empty
+    block = {**facts.block, "fact": fact, "read": read, "rows": waiver_rows(facts.slice["team_need"], kept),
+             "empty": None if kept else empty}
     return PersonalFacts(slice={**slice_, "kept_players": kept}, block=block)
 
 

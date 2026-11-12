@@ -28,6 +28,40 @@
   }
  },
  {
+  "type": "data-block",
+  "data": {
+   "kind": "sell_list",
+   "team": 3,
+   "rows": [
+    {
+     "player_id": "8132",
+     "name": "Tyler Allgeier",
+     "position": "RB",
+     "nfl_team": "ARI",
+     "headshot": "https://sleepercdn.com/content/nfl/players/8132.jpg",
+     "season_rank": "RB22",
+     "recent_rank": null,
+     "headline": "You should sell Tyler Allgeier now, while his hot month makes him look better than he is for your lineup.",
+     "bullets": [
+      {
+       "text": "Allgeier scored 12.7 points per game over the last four weeks, against 8.8 over the season, so another manager sees a hot back.",
+       "mark": "for"
+      },
+      {
+       "text": "In your lineup he ranks only RB33 by lineup value, so he gives you less than his recent points suggest.",
+       "mark": "for"
+      },
+      {
+       "text": "His schedule is soft, starting with the 29th most points to RBs in week 10, so the hot run could continue if you keep him.",
+       "mark": "against"
+      }
+     ]
+    }
+   ],
+   "empty": null
+  }
+ },
+ {
   "type": "data-answer",
   "data": {
    "kind": "sell",
