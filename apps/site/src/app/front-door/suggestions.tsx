@@ -64,8 +64,9 @@ export function Suggestions({
     // No gap here: the strip and the panel each carry their own 8px above, so a shut strip adds no height to the foot.
     <div className="flex flex-col">
       {/* The row is one line at every state of the Thread, so the Thread gets the screen (decision 02). A chip shows
-          only its Topic name, so "More" and 3 chips fit 375 px. A long name cuts with an ellipsis at the cap of a chip,
-          and a row too wide for a narrow phone scrolls sideways. The bleed keeps the last chip clear of the gutter. The
+          only its Topic name, and "More" and 3 chips always fit the row: a row that scrolls sideways hides a chip past
+          its edge, and decision 02 chose a whole row over one that scrolls. So a chip shrinks, and a long name cuts with
+          an ellipsis, on a phone too narrow for 3 whole names. The bleed keeps the last chip clear of the gutter. The
           4px pad above and below gives the press scale and the focus ring room in the scroll box, and the negative
           margin keeps the row one 44px chip high, so --spacing-door-foot-clear holds. */}
       <div
@@ -83,7 +84,7 @@ export function Suggestions({
             setShown(null);
             onMore(!moreOpen);
           }}
-          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-3 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
         >
           <span>More</span>
           <ChevronDownIcon
@@ -100,7 +101,7 @@ export function Suggestions({
               <div
                 key={index}
                 data-placeholder=""
-                className="flex min-h-touch w-28 flex-none items-center rounded-pill border border-door-hair bg-card px-sp-4 opacity-60"
+                className="flex min-h-touch w-28 min-w-0 flex-initial items-center rounded-pill border border-door-hair bg-card px-sp-4 opacity-60"
               >
                 <span className="h-sp-3 w-full rounded-pill bg-raised" />
               </div>
@@ -125,7 +126,7 @@ export function Suggestions({
               animate={off ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }}
               transition={off ? fadeIn(FAST, index * STAGGER) : { ...CHIP_GLIDE, layout: GLIDE, opacity: fadeIn(FAST, index * STAGGER) }}
-              className="press door-sheen flex min-h-touch max-w-chip flex-none snap-start items-center rounded-pill border border-door-hair bg-card px-sp-4 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+              className="press door-sheen flex min-h-touch max-w-chip min-w-0 flex-initial snap-start items-center rounded-pill border border-door-hair bg-card px-sp-3 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
             >
               <span aria-hidden className="max-w-full truncate text-body leading-tight font-semibold text-ink">
                 {topic.name}
