@@ -87,13 +87,16 @@ Claude keeps one more project folder for each worktree, named `-Users-brian-kwon
 
 ## 6. Set the marketplace and the plugin
 
-In `~/.claude/settings.json`, make these three changes:
+The command copies `~/.claude/settings.json` to `~/.claude/settings.json.bak`. Then it replaces the old path with the new path in the file. This also changes the old path in the two `autoMode` lines.
+
+```
+cp ~/.claude/settings.json ~/.claude/settings.json.bak && sed -i '' 's#/Users/brian.kwon/repos/cpcfantasyfootball#/Users/brian.kwon/repos/4thandgoal#g' ~/.claude/settings.json
+```
+
+Then open the file and make these two changes by hand. The old marketplace name is not a path, so the command leaves it.
 
 1. Rename the marketplace key to `4ag-local`.
-2. Set its path to `/Users/brian.kwon/repos/4thandgoal`.
-3. Set the plugin to `4ag@4ag-local`.
-
-Also change the old path in the two `autoMode` lines.
+2. Set the plugin to `4ag@4ag-local`.
 
 Check: `grep -n cpcfantasyfootball ~/.claude/settings.json` prints nothing.
 
@@ -105,7 +108,7 @@ The old venv holds the old path.
 cd ~/repos/4thandgoal && rm -rf .venv && uv sync --all-packages && pnpm install
 ```
 
-Check: `.venv/bin/python -c "import sys; print(sys.prefix)"` prints a path under `/Users/brian.kwon/repos/4thandgoal`.
+Check: `.venv/bin/python -c "import sys; print(sys.prefix)"` prints a path under `/Users/brian.kwon/repos/4thandgoal`. Then `pnpm --dir apps/site exec node -e 1` prints nothing and exits with 0.
 
 ## 8. Copy and load the LaunchAgent
 
@@ -117,7 +120,11 @@ Check: `launchctl list | grep cornerstone` shows the job.
 
 ## 9. Prove the plugin loads
 
-Open a new Claude session in `~/repos/4thandgoal`. Call one `4ag:` skill.
+```
+cd ~/repos/4thandgoal && claude
+```
+
+In the new session, call one `4ag:` skill.
 
 Check: `/plugin` lists `4ag@4ag-local` as enabled.
 
