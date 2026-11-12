@@ -6,6 +6,7 @@ import { z } from "zod";
 import { analyzeResponseSchema, asOfSchema, bulletSchema, findResponseSchema, tradedPlayerSchema } from "@cpc/analyzer/lib/schemas/api";
 import { AskError, type AskTarget, postClient, statusError } from "./ask-api";
 import type { Turn } from "./chat-turns";
+import { type SellList, sellListSchema } from "./sell-list";
 
 /* The form of the Trade page for an unsure pick: Your team, the partner of a sure player, and each sure player. */
 export const tradeFormSchema = z.object({
@@ -33,7 +34,8 @@ export const tradeAnswerSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("check"), document: analyzeResponseSchema }),
   z.object({ kind: z.literal("form"), form: tradeFormSchema }),
   z.object({ kind: z.literal("ideas"), document: findResponseSchema }),
-  z.object({ kind: z.literal("sell"), document: sellHighSchema }),
+  // The sell list of the stream rides on the Answer, so a kept Answer shows it again. One kept before the block has none.
+  z.object({ kind: z.literal("sell"), document: sellHighSchema, block: sellListSchema.optional() }),
 ]);
 export type TradeAnswer = z.infer<typeof tradeAnswerSchema>;
 
@@ -46,6 +48,7 @@ export type TradeRead = z.infer<typeof tradeReadSchema>;
 const partSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("data-step"), data: z.object({ line: z.string(), live: z.boolean().optional() }) }),
   z.object({ type: z.literal("data-key"), data: tradeReadSchema }),
+  z.object({ type: z.literal("data-block"), data: sellListSchema }),
   z.object({ type: z.literal("data-answer"), data: tradeAnswerSchema }),
   z.object({ type: z.literal("data-error"), data: z.object({ status: z.number(), line: z.string() }) }),
   z.object({ type: z.literal("data-cap"), data: z.object({ cap: z.enum(["team", "league"]), line: z.string() }) }),
@@ -94,6 +97,8 @@ async function readParts(body: ReadableStream<Uint8Array>, events: TradeEvents):
   const decoder = new TextDecoder();
   let buffer = "";
   let answered = false;
+  // The block of the stream comes just before the whole Answer, and the Answer carries it.
+  let sellList: SellList | null = null;
   for (;;) {
     const { value, done } = await reader.read();
     buffer += value ? decoder.decode(value, { stream: !done }) : "";
@@ -107,9 +112,11 @@ async function readParts(body: ReadableStream<Uint8Array>, events: TradeEvents):
       if (part.data.type === "data-step") events.onStep(part.data.data.line, part.data.data.live ?? false);
       if (part.data.type === "data-key") events.onKey(part.data.data);
       if (part.data.type === "data-error") throw new AskError(part.data.data.status, part.data.data.line);
+      if (part.data.type === "data-block") sellList = part.data.data;
       if (part.data.type === "data-answer") {
         answered = true;
-        events.onAnswer(part.data.data);
+        const answer = part.data.data;
+        events.onAnswer(answer.kind === "sell" && sellList ? { ...answer, block: sellList } : answer);
       }
       if (part.data.type === "data-cap") {
         answered = true;

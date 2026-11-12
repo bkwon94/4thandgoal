@@ -20,6 +20,7 @@ beforeEach(() => readFixtureSite("cpc"));
 
 const PASSPHRASE = "cornerstone-test";
 const LIL_FRIDGE = 3;
+const BO_GIRDS = 6;
 const fetchStub = vi.fn();
 const streams: (() => Response)[] = [];
 
@@ -263,6 +264,31 @@ describe("the personal Topics of Lil Fridge", () => {
     expect(answer.textContent).toContain("Sione Vaki");
     // The fixed copy of cpc holds a waiver file, but cpc builds no waiver page, so a link would give a 404.
     expect(within(answer).queryByRole("link", { name: /Read the full report/ })).toBeNull();
+  });
+
+  it("shows the waiver list of Bo Girds: each row with the position, the team, the projection, and the slot, and a tap opens the why (AT-29)", async () => {
+    // The stream that the API recorded for Bo Girds in week 10 with the real Jev and the real Claude.
+    localStorage.setItem("cpc.your-team", String(BO_GIRDS));
+    streams.push(() => sse(recorded("waiver-list")));
+    render(<HomePage />);
+    await tapInMore("Waiver targets");
+    const answer = await articleWith("Waiver targets", "Checked");
+    const list = within(answer).getByRole("list", { name: "2 free agents worth a claim" });
+    const [first, second] = within(list).getAllByRole("listitem");
+    const toggle = within(first).getByRole("button", { name: /J\.J\. McCarthy/ });
+    for (const part of ["QB · NYG", "16.9", "QB slot"]) expect(toggle.textContent).toContain(part);
+    expect(within(second).getByRole("button", { name: /Shedeur Sanders/ }).textContent).toContain("Bench");
+    // The row starts closed, so the why waits in place under it.
+    const panel = document.getElementById(toggle.getAttribute("aria-controls") ?? "")!;
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(panel.hasAttribute("hidden")).toBe(true);
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    await waitFor(() => expect(panel.hasAttribute("hidden")).toBe(false));
+    expect(panel.textContent).toContain("Projects 16.9 this week, over Malik Willis at 16.8 in your QB slot.");
+    expect(within(second).getByRole("button", { name: /Shedeur Sanders/ }).getAttribute("aria-expanded")).toBe("false");
+    // The list holds the why, so the stats and the rows of the old block do not show with it.
+    expect(answer.textContent).not.toContain("Free agents read");
   });
 
   it("never names an inner tool, a rival, or the commissioner by name in the cards", async () => {

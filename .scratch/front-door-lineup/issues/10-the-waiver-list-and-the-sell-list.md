@@ -10,6 +10,6 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-29, AT-32.
 
 **Status:** ready-for-agent
 
-- [ ] The stream of Waiver targets carries the waiver list, and a tapped row opens with the why (AT-29).
-- [ ] The stream of Sell high carries the sell list, and a tapped row opens with the bullets (AT-32).
+- [x] The stream of Waiver targets carries the waiver list, and a tapped row opens with the why (AT-29).
+- [x] The stream of Sell high carries the sell list, and a tapped row opens with the bullets (AT-32).
 - [ ] Site screenshots show both blocks closed and open.

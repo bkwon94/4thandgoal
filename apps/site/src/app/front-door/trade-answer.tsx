@@ -18,6 +18,7 @@ import { FAST, SLOW, STAGGER, VERY_SLOW, fadeIn, riseIn } from "./motion";
 import { QuestionBubble, Surface } from "./miss-card";
 import { StaleLine } from "./personal-answer";
 import { type Step, Steps } from "./steps";
+import { type SellList, SellListView } from "./sell-list";
 import type { SellHigh, TradeAnswer, TradeForm } from "./trade-api";
 
 /* The Bullets that the check shows of Your side, and of each offer. The Trade page holds each one. */
@@ -323,12 +324,15 @@ function SellPick({ pick, index }: { pick: SellHigh["picks"][number]; index: num
   );
 }
 
-/* Sell high or buy low: each player of Your team to sell, or the plain line of a roster with no clear sell. The full
-   report is the manager page of Your team. */
-function SellBody({ doc }: { doc: SellHigh }) {
+/* Sell high or buy low: the sell list of the stream, or for an Answer kept before the list, each player of Your team
+   to sell. A roster with no clear sell shows its plain line. The full report is the manager page of Your team. */
+function SellBody({ doc, block }: { doc: SellHigh; block?: SellList }) {
   return (
     <Settle label="Sell high or buy low">
-      {doc.picks.length > 0 ? (
+      {block ? (
+        // The sell list of the stream: each row opens in place with its bullets.
+        <SellListView block={block} live />
+      ) : doc.picks.length > 0 ? (
         <ul className="m-0 flex list-none flex-col gap-sp-4 p-0">
           {doc.picks.map((pick, index) => (
             <SellPick key={pick.player.player_id} pick={pick} index={index} />
@@ -387,7 +391,7 @@ export const TradeCard = forwardRef<
         {answer?.kind === "check" && <CheckBody doc={answer.document} analyze={analyze} />}
         {answer?.kind === "ideas" && <IdeasBody doc={answer.document} analyze={analyze} />}
         {answer?.kind === "form" && <FormBody form={answer.form} analyze={analyze} />}
-        {answer?.kind === "sell" && <SellBody doc={answer.document} />}
+        {answer?.kind === "sell" && <SellBody doc={answer.document} block={answer.block} />}
       </div>
     </article>
   );

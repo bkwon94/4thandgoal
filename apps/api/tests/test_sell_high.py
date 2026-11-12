@@ -269,3 +269,32 @@ def test_sell_high_sends_the_key_of_your_roster_and_goes_stale_when_it_changes(s
     assert current(other, "sell_high", key["key"])
     mine = _app(settings, dropped(sources, fixture_raw_dir, tmp_path, LIL_FRIDGE), jev, seller)
     assert not current(mine, "sell_high", key["key"])
+
+
+def test_the_stream_carries_the_sell_list_with_the_ranks_the_headline_and_the_bullets_of_each_player(api):
+    # AT-32 at the route seam: one row per player to sell, with his ranks and the headline, and the bullets that open in
+    # place. The block comes before the whole Answer, so the site shows the list from it.
+    parts = _parts(_sell(api))
+    [block] = _of(parts, "data-block")
+    [answer] = _of(parts, "data-answer")
+    types = [part["type"] for part in parts]
+    assert types.index("data-block") < types.index("data-answer")
+    assert block["kind"] == "sell_list"
+    assert block["team"] == LIL_FRIDGE and block["empty"] is None
+    [pick] = answer["document"]["picks"]
+    [row] = block["rows"]
+    player = pick["player"]
+    assert {key: row[key] for key in ("player_id", "name", "position", "nfl_team", "headshot")} == {
+        key: player[key] for key in ("player_id", "name", "position", "nfl_team", "headshot")}
+    assert (row["season_rank"], row["recent_rank"]) == (player.get("season_rank"), player.get("recent_rank"))
+    assert row["season_rank"]
+    assert row["headline"] == HEADLINE
+    assert row["bullets"] == [{"text": bullet["text"], "mark": bullet["mark"]} for bullet in pick["bullets"]]
+
+
+def test_a_roster_with_no_clear_sell_gives_a_sell_list_with_the_plain_line(settings, sources, jev):
+    # AT-32: a roster with no clear sell shows its plain line in place of the rows.
+    line = "No player of yours reads as a clear sell this week."
+    seller = StubSeller(lambda user: {"picks": [], "none_line": line})
+    [block] = _of(_parts(_sell(_app(settings, sources, jev, seller))), "data-block")
+    assert block["kind"] == "sell_list" and block["rows"] == [] and block["empty"] == line

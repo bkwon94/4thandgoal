@@ -254,3 +254,52 @@ def judge(jev: Jev, week: int, need: dict, players: list[dict]) -> Judged:
 def _shown(player: dict) -> dict:
     """The facts of a player as Jev and Claude read them: every fact but the Sleeper id."""
     return {key: value for key, value in player.items() if key != "player_id"}
+
+
+# The kind of the data block of the waiver targets: one row per kept free agent, and his why opens in place.
+WAIVER_LIST_KIND = "waiver_list"
+# The slot of a free agent who beats no starter and fits no empty slot, such as a stash who is out now.
+BENCH = "Bench"
+
+
+def slot_he_fills(need: dict, player: dict) -> str:
+    """The slot that a kept free agent takes: an empty slot that allows his position, else the slot of the starter with
+    the lowest week projection that he outprojects, else the bench."""
+    if player["empty_slots_he_fits"]:
+        return player["empty_slots_he_fits"][0]
+    beaten = [s for s in need["starters"] if s["player"] is not None and player["position"] in s["allows"]
+              and player["week_projection"] > s["week_projection"]]
+    return min(beaten, key=lambda s: (s["week_projection"], s["slot"]))["slot"] if beaten else BENCH
+
+
+def _why(need: dict, player: dict, slot: str) -> list[str]:
+    """The why of one kept free agent in plain lines from his facts: the read of Jev first, then his status, the slot,
+    the depth chart, the Sleeper adds, and the rest of the season. Code picks no player here. It only says what the facts say."""
+    lines = ["Worth a claim this week." if player["kind"] == "add this week" else "A stash for later weeks."]
+    if player["status"] != "healthy":
+        lines.append(f"Status now: {player['status']}.")
+    if slot in player["empty_slots_he_fits"]:
+        lines.append(f"Fills your empty {slot} slot.")
+    elif slot != BENCH:
+        starter = next(s for s in need["starters"] if s["slot"] == slot)
+        lines.append(f"Projects {player['week_projection']:.1f} this week, over {starter['player']} at "
+                     f"{starter['week_projection']:.1f} in your {slot} slot.")
+    if player.get("every_player_above_is_out"):
+        lines.append("Every player above him on the depth chart is out.")
+    if player["sleeper_adds_last_day"] > 0:
+        lines.append(f"{player['sleeper_adds_last_day']:,} adds across Sleeper in the last day.")
+    lines.append(f"{player['rest_of_season_projection']:.1f} projected points for the rest of the season.")
+    return lines
+
+
+def waiver_rows(need: dict, kept: list[dict]) -> list[dict]:
+    """The rows of the waiver list, best first as Jev kept them: who he is, his week projection, the slot he fills, the
+    kind of the claim, and his why."""
+    rows = []
+    for player in kept:
+        slot = slot_he_fills(need, player)
+        rows.append({"name": player["name"], "position": player["position"], "nfl_team": player["nfl_team"],
+                     "projection": player["week_projection"], "slot": slot,
+                     "kind": "add" if player["kind"] == "add this week" else "stash",
+                     "why": _why(need, player, slot)})
+    return rows

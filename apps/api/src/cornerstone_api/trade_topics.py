@@ -23,6 +23,7 @@ from analyzer.stage import Stage
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from cornerstone_api.ask import QUESTION_MAX, YES, Asker, ClientAsker
 from cornerstone_api.chat_turns import Turn, Turns, with_turns
+from cornerstone_api.sell_list import sell_list
 from cornerstone_api.trade_wording import (
     AIM_POSITION,
     AIMS_POSITION,
@@ -391,8 +392,8 @@ class SellHighRequest(BaseModel):
 
 @router.post("/sell-high")
 def sell_high(request: Request, body: SellHighRequest, asker: ClientAsker, served: ServedClient) -> StreamingResponse:
-    """Sell high or buy low for Your team: the steps of the sell high press and its document. The Advisor picks the
-    players of the roster to sell from their facts side by side, and writes why."""
+    """Sell high or buy low for Your team: the steps of the sell high press, its sell list, and its document. The
+    Advisor picks the players of the roster to sell from their facts side by side, and writes why."""
     _teams(asker, served, body.roster_id)
 
     def work(emit: Emit) -> None:
@@ -401,6 +402,7 @@ def sell_high(request: Request, body: SellHighRequest, asker: ClientAsker, serve
                                                                         _step(emit)))
         if document is not None:
             _send_key(asker, served, emit, "sell_high", body.roster_id, None)
+            emit("data-block", sell_list(document))
             emit("data-answer", {"kind": "sell", "document": document})
 
     return stream(work)

@@ -9,9 +9,10 @@ import { forwardRef, useState, type ReactNode } from "react";
 import { ArrowUpIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useKeyboardField } from "@cpc/design/shell/keyboard";
+import { BlockView } from "./answer-block";
 import { AnswerBody } from "./answer-card";
 import { FAST, SLOW, STAGGER, bubbleIn, fadeIn } from "./motion";
-import type { PersonalBlock } from "./personal-stream";
+import { type PersonalBlock, shownBlock } from "./personal-stream";
 import { Steps } from "./steps";
 import { TOPICS } from "./topics";
 
@@ -86,6 +87,7 @@ export const MissCard = forwardRef<
   HTMLElement,
   { question: string; closest: string[]; onPick: (key: string) => void; block?: PersonalBlock; avatars?: Record<number, string | null> }
 >(function MissCard({ question, closest, onPick, block, avatars = {} }, ref) {
+  const shown = block ? shownBlock(block) : null;
   const miss = (
     <>
       <p className="m-0 text-body leading-tight font-semibold text-ink">{MISS_LEAD}</p>
@@ -95,8 +97,9 @@ export const MissCard = forwardRef<
   return (
     <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={question} />
-      {block ? (
-        <AnswerBody answer={{ stats: block.stats, rows: block.rows, text: [], href: null }} avatars={avatars}>
+      {shown ? (
+        <AnswerBody answer={{ stats: shown.stats, rows: shown.rows, text: [], href: null }} avatars={avatars}>
+          {shown.answerBlock && <BlockView block={shown.answerBlock} live={false} />}
           <div className="flex flex-col gap-sp-3">{miss}</div>
         </AnswerBody>
       ) : (
