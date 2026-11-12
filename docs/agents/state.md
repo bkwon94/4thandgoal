@@ -13,6 +13,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | --- | --- | --- | --- | --- |
 | `agent-habits` | site | 03 close the site tickets whose merge main proves | none | |
 | `analyzer-multi-team` | site | 10 the headshot strip gap | none | |
+| `codex-flow` | both | 01 the rules move to AGENTS.md | none | |
 | `front-door` | both | 12 buy low targets from other rosters | none | |
 | `known-games` | pipeline | 08 the-site-renders-the-known-games-line | | |
 | `live-refetch` | both | 01 the live API rewrites the history of a patched week | none | |

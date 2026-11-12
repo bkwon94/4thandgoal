@@ -5,7 +5,7 @@ Date: 2026-11-11
 Apps: both. No product code in the site or the pipeline changes. The rule tests of each app learn the `AGENTS.md` files, and the skills that build work in each app run in both harnesses.
 Spec branch: `codex-flow`.
 Source: the map `.scratch/codex-flow/MAP.md` and decision tickets 01 to 05, from the sessions of 2026-11-11. ADRs 0014, 0019, 0021, and 0026.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 06, in `issues/`.
 
 ## Problem Statement
 
