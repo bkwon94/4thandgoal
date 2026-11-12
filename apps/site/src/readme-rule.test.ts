@@ -20,11 +20,11 @@ const HEADINGS = ["## Knows", "## Ports", "## Does not do"];
 const MAX_LINES = 24;
 
 const RULE = `each package folder holds a README of under ${MAX_LINES + 1} lines with the headings Knows, Ports, and Does not do`;
-const CLAUDE_MD_RULE = "no CLAUDE.md or AGENTS.md sits below the repo root, except one of each at the top of each app";
+const RULES_FILE_RULE = "no CLAUDE.md or AGENTS.md sits below the repo root, except one of each at the top of each app";
 /* Each app keeps its own commands in an AGENTS.md and a CLAUDE.md that imports it, so apps/<app>/ may hold both. See .scratch/one/PRD.md. */
 /* Both files carry the rules of a folder, so the rule treats them the same. */
 const RULES_FILES = ["CLAUDE.md", "AGENTS.md"];
-const APP_CLAUDE_MD = /^apps\/[^/]+\/(CLAUDE|AGENTS)\.md$/;
+const APP_RULES_FILE = /^apps\/[^/]+\/(CLAUDE|AGENTS)\.md$/;
 const ADR = "docs/adr/0016-the-rules-are-checks.md";
 
 function subfolders(dir: string): string[] {
@@ -88,16 +88,16 @@ function offenses(path: string, source: string | null): Offense[] {
   return found;
 }
 
-/* The paths come from git ls-files, so a CLAUDE.md in node_modules or in an ignored folder does not count. */
-function claudeMdOffenses(paths: string[]): Offense[] {
+/* The paths come from git ls-files, so a rules file in node_modules or in an ignored folder does not count. */
+function rulesFileOffenses(paths: string[]): Offense[] {
   return paths
-    .filter((path) => RULES_FILES.includes(basename(path)) && path !== basename(path) && !APP_CLAUDE_MD.test(path))
+    .filter((path) => RULES_FILES.includes(basename(path)) && path !== basename(path) && !APP_RULES_FILE.test(path))
     .map((path) => ({
       path,
       line: 1,
-      ruleId: "readme/no-claude-md",
+      ruleId: "readme/no-nested-rules-file",
       what: `${path} is a tracked ${basename(path)} below the root.`,
-      rule: CLAUDE_MD_RULE,
+      rule: RULES_FILE_RULE,
       adr: ADR,
       fix: `move the text into the README.md of the folder and delete the ${basename(path)}`,
     }));
@@ -132,7 +132,7 @@ describe("the readme rule", () => {
     const paths = trackedFiles();
     // An empty list would pass and does not run git.
     expect(paths).toContain("CLAUDE.md");
-    const found = claudeMdOffenses(paths);
+    const found = rulesFileOffenses(paths);
     if (found.length > 0) throw new Error(report(found));
   });
 
@@ -143,22 +143,22 @@ describe("the readme rule", () => {
   });
 
   it("finds one offense in a CLAUDE.md below the root", () => {
-    const found = claudeMdOffenses([
+    const found = rulesFileOffenses([
       "CLAUDE.md",
       "apps/pipeline/CLAUDE.md",
       "apps/site/src/lib/CLAUDE.md",
       ".scratch/notes-on-CLAUDE.md",
     ]);
-    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "apps/site/src/lib/CLAUDE.md", ruleId: "readme/no-claude-md" }]);
+    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "apps/site/src/lib/CLAUDE.md", ruleId: "readme/no-nested-rules-file" }]);
   });
 
   it("finds one offense in an AGENTS.md below the root", () => {
-    const found = claudeMdOffenses([
+    const found = rulesFileOffenses([
       "AGENTS.md",
       "apps/pipeline/AGENTS.md",
       "apps/site/src/lib/AGENTS.md",
     ]);
-    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "apps/site/src/lib/AGENTS.md", ruleId: "readme/no-claude-md" }]);
+    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "apps/site/src/lib/AGENTS.md", ruleId: "readme/no-nested-rules-file" }]);
   });
 
   it("finds one offense in a folder on disk with one source file and no README", () => {
