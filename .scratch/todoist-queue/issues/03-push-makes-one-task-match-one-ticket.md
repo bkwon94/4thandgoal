@@ -8,7 +8,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-8, AT-9, AT-10, AT-11
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] The unit tests check the plan of `push` with real ticket files and saved real `td` JSON, with no mock and no network.
 - [x] A second `push` of the same file plans zero writes.
