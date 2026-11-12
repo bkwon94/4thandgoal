@@ -296,7 +296,7 @@ Stories: 60
 Given: An Answer whose text has bold, italic, a bullet list, and a numbered list.
 When: The Answer renders.
 Then: The bold, the italic, and both lists render as marks.
-Evidence: the test name and the vitest output, and one screenshot at 375 px.
+Evidence: the test name and the vitest output of the four marks, and one screenshot at 375 px of a real Answer with the marks it has.
 
 AT-37: The text block shows blocked marks as plain text
 App: site
@@ -311,7 +311,7 @@ App: site
 Stories: 62, 64, 65, 67
 Given: The blocks of AT-1, AT-16, AT-19, and AT-22 to AT-35.
 When: The reader views each block.
-Then: Each block renders with no overflow and no overlap. Red marks Your team or the side that wins, and gray marks the rest. At 1280 px the blocks stack in the column of about 560 px.
+Then: Each block renders with no overflow and no overlap. Red marks Your team or the side that wins, gray marks the rest, and the up and down colors of the site mark a move. At 1280 px the blocks stack in the column of about 560 px.
 Evidence: site screenshots of each block.
 
 AT-39: The blocks honor reduced motion
@@ -532,3 +532,5 @@ Out of scope "The top five leaders at each position": no test. Reason: AT-21 che
 ## Revisions
 
 - 2026-11-12, AT-12: the Given line used the live week after the Thursday kickoff, so the test waited for a game. Brian chose a direct run now: the recorded week 10 with the clock set after the `start_time`. The lock reads the clock and the `has_started` flag, so the run proves the same rule.
+- 2026-11-12, AT-36: the wording tells Claude never to write a list, so no real Answer has all four marks. Brian chose: the vitest proves the four marks, and the screenshot shows a real Answer with the marks it has.
+- 2026-11-12, AT-38: the Then line now carries the PRD phrase "the up and down colors of the site mark a move", as Brian chose. The rank mover bars use those colors.
