@@ -1,13 +1,21 @@
 """
 The blocks of the league Topics in topics.json: the data of the one card that a Topic Answer shows, keyed by `kind`.
-Each kind has a model and a builder here. The site holds the same union over `kind` (ADR 0013).
+Each kind has a model and a builder here. The site holds the same union over `kind` (ADR 0013). The model of the
+matchup card lives in league.matchup_card, because the live card of the API shares it.
 """
 import re
 from typing import Literal
 
 from pydantic import BaseModel
 
-from league.lineup import BENCH_SLOTS, fill_slots
+from league.lineup import fill_slots
+from league.matchup_card import (
+    MatchupBlock,
+    MatchupPlayer,
+    MatchupTeam,
+    matchup_slots,
+    starting_slots,
+)
 from league.models import PlayerLine, Week
 
 
@@ -41,43 +49,6 @@ class RecapBlock(BaseModel):
     median: float | None
     top: RecapTop | None
     sentence: str | None
-
-
-class MatchupPlayer(BaseModel):
-    """The player of one side in one slot of a matchup card. The points are final for a played game and the
-    projection for a game ahead."""
-    name: str
-    position: str
-    nfl_team: str | None
-    points: float
-
-
-class MatchupSlot(BaseModel):
-    """One starting slot of a matchup card, such as RB or FLEX, with the player of each side. A side with an empty
-    slot has None there. The site draws the gap of the slot from the two points."""
-    slot: str
-    you: MatchupPlayer | None
-    them: MatchupPlayer | None
-
-
-class MatchupTeam(BaseModel):
-    """One team of a matchup card with its total: the final score or the projected score."""
-    roster_id: int
-    name: str
-    score: float
-
-
-class MatchupBlock(BaseModel):
-    """The matchup card of Your last matchup and Your next matchup: the two teams, their scores, and the starting
-    slots in the Sleeper order of the league. `final` tells final scores from projected ones. `odds` is the win chance
-    of Your team from 0 to 1 for a game ahead, or None when no odds are known, such as for a played game. The weekly
-    build and the live card of the API share this model."""
-    kind: Literal["matchup"] = "matchup"
-    final: bool
-    you: MatchupTeam
-    them: MatchupTeam
-    odds: float | None = None
-    slots: list[MatchupSlot]
 
 
 class RankMover(BaseModel):
@@ -129,23 +100,6 @@ def recap_block(rid: int, page: dict) -> RecapBlock:
         top=RecapTop(name=top["name"], position=top["position"], points=top["points"],
                      projection=top.get("projection")) if top else None,
         sentence=first_sentence(game.get("recap")))
-
-
-def starting_slots(roster_positions: list[str]) -> list[str]:
-    """The starting slots of a league in the Sleeper order, such as QB, RB, RB, FLEX, with the bench slots left out."""
-    return [slot for slot in roster_positions if slot not in BENCH_SLOTS]
-
-
-def matchup_slots(slots: list[str], you: list[tuple[str, MatchupPlayer]],
-                  them: list[tuple[str, MatchupPlayer]]) -> list[MatchupSlot]:
-    """The rows of a matchup card: each starting slot in `slots` with the next player of each side for that slot.
-    Each side lists its starters as pairs of the slot and the player, best first within a slot, so RB1 meets RB1."""
-    def take(side: list[tuple[str, MatchupPlayer]], slot: str) -> MatchupPlayer | None:
-        at = next((i for i, (each, _) in enumerate(side) if each == slot), None)
-        return None if at is None else side.pop(at)[1]
-
-    left, right = list(you), list(them)
-    return [MatchupSlot(slot=slot, you=take(left, slot), them=take(right, slot)) for slot in slots]
 
 
 def _played(line: PlayerLine) -> MatchupPlayer:

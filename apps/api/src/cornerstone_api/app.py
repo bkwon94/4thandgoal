@@ -34,7 +34,7 @@ from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import ask as ask_routes
 from cornerstone_api import free_answer as free_routes
-from cornerstone_api import personal_topics, suggestions, trade_topics
+from cornerstone_api import next_matchup, personal_topics, suggestions, trade_topics
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.caps import Caps
@@ -298,6 +298,7 @@ def create_app(
     app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(free_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(personal_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
+    app.include_router(next_matchup.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     # The Suggestions and the key check are reads that cost no Claude call, so they check the passphrase and no limit.
     app.include_router(suggestions.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_read_guard)])
 

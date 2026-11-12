@@ -8,6 +8,7 @@ import { MotionConfig } from "framer-motion";
 import { type ReactNode, type RefObject, useState } from "react";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { AnswerCard } from "./answer-card";
+import type { LiveSource } from "./live-matchup";
 import { morphId } from "./motion";
 import { TRADE_TOPIC_OF, type ThreadItem } from "./ask-thread";
 import { topicName } from "./topics";
@@ -20,12 +21,15 @@ export function Thread({
   answers,
   avatars,
   newest,
+  live,
   renderOther,
 }: {
   entries: Entry[];
   answers: Record<number, DoorAnswer[]>;
   avatars: Record<number, string | null>;
   newest: RefObject<HTMLElement | null>;
+  // The API that sends the live card of Your next matchup. With none, each league Answer shows only topics.json.
+  live?: LiveSource;
   // The front door renders each item that is not a league Topic as its card: a trade, a free or personal Answer, a
   // miss, a cap line, a note, a question in flight, or the passphrase card.
   // `morph` is the id that the newest item shares with its tapped Suggestion, so the chip morphs into its question.
@@ -55,7 +59,9 @@ export function Thread({
               ref={last ? newest : undefined}
               name={name}
               answer={answer}
+              team={entry.team}
               avatars={avatars}
+              live={live}
               morph={last ? morphOf(entry) : undefined}
             />
           );

@@ -133,6 +133,8 @@ LAYER_OF: dict[str, str] = {
     "league.season_inputs": "load",
     "league.live": "load",
     "league.lineup": "load",
+    # The matchup card reads the bench slots of the lineup. The weekly build and the live card of the API share it.
+    "league.matchup_card": "load",
     "season_schedule": "load",
     # facts
     "sheet": "facts",

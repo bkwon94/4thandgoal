@@ -1,0 +1,165 @@
+[
+ {
+  "type": "start"
+ },
+ {
+  "type": "data-block",
+  "data": {
+   "kind": "matchup",
+   "final": false,
+   "you": {
+    "roster_id": 6,
+    "name": "Bo Girds",
+    "score": 121.8
+   },
+   "them": {
+    "roster_id": 1,
+    "name": "The Blue Tent",
+    "score": 92.9
+   },
+   "odds": 0.821,
+   "slots": [
+    {
+     "slot": "QB",
+     "you": {
+      "name": "Aaron Rodgers",
+      "position": "QB",
+      "nfl_team": "PIT",
+      "points": 17.5
+     },
+     "them": {
+      "name": "Brock Purdy",
+      "position": "QB",
+      "nfl_team": "SF",
+      "points": 22.6
+     }
+    },
+    {
+     "slot": "RB",
+     "you": {
+      "name": "Kenneth Walker III",
+      "position": "RB",
+      "nfl_team": "KC",
+      "points": 20.1
+     },
+     "them": {
+      "name": "Jadarian Price",
+      "position": "RB",
+      "nfl_team": "SEA",
+      "points": 7.3
+     }
+    },
+    {
+     "slot": "RB",
+     "you": {
+      "name": "Kyren Williams",
+      "position": "RB",
+      "nfl_team": "LAR",
+      "points": 15.7
+     },
+     "them": {
+      "name": "Chris Rodriguez Jr.",
+      "position": "RB",
+      "nfl_team": "JAX",
+      "points": 6.1
+     }
+    },
+    {
+     "slot": "WR",
+     "you": {
+      "name": "Zay Flowers",
+      "position": "WR",
+      "nfl_team": "BAL",
+      "points": 13.5
+     },
+     "them": {
+      "name": "Christian Watson",
+      "position": "WR",
+      "nfl_team": "GB",
+      "points": 14.5
+     }
+    },
+    {
+     "slot": "WR",
+     "you": {
+      "name": "Matthew Golden",
+      "position": "WR",
+      "nfl_team": "GB",
+      "points": 12.9
+     },
+     "them": {
+      "name": "Rashee Rice",
+      "position": "WR",
+      "nfl_team": "KC",
+      "points": 11.6
+     }
+    },
+    {
+     "slot": "TE",
+     "you": {
+      "name": "Trey McBride",
+      "position": "TE",
+      "nfl_team": "ARI",
+      "points": 11.7
+     },
+     "them": {
+      "name": "Brock Bowers",
+      "position": "TE",
+      "nfl_team": "LV",
+      "points": 13.1
+     }
+    },
+    {
+     "slot": "FLEX",
+     "you": {
+      "name": "Parker Washington",
+      "position": "WR",
+      "nfl_team": "JAX",
+      "points": 12.8
+     },
+     "them": {
+      "name": "Darren Waller",
+      "position": "TE",
+      "nfl_team": "CAR",
+      "points": 6.9
+     }
+    },
+    {
+     "slot": "FLEX",
+     "you": {
+      "name": "Blake Corum",
+      "position": "RB",
+      "nfl_team": "LAR",
+      "points": 10.5
+     },
+     "them": {
+      "name": "Jordyn Tyson",
+      "position": "WR",
+      "nfl_team": "NO",
+      "points": 4.5
+     }
+    },
+    {
+     "slot": "DEF",
+     "you": {
+      "name": "Jacksonville Jaguars",
+      "position": "DEF",
+      "nfl_team": "JAX",
+      "points": 7.0
+     },
+     "them": {
+      "name": "Indianapolis Colts",
+      "position": "DEF",
+      "nfl_team": "IND",
+      "points": 6.3
+     }
+    }
+   ],
+   "read_at": "2026-11-12T07:53:00-05:00"
+  }
+ },
+ {
+  "type": "finish",
+  "finishReason": "stop"
+ }
+]

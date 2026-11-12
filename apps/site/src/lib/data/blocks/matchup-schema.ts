@@ -1,6 +1,7 @@
 /**
  * The Zod schema of the matchup card, the block of Your last matchup and Your next matchup, and its line of plain text.
- * The pipeline owns the shape (ADR 0013), in apps/pipeline/src/cornerstone/topic_blocks.py. The live card of the API shares it.
+ * The pipeline owns the shape (ADR 0013), in packages/league/python/src/league/matchup_card.py. The live card of the API
+ * shares it.
  */
 import { z } from "zod";
 import { gap, num } from "@cpc/design/format/format";
@@ -13,7 +14,8 @@ const matchupTeamSchema = z.object({ roster_id: z.number(), name: z.string(), sc
 
 /* The matchup card: the two teams, their scores, and the starting slots in the Sleeper order of the league. A side with
    an empty slot has null there. `final` tells final scores from projected ones. `odds` is the win chance of Your team
-   from 0 to 1, or null when no odds are known, such as for a played game. */
+   from 0 to 1, or null when no odds are known, such as for a played game. `read_at` is the time of the live read of
+   Sleeper in ISO 8601, on the live card of the API only. */
 export const matchupBlockSchema = z.object({
   kind: z.literal("matchup"),
   final: z.boolean(),
@@ -21,6 +23,7 @@ export const matchupBlockSchema = z.object({
   them: matchupTeamSchema,
   odds: z.number().nullable(),
   slots: z.array(z.object({ slot: z.string(), you: matchupPlayerSchema.nullable(), them: matchupPlayerSchema.nullable() })),
+  read_at: z.string().optional(),
 });
 
 export type MatchupBlock = z.infer<typeof matchupBlockSchema>;
