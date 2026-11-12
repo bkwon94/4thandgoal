@@ -8,7 +8,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Blocked by:** 01, 03, and 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The unit tests check the plan of `import`, including the choice of the live spec branches.
 - [ ] The real import loads `01 The formula` in the section `rankings` with `ready-for-agent`, `pipeline`, and the full description.
