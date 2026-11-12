@@ -6,7 +6,7 @@ Map: `.scratch/front-door-lineup/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -16,4 +16,4 @@ The proposal: allow bold, italic, bullet lists, numbered lists, and paragraphs. 
 
 ## Decision
 
-None yet.
+Brian approved the spec on 2026-11-12. The spec records the choice under "The text block (decision ticket 09)" in `PRD.md`: bold, italic, bullet lists, numbered lists, and paragraphs. A blocked mark shows as plain text.

@@ -17,12 +17,11 @@ One spec: a live Start or sit Topic that gives a manager a lineup with each Swap
 - The nine other blocks take "Rows and marks": the Ledger rows of decision 03, each block with one small mark, such as a tug bar, a step path, odds bars, bars from a center line, or a dot matrix. `decisions/04-prototype-topic-blocks.md`.
 - One block per Topic Answer, with optional text. Fifteen blocks: a waiver list and a sell list join the thirteen. The weekly build writes the blocks of six league Topics, and the API builds the rest, with the next matchup card live. The NFL game card shows only in a free answer. `decisions/05-grill-which-topic-shows-which-block.md`.
 - The win odds of one game come live from the projection gap and the league spread. The Lean closes the trade card. The slot rank bars show QB, RB, WR, and TE. The median tick shows only in a league that plays the median. `decisions/11-grill-block-data-gaps.md`.
+- The spec settles the Jev Swap question, the Suggestion fact of Start or sit, and the marks of the text block. `decisions/07-spec-jev-swap-question.md`, `decisions/08-spec-start-sit-suggestion-fact.md`, `decisions/09-spec-text-block-marks.md`.
 
 ## NOT YET SPECIFIED
 
-- What does Jev answer for a Swap? `decisions/07-spec-jev-swap-question.md`.
-- What is the Suggestion fact of Start or sit? `decisions/08-spec-start-sit-suggestion-fact.md`.
-- Which marks of markdown does the text block allow? `decisions/09-spec-text-block-marks.md`.
+None. The spec `PRD.md` holds every decision.
 
 ## OUT OF SCOPE
 

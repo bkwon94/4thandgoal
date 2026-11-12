@@ -6,7 +6,7 @@ Map: `.scratch/front-door-lineup/MAP.md`.
 
 **Blocked by:** 02
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ Each Suggestion shows one short fact. The spec sets the fact of Start or sit, su
 
 ## Decision
 
-None yet.
+Brian approved the spec on 2026-11-12. The spec records the choice under "The Suggestion fact of Start or sit (decision ticket 08)" in `PRD.md`: code facts only, "1 can't play, 1 Q", and the next kickoff when both counts are zero.

@@ -6,7 +6,7 @@ Map: `.scratch/front-door-lineup/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ Free judgment needs one typed Jev question for each pair of a bench player and t
 
 ## Decision
 
-None yet.
+Brian approved the spec on 2026-11-12. The spec records the choice under "The Jev Swap question (decision ticket 07)" in `PRD.md`: one Choice per pair of a bench player and a starter he can replace, a Swap at `YES_AT` 0.7, the highest probability first, and a failed call as the honest miss.
