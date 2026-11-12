@@ -103,7 +103,10 @@ CHECK_CONTEXT = ("A fantasy football league site answered `manager_question` fro
                  "`answer`. The answer read only `tool_results`, the data of this season.")
 
 # The end of a sentence: a stop, a question mark, or a bang, then a space. A line break ends a sentence too.
-SENTENCE_END = re.compile(r"(?<=[.!?])\s+|\n+")
+# A stop after "St.", "Jr.", "Sr.", or one capital letter, as in "Amon-Ra St. Brown" or "T.J. Hockenson", is part of a
+# name and ends no sentence. A cut there gave the check two halves that each failed alone. A sentence that truly ends
+# on such a name joins the next one, and the check reads the two as one.
+SENTENCE_END = re.compile(r"(?<=[.!?])(?<!\bSt\.)(?<!\bJr\.)(?<!\bSr\.)(?<!\b[A-Z]\.)\s+|\n+")
 
 
 # The marks of the text block that the site renders (decision 09): a bullet or a number at the head of a line, and bold
