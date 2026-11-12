@@ -22,15 +22,16 @@ from pydantic_ai.models.anthropic import AnthropicModelSettings
 from pydantic_ai.ui.vercel_ai.response_types import BaseChunk, DoneChunk, FinishChunk, StartChunk
 
 from analyzer.routes import ServedClient
-from cornerstone_api import free_feed, free_game, free_tools
+from cornerstone_api import free_feed, free_game, free_tools, free_topic
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import QUESTION_MAX, WEEK_MAX, Asker, ClientAsker, Route
 from cornerstone_api.chat_turns import Turn, Turns, turn_messages, turns_instructions
 from cornerstone_api.claude_stream import Checker, Outcome, Writer, adapter, checked_answer, data, kept_text
 from cornerstone_api.free_blocks import BLOCK, Block, ReadyBlock, row_sentences
-from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt, run_instructions
+from cornerstone_api.free_wording import INSTRUCTIONS, TOPIC_BLOCK_TOOL, rewrite_prompt, run_instructions
 from cornerstone_api.personal_facts import _ahead
 from cornerstone_api.personal_topics import LiveCache, _load
+from cornerstone_api.start_sit import load_live_week
 from facts.writer import route_model
 from league.live import fetch_live_week
 from league.paths import history_root
@@ -61,6 +62,7 @@ READERS: dict[str, Callable[..., dict]] = {
     "roster_grades": free_tools.roster_grades,
     "moves_feed": free_feed.moves_feed,
     "nfl_game": free_game.nfl_game,
+    "topic_block": free_topic.topic_block,
 }
 # The display tool of a block. It reads no data, so it does not count toward the cap, and its calls never stream.
 DISPLAY_TOOL = "show_block"
@@ -183,6 +185,11 @@ def nfl_game(ctx: RunContext[FreeDeps], team: str, position: str | None = None) 
     team against the league. Leave out `position` for all positions. The result has a ready NFL game card."""
     return _call(ctx, f"nfl_game_{team}" + ("" if position is None else f"_{position}"), "nfl_game", team=team,
                  **({} if position is None else {"position": position}))
+
+
+@AGENT.tool(description=TOPIC_BLOCK_TOOL)
+def topic_block(ctx: RunContext[FreeDeps], topic: free_topic.TopicBlock) -> dict:
+    return _call(ctx, f"topic_block_{topic}", "topic_block", topic=topic)
 
 
 @AGENT.tool
@@ -314,10 +321,14 @@ async def answer_stream(asker: Asker, route: Route, question: str, roster_id: in
 
 
 def season_data(served: Any, season: int, week: int, teams: dict[int, str],
-                live: LiveCache) -> free_tools.SeasonData:
-    """The data of one answer for the client of `served`: the saved weeks 1 to `week`, the live Sleeper fetch, and the
-    roster grades of the live league in `live`, the cache that stack_up reads."""
+                live: LiveCache, roster_id: int) -> free_tools.SeasonData:
+    """The data of one answer for the client of `served` and the team of `roster_id`: the saved weeks 1 to `week`, the
+    live Sleeper fetch, the roster grades and the personal facts of the live league in `live`, the cache that stack_up
+    reads, the live week of Start or sit, and the published weeks of the client."""
     client = served.client
+
+    def league():
+        return live.get_or_load(season, lambda: _load(served, season, live))
 
     def fetch_raw():
         raw, _, _ = fetch_live_week(season, client, served.sources.fetch_sleeper)
@@ -326,17 +337,20 @@ def season_data(served: Any, season: int, week: int, teams: dict[int, str],
     def fetch_grades() -> free_tools.LeagueGrades:
         # The free answer reads the same cached live league as stack_up, so both give the same grade of a team. The
         # loader and the projections ahead come from the personal Topics as they are, so no second loader exists.
-        league = live.get_or_load(season, lambda: _load(served, season, live))
-        snapshot = league.snapshot
+        loaded = league()
+        snapshot = loaded.snapshot
         inputs = SeasonInputs(history=snapshot.stats, snapshot=snapshot, projections_ahead=_ahead(snapshot),
                               chart=snapshot.chart)
-        return free_tools.LeagueGrades(grades=league.grades, places=roster_places(inputs))
+        return free_tools.LeagueGrades(grades=loaded.grades, places=roster_places(inputs))
 
     return free_tools.SeasonData(season=season, week=week, teams=teams,
                                  history_root=history_root(client.folder, season),
                                  points_key=client.settings.points_key, median_game=client.settings.median_game,
                                  fetch_raw=fetch_raw, fetch_grades=fetch_grades, tz=client.tz,
-                                 fetch_def_projections=served.sources.fetch_def_projections)
+                                 fetch_def_projections=served.sources.fetch_def_projections,
+                                 roster_id=roster_id, client_folder=client.folder,
+                                 fetch_personal=lambda topic, rid: league().facts(topic, rid),
+                                 fetch_week=lambda: load_live_week(served.sources, season))
 
 
 @router.post("/ask/free")
@@ -354,7 +368,7 @@ async def free(body: FreeRequest, asker: ClientAsker, served: ServedClient,
         logger.info("A free answer had no free route from the ask route, so it makes no Claude call")
         raise HTTPException(status_code=409, detail="This question has no free answer. Ask again.")
     deps = FreeDeps(data=season_data(served, asker.season, body.week, rosters,
-                                     request.app.state.live[request.path_params["slug"]]))
+                                     request.app.state.live[request.path_params["slug"]], body.roster_id))
     instructions = turns_instructions(run_instructions(asker.season, body.week, rosters[body.roster_id], route.team),
                                       body.turns)
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]

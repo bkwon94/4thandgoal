@@ -11,7 +11,8 @@ from functools import cached_property
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from cornerstone_api.personal_facts import PART_NAMES
+from cornerstone_api.personal_facts import PART_NAMES, PersonalFacts, PersonalTopic
+from cornerstone_api.start_sit import LiveWeek
 from league.history import load_saved_weeks
 from league.models import History, PastWeek
 from league.numbers import r2
@@ -107,7 +108,15 @@ class SeasonData:
     fetch_def_projections: Callable[[int, int], list[dict]] | None = None
     # The time zone of the league, so a day of the moves reads as the managers read it.
     tz: ZoneInfo = UTC_ZONE
+    # Your team, the folder of the client with its published weeks, the facts of a personal Topic of a roster from the
+    # live league that stack_up reads, and the live week of Start or sit. The Topic blocks of free_topic read them, and
+    # None in a test that reads no Topic block.
+    roster_id: int | None = None
+    client_folder: Path | None = None
+    fetch_personal: Callable[[PersonalTopic, int], PersonalFacts] | None = None
+    fetch_week: Callable[[], LiveWeek] | None = None
     _raw: RawWeek | None = field(default=None, init=False, repr=False)
+    _week: LiveWeek | None = field(default=None, init=False, repr=False)
 
     @cached_property
     def history(self) -> History:
@@ -117,6 +126,14 @@ class SeasonData:
         if self._raw is None:
             self._raw = self.fetch_raw()
         return self._raw
+
+    def live_week(self) -> LiveWeek:
+        """The live week of Start or sit, loaded once per answer. Raises ValueError as load_live_week does."""
+        if self.fetch_week is None:
+            raise ValueError("this answer reads no live week")
+        if self._week is None:
+            self._week = self.fetch_week()
+        return self._week
 
     def name(self, player_id: str) -> str:
         return player_name(player_id, self.raw().players.get(player_id))

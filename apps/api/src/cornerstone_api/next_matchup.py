@@ -67,19 +67,22 @@ def _side(lineup: WeekLineup) -> list[tuple[str, MatchupPlayer]]:
             for row in lineup.rows if row.player is not None]
 
 
-def _your_side(week: LiveWeek, jev: Jev, roster_id: int) -> tuple[list[tuple[str, MatchupPlayer]], float]:
-    """The slots and the total of Your side: the lineup of Start or sit with its Jev Swaps, from one Jev request.
+def _your_side(week: LiveWeek, jev: Jev | None, roster_id: int) -> tuple[list[tuple[str, MatchupPlayer]], float]:
+    """The slots and the total of Your side: the lineup of Start or sit with its Jev Swaps, from one Jev request, or
+    the lineup by projection with no `jev`.
 
     A failed Jev request falls back to the lineup by projection. The card is a part of a Topic Answer, so it still
     shows, and no miss card takes its place. The card carries no field for the fall back, so only the log says so.
     """
+    by_projection = week_lineup(week.raw, roster_id, week.kickoffs, week.now)
+    if jev is None:
+        return _side(by_projection), by_projection.shown_total
     try:
         block = week.judged(jev, roster_id).block
     except JevError as error:
         logger.warning("The Swap read of the live matchup card failed (%s), so Your side is by projection",
                        type(error).__name__)
-        lineup = week_lineup(week.raw, roster_id, week.kickoffs, week.now)
-        return _side(lineup), lineup.shown_total
+        return _side(by_projection), by_projection.shown_total
     # Each row of the block shows the player of the lineup with the Swaps, and `swap_total` is its shown total.
     slots = [(row["slot"], MatchupPlayer(name=row["player"], position=row["position"], nfl_team=row["nfl_team"],
                                          points=row["projection"] or 0.0))
@@ -96,12 +99,13 @@ def opponent(week: LiveWeek, roster_id: int) -> int | None:
                  if m.matchup_id == mine.matchup_id and m.roster_id != roster_id), None)
 
 
-def matchup_card(week: LiveWeek, roster_id: int, spread: float | None, jev: Jev) -> MatchupBlock | None:
+def matchup_card(week: LiveWeek, roster_id: int, spread: float | None, jev: Jev | None) -> MatchupBlock | None:
     """The live card of the next game of `roster_id`, or None when the team has no game in the live week.
 
     Your side is the lineup of Start or sit with its Jev Swaps, so a bye, an OUT player, or a Swap moves Your total and
     the odds. The other team is the lineup by projection, so its bye and its OUT players move its total too. The card
-    makes one Jev request, and a failed request gives Your side by projection. The odds are None with no sim spread.
+    makes one Jev request, and a failed request gives Your side by projection. With no `jev`, Your side is by
+    projection and the card makes no Jev request, as the free answer reads it. The odds are None with no sim spread.
     """
     other = opponent(week, roster_id)
     if other is None:

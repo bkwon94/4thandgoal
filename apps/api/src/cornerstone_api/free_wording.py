@@ -27,6 +27,11 @@ show_block once, after one short lead sentence:
   - Any other answer, such as one fact, a score, a record, or one fantasy game, is text only.
   - The answer is the moves of a week: the "ready" block of moves_feed, by its `block_id`.
   - The answer is about one NFL game, such as "the Bears game": the "ready" block of nfl_game, by its `block_id`.
+  - The answer is about a Topic of the team of the manager who asks, such as the recap of the week, his last game, \
+the power rankings, the playoff race, his schedule, his bye weeks, the rank of each position of his roster, his \
+lineup, or his next fantasy game: the "ready" block of topic_block, by its `block_id`.
+- The waiver list, the sell list, a trade, two players side by side for one slot, and a lineup with its swaps have \
+no ready block. Answer them in text.
 - A tool result with a `block_id` holds a ready block that code built from that data. To show it, call show_block \
 with kind "ready" and that `block_id`, and copy nothing into it.
 - A question about the top or best players or teams with no time, such as "my top players", means this season. The \
@@ -36,6 +41,34 @@ block from the tool results of your earlier calls. show_block reads no data.
 - In a player block, take `can_play_now` and `status` from the tool results.
 - Call the person who runs another team "the manager" of that team.
 """
+
+# The description of the topic_block tool, which Claude reads with its arguments.
+TOPIC_BLOCK_TOOL = """\
+The facts and the ready block of one Topic of the site for the team of the manager who asks. `topic` is one of: \
+"week_recap", the recap of the latest week; "last_matchup", the final score of his last game, slot by slot; \
+"power_rankings", the moves of the power rankings; "playoff_race", the standings ladder; "your_season", his schedule \
+of the season; "weak_spots", the bye week of each of his players; "stack_up", the rank of each position of his \
+roster grade; "start_sit", his lineup of the live week by projection; "next_matchup", the live score by projection \
+and the win odds of his next fantasy game. The result has a ready block."""
+
+# What each field of a Topic block means, in the tool result, so Claude and the check read the same meaning.
+TOPIC_MEANINGS = {
+    "topic": "The Topic of the site that the result holds, for the team of the manager who asks.",
+    "week": "For a league Topic, the week of the weekly build that wrote it. The facts cover that week only. For the "
+            "next matchup, the live week.",
+    "fact": "The one-line fact of the Topic.",
+    "stats": "The key numbers of the Topic, each with its label.",
+    "rows": "The rows of the Topic, each with its label, its value, and a short note.",
+    "text": "The sentences of the Topic that the weekly build wrote and checked.",
+    "team_facts": "The facts of the team that the block shows, from the live league or the live week.",
+    "card": "The data of the block that the site shows under the answer. In the matchup card, `you` is the team of "
+            "the manager who asks, `them` is the other team, `score` is the projected total, and `odds` is the "
+            "chance from 0 to 1 that the team of the manager who asks wins.",
+}
+
+# What "by projection" means, in the result of the lineup and of the live matchup card.
+LINEUP_BY_PROJECTION = ("Each slot holds the player with the best projection that the slot allows, with no swap of "
+                        "a bench player. The totals are the sums of the projections.")
 
 REWRITE = """\
 A check found that these sentences of your answer do not follow from the tool results:
