@@ -6,6 +6,7 @@ import { z } from "zod";
 import { analyzeResponseSchema, asOfSchema, bulletSchema, findResponseSchema, tradedPlayerSchema } from "@cpc/analyzer/lib/schemas/api";
 import { AskError, type AskTarget, postClient, statusError } from "./ask-api";
 import type { Turn } from "./chat-turns";
+import { tradeBlockSchema } from "./trade-block";
 
 /* The form of the Trade page for an unsure pick: Your team, the partner of a sure player, and each sure player. */
 export const tradeFormSchema = z.object({
@@ -28,11 +29,11 @@ export const sellHighSchema = z.object({
 export type SellHigh = z.infer<typeof sellHighSchema>;
 
 /* The whole Answer of a trade Topic: the read of a trade check, the form of an unsure pick, the trade ideas, or the
-   players to sell. */
+   players to sell. A trade check and trade ideas carry the trade card. An Answer kept from before the card has none. */
 export const tradeAnswerSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("check"), document: analyzeResponseSchema }),
+  z.object({ kind: z.literal("check"), document: analyzeResponseSchema, block: tradeBlockSchema.optional() }),
   z.object({ kind: z.literal("form"), form: tradeFormSchema }),
-  z.object({ kind: z.literal("ideas"), document: findResponseSchema }),
+  z.object({ kind: z.literal("ideas"), document: findResponseSchema, block: tradeBlockSchema.optional() }),
   z.object({ kind: z.literal("sell"), document: sellHighSchema }),
 ]);
 export type TradeAnswer = z.infer<typeof tradeAnswerSchema>;

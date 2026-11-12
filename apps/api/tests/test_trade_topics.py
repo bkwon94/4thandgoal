@@ -564,3 +564,46 @@ def test_the_kept_answer_key_holds_the_limit(settings, sources):
     keep = finder_cache_key(2026, LIL_FRIDGE, None, snapshot, limit=Limit(keep_players=[SHAKIR]))
     te = finder_cache_key(2026, LIL_FRIDGE, None, snapshot, limit=Limit(aim_position="TE"))
     assert len({plain, no_wr, keep, te}) == 4
+
+
+# The projected points of the week 6 fixture from the trade week 6 through week 14, the last week that it holds.
+SHAKIR_REST = 57.61
+FLOWERS_REST = 126.9
+
+
+def test_a_trade_check_sends_the_trade_card_with_the_lean_the_case_and_the_points_of_each_side(api):
+    # AT-34: the two sides, the projected points for the rest of the season of each player, and the Lean.
+    [answer] = _of(_parts(_check(api, SURE_TRADE)), "data-answer")
+    block = answer["block"]
+    assert block["kind"] == "trade"
+    [offer] = block["offers"]
+    assert offer["lean"] == answer["document"]["lean"] == "Lean yes"
+    assert offer["case"] == answer["document"]["case"]
+    assert offer["partner"] == "Bo Girds"
+    # Your side comes first, and each side lists the players it gets.
+    yours, theirs = offer["sides"]
+    assert yours["yours"] and yours["team"] == "Lil Fridge" and not theirs["yours"]
+    assert [(p["name"], p["points"]) for p in yours["gets"]] == [("Zay Flowers", FLOWERS_REST)]
+    assert [(p["name"], p["points"]) for p in theirs["gets"]] == [("Khalil Shakir", SHAKIR_REST)]
+    assert (yours["total"], theirs["total"]) == (FLOWERS_REST, SHAKIR_REST)
+    # The top Bullets of Your side open in place. The card adds no grade and no edge in points.
+    mine = next(side for side in answer["document"]["sides"] if side["roster_id"] == LIL_FRIDGE)
+    assert offer["bullets"] == mine["bullets"][:3]
+    assert "edge" not in json.dumps(block).lower()
+
+
+def test_trade_ideas_send_one_trade_card_with_a_row_per_offer(api):
+    # AT-33: one card, one offer per pick, each with its partner, its headline as the gist, and the points of each side.
+    [answer] = _of(_parts(api.post(IDEAS, json={"roster_id": LIL_FRIDGE}, headers=HEADERS)), "data-answer")
+    document, block = answer["document"], answer["block"]
+    assert block["kind"] == "trade"
+    assert [offer["id"] for offer in block["offers"]] == [trade["offer_id"] for trade in document["trades"]]
+    for offer, trade in zip(block["offers"], document["trades"], strict=True):
+        partner = next(side for side in trade["sides"] if side["roster_id"] != LIL_FRIDGE)
+        assert offer["partner"] == partner["team"]
+        assert offer["gist"] == trade["headline"]
+        assert offer["lean"] is None and offer["bullets"] == trade["bullets"][:2]
+        assert offer["sides"][0]["yours"] and offer["sides"][0]["roster_id"] == LIL_FRIDGE
+        for side in offer["sides"]:
+            assert side["gets"] and side["total"] == round(sum(p["points"] for p in side["gets"]), 2)
+            assert all(p["points"] > 0 for p in side["gets"])

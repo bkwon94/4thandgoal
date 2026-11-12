@@ -19,6 +19,7 @@ import { QuestionBubble, Surface } from "./miss-card";
 import { StaleLine } from "./personal-answer";
 import { type Step, Steps } from "./steps";
 import type { SellHigh, TradeAnswer, TradeForm } from "./trade-api";
+import { TradeBlockView, type TradeBlock, type TradeOffer } from "./trade-block";
 
 /* The Bullets that the check shows of Your side, and of each offer. The Trade page holds each one. */
 export const TOP_BULLETS = 3;
@@ -37,6 +38,19 @@ const LEAN_COLOR: Record<Lean, string> = {
 
 /* The Trade page with the trade of `prefill` in its form. */
 const tradeHref = (base: string, prefill: Prefill) => `${base}${prefillQuery(prefill)}`;
+
+/* The trade of one offer of the trade card, for the form of the Trade page: Your side gets the players of Your side,
+   and gives the players that the other side gets. */
+function offerPrefill(offer: TradeOffer): Prefill {
+  const mine = offer.sides.find((side) => side.yours) ?? offer.sides[0];
+  const partner = offer.sides.find((side) => side !== mine);
+  return {
+    team: mine.roster_id,
+    partner: partner?.roster_id ?? null,
+    gives: partner?.gets.map((player) => player.player_id) ?? [],
+    gets: mine.gets.map((player) => player.player_id),
+  };
+}
 
 /* The steps of the trade judge as the one step pattern. Each line comes when its stage ends, so while the Answer is
    not in, the newest line is the live one. Once the Answer lands, each line shows done. */
@@ -147,7 +161,18 @@ function CaseText({ text }: { text: string }) {
   );
 }
 
-/* The trade check: the trade, the Lean, the Case, the fairness line, the top Bullets of Your side, and the Trade page. */
+/* The trade check as the trade card, closed by the Lean, with the Trade page under it. */
+function CheckCard({ block, analyze }: { block: TradeBlock; analyze: string }) {
+  return (
+    <Settle label="Trade check">
+      <TradeBlockView block={block} live />
+      {block.offers[0] && <PageLink href={tradeHref(analyze, offerPrefill(block.offers[0]))} label="Open it on the Trade page" />}
+    </Settle>
+  );
+}
+
+/* The trade check: the trade, the Lean, the Case, the fairness line, the top Bullets of Your side, and the Trade page.
+   An Answer kept from before the trade card shows this way. */
 function CheckBody({ doc, analyze }: { doc: AnalyzeResponse; analyze: string }) {
   const off = useMotionOff();
   const mine = doc.trade.sides.find((side) => side.roster_id === doc.trade.asker) ?? doc.trade.sides[0];
@@ -262,11 +287,15 @@ function NearList({ near, label, asker, analyze, from }: { near: NearIdea[]; lab
 /* The trade ideas: each offer of the trade judge, then the near ideas it weighed with why each fell short. With no
    offer to send, the near ideas lead, because an idea is an idea. Only a search that built no offer shows its plain
    line alone. */
-function IdeasBody({ doc, analyze }: { doc: FindResponse; analyze: string }) {
+function IdeasBody({ doc, analyze, block }: { doc: FindResponse; analyze: string; block?: TradeBlock }) {
   const asker = doc.trade_pair.asker.roster_id;
   return (
     <Settle label="Trade ideas">
-      {doc.trades.length > 0 && (
+      {/* The trade card holds one row per offer. An Answer kept from before the card lists each offer in full. */}
+      {block && block.offers.length > 0 && (
+        <TradeBlockView block={block} live action={(offer) => <PageLink href={tradeHref(analyze, offerPrefill(offer))} label="Check this trade" />} />
+      )}
+      {!block && doc.trades.length > 0 && (
         <ul className="m-0 flex list-none flex-col gap-sp-4 p-0">
           {doc.trades.map((trade, index) => (
             <Offer key={trade.offer_id} trade={trade} asker={asker} analyze={analyze} index={index} />
@@ -384,8 +413,8 @@ export const TradeCard = forwardRef<
             <Steps steps={tradeSteps(steps, answer === null)} live={answer === null} />
           </Surface>
         )}
-        {answer?.kind === "check" && <CheckBody doc={answer.document} analyze={analyze} />}
-        {answer?.kind === "ideas" && <IdeasBody doc={answer.document} analyze={analyze} />}
+        {answer?.kind === "check" && (answer.block ? <CheckCard block={answer.block} analyze={analyze} /> : <CheckBody doc={answer.document} analyze={analyze} />)}
+        {answer?.kind === "ideas" && <IdeasBody doc={answer.document} analyze={analyze} block={answer.block} />}
         {answer?.kind === "form" && <FormBody form={answer.form} analyze={analyze} />}
         {answer?.kind === "sell" && <SellBody doc={answer.document} />}
       </div>
