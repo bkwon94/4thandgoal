@@ -169,7 +169,7 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
     number, name = H1.search(text).groups()
     number = number or path.name.split("-")[0]
     decision = _is_decision(path)
-    status = (_first(STATUS_LINE, text) or "").rstrip(".,;:")
+    status = _status(text)
     if decision and status == "open":
         status = DECISION_KINDS.get(_first(KIND_LINE, text), "needs-triage")
     # A ticket with no Status line is open. An odd word, which the tracker rule rejects, never becomes a label.
@@ -192,6 +192,11 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
         key=key, feature=feature, title=f"Decision {number}: {name}" if decision else f"{number} {name}",
         status=status, decision=decision, apps=apps, description="\n".join(line for line in lines if line),
     )
+
+
+def _status(text: str) -> str:
+    """The first word of the Status line of a ticket, with no trailing punctuation, or "" when it has none."""
+    return (_first(STATUS_LINE, text) or "").rstrip(".,;:")
 
 
 def _is_decision(path: Path) -> bool:
@@ -396,7 +401,7 @@ def _done_on_main(root: Path, key: str) -> bool:
         return False
     text = subprocess.run(["git", "-C", str(root), "show", f"main:{key}"], capture_output=True, text=True,
                           env=_clean_git_env()).stdout
-    return (_first(STATUS_LINE, text) or "").rstrip(".,;:") == "done"
+    return _status(text) == "done"
 
 
 def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[str]]:
@@ -459,7 +464,7 @@ def plan_pull(root: Path, feature: str, queue: Queue, completed: dict,
     plan = []
     for path in _feature_tickets(root, feature):
         key = path.relative_to(root).as_posix()
-        status = (_first(STATUS_LINE, path.read_text()) or "").rstrip(".,;:")
+        status = _status(path.read_text())
         if status in CLOSED_STATUSES:
             continue
         task = task_of(queue.tasks, key)
@@ -491,7 +496,7 @@ def write_statuses(root: Path, plan: list[tuple[str, str]], dry_run: bool) -> No
     for key, status in plan:
         path = root / key
         text = path.read_text()
-        print(f"pull {key}: {(_first(STATUS_LINE, text) or 'none').rstrip('.,;:')} -> {status}")
+        print(f"pull {key}: {_status(text) or 'none'} -> {status}")
         if not dry_run:
             path.write_text(re.sub(r"^\*\*Status:\*\*.*$", f"**Status:** {status}", text, count=1, flags=re.MULTILINE))
     print(f"{len(plan)} file{'' if len(plan) == 1 else 's'}{' planned, none written' if dry_run else ' written'}.")
