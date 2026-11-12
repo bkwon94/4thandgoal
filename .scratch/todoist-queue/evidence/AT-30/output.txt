@@ -38,7 +38,6 @@ We rejected two alternatives:
 - **No queue.** It leaves the cost of ADR 0021 as it is.
 
 The details sit in `docs/agents/issue-tracker.md`, under "The queue".
-[exit code: 0]
 
 $ sed -n '/^## The queue/,/^## The state file/p' docs/agents/issue-tracker.md
 ## The queue
@@ -68,13 +67,15 @@ its file path from the repo root, such as `4ag: .scratch/<feature>/issues/03-<sl
 prints one warning and exits 0. CI never calls `td`.
 
 ## The state file
-[exit code: 0]
 
 $ sed -n '/^## The queue labels/,$p' docs/agents/triage-labels.md
 ## The queue labels
 
 The queue is a Todoist project (ADR 0032). Each open task has one status label, and the label has the same
 name as the status. A push writes a flow status to the queue. A pull writes a triage status to git.
+
+The script `scripts/queue.py` writes and reads each label. It finds the ticket of a task by the key line, the first
+line of the task description: `4ag: <path of the ticket file>`. See "The queue" in `docs/agents/issue-tracker.md`.
 
 | Status               | Queue label       | Who sets it        | Task state |
 | -------------------- | ----------------- | ------------------ | ---------- |
@@ -91,14 +92,14 @@ name as the status. A push writes a flow status to the queue. A pull writes a tr
 When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
 
 Edit the right-hand column to match whatever vocabulary you actually use.
-[exit code: 0]
 
 $ grep -n -i 'queue\|key line\|4ag: \|queue.py' docs/agents/triage-labels.md
 15:## The queue labels
 17:The queue is a Todoist project (ADR 0032). Each open task has one status label, and the label has the same
 18:name as the status. A push writes a flow status to the queue. A pull writes a triage status to git.
-20:| Status               | Queue label       | Who sets it        | Task state |
-[exit code: 0]
+20:The script `scripts/queue.py` writes and reads each label. It finds the ticket of a task by the key line, the first
+21:line of the task description: `4ag: <path of the ticket file>`. See "The queue" in `docs/agents/issue-tracker.md`.
+23:| Status               | Queue label       | Who sets it        | Task state |
 
 $ grep -n -A3 -E '^\*\*(Queue|Wait task|Merge sweep)\*\*:' GLOSSARY.md
 1208:**Queue**:
@@ -112,4 +113,4 @@ $ grep -n -A3 -E '^\*\*(Queue|Wait task|Merge sweep)\*\*:' GLOSSARY.md
 1216:**Merge sweep**:
 1217-The step at the start of each `4ag` skill that finds each merged spec PR and closes its tasks in the queue.
 1218-_Avoid_: Sync, cleanup, close job
-[exit code: 0]
+

@@ -40,7 +40,7 @@ Observation: `gh pr list --head codex-flow --state all` prints nothing, and its 
 ## AT-5: A ticket on main has the full description
 
 App: scripts
-Then: its description has, in order, the key line, the app, the blockers, the link `https://github.com/bkwon94/4thandgoal/blob/main/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md`, and a summary of 500 characters or fewer that starts "the managers file still carries".
+Then: its description has, in order, the key line, the app, the blockers when the ticket names any, the link `https://github.com/bkwon94/4thandgoal/blob/main/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md`, and a summary of 500 characters or fewer that starts "the managers file still carries".
 Files: `evidence/AT-5/output.txt`
 Observation: The description has four lines in this order: the key line, `App: pipeline`, the link, and the summary. It has no blockers line, and the ticket file says `**Blocked by:** None (can start immediately)`. Todoist stores the link as a titled markdown link, `[4thandgoal/.scratch/... at main · bkwon94/4thandgoal](https://github.com/bkwon94/4thandgoal/blob/main/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md)`, with the named URL inside the parentheses. The summary has 311 characters and starts "the managers file still carries".
 
@@ -217,7 +217,7 @@ Observation: The grep finds 20 calls of `scripts/queue.py` in the skill files. `
 App: docs
 Then: ADR 0032 says it amends ADR 0021 and that the tracker in `.scratch/` stays the record. The two docs name the queue, its labels, the key line, and the script. The glossary has Queue, Wait task, and Merge sweep.
 Files: `evidence/AT-30/output.txt`
-Observation: ADR 0032 starts "This ADR amends ADR 0021." and says "The tracker stays the record.". The queue section of `docs/agents/issue-tracker.md` names the queue, the labels, the key line `4ag: <path>`, and the script `scripts/queue.py`. `docs/agents/triage-labels.md` has "The queue labels" with a table that maps each status to its queue label; it names neither the key line nor the script. `GLOSSARY.md` has the terms **Queue**, **Wait task**, and **Merge sweep**.
+Observation: ADR 0032 starts "This ADR amends ADR 0021." and says "The tracker stays the record.". The queue section of `docs/agents/issue-tracker.md` names the queue, the labels, the key line `4ag: <path>`, and the script `scripts/queue.py`. `docs/agents/triage-labels.md` has "The queue labels" with a table that maps each status to its queue label, and a paragraph that names the script `scripts/queue.py` and the key line `4ag: <path of the ticket file>`. `GLOSSARY.md` has the terms **Queue**, **Wait task**, and **Merge sweep**.
 
 ## AT-31: CI never calls td
 
