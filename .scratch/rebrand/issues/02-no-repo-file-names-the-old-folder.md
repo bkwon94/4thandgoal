@@ -8,7 +8,7 @@ Spec: `.scratch/rebrand/PRD.md`. Acceptance tests AT-5, AT-7, AT-8, AT-9, AT-10,
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `git grep` of AT-5 prints nothing, and the lock file holds no `cpcfantasyfootball`.
 - [x] The site package name is `4thandgoal-site`, and `pnpm check:fast` passes in `apps/site`.

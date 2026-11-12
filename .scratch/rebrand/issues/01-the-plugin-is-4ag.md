@@ -8,7 +8,7 @@ Spec: `.scratch/rebrand/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, AT-6, 
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `claude plugin validate .claude/plugin` and `claude plugin validate .` pass, with the names `4ag` and `4ag-local`.
 - [x] `.claude/settings.json` enables `4ag@4ag-local` and names no `cpc-local`.

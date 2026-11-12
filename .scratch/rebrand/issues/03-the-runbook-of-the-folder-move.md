@@ -8,7 +8,7 @@ Spec: `.scratch/rebrand/PRD.md`. Acceptance tests AT-11 and AT-12.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The runbook has the Tuesday warning and the nine steps in the order above, each with one command and one check.
 - [x] On a fresh clone with one worktree in the scratchpad, a move of the clone and the `git worktree repair` command of the runbook give a `git worktree list` with no `prunable`, and `git status` in the worktree exits 0.
