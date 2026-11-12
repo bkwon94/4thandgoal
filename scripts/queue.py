@@ -15,7 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 PROJECT = "4thandgoal"
-GITHUB = "https://github.com/bkwon94/4thandgoal/blob/main"
+REPO = "bkwon94/4thandgoal"
+GITHUB = f"https://github.com/{REPO}/blob/main"
 
 # The statuses that Brian sets in the queue. A push writes one of them only when it makes the task.
 TRIAGE_STATUSES = ("needs-triage", "needs-info", "ready-for-agent", "ready-for-human")
@@ -225,7 +226,7 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
         plan.append(["task", "update", f"id:{task['id']}", *update])
     section = queue.sections.get(ticket.feature)
     if section is None:
-        plan.append(_section_create(ticket, queue))
+        plan.append(_section_create(ticket.feature, queue))
         plan.append(["task", "move", f"id:{task['id']}", "--project", f"id:{queue.project_id}",
                      "--section", ticket.feature])
     elif task["sectionId"] != section:
@@ -257,8 +258,8 @@ def _labels(ticket: Ticket, current: list[str]) -> list[str]:
     return others + flow + (["decision"] if ticket.decision else []) + list(ticket.apps)
 
 
-def _section_create(ticket: Ticket, queue: Queue) -> list[str]:
-    return ["section", "create", "--name", ticket.feature, "--project", f"id:{queue.project_id}"]
+def _section_create(feature: str, queue: Queue) -> list[str]:
+    return ["section", "create", "--name", feature, "--project", f"id:{queue.project_id}"]
 
 
 def _plan_add(ticket: Ticket, queue: Queue) -> list[list[str]]:
@@ -267,12 +268,127 @@ def _plan_add(ticket: Ticket, queue: Queue) -> list[list[str]]:
     plan = [["label", "create", "--name", label] for label in labels if label not in queue.labels]
     section = queue.sections.get(ticket.feature)
     if section is None:
-        plan.append(_section_create(ticket, queue))
+        plan.append(_section_create(ticket.feature, queue))
     plan.append(["task", "add", ticket.title, "--project", f"id:{queue.project_id}",
                  "--section", f"id:{section}" if section else ticket.feature,
                  "--labels", ",".join(labels), "--description", ticket.description])
     return plan
 
+
+# The kinds of a wait task, each with its title. The section names the feature, so the title does not.
+WAIT_TITLES = {"approve-prd": "Approve PRD", "approve-acceptance": "Approve ACCEPTANCE",
+               "approve-tickets": "Approve tickets", "merge-pr": "Merge PR #{}"}
+PULL = f"https://github.com/{REPO}/pull"
+
+
+def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Queue) -> list[list[str]]:
+    """The `td` commands that open the wait task of one step that waits on Brian, or complete it when done is set.
+
+    The key of a wait task is `<feature>/wait/<kind>`. A feature can wait on two PRs at once, so the title of the task
+    tells two merge-pr tasks apart.
+    """
+    key = f"{feature}/wait/{kind}"
+    title = WAIT_TITLES[kind].format(number)
+    task = next((task for task in queue.tasks if _key(task) == key and (number is None or task["content"] == title)),
+                None)
+    if done:
+        return [["task", "complete", f"id:{task['id']}"]] if task else []
+    if task:
+        return []
+    lines = [f"4ag: {key}"]
+    if kind == "merge-pr":
+        lines.append(f"{PULL}/{number}")
+    plan = [["label", "create", "--name", "ready-for-human"]] if "ready-for-human" not in queue.labels else []
+    section = queue.sections.get(feature)
+    if section is None:
+        plan.append(_section_create(feature, queue))
+    plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
+                 "--section", f"id:{section}" if section else feature,
+                 "--labels", "ready-for-human", "--description", "\n".join(lines)])
+    return plan
+
+
+MERGE_PR_TITLE = re.compile(r"^Merge PR #(\d+)$")
+
+
+def _key(task: dict) -> str | None:
+    """The key of a task, from the first line of its description, such as `4ag: <path>`."""
+    line = (task.get("description") or "").split("\n")[0]
+    return line[len("4ag: "):] if line.startswith("4ag: ") else None
+
+
+def _wait_feature(task: dict) -> str | None:
+    """The feature of an open `Merge PR #N` wait task, or None for any other task."""
+    key = _key(task) or ""
+    if not MERGE_PR_TITLE.match(task["content"]) or not key.endswith("/wait/merge-pr"):
+        return None
+    return key.split("/")[0]
+
+
+def merge_prs(queue: Queue) -> list[int]:
+    """The number of the PR of each open `Merge PR #N` wait task, in the order of the queue."""
+    return [int(MERGE_PR_TITLE.match(task["content"]).group(1)) for task in queue.tasks if _wait_feature(task)]
+
+
+def pr_state(text: str) -> str:
+    """The state of a PR, MERGED, CLOSED, or OPEN, from the output of `gh pr view N --json state`."""
+    return json.loads(text)["state"]
+
+
+def _done_on_main(root: Path, key: str) -> bool:
+    """Whether the ticket is `done` on the branch main of the repo at the root.
+
+    The sweep reads main and not the checkout, because only a merge sets `done`. A root with no main holds no done
+    ticket.
+    """
+    if not _on_main(root, key):
+        return False
+    text = subprocess.run(["git", "-C", str(root), "show", f"main:{key}"], capture_output=True, text=True,
+                          env=_clean_git_env()).stdout
+    return (_first(STATUS_LINE, text) or "").rstrip(".,;:") == "done"
+
+
+def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[str]]:
+    """The `td` commands that close the tasks of each merged spec PR, given the state of the PR of each wait task.
+
+    For a merged PR, the task of each ticket that is `done` on main completes, then the wait task. A ticket still open
+    on main, such as a follow-up, keeps its task. A section is archived only after every task in it is complete,
+    because an archive also archives the open tasks. A PR closed without a merge gives its wait task `blocked`. An open
+    PR changes nothing. A feature that the root does not hold is skipped, so a sweep with a temp root never touches a
+    real feature.
+    """
+    plan: list[list[str]] = []
+    completed: set[str] = set()
+    swept: list[str] = []
+
+    def complete(task: dict) -> None:
+        if task["id"] not in completed:
+            completed.add(task["id"])
+            plan.append(["task", "complete", f"id:{task['id']}"])
+
+    for wait in queue.tasks:
+        feature = _wait_feature(wait)
+        if feature is None or not (root / ".scratch" / feature).is_dir():
+            continue
+        state = states.get(int(MERGE_PR_TITLE.match(wait["content"]).group(1)))
+        if state == "MERGED":
+            for task in queue.tasks:
+                key = _key(task) or ""
+                if key.startswith(f".scratch/{feature}/") and _done_on_main(root, key):
+                    complete(task)
+            complete(wait)
+            if feature not in swept:
+                swept.append(feature)
+        elif state == "CLOSED":
+            labels = [label for label in wait["labels"] if label not in OPEN_STATUSES] + ["blocked"]
+            if set(labels) != set(wait["labels"]):
+                plan.append(["task", "update", f"id:{wait['id']}", "--labels", ",".join(labels)])
+
+    for feature in swept:
+        section = queue.sections.get(feature)
+        if section and all(task["id"] in completed for task in queue.tasks if task["sectionId"] == section):
+            plan.append(["section", "archive", f"id:{section}"])
+    return plan
 
 class TdError(Exception):
     """A failed `td` call. Every failure of `td` exits 1, so the JSON error line on stderr names the cause."""
@@ -337,6 +453,20 @@ def read_queue() -> Queue:
     )
 
 
+def read_pr_state(number: int) -> str:
+    """The state of one PR, from `gh`. The call names the repo, so it works from a temp root with no remote."""
+    try:
+        run = subprocess.run(["gh", "pr", "view", str(number), "--repo", REPO, "--json", "state"], capture_output=True,
+                             text=True, timeout=TD_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        raise TdError("GH_TIMEOUT", f"gh gave no answer about PR #{number} in {TD_TIMEOUT} seconds") from None
+    except FileNotFoundError:
+        raise TdError("NO_GH", "gh is not on the PATH") from None
+    if run.returncode != 0:
+        raise TdError("GH_ERROR", " ".join(run.stderr.split()) or f"gh pr view {number} failed with no message")
+    return pr_state(run.stdout)
+
+
 def report_failure(subcommand: str, target: str, error: TdError) -> int:
     """Print one warning line and return 0. A failed Todoist call never stops the work of a skill."""
     print(f"warning: the queue {subcommand} of {target} failed: {error}. The queue is behind the tracker.")
@@ -367,6 +497,18 @@ def push(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     return ticket.key, plan_push(ticket, read_queue())
 
 
+def wait(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
+    args.target = f"{args.feature}/wait/{args.kind}"
+    return args.target, plan_wait(args.feature, args.kind, args.number, args.done, read_queue())
+
+
+def sweep(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
+    # A failed read names what the sweep reads in the warning.
+    args.target = "each open Merge PR task"
+    queue = read_queue()
+    return "sweep", plan_sweep(args.root, queue, {number: read_pr_state(number) for number in merge_prs(queue)})
+
+
 def main(argv: list[str]) -> int:
     # Each subcommand shares --dry-run and --root, and returns its target and its plan.
     shared = argparse.ArgumentParser(add_help=False)
@@ -378,7 +520,17 @@ def main(argv: list[str]) -> int:
     push_parser = subcommands.add_parser("push", parents=[shared], help="make the task of one ticket match its file")
     push_parser.add_argument("path", help="the path of a ticket or a decision ticket")
     push_parser.set_defaults(plan=push)
+    wait_parser = subcommands.add_parser("wait", parents=[shared], help="open or complete the wait task of one step")
+    wait_parser.add_argument("feature", help="the feature slug, which names the section")
+    wait_parser.add_argument("kind", choices=WAIT_TITLES, help="the step that waits on Brian")
+    wait_parser.add_argument("number", nargs="?", type=int, help="the number of the PR, for merge-pr")
+    wait_parser.add_argument("--done", action="store_true", help="complete the wait task")
+    wait_parser.set_defaults(plan=wait)
+    sweep_parser = subcommands.add_parser("sweep", parents=[shared], help="close the tasks of each merged spec PR")
+    sweep_parser.set_defaults(plan=sweep)
     args = parser.parse_args(argv)
+    if args.subcommand == "wait" and args.kind == "merge-pr" and args.number is None and not args.done:
+        wait_parser.error("merge-pr needs the number of the PR")
 
     try:
         _, plan = args.plan(args)
