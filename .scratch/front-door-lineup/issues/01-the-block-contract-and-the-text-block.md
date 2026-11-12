@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-36, AT-37, AT-41.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The site block schema is one union over `kind`, and the free answer kinds `list`, `table`, and `player` still pass it.
 - [x] The data part of a personal Topic carries a `kind`.
