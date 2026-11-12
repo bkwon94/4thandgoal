@@ -8,7 +8,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-29.
 
 **Blocked by:** 04 and 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Each of the six skills starts with the merge sweep.
 - [x] Each row of the push table has a call in its skill, at its step.
