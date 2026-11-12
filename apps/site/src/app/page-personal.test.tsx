@@ -332,3 +332,62 @@ describe("the links of the personal Topics", () => {
     expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].weak_spots).toBe(`/2026/managers/${LIL_FRIDGE}/`);
   });
 });
+
+/* Start or sit plays the stream of the API test over the live Sleeper week 10 of cpc, recorded on 2026-11-12. */
+describe("Start or sit", () => {
+  const rowsOf = (answer: HTMLElement) => within(within(answer).getByRole("list", { name: "Week 10 lineup" })).getAllByRole("listitem");
+
+  it("shows the lineup of Bo Girds in the Sleeper order with the team, the opponent, the kickoff, and the projection (AT-1)", async () => {
+    streams.push(() => sse(recorded("start-sit")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    await waitFor(() => expect(personalCalls()).toHaveLength(1));
+    expect(JSON.parse(personalCalls()[0][1].body)).toMatchObject({ topic: "start_sit" });
+    const answer = await articleWith("Start or sit", "Week 10 lineup");
+    const rows = rowsOf(answer);
+    expect(rows.map((row) => row.getAttribute("data-slot"))).toEqual(["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "FLEX", "DEF"]);
+    const kickoff = new Intl.DateTimeFormat(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" }).format(new Date(1794792000000));
+    expect(rows[0].textContent).toBe(`QBAaron RodgersPIT vs CIN· ${kickoff}17.5`);
+    expect(answer.textContent).toContain("By projection 121.8");
+  });
+
+  it("names each player who cannot play in one line under the rows (AT-10)", async () => {
+    streams.push(() => sse(recorded("start-sit")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Can't play:");
+    expect(answer.textContent).toContain("Can't play: L. Jackson IR (thumb)");
+    expect(rowsOf(answer).some((row) => row.textContent?.includes("Lamar Jackson"))).toBe(false);
+  });
+
+  it("opens the first Q row on arrival with the body part, the practice level, and the Pivot (AT-7, AT-8)", async () => {
+    streams.push(() => sse(recorded("start-sit-q")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Week 10 lineup");
+    const buttons = within(answer).getAllByRole("button", { expanded: true });
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0].textContent).toContain("Jared Goff");
+    const detail = document.getElementById(buttons[0].getAttribute("aria-controls") ?? "");
+    expect(detail?.getAttribute("aria-hidden")).toBe("false");
+    expect(detail?.textContent).toBe("Chest · No practice report yetStart J. Goff if he is active. If he is ruled out, start P. Mahomes.");
+  });
+
+  it("opens a closed row in place, so the rows above it keep their order and their state (AT-9)", async () => {
+    streams.push(() => sse(recorded("start-sit-q")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Week 10 lineup");
+    const before = rowsOf(answer).map((row) => row.textContent);
+    const [closed] = within(answer).getAllByRole("button", { expanded: false });
+    const row = closed.closest("li");
+    const above = rowsOf(answer).slice(0, rowsOf(answer).indexOf(row as HTMLElement));
+    const aboveState = above.map((item) => item.querySelector("button")?.getAttribute("aria-expanded") ?? null);
+    fireEvent.click(closed);
+    expect(closed.getAttribute("aria-expanded")).toBe("true");
+    // The detail opens inside its own row, under its line, so no row above it changes.
+    expect(row?.lastElementChild?.getAttribute("aria-hidden")).toBe("false");
+    expect(rowsOf(answer).map((item) => item.textContent)).toEqual(before);
+    expect(above.map((item) => item.querySelector("button")?.getAttribute("aria-expanded") ?? null)).toEqual(aboveState);
+  });
+});

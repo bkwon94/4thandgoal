@@ -10,10 +10,10 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT
 
 **Status:** ready-for-agent
 
-- [ ] The cpc lineup shows QB, RB, RB, WR, WR, TE, FLEX, FLEX, DEF in order (AT-1).
-- [ ] The norcal lineup shows three FLEX and no DEF (AT-2).
-- [ ] One projection equals its stat line scored with the cpc scoring, to 0.1 point (AT-3).
-- [ ] A Q row shows the body part, the practice level, and the Pivot line, and a null practice level reads "No practice report yet" (AT-7, AT-8).
-- [ ] An open row keeps the rows above it still, and the "Can't play" line names each such player (AT-9, AT-10).
-- [ ] A player whose game has started is locked, and Start or sit calls only Sleeper, ESPN, TypeSafe, and Anthropic (AT-12, AT-53).
+- [x] The cpc lineup shows QB, RB, RB, WR, WR, TE, FLEX, FLEX, DEF in order (AT-1).
+- [x] The norcal lineup shows three FLEX and no DEF (AT-2).
+- [x] One projection equals its stat line scored with the cpc scoring, to 0.1 point (AT-3).
+- [x] A Q row shows the body part, the practice level, and the Pivot line, and a null practice level reads "No practice report yet" (AT-7, AT-8).
+- [x] An open row keeps the rows above it still, and the "Can't play" line names each such player (AT-9, AT-10).
+- [x] A player whose game has started is locked, and Start or sit calls only Sleeper, ESPN, TypeSafe, and Anthropic (AT-12, AT-53).
 - [ ] The design bar of the spec ran, and `critique` and `polish` found nothing open.

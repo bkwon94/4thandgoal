@@ -13,11 +13,12 @@ import { AnswerBody } from "./answer-card";
 import type { AskTarget } from "./ask-api";
 import type { Turn } from "./chat-turns";
 import { FreeBody, useAnswerStream } from "./free-answer";
+import { LineupView } from "./lineup-block";
 import { shownText } from "./free-stream";
 import { QuestionBubble, Surface } from "./miss-card";
 import { riseIn } from "./motion";
 import { Steps, useIntentDelay } from "./steps";
-import { type PersonalBlock, type PersonalCap, type PersonalResult, type PersonalTopic, type PersonalView, personalViewOf } from "./personal-stream";
+import { type PersonalBlock, type PersonalCap, type PersonalResult, type PersonalTopic, type PersonalView, blockRows, personalViewOf } from "./personal-stream";
 
 /* The step between the data block and the text, while Claude writes the text. */
 export const WRITING_LINE = "Writing";
@@ -36,7 +37,8 @@ type Shared = {
 function PersonalBody({ block, view, live, href, avatars }: { block: PersonalBlock; view: PersonalView; live: boolean; href: string | null; avatars: Shared["avatars"] }) {
   const checked = view.check === "checked";
   return (
-    <AnswerBody answer={{ stats: block.stats, rows: block.rows, text: [], href: checked ? href : null }} avatars={avatars} asOf={block.as_of}>
+    <AnswerBody answer={{ ...blockRows(block), text: [], href: checked ? href : null }} avatars={avatars} asOf={block.kind === "rows" ? block.as_of : undefined}>
+      {block.kind === "lineup" && <LineupView block={block} />}
       <div className="flex flex-col gap-sp-3">
         <FreeBody view={view} live={live} first={WRITING_LINE} />
       </div>

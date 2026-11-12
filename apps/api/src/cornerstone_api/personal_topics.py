@@ -60,6 +60,7 @@ from cornerstone_api.personal_wording import (
     rewrite_prompt,
     topic_prompt,
 )
+from cornerstone_api.start_sit import START_SIT, LiveWeek, load_live_week
 from cornerstone_api.waiver_targets import judge
 from facts.writer import route_model
 from league.jev_port import Jev, JevError
@@ -91,6 +92,7 @@ CLOSEST: dict[str, list[str]] = {
     "weak_spots": ["stack_up", "waiver_targets", "trade_ideas"],
     "stack_up": ["weak_spots", "power_rankings", "your_season"],
     "waiver_targets": ["weak_spots", "stack_up", "trade_ideas"],
+    "start_sit": ["next_matchup", "weak_spots", "waiver_targets"],
 }
 
 AGENT = Agent(
@@ -203,6 +205,16 @@ async def load_live(served: Any, season: int, cache: LiveCache) -> Live:
         raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
 
 
+async def load_week(served: Any, season: int) -> LiveWeek:
+    """The live week of Start or sit for the client of `served`. Raises HTTPException 503 when Sleeper or the kickoffs
+    do not load."""
+    try:
+        return await anyio.to_thread.run_sync(load_live_week, served.sources, season)
+    except ValueError as error:
+        logger.warning("The live week of Start or sit did not load (%s)", error)
+        raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
+
+
 async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: PersonalFacts, key: str, own: bool,
                         your_team: str, model: Model | None, roster_id: int | None,
                         turns: list[Turn] | None = None, question: str | None = None) -> AsyncIterator[BaseChunk]:
@@ -284,14 +296,23 @@ async def _as_is(facts: PersonalFacts) -> PersonalFacts:
 async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClient,
                    request: Request) -> StreamingResponse:
     """The stream of one personal Topic for the team of the body. The facts come from the live snapshot, so the
-    Answer follows each waiver claim and trade."""
-    live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])
-    snapshot = live.snapshot
+    Answer follows each waiver claim and trade. Start or sit reads the live Sleeper week and its kickoffs instead."""
     subject = body.roster_id if body.team is None else body.team
-    if body.roster_id not in snapshot.rosters or subject not in snapshot.rosters:
-        raise HTTPException(status_code=422, detail="Pick your team again.")
-    facts, key = live.key(body.topic, body.roster_id, subject)
     own = subject == body.roster_id
+    if body.topic == START_SIT:
+        # Start or sit reads the live week and its kickoffs fresh for each Answer, because the game lock moves with the
+        # clock, so it reads no live league of the cache.
+        week = await load_week(served, asker.season)
+        rosters, team_name = week.rosters, week.team_name
+        facts_of: Callable[[], PersonalFacts] = lambda: week.facts(subject)
+    else:
+        live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])
+        rosters, team_name = live.snapshot.rosters, lambda roster_id: live.snapshot.teams[roster_id].name
+        facts_of = lambda: live.facts(body.topic, subject)
+    if body.roster_id not in rosters or subject not in rosters:
+        raise HTTPException(status_code=422, detail="Pick your team again.")
+    facts = facts_of()
+    key = answer_key(body.topic, own, facts, rosters[subject])
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
     # A typed question gets an Answer that fits its text and its chat, so it reads no kept Answer. Only a tap reads one,
     # so a tap never gets the Answer of a typed question, and one typed question never gets the Answer of another.
@@ -309,7 +330,7 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClie
         cap = hit
         stream = answer_stream(lambda: _as_is(facts), key, lambda _: _capped(body.topic, cap))
     else:
-        your_team = snapshot.teams[body.roster_id].name
+        your_team = team_name(body.roster_id)
         model = request.app.state.personal_model
         stream = answer_stream(lambda: shown_facts(asker.jev, body.topic, facts), key,
                                lambda shown: claude_answer(asker, store, body.topic, shown, key, own, your_team, model,

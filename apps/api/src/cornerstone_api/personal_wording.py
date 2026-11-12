@@ -51,6 +51,10 @@ TOPIC_ASKS = {
                       "of the last week, or the slot of `team_need` he fills, with at most one number. `kind` says if "
                       "he is an add this week or a stash for later weeks. Quote no FAAB bid. If `kept_players` is "
                       "empty, say plainly that no free agent beats the starters of the team this week.",
+    "start_sit": "Say who starts this week. `lineup` is the best legal lineup by projection, one entry per slot in the "
+                 "order of Sleeper, and each `projection` is in the points of the league. Name the top starters, each "
+                 "player of `cannot_play` with his status, and the `pivot` of each Questionable starter. A `locked` "
+                 "player's game has started, so he cannot move.",
 }
 
 # The two Nouls of the Jev read of one free agent, in one request with one state: the team need and his facts. An add
@@ -68,7 +72,8 @@ WAIVER_STASH = {
     "no": "{player} is a backup behind a healthy starter with a small role, so in later weeks he would still sit "
           "behind the starters of {team}."}
 
-TOPIC_NAMES = {"weak_spots": "Weak spots", "stack_up": "How you stack up", "waiver_targets": "Waiver targets"}
+TOPIC_NAMES = {"weak_spots": "Weak spots", "stack_up": "How you stack up", "waiver_targets": "Waiver targets",
+               "start_sit": "Start or sit"}
 
 REWRITE = """\
 A check found that these sentences of your Answer do not follow from the facts:

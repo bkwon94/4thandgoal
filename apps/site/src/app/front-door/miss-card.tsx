@@ -11,7 +11,8 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useKeyboardField } from "@cpc/design/shell/keyboard";
 import { AnswerBody } from "./answer-card";
 import { FAST, SLOW, STAGGER, bubbleIn, fadeIn } from "./motion";
-import type { PersonalBlock } from "./personal-stream";
+import { LineupView } from "./lineup-block";
+import { type PersonalBlock, blockRows } from "./personal-stream";
 import { Steps } from "./steps";
 import { TOPICS } from "./topics";
 
@@ -96,7 +97,8 @@ export const MissCard = forwardRef<
     <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={question} />
       {block ? (
-        <AnswerBody answer={{ stats: block.stats, rows: block.rows, text: [], href: null }} avatars={avatars}>
+        <AnswerBody answer={{ ...blockRows(block), text: [], href: null }} avatars={avatars}>
+          {block.kind === "lineup" && <LineupView block={block} />}
           <div className="flex flex-col gap-sp-3">{miss}</div>
         </AnswerBody>
       ) : (

@@ -1,5 +1,5 @@
 /**
- * The 13 Topics of the front door, and the hard rules that pick the 3 Suggestions: the day of the week sets the order,
+ * The 14 Topics of the front door, and the hard rules that pick the 3 Suggestions: the day of the week sets the order,
  * a Topic needs a fact to show, and an opened Topic waits until its fact changes (decision 02).
  */
 
@@ -20,6 +20,7 @@ export const TOPICS: readonly Topic[] = [
   { key: "waiver_targets", name: "Waiver targets", kind: "personal" },
   { key: "stack_up", name: "How you stack up", kind: "personal" },
   { key: "weak_spots", name: "Weak spots", kind: "personal" },
+  { key: "start_sit", name: "Start or sit", kind: "personal" },
   { key: "sell_high", name: "Sell high or buy low", kind: "judgment" },
   { key: "trade_ideas", name: "Trade ideas", kind: "judgment" },
   { key: "trade_check", name: "Trade check", kind: "judgment" },
@@ -45,7 +46,7 @@ const DAY_LEADS: Record<number, string[]> = {
   6: ["next_matchup", "weak_spots", "playoff_race"],
 };
 
-/* The keys of all 13 Topics in the order of one day of the week. */
+/* The keys of all 14 Topics in the order of one day of the week. */
 export function dayOrder(day: number): string[] {
   const leads = DAY_LEADS[day] ?? [];
   return [...leads, ...TOPICS.map((topic) => topic.key).filter((key) => !leads.includes(key))];

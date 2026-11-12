@@ -6,9 +6,10 @@ import type { UIMessage } from "ai";
 import { z } from "zod";
 import { topicRowSchema, topicStatSchema } from "@/lib/data/topics-schema";
 import { type FreeView, viewOf } from "./free-stream";
+import { lineupBlockSchema } from "./lineup-block";
 
-/* The 3 personal Topics, which the API builds live for one team. */
-export const PERSONAL_TOPICS = ["weak_spots", "stack_up", "waiver_targets"] as const;
+/* The 4 personal Topics, which the API builds live for one team. */
+export const PERSONAL_TOPICS = ["weak_spots", "stack_up", "waiver_targets", "start_sit"] as const;
 export type PersonalTopic = (typeof PERSONAL_TOPICS)[number];
 export const isPersonal = (key: string): key is PersonalTopic => (PERSONAL_TOPICS as readonly string[]).includes(key);
 
@@ -18,11 +19,12 @@ export const PERSONAL_LINES: Record<PersonalTopic, string> = {
   weak_spots: "Where your lineup is soft",
   stack_up: "Your roster against the league",
   waiver_targets: "Adds that fit your weak spots",
+  start_sit: "Your lineup for this week",
 };
 
-/* The data block of a personal Topic, in the shape of the data block of a league Topic. Its kind "rows" says it shows
-   stats and rows. A block kept before the kind has none, so it reads as "rows". */
-export const personalBlockSchema = z.object({
+/* The data block of a personal Topic that shows stats and rows, in the shape of the data block of a league Topic. Its
+   kind "rows" says so. A block kept before the kind has none, so it reads as "rows". */
+const rowsBlockSchema = z.object({
   kind: z.literal("rows").default("rows"),
   topic: z.enum(PERSONAL_TOPICS),
   team: z.number(),
@@ -32,7 +34,14 @@ export const personalBlockSchema = z.object({
   // When the numbers are from, such as "as of today" for the live grade of How you stack up.
   as_of: z.string().optional(),
 });
+/* The data block of a personal Topic: stats and rows, or the block of its own kind, such as the lineup of Start or sit. */
+export const personalBlockSchema = z.union([rowsBlockSchema, lineupBlockSchema]);
 export type PersonalBlock = z.infer<typeof personalBlockSchema>;
+
+/* The stats and the rows that the card of a block shows. A block of its own kind shows its own view and none. */
+export function blockRows(block: PersonalBlock): Pick<z.infer<typeof rowsBlockSchema>, "stats" | "rows"> {
+  return block.kind === "rows" ? { stats: block.stats, rows: block.rows } : { stats: [], rows: [] };
+}
 
 /* The calm line of a cap from the API, with the closest Topics. Past a cap, the API makes no Claude call. */
 export type PersonalCap = { line: string; closest: string[] };

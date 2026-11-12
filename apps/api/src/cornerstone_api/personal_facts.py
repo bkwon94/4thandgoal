@@ -14,7 +14,7 @@ from league.season_inputs import SeasonInputs
 from league.snapshot import Snapshot
 from managers.grade import ManagerGrade, Starter, roster_grades, roster_starters
 
-PersonalTopic = Literal["weak_spots", "stack_up", "waiver_targets"]
+PersonalTopic = Literal["weak_spots", "stack_up", "waiver_targets", "start_sit"]
 
 # The fact groups of each personal Topic (decision 03). The slice holds only these groups.
 FACT_GROUPS: dict[str, tuple[str, ...]] = {
