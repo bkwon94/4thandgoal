@@ -8,7 +8,7 @@ Spec: `.scratch/rebrand/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, AT-6, 
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] `claude plugin validate .claude/plugin` and `claude plugin validate .` pass, with the names `4ag` and `4ag-local`.
 - [x] `.claude/settings.json` enables `4ag@4ag-local` and names no `cpc-local`.
@@ -16,3 +16,9 @@ Spec: `.scratch/rebrand/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, AT-6, 
 - [x] `CLAUDE.md` lists all six skills as `4ag:`, under the title `# 4thandgoal`.
 - [x] The marker line of the `verdict` check is unchanged, and the `verdict` tests pass.
 - [x] `make check-fast` passes in `scripts/`, `apps/pipeline/`, and `apps/api/`.
+
+## Comments
+
+Merged into the Spec branch `rebrand` as 61444cb1, and the review fix 6cab4517, on 2026-11-11. Closes with the squash merge of the spec PR.
+AT-1, AT-2, AT-3, AT-4, AT-6, and AT-8 have PASS from the Judge; the full check passed at 34477b17.
+Read 7 files: CLAUDE.md, .scratch/rebrand/PRD.md, .scratch/rebrand/ACCEPTANCE.md, .scratch/rebrand/issues/01-the-plugin-is-4ag.md, .claude/plugin/.claude-plugin/plugin.json, .claude-plugin/marketplace.json, scripts/verdict.py.

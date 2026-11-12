@@ -8,7 +8,7 @@ Spec: `.scratch/rebrand/PRD.md`. Acceptance tests AT-5, AT-7, AT-8, AT-9, AT-10,
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The `git grep` of AT-5 prints nothing, and the lock file holds no `cpcfantasyfootball`.
 - [x] The site package name is `4thandgoal-site`, and `pnpm check:fast` passes in `apps/site`.
@@ -16,3 +16,9 @@ Spec: `.scratch/rebrand/PRD.md`. Acceptance tests AT-5, AT-7, AT-8, AT-9, AT-10,
 - [x] `plutil -lint` passes on the LaunchAgent, and each of its repo paths starts with `/Users/brian.kwon/repos/4thandgoal/`.
 - [ ] The guard commands of AT-13 to AT-16 show no change to pages, packages, clients, API code, the domain, the Fly app, the ADRs, or other features under `.scratch/`.
 - [ ] `make check-fast` passes in `scripts/`, `apps/pipeline/`, and `apps/api/`.
+
+## Comments
+
+Merged into the Spec branch `rebrand` as 6c4d31be, on 2026-11-11. Closes with the squash merge of the spec PR.
+AT-5, AT-7, AT-8, AT-9, AT-10, and AT-13 to AT-16 have PASS from the Judge; the full check passed at 34477b17.
+Read 8 files: CLAUDE.md, .scratch/rebrand/PRD.md, .scratch/rebrand/ACCEPTANCE.md, .scratch/rebrand/issues/02-no-repo-file-names-the-old-folder.md, apps/pipeline/CLAUDE.md, apps/pipeline/bin/cornerstone-build, apps/site/package.json, scripts/test_changed_apps.py.
