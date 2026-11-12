@@ -5,7 +5,7 @@ Date: 2026-11-12
 Apps: both. The site renders fifteen blocks, the names-only Suggestions row, the header sheet of the front door, and the text block. The pipeline writes the block data of six league Topics into `topics.json`. The API builds Start or sit live, the blocks of the personal and the trade Topics, the live matchup card, and the game lock.
 Spec branch: `front-door-lineup`.
 Source: the map `.scratch/front-door-lineup/MAP.md` and decision tickets 01 to 11. The sessions of 2026-11-11 and 2026-11-12.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 18, in `issues/`.
 
 ## Problem Statement
 
