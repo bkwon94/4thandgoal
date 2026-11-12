@@ -53,6 +53,10 @@ from cornerstone_api.personal_facts import (
 from cornerstone_api.personal_wording import (
     FACT_MEANINGS,
     INSTRUCTIONS,
+    SWAP_BENCH,
+    SWAP_MEANING,
+    SWAP_QUESTION,
+    SWAP_STARTER,
     TOPIC_ASKS,
     WAIVER_ADD,
     WAIVER_STASH,
@@ -60,7 +64,7 @@ from cornerstone_api.personal_wording import (
     rewrite_prompt,
     topic_prompt,
 )
-from cornerstone_api.start_sit import START_SIT, LiveWeek, load_live_week
+from cornerstone_api.start_sit import START_SIT, LiveWeek, load_live_week, with_reasons
 from cornerstone_api.waiver_targets import judge
 from facts.writer import route_model
 from league.jev_port import Jev, JevError
@@ -129,6 +133,10 @@ def answer_key(topic: str, own: bool, facts: PersonalFacts, roster: list[str]) -
     if topic == "waiver_targets":
         # The Jev read picks the players that the Answer names, so a change of its wording gives a fresh Answer.
         body["judge"] = {"add": WAIVER_ADD, "stash": WAIVER_STASH}
+    if topic == START_SIT:
+        # The Jev read picks the Swaps that the Answer shows, so a change of its wording gives a fresh Answer.
+        body["judge"] = {"question": SWAP_QUESTION, "bench": SWAP_BENCH, "starter": SWAP_STARTER,
+                         "means": SWAP_MEANING}
     return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
 
 
@@ -241,10 +249,16 @@ async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: Per
     outcome = Outcome()
     async for chunk in checked_answer(asker, writer, checker, roster_id, outcome):
         yield chunk
+    block = facts.block
+    if outcome.end == "checked" and topic == START_SIT:
+        # Claude writes the reason of each Swap, so the lineup comes again after the check with the checked sentences.
+        block = with_reasons(facts.block, outcome.text)
+        if block != facts.block:
+            yield data("block", block)
     if outcome.end == "checked" and not turns and question is None:
         # The block goes with the text, so a kept waiver Answer shows the players of its Jev read with no second read.
-        await anyio.to_thread.run_sync(store.put, key, topic, facts.block["team"],
-                                       {"text": outcome.text, "block": facts.block}, asker.clock())
+        await anyio.to_thread.run_sync(store.put, key, topic, block["team"],
+                                       {"text": outcome.text, "block": block}, asker.clock())
 
 
 async def shown_facts(jev: Jev, topic: str, facts: PersonalFacts) -> PersonalFacts:
@@ -267,18 +281,23 @@ async def _capped(topic: str, hit: CapHit) -> AsyncIterator[BaseChunk]:
 
 
 async def answer_stream(facts: Callable[[], Awaitable[PersonalFacts]], key: str,
-                        text: Callable[[PersonalFacts], AsyncIterator[BaseChunk]]) -> AsyncIterator[BaseChunk]:
+                        text: Callable[[PersonalFacts], AsyncIterator[BaseChunk]],
+                        miss: list[str] | None = None) -> AsyncIterator[BaseChunk]:
     """The whole stream of one personal Topic: the data block from code first, the key of the Answer, then the text.
 
-    The stream starts before `facts` gives the facts to show, so the Jev read of the waiver targets runs inside it. A
-    failed read ends the stream with an error and no text.
+    The stream starts before `facts` gives the facts to show, so the Jev read of the waiver targets and of the Swaps
+    runs inside it. A failed read ends the stream with no block and no text: the honest miss with the closest Topics of
+    `miss`, or else an error.
     """
     yield StartChunk()
     try:
         shown = await facts()
     except JevError as error:
         logger.warning("The Jev read of a personal Topic failed (%s)", error)
-        yield ErrorChunk(error_text=STREAM_ERROR)
+        if miss is not None:
+            yield data("miss", {"closest": miss})
+        else:
+            yield ErrorChunk(error_text=STREAM_ERROR)
     else:
         yield data("block", shown.block)
         yield data("key", {"key": key})
@@ -305,10 +324,17 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClie
         week = await load_week(served, asker.season)
         rosters, team_name = week.rosters, week.team_name
         facts_of: Callable[[], PersonalFacts] = lambda: week.facts(subject)
+        # The Jev read of the Swaps runs in the stream. A failed read gives the honest miss, never the lineup by
+        # projection, because a failed read is not a "keep the starter" (AT-20).
+        judged: Callable[[], Awaitable[PersonalFacts]] = lambda: anyio.to_thread.run_sync(week.judged, asker.jev,
+                                                                                           subject)
+        miss: list[str] | None = CLOSEST[START_SIT]
     else:
         live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])
         rosters, team_name = live.snapshot.rosters, lambda roster_id: live.snapshot.teams[roster_id].name
         facts_of = lambda: live.facts(body.topic, subject)
+        judged = lambda: shown_facts(asker.jev, body.topic, facts)
+        miss = None
     if body.roster_id not in rosters or subject not in rosters:
         raise HTTPException(status_code=422, detail="Pick your team again.")
     facts = facts_of()
@@ -332,7 +358,7 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClie
     else:
         your_team = team_name(body.roster_id)
         model = request.app.state.personal_model
-        stream = answer_stream(lambda: shown_facts(asker.jev, body.topic, facts), key,
+        stream = answer_stream(judged, key,
                                lambda shown: claude_answer(asker, store, body.topic, shown, key, own, your_team, model,
-                                                           body.roster_id, body.turns, body.question))
+                                                           body.roster_id, body.turns, body.question), miss)
     return adapter(AGENT, "").streaming_response(stream)

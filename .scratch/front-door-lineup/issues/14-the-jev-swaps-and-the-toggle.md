@@ -10,8 +10,8 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-4, AT-5, AT-6, AT
 
 **Status:** ready-for-agent
 
-- [ ] A pytest with the Jev fake marks a Swap at 0.70 and keeps the starter at 0.69 (AT-5).
-- [ ] A pytest with the Jev fake resolves the conflicts as AT-6 says (AT-6).
-- [ ] A pytest shows the honest miss on a failed Jev call (AT-20).
+- [x] A pytest with the Jev fake marks a Swap at 0.70 and keeps the starter at 0.69 (AT-5).
+- [x] A pytest with the Jev fake resolves the conflicts as AT-6 says (AT-6).
+- [x] A pytest shows the honest miss on a failed Jev call (AT-20).
 - [ ] A live lineup with a Swap shows the Swap row and its reason open on arrival (AT-4).
-- [ ] The toggle shows two totals, and the Swap total equals the sum of the projections with the Swaps (AT-11).
+- [x] The toggle shows two totals, and the Swap total equals the sum of the projections with the Swaps (AT-11).

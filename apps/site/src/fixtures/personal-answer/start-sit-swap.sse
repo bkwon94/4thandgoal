@@ -1,0 +1,94 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":6,"week":10,"total":121.7,"swap_total":104.7,"rows":[{"slot":"QB","player":"Aaron Rodgers","player_id":"96","position":"QB","nfl_team":"PIT","opponent":"CIN","kickoff":1794792000000,"projection":17.5,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Kenneth Walker III","player_id":"8151","position":"RB","nfl_team":"KC","opponent":"ATL","kickoff":1794765600000,"projection":20.1,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Mike Washington Jr.","player_id":"13305","position":"RB","nfl_team":"LV","opponent":"SEA","kickoff":1794776700000,"projection":4.8,"locked":false,"risk":null,"swap":{"over":"K. Williams","over_projection":15.7,"reason":null}},{"slot":"WR","player":"Zay Flowers","player_id":"9997","position":"WR","nfl_team":"BAL","opponent":"LAC","kickoff":1794878100000,"projection":13.5,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Konata Mumpfield","player_id":"12718","position":"WR","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":6.8,"locked":false,"risk":null,"swap":{"over":"M. Golden","over_projection":12.9,"reason":null}},{"slot":"TE","player":"Trey McBride","player_id":"8130","position":"TE","nfl_team":"ARI","opponent":"LAR","kickoff":1794776700000,"projection":11.7,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Parker Washington","player_id":"9487","position":"WR","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":12.8,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Blake Corum","player_id":"11586","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":10.5,"locked":false,"risk":null,"swap":null},{"slot":"DEF","player":"Jacksonville Jaguars","player_id":"JAX","position":"DEF","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":7.0,"locked":false,"risk":null,"swap":null}],"cannot_play":[{"name":"L. Jackson","status":"IR","body_part":"Thumb"}]}}
+
+data: {"type":"data-key","data":{"key":"a79095fe046745ca960094c932b987957ecf647fa80914d1f7026dd742297432"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Konata ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Mumpfield ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"starts ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"over ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Matthew ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Golden, ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"because ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"his ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"matchup ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"is ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"better ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"this ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"week. ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Mike ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Washington ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Jr. ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"starts ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"over ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Kyren ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Williams, ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"because ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"his ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"role ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"is ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"larger ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"this ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"week. ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"Start ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"the ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"rest ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"of ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"your ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"lineup ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"by ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-delta","delta":"projection. ","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"text-end","id":"e12c67eb-9f20-4bbf-8851-5644d708cdbf"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":6,"week":10,"total":121.7,"swap_total":104.7,"rows":[{"slot":"QB","player":"Aaron Rodgers","player_id":"96","position":"QB","nfl_team":"PIT","opponent":"CIN","kickoff":1794792000000,"projection":17.5,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Kenneth Walker III","player_id":"8151","position":"RB","nfl_team":"KC","opponent":"ATL","kickoff":1794765600000,"projection":20.1,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Mike Washington Jr.","player_id":"13305","position":"RB","nfl_team":"LV","opponent":"SEA","kickoff":1794776700000,"projection":4.8,"locked":false,"risk":null,"swap":{"over":"K. Williams","over_projection":15.7,"reason":"Mike Washington Jr. starts over Kyren Williams, because his role is larger this week."}},{"slot":"WR","player":"Zay Flowers","player_id":"9997","position":"WR","nfl_team":"BAL","opponent":"LAC","kickoff":1794878100000,"projection":13.5,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Konata Mumpfield","player_id":"12718","position":"WR","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":6.8,"locked":false,"risk":null,"swap":{"over":"M. Golden","over_projection":12.9,"reason":"Konata Mumpfield starts over Matthew Golden, because his matchup is better this week."}},{"slot":"TE","player":"Trey McBride","player_id":"8130","position":"TE","nfl_team":"ARI","opponent":"LAR","kickoff":1794776700000,"projection":11.7,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Parker Washington","player_id":"9487","position":"WR","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":12.8,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Blake Corum","player_id":"11586","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":10.5,"locked":false,"risk":null,"swap":null},{"slot":"DEF","player":"Jacksonville Jaguars","player_id":"JAX","position":"DEF","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":7.0,"locked":false,"risk":null,"swap":null}],"cannot_play":[{"name":"L. Jackson","status":"IR","body_part":"Thumb"}]}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
