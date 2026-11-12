@@ -20,8 +20,10 @@ export const PERSONAL_LINES: Record<PersonalTopic, string> = {
   waiver_targets: "Adds that fit your weak spots",
 };
 
-/* The data block of a personal Topic, in the shape of the data block of a league Topic. */
+/* The data block of a personal Topic, in the shape of the data block of a league Topic. Its kind "rows" says it shows
+   stats and rows. A block kept before the kind has none, so it reads as "rows". */
 export const personalBlockSchema = z.object({
+  kind: z.literal("rows").default("rows"),
   topic: z.enum(PERSONAL_TOPICS),
   team: z.number(),
   fact: z.string(),

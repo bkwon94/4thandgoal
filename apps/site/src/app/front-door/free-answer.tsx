@@ -17,6 +17,7 @@ import { type CheckState, type FreeResult, type FreeView, isKept, newPace, paced
 import { QuestionBubble, Surface, TopicChip } from "./miss-card";
 import { QUICK, SLOW, SMOOTH, STAGGER, VERY_SLOW, fadeIn } from "./motion";
 import { Steps } from "./steps";
+import { TextBlock, textWords } from "./text-block";
 
 /* The least time in ms that "Checking" and the fixing line hold on screen, so a fast check still reads as a check
    (AT-20, AT-21): two of --duration-slow, long enough to read one short word. */
@@ -108,17 +109,17 @@ export function useAnswerStream<V extends FreeView>({
 /* The line while Claude writes again after a failed check (decision 11). */
 export const FIXING_LINE = "Fixing a number…";
 
-/* The words of a text, each with the space after it. A word keeps its place by its index, so a word that grows as the
-   stream adds letters never plays its blur again. One read of the stream can hold many words, so the new words of a
+/* The text of an Answer as the text block, with its words. A word keeps its place by its index, so a word that grows as
+   the stream adds letters never plays its blur again. One read of the stream can hold many words, so the new words of a
    read sweep in one after another on --duration-stagger, and the whole read takes no more than --duration-very-slow
    (AT-44). A word that comes while a sweep runs starts after the last word of that sweep, so the words keep their
    order. Each word keeps the delay it got as it first showed, so a later render never plays its blur again. */
 function StreamText({ text, live }: { text: string; live: boolean }) {
-  const words = text.match(/\S+\s*/g) ?? [];
+  const count = textWords(text);
   const delays = useRef<number[]>([]);
   // The time that the last word of the sweep starts.
   const sweepEnd = useRef(0);
-  const fresh = words.length - delays.current.length;
+  const fresh = count - delays.current.length;
   if (live && fresh > 0) {
     const now = performance.now();
     const step = Math.min(STAGGER, VERY_SLOW / fresh) * 1000;
@@ -129,15 +130,12 @@ function StreamText({ text, live }: { text: string; live: boolean }) {
     }
     sweepEnd.current = at - step;
   }
-  return (
-    <p className="m-0 text-body leading-body text-ink">
-      {live ? words.map((word, index) => (
-        <span key={index} className="stream-word" style={{ animationDelay: `${Math.round(delays.current[index] ?? 0)}ms` }}>
-          {word}
-        </span>
-      )) : text}
-    </p>
+  const word = (token: string, index: number) => (
+    <span className="stream-word" style={{ animationDelay: `${Math.round(delays.current[index] ?? 0)}ms` }}>
+      {token}
+    </span>
   );
+  return <TextBlock text={text} className="text-ink" word={live ? word : undefined} />;
 }
 
 /* A line of work in flight. A band of the ink sweeps the mute text on a linear loop of 2 s, as the shimmer text of

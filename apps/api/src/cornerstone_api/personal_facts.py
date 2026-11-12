@@ -150,6 +150,11 @@ def trade_ideas_fact(snapshot: Snapshot, roster_id: int) -> str | None:
     return f"Offers for your {weak[0]}" if weak else None
 
 
+# The kind of the data block of a personal Topic that shows stats and rows. Every block on the stream names its kind, so
+# the site picks its view from the kind alone.
+ROWS_KIND = "rows"
+
+
 def _weak_slot(need: dict) -> str | None:
     """The first weak starting slot of the team, such as "QB", or None when it has none."""
     weak = need["weak_starting_slots"]
@@ -230,4 +235,4 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
                            "roster_id": None, "you": False} for part in grade.parts]}
     else:
         block = _waiver_block(groups["team_need"], len(groups["candidates"]))
-    return PersonalFacts(slice=slice_, block={"topic": topic, "team": roster_id, **block})
+    return PersonalFacts(slice=slice_, block={"kind": ROWS_KIND, "topic": topic, "team": roster_id, **block})

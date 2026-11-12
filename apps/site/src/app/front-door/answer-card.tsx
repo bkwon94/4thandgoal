@@ -11,6 +11,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import type { TopicRow } from "@/lib/data/topics-schema";
 import { SLOW, VERY_SLOW, bubbleIn, fadeIn, riseIn } from "./motion";
+import { TextBlock } from "./text-block";
 
 export const AnswerCard = forwardRef<
   HTMLElement,
@@ -76,12 +77,9 @@ export function AnswerBody({
         </ul>
       )}
       {answer.text.length > 0 && (
-        <motion.div className="flex flex-col gap-sp-3" {...riseIn(off, { delay: 0.2, text: true })}>
-          {answer.text.map((paragraph, index) => (
-            <p key={index} className="m-0 text-body leading-body text-ink-2">
-              {paragraph}
-            </p>
-          ))}
+        <motion.div {...riseIn(off, { delay: 0.2, text: true })}>
+          {/* Each blurb is one paragraph of the text block, so a blank line keeps them apart. */}
+          <TextBlock text={answer.text.join("\n\n")} className="text-ink-2" />
         </motion.div>
       )}
       {children}

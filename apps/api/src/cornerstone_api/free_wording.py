@@ -69,6 +69,21 @@ CHECK_CONTEXT = ("A fantasy football league site answered `manager_question` fro
 SENTENCE_END = re.compile(r"(?<=[.!?])\s+|\n+")
 
 
+# The marks of the text block that the site renders (decision 09): a bullet or a number at the head of a line, and bold
+# or italic around words. The rules match `text-block.tsx` of the site. Every other mark stays, because the site shows
+# it as plain text too.
+LIST_MARK = re.compile(r"^[ \t]*(?:[-*+]|\d+[.)])[ \t]+", re.MULTILINE)
+INLINE_MARK = re.compile(r"\*\*(?=\S)(.+?)(?<=\S)\*\*|__(?=\S)(.+?)(?<=\S)__|\*(?=\S)(.+?)(?<=\S)\*"
+                         r"|(?<!\w)_(?=\S)(.+?)(?<=\S)_(?!\w)")
+
+
+def plain_text(text: str) -> str:
+    """`text` with the marks of the text block taken out, so the Jev check reads the plain sentences that the manager
+    reads on the site."""
+    unlisted = LIST_MARK.sub("", text)
+    return INLINE_MARK.sub(lambda match: next(group for group in match.groups() if group is not None), unlisted)
+
+
 def sentences(text: str) -> list[str]:
     """The sentences of an answer, in order, with no blank one."""
     return [part.strip() for part in SENTENCE_END.split(text) if part.strip()]

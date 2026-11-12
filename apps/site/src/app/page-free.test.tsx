@@ -372,3 +372,92 @@ describe("the block of a free answer (H27)", () => {
   });
 });
 
+
+/* A free answer whose checked text is `text`, in the parts that the API streams for a live run: one step, the text,
+   then the check. */
+function textWith(text: string) {
+  routes.push({ route: "free", topic: null, team: null, closest: [], suggestion: null, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } });
+  const parts = [
+    { type: "start" },
+    { type: "start-step" },
+    { type: "finish-step" },
+    { type: "data-check", id: "check", data: { state: "checking" } },
+    { type: "text-start", id: "t" },
+    { type: "text-delta", id: "t", delta: text },
+    { type: "text-end", id: "t" },
+    { type: "data-check", id: "check", data: { state: "checked" } },
+    { type: "finish", finishReason: "stop" },
+  ];
+  streams.push(() => sse(`${parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("")}data: [DONE]\n\n`));
+}
+
+/* The text block of the Answer: the one element that holds the text marks. */
+function textBlockOf(answer: HTMLElement) {
+  const block = answer.querySelector<HTMLElement>("[data-text-block]");
+  expect(block).not.toBeNull();
+  return block!;
+}
+
+describe("the text block of an Answer", () => {
+  const MARKED = [
+    "Lil Fridge is **3rd** of 12, and the gap is *small*.",
+    "",
+    "- Bo Girds won by 14.2",
+    "- Teehee lost by 3.1",
+    "",
+    "1. Start Kenneth Walker III",
+    "2. Sit Blake Corum",
+  ].join("\n");
+
+  it("renders bold, italic, a bullet list, and a numbered list as marks, live and kept (AT-36)", async () => {
+    textWith(MARKED);
+    render(<HomePage />);
+    await ask("how is my team");
+    const expectMarks = (answer: HTMLElement) => {
+      const block = textBlockOf(answer);
+      expect(within(block).getByText("3rd").closest("strong")).not.toBeNull();
+      expect(within(block).getByText("small").closest("em")).not.toBeNull();
+      expect([...block.querySelectorAll("ul li")].map((item) => item.textContent?.trim())).toEqual(["Bo Girds won by 14.2", "Teehee lost by 3.1"]);
+      expect([...block.querySelectorAll("ol li")].map((item) => item.textContent?.trim())).toEqual(["Start Kenneth Walker III", "Sit Blake Corum"]);
+      expect(block.textContent).not.toContain("*");
+    };
+    // The live card sweeps each word in, inside its marks.
+    const live = await articleWith("how is my team", "Checked");
+    await waitFor(() => expectMarks(live));
+    expect(textBlockOf(live).querySelector("strong .stream-word")?.textContent).toBe("3rd");
+    // The kept card takes the place of the live card, and a reload shows the same marks with no stream.
+    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("Kenneth Walker III"), { timeout: 3000 });
+    cleanup();
+    render(<HomePage />);
+    expectMarks(await articleWith("how is my team", "Sit Blake Corum"));
+    expect(freeCalls()).toHaveLength(1);
+  });
+
+  it("shows a link, an image, a heading, and raw HTML as plain text, with no such element (AT-37)", async () => {
+    const lines = [
+      "## Week 9 recap",
+      "",
+      "Read [the recap](https://example.com/recap) first.",
+      "",
+      "![a chart](https://example.com/chart.png)",
+      "",
+      'Bo Girds won. <b>Bold</b> <a href="https://example.com">here</a> <script>alert(1)</script>',
+      "",
+      "| Team | Points |",
+      "| --- | --- |",
+      "| Bo Girds | 114.07 |",
+    ];
+    textWith(lines.join("\n"));
+    render(<HomePage />);
+    await ask("what happened");
+    const answer = await articleWith("what happened", "Checked");
+    const block = await waitFor(() => textBlockOf(answer));
+    for (const line of ["## Week 9 recap", "Read [the recap](https://example.com/recap) first.", "![a chart](https://example.com/chart.png)", "<b>Bold</b>", '<a href="https://example.com">here</a>', "<script>alert(1)</script>", "| Bo Girds | 114.07 |"]) {
+      expect(block.textContent).toContain(line);
+    }
+    expect(block.querySelectorAll("a, img, h1, h2, h3, h4, h5, h6, b, script, table")).toHaveLength(0);
+    // Only the elements of the allowlist reach the page.
+    const tags = new Set([...block.querySelectorAll("*")].map((element) => element.tagName.toLowerCase()));
+    expect([...tags].every((tag) => ["p", "ul", "ol", "li", "strong", "em", "span"].includes(tag))).toBe(true);
+  });
+});

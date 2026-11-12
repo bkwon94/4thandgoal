@@ -10,9 +10,9 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-36, AT-37, AT-41.
 
 **Status:** ready-for-agent
 
-- [ ] The site block schema is one union over `kind`, and the free answer kinds `list`, `table`, and `player` still pass it.
-- [ ] The data part of a personal Topic carries a `kind`.
-- [ ] A vitest renders bold, italic, a bullet list, and a numbered list as marks (AT-36).
-- [ ] A vitest shows a link, an image, a heading, and raw HTML as plain text, with no such element on the page (AT-37).
-- [ ] A pytest shows that the Jev check gets the text with no markdown marks.
-- [ ] A vitest renders a version 1 `topics.json` with no `block` as today (AT-41).
+- [x] The site block schema is one union over `kind`, and the free answer kinds `list`, `table`, and `player` still pass it.
+- [x] The data part of a personal Topic carries a `kind`.
+- [x] A vitest renders bold, italic, a bullet list, and a numbered list as marks (AT-36).
+- [x] A vitest shows a link, an image, a heading, and raw HTML as plain text, with no such element on the page (AT-37).
+- [x] A pytest shows that the Jev check gets the text with no markdown marks.
+- [x] A vitest renders a version 1 `topics.json` with no `block` as today (AT-41).
