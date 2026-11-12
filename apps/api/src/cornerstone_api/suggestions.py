@@ -16,7 +16,7 @@ from analyzer.sell_facts import sell_sheet, sheet_players
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import YES, Asker, ClientAsker
 from cornerstone_api.personal_facts import PersonalTopic, trade_ideas_fact
-from cornerstone_api.personal_topics import Live, claude_answer, load_live, shown_facts
+from cornerstone_api.personal_topics import Live, answer_key, claude_answer, load_live, load_week, shown_facts
 from cornerstone_api.start_sit import START_SIT, load_live_week
 from cornerstone_api.start_sit_fact import start_sit_fact
 from cornerstone_api.suggestion_wording import (
@@ -238,13 +238,19 @@ async def current(body: CurrentRequest, asker: ClientAsker, served: ServedClient
            for item in body.answers):
         raise HTTPException(status_code=422, detail="Pick your team again.")
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
+    # Start or sit builds its Answer from the live Sleeper week and not from the live league, so its key comes from the
+    # same week, as the tap reads it. The week loads only when the Thread holds a Start or sit Answer.
+    week = await load_week(served, asker.season) if any(item.topic == START_SIT for item in body.answers) else None
 
     def check(item: KeyItem) -> dict:
         if item.topic in TRADE_TOPICS:
             key = trade_key(cast(TradeTopic, item.topic), rosters, item.roster_id, item.team)
             return {"key": item.key, "current": key == item.key, "kept_at": None}
         subject = item.roster_id if item.team is None else item.team
-        _, key = live.key(cast(PersonalTopic, item.topic), item.roster_id, subject)
+        if week is not None and item.topic == START_SIT:
+            key = answer_key(START_SIT, subject == item.roster_id, week.facts(subject), week.rosters[subject])
+        else:
+            _, key = live.key(cast(PersonalTopic, item.topic), item.roster_id, subject)
         return {"key": item.key, "current": key == item.key, "kept_at": store.kept_at(item.key)}
 
     return {"answers": [await anyio.to_thread.run_sync(check, item) for item in body.answers]}
