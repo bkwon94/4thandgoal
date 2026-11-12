@@ -3,6 +3,8 @@
  * of the front door for each team. The pipeline owns the shape (ADR 0013), in apps/pipeline/src/cornerstone/topics.py.
  */
 import { z } from "zod";
+import { matchupBlockSchema } from "./blocks/matchup-schema";
+import { rankMoversBlockSchema } from "./blocks/rank-movers-schema";
 import { recapBlockSchema } from "./blocks/recap-schema";
 
 /* The 7 Topics that the weekly build answers. The other 6 Topics of the front door are live from the API. */
@@ -26,6 +28,8 @@ export const topicRowSchema = z.object({
    blocks/ and one line here, and the answer block of the front door adds the same schema to its union. */
 export const topicBlockSchema = z.discriminatedUnion("kind", [
   recapBlockSchema,
+  matchupBlockSchema,
+  rankMoversBlockSchema,
 ]);
 
 /* The Answer of one league Topic for one team. The fact is the line of its Suggestion, and the text holds the blurbs of

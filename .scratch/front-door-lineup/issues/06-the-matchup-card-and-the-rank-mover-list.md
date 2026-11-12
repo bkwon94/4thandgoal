@@ -10,6 +10,6 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-24, AT-26, AT-40.
 
 **Status:** ready-for-agent
 
-- [ ] The week 9 build of cpc writes a last matchup `block` with 114.07 to 100.63 against Teehee, slot by slot (AT-24).
-- [ ] The week 9 build writes a `block` for Your next matchup and for Power rankings in both leagues (AT-40).
+- [x] The week 9 build of cpc writes a last matchup `block` with 114.07 to 100.63 against Teehee, slot by slot (AT-24).
+- [x] The week 9 build writes a `block` for Your next matchup and for Power rankings in both leagues (AT-40).
 - [ ] Site screenshots show the matchup card and the rank mover list (AT-24, AT-26).

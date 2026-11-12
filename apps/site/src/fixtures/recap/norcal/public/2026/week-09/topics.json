@@ -164,7 +164,158 @@
         "text": [
           "puurdygood trailed by 19.5 after the early Sunday games and still won going away, nudging its playoff odds to about 87% this week. The new pickup Audric Estime posted 14.7, but trade add Saquon Barkley managed just 8.2. Ladd McConkey, another trade add, was blanked and is now listed Questionable, Xavier Worthy is now listed Out, and VarsityBlue2 watched its playoff odds sink this week."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 1,
+            "name": "puurdygood",
+            "score": 110.44
+          },
+          "them": {
+            "roster_id": 2,
+            "name": "VarsityBlue2",
+            "score": 83.1
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Kirk Cousins",
+                "position": "QB",
+                "nfl_team": "LV",
+                "points": 17.64
+              },
+              "them": {
+                "name": "Dak Prescott",
+                "position": "QB",
+                "nfl_team": "DAL",
+                "points": 23.5
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Christian McCaffrey",
+                "position": "RB",
+                "nfl_team": "SF",
+                "points": 22.7
+              },
+              "them": {
+                "name": "Audric Estime",
+                "position": "RB",
+                "nfl_team": "NO",
+                "points": 14.7
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Kyren Williams",
+                "position": "RB",
+                "nfl_team": "LAR",
+                "points": 9.1
+              },
+              "them": {
+                "name": "Saquon Barkley",
+                "position": "RB",
+                "nfl_team": "PHI",
+                "points": 8.2
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Tetairoa McMillan",
+                "position": "WR",
+                "nfl_team": "CAR",
+                "points": 15.6
+              },
+              "them": {
+                "name": "Khalil Shakir",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 9.8
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Nico Collins",
+                "position": "WR",
+                "nfl_team": "HOU",
+                "points": 15.5
+              },
+              "them": {
+                "name": "Ladd McConkey",
+                "position": "WR",
+                "nfl_team": "LAC",
+                "points": 0.0
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Brenton Strange",
+                "position": "TE",
+                "nfl_team": "JAX",
+                "points": 4.2
+              },
+              "them": {
+                "name": "Sam LaPorta",
+                "position": "TE",
+                "nfl_team": "DET",
+                "points": 7.2
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Harold Fannin Jr.",
+                "position": "TE",
+                "nfl_team": "CLE",
+                "points": 12.2
+              },
+              "them": {
+                "name": "Xavier Worthy",
+                "position": "WR",
+                "nfl_team": "KC",
+                "points": 10.8
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Rachaad White",
+                "position": "RB",
+                "nfl_team": "WAS",
+                "points": 6.9
+              },
+              "them": {
+                "name": "Dalton Kincaid",
+                "position": "TE",
+                "nfl_team": "BUF",
+                "points": 5.8
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "DJ Moore",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 6.6
+              },
+              "them": {
+                "name": "Mike Gesicki",
+                "position": "TE",
+                "nfl_team": "CIN",
+                "points": 3.1
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -189,7 +340,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 1,
+            "name": "puurdygood",
+            "score": 132.18
+          },
+          "them": {
+            "roster_id": 9,
+            "name": "kaiedmonds",
+            "score": 117.07
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Kirk Cousins",
+                "position": "QB",
+                "nfl_team": "LV",
+                "points": 14.62
+              },
+              "them": {
+                "name": "Caleb Williams",
+                "position": "QB",
+                "nfl_team": "CHI",
+                "points": 0.0
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Christian McCaffrey",
+                "position": "RB",
+                "nfl_team": "SF",
+                "points": 22.55
+              },
+              "them": {
+                "name": "Chuba Hubbard",
+                "position": "RB",
+                "nfl_team": "CAR",
+                "points": 18.0
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Kyren Williams",
+                "position": "RB",
+                "nfl_team": "LAR",
+                "points": 17.75
+              },
+              "them": {
+                "name": "James Cook III",
+                "position": "RB",
+                "nfl_team": "BUF",
+                "points": 15.3
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Tetairoa McMillan",
+                "position": "WR",
+                "nfl_team": "CAR",
+                "points": 15.9
+              },
+              "them": {
+                "name": "Justin Jefferson",
+                "position": "WR",
+                "nfl_team": "MIN",
+                "points": 16.92
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Nico Collins",
+                "position": "WR",
+                "nfl_team": "HOU",
+                "points": 15.09
+              },
+              "them": {
+                "name": "Christian Watson",
+                "position": "WR",
+                "nfl_team": "GB",
+                "points": 16.16
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Harold Fannin Jr.",
+                "position": "TE",
+                "nfl_team": "CLE",
+                "points": 11.05
+              },
+              "them": {
+                "name": "George Kittle",
+                "position": "TE",
+                "nfl_team": "SF",
+                "points": 16.19
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "DJ Moore",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 13.06
+              },
+              "them": {
+                "name": "Rashee Rice",
+                "position": "WR",
+                "nfl_team": "KC",
+                "points": 14.65
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Wan'Dale Robinson",
+                "position": "WR",
+                "nfl_team": "TEN",
+                "points": 11.13
+              },
+              "them": {
+                "name": "Keenan Allen",
+                "position": "WR",
+                "nfl_team": "IND",
+                "points": 10.36
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Brenton Strange",
+                "position": "TE",
+                "nfl_team": "JAX",
+                "points": 11.03
+              },
+              "them": {
+                "name": "Travis Etienne Jr.",
+                "position": "RB",
+                "nfl_team": "NO",
+                "points": 9.49
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -234,7 +536,95 @@
         "text": [
           "puurdygood rises to 4th on a 2-game win streak. They project 131 a week from here, above their season pace."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": true
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -542,7 +932,158 @@
         "text": [
           "puurdygood trailed by 19.5 after the early Sunday games and still won going away, nudging its playoff odds to about 87% this week. The new pickup Audric Estime posted 14.7, but trade add Saquon Barkley managed just 8.2. Ladd McConkey, another trade add, was blanked and is now listed Questionable, Xavier Worthy is now listed Out, and VarsityBlue2 watched its playoff odds sink this week."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 2,
+            "name": "VarsityBlue2",
+            "score": 83.1
+          },
+          "them": {
+            "roster_id": 1,
+            "name": "puurdygood",
+            "score": 110.44
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Dak Prescott",
+                "position": "QB",
+                "nfl_team": "DAL",
+                "points": 23.5
+              },
+              "them": {
+                "name": "Kirk Cousins",
+                "position": "QB",
+                "nfl_team": "LV",
+                "points": 17.64
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Audric Estime",
+                "position": "RB",
+                "nfl_team": "NO",
+                "points": 14.7
+              },
+              "them": {
+                "name": "Christian McCaffrey",
+                "position": "RB",
+                "nfl_team": "SF",
+                "points": 22.7
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Saquon Barkley",
+                "position": "RB",
+                "nfl_team": "PHI",
+                "points": 8.2
+              },
+              "them": {
+                "name": "Kyren Williams",
+                "position": "RB",
+                "nfl_team": "LAR",
+                "points": 9.1
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Khalil Shakir",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 9.8
+              },
+              "them": {
+                "name": "Tetairoa McMillan",
+                "position": "WR",
+                "nfl_team": "CAR",
+                "points": 15.6
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Ladd McConkey",
+                "position": "WR",
+                "nfl_team": "LAC",
+                "points": 0.0
+              },
+              "them": {
+                "name": "Nico Collins",
+                "position": "WR",
+                "nfl_team": "HOU",
+                "points": 15.5
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Sam LaPorta",
+                "position": "TE",
+                "nfl_team": "DET",
+                "points": 7.2
+              },
+              "them": {
+                "name": "Brenton Strange",
+                "position": "TE",
+                "nfl_team": "JAX",
+                "points": 4.2
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Xavier Worthy",
+                "position": "WR",
+                "nfl_team": "KC",
+                "points": 10.8
+              },
+              "them": {
+                "name": "Harold Fannin Jr.",
+                "position": "TE",
+                "nfl_team": "CLE",
+                "points": 12.2
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Dalton Kincaid",
+                "position": "TE",
+                "nfl_team": "BUF",
+                "points": 5.8
+              },
+              "them": {
+                "name": "Rachaad White",
+                "position": "RB",
+                "nfl_team": "WAS",
+                "points": 6.9
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Mike Gesicki",
+                "position": "TE",
+                "nfl_team": "CIN",
+                "points": 3.1
+              },
+              "them": {
+                "name": "DJ Moore",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 6.6
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -567,7 +1108,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 2,
+            "name": "VarsityBlue2",
+            "score": 103.48
+          },
+          "them": {
+            "roster_id": 12,
+            "name": "The Dart Side",
+            "score": 84.06
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Dak Prescott",
+                "position": "QB",
+                "nfl_team": "DAL",
+                "points": 18.68
+              },
+              "them": {
+                "name": "Bryce Young",
+                "position": "QB",
+                "nfl_team": "CAR",
+                "points": 19.83
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Cam Skattebo",
+                "position": "RB",
+                "nfl_team": "NYG",
+                "points": 12.03
+              },
+              "them": {
+                "name": "Chase Brown",
+                "position": "RB",
+                "nfl_team": "CIN",
+                "points": 12.98
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Kimani Vidal",
+                "position": "RB",
+                "nfl_team": "LAC",
+                "points": 7.11
+              },
+              "them": {
+                "name": "Omarion Hampton",
+                "position": "RB",
+                "nfl_team": "LAC",
+                "points": 8.71
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Ladd McConkey",
+                "position": "WR",
+                "nfl_team": "LAC",
+                "points": 11.41
+              },
+              "them": {
+                "name": "Caleb Douglas",
+                "position": "WR",
+                "nfl_team": "MIA",
+                "points": 8.0
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Xavier Worthy",
+                "position": "WR",
+                "nfl_team": "KC",
+                "points": 10.32
+              },
+              "them": {
+                "name": "Ja'Kobi Lane",
+                "position": "WR",
+                "nfl_team": "BAL",
+                "points": 5.53
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Sam LaPorta",
+                "position": "TE",
+                "nfl_team": "DET",
+                "points": 12.89
+              },
+              "them": {
+                "name": "Tucker Kraft",
+                "position": "TE",
+                "nfl_team": "GB",
+                "points": 10.65
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Dalton Kincaid",
+                "position": "TE",
+                "nfl_team": "BUF",
+                "points": 10.71
+              },
+              "them": {
+                "name": "Zonovan Knight",
+                "position": "RB",
+                "nfl_team": "ARI",
+                "points": 7.67
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Mike Gesicki",
+                "position": "TE",
+                "nfl_team": "CIN",
+                "points": 10.23
+              },
+              "them": {
+                "name": "Emmett Johnson",
+                "position": "RB",
+                "nfl_team": "KC",
+                "points": 6.83
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Khalil Shakir",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 10.1
+              },
+              "them": {
+                "name": "Kenyon Sadiq",
+                "position": "TE",
+                "nfl_team": "NYJ",
+                "points": 3.86
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -612,7 +1304,95 @@
         "text": [
           "VarsityBlue2 slips to 10th with a 3-6 record. The offense has gone quiet, down to 98.43 a week lately. Playoff odds of 3% say the rest out loud."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": true
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -920,7 +1700,158 @@
         "text": [
           "Skol Daddy flattened BobBuckstein 136.24 to 88.66 in an upset, and the lead never changed hands after Thursday. Adonai Mitchell put up a 0 for the losing side and dropped 2 passes along the way. The winners moved up in the standings, while the losing side slid down and saw its winning streak end."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 3,
+            "name": "BobBuckstein",
+            "score": 88.66
+          },
+          "them": {
+            "roster_id": 5,
+            "name": "Skol Daddy",
+            "score": 136.24
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Josh Allen",
+                "position": "QB",
+                "nfl_team": "BUF",
+                "points": 15.86
+              },
+              "them": {
+                "name": "Joe Burrow",
+                "position": "QB",
+                "nfl_team": "CIN",
+                "points": 35.54
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Jonah Coleman",
+                "position": "RB",
+                "nfl_team": "DEN",
+                "points": 18.8
+              },
+              "them": {
+                "name": "Blake Corum",
+                "position": "RB",
+                "nfl_team": "LAR",
+                "points": 11.8
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Ashton Jeanty",
+                "position": "RB",
+                "nfl_team": "LV",
+                "points": 7.0
+              },
+              "them": {
+                "name": "Woody Marks",
+                "position": "RB",
+                "nfl_team": "HOU",
+                "points": 8.4
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Amon-Ra St. Brown",
+                "position": "WR",
+                "nfl_team": "DET",
+                "points": 16.6
+              },
+              "them": {
+                "name": "Ja'Marr Chase",
+                "position": "WR",
+                "nfl_team": "CIN",
+                "points": 31.5
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Jalen Coker",
+                "position": "WR",
+                "nfl_team": "CAR",
+                "points": 6.6
+              },
+              "them": {
+                "name": "Malik Washington",
+                "position": "WR",
+                "nfl_team": "MIA",
+                "points": 4.1
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Colston Loveland",
+                "position": "TE",
+                "nfl_team": "CHI",
+                "points": 9.4
+              },
+              "them": {
+                "name": "Brock Bowers",
+                "position": "TE",
+                "nfl_team": "LV",
+                "points": 22.3
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Bhayshul Tuten",
+                "position": "RB",
+                "nfl_team": "JAX",
+                "points": 8.9
+              },
+              "them": {
+                "name": "Jakobi Meyers",
+                "position": "WR",
+                "nfl_team": "JAX",
+                "points": 10.5
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Antonio Williams",
+                "position": "WR",
+                "nfl_team": "WAS",
+                "points": 5.5
+              },
+              "them": {
+                "name": "T.J. Hockenson",
+                "position": "TE",
+                "nfl_team": "MIN",
+                "points": 7.3
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Adonai Mitchell",
+                "position": "WR",
+                "nfl_team": "NYJ",
+                "points": 0.0
+              },
+              "them": {
+                "name": "Jordan Addison",
+                "position": "WR",
+                "nfl_team": "MIN",
+                "points": 4.8
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -945,7 +1876,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 3,
+            "name": "BobBuckstein",
+            "score": 128.79
+          },
+          "them": {
+            "roster_id": 6,
+            "name": "Mitseeker5000",
+            "score": 119.67
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Josh Allen",
+                "position": "QB",
+                "nfl_team": "BUF",
+                "points": 26.17
+              },
+              "them": {
+                "name": "Jayden Daniels",
+                "position": "QB",
+                "nfl_team": "WAS",
+                "points": 19.28
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Bhayshul Tuten",
+                "position": "RB",
+                "nfl_team": "JAX",
+                "points": 16.34
+              },
+              "them": {
+                "name": "Javonte Williams",
+                "position": "RB",
+                "nfl_team": "DAL",
+                "points": 17.74
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Ashton Jeanty",
+                "position": "RB",
+                "nfl_team": "LV",
+                "points": 12.47
+              },
+              "them": {
+                "name": "Devin Singletary",
+                "position": "RB",
+                "nfl_team": "NYG",
+                "points": 9.9
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Amon-Ra St. Brown",
+                "position": "WR",
+                "nfl_team": "DET",
+                "points": 19.55
+              },
+              "them": {
+                "name": "Chris Olave",
+                "position": "WR",
+                "nfl_team": "NO",
+                "points": 16.22
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Jalen Coker",
+                "position": "WR",
+                "nfl_team": "CAR",
+                "points": 14.7
+              },
+              "them": {
+                "name": "Carnell Tate",
+                "position": "WR",
+                "nfl_team": "TEN",
+                "points": 12.6
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Michael Mayer",
+                "position": "TE",
+                "nfl_team": "LV",
+                "points": 7.32
+              },
+              "them": {
+                "name": "Travis Kelce",
+                "position": "TE",
+                "nfl_team": "KC",
+                "points": 12.76
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Tony Pollard",
+                "position": "RB",
+                "nfl_team": "TEN",
+                "points": 12.05
+              },
+              "them": {
+                "name": "Stefon Diggs",
+                "position": "WR",
+                "nfl_team": "WAS",
+                "points": 11.36
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Germie Bernard",
+                "position": "WR",
+                "nfl_team": "PIT",
+                "points": 10.24
+              },
+              "them": {
+                "name": "Hunter Henry",
+                "position": "TE",
+                "nfl_team": "NE",
+                "points": 10.21
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "KC Concepcion Jr.",
+                "position": "WR",
+                "nfl_team": "CLE",
+                "points": 9.95
+              },
+              "them": {
+                "name": "Rico Dowdle",
+                "position": "RB",
+                "nfl_team": "PIT",
+                "points": 9.6
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -990,7 +2072,95 @@
         "text": [
           "BobBuckstein tumbles 5 places to 7th. Losing by 48 will do that. Playoff odds are 40%, and they project 137 a week from here."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": true
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -1298,7 +2468,158 @@
         "text": [
           "Davlionman beat The Mean Machine 117.46 to 104.78, a margin of 12.68."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 4,
+            "name": "The Mean Machine",
+            "score": 104.78
+          },
+          "them": {
+            "roster_id": 10,
+            "name": "Davlionman",
+            "score": 117.46
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Brock Purdy",
+                "position": "QB",
+                "nfl_team": "SF",
+                "points": 30.28
+              },
+              "them": {
+                "name": "C.J. Stroud",
+                "position": "QB",
+                "nfl_team": "HOU",
+                "points": 46.36
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Jonathan Taylor",
+                "position": "RB",
+                "nfl_team": "IND",
+                "points": 9.4
+              },
+              "them": {
+                "name": "Jahmyr Gibbs",
+                "position": "RB",
+                "nfl_team": "DET",
+                "points": 13.4
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Tyler Allgeier",
+                "position": "RB",
+                "nfl_team": "ARI",
+                "points": 6.6
+              },
+              "them": {
+                "name": "Josh Jacobs",
+                "position": "RB",
+                "nfl_team": "GB",
+                "points": 0.5
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Tee Higgins",
+                "position": "WR",
+                "nfl_team": "CIN",
+                "points": 20.2
+              },
+              "them": {
+                "name": "Drake London",
+                "position": "WR",
+                "nfl_team": "ATL",
+                "points": 11.8
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Jameson Williams",
+                "position": "WR",
+                "nfl_team": "DET",
+                "points": 5.0
+              },
+              "them": {
+                "name": "Malik Nabers",
+                "position": "WR",
+                "nfl_team": "NYG",
+                "points": 9.3
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Kyle Pitts Sr.",
+                "position": "TE",
+                "nfl_team": "ATL",
+                "points": 5.3
+              },
+              "them": {
+                "name": "Dallas Goedert",
+                "position": "TE",
+                "nfl_team": "PHI",
+                "points": 10.0
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Makai Lemon",
+                "position": "WR",
+                "nfl_team": "PHI",
+                "points": 12.1
+              },
+              "them": {
+                "name": "DeMario Douglas",
+                "position": "WR",
+                "nfl_team": "NE",
+                "points": 15.2
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Juwan Johnson",
+                "position": "TE",
+                "nfl_team": "NO",
+                "points": 11.4
+              },
+              "them": {
+                "name": "Quinshon Judkins",
+                "position": "RB",
+                "nfl_team": "CLE",
+                "points": 5.5
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Darius Cooper",
+                "position": "WR",
+                "nfl_team": "PHI",
+                "points": 4.5
+              },
+              "them": {
+                "name": "Braelon Allen",
+                "position": "RB",
+                "nfl_team": "NYJ",
+                "points": 5.4
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -1323,7 +2644,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 4,
+            "name": "The Mean Machine",
+            "score": 118.42
+          },
+          "them": {
+            "roster_id": 5,
+            "name": "Skol Daddy",
+            "score": 127.08
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Drake Maye",
+                "position": "QB",
+                "nfl_team": "NE",
+                "points": 23.54
+              },
+              "them": {
+                "name": "Joe Burrow",
+                "position": "QB",
+                "nfl_team": "CIN",
+                "points": 22.16
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Jonathan Taylor",
+                "position": "RB",
+                "nfl_team": "IND",
+                "points": 17.07
+              },
+              "them": {
+                "name": "Jaylen Warren",
+                "position": "RB",
+                "nfl_team": "PIT",
+                "points": 16.71
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Tyler Allgeier",
+                "position": "RB",
+                "nfl_team": "ARI",
+                "points": 9.7
+              },
+              "them": {
+                "name": "David Montgomery",
+                "position": "RB",
+                "nfl_team": "HOU",
+                "points": 11.12
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Tee Higgins",
+                "position": "WR",
+                "nfl_team": "CIN",
+                "points": 17.02
+              },
+              "them": {
+                "name": "Ja'Marr Chase",
+                "position": "WR",
+                "nfl_team": "CIN",
+                "points": 19.67
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "A.J. Brown",
+                "position": "WR",
+                "nfl_team": "NE",
+                "points": 13.9
+              },
+              "them": {
+                "name": "Malik Washington",
+                "position": "WR",
+                "nfl_team": "MIA",
+                "points": 10.23
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Juwan Johnson",
+                "position": "TE",
+                "nfl_team": "NO",
+                "points": 9.0
+              },
+              "them": {
+                "name": "Brock Bowers",
+                "position": "TE",
+                "nfl_team": "LV",
+                "points": 17.01
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Jameson Williams",
+                "position": "WR",
+                "nfl_team": "DET",
+                "points": 12.56
+              },
+              "them": {
+                "name": "T.J. Hockenson",
+                "position": "TE",
+                "nfl_team": "MIN",
+                "points": 10.45
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Kyle Pitts Sr.",
+                "position": "TE",
+                "nfl_team": "ATL",
+                "points": 8.36
+              },
+              "them": {
+                "name": "Blake Corum",
+                "position": "RB",
+                "nfl_team": "LAR",
+                "points": 9.87
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Dylan Sampson",
+                "position": "RB",
+                "nfl_team": "CLE",
+                "points": 7.27
+              },
+              "them": {
+                "name": "Jakobi Meyers",
+                "position": "WR",
+                "nfl_team": "JAX",
+                "points": 9.86
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -1368,7 +2840,95 @@
         "text": [
           "The Mean Machine stays 11th on a 2-game losing streak. Mean on paper, not much of a machine on the field."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": true
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -1676,7 +3236,158 @@
         "text": [
           "Skol Daddy flattened BobBuckstein 136.24 to 88.66 in an upset, and the lead never changed hands after Thursday. Adonai Mitchell put up a 0 for the losing side and dropped 2 passes along the way. The winners moved up in the standings, while the losing side slid down and saw its winning streak end."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 5,
+            "name": "Skol Daddy",
+            "score": 136.24
+          },
+          "them": {
+            "roster_id": 3,
+            "name": "BobBuckstein",
+            "score": 88.66
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Joe Burrow",
+                "position": "QB",
+                "nfl_team": "CIN",
+                "points": 35.54
+              },
+              "them": {
+                "name": "Josh Allen",
+                "position": "QB",
+                "nfl_team": "BUF",
+                "points": 15.86
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Blake Corum",
+                "position": "RB",
+                "nfl_team": "LAR",
+                "points": 11.8
+              },
+              "them": {
+                "name": "Jonah Coleman",
+                "position": "RB",
+                "nfl_team": "DEN",
+                "points": 18.8
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Woody Marks",
+                "position": "RB",
+                "nfl_team": "HOU",
+                "points": 8.4
+              },
+              "them": {
+                "name": "Ashton Jeanty",
+                "position": "RB",
+                "nfl_team": "LV",
+                "points": 7.0
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Ja'Marr Chase",
+                "position": "WR",
+                "nfl_team": "CIN",
+                "points": 31.5
+              },
+              "them": {
+                "name": "Amon-Ra St. Brown",
+                "position": "WR",
+                "nfl_team": "DET",
+                "points": 16.6
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Malik Washington",
+                "position": "WR",
+                "nfl_team": "MIA",
+                "points": 4.1
+              },
+              "them": {
+                "name": "Jalen Coker",
+                "position": "WR",
+                "nfl_team": "CAR",
+                "points": 6.6
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Brock Bowers",
+                "position": "TE",
+                "nfl_team": "LV",
+                "points": 22.3
+              },
+              "them": {
+                "name": "Colston Loveland",
+                "position": "TE",
+                "nfl_team": "CHI",
+                "points": 9.4
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Jakobi Meyers",
+                "position": "WR",
+                "nfl_team": "JAX",
+                "points": 10.5
+              },
+              "them": {
+                "name": "Bhayshul Tuten",
+                "position": "RB",
+                "nfl_team": "JAX",
+                "points": 8.9
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "T.J. Hockenson",
+                "position": "TE",
+                "nfl_team": "MIN",
+                "points": 7.3
+              },
+              "them": {
+                "name": "Antonio Williams",
+                "position": "WR",
+                "nfl_team": "WAS",
+                "points": 5.5
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Jordan Addison",
+                "position": "WR",
+                "nfl_team": "MIN",
+                "points": 4.8
+              },
+              "them": {
+                "name": "Adonai Mitchell",
+                "position": "WR",
+                "nfl_team": "NYJ",
+                "points": 0.0
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -1701,7 +3412,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 5,
+            "name": "Skol Daddy",
+            "score": 127.08
+          },
+          "them": {
+            "roster_id": 4,
+            "name": "The Mean Machine",
+            "score": 118.42
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Joe Burrow",
+                "position": "QB",
+                "nfl_team": "CIN",
+                "points": 22.16
+              },
+              "them": {
+                "name": "Drake Maye",
+                "position": "QB",
+                "nfl_team": "NE",
+                "points": 23.54
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Jaylen Warren",
+                "position": "RB",
+                "nfl_team": "PIT",
+                "points": 16.71
+              },
+              "them": {
+                "name": "Jonathan Taylor",
+                "position": "RB",
+                "nfl_team": "IND",
+                "points": 17.07
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "David Montgomery",
+                "position": "RB",
+                "nfl_team": "HOU",
+                "points": 11.12
+              },
+              "them": {
+                "name": "Tyler Allgeier",
+                "position": "RB",
+                "nfl_team": "ARI",
+                "points": 9.7
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Ja'Marr Chase",
+                "position": "WR",
+                "nfl_team": "CIN",
+                "points": 19.67
+              },
+              "them": {
+                "name": "Tee Higgins",
+                "position": "WR",
+                "nfl_team": "CIN",
+                "points": 17.02
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Malik Washington",
+                "position": "WR",
+                "nfl_team": "MIA",
+                "points": 10.23
+              },
+              "them": {
+                "name": "A.J. Brown",
+                "position": "WR",
+                "nfl_team": "NE",
+                "points": 13.9
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Brock Bowers",
+                "position": "TE",
+                "nfl_team": "LV",
+                "points": 17.01
+              },
+              "them": {
+                "name": "Juwan Johnson",
+                "position": "TE",
+                "nfl_team": "NO",
+                "points": 9.0
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "T.J. Hockenson",
+                "position": "TE",
+                "nfl_team": "MIN",
+                "points": 10.45
+              },
+              "them": {
+                "name": "Jameson Williams",
+                "position": "WR",
+                "nfl_team": "DET",
+                "points": 12.56
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Blake Corum",
+                "position": "RB",
+                "nfl_team": "LAR",
+                "points": 9.87
+              },
+              "them": {
+                "name": "Kyle Pitts Sr.",
+                "position": "TE",
+                "nfl_team": "ATL",
+                "points": 8.36
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Jakobi Meyers",
+                "position": "WR",
+                "nfl_team": "JAX",
+                "points": 9.86
+              },
+              "them": {
+                "name": "Dylan Sampson",
+                "position": "RB",
+                "nfl_team": "CLE",
+                "points": 7.27
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -1739,7 +3601,95 @@
         "text": [
           "Skol Daddy takes the top spot at 4-5, a losing record wearing a crown. They jumped 2 places after a 48-point win. Playoff odds sit near a coin flip at 46%, with a projection of 127 a week from here."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": true
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -2047,7 +3997,158 @@
         "text": [
           "Hock Tua 💦 trailed by 28.22 after the early Sunday games, then dropped a season-high 156.88 to knock off Mitseeker5000 in an upset. Puka Nacua and Patrick Mahomes are both now listed Questionable. Recent add Ryan Flournoy managed just 7.3, and the winners still climbed to 2nd while snapping the league leader's winning streak."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 6,
+            "name": "Mitseeker5000",
+            "score": 121.4
+          },
+          "them": {
+            "roster_id": 8,
+            "name": "Hock Tua 💦",
+            "score": 156.88
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Jared Goff",
+                "position": "QB",
+                "nfl_team": "DET",
+                "points": 6.3
+              },
+              "them": {
+                "name": "Patrick Mahomes",
+                "position": "QB",
+                "nfl_team": "KC",
+                "points": 20.48
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Javonte Williams",
+                "position": "RB",
+                "nfl_team": "DAL",
+                "points": 22.4
+              },
+              "them": {
+                "name": "Bucky Irving",
+                "position": "RB",
+                "nfl_team": "TB",
+                "points": 28.5
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "D'Andre Swift",
+                "position": "RB",
+                "nfl_team": "CHI",
+                "points": 3.1
+              },
+              "them": {
+                "name": "Bijan Robinson",
+                "position": "RB",
+                "nfl_team": "ATL",
+                "points": 26.7
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Puka Nacua",
+                "position": "WR",
+                "nfl_team": "LAR",
+                "points": 35.0
+              },
+              "them": {
+                "name": "Matthew Golden",
+                "position": "WR",
+                "nfl_team": "GB",
+                "points": 32.4
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Chris Olave",
+                "position": "WR",
+                "nfl_team": "NO",
+                "points": 16.8
+              },
+              "them": {
+                "name": "Ryan Flournoy",
+                "position": "WR",
+                "nfl_team": "DAL",
+                "points": 7.3
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Travis Kelce",
+                "position": "TE",
+                "nfl_team": "KC",
+                "points": 17.3
+              },
+              "them": {
+                "name": "Trey McBride",
+                "position": "TE",
+                "nfl_team": "ARI",
+                "points": 12.4
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Stefon Diggs",
+                "position": "WR",
+                "nfl_team": "WAS",
+                "points": 8.1
+              },
+              "them": {
+                "name": "Omar Cooper Jr.",
+                "position": "WR",
+                "nfl_team": "NYJ",
+                "points": 13.8
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Hunter Henry",
+                "position": "TE",
+                "nfl_team": "NE",
+                "points": 6.5
+              },
+              "them": {
+                "name": "Alvin Kamara",
+                "position": "RB",
+                "nfl_team": "NO",
+                "points": 7.9
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Devin Singletary",
+                "position": "RB",
+                "nfl_team": "NYG",
+                "points": 5.9
+              },
+              "them": {
+                "name": "Ollie Gordon II",
+                "position": "RB",
+                "nfl_team": "MIA",
+                "points": 7.4
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -2072,7 +4173,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 6,
+            "name": "Mitseeker5000",
+            "score": 119.67
+          },
+          "them": {
+            "roster_id": 3,
+            "name": "BobBuckstein",
+            "score": 128.79
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Jayden Daniels",
+                "position": "QB",
+                "nfl_team": "WAS",
+                "points": 19.28
+              },
+              "them": {
+                "name": "Josh Allen",
+                "position": "QB",
+                "nfl_team": "BUF",
+                "points": 26.17
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Javonte Williams",
+                "position": "RB",
+                "nfl_team": "DAL",
+                "points": 17.74
+              },
+              "them": {
+                "name": "Bhayshul Tuten",
+                "position": "RB",
+                "nfl_team": "JAX",
+                "points": 16.34
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Devin Singletary",
+                "position": "RB",
+                "nfl_team": "NYG",
+                "points": 9.9
+              },
+              "them": {
+                "name": "Ashton Jeanty",
+                "position": "RB",
+                "nfl_team": "LV",
+                "points": 12.47
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Chris Olave",
+                "position": "WR",
+                "nfl_team": "NO",
+                "points": 16.22
+              },
+              "them": {
+                "name": "Amon-Ra St. Brown",
+                "position": "WR",
+                "nfl_team": "DET",
+                "points": 19.55
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Carnell Tate",
+                "position": "WR",
+                "nfl_team": "TEN",
+                "points": 12.6
+              },
+              "them": {
+                "name": "Jalen Coker",
+                "position": "WR",
+                "nfl_team": "CAR",
+                "points": 14.7
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Travis Kelce",
+                "position": "TE",
+                "nfl_team": "KC",
+                "points": 12.76
+              },
+              "them": {
+                "name": "Michael Mayer",
+                "position": "TE",
+                "nfl_team": "LV",
+                "points": 7.32
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Stefon Diggs",
+                "position": "WR",
+                "nfl_team": "WAS",
+                "points": 11.36
+              },
+              "them": {
+                "name": "Tony Pollard",
+                "position": "RB",
+                "nfl_team": "TEN",
+                "points": 12.05
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Hunter Henry",
+                "position": "TE",
+                "nfl_team": "NE",
+                "points": 10.21
+              },
+              "them": {
+                "name": "Germie Bernard",
+                "position": "WR",
+                "nfl_team": "PIT",
+                "points": 10.24
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Rico Dowdle",
+                "position": "RB",
+                "nfl_team": "PIT",
+                "points": 9.6
+              },
+              "them": {
+                "name": "KC Concepcion Jr.",
+                "position": "WR",
+                "nfl_team": "CLE",
+                "points": 9.95
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -2117,7 +4369,95 @@
         "text": [
           "Mitseeker5000 slides to 3rd despite owning the standings. That 35-point loss dropped them 2 places. Scoring is down to 127.65 a week lately."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": true
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -2418,7 +4758,158 @@
         "text": [
           "Luther Burden III got hurt late in this one and is now listed Questionable. CeeDee Lamb, a recent add by trade, outscored the margin on his own with 33.5, and Bo Girds saw its playoff odds climb to 46% this week. kaiedmonds slid from 3rd to 6th after losing in an upset."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 7,
+            "name": "Bo Girds",
+            "score": 155.38
+          },
+          "them": {
+            "roster_id": 9,
+            "name": "kaiedmonds",
+            "score": 128.06
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Trevor Lawrence",
+                "position": "QB",
+                "nfl_team": "JAX",
+                "points": 15.58
+              },
+              "them": {
+                "name": "Caleb Williams",
+                "position": "QB",
+                "nfl_team": "CHI",
+                "points": 20.76
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Kenneth Walker III",
+                "position": "RB",
+                "nfl_team": "KC",
+                "points": 36.3
+              },
+              "them": {
+                "name": "James Cook III",
+                "position": "RB",
+                "nfl_team": "BUF",
+                "points": 16.7
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Austin Ekeler",
+                "position": "RB",
+                "nfl_team": "WAS",
+                "points": 5.4
+              },
+              "them": {
+                "name": "Chuba Hubbard",
+                "position": "RB",
+                "nfl_team": "CAR",
+                "points": 13.6
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "CeeDee Lamb",
+                "position": "WR",
+                "nfl_team": "DAL",
+                "points": 33.5
+              },
+              "them": {
+                "name": "Christian Watson",
+                "position": "WR",
+                "nfl_team": "GB",
+                "points": 30.1
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Zay Flowers",
+                "position": "WR",
+                "nfl_team": "BAL",
+                "points": 5.3
+              },
+              "them": {
+                "name": "Justin Jefferson",
+                "position": "WR",
+                "nfl_team": "MIN",
+                "points": 8.8
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Isaiah Likely",
+                "position": "TE",
+                "nfl_team": "NYG",
+                "points": 16.3
+              },
+              "them": {
+                "name": "George Kittle",
+                "position": "TE",
+                "nfl_team": "SF",
+                "points": 9.8
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Luther Burden III",
+                "position": "WR",
+                "nfl_team": "CHI",
+                "points": 20.7
+              },
+              "them": {
+                "name": "Jadarian Price",
+                "position": "RB",
+                "nfl_team": "SEA",
+                "points": 11.8
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Parker Washington",
+                "position": "WR",
+                "nfl_team": "JAX",
+                "points": 14.1
+              },
+              "them": {
+                "name": "Rashee Rice",
+                "position": "WR",
+                "nfl_team": "KC",
+                "points": 9.9
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Eli Raridon",
+                "position": "TE",
+                "nfl_team": "NE",
+                "points": 8.2
+              },
+              "them": {
+                "name": "Keenan Allen",
+                "position": "WR",
+                "nfl_team": "IND",
+                "points": 6.6
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -2443,7 +4934,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 7,
+            "name": "Bo Girds",
+            "score": 129.18
+          },
+          "them": {
+            "roster_id": 10,
+            "name": "Davlionman",
+            "score": 123.6
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Trevor Lawrence",
+                "position": "QB",
+                "nfl_team": "JAX",
+                "points": 21.74
+              },
+              "them": {
+                "name": "C.J. Stroud",
+                "position": "QB",
+                "nfl_team": "HOU",
+                "points": 16.27
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Kenneth Walker III",
+                "position": "RB",
+                "nfl_team": "KC",
+                "points": 21.04
+              },
+              "them": {
+                "name": "Jahmyr Gibbs",
+                "position": "RB",
+                "nfl_team": "DET",
+                "points": 24.65
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Austin Ekeler",
+                "position": "RB",
+                "nfl_team": "WAS",
+                "points": 8.05
+              },
+              "them": {
+                "name": "Braelon Allen",
+                "position": "RB",
+                "nfl_team": "NYJ",
+                "points": 10.81
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "CeeDee Lamb",
+                "position": "WR",
+                "nfl_team": "DAL",
+                "points": 20.12
+              },
+              "them": {
+                "name": "Malik Nabers",
+                "position": "WR",
+                "nfl_team": "NYG",
+                "points": 16.85
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Zay Flowers",
+                "position": "WR",
+                "nfl_team": "BAL",
+                "points": 16.25
+              },
+              "them": {
+                "name": "Drake London",
+                "position": "WR",
+                "nfl_team": "ATL",
+                "points": 16.44
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Isaiah Likely",
+                "position": "TE",
+                "nfl_team": "NYG",
+                "points": 12.51
+              },
+              "them": {
+                "name": "Pat Freiermuth",
+                "position": "TE",
+                "nfl_team": "PIT",
+                "points": 10.88
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Parker Washington",
+                "position": "WR",
+                "nfl_team": "JAX",
+                "points": 15.31
+              },
+              "them": {
+                "name": "Quinshon Judkins",
+                "position": "RB",
+                "nfl_team": "CLE",
+                "points": 10.78
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Tyler Higbee",
+                "position": "TE",
+                "nfl_team": "LAR",
+                "points": 8.64
+              },
+              "them": {
+                "name": "Keon Coleman",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 8.83
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Eli Raridon",
+                "position": "TE",
+                "nfl_team": "NE",
+                "points": 5.52
+              },
+              "them": {
+                "name": "DeMario Douglas",
+                "position": "WR",
+                "nfl_team": "NE",
+                "points": 8.09
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -2488,7 +5130,95 @@
         "text": [
           "Bo Girds jumps 4 places despite a 4-5 record. The move came after a 27-point win over the 3rd-place team. Playoff odds sit at 46%, with the easiest remaining schedule in the league ahead."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": true
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -2796,7 +5526,158 @@
         "text": [
           "Hock Tua 💦 trailed by 28.22 after the early Sunday games, then dropped a season-high 156.88 to knock off Mitseeker5000 in an upset. Puka Nacua and Patrick Mahomes are both now listed Questionable. Recent add Ryan Flournoy managed just 7.3, and the winners still climbed to 2nd while snapping the league leader's winning streak."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 8,
+            "name": "Hock Tua 💦",
+            "score": 156.88
+          },
+          "them": {
+            "roster_id": 6,
+            "name": "Mitseeker5000",
+            "score": 121.4
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Patrick Mahomes",
+                "position": "QB",
+                "nfl_team": "KC",
+                "points": 20.48
+              },
+              "them": {
+                "name": "Jared Goff",
+                "position": "QB",
+                "nfl_team": "DET",
+                "points": 6.3
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Bucky Irving",
+                "position": "RB",
+                "nfl_team": "TB",
+                "points": 28.5
+              },
+              "them": {
+                "name": "Javonte Williams",
+                "position": "RB",
+                "nfl_team": "DAL",
+                "points": 22.4
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Bijan Robinson",
+                "position": "RB",
+                "nfl_team": "ATL",
+                "points": 26.7
+              },
+              "them": {
+                "name": "D'Andre Swift",
+                "position": "RB",
+                "nfl_team": "CHI",
+                "points": 3.1
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Matthew Golden",
+                "position": "WR",
+                "nfl_team": "GB",
+                "points": 32.4
+              },
+              "them": {
+                "name": "Puka Nacua",
+                "position": "WR",
+                "nfl_team": "LAR",
+                "points": 35.0
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Ryan Flournoy",
+                "position": "WR",
+                "nfl_team": "DAL",
+                "points": 7.3
+              },
+              "them": {
+                "name": "Chris Olave",
+                "position": "WR",
+                "nfl_team": "NO",
+                "points": 16.8
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Trey McBride",
+                "position": "TE",
+                "nfl_team": "ARI",
+                "points": 12.4
+              },
+              "them": {
+                "name": "Travis Kelce",
+                "position": "TE",
+                "nfl_team": "KC",
+                "points": 17.3
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Omar Cooper Jr.",
+                "position": "WR",
+                "nfl_team": "NYJ",
+                "points": 13.8
+              },
+              "them": {
+                "name": "Stefon Diggs",
+                "position": "WR",
+                "nfl_team": "WAS",
+                "points": 8.1
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Alvin Kamara",
+                "position": "RB",
+                "nfl_team": "NO",
+                "points": 7.9
+              },
+              "them": {
+                "name": "Hunter Henry",
+                "position": "TE",
+                "nfl_team": "NE",
+                "points": 6.5
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Ollie Gordon II",
+                "position": "RB",
+                "nfl_team": "MIA",
+                "points": 7.4
+              },
+              "them": {
+                "name": "Devin Singletary",
+                "position": "RB",
+                "nfl_team": "NYG",
+                "points": 5.9
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -2821,7 +5702,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 8,
+            "name": "Hock Tua 💦",
+            "score": 128.16
+          },
+          "them": {
+            "roster_id": 11,
+            "name": "Breece Mode",
+            "score": 122.32
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Patrick Mahomes",
+                "position": "QB",
+                "nfl_team": "KC",
+                "points": 18.85
+              },
+              "them": {
+                "name": "Jordan Love",
+                "position": "QB",
+                "nfl_team": "GB",
+                "points": 17.26
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Bijan Robinson",
+                "position": "RB",
+                "nfl_team": "ATL",
+                "points": 19.94
+              },
+              "them": {
+                "name": "Derrick Henry",
+                "position": "RB",
+                "nfl_team": "BAL",
+                "points": 15.56
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Ollie Gordon II",
+                "position": "RB",
+                "nfl_team": "MIA",
+                "points": 12.66
+              },
+              "them": {
+                "name": "Breece Hall",
+                "position": "RB",
+                "nfl_team": "NYJ",
+                "points": 9.27
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Matthew Golden",
+                "position": "WR",
+                "nfl_team": "GB",
+                "points": 14.73
+              },
+              "them": {
+                "name": "Jaxon Smith-Njigba",
+                "position": "WR",
+                "nfl_team": "SEA",
+                "points": 24.33
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "George Pickens",
+                "position": "WR",
+                "nfl_team": "DAL",
+                "points": 13.67
+              },
+              "them": {
+                "name": "Garrett Wilson",
+                "position": "WR",
+                "nfl_team": "NYJ",
+                "points": 14.33
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Trey McBride",
+                "position": "TE",
+                "nfl_team": "ARI",
+                "points": 15.59
+              },
+              "them": {
+                "name": "Tyler Warren",
+                "position": "TE",
+                "nfl_team": "IND",
+                "points": 12.34
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "DK Metcalf",
+                "position": "WR",
+                "nfl_team": "PIT",
+                "points": 11.68
+              },
+              "them": {
+                "name": "Josh Downs",
+                "position": "WR",
+                "nfl_team": "IND",
+                "points": 10.04
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Deebo Samuel Sr.",
+                "position": "WR",
+                "nfl_team": "SF",
+                "points": 10.73
+              },
+              "them": {
+                "name": "Tre Tucker",
+                "position": "WR",
+                "nfl_team": "LV",
+                "points": 9.95
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Zach Charbonnet",
+                "position": "RB",
+                "nfl_team": "SEA",
+                "points": 10.31
+              },
+              "them": {
+                "name": "Jordan Mason",
+                "position": "RB",
+                "nfl_team": "MIN",
+                "points": 9.24
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -2866,7 +5898,95 @@
         "text": [
           "Hock Tua 💦 rockets 5 places to 2nd. The jump came after a 35-point win over the 1st-place team. They took down the league leader, no small thing."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": true
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -3174,7 +6294,158 @@
         "text": [
           "Luther Burden III got hurt late in this one and is now listed Questionable. CeeDee Lamb, a recent add by trade, outscored the margin on his own with 33.5, and Bo Girds saw its playoff odds climb to 46% this week. kaiedmonds slid from 3rd to 6th after losing in an upset."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 9,
+            "name": "kaiedmonds",
+            "score": 128.06
+          },
+          "them": {
+            "roster_id": 7,
+            "name": "Bo Girds",
+            "score": 155.38
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Caleb Williams",
+                "position": "QB",
+                "nfl_team": "CHI",
+                "points": 20.76
+              },
+              "them": {
+                "name": "Trevor Lawrence",
+                "position": "QB",
+                "nfl_team": "JAX",
+                "points": 15.58
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "James Cook III",
+                "position": "RB",
+                "nfl_team": "BUF",
+                "points": 16.7
+              },
+              "them": {
+                "name": "Kenneth Walker III",
+                "position": "RB",
+                "nfl_team": "KC",
+                "points": 36.3
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Chuba Hubbard",
+                "position": "RB",
+                "nfl_team": "CAR",
+                "points": 13.6
+              },
+              "them": {
+                "name": "Austin Ekeler",
+                "position": "RB",
+                "nfl_team": "WAS",
+                "points": 5.4
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Christian Watson",
+                "position": "WR",
+                "nfl_team": "GB",
+                "points": 30.1
+              },
+              "them": {
+                "name": "CeeDee Lamb",
+                "position": "WR",
+                "nfl_team": "DAL",
+                "points": 33.5
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Justin Jefferson",
+                "position": "WR",
+                "nfl_team": "MIN",
+                "points": 8.8
+              },
+              "them": {
+                "name": "Zay Flowers",
+                "position": "WR",
+                "nfl_team": "BAL",
+                "points": 5.3
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "George Kittle",
+                "position": "TE",
+                "nfl_team": "SF",
+                "points": 9.8
+              },
+              "them": {
+                "name": "Isaiah Likely",
+                "position": "TE",
+                "nfl_team": "NYG",
+                "points": 16.3
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Jadarian Price",
+                "position": "RB",
+                "nfl_team": "SEA",
+                "points": 11.8
+              },
+              "them": {
+                "name": "Luther Burden III",
+                "position": "WR",
+                "nfl_team": "CHI",
+                "points": 20.7
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Rashee Rice",
+                "position": "WR",
+                "nfl_team": "KC",
+                "points": 9.9
+              },
+              "them": {
+                "name": "Parker Washington",
+                "position": "WR",
+                "nfl_team": "JAX",
+                "points": 14.1
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Keenan Allen",
+                "position": "WR",
+                "nfl_team": "IND",
+                "points": 6.6
+              },
+              "them": {
+                "name": "Eli Raridon",
+                "position": "TE",
+                "nfl_team": "NE",
+                "points": 8.2
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -3199,7 +6470,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 9,
+            "name": "kaiedmonds",
+            "score": 117.07
+          },
+          "them": {
+            "roster_id": 1,
+            "name": "puurdygood",
+            "score": 132.18
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Caleb Williams",
+                "position": "QB",
+                "nfl_team": "CHI",
+                "points": 0.0
+              },
+              "them": {
+                "name": "Kirk Cousins",
+                "position": "QB",
+                "nfl_team": "LV",
+                "points": 14.62
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Chuba Hubbard",
+                "position": "RB",
+                "nfl_team": "CAR",
+                "points": 18.0
+              },
+              "them": {
+                "name": "Christian McCaffrey",
+                "position": "RB",
+                "nfl_team": "SF",
+                "points": 22.55
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "James Cook III",
+                "position": "RB",
+                "nfl_team": "BUF",
+                "points": 15.3
+              },
+              "them": {
+                "name": "Kyren Williams",
+                "position": "RB",
+                "nfl_team": "LAR",
+                "points": 17.75
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Justin Jefferson",
+                "position": "WR",
+                "nfl_team": "MIN",
+                "points": 16.92
+              },
+              "them": {
+                "name": "Tetairoa McMillan",
+                "position": "WR",
+                "nfl_team": "CAR",
+                "points": 15.9
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Christian Watson",
+                "position": "WR",
+                "nfl_team": "GB",
+                "points": 16.16
+              },
+              "them": {
+                "name": "Nico Collins",
+                "position": "WR",
+                "nfl_team": "HOU",
+                "points": 15.09
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "George Kittle",
+                "position": "TE",
+                "nfl_team": "SF",
+                "points": 16.19
+              },
+              "them": {
+                "name": "Harold Fannin Jr.",
+                "position": "TE",
+                "nfl_team": "CLE",
+                "points": 11.05
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Rashee Rice",
+                "position": "WR",
+                "nfl_team": "KC",
+                "points": 14.65
+              },
+              "them": {
+                "name": "DJ Moore",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 13.06
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Keenan Allen",
+                "position": "WR",
+                "nfl_team": "IND",
+                "points": 10.36
+              },
+              "them": {
+                "name": "Wan'Dale Robinson",
+                "position": "WR",
+                "nfl_team": "TEN",
+                "points": 11.13
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Travis Etienne Jr.",
+                "position": "RB",
+                "nfl_team": "NO",
+                "points": 9.49
+              },
+              "them": {
+                "name": "Brenton Strange",
+                "position": "TE",
+                "nfl_team": "JAX",
+                "points": 11.03
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -3244,7 +6666,95 @@
         "text": [
           "kaiedmonds crashes 5 places to 9th. A 27-point loss dropped them to 6th in the standings. They still hold the last playoff spot, somehow."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": true
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -3552,7 +7062,158 @@
         "text": [
           "Davlionman beat The Mean Machine 117.46 to 104.78, a margin of 12.68."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 10,
+            "name": "Davlionman",
+            "score": 117.46
+          },
+          "them": {
+            "roster_id": 4,
+            "name": "The Mean Machine",
+            "score": 104.78
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "C.J. Stroud",
+                "position": "QB",
+                "nfl_team": "HOU",
+                "points": 46.36
+              },
+              "them": {
+                "name": "Brock Purdy",
+                "position": "QB",
+                "nfl_team": "SF",
+                "points": 30.28
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Jahmyr Gibbs",
+                "position": "RB",
+                "nfl_team": "DET",
+                "points": 13.4
+              },
+              "them": {
+                "name": "Jonathan Taylor",
+                "position": "RB",
+                "nfl_team": "IND",
+                "points": 9.4
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Josh Jacobs",
+                "position": "RB",
+                "nfl_team": "GB",
+                "points": 0.5
+              },
+              "them": {
+                "name": "Tyler Allgeier",
+                "position": "RB",
+                "nfl_team": "ARI",
+                "points": 6.6
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Drake London",
+                "position": "WR",
+                "nfl_team": "ATL",
+                "points": 11.8
+              },
+              "them": {
+                "name": "Tee Higgins",
+                "position": "WR",
+                "nfl_team": "CIN",
+                "points": 20.2
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Malik Nabers",
+                "position": "WR",
+                "nfl_team": "NYG",
+                "points": 9.3
+              },
+              "them": {
+                "name": "Jameson Williams",
+                "position": "WR",
+                "nfl_team": "DET",
+                "points": 5.0
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Dallas Goedert",
+                "position": "TE",
+                "nfl_team": "PHI",
+                "points": 10.0
+              },
+              "them": {
+                "name": "Kyle Pitts Sr.",
+                "position": "TE",
+                "nfl_team": "ATL",
+                "points": 5.3
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "DeMario Douglas",
+                "position": "WR",
+                "nfl_team": "NE",
+                "points": 15.2
+              },
+              "them": {
+                "name": "Makai Lemon",
+                "position": "WR",
+                "nfl_team": "PHI",
+                "points": 12.1
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Quinshon Judkins",
+                "position": "RB",
+                "nfl_team": "CLE",
+                "points": 5.5
+              },
+              "them": {
+                "name": "Juwan Johnson",
+                "position": "TE",
+                "nfl_team": "NO",
+                "points": 11.4
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Braelon Allen",
+                "position": "RB",
+                "nfl_team": "NYJ",
+                "points": 5.4
+              },
+              "them": {
+                "name": "Darius Cooper",
+                "position": "WR",
+                "nfl_team": "PHI",
+                "points": 4.5
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -3577,7 +7238,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 10,
+            "name": "Davlionman",
+            "score": 123.6
+          },
+          "them": {
+            "roster_id": 7,
+            "name": "Bo Girds",
+            "score": 129.18
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "C.J. Stroud",
+                "position": "QB",
+                "nfl_team": "HOU",
+                "points": 16.27
+              },
+              "them": {
+                "name": "Trevor Lawrence",
+                "position": "QB",
+                "nfl_team": "JAX",
+                "points": 21.74
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Jahmyr Gibbs",
+                "position": "RB",
+                "nfl_team": "DET",
+                "points": 24.65
+              },
+              "them": {
+                "name": "Kenneth Walker III",
+                "position": "RB",
+                "nfl_team": "KC",
+                "points": 21.04
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Braelon Allen",
+                "position": "RB",
+                "nfl_team": "NYJ",
+                "points": 10.81
+              },
+              "them": {
+                "name": "Austin Ekeler",
+                "position": "RB",
+                "nfl_team": "WAS",
+                "points": 8.05
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Malik Nabers",
+                "position": "WR",
+                "nfl_team": "NYG",
+                "points": 16.85
+              },
+              "them": {
+                "name": "CeeDee Lamb",
+                "position": "WR",
+                "nfl_team": "DAL",
+                "points": 20.12
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Drake London",
+                "position": "WR",
+                "nfl_team": "ATL",
+                "points": 16.44
+              },
+              "them": {
+                "name": "Zay Flowers",
+                "position": "WR",
+                "nfl_team": "BAL",
+                "points": 16.25
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Pat Freiermuth",
+                "position": "TE",
+                "nfl_team": "PIT",
+                "points": 10.88
+              },
+              "them": {
+                "name": "Isaiah Likely",
+                "position": "TE",
+                "nfl_team": "NYG",
+                "points": 12.51
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Quinshon Judkins",
+                "position": "RB",
+                "nfl_team": "CLE",
+                "points": 10.78
+              },
+              "them": {
+                "name": "Parker Washington",
+                "position": "WR",
+                "nfl_team": "JAX",
+                "points": 15.31
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Keon Coleman",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 8.83
+              },
+              "them": {
+                "name": "Tyler Higbee",
+                "position": "TE",
+                "nfl_team": "LAR",
+                "points": 8.64
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "DeMario Douglas",
+                "position": "WR",
+                "nfl_team": "NE",
+                "points": 8.09
+              },
+              "them": {
+                "name": "Eli Raridon",
+                "position": "TE",
+                "nfl_team": "NE",
+                "points": 5.52
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -3622,7 +7434,95 @@
         "text": [
           "Davlionman edges up to 5th with a 6-3 record. The offense ranks just 9th in scoring, and the record keeps covering for it."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": true
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -3930,7 +7830,158 @@
         "text": [
           "Jordan Love won it alone, putting up 42.18 to outscore the 24.66 margin on his own as Breece Mode beat The Dart Side. The winners climbed to 5th in the standings, while the losers, who actually led after the early Sunday games, stayed stuck in 12th. Rhamondre Stevenson was hurt in this game and is now listed Out, and so are Jaylen Waddle and Michael Wilson."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 11,
+            "name": "Breece Mode",
+            "score": 115.86
+          },
+          "them": {
+            "roster_id": 12,
+            "name": "The Dart Side",
+            "score": 91.2
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Jordan Love",
+                "position": "QB",
+                "nfl_team": "GB",
+                "points": 42.18
+              },
+              "them": {
+                "name": "Tyler Shough",
+                "position": "QB",
+                "nfl_team": "NO",
+                "points": 21.7
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Rhamondre Stevenson",
+                "position": "RB",
+                "nfl_team": "NE",
+                "points": 14.8
+              },
+              "them": {
+                "name": "Chase Brown",
+                "position": "RB",
+                "nfl_team": "CIN",
+                "points": 10.5
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Derrick Henry",
+                "position": "RB",
+                "nfl_team": "BAL",
+                "points": 5.58
+              },
+              "them": {
+                "name": "Omarion Hampton",
+                "position": "RB",
+                "nfl_team": "LAC",
+                "points": 6.0
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Jaxon Smith-Njigba",
+                "position": "WR",
+                "nfl_team": "SEA",
+                "points": 12.1
+              },
+              "them": {
+                "name": "Caleb Douglas",
+                "position": "WR",
+                "nfl_team": "MIA",
+                "points": 13.0
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Tre Tucker",
+                "position": "WR",
+                "nfl_team": "LV",
+                "points": 9.5
+              },
+              "them": {
+                "name": "Jaylen Waddle",
+                "position": "WR",
+                "nfl_team": "DEN",
+                "points": 3.2
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Tyler Warren",
+                "position": "TE",
+                "nfl_team": "IND",
+                "points": 8.4
+              },
+              "them": {
+                "name": "Tucker Kraft",
+                "position": "TE",
+                "nfl_team": "GB",
+                "points": 1.9
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Breece Hall",
+                "position": "RB",
+                "nfl_team": "NYJ",
+                "points": 11.7
+              },
+              "them": {
+                "name": "Rome Odunze",
+                "position": "WR",
+                "nfl_team": "CHI",
+                "points": 16.0
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Jordan Mason",
+                "position": "RB",
+                "nfl_team": "MIN",
+                "points": 6.2
+              },
+              "them": {
+                "name": "Michael Wilson",
+                "position": "WR",
+                "nfl_team": "ARI",
+                "points": 12.0
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Josh Downs",
+                "position": "WR",
+                "nfl_team": "IND",
+                "points": 5.4
+              },
+              "them": {
+                "name": "Emeka Egbuka",
+                "position": "WR",
+                "nfl_team": "TB",
+                "points": 6.9
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -3955,7 +8006,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 11,
+            "name": "Breece Mode",
+            "score": 122.32
+          },
+          "them": {
+            "roster_id": 8,
+            "name": "Hock Tua 💦",
+            "score": 128.16
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Jordan Love",
+                "position": "QB",
+                "nfl_team": "GB",
+                "points": 17.26
+              },
+              "them": {
+                "name": "Patrick Mahomes",
+                "position": "QB",
+                "nfl_team": "KC",
+                "points": 18.85
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Derrick Henry",
+                "position": "RB",
+                "nfl_team": "BAL",
+                "points": 15.56
+              },
+              "them": {
+                "name": "Bijan Robinson",
+                "position": "RB",
+                "nfl_team": "ATL",
+                "points": 19.94
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Breece Hall",
+                "position": "RB",
+                "nfl_team": "NYJ",
+                "points": 9.27
+              },
+              "them": {
+                "name": "Ollie Gordon II",
+                "position": "RB",
+                "nfl_team": "MIA",
+                "points": 12.66
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Jaxon Smith-Njigba",
+                "position": "WR",
+                "nfl_team": "SEA",
+                "points": 24.33
+              },
+              "them": {
+                "name": "Matthew Golden",
+                "position": "WR",
+                "nfl_team": "GB",
+                "points": 14.73
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Garrett Wilson",
+                "position": "WR",
+                "nfl_team": "NYJ",
+                "points": 14.33
+              },
+              "them": {
+                "name": "George Pickens",
+                "position": "WR",
+                "nfl_team": "DAL",
+                "points": 13.67
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Tyler Warren",
+                "position": "TE",
+                "nfl_team": "IND",
+                "points": 12.34
+              },
+              "them": {
+                "name": "Trey McBride",
+                "position": "TE",
+                "nfl_team": "ARI",
+                "points": 15.59
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Josh Downs",
+                "position": "WR",
+                "nfl_team": "IND",
+                "points": 10.04
+              },
+              "them": {
+                "name": "DK Metcalf",
+                "position": "WR",
+                "nfl_team": "PIT",
+                "points": 11.68
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Tre Tucker",
+                "position": "WR",
+                "nfl_team": "LV",
+                "points": 9.95
+              },
+              "them": {
+                "name": "Deebo Samuel Sr.",
+                "position": "WR",
+                "nfl_team": "SF",
+                "points": 10.73
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Jordan Mason",
+                "position": "RB",
+                "nfl_team": "MIN",
+                "points": 9.24
+              },
+              "them": {
+                "name": "Zach Charbonnet",
+                "position": "RB",
+                "nfl_team": "SEA",
+                "points": 10.31
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -4000,7 +8202,95 @@
         "text": [
           "Breece Mode holds at 8th, level with the last playoff spot. Scoring has sagged to 109.48 a week over the last 3 weeks. The hardest remaining schedule awaits, with playoff odds at 49%."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": true
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": false
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",
@@ -4308,7 +8598,158 @@
         "text": [
           "Jordan Love won it alone, putting up 42.18 to outscore the 24.66 margin on his own as Breece Mode beat The Dart Side. The winners climbed to 5th in the standings, while the losers, who actually led after the early Sunday games, stayed stuck in 12th. Rhamondre Stevenson was hurt in this game and is now listed Out, and so are Jaylen Waddle and Michael Wilson."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": true,
+          "you": {
+            "roster_id": 12,
+            "name": "The Dart Side",
+            "score": 91.2
+          },
+          "them": {
+            "roster_id": 11,
+            "name": "Breece Mode",
+            "score": 115.86
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Tyler Shough",
+                "position": "QB",
+                "nfl_team": "NO",
+                "points": 21.7
+              },
+              "them": {
+                "name": "Jordan Love",
+                "position": "QB",
+                "nfl_team": "GB",
+                "points": 42.18
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Chase Brown",
+                "position": "RB",
+                "nfl_team": "CIN",
+                "points": 10.5
+              },
+              "them": {
+                "name": "Rhamondre Stevenson",
+                "position": "RB",
+                "nfl_team": "NE",
+                "points": 14.8
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Omarion Hampton",
+                "position": "RB",
+                "nfl_team": "LAC",
+                "points": 6.0
+              },
+              "them": {
+                "name": "Derrick Henry",
+                "position": "RB",
+                "nfl_team": "BAL",
+                "points": 5.58
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Caleb Douglas",
+                "position": "WR",
+                "nfl_team": "MIA",
+                "points": 13.0
+              },
+              "them": {
+                "name": "Jaxon Smith-Njigba",
+                "position": "WR",
+                "nfl_team": "SEA",
+                "points": 12.1
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Jaylen Waddle",
+                "position": "WR",
+                "nfl_team": "DEN",
+                "points": 3.2
+              },
+              "them": {
+                "name": "Tre Tucker",
+                "position": "WR",
+                "nfl_team": "LV",
+                "points": 9.5
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Tucker Kraft",
+                "position": "TE",
+                "nfl_team": "GB",
+                "points": 1.9
+              },
+              "them": {
+                "name": "Tyler Warren",
+                "position": "TE",
+                "nfl_team": "IND",
+                "points": 8.4
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Rome Odunze",
+                "position": "WR",
+                "nfl_team": "CHI",
+                "points": 16.0
+              },
+              "them": {
+                "name": "Breece Hall",
+                "position": "RB",
+                "nfl_team": "NYJ",
+                "points": 11.7
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Michael Wilson",
+                "position": "WR",
+                "nfl_team": "ARI",
+                "points": 12.0
+              },
+              "them": {
+                "name": "Jordan Mason",
+                "position": "RB",
+                "nfl_team": "MIN",
+                "points": 6.2
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Emeka Egbuka",
+                "position": "WR",
+                "nfl_team": "TB",
+                "points": 6.9
+              },
+              "them": {
+                "name": "Josh Downs",
+                "position": "WR",
+                "nfl_team": "IND",
+                "points": 5.4
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "next_matchup",
@@ -4333,7 +8774,158 @@
         "text": [
           "Hock Tua 💦 gets 97% playoff odds with a win over Breece Mode and 77% with a loss, in a Must Watch that sits right near the cut. Their opponent swings from 67% playoff odds with a win to 32% with a loss. VarsityBlue2 at 3-6 meets The Dart Side at 2-7, a showdown of the awful from below the cut. The last-place side puts a 3-game losing streak on the line. Playoff odds hold near 3% and 1% either way. kaiedmonds loses Caleb Williams to a bye with no bench player who can fill his slot."
         ],
-        "block": null
+        "block": {
+          "kind": "matchup",
+          "final": false,
+          "you": {
+            "roster_id": 12,
+            "name": "The Dart Side",
+            "score": 84.06
+          },
+          "them": {
+            "roster_id": 2,
+            "name": "VarsityBlue2",
+            "score": 103.48
+          },
+          "odds": null,
+          "slots": [
+            {
+              "slot": "QB",
+              "you": {
+                "name": "Bryce Young",
+                "position": "QB",
+                "nfl_team": "CAR",
+                "points": 19.83
+              },
+              "them": {
+                "name": "Dak Prescott",
+                "position": "QB",
+                "nfl_team": "DAL",
+                "points": 18.68
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Chase Brown",
+                "position": "RB",
+                "nfl_team": "CIN",
+                "points": 12.98
+              },
+              "them": {
+                "name": "Cam Skattebo",
+                "position": "RB",
+                "nfl_team": "NYG",
+                "points": 12.03
+              }
+            },
+            {
+              "slot": "RB",
+              "you": {
+                "name": "Omarion Hampton",
+                "position": "RB",
+                "nfl_team": "LAC",
+                "points": 8.71
+              },
+              "them": {
+                "name": "Kimani Vidal",
+                "position": "RB",
+                "nfl_team": "LAC",
+                "points": 7.11
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Caleb Douglas",
+                "position": "WR",
+                "nfl_team": "MIA",
+                "points": 8.0
+              },
+              "them": {
+                "name": "Ladd McConkey",
+                "position": "WR",
+                "nfl_team": "LAC",
+                "points": 11.41
+              }
+            },
+            {
+              "slot": "WR",
+              "you": {
+                "name": "Ja'Kobi Lane",
+                "position": "WR",
+                "nfl_team": "BAL",
+                "points": 5.53
+              },
+              "them": {
+                "name": "Xavier Worthy",
+                "position": "WR",
+                "nfl_team": "KC",
+                "points": 10.32
+              }
+            },
+            {
+              "slot": "TE",
+              "you": {
+                "name": "Tucker Kraft",
+                "position": "TE",
+                "nfl_team": "GB",
+                "points": 10.65
+              },
+              "them": {
+                "name": "Sam LaPorta",
+                "position": "TE",
+                "nfl_team": "DET",
+                "points": 12.89
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Zonovan Knight",
+                "position": "RB",
+                "nfl_team": "ARI",
+                "points": 7.67
+              },
+              "them": {
+                "name": "Dalton Kincaid",
+                "position": "TE",
+                "nfl_team": "BUF",
+                "points": 10.71
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Emmett Johnson",
+                "position": "RB",
+                "nfl_team": "KC",
+                "points": 6.83
+              },
+              "them": {
+                "name": "Mike Gesicki",
+                "position": "TE",
+                "nfl_team": "CIN",
+                "points": 10.23
+              }
+            },
+            {
+              "slot": "FLEX",
+              "you": {
+                "name": "Kenyon Sadiq",
+                "position": "TE",
+                "nfl_team": "NYJ",
+                "points": 3.86
+              },
+              "them": {
+                "name": "Khalil Shakir",
+                "position": "WR",
+                "nfl_team": "BUF",
+                "points": 10.1
+              }
+            }
+          ]
+        }
       },
       {
         "topic": "power_rankings",
@@ -4371,7 +8963,95 @@
         "text": [
           "The Dart Side holds last place, 0-3 over the last 3 weeks. They have lost 3 straight and own playoff odds of 1%. Dark times indeed."
         ],
-        "block": null
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 5,
+              "name": "Skol Daddy",
+              "rank": 1,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "Hock Tua 💦",
+              "rank": 2,
+              "move": 5,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Mitseeker5000",
+              "rank": 3,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "puurdygood",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Davlionman",
+              "rank": 5,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Bo Girds",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "BobBuckstein",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Breece Mode",
+              "rank": 8,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "kaiedmonds",
+              "rank": 9,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "VarsityBlue2",
+              "rank": 10,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "The Mean Machine",
+              "rank": 11,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "The Dart Side",
+              "rank": 12,
+              "move": 0,
+              "you": true
+            }
+          ]
+        }
       },
       {
         "topic": "playoff_race",

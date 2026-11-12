@@ -8,8 +8,9 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from cornerstone.topic_blocks import TopicBlock, recap_block
+from cornerstone.topic_blocks import TopicBlock, last_matchup_block, next_matchup_block, rank_movers_block, recap_block
 from league.files import write_bytes_atomic
+from league.models import Week
 from league.numbers import ordinal
 from league.paths import site_week_dir
 
@@ -82,7 +83,7 @@ def _week_recap(rid: int, page: dict) -> TopicAnswer:
                        text=[blurbs["motw"]] if blurbs.get("motw") else [], block=recap_block(rid, page))
 
 
-def _last_matchup(rid: int, page: dict) -> TopicAnswer | None:
+def _last_matchup(rid: int, page: dict, league_week: Week | None) -> TopicAnswer | None:
     game = next((m for m in page["matchups"] if any(s["team"]["roster_id"] == rid for s in m["sides"])), None)
     if game is None:
         return None
@@ -93,10 +94,11 @@ def _last_matchup(rid: int, page: dict) -> TopicAnswer | None:
                 note=f"{s['top']['name']} {_points(s['top']['points'])}" if s.get("top") else None,
                 roster_id=s["team"]["roster_id"], you=s is mine) for s in game["sides"]]
     return TopicAnswer(topic="last_matchup", fact=f"{word} {_points(mine['score'])} to {_points(other['score'])}",
-                       rows=rows, text=[game["recap"]] if game.get("recap") else [])
+                       rows=rows, text=[game["recap"]] if game.get("recap") else [],
+                       block=last_matchup_block(rid, league_week) if league_week else None)
 
 
-def _next_matchup(rid: int, page: dict) -> TopicAnswer | None:
+def _next_matchup(rid: int, page: dict, league_week: Week | None) -> TopicAnswer | None:
     pair = next((p for p in page["next"] if rid in (p["a"]["roster_id"], p["b"]["roster_id"])), None)
     if pair is None:
         return None
@@ -106,7 +108,8 @@ def _next_matchup(rid: int, page: dict) -> TopicAnswer | None:
                 roster_id=t["roster_id"], you=t is mine) for t in (mine, other)]
     blurb = page["blurbs"].get("next_week")
     return TopicAnswer(topic="next_matchup", fact=f"Next: {other['name']}, {other['wins']}-{other['losses']}",
-                       rows=rows, text=[blurb] if blurb else [])
+                       rows=rows, text=[blurb] if blurb else [],
+                       block=next_matchup_block(rid, league_week) if league_week else None)
 
 
 def _rankings_week(rankings: dict | None, week: int) -> dict | None:
@@ -137,7 +140,7 @@ def _power_rankings(rid: int, ranked: dict | None) -> TopicAnswer | None:
              Stat(label="Record", value=f"{row['wins']}-{row['losses']}")]
     text = " ".join(sentence["text"] for sentence in row["blurb"])
     return TopicAnswer(topic="power_rankings", fact=f"{ordinal(row['rank'])}, {_movement(row['movement'])}",
-                       stats=stats, rows=rows, text=[text] if text else [])
+                       stats=stats, rows=rows, text=[text] if text else [], block=rank_movers_block(rid, ranked))
 
 
 def _playoff_race(rid: int, ranked: dict | None, page: dict) -> TopicAnswer | None:
@@ -201,18 +204,20 @@ def _leaders_trades(rid: int, page: dict) -> TopicAnswer:
     return TopicAnswer(topic="leaders_trades", fact=fact, stats=stats, rows=rows, text=[blurb] if blurb else [])
 
 
-def team_answers(rid: int, page: dict, rankings: dict | None, managers: dict | None) -> list[TopicAnswer]:
-    """The league Answers of one team. A Topic with no data in the build, such as no next game, has no Answer."""
+def team_answers(rid: int, page: dict, rankings: dict | None, managers: dict | None,
+                 league_week: Week | None = None) -> list[TopicAnswer]:
+    """The league Answers of one team. A Topic with no data in the build, such as no next game, has no Answer.
+    The matchup cards read the lineups of the parsed raw `league_week`. With None, those Topics have no block."""
     ranked = _rankings_week(rankings, page["week"])
-    answers = [_week_recap(rid, page), _last_matchup(rid, page), _next_matchup(rid, page),
+    answers = [_week_recap(rid, page), _last_matchup(rid, page, league_week), _next_matchup(rid, page, league_week),
                _power_rankings(rid, ranked), _playoff_race(rid, ranked, page), _your_season(rid, page, managers),
                _leaders_trades(rid, page)]
     return [answer for answer in answers if answer is not None]
 
 
-def write_topics(site_dir: Path, season: int, week: int) -> Path | None:
-    """Write topics.json beside the page.json of the week from the files of the build folder `site_dir`.
-    None when the week has no page.json."""
+def write_topics(site_dir: Path, season: int, week: int, league_week: Week | None = None) -> Path | None:
+    """Write topics.json beside the page.json of the week from the files of the build folder `site_dir` and the
+    parsed raw week `league_week`, which holds the lineups. None when the week has no page.json."""
     folder = site_week_dir(site_dir, season, week)
     page = _read(folder / "page.json")
     if page is None:
@@ -220,15 +225,15 @@ def write_topics(site_dir: Path, season: int, week: int) -> Path | None:
     rankings = _read(site_dir / str(season) / "rankings.json")
     managers = _read(site_dir / str(season) / "managers.json")
     body = TopicsFile(season=season, week=week, teams={
-        key: team_answers(int(key), page, rankings, managers) for key in sorted(page["teams"], key=int)})
+        key: team_answers(int(key), page, rankings, managers, league_week) for key in sorted(page["teams"], key=int)})
     out = folder / TOPICS_FILE
     write_bytes_atomic(out, (body.model_dump_json(indent=2) + "\n").encode("utf-8"))
     return out
 
 
-def write_topics_or_warn(site_dir: Path, season: int, week: int) -> None:
+def write_topics_or_warn(site_dir: Path, season: int, week: int, league_week: Week | None = None) -> None:
     """Write topics.json. The page is built by now, so a bad input only logs a warning."""
     try:
-        write_topics(site_dir, season, week)
+        write_topics(site_dir, season, week, league_week)
     except (OSError, ValueError, KeyError, TypeError, StopIteration) as err:
         log.warning("%s not written for week %d: %s", TOPICS_FILE, week, err)

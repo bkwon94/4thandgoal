@@ -8,11 +8,15 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { z } from "zod";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { matchupBlockSchema, matchupText } from "@/lib/data/blocks/matchup-schema";
+import { rankMoversBlockSchema, rankMoversText } from "@/lib/data/blocks/rank-movers-schema";
 import { recapBlockSchema, recapText } from "@/lib/data/blocks/recap-schema";
 import { FeedView, feedBlockSchema, feedText } from "./feed-block";
 import { ByeGridView, byeGridBlockSchema, byeGridText } from "./bye-grid";
 import { LineupView, lineupBlockSchema, lineupText } from "./lineup-block";
 import { VERY_SLOW, riseIn, staggerOf } from "./motion";
+import { MatchupCard } from "./matchup-card";
+import { RankMoverList } from "./rank-mover-list";
 import { RecapCard } from "./recap-card";
 import { TradeBlockView, tradeBlockSchema, tradeBlockText } from "./trade-block";
 import { SlotRanksView, slotRanksBlockSchema, slotRanksText } from "./slot-rank-bars";
@@ -53,6 +57,8 @@ export const answerBlockSchema = z.discriminatedUnion("kind", [
   waiverListSchema,
   sellListSchema,
   lineupBlockSchema,
+  matchupBlockSchema,
+  rankMoversBlockSchema,
 ]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
@@ -87,6 +93,8 @@ export function blockText(block: AnswerBlock): string {
     case "sell_list":
       return sellListText(block);
     case "lineup": return lineupText(block);
+    case "matchup": return matchupText(block);
+    case "rank_movers": return rankMoversText(block);
   }
 }
 
@@ -237,5 +245,7 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
     case "sell_list":
       return <SellListView block={block} live={live} />;
     case "lineup": return <LineupView block={block} />;
+    case "matchup": return <MatchupCard block={block} live={live} />;
+    case "rank_movers": return <RankMoverList block={block} live={live} />;
   }
 }
