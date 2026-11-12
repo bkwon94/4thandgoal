@@ -58,14 +58,13 @@ Check: `git -C ~/repos/4thandgoal remote -v` shows `bkwon94/4thandgoal` for fetc
 
 Pass the path of each remaining worktree. Include a worktree outside the repo, such as one in `/private/tmp`.
 
-First, set `other` to the path of each outside worktree. Set it to nothing if there is none. Find them in the output of `git worktree list` before the move.
+The command finds each outside worktree from the git records, which still hold their paths. Then it repairs them with the worktrees under `.claude/worktrees/`.
 
 ```
-other=/private/tmp/example-worktree
-cd ~/repos/4thandgoal && git worktree repair .claude/worktrees/*(N) $other
+cd ~/repos/4thandgoal && other=(${(f)"$(git worktree list --porcelain | awk '/^worktree /{print $2}' | grep -v -e '/repos/4thandgoal' -e '/repos/cpcfantasyfootball')"}) && git worktree repair .claude/worktrees/*(N) $other
 ```
 
-The `(N)` makes an empty glob match nothing. Without it, zsh stops with "no matches found" when `.claude/worktrees/` is empty. The value `/private/tmp/example-worktree` is an example. Replace it.
+The command is for zsh. The `(N)` makes an empty glob match nothing. Without it, zsh stops with "no matches found" when `.claude/worktrees/` is empty. The `${(f)...}` splits the outside paths into one word for each line.
 
 Check: `git worktree list` shows `/Users/brian.kwon/repos/4thandgoal` and no line with `prunable`.
 
@@ -87,18 +86,17 @@ Claude keeps one more project folder for each worktree, named `-Users-brian-kwon
 
 ## 6. Set the marketplace and the plugin
 
-The command copies `~/.claude/settings.json` to `~/.claude/settings.json.bak`. Then it replaces the old path with the new path in the file. This also changes the old path in the two `autoMode` lines.
+The command copies `~/.claude/settings.json` to `~/.claude/settings.json.bak`. Then it changes three names in the file:
+
+1. The old folder and repo name `cpcfantasyfootball` becomes `4thandgoal`. This changes the marketplace path and the old names in the `autoMode` lines.
+2. The plugin `cpc@cpc-local` becomes `4ag@4ag-local`.
+3. The marketplace key `cpc-local` becomes `4ag-local`.
 
 ```
-cp ~/.claude/settings.json ~/.claude/settings.json.bak && sed -i '' 's#/Users/brian.kwon/repos/cpcfantasyfootball#/Users/brian.kwon/repos/4thandgoal#g' ~/.claude/settings.json
+cp ~/.claude/settings.json ~/.claude/settings.json.bak && sed -i '' -e 's#cpcfantasyfootball#4thandgoal#g' -e 's#"cpc@cpc-local"#"4ag@4ag-local"#g' -e 's#"cpc-local"#"4ag-local"#g' ~/.claude/settings.json
 ```
 
-Then open the file and make these two changes by hand. The old marketplace name is not a path, so the command leaves it.
-
-1. Rename the marketplace key to `4ag-local`.
-2. Set the plugin to `4ag@4ag-local`.
-
-Check: `grep -n cpcfantasyfootball ~/.claude/settings.json` prints nothing.
+Check: `grep -nE 'cpcfantasyfootball|cpc-local' ~/.claude/settings.json` prints nothing, and `python3 -m json.tool ~/.claude/settings.json >/dev/null && echo ok` prints `ok`.
 
 ## 7. Rebuild the venv and the node modules
 
