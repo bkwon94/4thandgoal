@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-21, AT-38, AT-39,
 
 **Blocked by:** 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] Screenshots of each of the 14 Answers show one block or none, and the leaders as a list (AT-21).
 - [ ] Screenshots of each block show no overflow and no overlap, and the colors of the spec (AT-38).
