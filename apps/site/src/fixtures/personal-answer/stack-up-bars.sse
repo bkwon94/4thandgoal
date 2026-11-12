@@ -1,0 +1,42 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"rows","topic":"stack_up","team":6,"as_of":"as of today","fact":"Grade B, QB ranks 10th of 12","stats":[{"label":"Grade","value":"B"},{"label":"Best spot","value":"WR 4th"},{"label":"Weakest spot","value":"QB 10th"}],"rows":[{"label":"Projection Ahead","value":"6th of 12","note":null,"roster_id":null,"you":false},{"label":"Season Production","value":"2nd of 12","note":null,"roster_id":null,"you":false},{"label":"Trade Value","value":"10th of 12","note":null,"roster_id":null,"you":false},{"label":"Depth And Holes","value":"9th of 12","note":null,"roster_id":null,"you":false}],"block":{"kind":"slot_ranks","grade":"B","read":"Soft at QB. Thin at WR.","teams":12,"rows":[{"position":"QB","rank":10,"label":"10th of 12"},{"position":"RB","rank":6,"label":"6th of 12"},{"position":"WR","rank":4,"label":"4th of 12"},{"position":"TE","rank":5,"label":"5th of 12"}]}}}
+
+data: {"type":"data-key","data":{"key":"c00319537c9885a1714ba5e8a406e208259bfa2cb0572f256a120ee0765eefd5"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"Your ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"weakest ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"spot ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"is ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"QB, ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"which ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"ranks ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"10th ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"of ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-delta","delta":"12. ","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"text-end","id":"4d6e588a-1ccd-4a10-be0a-7e7487d1e570"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

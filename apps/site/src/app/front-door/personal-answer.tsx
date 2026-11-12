@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef } from "react";
 import { RotateCwIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { BlockView } from "./answer-block";
 import { AnswerBody } from "./answer-card";
 import type { AskTarget } from "./ask-api";
 import type { Turn } from "./chat-turns";
@@ -35,8 +36,11 @@ type Shared = {
    Under the data block, the Writing step waits until the check comes, so the card never sits still. */
 function PersonalBody({ block, view, live, href, avatars }: { block: PersonalBlock; view: PersonalView; live: boolean; href: string | null; avatars: Shared["avatars"] }) {
   const checked = view.check === "checked";
+  // A Topic Answer shows one block at most, so a Topic with its own block shows it in place of the stats and the rows.
+  const shown = block.block ? { stats: [], rows: [] } : { stats: block.stats, rows: block.rows };
   return (
-    <AnswerBody answer={{ stats: block.stats, rows: block.rows, text: [], href: checked ? href : null }} avatars={avatars} asOf={block.as_of}>
+    <AnswerBody answer={{ ...shown, text: [], href: checked ? href : null }} avatars={avatars} asOf={block.as_of}>
+      {block.block && <BlockView block={block.block} live={live} />}
       <div className="flex flex-col gap-sp-3">
         <FreeBody view={view} live={live} first={WRITING_LINE} />
       </div>

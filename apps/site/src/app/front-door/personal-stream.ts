@@ -5,6 +5,7 @@
 import type { UIMessage } from "ai";
 import { z } from "zod";
 import { topicRowSchema, topicStatSchema } from "@/lib/data/topics-schema";
+import { answerBlockSchema } from "./answer-block";
 import { type FreeView, viewOf } from "./free-stream";
 
 /* The 3 personal Topics, which the API builds live for one team. */
@@ -31,6 +32,9 @@ export const personalBlockSchema = z.object({
   rows: z.array(topicRowSchema),
   // When the numbers are from, such as "as of today" for the live grade of How you stack up.
   as_of: z.string().optional(),
+  // The one block of the Topic, such as the slot rank bars of How you stack up. It takes the place of the stats and the
+  // rows in the card. A block kept before the Topic had one has none, so the card shows its stats and rows.
+  block: answerBlockSchema.optional(),
 });
 export type PersonalBlock = z.infer<typeof personalBlockSchema>;
 
