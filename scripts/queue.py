@@ -26,6 +26,8 @@ TRIAGE_STATUSES = ("needs-triage", "needs-info", "ready-for-agent", "ready-for-h
 # The statuses that only the skills set. A push always writes them.
 FLOW_STATUSES = ("in-progress", "in-review", "blocked")
 OPEN_STATUSES = TRIAGE_STATUSES + FLOW_STATUSES
+# The statuses of a closed ticket. Only the flow sets them.
+CLOSED_STATUSES = ("done", "wontfix")
 APPS = ("site", "pipeline", "api")
 # A push replaces only these labels on a task, and keeps every other label that Brian adds.
 FLOW_LABELS = OPEN_STATUSES + ("wontfix", "decision") + APPS
@@ -35,8 +37,9 @@ FLOW_LABELS = OPEN_STATUSES + ("wontfix", "decision") + APPS
 DECISION_KINDS = {"grill": "ready-for-human", "prototype": "ready-for-human", "research": "ready-for-agent",
                   "spec": "ready-for-agent"}
 
-# The metadata lines of a ticket, such as "**Status:** ready-for-agent".
-STATUS_LINE = re.compile(r"^\*\*Status:\*\*\s*(\S*)", re.MULTILINE)
+# The metadata lines of a ticket, such as "**Status:** ready-for-agent". The Status line may be plain or bold, as in
+# the tracker rule of the pipeline and of the site.
+STATUS_LINE = re.compile(r"^(?:\*\*)?Status:(?:\*\*)?[ \t]*(\S*)", re.MULTILINE)
 KIND_LINE = re.compile(r"^\*\*Kind:\*\*\s*(\S*)", re.MULTILINE)
 BLOCKED_LINE = re.compile(r"^\*\*Blocked by:\*\*\s*(.*?)\s*$", re.MULTILINE)
 WHAT_TO_BUILD = re.compile(r"^\*\*What to build:\*\*\s*(.+)$", re.MULTILINE)
@@ -44,8 +47,9 @@ WHAT_TO_BUILD = re.compile(r"^\*\*What to build:\*\*\s*(.+)$", re.MULTILINE)
 NOT_PROSE = re.compile(r"^(#|\*\*[^*]+:\*\*|[A-Z][A-Za-z ]*: |[-*] |\d+\. )")
 H1 = re.compile(r"^#\s+(?:(\d+):\s*)?(.+?)\s*$", re.MULTILINE)
 SUMMARY_LIMIT = 500
-# A dead network can hang one `td` call for about 2 minutes, because the SDK retries. A push gives up sooner.
-TD_TIMEOUT = 10
+# A dead network can hang one `td` call for about 2 minutes, because the SDK retries. A push gives up sooner. A `gh`
+# call has the same limit.
+CALL_TIMEOUT = 10
 
 
 @dataclass(frozen=True)
@@ -89,8 +93,7 @@ def checkout_reader(root: Path) -> Reader:
 def branch_reader(root: Path, branch: str) -> Reader:
     """Read the files of a branch of the repo at the root, with no checkout of that branch."""
     def read(path: str) -> str | None:
-        show = subprocess.run(["git", "-C", str(root), "show", f"{branch}:{path}"], capture_output=True, text=True,
-                              env=_clean_git_env())
+        show = _git(root, "show", f"{branch}:{path}")
         return show.stdout if show.returncode == 0 else None
     return read
 
@@ -124,8 +127,10 @@ def _on_main(root: Path, key: str) -> bool:
     return _is_repo_top(root) and _git(root, "cat-file", "-e", f"main:{key}").returncode == 0
 
 
-def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
-    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, env=_clean_git_env())
+def _git(root: Path, *args: str, timeout: float | None = None) -> subprocess.CompletedProcess:
+    """Run one git command in the repo at the root, with no GIT_ variable from a hook."""
+    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, env=_clean_git_env(),
+                          timeout=timeout)
 
 
 def _is_repo_top(root: Path) -> bool:
@@ -165,12 +170,12 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
     path = Path(key)
     number, name = H1.search(text).groups()
     number = number or path.name.split("-")[0]
-    decision = path.parent.name == "decisions"
-    status = (_first(STATUS_LINE, text) or "").rstrip(".,;:")
+    decision = _is_decision(path)
+    status = _status(text)
     if decision and status == "open":
         status = DECISION_KINDS.get(_first(KIND_LINE, text), "needs-triage")
     # A ticket with no Status line is open. An odd word, which the tracker rule rejects, never becomes a label.
-    if status not in OPEN_STATUSES + ("done", "wontfix"):
+    if status not in OPEN_STATUSES + CLOSED_STATUSES:
         status = "needs-triage"
     blocked = _first(BLOCKED_LINE, text)
     # "None (can start immediately)." and "none. Before this ticket, ..." both mean no blocker.
@@ -189,6 +194,17 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
         key=key, feature=feature, title=f"Decision {number}: {name}" if decision else f"{number} {name}",
         status=status, decision=decision, apps=apps, description="\n".join(line for line in lines if line),
     )
+
+
+def _status(text: str) -> str:
+    """The first word of the Status line of a ticket, in lowercase with no trailing punctuation, or "" when it has
+    none. The tracker rule of the pipeline and of the site read it the same way."""
+    return (_first(STATUS_LINE, text) or "").lower().rstrip(".,;:")
+
+
+def _is_decision(path: Path) -> bool:
+    """Whether the ticket at the path is a decision ticket, a file in a decisions/ folder."""
+    return path.parent.name == "decisions"
 
 
 def _first(pattern: re.Pattern, text: str) -> str | None:
@@ -218,18 +234,19 @@ class Queue:
             labels={label["name"] for label in labels["results"]} | set(labels.get("sharedLabels") or []),
         )
 
-    def task(self, key: str) -> dict | None:
-        """The open task whose description starts with the key line of the ticket.
 
-        No Todoist filter reads a description, so the match is local, on the one read of the open tasks.
-        """
-        return task_of(self.tasks, key)
+def _key(task: dict) -> str | None:
+    """The key of a task, from the first line of its description, such as `4ag: <path>`."""
+    line = (task.get("description") or "").split("\n")[0]
+    return line[len("4ag: "):] if line.startswith("4ag: ") else None
 
 
 def task_of(tasks: list[dict], key: str) -> dict | None:
-    """The task whose description starts with the key line of the ticket, `4ag: <key>`."""
-    line = f"4ag: {key}"
-    return next((task for task in tasks if (task.get("description") or "").split("\n")[0] == line), None)
+    """The task whose description starts with the key line of the ticket, `4ag: <key>`.
+
+    No Todoist filter reads a description, so the match is local, on the one read of the tasks.
+    """
+    return next((task for task in tasks if _key(task) == key), None)
 
 
 def project_id(projects: dict) -> str:
@@ -237,7 +254,7 @@ def project_id(projects: dict) -> str:
     for project in projects["results"]:
         if project["name"] == PROJECT:
             return project["id"]
-    raise TdError("NO_PROJECT", f"Todoist has no project named {PROJECT}")
+    raise QueueError("NO_PROJECT", f"Todoist has no project named {PROJECT}")
 
 
 def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
@@ -245,8 +262,8 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
 
     No command sets the priority or the order, because the queue owns them.
     """
-    task = queue.task(ticket.key)
-    closed = ticket.status in ("done", "wontfix")
+    task = task_of(queue.tasks, ticket.key)
+    closed = ticket.status in CLOSED_STATUSES
     if task is None:
         # A closed ticket never enters the queue.
         return [] if closed else _plan_add(ticket, queue)
@@ -310,17 +327,22 @@ def _section_create(feature: str, queue: Queue) -> list[str]:
     return ["section", "create", "--name", feature, "--project", f"id:{queue.project_id}"]
 
 
+def _plan_task_add(title: str, feature: str, labels: list[str], description: str, queue: Queue) -> list[list[str]]:
+    """Make a task in the section of the feature, and first the section when it is missing. A command after a planned
+    `section create` names the section, because its id is not known yet."""
+    section = queue.sections.get(feature)
+    plan = [] if section else [_section_create(feature, queue)]
+    plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
+                 "--section", f"id:{section}" if section else feature,
+                 "--labels", ",".join(labels), "--description", description])
+    return plan
+
+
 def _plan_add(ticket: Ticket, queue: Queue) -> list[list[str]]:
-    """Make the task. A command after a planned `section create` names the section, because its id is not known yet."""
+    """Make the task of the ticket, and first each missing label."""
     labels = _labels(ticket, [])
     plan = [["label", "create", "--name", label] for label in labels if label not in queue.labels]
-    section = queue.sections.get(ticket.feature)
-    if section is None:
-        plan.append(_section_create(ticket.feature, queue))
-    plan.append(["task", "add", ticket.title, "--project", f"id:{queue.project_id}",
-                 "--section", f"id:{section}" if section else ticket.feature,
-                 "--labels", ",".join(labels), "--description", ticket.description])
-    return plan
+    return plan + _plan_task_add(ticket.title, ticket.feature, labels, ticket.description, queue)
 
 
 # The kinds of a wait task, each with its title. The section names the feature, so the title does not.
@@ -347,22 +369,10 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
     if kind == "merge-pr":
         lines.append(f"{PULL}/{number}")
     plan = [["label", "create", "--name", "ready-for-human"]] if "ready-for-human" not in queue.labels else []
-    section = queue.sections.get(feature)
-    if section is None:
-        plan.append(_section_create(feature, queue))
-    plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
-                 "--section", f"id:{section}" if section else feature,
-                 "--labels", "ready-for-human", "--description", "\n".join(lines)])
-    return plan
+    return plan + _plan_task_add(title, feature, ["ready-for-human"], "\n".join(lines), queue)
 
 
 MERGE_PR_TITLE = re.compile(r"^Merge PR #(\d+)$")
-
-
-def _key(task: dict) -> str | None:
-    """The key of a task, from the first line of its description, such as `4ag: <path>`."""
-    line = (task.get("description") or "").split("\n")[0]
-    return line[len("4ag: "):] if line.startswith("4ag: ") else None
 
 
 def _wait_feature(task: dict) -> str | None:
@@ -383,17 +393,28 @@ def pr_state(text: str) -> str:
     return json.loads(text)["state"]
 
 
-def _done_on_main(root: Path, key: str) -> bool:
-    """Whether the ticket is `done` on the branch main of the repo at the root.
+def _main_ref(root: Path) -> str | None:
+    """The ref of main that the sweep reads: origin/main when it exists, else the local main.
+
+    Brian merges on GitHub, so the local main is behind until a pull. The sweep handler fetches origin/main first. A
+    root that is not the top of a git repo has no main.
+    """
+    if not _is_repo_top(root):
+        return None
+    origin = _git(root, "rev-parse", "--verify", "--quiet", "refs/remotes/origin/main").returncode == 0
+    return "origin/main" if origin else "main"
+
+
+def _done_on_main(root: Path, ref: str | None, key: str) -> bool:
+    """Whether the ticket is `done` on the ref of main.
 
     The sweep reads main and not the checkout, because only a merge sets `done`. A root with no main holds no done
     ticket.
     """
-    if not _on_main(root, key):
+    if ref is None:
         return False
-    text = subprocess.run(["git", "-C", str(root), "show", f"main:{key}"], capture_output=True, text=True,
-                          env=_clean_git_env()).stdout
-    return (_first(STATUS_LINE, text) or "").rstrip(".,;:") == "done"
+    show = _git(root, "show", f"{ref}:{key}")
+    return show.returncode == 0 and _status(show.stdout) == "done"
 
 
 def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[str]]:
@@ -408,6 +429,7 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
     plan: list[list[str]] = []
     completed: set[str] = set()
     swept: list[str] = []
+    ref = _main_ref(root)
 
     def complete(task: dict) -> None:
         if task["id"] not in completed:
@@ -422,7 +444,7 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
         if state == "MERGED":
             for task in queue.tasks:
                 key = _key(task) or ""
-                if key.startswith(f".scratch/{feature}/") and _done_on_main(root, key):
+                if key.startswith(f".scratch/{feature}/") and _done_on_main(root, ref, key):
                     complete(task)
             complete(wait)
             if feature not in swept:
@@ -437,6 +459,7 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
         if section and all(task["id"] in completed for task in queue.tasks if task["sectionId"] == section):
             plan.append(["section", "archive", f"id:{section}"])
     return plan
+
 
 def _feature_tickets(root: Path, feature: str) -> list[Path]:
     """The tickets and decision tickets of a feature, also those in the site/ and pipeline/ subfolders of a shared
@@ -455,10 +478,10 @@ def plan_pull(root: Path, feature: str, queue: Queue, completed: dict,
     plan = []
     for path in _feature_tickets(root, feature):
         key = path.relative_to(root).as_posix()
-        status = (_first(STATUS_LINE, path.read_text()) or "").rstrip(".,;:")
-        if status in ("done", "wontfix"):
+        status = _status(path.read_text())
+        if status in CLOSED_STATUSES:
             continue
-        task = queue.task(key)
+        task = task_of(queue.tasks, key)
         if task is None:
             # An open task of the same ticket wins over a completed one, because Brian reopened it.
             done = task_of(completed["results"], key)
@@ -466,7 +489,7 @@ def plan_pull(root: Path, feature: str, queue: Queue, completed: dict,
                 plan.append((key, "done" if _says_done(comments(done["id"])) else "wontfix"))
             continue
         # A decision ticket has no triage status in its file, only open, done, or wontfix.
-        if path.parent.name == "decisions":
+        if _is_decision(path):
             continue
         label = next((label for label in task["labels"] if label in TRIAGE_STATUSES), None)
         if label and label != status:
@@ -487,9 +510,9 @@ def write_statuses(root: Path, plan: list[tuple[str, str]], dry_run: bool) -> No
     for key, status in plan:
         path = root / key
         text = path.read_text()
-        print(f"pull {key}: {(_first(STATUS_LINE, text) or 'none').rstrip('.,;:')} -> {status}")
+        print(f"pull {key}: {_status(text) or 'none'} -> {status}")
         if not dry_run:
-            path.write_text(re.sub(r"^\*\*Status:\*\*.*$", f"**Status:** {status}", text, count=1, flags=re.MULTILINE))
+            path.write_text(re.sub(r"^(?:\*\*)?Status:(?:\*\*)?.*$", f"**Status:** {status}", text, count=1, flags=re.MULTILINE))
     print(f"{len(plan)} file{'' if len(plan) == 1 else 's'}{' planned, none written' if dry_run else ' written'}.")
 
 
@@ -566,15 +589,15 @@ def plan_import(root: Path, queue: Queue, filters: dict, prs: dict[str, list[dic
     return unique
 
 
-class TdError(Exception):
-    """A failed `td` call. Every failure of `td` exits 1, so the JSON error line on stderr names the cause."""
+class QueueError(Exception):
+    """A failed `td` or `gh` call. Every failure of `td` exits 1, so the JSON error line on stderr names the cause."""
 
     def __init__(self, code: str, message: str):
         super().__init__(f"{code} {message}")
         self.code = code
 
     @classmethod
-    def from_stderr(cls, stderr: str) -> "TdError":
+    def from_stderr(cls, stderr: str) -> "QueueError":
         for line in reversed(stderr.strip().splitlines()):
             try:
                 error = json.loads(line)["error"]
@@ -600,20 +623,20 @@ def td_bin_folder(home: Path, env: dict[str, str]) -> Path | None:
 
 
 def run_td(command: list[str]) -> dict:
-    """Run one `td` command with JSON output and return the JSON. A failure raises TdError."""
+    """Run one `td` command with JSON output and return the JSON. A failure raises QueueError."""
     env = dict(os.environ)
     folder = td_bin_folder(Path.home(), env)
     if folder:
         env["PATH"] = os.pathsep.join([str(folder), env.get("PATH", "")])
     td = str(folder / "td") if folder else "td"
     try:
-        run = subprocess.run([td, *command, "--json"], capture_output=True, text=True, env=env, timeout=TD_TIMEOUT)
+        run = subprocess.run([td, *command, "--json"], capture_output=True, text=True, env=env, timeout=CALL_TIMEOUT)
     except subprocess.TimeoutExpired:
-        raise TdError("TIMEOUT", f"td gave no answer in {TD_TIMEOUT} seconds") from None
+        raise QueueError("TIMEOUT", f"td gave no answer in {CALL_TIMEOUT} seconds") from None
     except FileNotFoundError:
-        raise TdError("NO_TD", "td is not in an nvm Node and not on the PATH") from None
+        raise QueueError("NO_TD", "td is not in an nvm Node and not on the PATH") from None
     if run.returncode != 0:
-        raise TdError.from_stderr(run.stderr)
+        raise QueueError.from_stderr(run.stderr)
     return json.loads(run.stdout) if run.stdout.strip() else {}
 
 
@@ -635,16 +658,16 @@ GH_FOLDERS = ("/opt/homebrew/bin", "/usr/local/bin")
 
 def run_gh(args: list[str], what: str) -> str:
     """Run one `gh` command and return its output. Each call names the repo, so it works from a temp root with no
-    remote. A failure raises TdError, so it warns like a failed `td` call."""
+    remote. A failure raises QueueError, so it warns like a failed `td` call."""
     gh = shutil.which("gh") or shutil.which("gh", path=os.pathsep.join(GH_FOLDERS)) or "gh"
     try:
-        run = subprocess.run([gh, *args, "--repo", REPO], capture_output=True, text=True, timeout=TD_TIMEOUT)
+        run = subprocess.run([gh, *args, "--repo", REPO], capture_output=True, text=True, timeout=CALL_TIMEOUT)
     except subprocess.TimeoutExpired:
-        raise TdError("GH_TIMEOUT", f"gh gave no answer about {what} in {TD_TIMEOUT} seconds") from None
+        raise QueueError("GH_TIMEOUT", f"gh gave no answer about {what} in {CALL_TIMEOUT} seconds") from None
     except FileNotFoundError:
-        raise TdError("NO_GH", "gh is not on the PATH") from None
+        raise QueueError("NO_GH", "gh is not on the PATH") from None
     if run.returncode != 0:
-        raise TdError("GH_ERROR", " ".join(run.stderr.split()) or f"gh failed about {what} with no message")
+        raise QueueError("GH_ERROR", " ".join(run.stderr.split()) or f"gh failed about {what} with no message")
     return run.stdout
 
 
@@ -659,7 +682,7 @@ def read_prs(branch: str) -> list[dict]:
                              f"the PRs of {branch}"))
 
 
-def report_failure(subcommand: str, target: str, error: TdError) -> int:
+def report_failure(subcommand: str, target: str, error: QueueError) -> int:
     """Print one warning line and return 0. A failed Todoist call never stops the work of a skill."""
     print(f"warning: the queue {subcommand} of {target} failed: {error}. The queue is behind the tracker.")
     return 0
@@ -694,9 +717,25 @@ def wait(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     return args.target, plan_wait(args.feature, args.kind, args.number, args.done, read_queue())
 
 
+def fetch_main(root: Path) -> None:
+    """Fetch main from origin, so the sweep sees each merge on GitHub. A failed fetch warns, and the sweep reads the
+    last fetched main."""
+    if not _is_repo_top(root):
+        return
+    try:
+        fetch = _git(root, "fetch", "--quiet", "origin", "main", timeout=CALL_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        error = f"no answer in {CALL_TIMEOUT} seconds"
+    else:
+        error = (" ".join(fetch.stderr.split()) or "no message") if fetch.returncode != 0 else None
+    if error:
+        print(f"warning: git fetch origin main failed: {error}. The sweep reads the last fetched main.")
+
+
 def sweep(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     # A failed read names what the sweep reads in the warning.
     args.target = "each open Merge PR task"
+    fetch_main(args.root)
     queue = read_queue()
     return "sweep", plan_sweep(args.root, queue, {number: read_pr_state(number) for number in merge_prs(queue)})
 
@@ -762,7 +801,7 @@ def main(argv: list[str]) -> int:
         _, plan = args.plan(args)
         # A subcommand that writes files in place of `td` commands sets its own runner.
         getattr(args, "run", run_plan)(plan, args.dry_run)
-    except TdError as error:
+    except QueueError as error:
         return report_failure(args.subcommand, getattr(args, "target", args.subcommand), error)
     return 0
 

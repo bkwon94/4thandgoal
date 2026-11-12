@@ -232,12 +232,26 @@ class APullOfTheTriageOfBrian(unittest.TestCase):
 
     def test_a_closed_ticket_keeps_its_status(self):
         # A done ticket keeps its status label until the merge sweep, and only the flow reopens a closed ticket.
-        for line in ("**Status:** done", "**Status:** wontfix"):
+        for line in ("**Status:** done", "**Status:** wontfix", "**Status:** Done.", "Status: done"):
             with self.subTest(line):
                 self.status_line(line)
                 self.assertEqual(self.pull("tasks-zz-triaged.json"), [])
                 self.assertEqual(self.pull("tasks-empty.json", "completed-zz-01.json"), [])
                 self.ticket.write_text(self.ticket.read_text().replace(line, "**Status:** ready-for-agent"))
+
+    def test_a_plain_status_line_and_a_capital_first_word_read_like_the_tracker_rules(self):
+        for line, status in (("Status: Done", "done"), ("Status: in-review;", "in-review"),
+                             ("**Status:** Ready-for-human,", "ready-for-human")):
+            with self.subTest(line):
+                self.ticket.write_text(self.ticket.read_text().replace("**Status:** ready-for-agent", line))
+                self.assertEqual(load_ticket(self.root, self.ticket).status, status)
+                self.ticket.write_text(self.ticket.read_text().replace(line, "**Status:** ready-for-agent"))
+
+    def test_a_write_replaces_a_plain_status_line(self):
+        self.status_line("Status: ready-for-agent")
+        self.write([(f"{ZZ}/issues/01-zz-ready.md", "needs-info")])
+        self.assertIn("**Status:** needs-info\n", self.ticket.read_text())
+        self.assertNotIn("Status: ready-for-agent", self.ticket.read_text())
 
     def test_a_same_first_word_changes_nothing_and_keeps_the_text_after_it(self):
         self.status_line("**Status:** ready-for-human, since Brian asked on 2026-11-12")
@@ -337,14 +351,14 @@ class TheTdCall(unittest.TestCase):
                          Path("/opt/td/bin"))
 
     def test_a_failed_call_names_its_error_code(self):
-        error = queue_script.TdError.from_stderr(td_json("error-auth.stderr"))
+        error = queue_script.QueueError.from_stderr(td_json("error-auth.stderr"))
         self.assertEqual(str(error), "AUTH_ERROR HTTP 401: Unauthorized")
 
     def test_a_failed_push_warns_in_one_line_and_exits_0(self):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             code = queue_script.report_failure("push", ".scratch/zz-queue-check/issues/02-zz-blocked.md",
-                                               queue_script.TdError.from_stderr(td_json("error-auth.stderr")))
+                                               queue_script.QueueError.from_stderr(td_json("error-auth.stderr")))
         self.assertEqual(code, 0)
         self.assertEqual(out.getvalue().splitlines(), [
             "warning: the queue push of .scratch/zz-queue-check/issues/02-zz-blocked.md failed: AUTH_ERROR HTTP 401: "
@@ -476,6 +490,31 @@ class TheMergeSweep(unittest.TestCase):
         next(task for task in blocked.tasks if task["content"] == "Merge PR #16")["labels"] = ["blocked", "phone"]
         self.assertEqual(queue_script.plan_sweep(self.root, blocked, {34: OPEN, 16: CLOSED, 13: OPEN}), [])
 
+    def git(self, *args: str) -> None:
+        subprocess.run(["git", "-C", str(self.root), *args], check=True, env=queue_script._clean_git_env())
+
+    def commit(self) -> None:
+        self.git("add", "-A")
+        self.git("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "next")
+
+    def test_the_sweep_reads_origin_main_when_it_exists(self):
+        # Brian merged on GitHub: origin/main has 01 done, and the local main is one commit behind.
+        self.commit_main()
+        self.set_status("issues/01-zz-ready.md", "ready-for-agent", "done")
+        self.commit()
+        self.git("update-ref", "refs/remotes/origin/main", "HEAD")
+        self.git("reset", "-q", "--hard", "HEAD~1")
+        self.assertIn(["task", "complete", TASK_01], self.sweep({34: MERGED, 16: OPEN, 13: OPEN}))
+
+    def test_the_sweep_reads_the_local_main_with_no_origin_main(self):
+        self.commit_main()
+        self.set_status("issues/01-zz-ready.md", "ready-for-agent", "done")
+        self.commit()
+        self.assertIn(["task", "complete", TASK_01], self.sweep({34: MERGED, 16: OPEN, 13: OPEN}))
+        # An origin/main that is behind wins over the local main, so 01 keeps its task.
+        self.git("update-ref", "refs/remotes/origin/main", "HEAD~1")
+        self.assertNotIn(["task", "complete", TASK_01], self.sweep({34: MERGED, 16: OPEN, 13: OPEN}))
+
     def test_a_root_with_no_main_completes_no_ticket(self):
         self.assertEqual(self.sweep({34: MERGED, 16: OPEN, 13: OPEN}), [["task", "complete", WAIT_34]])
 
@@ -576,7 +615,7 @@ class TheImport(unittest.TestCase):
         # Todoist stores a bare URL in a description as a markdown link with the title of the page.
         imported = queue(tasks="tasks-imported.json", sections="sections-imported.json", labels="labels-imported.json")
         ticket = load_ticket(self.root, self.root / ".scratch/site-pages/issues/09-home-test-class-name.md")
-        self.assertIn("](https://github.com/", imported.task(ticket.key)["description"])
+        self.assertIn("](https://github.com/", queue_script.task_of(imported.tasks, ticket.key)["description"])
         self.assertEqual(plan_push(ticket, imported), [])
 
     def test_a_second_import_plans_zero_writes(self):
