@@ -876,44 +876,9 @@
             "value": "3"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": true
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -1797,44 +1762,9 @@
             "value": "1"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -2711,44 +2641,9 @@
             "value": "1"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -3625,44 +3520,9 @@
             "value": "0"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -4546,44 +4406,9 @@
             "value": "0"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -5462,44 +5287,9 @@
             "value": "2"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": true
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -6383,44 +6173,9 @@
             "value": "1"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -7297,44 +7052,9 @@
             "value": "4"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": true
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": true
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -8218,44 +7938,9 @@
             "value": "2"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": true
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -9132,44 +8817,9 @@
             "value": "1"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -10053,44 +9703,9 @@
             "value": "0"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null
@@ -10974,44 +10589,9 @@
             "value": "0"
           }
         ],
-        "rows": [
-          {
-            "label": "Jordan Love",
-            "value": "36.18",
-            "note": "QB · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Kenneth Walker III",
-            "value": "34.3",
-            "note": "RB · Bo Girds",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "CeeDee Lamb",
-            "value": "28.5",
-            "note": "WR · Return of T Mac",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "Brock Bowers",
-            "value": "18.8",
-            "note": "TE · The Blue Tent",
-            "roster_id": null,
-            "you": false
-          },
-          {
-            "label": "San Francisco 49ers",
-            "value": "20.05",
-            "note": "DEF · Maye d'force B with U",
-            "roster_id": null,
-            "you": false
-          }
-        ],
+        "rows": [],
         "text": [
+          "- **QB** Jordan Love, 36.18, Return of T Mac\n- **RB** Kenneth Walker III, 34.3, Bo Girds\n- **WR** CeeDee Lamb, 28.5, Return of T Mac\n- **TE** Brock Bowers, 18.8, The Blue Tent\n- **DEF** San Francisco 49ers, 20.05, Maye d'force B with U",
           "Jordan Love topped every started quarterback with 36.18 for Return of T Mac. That same roster had CeeDee Lamb leading the receivers at 28.5, on the biggest share of his team's targets and air yards among started WRs. Kenneth Walker III led the backs with 34.3 for Bo Girds on a carry share that ranked only 15th. The Blue Tent put Brock Bowers atop the tight ends and got Brock Purdy and Bucky Irving onto the podium too."
         ],
         "block": null

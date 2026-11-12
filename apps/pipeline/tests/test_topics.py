@@ -103,7 +103,8 @@ def test_a_league_answer_reuses_the_blurbs_and_the_data_of_the_week(tmp_path):
     assert answers["your_season"]["fact"] == "10-6, 2nd of 12"
     assert answers["week_recap"]["fact"] == "You scored 80.11, 12th of 12"
     assert answers["week_recap"]["text"] == [page["blurbs"]["motw"]]
-    assert answers["leaders_trades"]["text"] == [page["blurbs"]["position_leaders"]]
+    # The list of the leaders leads the text, and the blurb of the week follows it.
+    assert answers["leaders_trades"]["text"][1:] == [page["blurbs"]["position_leaders"]]
 
 
 # Bo Girds, the team of the acceptance tests of the recap card, in each league.
@@ -297,3 +298,28 @@ def test_the_matchup_topics_have_no_block_without_the_raw_week(tmp_path):
         assert kinds == {"week_recap": "recap", "last_matchup": None, "next_matchup": None,
                          "power_rankings": "rank_movers", "playoff_race": "ladder", "your_season": None,
                          "leaders_trades": None}
+
+
+def test_position_leaders_lists_one_leader_per_position_in_its_text_and_has_no_block(tmp_path):
+    """AT-21: Position leaders and recent trades shows no block. Its text opens with a markdown list of the top scorer
+    at each position of week 9, so the text block of the site draws it as a list. The blurb of the week follows it."""
+    for slug in ("cpc", "norcal"):
+        site = _published_week_9(tmp_path / slug, slug)
+        write_topics(site, 2026, 9, league_week=_week_9(slug))
+        page = json.loads((site / "2026" / "week-09" / "page.json").read_text(encoding="utf-8"))
+        answer = next(a for a in _topics(site, 2026, 9)["teams"][BO_GIRDS[slug]] if a["topic"] == "leaders_trades")
+        assert answer["block"] is None
+        items = answer["text"][0].split("\n")
+        groups = [group for group in page["leaders"] if group["rows"]]
+        assert len(items) == len(groups)
+        for item, group in zip(items, groups):
+            top = group["rows"][0]
+            assert item.startswith(f"- **{group['position']}** ")
+            assert top["player"] in item
+            assert top["team"] in item
+        # The list takes the place of the rows, so the leaders show once.
+        assert answer["rows"] == []
+        assert answer["text"][1:] == [page["blurbs"]["position_leaders"]]
+    # In cpc, Kenneth Walker III of Bo Girds led the backs with 34.3.
+    cpc = next(a for a in _topics(tmp_path / "cpc", 2026, 9)["teams"]["6"] if a["topic"] == "leaders_trades")
+    assert "- **RB** Kenneth Walker III, 34.3, Bo Girds" in cpc["text"][0].split("\n")
