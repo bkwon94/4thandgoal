@@ -1,0 +1,257 @@
+"""
+Tests the plan of each subcommand of scripts/queue.py with real ticket files and saved real `td` JSON.
+The tickets sit in scripts/fixtures/queue/root/, and the `td` output sits in scripts/fixtures/queue/td/.
+"""
+import contextlib
+import importlib.util
+import io
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+# The script is queue.py, and the standard library has a module named queue. A load by path under its own name keeps
+# the two apart.
+_spec = importlib.util.spec_from_file_location("queue_script", HERE / "queue.py")
+queue_script = importlib.util.module_from_spec(_spec)
+sys.modules["queue_script"] = queue_script
+_spec.loader.exec_module(queue_script)
+Queue, load_ticket, plan_push = queue_script.Queue, queue_script.load_ticket, queue_script.plan_push
+
+FIXTURES = HERE / "fixtures" / "queue"
+ROOT = FIXTURES / "root"
+TD = FIXTURES / "td"
+ZZ = ".scratch/zz-queue-check"
+
+
+def td_json(name: str) -> str:
+    return (TD / name).read_text()
+
+
+def queue(tasks: str = "tasks-empty.json", sections: str = "sections-empty.json",
+          labels: str = "labels-empty.json") -> Queue:
+    """The queue as four real reads of `td` show it."""
+    return Queue.from_json(td_json("project-list.json"), td_json(sections), td_json(tasks), td_json(labels))
+
+
+def option(command: list[str], flag: str) -> str:
+    """The value after a flag of one planned command."""
+    return command[command.index(flag) + 1]
+
+
+class APushOfANewTicket(unittest.TestCase):
+
+    def test_a_new_ticket_makes_its_section_and_its_task(self):
+        ticket = load_ticket(ROOT, ROOT / ZZ / "issues/01-zz-ready.md")
+        self.assertEqual(plan_push(ticket, queue()), [
+            ["label", "create", "--name", "ready-for-agent"],
+            ["section", "create", "--name", "zz-queue-check", "--project", "id:6j222rQrr58wHx9G"],
+            ["task", "add", "01 ZZ ready", "--project", "id:6j222rQrr58wHx9G", "--section", "zz-queue-check",
+             "--labels", "ready-for-agent", "--description",
+             "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md\n"
+             "On the spec branch zz-queue-check.\n"
+             "A throwaway ticket for the acceptance tests of the queue. It names no real work."],
+        ])
+
+    def test_a_grill_decision_ticket_waits_on_brian(self):
+        add = plan_push(load_ticket(ROOT, ROOT / ZZ / "decisions/01-grill-zz-question.md"), queue())[-1]
+        self.assertEqual(add[2], "Decision 01: Does the grill ZZ question need Brian?")
+        self.assertEqual(option(add, "--labels"), "ready-for-human,decision")
+
+    def test_a_research_decision_ticket_waits_on_an_agent(self):
+        add = plan_push(load_ticket(ROOT, ROOT / ZZ / "decisions/02-research-zz-question.md"), queue())[-1]
+        self.assertEqual(add[2], "Decision 02: What does the research ZZ question find?")
+        self.assertEqual(option(add, "--labels"), "ready-for-agent,decision")
+        self.assertIn("Blocked by: 01", option(add, "--description"))
+        self.assertIn("A throwaway research question", option(add, "--description"))
+
+
+PUSHED = {"tasks": "tasks-zz.json", "sections": "sections-zz.json", "labels": "labels-flow.json"}
+# Brian set 01 to ready-for-human, added his label phone, set p1, and dragged 02 out of its section.
+TRIAGED = {**PUSHED, "tasks": "tasks-zz-triaged.json"}
+TASK_01 = "id:6j2Gr4hP2xQ9c5Rw"
+TASK_02 = "id:6j2Gr4j3Vv8fMRgx"
+DECISION_01 = "id:6j2Gr4mFg7XCJqQ2"
+
+
+class APushOfATicketWithATask(unittest.TestCase):
+    """The queue holds the tasks that a push of the throwaway feature makes. Some tests change a file first."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name) / "root"
+        shutil.copytree(ROOT, self.root)
+
+    def edit(self, path: str, old: str, new: str) -> Path:
+        file = self.root / ZZ / path
+        text = file.read_text()
+        self.assertIn(old, text)
+        file.write_text(text.replace(old, new))
+        return file
+
+    def push(self, path: str, state: dict) -> list[list[str]]:
+        return plan_push(load_ticket(self.root, self.root / ZZ / path), queue(**state))
+
+    def test_a_second_push_of_each_file_plans_zero_writes(self):
+        for path in ("issues/01-zz-ready.md", "issues/02-zz-blocked.md", "decisions/01-grill-zz-question.md",
+                     "decisions/02-research-zz-question.md"):
+            with self.subTest(path):
+                self.assertEqual(self.push(path, PUSHED), [])
+
+    def test_the_triage_label_the_extra_label_and_the_priority_of_brian_stay(self):
+        self.assertEqual(self.push("issues/01-zz-ready.md", TRIAGED), [])
+
+    def test_a_flow_status_replaces_the_triage_label_and_keeps_the_extra_label(self):
+        self.edit("issues/01-zz-ready.md", "**Status:** ready-for-agent", "**Status:** in-review")
+        self.assertEqual(self.push("issues/01-zz-ready.md", TRIAGED),
+                         [["task", "update", TASK_01, "--labels", "phone,in-review"]])
+
+    def test_a_triage_status_in_the_file_replaces_an_old_flow_label(self):
+        # The skills set the flow labels. A file back at a triage status means a skill moved the ticket on.
+        self.edit("issues/02-zz-blocked.md", "**Status:** blocked", "**Status:** ready-for-agent")
+        self.assertEqual(self.push("issues/02-zz-blocked.md", PUSHED),
+                         [["task", "update", TASK_02, "--labels", "ready-for-agent"]])
+
+    def test_a_task_out_of_its_section_moves_back(self):
+        self.assertEqual(self.push("issues/02-zz-blocked.md", TRIAGED),
+                         [["task", "move", TASK_02, "--section", "id:6j2Gq9xWJwFvVfMx"]])
+
+    def test_a_new_summary_updates_the_description(self):
+        self.edit("issues/02-zz-blocked.md", "It names no real work.", "It names no work.")
+        plan = self.push("issues/02-zz-blocked.md", PUSHED)
+        self.assertEqual([command[:3] for command in plan], [["task", "update", TASK_02]])
+        self.assertTrue(option(plan[0], "--description").endswith("It names no work."))
+
+    def test_a_new_comment_in_the_file_changes_nothing(self):
+        file = self.root / ZZ / "issues/02-zz-blocked.md"
+        file.write_text(file.read_text() + "\n## Comments\n\n- 2026-11-12: a new note on the ticket.\n")
+        self.assertEqual(self.push("issues/02-zz-blocked.md", PUSHED), [])
+
+    def test_a_done_decision_ticket_completes_its_task(self):
+        self.edit("decisions/01-grill-zz-question.md", "**Status:** open", "**Status:** done")
+        self.assertEqual(self.push("decisions/01-grill-zz-question.md", PUSHED), [
+            ["task", "update", DECISION_01, "--labels", "decision"],
+            ["task", "complete", DECISION_01],
+        ])
+
+    def test_a_done_ticket_never_completes_from_a_push(self):
+        # Only the merge sweep completes the task of a done ticket.
+        self.edit("issues/02-zz-blocked.md", "**Status:** blocked", "**Status:** done")
+        self.assertEqual(self.push("issues/02-zz-blocked.md", PUSHED), [])
+
+    def test_a_wontfix_ticket_completes_with_the_label_wontfix(self):
+        self.edit("issues/01-zz-ready.md", "**Status:** ready-for-agent", "**Status:** wontfix")
+        self.assertEqual(self.push("issues/01-zz-ready.md", TRIAGED), [
+            ["task", "update", TASK_01, "--labels", "phone,wontfix"],
+            ["task", "complete", TASK_01],
+        ])
+
+    def test_a_closed_ticket_with_no_task_plans_nothing(self):
+        self.assertEqual(plan_push(load_ticket(ROOT, ROOT / ZZ / "issues/03-zz-done.md"), queue()), [])
+
+    def test_a_new_ticket_goes_into_the_section_that_exists(self):
+        file = self.root / ZZ / "issues/04-zz-new.md"
+        file.write_text((self.root / ZZ / "issues/01-zz-ready.md").read_text().replace("01: ZZ ready", "04: ZZ new"))
+        self.assertEqual([command[:3] for command in self.push("issues/04-zz-new.md", PUSHED)],
+                         [["task", "add", "04 ZZ new"]])
+        self.assertEqual(option(self.push("issues/04-zz-new.md", PUSHED)[0], "--section"), "id:6j2Gq9xWJwFvVfMx")
+
+    def test_an_odd_status_gives_needs_triage_and_makes_no_odd_label(self):
+        file = self.edit("issues/01-zz-ready.md", "**Status:** ready-for-agent", "**Status:** backlog")
+        file.rename(file.with_name("05-zz-odd.md"))
+        add = self.push("issues/05-zz-odd.md", PUSHED)[-1]
+        self.assertEqual(option(add, "--labels"), "needs-triage")
+
+    def test_no_push_sets_the_priority(self):
+        for state in (PUSHED, TRIAGED, {}):
+            for path in ("issues/01-zz-ready.md", "issues/02-zz-blocked.md"):
+                for command in self.push(path, state):
+                    self.assertNotIn("--priority", command)
+                    self.assertNotIn("--order", command)
+
+
+class TheAppLabel(unittest.TestCase):
+
+    def test_a_shared_feature_takes_the_app_of_its_subfolder(self):
+        path = ".scratch/manager-pages/site/issues/11-the-bench-sentence-and-the-odds-change-words.md"
+        ticket = load_ticket(ROOT, ROOT / path)
+        add = plan_push(ticket, queue())[-1]
+        self.assertEqual(option(add, "--section"), "manager-pages")
+        self.assertEqual(option(add, "--labels"), "ready-for-human,site")
+        self.assertIn("\nApp: site\n", option(add, "--description"))
+
+    def test_both_in_the_state_row_gives_site_and_pipeline(self):
+        ticket = load_ticket(ROOT, ROOT / ".scratch/todoist-queue/issues/03-push-makes-one-task-match-one-ticket.md")
+        add = plan_push(ticket, queue())[-1]
+        self.assertEqual(option(add, "--labels"), "ready-for-agent,site,pipeline")
+        self.assertIn("\nApp: site, pipeline\n", option(add, "--description"))
+
+    def test_a_feature_with_no_state_row_reads_the_apps_line_of_its_prd(self):
+        ticket = load_ticket(ROOT, ROOT / ".scratch/front-door/issues/01-the-front-door-shell.md")
+        self.assertIn("\nApp: site, pipeline, api\n", ticket.description)
+
+    def test_a_feature_with_no_row_and_no_prd_gets_no_app(self):
+        add = plan_push(load_ticket(ROOT, ROOT / ZZ / "issues/01-zz-ready.md"), queue())[-1]
+        self.assertNotIn("App:", option(add, "--description"))
+
+
+class TheLink(unittest.TestCase):
+
+    def test_a_ticket_on_main_links_to_github(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            shutil.copytree(ROOT, root)
+            for args in (["init", "-q", "-b", "main"], ["add", "-A"], ["-c", "user.name=t", "-c", "user.email=t@t",
+                                                                          "commit", "-q", "-m", "fixture"]):
+                subprocess.run(["git", "-C", str(root), *args], check=True, env=queue_script._clean_git_env())
+            ticket = load_ticket(root, root / ZZ / "issues/01-zz-ready.md")
+        self.assertEqual(ticket.description.splitlines()[1], "https://github.com/bkwon94/4thandgoal/blob/main/"
+                                                             ".scratch/zz-queue-check/issues/01-zz-ready.md")
+
+    def test_a_ticket_off_main_names_its_spec_branch(self):
+        ticket = load_ticket(ROOT, ROOT / ".scratch/todoist-queue/issues/03-push-makes-one-task-match-one-ticket.md")
+        lines = ticket.description.splitlines()
+        self.assertEqual(lines[:3], ["4ag: .scratch/todoist-queue/issues/03-push-makes-one-task-match-one-ticket.md",
+                                     "App: site, pipeline", "On the spec branch todoist-queue."])
+        self.assertNotIn("github.com", ticket.description)
+        self.assertTrue(lines[3].startswith("An agent runs one command"))
+
+
+class TheTdCall(unittest.TestCase):
+
+    def test_the_newest_nvm_node_that_holds_td_wins(self):
+        with tempfile.TemporaryDirectory() as home:
+            for version, has_td in (("v9.11.2", True), ("v24.15.0", True), ("v25.1.0", False)):
+                folder = Path(home) / ".nvm/versions/node" / version / "bin"
+                folder.mkdir(parents=True)
+                if has_td:
+                    (folder / "td").write_text("")
+            self.assertEqual(queue_script.td_bin_folder(Path(home), {}),
+                             Path(home) / ".nvm/versions/node/v24.15.0/bin")
+
+    def test_an_environment_variable_overrides_the_folder(self):
+        self.assertEqual(queue_script.td_bin_folder(Path("/nowhere"), {"QUEUE_TD_BIN": "/opt/td/bin"}),
+                         Path("/opt/td/bin"))
+
+    def test_a_failed_call_names_its_error_code(self):
+        error = queue_script.TdError.from_stderr(td_json("error-auth.stderr"))
+        self.assertEqual(str(error), "AUTH_ERROR HTTP 401: Unauthorized")
+
+    def test_a_failed_push_warns_in_one_line_and_exits_0(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = queue_script.report_failure("push", ".scratch/zz-queue-check/issues/02-zz-blocked.md",
+                                               queue_script.TdError.from_stderr(td_json("error-auth.stderr")))
+        self.assertEqual(code, 0)
+        self.assertEqual(out.getvalue().splitlines(), [
+            "warning: the queue push of .scratch/zz-queue-check/issues/02-zz-blocked.md failed: AUTH_ERROR HTTP 401: "
+            "Unauthorized. The queue is behind the tracker.",
+        ])
+
+
+if __name__ == "__main__":
+    unittest.main()
