@@ -18,10 +18,10 @@ Git stays the record, and the Todoist project `4thandgoal` becomes the queue tha
 - The ticket path in the task description is the key. Each push is idempotent. `decisions/01-grill-record-and-queue.md`.
 - A failed `td` call never blocks the flow. CI never calls `td`. `decisions/01-grill-record-and-queue.md`.
 - `td` cannot search a description, so the sync reads the project once and matches locally. Each call needs the nvm PATH and a timeout. `decisions/02-research-td-facts.md`.
+- Each `4ag` skill pushes at the steps in a fixed table. Wait tasks mark an approval or a merge. A sweep at the start of each skill closes the tasks of a merged PR. `decisions/03-grill-push-points.md`.
 
 ## NOT YET SPECIFIED
 
-- Which skill pushes what, at which step of the flow? `decisions/03-grill-push-points.md`.
 - Is the tool one shared script in the plugin, or inline `td` calls in each skill? `decisions/04-grill-tool-shape.md`.
 - What are the title, the description, the link, the priority, and the app label of a task? `decisions/05-spec-task-content.md`.
 
