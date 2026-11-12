@@ -23,12 +23,18 @@ APPS = {"site", "pipeline"}
 ADR = "docs/adr/0014-the-rules-are-checks.md"
 STATE = "docs/agents/state.md"
 CLOSED = {"done", "wontfix"}
+# The nine statuses of a ticket. The first word of a Status line must be one of them.
+STATUSES = {
+    "needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "in-progress", "in-review", "blocked",
+    *CLOSED,
+}
 STATUS = re.compile(r"^\*\*Status:\*\*\s*(\S*)")
 
 MISSING_RULE = "each feature with an open ticket has a row in docs/agents/state.md"
 STALE_RULE = "each row of docs/agents/state.md names a feature with an open ticket"
 MISSING_FIX = "add a row to `docs/agents/state.md`."
 STALE_FIX = "remove the row, because the feature is done."
+STATUS_RULE = "the first word of the Status line of a ticket is one of the nine statuses"
 
 
 def _tracked_scratch_files(root: Path) -> list[str]:
@@ -139,6 +145,34 @@ def _stale_row_offenses(root: Path, tracked: list[str], state_path: Path) -> lis
         if not any(_covers(feature, row_app, open_feature, app) for open_feature, app in features)]
 
 
+def _odd_status_offenses(root: Path, tracked: list[str]) -> list[Offense]:
+    """One offense for each ticket whose Status has a first word outside the nine statuses.
+
+    A ticket with no Status line has no triage yet, so it is legal and open.
+    """
+    offenses: list[Offense] = []
+    for path in tracked:
+        if not _ticket_key(path):
+            continue
+        for number, text in enumerate((root / path).read_text().splitlines(), start=1):
+            match = STATUS.match(text)
+            if not match:
+                continue
+            word = match.group(1).lower().rstrip(".,")
+            if word not in STATUSES:
+                offenses.append(Offense(
+                    path=path,
+                    line=number,
+                    rule_id="tracker/status",
+                    what=f"The ticket has the status {word or 'none'}, and it is not one of the nine statuses.",
+                    rule=STATUS_RULE,
+                    adr=ADR,
+                    fix="set the first word of the Status line to one of: " + ", ".join(sorted(STATUSES)) + ".",
+                ))
+            break
+    return offenses
+
+
 def test_each_open_feature_has_a_row():
     offenses = _missing_row_offenses(ROOT, _tracked_scratch_files(ROOT), ROOT / STATE)
     assert not offenses, report(offenses)
@@ -199,3 +233,26 @@ def test_the_rule_counts_a_subfolder_ticket_for_its_app(tmp_path):
     ]
     state_path.write_text(table + "| `waiver` | pipeline | 09 | none | |\n")
     assert _missing_row_offenses(tmp_path, tracked, state_path) + _stale_row_offenses(tmp_path, tracked, state_path) == []
+
+
+def test_the_rule_finds_a_ticket_with_an_odd_status(tmp_path):
+    issues = tmp_path / ".scratch" / "zz-rule" / "issues"
+    issues.mkdir(parents=True)
+    (issues / "01-zz.md").write_text("# 01: Zz\n\n**Status:** backlog\n")
+    offenses = _odd_status_offenses(tmp_path, [".scratch/zz-rule/issues/01-zz.md"])
+    assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
+        (".scratch/zz-rule/issues/01-zz.md", 3, "tracker/status")]
+    assert "backlog" in offenses[0].what
+
+
+def test_a_ticket_with_no_status_line_passes(tmp_path):
+    issues = tmp_path / ".scratch" / "zz-rule" / "issues"
+    issues.mkdir(parents=True)
+    (issues / "01-zz.md").write_text("# 01: Zz\n\nNo status yet.\n")
+    (issues / "02-zz.md").write_text("# 02: Zz\n\n**Status:** done 2026-10-24\n")
+    assert _odd_status_offenses(tmp_path, [".scratch/zz-rule/issues/01-zz.md", ".scratch/zz-rule/issues/02-zz.md"]) == []
+
+
+def test_each_ticket_has_one_of_the_nine_statuses():
+    offenses = _odd_status_offenses(ROOT, _tracked_scratch_files(ROOT))
+    assert not offenses, report(offenses)
