@@ -10,6 +10,6 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-20 and AT-21.
 
 **Status:** ready-for-agent
 
-- [ ] The doc lists the four steps, each with exact values and a check.
-- [ ] `gh api` shows a ruleset on `main` that needs `verdict`, with the Repository admin role on the bypass list.
-- [ ] `make check-fast` passes.
+- [x] The doc lists the four steps, each with exact values and a check.
+- [x] `gh api` shows a ruleset on `main` that needs `verdict`, with the Repository admin role on the bypass list.
+- [x] `make check-fast` passes.
