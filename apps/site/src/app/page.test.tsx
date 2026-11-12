@@ -183,6 +183,8 @@ describe("the Suggestions of Lil Fridge", () => {
     render(<HomePage />);
     const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"));
     expect(rankings).toBeTruthy();
+    // The first tap shows the fact, and the second tap opens the Topic.
+    fireEvent.click(rankings!);
     fireEvent.click(rankings!);
     expect(await screen.findByRole("article", { name: "Power rankings" })).toBeTruthy();
 
@@ -377,6 +379,8 @@ describe("the Thread of Lil Fridge", () => {
     const confirm = vi.spyOn(window, "confirm");
     render(<HomePage />);
     const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"))!;
+    // The first tap shows the fact, and the second tap opens the Topic.
+    fireEvent.click(rankings);
     fireEvent.click(rankings);
     await openTopic("Week recap");
     expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toHaveLength(2);

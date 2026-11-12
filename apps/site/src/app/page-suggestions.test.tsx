@@ -76,6 +76,13 @@ async function suggestionChips() {
   return within(row).getAllByRole("button");
 }
 
+/* Opens a Topic from its chip: the first tap shows its fact in the strip, and the second tap opens it (decision 02). */
+function openChip(label: string) {
+  const chip = screen.getByRole("button", { name: label });
+  fireEvent.click(chip);
+  fireEvent.click(chip);
+}
+
 beforeEach(() => {
   fetchStub.mockImplementation(async (url: string, init?: RequestInit) => {
     const path = String(url);
@@ -139,25 +146,61 @@ describe("the Suggestions that the API serves", () => {
     streams.push(() => sse(fixture("personal-answer", "waiver-targets.sse")));
     render(<HomePage />);
     await waitFor(async () => expect((await suggestionChips()).map((chip) => chip.getAttribute("aria-label"))).toContain("Waiver targets: 19 free agents on the list"));
-    fireEvent.click(screen.getByRole("button", { name: "Waiver targets: 19 free agents on the list" }));
+    openChip("Waiver targets: 19 free agents on the list");
     await waitFor(() => expect(localStorage.getItem("cpc.opened-topics") ?? "").toContain("19 free agents on the list"));
     await waitFor(async () => expect((await suggestionChips()).map((chip) => chip.getAttribute("aria-label"))).not.toContain("Waiver targets: 19 free agents on the list"));
   });
 });
 
 describe("the layout of the Suggestions row", () => {
-  it("wraps while the Thread is empty and scrolls sideways in one row once the Thread has Answers (AT-4)", async () => {
+  it("stays one row of names, with More first, with an empty Thread and with an Answer (AT-42)", async () => {
     onWednesday();
     streams.push(() => sse(fixture("personal-answer", "waiver-targets.sse")));
     render(<HomePage />);
-    const row = await screen.findByRole("group", { name: "Suggestions" });
-    expect(row.className).toContain("flex-wrap");
-    await waitFor(async () => expect((await suggestionChips()).map((chip) => chip.getAttribute("aria-label"))).toContain("Waiver targets: 19 free agents on the list"));
+    const chip = "Waiver targets: 19 free agents on the list";
+    await waitFor(async () => expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(chip));
+    const oneRow = async () => {
+      const row = screen.getByRole("group", { name: "Suggestions" });
+      expect(row.className).toContain("flex-nowrap");
+      expect(row.className).not.toContain("flex-wrap");
+      const [more, ...chips] = await suggestionChips();
+      expect(more.textContent).toBe("More");
+      // Each chip shows only its Topic name: no number of a fact shows on the row.
+      for (const each of chips) expect(each.textContent).toBe(each.getAttribute("aria-label")!.split(":")[0]);
+    };
+    await oneRow();
+    openChip(chip);
+    await screen.findByRole("article", { name: "Waiver targets" });
+    await oneRow();
+  });
+
+  it("shows the fact on the first tap and opens the Topic on the second tap (AT-43)", async () => {
+    onWednesday();
+    streams.push(() => sse(fixture("personal-answer", "waiver-targets.sse")));
+    render(<HomePage />);
+    const label = "Waiver targets: 19 free agents on the list";
+    await waitFor(async () => expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(label));
+    const chip = screen.getByRole("button", { name: label });
+    fireEvent.click(chip);
+    const strip = screen.getByRole("button", { name: "Open Waiver targets" });
+    expect(strip.textContent).toContain("19 free agents on the list");
+    expect(strip.textContent).toContain("Open →");
+    expect(screen.queryByRole("article", { name: "Waiver targets" })).toBeNull();
+    expect(callsTo("/personal")).toHaveLength(0);
+    fireEvent.click(chip);
+    expect(await screen.findByRole("article", { name: "Waiver targets" })).toBeTruthy();
+  });
+
+  it("moves the strip to another chip on its tap and opens no Topic (AT-44)", async () => {
+    onWednesday();
+    render(<HomePage />);
+    await waitFor(async () => expect(await suggestionChips()).toHaveLength(4));
     fireEvent.click(screen.getByRole("button", { name: "Waiver targets: 19 free agents on the list" }));
-    await waitFor(() => expect(screen.getByRole("group", { name: "Suggestions" }).className).toContain("flex-nowrap"));
-    const docked = screen.getByRole("group", { name: "Suggestions" });
-    expect(docked.className).toContain("overflow-x-auto");
-    expect(docked.className).not.toContain("flex-wrap");
+    fireEvent.click(screen.getByRole("button", { name: "Power rankings: 6th, down 5" }));
+    const strip = screen.getByRole("button", { name: "Open Power rankings" });
+    await waitFor(() => expect(strip.textContent).not.toContain("free agents"));
+    expect(strip.textContent).toContain("6th, down 5");
+    expect(screen.queryAllByRole("article")).toHaveLength(0);
   });
 });
 
@@ -174,7 +217,7 @@ describe("the trade Topics as Suggestions", () => {
     render(<HomePage />);
     const chip = "Trade ideas: Offers for your QB, 7th of 12";
     await waitFor(async () => expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(chip));
-    fireEvent.click(screen.getByRole("button", { name: chip }));
+    openChip(chip);
     // The tap runs the Topic as "More" does: the trade ideas route with Your team and no partner.
     await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
     expect(JSON.parse(String(callsTo("/trade-ideas")[0][1]?.body))).toEqual({ roster_id: LIL_FRIDGE, partner: null });

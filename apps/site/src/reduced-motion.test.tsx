@@ -338,12 +338,35 @@ describe("Reduced motion on the static pages", () => {
     await waitFor(() => expect(row.parentElement!.style.opacity).toBe("1"));
   });
 
+  it("fades the strip of a Suggestion in and across to another fact, with no move and no blur (AT-43, AT-44)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    onTestFinished(() => localStorage.clear());
+    render(<HomePage />);
+    const [, first, second] = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole("button");
+    for (const chip of [first, second]) {
+      fireEvent.click(chip);
+      const name = chip.getAttribute("aria-label")!.split(":")[0];
+      const strip = screen.getByRole("button", { name: `Open ${name}` });
+      const box = strip.parentElement!.parentElement!;
+      const parts = [box, ...box.querySelectorAll<HTMLElement>("*")];
+      for (const part of parts) {
+        expect(part.style.transform).not.toMatch(/translate|scale/);
+        expect(part.style.filter).not.toMatch(/blur/);
+        expect(part.style.height).not.toBe("0px");
+      }
+      // The fade of the strip ends at full opacity.
+      await waitFor(() => expect(box.style.opacity).toBe("1"));
+    }
+  });
+
   it("keeps only the fades when a tapped Suggestion opens its Answer: no glide, blur, or spring (AT-46 of front-door)", async () => {
     localStorage.setItem("cpc.your-team", "3");
     onTestFinished(() => localStorage.clear());
     render(<HomePage />);
     const chip = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole("button")[1];
     const name = chip.getAttribute("aria-label")!.split(":")[0];
+    // The first tap shows the fact in the strip, and the second tap opens the Topic.
+    fireEvent.click(chip);
     fireEvent.click(chip);
     const answer = await screen.findByRole("article", { name });
     const bubble = within(answer).getByText(name, { selector: "p" });

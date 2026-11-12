@@ -1,12 +1,13 @@
 /**
- * The Suggestion chips above the ask box: "More" leads the row, then the 3 Suggestions of Your team, each with its Topic
- * name and one fact. "More" opens the list of all 13 Topics from its pill, so no Topic is ever out of reach. Until the
- * picks are in, 3 quiet placeholder chips hold their place.
+ * The Suggestion chips above the ask box: "More" leads one row, then the 3 Suggestions of Your team, each with only its
+ * Topic name. A first tap on a chip shows its fact in a strip under the row, and a second tap opens the Topic. "More"
+ * opens the list of all 13 Topics from its pill, so no Topic is ever out of reach. Until the picks are in, 3 quiet
+ * placeholder chips hold their place.
  */
 "use client";
 
 import { AnimatePresence, motion, useIsPresent } from "framer-motion";
-import { type ComponentProps, useId } from "react";
+import { type ComponentProps, useId, useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { closeKeyboard, keepFocus } from "./keyboard-tap";
@@ -27,7 +28,6 @@ export function Suggestions({
   picks,
   facts,
   moreOpen,
-  wrap,
   onMore,
   onPick,
 }: {
@@ -35,42 +35,55 @@ export function Suggestions({
   picks: string[] | null;
   facts: Record<string, string>;
   moreOpen: boolean;
-  wrap: boolean;
   onMore: (open: boolean) => void;
   onPick: (key: string) => void;
 }) {
   const off = useMotionOff();
   const panelId = useId();
+  const stripId = useId();
+  // The key of the chip whose fact shows in the strip. The tap is the reveal, not a long press: a long press is hard to
+  // find on the web, and it fights the text callout of iOS (decision 02).
+  const [shown, setShown] = useState<string | null>(null);
   // A pick keeps the focus through the press, so the dock holds still until the click lands. Then the keyboard closes.
   const pick = (key: string) => {
+    setShown(null);
     onPick(key);
     closeKeyboard();
   };
+  // The first tap shows the fact and keeps the keyboard, as "More" does. The second tap on the same chip opens it.
+  // The strip takes the place of the "More" panel, so a chip tap closes the panel.
+  const tap = (key: string) => {
+    if (shown === key) return pick(key);
+    setShown(key);
+    if (moreOpen) onMore(false);
+  };
   const topics = (picks ?? []).map((key) => TOPICS.find((topic) => topic.key === key)).filter((topic): topic is Topic => !!topic);
+  // The strip shows only while its chip is in the row and the "More" panel is shut.
+  const strip = moreOpen ? undefined : topics.find((topic) => topic.key === shown);
   return (
-    <div className="flex flex-col gap-sp-2">
-      {/* With an empty Thread the row wraps, so all 3 chips show whole at each width and none hides past the edge (AT-4).
-          On a phone "More" and the first chip share the first line, and the other two chips share the second. With
-          Answers in the Thread the row sits in the dock at the foot, and two lines of chips would hide the Answers, so
-          it stays one row that scrolls sideways (the PRD). The bleed keeps the last chip clear of the gutter. A chip
-          grows from a base of 9rem up to its cap, and a long fact cuts with an ellipsis after its number. */}
+    // No gap here: the strip and the panel each carry their own 8px above, so a shut strip adds no height to the foot.
+    <div className="flex flex-col">
+      {/* The row is one line at every state of the Thread, so the Thread gets the screen (decision 02). A chip shows
+          only its Topic name, so "More" and 3 chips fit 375 px. A long name cuts with an ellipsis at the cap of a chip,
+          and a row too wide for a narrow phone scrolls sideways. The bleed keeps the last chip clear of the gutter. The
+          4px pad above and below gives the press scale and the focus ring room in the scroll box, and the negative
+          margin keeps the row one 44px chip high, so --spacing-door-foot-clear holds. */}
       <div
         role="group"
         aria-label="Suggestions"
         aria-busy={picks === null || undefined}
-        className={
-          wrap
-            ? "flex flex-wrap gap-sp-2"
-            : "-mx-gutter flex snap-x scroll-px-gutter flex-nowrap gap-sp-2 overflow-x-auto overscroll-x-contain px-gutter pb-sp-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        }
+        className="-mx-gutter -my-sp-1 flex snap-x scroll-px-gutter flex-nowrap gap-sp-2 overflow-x-auto overscroll-x-contain px-gutter py-sp-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <button
           type="button"
           aria-expanded={moreOpen}
           aria-controls={panelId}
           onMouseDown={keepFocus}
-          onClick={() => onMore(!moreOpen)}
-          className={`press door-sheen flex min-h-touch flex-none ${wrap ? "" : "snap-start"} items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised`}
+          onClick={() => {
+            setShown(null);
+            onMore(!moreOpen);
+          }}
+          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
         >
           <span>More</span>
           <ChevronDownIcon
@@ -80,17 +93,16 @@ export function Suggestions({
           />
         </button>
         {picks === null && (
-          // The placeholders hold the size of a chip, with two still bars for the name and the fact. They do not pulse,
-          // so the dock stays quiet for the moment until the chips land.
+          // The placeholders hold the size of a chip, with one still bar for the name. They do not pulse, so the dock
+          // stays quiet for the moment until the chips land.
           <div aria-hidden className="contents">
             {[0, 1, 2].map((index) => (
               <div
                 key={index}
                 data-placeholder=""
-                className={`flex min-h-touch max-w-chip ${wrap ? "min-w-0 flex-[1_1_9rem]" : "w-36 flex-none"} flex-col justify-center gap-sp-1 rounded-tile border border-door-hair bg-card px-sp-4 py-sp-2 opacity-60`}
+                className="flex min-h-touch w-28 flex-none items-center rounded-pill border border-door-hair bg-card px-sp-4 opacity-60"
               >
-                <span className="h-sp-3 w-3/4 rounded-pill bg-raised" />
-                <span className="h-sp-2 w-1/2 rounded-pill bg-raised" />
+                <span className="h-sp-3 w-full rounded-pill bg-raised" />
               </div>
             ))}
           </div>
@@ -103,23 +115,73 @@ export function Suggestions({
               layout={!off}
               // The chip and the question of its Answer share one id, so a tap morphs the chip into the question.
               layoutId={off ? undefined : morphId(topic.key)}
+              // The name leads the label, so a voice command by the name finds the chip, and the fact follows it.
               aria-label={`${topic.name}: ${facts[topic.key]}`}
+              aria-expanded={strip?.key === topic.key}
+              aria-controls={stripId}
               onMouseDown={keepFocus}
-              onClick={() => pick(topic.key)}
+              onClick={() => tap(topic.key)}
               initial={off ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
               animate={off ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }}
               transition={off ? fadeIn(FAST, index * STAGGER) : { ...CHIP_GLIDE, layout: GLIDE, opacity: fadeIn(FAST, index * STAGGER) }}
-              className={`press door-sheen flex min-h-touch max-w-chip ${wrap ? "min-w-0 flex-[1_1_9rem]" : "flex-none snap-start"} flex-col items-start justify-center gap-sp-0 rounded-tile border border-door-hair bg-card px-sp-4 py-sp-2 text-left transition-colors duration-150 hover-fine:bg-raised`}
+              className="press door-sheen flex min-h-touch max-w-chip flex-none snap-start items-center rounded-pill border border-door-hair bg-card px-sp-4 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
             >
               <span aria-hidden className="max-w-full truncate text-body leading-tight font-semibold text-ink">
                 {topic.name}
               </span>
-              <span aria-hidden className="max-w-full truncate font-mono text-meta leading-tight text-mute tabular-nums">
-                {facts[topic.key]}
-              </span>
             </SuggestionChip>
           ))}
+        </AnimatePresence>
+      </div>
+      <div id={stripId}>
+        <AnimatePresence initial={false}>
+          {strip && (
+            // The strip grows the foot from 0 to its height, so the row above it rises with it and never jumps. With
+            // motion off, the height jumps and only the opacity fades.
+            <motion.div
+              key="strip"
+              className="overflow-hidden"
+              initial={off ? { opacity: 0 } : { opacity: 0, height: 0 }}
+              animate={off ? { opacity: 1, transition: fadeIn(FAST) } : { opacity: 1, height: "auto", transition: fadeIn(FAST) }}
+              exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, height: 0, transition: fadeIn(QUICK) }}
+            >
+              <div className="pt-sp-2">
+                <motion.button
+                  type="button"
+                  aria-label={`Open ${strip.name}`}
+                  onMouseDown={keepFocus}
+                  onClick={() => pick(strip.key)}
+                  // The strip drops from the row on --distance-micro with --blur-small, so it reads as the chip opening,
+                  // and it leaves faster than it came. With motion off, only the opacity moves.
+                  initial={off ? false : { y: -4, filter: "blur(2px)" }}
+                  animate={off ? undefined : { y: 0, filter: "blur(0px)", transition: fadeIn(FAST) }}
+                  exit={off ? undefined : { y: -4, filter: "blur(2px)", transition: fadeIn(QUICK) }}
+                  className="press door-sheen relative flex min-h-touch w-full items-center gap-sp-3 rounded-tile border border-door-hair bg-card px-sp-4 py-sp-2 text-left transition-colors duration-150 hover-fine:bg-raised"
+                >
+                  {/* A tap on another chip cross-fades the fact in place with a soft blur, both at once and with no move
+                      (Text swap soft). The old fact leaves the flow, so the strip never grows for the overlap. */}
+                  <span className="relative min-w-0 flex-1">
+                    <AnimatePresence initial={false} mode="popLayout">
+                      <motion.span
+                        key={strip.key}
+                        initial={off ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
+                        animate={off ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)" }}
+                        exit={off ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
+                        transition={{ duration: QUICK, ease: "easeInOut" }}
+                        className="block font-mono text-meta leading-tight text-ink tabular-nums"
+                      >
+                        {facts[strip.key]}
+                      </motion.span>
+                    </AnimatePresence>
+                  </span>
+                  <span aria-hidden className="flex-none text-meta leading-tight font-semibold text-ink">
+                    Open →
+                  </span>
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
       <AnimatePresence initial={false}>
@@ -138,7 +200,7 @@ export function Suggestions({
                 : { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", transition: { ...MORE_SPRING, opacity: fadeIn(FAST), filter: fadeIn(FAST) } }
             }
             exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.99, filter: "blur(2px)", transition: { duration: QUICK, ease: SMOOTH } }}
-            className="door-lift overflow-hidden rounded-card border border-door-hair bg-card"
+            className="door-lift mt-sp-2 overflow-hidden rounded-card border border-door-hair bg-card"
           >
             <ul aria-label="All Topics" className="m-0 flex max-h-more list-none flex-col overflow-y-auto overscroll-contain p-sp-1">
               {TOPICS.map((topic, index) => {

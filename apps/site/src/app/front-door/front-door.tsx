@@ -527,11 +527,11 @@ export function FrontDoor({
               {!missed && (day === null || picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
                   {/* Until the browser reads the day, quiet placeholder chips hold the place of the chips. */}
-                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} wrap={empty} onMore={setMoreOpen} onPick={(key) => open(key)} />
+                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
                 </motion.div>
               ) : null}
-              {/* The ask box glides on its own box too. The dock changes inside as it glides: the chips go from two lines
-                  to one row, and the dock gains its top pad and its bleed. The glide of the dock alone puts the ask box
+              {/* The ask box glides on its own box too. The dock changes inside as it glides: the dock gains its top pad
+                  and its bleed. The glide of the dock alone puts the ask box
                   about 40 px up and 16 px right at the start, so it would rise before it falls (ticket 46). */}
               <motion.div
                 {...riseIn(off, { delay: 0.08 })}
