@@ -11,13 +11,15 @@ from zoneinfo import ZoneInfo
 import httpx
 
 from analyzer.trade_jev import YES_AT
+from cornerstone_api.comparison import COMPARISON_KIND, compare_facts, with_cites
 from cornerstone_api.free_wording import plain_text, sentences
 from cornerstone_api.game_lock import Kickoff, week_kickoffs
+from cornerstone_api.named_players import named_players
 from cornerstone_api.nfl_week import defense_strip, pass_share, saved_stats, usage_shares
 from cornerstone_api.personal_facts import PersonalFacts
-from cornerstone_api.personal_wording import FACT_SHEET_MEANINGS, SWAP_MEANING, swap_question
+from cornerstone_api.personal_wording import FACT_SHEET_MEANINGS, SWAP_MEANING, compare_question, swap_question
 from cornerstone_api.trade_wording import option_keys
-from cornerstone_api.week_lineup import Player, Row, WeekLineup, week_lineup
+from cornerstone_api.week_lineup import Player, Row, WeekLineup, full_name, week_lineup
 from league.jev_port import Jev, JevError
 from league.lineup import allowed_positions
 from league.parse import team_name
@@ -76,6 +78,75 @@ class LiveWeek:
         lineup = week_lineup(self.raw, roster_id, self.kickoffs, self.now)
         swaps = self.swaps(jev, roster_id, lineup)
         return PersonalFacts(slice=self._slice(roster_id, lineup, swaps), block=_block(roster_id, lineup, swaps, self.kickoffs))
+
+    def asked(self, jev: Jev, roster_id: int, question: str | None) -> PersonalFacts:
+        """The facts of Start or sit for a typed `question`. Two players of the roster that it names get the
+        comparison, and three or more get the lineup of the slots that they can fill. Any other question gets the whole
+        lineup. Raises JevError when the read fails, as `judged` does."""
+        named = [] if question is None else self._named(roster_id, question)
+        if len(named) == 2:
+            return self._compared(jev, roster_id, named[0], named[1])
+        facts = self.judged(jev, roster_id)
+        if len(named) < 2:
+            return facts
+        return _only_slots(facts, {player.position for player in named}, {player.name for player in named})
+
+    def _named(self, roster_id: int, question: str) -> list[Player]:
+        """The players of the roster that `question` names, in its order, who can play or start. A locked player of
+        the bench is in no part of the lineup, so he is never named."""
+        lineup = week_lineup(self.raw, roster_id, self.kickoffs, self.now)
+        players = {player.player_id: player for player in [row.player for row in lineup.rows if row.player] +
+                   lineup.bench + [absent.player for absent in lineup.cannot_play]}
+        rosters = self.rosters
+        names = {pid: full_name(self.raw.players.get(pid, {}), pid) for ids in rosters.values() for pid in ids}
+        own = {pid: names[pid] for pid in rosters[roster_id]}
+        others = {pid: name for pid, name in names.items() if pid not in own}
+        return [players[pid] for pid in named_players(question, own, others).own if pid in players]
+
+    def _compared(self, jev: Jev, roster_id: int, first: Player, second: Player) -> PersonalFacts:
+        """The comparison of two players of the roster, with the pick of one Jev Choice over their Fact sheets. A
+        player who cannot play is never the pick, so the read runs only when both can play."""
+        lineup = week_lineup(self.raw, roster_id, self.kickoffs, self.now)
+        absent = {absent.player.player_id: absent.status for absent in lineup.cannot_play}
+        pair = [first, second]
+        able = [player for player in pair if player.player_id not in absent]
+        team = self.team_name(roster_id)
+        if len(able) == 2:
+            option = option_keys({player.player_id: player.name for player in pair})
+            key = "compare"
+            questions = {key: compare_question(_shared_slot(lineup, first, second), team, lineup.week,
+                                               (option[first.player_id], first.name),
+                                               (option[second.player_id], second.name))}
+            state = {"scoring": self._scoring(), "week": lineup.week, "what_each_fact_means": FACT_SHEET_MEANINGS,
+                     "players": {player.name: self.fact_sheet(player) for player in pair}}
+            response = jev.ask(state, questions)
+            probability = response.choices.get(key, {}).get(option[first.player_id])
+            if probability is None:
+                raise JevError("the Jev read of the two players gave no answer")
+            # A tie keeps the player with the higher projection.
+            pick: int | None = 0 if (probability, first.projection or 0.0) >= (1 - probability, second.projection or 0.0) \
+                else 1
+        else:
+            pick = pair.index(able[0]) if able else None
+        sheets = [self.fact_sheet(player) for player in pair]
+        rows = compare_facts(sheets)
+        games = {team_code: game for game in self.kickoffs for team_code in (game.home, game.away)}
+        block = {"kind": COMPARISON_KIND, "topic": START_SIT, "team": roster_id, "week": lineup.week,
+                 "players": [{"name": player.short_name, "player_id": player.player_id, "position": player.position,
+                              "nfl_team": player.nfl_team, "opponent": sheet["opponent"],
+                              "kickoff": None if player.nfl_team not in games
+                              else int(games[player.nfl_team].start.timestamp() * 1000),
+                              "projection": sheet["projection"],
+                              "status": absent.get(player.player_id) or player.injury_status}
+                             for player, sheet in zip(pair, sheets, strict=True)],
+                 "facts": rows, "pick": pick}
+        facts = {"team": team, "week": lineup.week, "scoring": self._scoring(),
+                 "players": sheets, "pick": None if pick is None else pair[pick].name,
+                 "cannot_play": [player.name for player in pair if player.player_id in absent],
+                 "facts": [{"fact": row["label"], **{player.name: shown for player, shown
+                                                     in zip(pair, row["shown"], strict=True)}} for row in rows],
+                 "what_each_fact_means": FACT_SHEET_MEANINGS}
+        return PersonalFacts(slice=facts, block=block)
 
     def swaps(self, jev: Jev, roster_id: int, lineup: WeekLineup) -> list[Swap]:
         """The Swaps of the lineup: one Jev request with one Choice per pair of a bench player and a starter whose slot
@@ -203,6 +274,32 @@ class LiveWeek:
 
 
 
+def _shared_slot(lineup: WeekLineup, first: Player, second: Player) -> str:
+    """The slot that the Choice of two players names: the slot of either one by projection that the other can fill,
+    else the first slot of the lineup that takes both, else "starter"."""
+    for row in lineup.rows:
+        if (row.player is not None and row.player.player_id in {first.player_id, second.player_id}
+                and {first.position, second.position} <= allowed_positions(row.slot)):
+            return row.slot
+    return next((row.slot for row in lineup.rows if {first.position, second.position} <= allowed_positions(row.slot)),
+                "starter")
+
+
+def _only_slots(facts: PersonalFacts, positions: set[str], names: set[str]) -> PersonalFacts:
+    """The facts of the lineup with only the slots that take one of `positions`, and the players of `names` who cannot
+    play. The totals are the totals of the rows that show."""
+    block = facts.block
+    rows = [row for row in block["rows"] if allowed_positions(row["slot"]) & positions]
+    total = round(sum(row["swap"]["over_projection"] if row["swap"] else row["projection"] or 0.0 for row in rows), 1)
+    shown = {**block, "rows": rows, "total": total,
+             "swap_total": round(sum(row["projection"] or 0.0 for row in rows), 1),
+             "cannot_play": [absent for absent in block["cannot_play"]
+                             if any(_last_name(absent["name"]) == _last_name(name) for name in names)]}
+    slots = {row["slot"] for row in rows}
+    lineup = [entry for entry in facts.slice["lineup"] if entry["slot"] in slots]
+    return PersonalFacts(slice={**facts.slice, "lineup": lineup}, block=shown)
+
+
 def with_swaps(lineup: WeekLineup, swaps: list[Swap], kickoffs: list[Kickoff]) -> WeekLineup:
     """The lineup with each Swap: the bench player in the slot with his own game, and the starter on the bench."""
     games = {team: game for game in kickoffs for team in (game.home, game.away)}
@@ -291,6 +388,12 @@ def with_reasons(block: dict, text: str) -> dict:
             row = {**row, "swap": {**swap, "reason": reason}}
         rows.append(row)
     return {**block, "rows": rows}
+
+
+def checked_block(block: dict, text: str) -> dict:
+    """The block of Start or sit after the check of `text`: the reason of each Swap of the lineup, or the dot on each
+    cited fact of the comparison."""
+    return with_cites(block, text) if block["kind"] == COMPARISON_KIND else with_reasons(block, text)
 
 
 def load_live_week(sources, season: int, *, fact_sheets: bool = True) -> LiveWeek:

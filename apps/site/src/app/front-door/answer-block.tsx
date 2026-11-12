@@ -13,6 +13,7 @@ import { matchupBlockSchema, matchupText } from "@/lib/data/blocks/matchup-schem
 import { rankMoversBlockSchema, rankMoversText } from "@/lib/data/blocks/rank-movers-schema";
 import { recapBlockSchema, recapText } from "@/lib/data/blocks/recap-schema";
 import { scheduleBlockSchema, scheduleText } from "@/lib/data/blocks/schedule-schema";
+import { ComparisonView, comparisonBlockSchema, comparisonText } from "./comparison-block";
 import { FeedView, feedBlockSchema, feedText } from "./feed-block";
 import { ByeGridView, byeGridBlockSchema, byeGridText } from "./bye-grid";
 import { LineupView, lineupBlockSchema, lineupText } from "./lineup-block";
@@ -67,6 +68,7 @@ export const answerBlockSchema = z.discriminatedUnion("kind", [
   ladderBlockSchema,
   scheduleBlockSchema,
   nflGameBlockSchema,
+  comparisonBlockSchema,
 ]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
@@ -106,6 +108,7 @@ export function blockText(block: AnswerBlock): string {
     case "ladder": return ladderText(block);
     case "schedule": return scheduleText(block);
     case "nfl_game": return nflGameText(block);
+    case "comparison": return comparisonText(block);
   }
 }
 
@@ -261,5 +264,6 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
     case "ladder": return <StandingsLadder block={block} live={live} />;
     case "schedule": return <ScheduleStrip block={block} live={live} />;
     case "nfl_game": return <NflGameView block={block} live={live} />;
+    case "comparison": return <ComparisonView block={block} live={live} />;
   }
 }

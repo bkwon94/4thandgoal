@@ -7,6 +7,7 @@ import { z } from "zod";
 import { type TopicRow, type TopicStat, topicRowSchema, topicStatSchema } from "@/lib/data/topics-schema";
 import { type AnswerBlock, answerBlockSchema } from "./answer-block";
 import { type FreeView, viewOf } from "./free-stream";
+import { comparisonBlockSchema } from "./comparison-block";
 import { lineupBlockSchema } from "./lineup-block";
 
 /* The 4 personal Topics, which the API builds live for one team. */
@@ -39,11 +40,13 @@ const rowsBlockSchema = personalHeadSchema.extend({
   block: answerBlockSchema.optional(),
 });
 
-/* The data block of a personal Topic: the stats and rows, the lineup of Start or sit, or one block of the block
-   contract, such as the waiver list. The lineup carries no fact, so it has its own branch. */
+/* The data block of a personal Topic: the stats and rows, the lineup or the comparison of Start or sit, or one block
+   of the block contract, such as the waiver list. The lineup and the comparison carry no fact, so each has its own
+   branch. */
 export const personalBlockSchema = z.union([
   rowsBlockSchema,
   lineupBlockSchema,
+  comparisonBlockSchema,
   z.intersection(answerBlockSchema, personalHeadSchema),
 ]);
 export type PersonalBlock = z.infer<typeof personalBlockSchema>;

@@ -82,6 +82,14 @@ SWAP_QUESTION = ("Which player will score more fantasy points this week in the s
                  "of {team} in week {week}?")
 SWAP_BENCH = "{player}, on the bench of {team}. His Fact sheet is `players.{player}`."
 SWAP_STARTER = "{player}, the {slot} of {team} by projection. His Fact sheet is `players.{player}`."
+# The option of one player in the Choice of a typed "Start A or B?". The question is the Choice of a Swap, over the same
+# Fact sheets, and the pick is the player with the higher probability.
+COMPARE_OPTION = "{player}, a player of {team}. His Fact sheet is `players.{player}`."
+# What the comparison of two players asks of the text.
+COMPARE_ASK = ("Say which of the two players of `players` to start this week. `pick` is the player to start, from a "
+               "read of the two Fact sheets, or null when neither can play. Start with \"Start\" and the full name of "
+               "`pick`. Then give the reason in 1 to 3 short sentences from the facts of `facts` that favor him, each "
+               "with its number as `facts` shows it, such as 24%. A player in `cannot_play` cannot play this week.")
 # What a Swap means, in the slice of Start or sit, so Claude and the Jev check read the same meaning.
 SWAP_MEANING = ("An entry of `lineup` with `swap_over` is a Swap: its player starts in place of the player named in "
                 "`swap_over`, who has the higher projection and goes to the bench, because a read of the two Fact "
@@ -119,13 +127,14 @@ Write the whole Answer again. Keep only what the facts say, with the same rules.
 """
 
 
-def topic_prompt(topic: str, facts: dict, own: bool, question: str | None = None) -> str:
+def topic_prompt(topic: str, facts: dict, own: bool, question: str | None = None, ask: str | None = None) -> str:
     """The prompt of one Topic: what to write, the typed question if the manager typed one, whom it addresses, and the
-    slice as JSON with sorted keys, so the same facts give the same prompt."""
+    slice as JSON with sorted keys, so the same facts give the same prompt. `ask` takes the place of the ask of the
+    Topic, as the comparison of two players does for Start or sit."""
     voice = ("The manager of this team asks, so call the team \"your team\" or \"you\"." if own
              else f"The manager of another team asks, so call this team {facts['team']}.")
     typed = "" if question is None else f"The manager asks: \"{question}\". Answer that question from the facts.\n"
-    return (f"Topic: {TOPIC_NAMES[topic]}.\n{TOPIC_ASKS[topic]}\n{typed}{voice}\n\nFacts:\n"
+    return (f"Topic: {TOPIC_NAMES[topic]}.\n{ask or TOPIC_ASKS[topic]}\n{typed}{voice}\n\nFacts:\n"
             f"{json.dumps(facts, sort_keys=True, indent=1)}")
 
 
@@ -154,3 +163,11 @@ def swap_question(slot: str, team: str, week: int, bench: tuple[str, str],
     return ChoiceQuestion(instructions=SWAP_QUESTION.format(week=week, **fill),
                           options={bench[0]: SWAP_BENCH.format(player=bench[1], **fill),
                                    starter[0]: SWAP_STARTER.format(player=starter[1], **fill)})
+
+
+def compare_question(slot: str, team: str, week: int, first: tuple[str, str],
+                     second: tuple[str, str]) -> ChoiceQuestion:
+    """The Choice of a typed "Start A or B?": the question of a Swap, with one option per player in the order of the
+    question. `first` and `second` each hold the option key and the name of the player."""
+    return ChoiceQuestion(instructions=SWAP_QUESTION.format(slot=slot, team=team, week=week),
+                          options={key: COMPARE_OPTION.format(player=name, team=team) for key, name in (first, second)})

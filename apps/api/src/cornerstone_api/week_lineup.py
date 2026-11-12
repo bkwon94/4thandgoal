@@ -96,6 +96,13 @@ def _short(entry: dict, position: str) -> str:
     return f"{first[0]}. {last}"
 
 
+def full_name(entry: dict, pid: str) -> str:
+    """The full name of a player from his entry of the Sleeper players file, such as "Jacksonville Jaguars" for a
+    defense, or his id with no name."""
+    return entry.get("full_name") or " ".join(part for part in (entry.get("first_name"), entry.get("last_name"))
+                                              if part) or pid
+
+
 def _players(raw: RawWeek, ids: list[str]) -> dict[str, Player]:
     scoring = raw.league.scoring_settings
     projected = {row.player_id: row.stats for row in raw.projections}
@@ -104,8 +111,7 @@ def _players(raw: RawWeek, ids: list[str]) -> dict[str, Player]:
         entry = raw.players.get(pid, {})
         position = entry.get("position") or ""
         stats = projected.get(pid)
-        name = entry.get("full_name") or " ".join(part for part in (entry.get("first_name"), entry.get("last_name"))
-                                                  if part) or pid
+        name = full_name(entry, pid)
         players[pid] = Player(
             player_id=pid, name=name, short_name=_short(entry, position), position=position,
             nfl_team=entry.get("team"), injury_status=entry.get("injury_status"),

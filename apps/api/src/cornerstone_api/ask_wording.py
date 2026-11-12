@@ -1,5 +1,5 @@
 """
-All the wording of the Jev route of the ask box: the 13 Topics, the data sources, the state, and the 7 typed questions.
+All the wording of the Jev route of the ask box: the 14 Topics, the data sources, the state, and the 7 typed questions.
 The route in ask.py decides with code from the answers. Change a question here and run the live route eval (AT-17).
 """
 import re
@@ -9,7 +9,7 @@ from league.jev_port import ChoiceQuestion, NoulQuestion
 CONTEXT = ("A manager of this 12-team fantasy football league typed `manager_question` "
            "into the ask box of the league site.")
 
-# The 13 Topics of the front door, by the key that the site uses, in the order of the table of the spec.
+# The 14 Topics of the front door, by the key that the site uses, in the order of the table of the spec.
 TOPICS = {
     "week_recap": "The recap of the last fantasy week for the whole league: scores, results, standout games, and the "
                   "weekly report.",
@@ -32,6 +32,9 @@ TOPICS = {
                    "trade ideas of the chat, such as 'not a WR', 'keep Walker', 'someone else', or 'what about for a "
                    "TE'.",
     "trade_check": "A check of one trade that the manager names: is it fair, and who wins it.",
+    "start_sit": "Who to start this week in the lineup of the manager's own team, with the reason: the whole lineup, or "
+                 "which of two or more players of the manager's own team to start, such as 'Start Downs or "
+                 "Pittman?'.",
 }
 
 # The Topics that cover one week. The state names that week in each, so a question about an older week reads as no fit.
@@ -44,7 +47,7 @@ WEEK_TOPICS = {
 
 
 def topics(week: int) -> dict[str, str]:
-    """The 13 Topics as the state shows them, with the latest week in each Topic that covers one week."""
+    """The 14 Topics as the state shows them, with the latest week in each Topic that covers one week."""
     return {key: WEEK_TOPICS[key].format(week=week) if key in WEEK_TOPICS else text for key, text in TOPICS.items()}
 
 

@@ -43,6 +43,7 @@ from cornerstone_api.claude_stream import (
     data,
     kept_text,
 )
+from cornerstone_api.comparison import COMPARISON_KIND
 from cornerstone_api.personal_facts import (
     PersonalFacts,
     PersonalTopic,
@@ -51,6 +52,7 @@ from cornerstone_api.personal_facts import (
     topic_facts,
 )
 from cornerstone_api.personal_wording import (
+    COMPARE_ASK,
     FACT_MEANINGS,
     INSTRUCTIONS,
     SWAP_BENCH,
@@ -64,7 +66,7 @@ from cornerstone_api.personal_wording import (
     rewrite_prompt,
     topic_prompt,
 )
-from cornerstone_api.start_sit import START_SIT, LiveWeek, load_live_week, with_reasons
+from cornerstone_api.start_sit import START_SIT, LiveWeek, checked_block, load_live_week
 from cornerstone_api.waiver_targets import judge
 from facts.writer import route_model
 from league.jev_port import Jev, JevError
@@ -241,7 +243,10 @@ async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: Per
     turns = turns or []
     instructions = turns_instructions(f"The facts are the league data now, before the games of week "
                                       f"{facts.slice['week']}.", turns)
-    writer = Writer(label=f"personal Topic {topic}", agent=AGENT, prompt=topic_prompt(topic, facts.slice, own, question),
+    # The comparison of two players has its own ask, because its slice holds two Fact sheets and not a lineup.
+    ask = COMPARE_ASK if facts.block.get("kind") == COMPARISON_KIND else None
+    writer = Writer(label=f"personal Topic {topic}", agent=AGENT,
+                    prompt=topic_prompt(topic, facts.slice, own, question, ask),
                     deps=None, instructions=instructions, model=model, rewrite=rewrite_prompt,
                     history=turn_messages(turns))
     checker = Checker(question=check_question(topic, team, question), your_team=your_team,
@@ -251,8 +256,9 @@ async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: Per
         yield chunk
     block = facts.block
     if outcome.end == "checked" and topic == START_SIT:
-        # Claude writes the reason of each Swap, so the lineup comes again after the check with the checked sentences.
-        block = with_reasons(facts.block, outcome.text)
+        # Claude writes the reason of each Swap and the reason of a pick, so the block comes again after the check with
+        # the checked sentences of each Swap, or the dot on each fact that the checked text cites.
+        block = checked_block(facts.block, outcome.text)
         if block != facts.block:
             yield data("block", block)
     if outcome.end == "checked" and not turns and question is None:
@@ -326,8 +332,11 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClie
         facts_of: Callable[[], PersonalFacts] = lambda: week.facts(subject)
         # The Jev read of the Swaps runs in the stream. A failed read gives the honest miss, never the lineup by
         # projection, because a failed read is not a "keep the starter" (AT-20).
-        judged: Callable[[], Awaitable[PersonalFacts]] = lambda: anyio.to_thread.run_sync(week.judged, asker.jev,
-                                                                                           subject)
+        # A typed question that names two players of the roster gets the comparison, and three or more get the slots
+        # that they can fill.
+        question = body.question
+        judged: Callable[[], Awaitable[PersonalFacts]] = lambda: anyio.to_thread.run_sync(week.asked, asker.jev,
+                                                                                           subject, question)
         miss: list[str] | None = CLOSEST[START_SIT]
     else:
         live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])

@@ -198,13 +198,26 @@ def _rosters(client: Client, served: analyzer_routes.Served) -> Callable[[], dic
     return rosters
 
 
+def _roster_players(client: Client, served: analyzer_routes.Served) -> Callable[[], dict[int, dict[str, str]]]:
+    """The name of each rostered player of `client` by player id, per roster, from the teams route of the analyzer, so
+    it shares the cache of the live Sleeper rosters."""
+    season = client.values.latest_season
+
+    def players() -> dict[int, dict[str, str]]:
+        return {team["roster_id"]: {player["player_id"]: player["name"] for player in team["players"]}
+                for team in analyzer_routes.teams(season, served)["teams"]}
+
+    return players
+
+
 def _asker(settings: Settings, client: Client, served: analyzer_routes.Served, jev: Jev) -> ask_routes.Asker:
     """The ask route of one client. Its miss log is <slug>.sqlite and its caps are <slug>.caps.sqlite in the ask folder,
     on the volume on Fly, so each league keeps its own budget."""
     folder = ask_dir(settings)
     return ask_routes.Asker(season=client.values.latest_season, jev=jev, misses=MissLog(folder / f"{client.slug}.sqlite"),
                             rosters=_rosters(client, served), clock=lambda: datetime.now(client.tz),
-                            caps=Caps(folder / f"{client.slug}.caps.sqlite", client.slug))
+                            caps=Caps(folder / f"{client.slug}.caps.sqlite", client.slug),
+                            roster_players=_roster_players(client, served))
 
 
 def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) -> eggs_routes.Hunt:

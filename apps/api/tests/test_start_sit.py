@@ -468,3 +468,99 @@ def test_the_fact_sheet_of_a_player_holds_his_matchup_his_game_his_team_tilt_and
     assert sheet["injury_status"] is None
     # The state says what each fact of a sheet means, so the read and the check read the same meaning.
     assert set(read.state["what_each_fact_means"]) >= {"expected_margin", "defense_against_position", "last_3_weeks"}
+
+
+ASK = "/clients/cpc/ask"
+# The route answers of a typed start question: about the league, a fit for a Topic, and no team named.
+START_ROUTE = {"about_league": 0.99, "fits_topic": 0.95, "data_can_answer": 0.6}
+
+
+class Router(Edges):
+    """A stand-in for Jev that routes each typed question to Start or sit, and reads each pair of two players by the
+    edges of Edges, the first option first."""
+
+    def noul(self, key: str, question: NoulQuestion, state: dict) -> float:
+        return START_ROUTE.get(key, 0.01) if "topics" in state else 0.95
+
+    def choose(self, key: str, question: ChoiceQuestion, state: dict) -> dict[str, float]:
+        if "topics" in state:
+            return {option: float(option == ("start_sit" if key == "topic" else next(iter(question.options))))
+                    for option in question.options}
+        return super().choose(key, question, state)
+
+
+def _routed(edges: dict[tuple[str, str], float] | None = None) -> FakeJev:
+    router = Router(edges)
+    return FakeJev(answer=router.noul, choose=router.choose)
+
+
+def _ask(api: TestClient, question: str) -> dict:
+    response = api.post(ASK, json={"question": question, "roster_id": BO_GIRDS["cpc"], "week": 9}, headers=HEADERS)
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
+def _typed(api: TestClient, question: str) -> list[dict]:
+    response = api.post(PERSONAL.format(slug="cpc"), json={"topic": "start_sit", "roster_id": BO_GIRDS["cpc"],
+                                                          "question": question}, headers=HEADERS)
+    assert response.status_code == 200, response.text
+    return _chunks(response)
+
+
+def test_start_a_or_b_with_two_players_of_your_team_gives_the_comparison_and_the_pick_of_the_swap_read(settings,
+                                                                                                    sources):
+    # AT-16: Matthew Golden starts at WR by projection, 12.9 to the 6.8 of Konata Mumpfield. The read gives Golden 0.2,
+    # so the pick is Mumpfield, with a pair of values for each fact and the side that wins each fact.
+    jev = _routed({("Matthew Golden", "Konata Mumpfield"): 0.2})
+    writer = Writer("Start Konata Mumpfield. His 6.8 projection trails, but the read of his matchup is better.")
+    api = _api(settings, sources, jev=jev, writer=writer)
+    route = _ask(api, "Start Golden or Mumpfield?")
+    assert (route["route"], route["topic"]) == ("topic", "start_sit")
+    chunks = _typed(api, "Start Golden or Mumpfield?")
+    blocks = [c["data"] for c in chunks if c["type"] == "data-block"]
+    first, last = blocks[0], blocks[-1]
+    assert first["kind"] == "comparison" and first["topic"] == "start_sit" and first["team"] == BO_GIRDS["cpc"]
+    assert [player["name"] for player in first["players"]] == ["M. Golden", "K. Mumpfield"]
+    assert [player["projection"] for player in first["players"]] == [12.9, 6.8]
+    assert first["pick"] == 1
+    facts = {fact["key"]: fact for fact in first["facts"]}
+    assert {"projection", "defense", "team_points", "margin", "snap_share", "target_share", "pass_share"} <= set(facts)
+    assert facts["projection"]["values"] == [12.9, 6.8] and facts["projection"]["winner"] == 0
+    assert all(len(fact["values"]) == 2 and fact["winner"] in (0, 1, None) for fact in first["facts"])
+    # The pick comes from the Choice of the Swaps, over the same Fact sheets.
+    [read] = [request for request in jev.requests if "players" in request.state]
+    [question] = read.questions.values()
+    assert "as the WR of Bo Girds" in question.instructions
+    assert [option.split(",")[0] for option in question.options.values()] == ["Matthew Golden", "Konata Mumpfield"]
+    assert set(read.state["players"]) == {"Matthew Golden", "Konata Mumpfield"}
+    assert read.state["players"]["Konata Mumpfield"]["last_3_weeks"]["weeks"] == [7, 8, 9]
+    # No fact is cited before the check. After it, the fact whose number the checked text gives carries the dot.
+    assert not any(fact["cited"] for fact in first["facts"])
+    assert [fact["key"] for fact in last["facts"] if fact["cited"]] == ["projection"]
+
+
+def test_a_failed_read_of_the_two_players_gives_the_honest_miss(settings, sources):
+    api = _api(settings, sources, jev=FakeJev(error=JevError("down")))
+    chunks = _typed(api, "Start Golden or Mumpfield?")
+    assert not any(c["type"] == "data-block" for c in chunks)
+    assert [c["type"] for c in chunks if c["type"] == "data-miss"] == ["data-miss"]
+
+
+def test_a_start_question_with_three_wrs_gives_the_lineup_block_for_the_wr_and_flex_slots(settings, sources):
+    # AT-17: Zay Flowers and Matthew Golden start at WR, and Konata Mumpfield sits on the bench.
+    jev = _routed()
+    api = _api(settings, sources, jev=jev)
+    assert _ask(api, "Should I start Flowers, Golden, or Mumpfield?")["topic"] == "start_sit"
+    blocks = [c["data"] for c in _typed(api, "Should I start Flowers, Golden, or Mumpfield?") if c["type"] == "data-block"]
+    block = blocks[-1]
+    assert block["kind"] == "lineup"
+    assert [row["slot"] for row in block["rows"]] == ["WR", "WR", "FLEX", "FLEX"]
+    assert block["total"] == pytest.approx(sum(row["projection"] for row in block["rows"]), abs=0.05)
+
+
+@pytest.mark.parametrize("question", ["Start Golden or Stefon Diggs?", "start golden or diggs"])
+def test_a_start_question_with_a_player_off_your_roster_goes_to_a_free_answer(settings, sources, question):
+    # AT-18: Stefon Diggs is on the roster of Lil Fridge, so the question is not about the lineup of Bo Girds.
+    jev = _routed()
+    route = _ask(_api(settings, sources, jev=jev), question)
+    assert (route["route"], route["topic"]) == ("free", None)
