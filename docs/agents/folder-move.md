@@ -27,8 +27,10 @@ A worktree of an open spec stays. The move step repairs it.
 First, list each worktree whose branch is merged into `origin/main`. The command fetches first, so the test sees the latest `main`. It removes nothing.
 
 ```
-cd ~/repos/cpcfantasyfootball && git fetch origin && for wt in .claude/worktrees/*; do b=$(git -C "$wt" branch --show-current); [ -n "$b" ] || continue; if git merge-base --is-ancestor "$b" origin/main || [ -n "$(gh pr list --state merged --head "$b" --json number --jq '.[0].number')" ]; then echo "$wt $b"; fi; done
+cd ~/repos/cpcfantasyfootball && git fetch origin && for wt in .claude/worktrees/*(N); do b=$(git -C "$wt" branch --show-current); [ -n "$b" ] || continue; if git merge-base --is-ancestor "$b" origin/main || [ -n "$(gh pr list --state merged --head "$b" --json number --jq '.[0].number')" ]; then echo "$wt $b"; fi; done
 ```
+
+The `(N)` makes an empty glob match nothing. Without it, zsh stops with "no matches found" when `.claude/worktrees/` is empty.
 
 A squash merge leaves the branch out of `main`. The `gh pr list` test finds those branches.
 
@@ -56,9 +58,14 @@ Check: `git -C ~/repos/4thandgoal remote -v` shows `bkwon94/4thandgoal` for fetc
 
 Pass the path of each remaining worktree. Include a worktree outside the repo, such as one in `/private/tmp`.
 
+First, set `other` to the path of each outside worktree. Set it to nothing if there is none. Find them in the output of `git worktree list` before the move.
+
 ```
-cd ~/repos/4thandgoal && git worktree repair .claude/worktrees/* <other worktree path>
+other=/private/tmp/example-worktree
+cd ~/repos/4thandgoal && git worktree repair .claude/worktrees/*(N) $other
 ```
+
+The `(N)` makes an empty glob match nothing. Without it, zsh stops with "no matches found" when `.claude/worktrees/` is empty. The value `/private/tmp/example-worktree` is an example. Replace it.
 
 Check: `git worktree list` shows `/Users/brian.kwon/repos/4thandgoal` and no line with `prunable`.
 
