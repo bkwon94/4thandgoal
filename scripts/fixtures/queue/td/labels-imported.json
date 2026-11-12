@@ -1,0 +1,78 @@
+{
+  "results": [
+    {
+      "id": "2186351579",
+      "name": "needs-triage",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351580",
+      "name": "needs-info",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351581",
+      "name": "ready-for-agent",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351582",
+      "name": "ready-for-human",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351583",
+      "name": "in-progress",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351584",
+      "name": "in-review",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351585",
+      "name": "blocked",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351586",
+      "name": "wontfix",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351587",
+      "name": "decision",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351588",
+      "name": "site",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351589",
+      "name": "pipeline",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2186351590",
+      "name": "api",
+      "color": "charcoal",
+      "isFavorite": false
+    }
+  ],
+  "nextCursor": null,
+  "sharedLabels": []
+}

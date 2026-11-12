@@ -10,11 +10,11 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Status:** ready-for-agent
 
-- [ ] The unit tests check the plan of `import`, including the choice of the live spec branches.
+- [x] The unit tests check the plan of `import`, including the choice of the live spec branches.
 - [ ] The real import loads `01 The formula` in the section `rankings` with `ready-for-agent`, `pipeline`, and the full description.
 - [ ] Both `rankings` subfolders share one section, with the labels `site` and `pipeline`.
-- [ ] The `codex-flow` ticket 01 shows `in-review` and "On the spec branch codex-flow." with no link.
-- [ ] No task names a `done` ticket of `front-door`.
-- [ ] Each label, `Ideas`, and the filter exist once after a second import.
-- [ ] A second `import --dry-run` plans zero writes, and it runs under `env -i` with no `td` error.
-- [ ] `make check-scripts` passes and lists the cases of the script tests.
+- [x] The `codex-flow` ticket 01 shows `in-review` and "On the spec branch codex-flow." with no link.
+- [x] No task names a `done` ticket of `front-door`.
+- [x] Each label, `Ideas`, and the filter exist once after a second import.
+- [x] A second `import --dry-run` plans zero writes, and it runs under `env -i` with no `td` error.
+- [x] `make check-scripts` passes and lists the cases of the script tests.

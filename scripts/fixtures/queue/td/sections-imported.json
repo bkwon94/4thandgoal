@@ -1,0 +1,93 @@
+{
+  "results": [
+    {
+      "id": "6j23MVCCH6GG33Qp",
+      "name": "Ideas",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 1,
+      "url": "https://app.todoist.com/app/section/ideas-6j23MVCCH6GG33Qp"
+    },
+    {
+      "id": "6j23MVFvmP3pXp9G",
+      "name": "codex-flow",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 2,
+      "url": "https://app.todoist.com/app/section/codex-flow-6j23MVFvmP3pXp9G"
+    },
+    {
+      "id": "6j23MVhF6HM9FRwp",
+      "name": "front-door-lineup",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 3,
+      "url": "https://app.todoist.com/app/section/front-door-lineup-6j23MVhF6HM9FRwp"
+    },
+    {
+      "id": "6j23MX6W842H5FGG",
+      "name": "manager-pages",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 4,
+      "url": "https://app.todoist.com/app/section/manager-pages-6j23MX6W842H5FGG"
+    },
+    {
+      "id": "6j23MXCJF4XHX95G",
+      "name": "modular",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 5,
+      "url": "https://app.todoist.com/app/section/modular-6j23MXCJF4XHX95G"
+    },
+    {
+      "id": "6j23MXJ7Mhqm6GHG",
+      "name": "pick-reason",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 6,
+      "url": "https://app.todoist.com/app/section/pick-reason-6j23MXJ7Mhqm6GHG"
+    },
+    {
+      "id": "6j23MXRfvWVF8fWG",
+      "name": "readme-module-navigation",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 7,
+      "url": "https://app.todoist.com/app/section/readme-module-navigation-6j23MXRfvWVF8fWG"
+    },
+    {
+      "id": "6j23MXhp23FMM8fp",
+      "name": "site-pages",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 8,
+      "url": "https://app.todoist.com/app/section/site-pages-6j23MXhp23FMM8fp"
+    },
+    {
+      "id": "6j23MXq7P8gc8vVp",
+      "name": "todoist-queue",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 9,
+      "url": "https://app.todoist.com/app/section/todoist-queue-6j23MXq7P8gc8vVp"
+    },
+    {
+      "id": "6j23McXGPmCm5HwG",
+      "name": "tone",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 10,
+      "url": "https://app.todoist.com/app/section/tone-6j23McXGPmCm5HwG"
+    },
+    {
+      "id": "6j23McgvMHwC6V2G",
+      "name": "week-8-fixes",
+      "description": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionOrder": 11,
+      "url": "https://app.todoist.com/app/section/week-8-fixes-6j23McgvMHwC6V2G"
+    }
+  ],
+  "nextCursor": null
+}

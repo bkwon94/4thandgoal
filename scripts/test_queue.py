@@ -480,6 +480,123 @@ class TheMergeSweep(unittest.TestCase):
         self.assertEqual(self.sweep({34: MERGED, 16: OPEN, 13: OPEN}), [["task", "complete", WAIT_34]])
 
 
+BRANCH = FIXTURES / "branch"
+
+
+def gh_prs(name: str) -> list[dict]:
+    """The PRs of one branch from saved real output of `gh pr list --head <branch> --state all --json number,state`."""
+    return json.loads((FIXTURES / "gh" / name).read_text())
+
+
+class TheImport(unittest.TestCase):
+    """The root is a git repo. Its branch main holds the fixture tickets. The branch codex-flow adds a feature that
+    only it holds, and it has no PR. The branch midseason-report adds an open ticket, and its PR merged as #13."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name) / "repo"
+        shutil.copytree(ROOT, self.root)
+        self.git("init", "-q", "-b", "main")
+        self.commit("fixture")
+        for feature in ("codex-flow", "midseason-report"):
+            self.git("checkout", "-q", "-b", feature)
+            shutil.copytree(BRANCH / ".scratch" / feature, self.root / ".scratch" / feature)
+            self.commit(feature)
+            self.git("checkout", "-q", "main")
+        self.prs = {"codex-flow": gh_prs("list-codex-flow.json"), "midseason-report": gh_prs("list-midseason-report.json")}
+
+    def git(self, *args: str) -> None:
+        subprocess.run(["git", "-C", str(self.root), *args], check=True, env=queue_script._clean_git_env())
+
+    def commit(self, message: str) -> None:
+        self.git("add", "-A")
+        self.git("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", message)
+
+    def plan(self, state: dict | None = None, filters: str = "filters-default.json") -> list[list[str]]:
+        return queue_script.plan_import(self.root, queue(**(state or {})), json.loads(td_json(filters)), self.prs)
+
+    def adds(self, plan: list[list[str]]) -> dict[str, list[str]]:
+        return {command[2]: command for command in plan if command[:2] == ["task", "add"]}
+
+    def test_the_spec_branches_are_the_local_branches_with_a_feature_folder(self):
+        self.assertEqual(queue_script.spec_branches(self.root), ["codex-flow", "midseason-report"])
+
+    def test_a_ticket_on_a_live_spec_branch_reads_from_that_branch_with_no_link(self):
+        add = self.adds(self.plan())["01 The rules move to AGENTS.md"]
+        self.assertEqual(option(add, "--section"), "codex-flow")
+        self.assertEqual(option(add, "--labels"), "in-review,site,pipeline")
+        description = option(add, "--description")
+        self.assertEqual(description.splitlines()[:4], [
+            "4ag: .scratch/codex-flow/issues/01-the-rules-move-to-agents-md.md", "App: site, pipeline",
+            "On the spec branch codex-flow.", description.splitlines()[3]])
+        self.assertTrue(description.splitlines()[3].startswith("The repo rules live in `AGENTS.md`"))
+        self.assertNotIn("github.com", description)
+
+    def test_a_spec_branch_with_a_merged_pr_is_skipped(self):
+        self.assertFalse([command for command in self.plan() if "midseason-report" in words(command)])
+
+    def test_an_empty_queue_first_gets_the_labels_the_ideas_section_and_the_filter(self):
+        plan = self.plan()
+        self.assertEqual(plan[:15], [["label", "create", "--name", label] for label in (
+            "needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "in-progress", "in-review", "blocked",
+            "wontfix", "decision", "site", "pipeline", "api")] + [
+            ["section", "create", "--name", "Ideas", "--project", PROJECT],
+            ["filter", "create", "--name", "Waits on Brian", "--query", "#4thandgoal & @ready-for-human"],
+            ["section", "create", "--name", "codex-flow", "--project", PROJECT],
+        ])
+        self.assertEqual([command for command in plan[15:] if command[0] == "label"], [])
+
+    def test_each_open_ticket_and_open_decision_ticket_enters_and_no_done_ticket(self):
+        self.assertEqual(sorted(self.adds(self.plan())), [
+            "01 The rules move to AGENTS.md",
+            "01 ZZ ready", "02 ZZ blocked", "03 Push makes one task match one ticket",
+            "09 The home page test reads a class name", "11 The bench sentence and the odds change words",
+            "Decision 01: Does the grill ZZ question need Brian?",
+            "Decision 02: What does the research ZZ question find?",
+        ])
+
+    def test_a_research_note_is_not_a_ticket(self):
+        notes = ".scratch/todoist-queue/decisions/02-research-td-facts.notes.md"
+        self.assertTrue((self.root / notes).is_file())
+        self.assertNotIn(notes, words(sum(self.plan(), [])))
+
+    def test_each_section_is_made_once(self):
+        sections = [command[3] for command in self.plan() if command[:2] == ["section", "create"]]
+        self.assertEqual(sections, ["Ideas", "codex-flow", "manager-pages", "site-pages", "todoist-queue",
+                                    "zz-queue-check"])
+
+    def test_an_open_pr_of_a_live_spec_makes_its_merge_wait(self):
+        # No PR is open on 2026-11-12, so the open state comes from the saved `gh pr view` output of an open PR.
+        self.prs["codex-flow"] = [{"number": 36, "state": OPEN}]
+        self.assertEqual(self.adds(self.plan())["Merge PR #36"][-1],
+                         "4ag: codex-flow/wait/merge-pr\nhttps://github.com/bkwon94/4thandgoal/pull/36")
+
+    def test_a_link_that_todoist_turned_into_a_titled_link_plans_no_update(self):
+        # Todoist stores a bare URL in a description as a markdown link with the title of the page.
+        imported = queue(tasks="tasks-imported.json", sections="sections-imported.json", labels="labels-imported.json")
+        ticket = load_ticket(self.root, self.root / ".scratch/site-pages/issues/09-home-test-class-name.md")
+        self.assertIn("](https://github.com/", imported.task(ticket.key)["description"])
+        self.assertEqual(plan_push(ticket, imported), [])
+
+    def test_a_second_import_plans_zero_writes(self):
+        root = Path(self.root.parent) / "zz-only"
+        root.mkdir()
+        shutil.copytree(ROOT / ZZ, root / ZZ)
+        imported = queue(**PUSHED)
+        imported.sections.update(queue(sections="sections-imported.json").sections)
+        self.assertEqual(queue_script.plan_import(root, imported, json.loads(td_json("filters-imported.json")), {}),
+                         [])
+
+    def test_a_folder_inside_the_repo_has_no_spec_branch(self):
+        self.assertEqual(queue_script.spec_branches(ROOT), [])
+
+
+def words(command: list[str]) -> str:
+    """The words of a planned command in one line, for a search."""
+    return " ".join(command)
+
+
 class TheCommandLine(unittest.TestCase):
 
     def test_a_merge_pr_wait_needs_the_pr_number(self):

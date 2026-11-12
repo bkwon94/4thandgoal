@@ -9,6 +9,7 @@ import json
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -72,22 +73,44 @@ def _app_words(text: str) -> tuple[str, ...]:
     return tuple(app for app in APPS if app in words)
 
 
-def _apps(root: Path, key: str) -> tuple[str, ...]:
+# A reader gives the text of a file by its path from the repo root, or None when the file does not exist. It reads the
+# checkout, or a branch for a feature on a live spec branch.
+Reader = Callable[[str], "str | None"]
+
+
+def checkout_reader(root: Path) -> Reader:
+    """Read the files of the checkout at the root."""
+    def read(path: str) -> str | None:
+        file = root / path
+        return file.read_text() if file.is_file() else None
+    return read
+
+
+def branch_reader(root: Path, branch: str) -> Reader:
+    """Read the files of a branch of the repo at the root, with no checkout of that branch."""
+    def read(path: str) -> str | None:
+        show = subprocess.run(["git", "-C", str(root), "show", f"{branch}:{path}"], capture_output=True, text=True,
+                              env=_clean_git_env())
+        return show.stdout if show.returncode == 0 else None
+    return read
+
+
+def _apps(read: Reader, key: str) -> tuple[str, ...]:
     """The app of a ticket: the subfolder of a shared feature, else the App column of its row in state.md, else the
     Apps line of its PRD."""
     parts = key.split("/")
     if len(parts) > 3 and parts[2] in APPS:
         return (parts[2],)
     feature = parts[1]
-    state = root / "docs/agents/state.md"
-    if state.is_file():
+    state = read("docs/agents/state.md")
+    if state is not None:
         row = re.compile(rf"^\|\s*`?{re.escape(feature)}`?\s*\|\s*([^|]*)\|", re.MULTILINE)
-        apps = _app_words(" ".join(row.findall(state.read_text())))
+        apps = _app_words(" ".join(row.findall(state)))
         if apps:
             return apps
-    prd = root / ".scratch" / feature / "PRD.md"
-    if prd.is_file():
-        line = re.search(r"^Apps:([^.\n]*)", prd.read_text(), re.MULTILINE)
+    prd = read(f".scratch/{feature}/PRD.md")
+    if prd is not None:
+        line = re.search(r"^Apps:([^.\n]*)", prd, re.MULTILINE)
         if line:
             return _app_words(line.group(1))
     return ()
@@ -98,13 +121,17 @@ def _on_main(root: Path, key: str) -> bool:
 
     A root that is not the top of a git repo has no main, such as a folder of fixtures inside the repo.
     """
-    def git(*args: str) -> subprocess.CompletedProcess:
-        return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, env=_clean_git_env())
+    return _is_repo_top(root) and _git(root, "cat-file", "-e", f"main:{key}").returncode == 0
 
-    top = git("rev-parse", "--show-toplevel")
-    if top.returncode != 0 or Path(top.stdout.strip()).resolve() != root.resolve():
-        return False
-    return git("cat-file", "-e", f"main:{key}").returncode == 0
+
+def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, env=_clean_git_env())
+
+
+def _is_repo_top(root: Path) -> bool:
+    """Whether the root is the top of a git repo, and not a folder inside one."""
+    top = _git(root, "rev-parse", "--show-toplevel")
+    return top.returncode == 0 and Path(top.stdout.strip()).resolve() == root.resolve()
 
 
 def _clean_git_env() -> dict[str, str]:
@@ -130,7 +157,12 @@ def _summary(text: str) -> str | None:
 def load_ticket(root: Path, path: Path) -> Ticket:
     """Read the ticket at the path. The key is its path from the root, as the first line of the task description."""
     key = path.resolve().relative_to(root.resolve()).as_posix()
-    text = path.read_text()
+    return ticket_of(root, key, path.read_text(), checkout_reader(root))
+
+
+def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
+    """The ticket with the key and the text. The reader gives state.md and the PRD from the same place as the text."""
+    path = Path(key)
     number, name = H1.search(text).groups()
     number = number or path.name.split("-")[0]
     decision = path.parent.name == "decisions"
@@ -145,7 +177,7 @@ def load_ticket(root: Path, path: Path) -> Ticket:
     if blocked and re.match(r"none\b", blocked, re.IGNORECASE):
         blocked = None
     feature = _feature(key)
-    apps = _apps(root, key)
+    apps = _apps(read, key)
     lines = [
         f"4ag: {key}",
         f"App: {', '.join(apps)}" if apps else None,
@@ -225,7 +257,7 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
     update = []
     if task["content"] != ticket.title:
         update += ["--content", ticket.title]
-    if task["description"] != ticket.description:
+    if _bare_links(task["description"]) != ticket.description:
         update += ["--description", ticket.description]
     if set(labels) != set(task["labels"]):
         update += ["--labels", ",".join(labels)]
@@ -243,6 +275,15 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
     if ticket.status == "wontfix" or (ticket.status == "done" and ticket.decision):
         plan.append(["task", "complete", f"id:{task['id']}"])
     return plan
+
+
+# Todoist stores a bare URL in a description as a markdown link with the title of the page, `[<title>](<url>)`.
+TITLED_LINK = re.compile(r"\[[^\]\n]*\]\((https?://[^)\s]+)\)")
+
+
+def _bare_links(description: str) -> str:
+    """The description with each titled link back as its bare URL, as the push writes it."""
+    return TITLED_LINK.sub(r"\1", description)
 
 
 def _labels(ticket: Ticket, current: list[str]) -> list[str]:
@@ -401,7 +442,7 @@ def _feature_tickets(root: Path, feature: str) -> list[Path]:
     """The tickets and decision tickets of a feature, also those in the site/ and pipeline/ subfolders of a shared
     feature."""
     folder = root / ".scratch" / feature
-    return sorted(path for path in folder.rglob("*.md") if path.parent.name in ("issues", "decisions"))
+    return sorted(path for path in folder.rglob("*.md") if _is_ticket(path.relative_to(root).as_posix()))
 
 
 def plan_pull(root: Path, feature: str, queue: Queue, completed: dict,
@@ -450,6 +491,79 @@ def write_statuses(root: Path, plan: list[tuple[str, str]], dry_run: bool) -> No
         if not dry_run:
             path.write_text(re.sub(r"^\*\*Status:\*\*.*$", f"**Status:** {status}", text, count=1, flags=re.MULTILINE))
     print(f"{len(plan)} file{'' if len(plan) == 1 else 's'}{' planned, none written' if dry_run else ' written'}.")
+
+
+IDEAS = "Ideas"
+# The filter of the steps that wait on Brian. Its query reads the project and the label, not a description.
+WAITS_FILTER = ("Waits on Brian", f"#{PROJECT} & @ready-for-human")
+# A ticket or a decision ticket is a file such as `03-the-skill-sync.md`. A research ticket keeps its notes beside it
+# in `03-the-skill-sync.notes.md`, which is not a ticket.
+TICKET_FILE = re.compile(r"^\d+-[^.]+\.md$")
+
+
+def spec_branches(root: Path) -> list[str]:
+    """The local branches that hold a feature folder of their own name, `.scratch/<branch>/`, in name order.
+
+    A root that is not the top of a git repo has no branch, such as a folder of fixtures inside the repo.
+    """
+    if not _is_repo_top(root):
+        return []
+    refs = _git(root, "for-each-ref", "--format=%(refname:short)", "refs/heads")
+    return sorted(branch for branch in refs.stdout.split()
+                  if _git(root, "cat-file", "-e", f"{branch}:.scratch/{branch}").returncode == 0)
+
+
+def _is_ticket(key: str) -> bool:
+    parts = key.split("/")
+    return parts[-2] in ("issues", "decisions") and TICKET_FILE.match(parts[-1]) is not None
+
+
+def _branch_tickets(root: Path, branch: str) -> list[str]:
+    """The keys of the tickets and decision tickets of the feature on its spec branch."""
+    files = _git(root, "ls-tree", "-r", "--name-only", branch, "--", f".scratch/{branch}/").stdout.split("\n")
+    return sorted(key for key in files if key and _is_ticket(key))
+
+
+def plan_import(root: Path, queue: Queue, filters: dict, prs: dict[str, list[dict]]) -> list[list[str]]:
+    """The `td` commands that load the open work into the queue, given the PRs of each spec branch from `gh`.
+
+    First come the labels of the flow, the Ideas section, and the filter, each only when it is missing. Then a push
+    of each ticket and decision ticket, and a wait task for each open PR of a live spec. A live spec branch has no
+    merged PR, and its feature reads from the branch. Each other feature reads from the checkout. A squash merge leaves
+    the commits of the branch off main, so only `gh` tells a merged branch.
+    """
+    plan = [["label", "create", "--name", label] for label in FLOW_LABELS if label not in queue.labels]
+    if IDEAS not in queue.sections:
+        plan.append(_section_create(IDEAS, queue))
+    name, query = WAITS_FILTER
+    if not any(item["name"] == name for item in filters["results"]):
+        plan.append(["filter", "create", "--name", name, "--query", query])
+    # The pushes below see each label of the flow, because the first commands make the missing ones.
+    pushes = Queue(queue.project_id, queue.sections, queue.tasks, queue.labels | set(FLOW_LABELS))
+
+    live = [branch for branch in spec_branches(root)
+            if branch in prs and not any(pr["state"] == "MERGED" for pr in prs[branch])]
+    checkout = root / ".scratch"
+    features = {path.name for path in checkout.iterdir() if path.is_dir()} if checkout.is_dir() else set()
+    for feature in sorted(features | set(live)):
+        if feature in live:
+            read = branch_reader(root, feature)
+            keys = _branch_tickets(root, feature)
+        else:
+            read = checkout_reader(root)
+            keys = [path.relative_to(root).as_posix() for path in _feature_tickets(root, feature)]
+        for key in keys:
+            plan += plan_push(ticket_of(root, key, read(key), read), pushes)
+        for pr in prs.get(feature, []) if feature in live else []:
+            if pr["state"] == "OPEN":
+                plan += plan_wait(feature, "merge-pr", pr["number"], False, pushes)
+
+    # Each push plans the section of a new feature, so the second plan of the same section drops out.
+    unique: list[list[str]] = []
+    for command in plan:
+        if command[:2] != ["section", "create"] or command not in unique:
+            unique.append(command)
+    return unique
 
 
 class TdError(Exception):
@@ -515,18 +629,34 @@ def read_queue() -> Queue:
     )
 
 
-def read_pr_state(number: int) -> str:
-    """The state of one PR, from `gh`. The call names the repo, so it works from a temp root with no remote."""
+# The folders where Homebrew puts `gh`. A run from a clean environment, such as `env -i`, has no PATH to find it.
+GH_FOLDERS = ("/opt/homebrew/bin", "/usr/local/bin")
+
+
+def run_gh(args: list[str], what: str) -> str:
+    """Run one `gh` command and return its output. Each call names the repo, so it works from a temp root with no
+    remote. A failure raises TdError, so it warns like a failed `td` call."""
+    gh = shutil.which("gh") or shutil.which("gh", path=os.pathsep.join(GH_FOLDERS)) or "gh"
     try:
-        run = subprocess.run(["gh", "pr", "view", str(number), "--repo", REPO, "--json", "state"], capture_output=True,
-                             text=True, timeout=TD_TIMEOUT)
+        run = subprocess.run([gh, *args, "--repo", REPO], capture_output=True, text=True, timeout=TD_TIMEOUT)
     except subprocess.TimeoutExpired:
-        raise TdError("GH_TIMEOUT", f"gh gave no answer about PR #{number} in {TD_TIMEOUT} seconds") from None
+        raise TdError("GH_TIMEOUT", f"gh gave no answer about {what} in {TD_TIMEOUT} seconds") from None
     except FileNotFoundError:
         raise TdError("NO_GH", "gh is not on the PATH") from None
     if run.returncode != 0:
-        raise TdError("GH_ERROR", " ".join(run.stderr.split()) or f"gh pr view {number} failed with no message")
-    return pr_state(run.stdout)
+        raise TdError("GH_ERROR", " ".join(run.stderr.split()) or f"gh failed about {what} with no message")
+    return run.stdout
+
+
+def read_pr_state(number: int) -> str:
+    """The state of one PR, from `gh`."""
+    return pr_state(run_gh(["pr", "view", str(number), "--json", "state"], f"PR #{number}"))
+
+
+def read_prs(branch: str) -> list[dict]:
+    """The number and the state of each PR from the branch, from `gh`."""
+    return json.loads(run_gh(["pr", "list", "--head", branch, "--state", "all", "--json", "number,state"],
+                             f"the PRs of {branch}"))
 
 
 def report_failure(subcommand: str, target: str, error: TdError) -> int:
@@ -571,6 +701,14 @@ def sweep(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     return "sweep", plan_sweep(args.root, queue, {number: read_pr_state(number) for number in merge_prs(queue)})
 
 
+def import_(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
+    args.target = "the open work"
+    queue = read_queue()
+    filters = run_td(["filter", "list"])
+    return "import", plan_import(args.root, queue, filters,
+                                 {branch: read_prs(branch) for branch in spec_branches(args.root)})
+
+
 # The completed-task read of `td` covers at most 93 days per call.
 COMPLETED_DAYS = 90
 
@@ -613,6 +751,9 @@ def main(argv: list[str]) -> int:
                                          help="write the triage in the queue into the Status lines of a feature")
     pull_parser.add_argument("feature", help="the feature slug, the folder under .scratch/")
     pull_parser.set_defaults(plan=pull)
+    import_parser = subcommands.add_parser("import", parents=[shared],
+                                           help="load the open work, the labels, Ideas, and the filter into the queue")
+    import_parser.set_defaults(plan=import_)
     args = parser.parse_args(argv)
     if args.subcommand == "wait" and args.kind == "merge-pr" and args.number is None and not args.done:
         wait_parser.error("merge-pr needs the number of the PR")
