@@ -23,9 +23,9 @@ Run each command with `--root "$T"`. Make each Todoist change of the Given with 
 AT-1: The import loads an open ticket
 App: scripts
 Stories: 1, 2, 3, 26
-Given: the audit of AT-27 is committed on `todoist-queue`, and `.scratch/rankings/pipeline/issues/01-the-formula.md` is `ready-for-agent` after it
+Given: the audit of AT-27 is committed on `todoist-queue`, and `.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md` is `ready-for-agent` after it
 When: `python3 scripts/queue.py import` runs in the worktree of `todoist-queue`.
-Then: the section `rankings` has the task `01 The formula`, with the labels `ready-for-agent` and `pipeline`, and its description starts with `4ag: .scratch/rankings/pipeline/issues/01-the-formula.md`.
+Then: the section `manager-pages` has the task `12 Drop awards from the managers entry`, with the labels `ready-for-agent` and `pipeline`, and its description starts with `4ag: .scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md`.
 Evidence: the command and its output, and the JSON of that task from `td task list`.
 
 AT-2: A second import changes nothing
@@ -39,9 +39,9 @@ Evidence: the command and its full output.
 AT-3: A shared feature gets one section
 App: scripts
 Stories: 2, 28
-Given: the import of AT-1 is done, and `rankings` has a `site/` and a `pipeline/` subfolder
-When: the reader lists the tasks of the section `rankings`.
-Then: `01 The reader and the route` has the label `site`, and `01 The formula` has the label `pipeline`, both in the one section `rankings`.
+Given: the import of AT-1 is done, and `manager-pages` has a `site/` and a `pipeline/` subfolder
+When: the reader lists the tasks of the section `manager-pages`.
+Then: `11 The bench sentence and the odds change words` has the label `site`, and `12 Drop awards from the managers entry` has the label `pipeline`, both in the one section `manager-pages`.
 Evidence: `td section list 4thandgoal` and the JSON of both tasks.
 
 AT-4: A ticket on a spec branch has no GitHub link
@@ -56,8 +56,8 @@ AT-5: A ticket on main has the full description
 App: scripts
 Stories: 26, 27, 29, 30
 Given: the import of AT-1 is done
-When: the reader opens the task `01 The formula`.
-Then: its description has, in order, the key line, the app, the blockers, the link `https://github.com/bkwon94/4thandgoal/blob/main/.scratch/rankings/pipeline/issues/01-the-formula.md`, and a summary of 500 characters or fewer that starts "A pure function that takes the history".
+When: the reader opens the task `12 Drop awards from the managers entry`.
+Then: its description has, in order, the key line, the app, the blockers, the link `https://github.com/bkwon94/4thandgoal/blob/main/.scratch/manager-pages/pipeline/issues/12-drop-awards-from-managers-entry.md`, and a summary of 500 characters or fewer that starts "the managers file still carries".
 Evidence: the JSON of the task.
 
 AT-6: A done ticket stays out of the queue
@@ -334,4 +334,4 @@ Out of scope "The `done` tickets on `main`": AT-6
 
 ## Revisions
 
-None yet.
+- 2026-11-12: Brian approved a move of AT-1, AT-3, and AT-5 from `rankings` to `manager-pages`. The audit set every `rankings` ticket to `done`, so no `rankings` task enters the queue. `manager-pages` keeps an open ticket in both its `site/` and `pipeline/` subfolders, so the tests check the same behavior.
