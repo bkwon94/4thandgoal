@@ -28,6 +28,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `site-api` | pipeline | 10 prompt-caching | | |
 | `site-foundation` | site | 01 the tiers and the page column | none | |
 | `site-pages` | site | 01 the page shell | none | |
+| `todoist-queue` | both | 01 the audit of the open tickets | none | |
 | `site-report` | site | 01 the type scale, the measure, and the cards | none | |
 | `site-speed` | site | 01 the teams prefetch and the skeleton | none | |
 | `tone` | pipeline | 09 leftovers-after-the-second-rewrite | | |

@@ -5,7 +5,7 @@ Date: 2026-11-12
 Apps: neither app changes its product code. The `4ag` plugin skills, a root script, the tracker records, and the tracker rules of both apps change.
 Spec branch: `todoist-queue`.
 Source: the map `.scratch/todoist-queue/MAP.md` and decision tickets 01 to 05. ADRs 0019, 0021, and 0026.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 08, in `issues/`.
 
 ## Problem Statement
 
