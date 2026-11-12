@@ -10,9 +10,11 @@ import { z } from "zod";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { recapBlockSchema, recapText } from "@/lib/data/blocks/recap-schema";
 import { FeedView, feedBlockSchema, feedText } from "./feed-block";
+import { ByeGridView, byeGridBlockSchema, byeGridText } from "./bye-grid";
 import { VERY_SLOW, riseIn, staggerOf } from "./motion";
 import { RecapCard } from "./recap-card";
 import { TradeBlockView, tradeBlockSchema, tradeBlockText } from "./trade-block";
+import { SlotRanksView, slotRanksBlockSchema, slotRanksText } from "./slot-rank-bars";
 
 const listBlockSchema = z.object({
   kind: z.literal("list"),
@@ -43,6 +45,8 @@ export const answerBlockSchema = z.discriminatedUnion("kind", [
   recapBlockSchema,
   tradeBlockSchema,
   feedBlockSchema,
+  slotRanksBlockSchema,
+  byeGridBlockSchema,
 ]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
@@ -68,6 +72,10 @@ export function blockText(block: AnswerBlock): string {
     case "trade":
       return tradeBlockText(block);
     case "feed": return feedText(block);
+    case "slot_ranks":
+      return slotRanksText(block);
+    case "bye_grid":
+      return byeGridText(block);
   }
 }
 
@@ -209,5 +217,9 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
     case "trade":
       return <TradeBlockView block={block} live={live} />;
     case "feed": return <FeedView block={block} live={live} />;
+    case "slot_ranks":
+      return <SlotRanksView block={block} live={live} />;
+    case "bye_grid":
+      return <ByeGridView block={block} live={live} />;
   }
 }

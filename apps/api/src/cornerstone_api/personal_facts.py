@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from analyzer.trade_jev import weak_slot_rows, weak_starting_slots
+from cornerstone_api.grade_blocks import bye_grid, slot_rank_bars
 from cornerstone_api.waiver_targets import waiver_facts
 from league.lineup import cannot_play_now, lineup_now
 from league.numbers import ordinal
@@ -220,7 +221,8 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
                  "stats": [{"label": "Weakest spot", "value": weakest},
                            {"label": "Rank", "value": rank},
                            {"label": "Holes", "value": str(hole_count)}],
-                 "rows": _slot_rows(snapshot, grade, mine, teams, empty)}
+                 "rows": _slot_rows(snapshot, grade, mine, teams, empty),
+                 "block": bye_grid(snapshot, roster_id, mine)}
     elif topic == "stack_up":
         best = _worst(grade)[-1]
         # The grade reads the live league, and the grade of the managers page reads the weekly build, so the two can
@@ -232,7 +234,8 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
                            {"label": "Best spot", "value": f"{best.position} {ordinal(best.rank)}"},
                            {"label": "Weakest spot", "value": f"{worst.position} {ordinal(worst.rank)}"}],
                  "rows": [{"label": PART_NAMES[part.key], "value": _of(part.rank, teams), "note": None,
-                           "roster_id": None, "you": False} for part in grade.parts]}
+                           "roster_id": None, "you": False} for part in grade.parts],
+                 "block": slot_rank_bars(grade, teams)}
     else:
         block = _waiver_block(groups["team_need"], len(groups["candidates"]))
     return PersonalFacts(slice=slice_, block={"kind": ROWS_KIND, "topic": topic, "team": roster_id, **block})

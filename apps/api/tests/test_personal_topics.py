@@ -24,6 +24,7 @@ from cornerstone_api.personal_wording import FACT_MEANINGS, INSTRUCTIONS
 from cornerstone_api.settings import Settings
 from cornerstone_api.waiver_targets import TOP_BY_ADDS, TOP_BY_REST_PER_POSITION, TOP_BY_WEEK_PER_POSITION
 from league.jev_port import JevError, NoulQuestion
+from league.nflverse import read_schedules
 from league.numbers import ordinal
 from league.provider.raw import RawTrending
 from league.provider.sleeper import load_raw
@@ -823,3 +824,47 @@ def test_a_row_with_a_hole_never_reads_a_depth_word_of_spare_players(settings, s
     held = [row for row in rows if "hole:" in row["note"]]
     assert held
     assert all(row["note"].startswith("thin · hole:") for row in held)
+
+
+def test_how_you_stack_up_carries_the_slot_rank_bars_with_four_rows_only(week_9_repo, sources):
+    # AT-30: the block of How you stack up holds the slot rank bars: QB, RB, WR, and TE of the roster grade, each with
+    # its rank in the league, and the grade with its read in the header. No FLEX rank and no DEF rank (decision 11).
+    writer = Writer()
+    block = _block(_chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=Checks([True]).answer), writer),
+                                "stack_up", roster_id=BO_GIRDS)))
+    facts = _facts(writer.requests[0])
+    bars = block["block"]
+    assert bars["kind"] == "slot_ranks"
+    assert [row["position"] for row in bars["rows"]] == ["QB", "RB", "WR", "TE"]
+    ranks = {slot["position"]: slot["rank"] for slot in facts["slot_ranks"]}
+    assert [(row["rank"], row["label"]) for row in bars["rows"]] == [
+        (ranks[position], f"{ordinal(ranks[position])} of 12") for position in ("QB", "RB", "WR", "TE")]
+    assert bars["teams"] == 12
+    assert bars["grade"] == facts["grade"]["letter"] and bars["read"] == facts["grade_read"]
+
+
+def test_weak_spots_carries_the_bye_grid_with_the_bye_weeks_of_the_nfl_schedules(week_9_repo, sources):
+    # AT-31: the block of Weak spots holds the bye grid: the starters, then the bench, against the next weeks, each with
+    # the bye week of his NFL team. The site draws a red dot where a starter meets his bye week.
+    writer = Writer()
+    block = _block(_chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=Checks([True]).answer), writer),
+                                "weak_spots", roster_id=BO_GIRDS)))
+    grid = block["block"]
+    assert grid["kind"] == "bye_grid"
+    # The live week is 10, and the regular season of cpc ends in week 14.
+    assert grid["weeks"] == [10, 11, 12, 13, 14]
+    byes = {team: s.bye_week for team, s in read_schedules(FIXTURES / "nflverse" / "games.csv", 2026).items()}
+    week_9 = load_raw(WEEK_9_RAW)
+    [roster] = [r for r in week_9.rosters if r.roster_id == BO_GIRDS]
+    assert len(grid["players"]) == len(roster.players or [])
+    for player in grid["players"]:
+        assert player["bye"] == byes.get(player["nfl_team"])
+    starters = [player for player in grid["players"] if player["starter"]]
+    # The skill starters are the starters of the slice, and the cpc lineup starts a DEF too, so his bye counts.
+    assert [p["name"] for p in starters if p["slot"] != "DEF"] == [
+        s["player"] for s in _facts(writer.requests[0])["starters"] if s["player"] is not None]
+    assert [p["name"] for p in starters if p["slot"] == "DEF"] == ["Jacksonville Jaguars"]
+    # Bo Girds starts players whose NFL team has a bye in the weeks of the grid, so the grid has red dots to show:
+    # Kyren Williams and Matthew Golden in week 11, Zay Flowers in week 13, and Trey McBride in week 14.
+    assert sorted((p["bye"], p["name"]) for p in starters if p["bye"] in grid["weeks"]) == [
+        (11, "Kyren Williams"), (11, "Matthew Golden"), (13, "Zay Flowers"), (14, "Trey McBride")]
