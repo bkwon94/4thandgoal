@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The cpc lineup shows QB, RB, RB, WR, WR, TE, FLEX, FLEX, DEF in order (AT-1).
 - [x] The norcal lineup shows three FLEX and no DEF (AT-2).
