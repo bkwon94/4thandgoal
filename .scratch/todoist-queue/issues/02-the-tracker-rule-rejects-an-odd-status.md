@@ -8,7 +8,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-28.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A new case in each tracker rule test fails a ticket at `backlog` and names it.
 - [x] A ticket with no `Status:` line still passes.
