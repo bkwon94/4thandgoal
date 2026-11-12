@@ -287,7 +287,7 @@ describe("the personal Topics of Lil Fridge", () => {
     await waitFor(() => expect(panel.hasAttribute("hidden")).toBe(false));
     expect(panel.textContent).toContain("Projects 16.9 this week, over Malik Willis at 16.8 in your QB slot.");
     expect(within(second).getByRole("button", { name: /Shedeur Sanders/ }).getAttribute("aria-expanded")).toBe("false");
-    // The list holds the why, so the stats and the rows of the old block do not show with it.
+    // The list holds the why, so no stats and no rows show with it.
     expect(answer.textContent).not.toContain("Free agents read");
   });
 

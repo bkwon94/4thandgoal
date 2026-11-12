@@ -1,6 +1,6 @@
 /**
- * The block of a free answer: a ranked list, a small table, or a player card that Claude shows under its lead line,
- * in the style of the rows of the data block. It holds the shape of the `data-block` part and its short text for a turn.
+ * The block of an Answer: the schema union of every block kind, its short text for a turn, and its view.
+ * It holds the shape of the `data-block` part, which Claude shows under its lead line.
  */
 "use client";
 
@@ -90,10 +90,12 @@ export function blockText(block: AnswerBlock): string {
       const stats = block.stats.map((stat) => `${stat.label} ${stat.value}.`);
       return [`${head}, ${block.can_play_now ? "can play now" : "can't play now"} (${block.status}).`, ...stats, ...(block.note ? [block.note] : [])].join(" ");
     }
-    case "recap": return recapText(block);
+    case "recap":
+      return recapText(block);
     case "trade":
       return tradeBlockText(block);
-    case "feed": return feedText(block);
+    case "feed":
+      return feedText(block);
     case "slot_ranks":
       return slotRanksText(block);
     case "bye_grid":
@@ -102,13 +104,20 @@ export function blockText(block: AnswerBlock): string {
       return waiverListText(block);
     case "sell_list":
       return sellListText(block);
-    case "lineup": return lineupText(block);
-    case "matchup": return matchupText(block);
-    case "rank_movers": return rankMoversText(block);
-    case "ladder": return ladderText(block);
-    case "schedule": return scheduleText(block);
-    case "nfl_game": return nflGameText(block);
-    case "comparison": return comparisonText(block);
+    case "lineup":
+      return lineupText(block);
+    case "matchup":
+      return matchupText(block);
+    case "rank_movers":
+      return rankMoversText(block);
+    case "ladder":
+      return ladderText(block);
+    case "schedule":
+      return scheduleText(block);
+    case "nfl_game":
+      return nflGameText(block);
+    case "comparison":
+      return comparisonText(block);
   }
 }
 
@@ -246,10 +255,12 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
       return <TableView block={block} live={live} />;
     case "player":
       return <PlayerView block={block} live={live} />;
-    case "recap": return <RecapCard block={block} live={live} />;
+    case "recap":
+      return <RecapCard block={block} live={live} />;
     case "trade":
       return <TradeBlockView block={block} live={live} />;
-    case "feed": return <FeedView block={block} live={live} />;
+    case "feed":
+      return <FeedView block={block} live={live} />;
     case "slot_ranks":
       return <SlotRanksView block={block} live={live} />;
     case "bye_grid":
@@ -258,12 +269,19 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
       return <WaiverListView block={block} live={live} />;
     case "sell_list":
       return <SellListView block={block} live={live} />;
-    case "lineup": return <LineupView block={block} />;
-    case "matchup": return <MatchupCard block={block} live={live} />;
-    case "rank_movers": return <RankMoverList block={block} live={live} />;
-    case "ladder": return <StandingsLadder block={block} live={live} />;
-    case "schedule": return <ScheduleStrip block={block} live={live} />;
-    case "nfl_game": return <NflGameView block={block} live={live} />;
-    case "comparison": return <ComparisonView block={block} live={live} />;
+    case "lineup":
+      return <LineupView block={block} />;
+    case "matchup":
+      return <MatchupCard block={block} live={live} />;
+    case "rank_movers":
+      return <RankMoverList block={block} live={live} />;
+    case "ladder":
+      return <StandingsLadder block={block} live={live} />;
+    case "schedule":
+      return <ScheduleStrip block={block} live={live} />;
+    case "nfl_game":
+      return <NflGameView block={block} live={live} />;
+    case "comparison":
+      return <ComparisonView block={block} live={live} />;
   }
 }

@@ -1,7 +1,6 @@
 /**
- * The lineup block of Start or sit: each slot of the Week lineup in Sleeper order, a Swap or a Q row that opens in place
- * with its reason or its Pivot, the "Can't play" line, and the toggle of the total. It holds the schema of the block, its
- * short text for a turn, and its view.
+ * The lineup block of Start or sit: its schema, its short text for a turn, and its view. The view shows each slot of the
+ * Week lineup in Sleeper order, a Swap or a Q row that opens in place, the "Can't play" line, and the toggle of the total.
  */
 "use client";
 
