@@ -36,7 +36,7 @@ from cornerstone_api.claude_stream import kept_text
 from cornerstone_api.free_answer import AGENT, NO_READY_BLOCK, FreeDeps, shown_block
 from cornerstone_api.free_tools import SeasonData
 from cornerstone_api.free_topic import topic_block
-from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt
+from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt, sentences
 from cornerstone_api.game_lock import week_kickoffs
 from cornerstone_api.grade_blocks import slot_rank_bars
 from cornerstone_api.personal_facts import PART_NAMES, live_grades
@@ -553,6 +553,24 @@ def test_the_best_roster_reads_the_grade_of_every_team_in_one_call_best_first(re
 def test_the_instructions_ask_for_facts_only_with_no_advice_rating_or_opinion():
     # H6: the check failed "a good time to sell" and "decent", each advice or an opinion and no wrong number.
     assert "Give no advice, no rating, and no opinion word" in INSTRUCTIONS
+
+
+def test_the_instructions_say_nothing_about_a_thing_the_tool_results_do_not_have():
+    # B2: a typed start question got sentences such as "No Swap entries came with your lineup", and the check failed them.
+    assert "Never say that a lineup or a player has no swap, no injury status, or no lock" in INSTRUCTIONS
+
+
+def test_the_free_instructions_ask_for_only_the_final_answer_with_no_self_correction():
+    # C: a personal Answer shipped "... where you rank 11th of 12 teams... wait, that is not right: you".
+    assert "Write only the final answer. Never correct yourself in the text" in INSTRUCTIONS
+
+
+def test_an_abbreviation_inside_a_name_ends_no_sentence():
+    # B3: the split cut "Amon-Ra St. Brown" at "St.", and the check failed each half alone.
+    text = ("Start Amon-Ra St. Brown if he is active. KC Concepcion Jr. and T.J. Hockenson sit. "
+            "Brown is active, start him.")
+    assert sentences(text) == ["Start Amon-Ra St. Brown if he is active.", "KC Concepcion Jr. and T.J. Hockenson sit.",
+                               "Brown is active, start him."]
 
 
 def test_the_rewrite_removes_or_restates_each_failed_sentence_and_adds_no_claim():

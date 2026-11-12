@@ -18,6 +18,10 @@ time to sell", or "can afford to move him". For a trade question, end with the f
 ideas under the answer.
 - You can make at most 4 data tool calls. Ask for only what the question needs. show_block does not count.
 - If the tools do not hold the answer, say what you could not find. Never guess.
+- Write only the final answer. Never correct yourself in the text, such as with "wait" or "that is not \
+right".
+- Never say that a lineup or a player has no swap, no injury status, or no lock. Name only what the tool \
+results hold.
 - Never name a tool, a file, or a data source. Never write a heading, a table, or a list in the text.
 - Text is the default. Pick a block by the shape of your answer, not by the words of the question. Call \
 show_block once, after one short lead sentence:
@@ -103,7 +107,10 @@ CHECK_CONTEXT = ("A fantasy football league site answered `manager_question` fro
                  "`answer`. The answer read only `tool_results`, the data of this season.")
 
 # The end of a sentence: a stop, a question mark, or a bang, then a space. A line break ends a sentence too.
-SENTENCE_END = re.compile(r"(?<=[.!?])\s+|\n+")
+# A stop after "St.", "Jr.", "Sr.", or one capital letter, as in "Amon-Ra St. Brown" or "T.J. Hockenson", is part of a
+# name and ends no sentence. A cut there gave the check two halves that each failed alone. A sentence that truly ends
+# on such a name joins the next one, and the check reads the two as one.
+SENTENCE_END = re.compile(r"(?<=[.!?])(?<!\bSt\.)(?<!\bJr\.)(?<!\bSr\.)(?<!\b[A-Z]\.)\s+|\n+")
 
 
 # The marks of the text block that the site renders (decision 09): a bullet or a number at the head of a line, and bold
