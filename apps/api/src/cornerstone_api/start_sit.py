@@ -121,9 +121,9 @@ class LiveWeek:
                  "bench": [self.fact_sheet(player) for player in swapped.bench],
                  "cannot_play": [{"player": absent.player.name, "status": absent.status,
                                   "body_part": absent.body_part} for absent in lineup.cannot_play],
-                 "projected_total": round(lineup.total, 1)}
+                 "projected_total": lineup.shown_total}
         if swaps:
-            facts |= {"projected_total_with_swaps": round(swapped.total, 1), "swap_means": SWAP_MEANING}
+            facts |= {"projected_total_with_swaps": swapped.shown_total, "swap_means": SWAP_MEANING}
         return facts
 
     def fact_sheet(self, player: Player) -> dict:
@@ -174,19 +174,13 @@ def _row(row: Row, swap: Swap | None) -> dict:
                                                "reason": None}}
 
 
-def _shown_total(lineup: WeekLineup) -> float:
-    """The sum of the projections that the rows show, each to one decimal, so a reader who adds the rows gets the total
-    of the header."""
-    return round(sum(round(row.player.projection or 0.0, 1) for row in lineup.rows if row.player is not None), 1)
-
-
 def _block(roster_id: int, lineup: WeekLineup, swaps: list[Swap], kickoffs: list[Kickoff]) -> dict:
     """The lineup block: each row with its kickoff in epoch ms, so the site shows it in the time zone of the browser.
     `total` is the total by projection, and `swap_total` the total with the Swaps."""
     by_index = {swap.index: swap for swap in swaps}
     swapped = with_swaps(lineup, swaps, kickoffs)
     return {"kind": LINEUP_KIND, "topic": START_SIT, "team": roster_id, "week": lineup.week,
-            "total": _shown_total(lineup), "swap_total": _shown_total(swapped),
+            "total": lineup.shown_total, "swap_total": swapped.shown_total,
             "rows": [_row(row, by_index.get(index)) for index, row in enumerate(swapped.rows)],
             "cannot_play": [{"name": absent.player.short_name, "status": absent.status, "body_part": absent.body_part}
                             for absent in lineup.cannot_play]}

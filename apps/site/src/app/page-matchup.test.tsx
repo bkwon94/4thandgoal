@@ -107,7 +107,7 @@ describe("the live card of Your next matchup", () => {
     render(<Door />);
     await openBlock("Your next matchup", "matchup");
     const answer = screen.getByRole("article", { name: "Your next matchup" });
-    await waitFor(() => expect(answer.textContent).toContain("121.8"));
+    await waitFor(() => expect(answer.textContent).toContain("121.7"));
     const card = answer.querySelector<HTMLElement>('[data-block="matchup"]')!;
     expect(card.textContent).toContain("92.9");
     expect(within(card).getByRole("img", { name: "Your win odds, 82%" })).toBeTruthy();

@@ -81,8 +81,8 @@ def matchup_card(week: LiveWeek, roster_id: int, spread: float | None) -> Matchu
     if other is None:
         return None
     mine, theirs = (week_lineup(week.raw, rid, week.kickoffs, week.now) for rid in (roster_id, other))
-    you = MatchupTeam(roster_id=roster_id, name=week.team_name(roster_id), score=round(mine.total, 1))
-    them = MatchupTeam(roster_id=other, name=week.team_name(other), score=round(theirs.total, 1))
+    you = MatchupTeam(roster_id=roster_id, name=week.team_name(roster_id), score=mine.shown_total)
+    them = MatchupTeam(roster_id=other, name=week.team_name(other), score=theirs.shown_total)
     return MatchupBlock(
         final=False, you=you, them=them,
         odds=None if spread is None else round(win_odds(you.score, them.score, spread), 3),
