@@ -12,7 +12,7 @@ Why: Codex loads the project `.codex/config.toml` only for a trusted project. Wi
 Brian did this on 2026-11-12. `~/.codex/config.toml` holds these lines:
 
 ```
-[projects."/Users/brian.kwon/repos/4thandgoal"]
+[projects."~/repos/4thandgoal"]
 trust_level = "trusted"
 ```
 
@@ -25,10 +25,10 @@ Why: Codex in a linked worktree cannot write its own gitdir, so it cannot commit
 **Warning: never start Codex in a worktree.** A session there cannot commit, and `4ag:implement` stops mid-build.
 
 ```
-cd /Users/brian.kwon/repos/4thandgoal && codex
+cd ~/repos/4thandgoal && codex
 ```
 
-Check: run `pwd` before you start Codex. It prints `/Users/brian.kwon/repos/4thandgoal`.
+Check: run `pwd` before you start Codex. It prints `~/repos/4thandgoal`.
 
 To call a skill, type `$` and the part of the name after the colon, such as `$plan`, then choose `4ag:plan` from the list. The list does not match `$4ag`. A full `$4ag:plan` typed and sent also loads the skill.
 
