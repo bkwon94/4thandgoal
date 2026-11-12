@@ -26,6 +26,8 @@ TRIAGE_STATUSES = ("needs-triage", "needs-info", "ready-for-agent", "ready-for-h
 # The statuses that only the skills set. A push always writes them.
 FLOW_STATUSES = ("in-progress", "in-review", "blocked")
 OPEN_STATUSES = TRIAGE_STATUSES + FLOW_STATUSES
+# The statuses of a closed ticket. Only the flow sets them.
+CLOSED_STATUSES = ("done", "wontfix")
 APPS = ("site", "pipeline", "api")
 # A push replaces only these labels on a task, and keeps every other label that Brian adds.
 FLOW_LABELS = OPEN_STATUSES + ("wontfix", "decision") + APPS
@@ -166,12 +168,12 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
     path = Path(key)
     number, name = H1.search(text).groups()
     number = number or path.name.split("-")[0]
-    decision = path.parent.name == "decisions"
+    decision = _is_decision(path)
     status = (_first(STATUS_LINE, text) or "").rstrip(".,;:")
     if decision and status == "open":
         status = DECISION_KINDS.get(_first(KIND_LINE, text), "needs-triage")
     # A ticket with no Status line is open. An odd word, which the tracker rule rejects, never becomes a label.
-    if status not in OPEN_STATUSES + ("done", "wontfix"):
+    if status not in OPEN_STATUSES + CLOSED_STATUSES:
         status = "needs-triage"
     blocked = _first(BLOCKED_LINE, text)
     # "None (can start immediately)." and "none. Before this ticket, ..." both mean no blocker.
@@ -190,6 +192,11 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
         key=key, feature=feature, title=f"Decision {number}: {name}" if decision else f"{number} {name}",
         status=status, decision=decision, apps=apps, description="\n".join(line for line in lines if line),
     )
+
+
+def _is_decision(path: Path) -> bool:
+    """Whether the ticket at the path is a decision ticket, a file in a decisions/ folder."""
+    return path.parent.name == "decisions"
 
 
 def _first(pattern: re.Pattern, text: str) -> str | None:
@@ -247,7 +254,7 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
     No command sets the priority or the order, because the queue owns them.
     """
     task = queue.task(ticket.key)
-    closed = ticket.status in ("done", "wontfix")
+    closed = ticket.status in CLOSED_STATUSES
     if task is None:
         # A closed ticket never enters the queue.
         return [] if closed else _plan_add(ticket, queue)
@@ -458,7 +465,7 @@ def plan_pull(root: Path, feature: str, queue: Queue, completed: dict,
     for path in _feature_tickets(root, feature):
         key = path.relative_to(root).as_posix()
         status = (_first(STATUS_LINE, path.read_text()) or "").rstrip(".,;:")
-        if status in ("done", "wontfix"):
+        if status in CLOSED_STATUSES:
             continue
         task = queue.task(key)
         if task is None:
@@ -468,7 +475,7 @@ def plan_pull(root: Path, feature: str, queue: Queue, completed: dict,
                 plan.append((key, "done" if _says_done(comments(done["id"])) else "wontfix"))
             continue
         # A decision ticket has no triage status in its file, only open, done, or wontfix.
-        if path.parent.name == "decisions":
+        if _is_decision(path):
             continue
         label = next((label for label in task["labels"] if label in TRIAGE_STATUSES), None)
         if label and label != status:
