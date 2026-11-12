@@ -234,6 +234,11 @@ def test_the_instructions_say_nothing_about_a_thing_the_facts_do_not_have():
     assert "If the lineup has no Swap, no Questionable starter, or no `locked` player, say nothing" in TOPIC_ASKS["start_sit"]
 
 
+def test_the_personal_instructions_ask_for_only_the_final_answer_with_no_self_correction():
+    # C: a personal Answer shipped "... where you rank 11th of 12 teams... wait, that is not right: you".
+    assert "Write only the final answer. Never correct yourself in the text" in INSTRUCTIONS
+
+
 def test_a_failed_check_logs_each_failed_sentence_with_its_noul(settings, sources, caplog):
     # H17: the log shows which sentence failed and how sure the check was.
     writer = Writer()

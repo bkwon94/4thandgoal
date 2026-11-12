@@ -37,6 +37,7 @@ Rules:
 """ + "".join(f"- {meaning}\n" for meaning in FACT_MEANINGS.values()) + """\
 - Use the depth words of `depth_means`, not your own.
 - Never do math on the numbers, and never guess what the facts do not say.
+- Write only the final answer. Never correct yourself in the text, such as with "wait" or "that is not right".
 - Say nothing about a thing that the facts do not have, such as a Swap, an injury status, or a lock.
 - Never name a tool, a file, a grade formula, or a data source. Never use a heading, a table, or a list.
 - Call the person who runs another team "the manager" of that team.
