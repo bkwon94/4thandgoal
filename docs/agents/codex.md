@@ -9,10 +9,10 @@ Do the steps in order. Run the check of each step before the next one. If a chec
 
 Why: Codex loads the project `.codex/config.toml` only for a trusted project. Without it, the profile `4ag` does not apply.
 
-`~/.codex/config.toml` holds these lines:
+`~/.codex/config.toml` holds these lines. Write the key as the absolute path of the main checkout, such as the output of `cd ~/repos/4thandgoal && pwd`. Codex matches the key exactly and does not expand `~`.
 
 ```
-[projects."~/repos/4thandgoal"]
+[projects."<absolute path of the main checkout>"]
 trust_level = "trusted"
 ```
 
