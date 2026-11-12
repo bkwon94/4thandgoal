@@ -3,25 +3,32 @@ The Topic Start or sit: the live Sleeper week and its kickoffs for one request, 
 the block of the lineup that the site shows and the Fact sheet of each player that Claude and the Jev checks read.
 """
 import dataclasses
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
+from functools import cached_property
 from zoneinfo import ZoneInfo
+
+import httpx
 
 from analyzer.trade_jev import YES_AT
 from cornerstone_api.free_wording import plain_text, sentences
 from cornerstone_api.game_lock import Kickoff, week_kickoffs
+from cornerstone_api.nfl_week import defense_strip, pass_share, saved_stats, usage_shares
 from cornerstone_api.personal_facts import PersonalFacts
-from cornerstone_api.personal_wording import SWAP_MEANING, swap_question
+from cornerstone_api.personal_wording import FACT_SHEET_MEANINGS, SWAP_MEANING, swap_question
 from cornerstone_api.trade_wording import option_keys
 from cornerstone_api.week_lineup import Player, Row, WeekLineup, week_lineup
 from league.jev_port import Jev, JevError
 from league.lineup import allowed_positions
 from league.parse import team_name
+from league.paths import history_root
 from league.provider.raw import RawWeek
 
 START_SIT = "start_sit"
 # The kind of the data block of Start or sit. The site picks the view of the lineup block from it.
 LINEUP_KIND = "lineup"
+# The usage of a player reads the last 3 saved weeks before the live week.
+USAGE_WEEKS = 3
 
 
 @dataclass(frozen=True)
@@ -37,13 +44,16 @@ class Swap:
 
 @dataclass(frozen=True)
 class LiveWeek:
-    """The live week of one request: the raw Sleeper data, the kickoffs of the week, the clock, and the league time
-    zone. Start or sit reads only Sleeper and the kickoffs, so it fetches no slow source and no news (AT-53)."""
+    """The live week of one request: the raw Sleeper data, the kickoffs of the week, the clock, the league time zone,
+    the Sleeper DEF projections of the week, and the saved Sleeper stat rows of each week before it, by week. Start or
+    sit reads only Sleeper, the kickoffs, and the saved weeks, so it fetches no slow source and no news (AT-53)."""
 
     raw: RawWeek
     kickoffs: list[Kickoff]
     now: datetime
     tz: ZoneInfo
+    defenses: list[dict] = field(default_factory=list)
+    stats: dict[int, list[dict]] = field(default_factory=dict)
 
     @property
     def rosters(self) -> dict[int, list[str]]:
@@ -86,7 +96,7 @@ class LiveWeek:
                                            (option[bench.player_id], bench.name),
                                            (option[starter.player_id], starter.name))
         players = [row.player for row in lineup.rows if row.player is not None] + lineup.bench
-        state = {"scoring": self._scoring(), "week": lineup.week,
+        state = {"scoring": self._scoring(), "week": lineup.week, "what_each_fact_means": FACT_SHEET_MEANINGS,
                  "players": {player.name: self.fact_sheet(player) for player in players}}
         response = jev.ask(state, questions)
         candidates = []
@@ -121,23 +131,75 @@ class LiveWeek:
                  "bench": [self.fact_sheet(player) for player in swapped.bench],
                  "cannot_play": [{"player": absent.player.name, "status": absent.status,
                                   "body_part": absent.body_part} for absent in lineup.cannot_play],
-                 "projected_total": round(lineup.total, 1)}
+                 "projected_total": round(lineup.total, 1), "what_each_fact_means": FACT_SHEET_MEANINGS}
         if swaps:
             facts |= {"projected_total_with_swaps": round(swapped.total, 1), "swap_means": SWAP_MEANING}
         return facts
 
     def fact_sheet(self, player: Player) -> dict:
-        """The Fact sheet of one player: his team, his game, his projection and its stat line, and his status. The
-        state of a Jev read keys each sheet by the player name."""
+        """The Fact sheet of one player: his team, his game, his projection and its stat line, the defense of his
+        opponent against his position, the projected points of his team and the expected margin from the two DEF
+        projections, the pass tilt of his team, his usage over the last 3 saved weeks, and his status. The state of a
+        Jev read keys each sheet by the player name."""
         games = {team: game for game in self.kickoffs for team in (game.home, game.away)}
         game = games.get(player.nfl_team or "")
         opponent = None if game is None else (game.away if game.home == player.nfl_team else game.home)
+        allowed = {row["player_id"]: row["stats"].get("pts_allow") for row in self.defenses}
+        # Each team scores what the DEF projection of the other team allows.
+        team_points, opponent_points = allowed.get(opponent or ""), allowed.get(player.nfl_team or "")
         return {"player": player.name, "position": player.position, "nfl_team": player.nfl_team,
                 "opponent": opponent,
                 "kickoff": None if game is None else game.start.astimezone(self.tz).strftime("%a %-I:%M %p %Z"),
                 "projection": None if player.projection is None else round(player.projection, 1),
-                "projected_stat_line": player.stat_line, "injury_status": player.injury_status,
+                "projected_stat_line": player.stat_line,
+                "defense_against_position": None if opponent is None else self._defense(opponent, player.position),
+                "team_projected_points": team_points, "opponent_projected_points": opponent_points,
+                "expected_margin": None if team_points is None or opponent_points is None
+                else round(team_points - opponent_points, 2),
+                "team_pass_share": self._pass_share(player.nfl_team),
+                "league_pass_share": self._pass_share(None),
+                "last_3_weeks": {"weeks": self._usage_weeks, **usage_shares(
+                    {week: self.stats[week] for week in self._usage_weeks}, player.player_id)},
+                "injury_status": player.injury_status,
                 "body_part": player.body_part, "practice_participation": player.practice}
+
+    @cached_property
+    def _season_rows(self) -> list[dict]:
+        return [row for rows in self.stats.values() for row in rows]
+
+    @cached_property
+    def _usage_weeks(self) -> list[int]:
+        return sorted(self.stats)[-USAGE_WEEKS:]
+
+    def _defense(self, opponent: str, position: str) -> dict | None:
+        """The fantasy points per game that the defense of `opponent` allows to `position`, its place among the
+        defenses from 1, the fewest allowed, and the league average, or None with no game of that defense."""
+        strip = self._strip(position)
+        place = next((i for i, row in enumerate(strip, start=1) if row["team"] == opponent), None)
+        if place is None:
+            return None
+        return {"position": position, "allowed_per_game": strip[place - 1]["allowed"], "place": place, "of": len(strip),
+                "league_average": round(sum(row["allowed"] for row in strip) / len(strip), 1)}
+
+    @cached_property
+    def _strips(self) -> dict[str, list[dict]]:
+        """The defense strip of each position that a Fact sheet read, so each strip reads the rows once."""
+        return {}
+
+    @cached_property
+    def _shares(self) -> dict[str | None, float | None]:
+        """The pass share of each NFL team that a Fact sheet read, so each share reads the rows once."""
+        return {}
+
+    def _strip(self, position: str) -> list[dict]:
+        if position not in self._strips:
+            self._strips[position] = defense_strip(self._season_rows, position)
+        return self._strips[position]
+
+    def _pass_share(self, team: str | None) -> float | None:
+        if team not in self._shares:
+            self._shares[team] = pass_share(self._season_rows, team)
+        return self._shares[team]
 
 
 
@@ -231,8 +293,10 @@ def with_reasons(block: dict, text: str) -> dict:
     return {**block, "rows": rows}
 
 
-def load_live_week(sources, season: int) -> LiveWeek:
-    """The live week for the client of `sources`: one fetch of the Sleeper week, then its kickoffs, both fresh.
+def load_live_week(sources, season: int, *, fact_sheets: bool = True) -> LiveWeek:
+    """The live week for the client of `sources`: one fetch of the Sleeper week, then its kickoffs and the DEF
+    projections of the week, all fresh, and the saved stat rows of the weeks before it. With `fact_sheets` false, it
+    skips the DEF projections and the saved weeks, because only a Fact sheet reads them.
 
     Raises ValueError when Sleeper is not in `season`, and KickoffsError, a ValueError, when no source gives the
     kickoffs, because no lineup can respect the game lock without them.
@@ -242,4 +306,14 @@ def load_live_week(sources, season: int) -> LiveWeek:
         raise ValueError(f"Sleeper is in season {raw.state.season}, not {season}")
     week = raw.state.display_week
     kickoffs = week_kickoffs(season, week, sources.fetch_sleeper_scores, sources.fetch_espn_scoreboard)
-    return LiveWeek(raw=raw, kickoffs=kickoffs, now=sources.clock(), tz=sources.client.tz)
+    if not fact_sheets:
+        return LiveWeek(raw=raw, kickoffs=kickoffs, now=sources.clock(), tz=sources.client.tz)
+    try:
+        defenses = sources.fetch_def_projections(season, week)
+    except (httpx.HTTPError, ValueError):
+        # The DEF projections give only facts of the Fact sheet, so the lineup still stands without them, and those
+        # facts read as null.
+        defenses = []
+    stats = saved_stats(history_root(sources.client.folder, season), list(range(1, week)))
+    return LiveWeek(raw=raw, kickoffs=kickoffs, now=sources.clock(), tz=sources.client.tz, defenses=defenses,
+                    stats=stats)

@@ -2,18 +2,13 @@
 The NFL game card of a free answer: the expected margin of one NFL game from the two Sleeper DEF projections, the 32
 defenses against a position, and the pass share of each team, as a data tool result and as the block that code builds.
 """
-import json
-from collections import defaultdict
-
 import httpx
 
 from cornerstone_api.free_tools import WORD, SeasonData
-from league.paths import history_week_dir
-from league.provider.sleeper import UNOFFICIAL_URL
+from cornerstone_api.nfl_week import defense_strip, pass_share, saved_stats
 
 # The kind of the block. The site picks the view of the NFL game card from it.
 NFL_GAME_KIND = "nfl_game"
-TIMEOUT_SECONDS = 10
 # The positions of the strip, by the suffix of the Sleeper stat `fan_pts_allow_<pos>`.
 POSITIONS = ("QB", "RB", "WR", "TE")
 # A team has at most one bye in a row, so the next game is in the live week or the week after.
@@ -35,14 +30,6 @@ GAME_MEANINGS = {
 }
 
 
-def fetch_def_projections(season: int, week: int) -> list[dict]:
-    """The Sleeper projections of the 32 defenses for `week`, as JSON. A team on a bye has no row."""
-    response = httpx.get(f"{UNOFFICIAL_URL}/projections/nfl/{season}/{week}",
-                         params=[("season_type", "regular"), ("position[]", "DEF")], timeout=TIMEOUT_SECONDS)
-    response.raise_for_status()
-    return response.json()
-
-
 def _plain(text: str) -> str:
     return " ".join(WORD.findall(text.lower()))
 
@@ -62,34 +49,7 @@ def _matches(row: dict, team: str) -> bool:
 
 def _saved_stats(data: SeasonData) -> list[dict]:
     """The Sleeper stat rows of each saved week, with the team of each row."""
-    rows = []
-    for week in data.saved():
-        path = history_week_dir(data.history_root, week) / "stats.json"
-        if path.exists():
-            rows.extend(json.loads(path.read_text(encoding="utf-8")))
-    return rows
-
-
-def _strip(stats: list[dict], position: str | None) -> list[dict]:
-    """The fantasy points per game that each defense allows to `position`, fewest first."""
-    key = "fan_pts_allow" if position is None else f"fan_pts_allow_{position.lower()}"
-    games: dict[str, list[float]] = defaultdict(list)
-    for row in stats:
-        line = row.get("stats") or {}
-        if (row.get("player") or {}).get("position") == "DEF" and line.get("gp") and key in line:
-            games[row["player_id"]].append(line[key])
-    means = {team: round(sum(values) / len(values), 1) for team, values in games.items()}
-    return [{"team": team, "allowed": means[team]} for team in sorted(means, key=lambda t: (means[t], t))]
-
-
-def _share(stats: list[dict], team: str | None) -> float | None:
-    passes = runs = 0.0
-    for row in stats:
-        if team is None or row.get("team") == team:
-            line = row.get("stats") or {}
-            passes += line.get("pass_att", 0.0)
-            runs += line.get("rush_att", 0.0)
-    return round(passes / (passes + runs), 3) if passes + runs else None
+    return [row for rows in saved_stats(data.history_root, data.saved()).values() for row in rows]
 
 
 def _game(data: SeasonData, team: str) -> tuple[int, dict, dict] | dict:
@@ -131,10 +91,10 @@ def nfl_game(data: SeasonData, team: str, position: str | None = None) -> dict:
     points = theirs["stats"]["pts_allow"], mine["stats"]["pts_allow"]
     margin = round(points[0] - points[1], 2)
     stats = _saved_stats(data)
-    strip = _strip(stats, position)
+    strip = defense_strip(stats, position)
     lit = theirs["player_id"]
     place = next((i for i, row in enumerate(strip, start=1) if row["team"] == lit), None)
-    shares = _share(stats, mine["player_id"]), _share(stats, lit), _share(stats, None)
+    shares = pass_share(stats, mine["player_id"]), pass_share(stats, lit), pass_share(stats, None)
     average = round(sum(row["allowed"] for row in strip) / len(strip), 1) if strip else None
     block = {
         "kind": NFL_GAME_KIND, "week": week, "title": f"Week {week}: {nickname} vs {other_nickname}",

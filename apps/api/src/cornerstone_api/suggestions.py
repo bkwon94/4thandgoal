@@ -164,7 +164,8 @@ async def _start_sit_fact(served: ServedClient, season: int, roster_id: int):
     """The fact of Start or sit from the live Sleeper week, with no Jev call. When Sleeper or the kickoffs do not load,
     only Start or sit loses its fact, so the other Suggestions still show."""
     try:
-        week = await anyio.to_thread.run_sync(load_live_week, served.sources, season)
+        # The fact counts the holes and the Q starters, so it reads no Fact sheet.
+        week = await anyio.to_thread.run_sync(lambda: load_live_week(served.sources, season, fact_sheets=False))
     except ValueError as error:
         logger.warning("The live week of the Start or sit fact did not load (%s)", error)
         return None

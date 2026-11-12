@@ -4,6 +4,7 @@ of Claude, and the live Sleeper week 10 of cpc and norcal with the week kickoffs
 """
 import dataclasses
 import json
+import shutil
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from pathlib import Path
@@ -35,6 +36,10 @@ BEFORE_KICKOFF = datetime(2026, 11, 12, 12, 53, tzinfo=UTC)
 # One minute after the kickoff of NYG at WAS, at 2026-11-13T01:15Z.
 AFTER_THURSDAY = datetime(2026, 11, 13, 1, 16, tzinfo=UTC)
 NORCAL_HEADERS = {"X-League-Passphrase": "norcal-test"}
+# The saved Sleeper stat rows of weeks 1 to 9 of cpc and the Sleeper DEF projections of week 10, recorded on 2026-11-12.
+# The stat rows are NFL facts, so both leagues read the same rows.
+SAVED_HISTORY = Path(__file__).parents[3] / "clients" / "cpc" / "data" / "2026" / "history"
+DEF_PROJECTIONS = Path(__file__).parent / "fixtures" / "nfl-game"
 
 
 def _recorded(name: str) -> dict:
@@ -47,6 +52,18 @@ def sleeper_scores(season: int, week: int) -> dict:
 
 def espn_scoreboard(season: int, week: int) -> dict:
     return _recorded(f"espn-scoreboard-week-{week}.json")
+
+
+def def_projections(season: int, week: int) -> list[dict]:
+    return json.loads((DEF_PROJECTIONS / f"sleeper-def-projections-week-{week}.json").read_text())
+
+
+def _saved_weeks(folder: Path) -> None:
+    """Put the saved stat rows of weeks 1 to 9 in the history of the client folder of the test."""
+    for week in range(1, 10):
+        target = folder / "data" / "2026" / "history" / f"week-{week:02d}"
+        target.mkdir(parents=True, exist_ok=True)
+        shutil.copy(SAVED_HISTORY / f"week-{week:02d}" / "stats.json", target / "stats.json")
 
 
 def _down(season: int, week: int) -> dict:
@@ -112,6 +129,7 @@ def _sources(base, slug: str, now: datetime, calls: Calls | None = None, scores=
         fetch_sleeper=calls.wrap("sleeper", lambda league_id: (raw, BEFORE_KICKOFF)),
         fetch_sleeper_scores=calls.wrap("sleeper scores", scores),
         fetch_espn_scoreboard=calls.wrap("espn scoreboard", scoreboard),
+        fetch_def_projections=calls.wrap("def projections", def_projections),
         fetch_nflverse=_forbidden, fetch_history_week=_forbidden, fetch_trending=_forbidden, read_chart=_forbidden,
         fetch_past=_forbidden)
 
@@ -120,6 +138,7 @@ def _api(settings, sources, slug: str = "cpc", now: datetime = BEFORE_KICKOFF, w
          jev: FakeJev | None = None, **source_changes) -> TestClient:
     """An app over cpc and norcal, each on its recorded week 10."""
     cpc = _sources(_here(sources, settings), "cpc", now, **source_changes)
+    _saved_weeks(cpc.client.folder)
     values = cpc.client.values.model_copy(
         update={"packages": [name for name in cpc.client.values.packages if name != "eggs"]})
     norcal = _sources(dataclasses.replace(cpc, client=cpc.client.model_copy(update={"slug": "norcal",
@@ -266,7 +285,7 @@ def test_start_sit_calls_only_sleeper_and_the_kickoff_sources(settings, sources)
     calls = Calls()
     writer = Writer()
     _block(_api(settings, sources, calls=calls, writer=writer))
-    assert set(calls.names) == {"sleeper", "sleeper scores"}
+    assert set(calls.names) == {"sleeper", "sleeper scores", "def projections"}
     assert writer.calls == 1
     assert SLEEPER_GRAPHQL_URL.startswith("https://sleeper.com/")
     assert ESPN_SCOREBOARD_URL.startswith("https://site.api.espn.com/")
@@ -402,3 +421,50 @@ def test_a_locked_player_is_never_a_swap_and_never_loses_his_slot_to_one(setting
     cpc = _block(_api(settings, sources, now=AFTER_THURSDAY,
                       jev=_edges({("Antonio Williams", "Matthew Golden"): 0.95})))
     assert _swaps(cpc) == {}
+
+
+def _stat_rows(weeks: range) -> dict[int, list[dict]]:
+    return {week: json.loads((SAVED_HISTORY / f"week-{week:02d}" / "stats.json").read_text()) for week in weeks}
+
+
+def test_the_fact_sheet_of_a_player_holds_his_matchup_his_game_his_team_tilt_and_his_usage(settings, sources):
+    # Zay Flowers of Bo Girds plays for BAL against LAC in week 10. The Jev read of the Swaps reads his Fact sheet.
+    jev = _edges({})
+    _block(_api(settings, sources, jev=jev))
+    [read] = [request for request in jev.requests if "players" in request.state]
+    sheet = read.state["players"]["Zay Flowers"]
+    assert sheet["opponent"] == "LAC" and sheet["projection"] == 13.5 and sheet["projected_stat_line"]
+    # The expected margin is the gap of the two DEF projections: BAL scores what the LAC defense allows.
+    defenses = {row["player_id"]: row["stats"]["pts_allow"] for row in def_projections(2026, 10)}
+    assert sheet["team_projected_points"] == defenses["LAC"]
+    assert sheet["opponent_projected_points"] == defenses["BAL"]
+    assert sheet["expected_margin"] == round(defenses["LAC"] - defenses["BAL"], 2)
+    # The LAC defense against WRs: the mean of `fan_pts_allow_wr` over its games of weeks 1 to 9, and its place.
+    season = _stat_rows(range(1, 10))
+    games = [row["stats"]["fan_pts_allow_wr"] for rows in season.values() for row in rows
+             if row["player_id"] == "LAC" and row["stats"].get("gp")]
+    defense = sheet["defense_against_position"]
+    assert defense["position"] == "WR" and defense["of"] == 32
+    assert defense["allowed_per_game"] == round(sum(games) / len(games), 1)
+    assert 1 <= defense["place"] <= 32 and defense["league_average"] is not None
+    # The pass tilt of BAL against the league, over the saved weeks.
+    rows = [row for rows in season.values() for row in rows]
+    passes = sum(row["stats"].get("pass_att", 0) for row in rows if row.get("team") == "BAL")
+    runs = sum(row["stats"].get("rush_att", 0) for row in rows if row.get("team") == "BAL")
+    assert sheet["team_pass_share"] == round(passes / (passes + runs), 3)
+    assert 0 < sheet["league_pass_share"] < 1
+    # His share of the targets, the carries, and the snaps of BAL in his games of weeks 7 to 9.
+    last = _stat_rows(range(7, 10))
+    mine = [row for rows in last.values() for row in rows if row["player_id"] == "9997" and row["stats"].get("gp")]
+    team = [row for week_rows in last.values() for row in week_rows if row.get("team") == "BAL"]
+    usage = sheet["last_3_weeks"]
+    assert usage["weeks"] == [7, 8, 9]
+    assert usage["target_share"] == round(sum(r["stats"].get("rec_tgt", 0) for r in mine)
+                                          / sum(r["stats"].get("rec_tgt", 0) for r in team), 3)
+    assert usage["carry_share"] == round(sum(r["stats"].get("rush_att", 0) for r in mine)
+                                         / sum(r["stats"].get("rush_att", 0) for r in team), 3)
+    assert usage["snap_share"] == round(sum(r["stats"]["off_snp"] for r in mine)
+                                        / sum(r["stats"]["tm_off_snp"] for r in mine), 3)
+    assert sheet["injury_status"] is None
+    # The state says what each fact of a sheet means, so the read and the check read the same meaning.
+    assert set(read.state["what_each_fact_means"]) >= {"expected_margin", "defense_against_position", "last_3_weeks"}

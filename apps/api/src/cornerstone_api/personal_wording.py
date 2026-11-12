@@ -88,6 +88,27 @@ SWAP_MEANING = ("An entry of `lineup` with `swap_over` is a Swap: its player sta
                 "sheets says its player will score more this week. `projected_total_with_swaps` is the projected "
                 "total of the lineup with the Swaps.")
 
+# What each fact of the Fact sheet of a player means, in the slice of Start or sit and in the state of the Jev read, so
+# Claude, the read, and the check read the same meaning.
+FACT_SHEET_MEANINGS = {
+    "projection": "The projected fantasy points of the player this week in the scoring of this league, from his "
+                  "`projected_stat_line`.",
+    "defense_against_position": "The fantasy points per game that the defense of `opponent` allows to the position of "
+                                "the player this season, its `place` among the defenses from 1, the fewest allowed, "
+                                "to `of`, the most allowed, and the league average. More allowed is a softer matchup.",
+    "team_projected_points": "The NFL points that the team of the player is projected to score this week: the "
+                             "`pts_allow` of the Sleeper DEF projection of `opponent`.",
+    "opponent_projected_points": "The NFL points that `opponent` is projected to score this week.",
+    "expected_margin": "`team_projected_points` minus `opponent_projected_points`, from the two Sleeper DEF "
+                       "projections. It is not a betting line. Below 0, the team of the player is projected behind.",
+    "team_pass_share": "The share of the plays of the team of the player this season that are passes: pass attempts "
+                       "over pass attempts and carries. `league_pass_share` is the share of all NFL teams.",
+    "last_3_weeks": "The share of the targets, the carries, and the offensive snaps of his NFL team that the player "
+                    "had in the games he played in `weeks`, the last 3 saved weeks. Null means he played no game then.",
+    "injury_status": "The injury status of Sleeper, such as Questionable, with `body_part` and the practice level "
+                     "`practice_participation`. Null `injury_status` means no injury status.",
+}
+
 TOPIC_NAMES = {"weak_spots": "Weak spots", "stack_up": "How you stack up", "waiver_targets": "Waiver targets",
                "start_sit": "Start or sit"}
 

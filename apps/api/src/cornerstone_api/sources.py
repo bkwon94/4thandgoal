@@ -7,8 +7,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 
-from cornerstone_api.free_game import fetch_def_projections
 from cornerstone_api.game_lock import ScoresFetcher, fetch_espn_scoreboard, fetch_sleeper_scores
+from cornerstone_api.nfl_week import fetch_def_projections
 from facts.writer import parse_call
 from league.chart import chart_values, claude_reader
 from league.client import Client
