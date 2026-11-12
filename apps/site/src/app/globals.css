@@ -103,10 +103,6 @@
        The surface pads its foot by the home bar of an iPhone, so the ask box sits above the bar. */
     --spacing-door-foot: 0px;
     --spacing-door-safe: env(safe-area-inset-bottom);
-    /* The space that the foot covers above its bottom offset: its 12px pads, one row of chips, the gap, the ask box,
-       and the pad of the home bar. A card adds it to the offset as its scroll margin, so a focused field in the card
-       scrolls into view above the foot. */
-    --spacing-door-foot-clear: calc(var(--spacing-door-foot) + var(--spacing-door-safe) + 3 * var(--spacing-sp-3) + var(--spacing-touch) + var(--spacing-ask));
     /* The Thread header sticks under the top band: one 44px row and 4px above and below. A new question scrolls to
        its top under both, so its bubble never hides behind them. */
     --spacing-door-head: calc(var(--spacing-touch) + 2 * var(--spacing-sp-1));

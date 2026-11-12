@@ -68,7 +68,7 @@ export function Suggestions({
           its edge. A chip can still shrink and cut its name with an ellipsis, but only as a guard for a very long name.
           The bleed keeps the last chip clear of the gutter. The
           4px pad above and below gives the press scale and the focus ring room in the scroll box, and the negative
-          margin keeps the row one 44px chip high, so --spacing-door-foot-clear holds. */}
+          margin keeps the row one 44px chip high. */}
       <div
         role="group"
         aria-label="Suggestions"
