@@ -4,7 +4,7 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-17, AT-18, AT-19, and AT
 
 **App:** both
 
-**What to build:** Brian and a Codex session take `week-8-fixes` 07, "the READMEs name the module an agent needs", from `$4ag:plan` to `$4ag:implement`, from the worktree of `codex-flow`, before this spec merges. Brian approves the spec steps in the Codex session. The run ends with a ticket branch merged into its own Spec branch, `EVIDENCE.md`, a `VERDICTS.md` from a fresh Codex Judge on `gpt-6-astra`, and an open PR to `main` that waits for this spec to merge. The ticket also checks that this spec changes no product code.
+**What to build:** Brian and a Codex session take `week-8-fixes` 07, "the READMEs name the module an agent needs", from `$4ag:plan` to `$4ag:implement`, from the main checkout root, with the `.codex/config.toml` of `codex-flow` in place, before this spec merges. Codex in a linked worktree cannot write its own gitdir. Brian approves the spec steps in the Codex session. The run ends with a ticket branch merged into its own Spec branch, `EVIDENCE.md`, a `VERDICTS.md` from a fresh Codex Judge on `gpt-6-astra`, and an open PR to `main` that waits for this spec to merge. The ticket also checks that this spec changes no product code.
 
 **Blocked by:** 03, 04, 05
 

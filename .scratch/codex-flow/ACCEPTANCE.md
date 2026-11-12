@@ -4,7 +4,7 @@ Spec: `.scratch/codex-flow/PRD.md`.
 
 The Test verdict: the Judge gives one for each test in `VERDICTS.md`. The Judge is a fresh subagent that reads only this file and the evidence. The PR merges when every test has PASS and Brian gives no FAIL in a PR comment (ADR 0026). The agent that builds the work records the evidence and gives no Test verdict.
 
-No test changes the site UI, so no test takes screenshots. Each test takes the command and its output. Each Codex run uses Codex CLI 0.167.1 at the root of the worktree `.claude/worktrees/codex-flow`, on the head of the Spec branch `codex-flow`, unless the test says otherwise. A "scratch copy" is a throwaway clone of that head, outside the repo, so a broken file never reaches a commit.
+No test changes the site UI, so no test takes screenshots. Each test takes the command and its output. Each Codex run uses Codex CLI 0.167.1 at the root of the worktree `.claude/worktrees/codex-flow`, on the head of the Spec branch `codex-flow`, unless the test says otherwise. A run that commits or calls `gh`, as in AT-13, AT-15, AT-16, and AT-17, starts at the main checkout root instead, because Codex in a linked worktree cannot write its own gitdir. A "scratch copy" is a throwaway clone of that head, outside the repo, so a broken file never reaches a commit.
 
 ## Tests
 
@@ -140,7 +140,7 @@ AT-17: A real spec runs end to end in Codex
 App: both
 Stories: 12, 21
 Given: the ticket `week-8-fixes` 07, "the READMEs name the module an agent needs", and the head of `codex-flow`.
-When: Brian and a Codex session run `$4ag:plan`, `$4ag:to-spec`, `$4ag:to-acceptance`, `$4ag:to-tickets`, and `$4ag:implement` for it, from the worktree of `codex-flow`.
+When: Brian and a Codex session run `$4ag:plan`, `$4ag:to-spec`, `$4ag:to-acceptance`, `$4ag:to-tickets`, and `$4ag:implement` for it, from the main checkout root, with the `.codex/config.toml` of `codex-flow` in place.
 Then: its spec has a ticket branch merged into its Spec branch, an `EVIDENCE.md`, a `VERDICTS.md`, and an open PR to `main`.
 Evidence: the Spec branch name, `git log --oneline` of the Spec branch, the paths of `EVIDENCE.md` and `VERDICTS.md`, and the PR URL.
 
@@ -232,4 +232,4 @@ Out of scope "A change to the product code of the site, the pipeline, or the API
 
 ## Revisions
 
-None yet.
+- 2026-11-12: Brian approved that Codex starts at the main checkout root, not in a worktree, after ticket 02 found the limit. AT-17 and the note above the tests change to match.

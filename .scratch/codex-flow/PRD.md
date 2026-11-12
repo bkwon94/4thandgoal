@@ -82,8 +82,8 @@ The seams, highest first:
 1. **The Codex skill list.** `codex debug prompt-input "hi"` at the repo root prints the prompt that the model sees, with no model call and no cost. Its output names the six `4ag:` skills, and each path resolves under `.claude/plugin/skills/`. This is evidence, not CI, because CI has no Codex.
 2. **The rule tests.** The new harness rule and the changed readme rules run in `make check-fast` and in CI. Prior art: `apps/pipeline/tests/test_rule_readmes.py`, `apps/site/src/readme-rule.test.ts`, and `apps/pipeline/tests/test_rule_tracker.py`, which read the tracked files through `git ls-files`.
 3. **The Claude Code import.** A Claude Code session in the worktree loads the rules from `AGENTS.md` through `@AGENTS.md`. The evidence is the rules that the session shows, such as the `/memory` view or a question about the flow.
-4. **The smoke run of each skill in Codex.** Codex loads each of the six skills and runs its "Before you start" check, from the spec branch worktree. The evidence is the transcript of each run.
-5. **The real spec in Codex.** Codex runs `week-8-fixes` 07, "the READMEs name the module an agent needs", from `$4ag:plan` to `$4ag:implement`, from the spec branch worktree, before this spec merges (decision 01). The evidence is the ticket branch, the commits, `EVIDENCE.md`, the `VERDICTS.md` from a Codex Judge on `gpt-6-astra`, and the PR. The PR of that spec waits for this spec to merge.
+4. **The smoke run of each skill in Codex.** Codex loads each of the six skills and runs its "Before you start" check. The evidence is the transcript of each run.
+5. **The real spec in Codex.** Codex runs `week-8-fixes` 07, "the READMEs name the module an agent needs", from `$4ag:plan` to `$4ag:implement`, from the main checkout root, before this spec merges (decision 01). Codex in a linked worktree cannot write its own gitdir, so every Codex session that commits starts at the main checkout root. The evidence is the ticket branch, the commits, `EVIDENCE.md`, the `VERDICTS.md` from a Codex Judge on `gpt-6-astra`, and the PR. The PR of that spec waits for this spec to merge.
 
 ## Out of Scope
 
