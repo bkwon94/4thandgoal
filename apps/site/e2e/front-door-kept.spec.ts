@@ -60,6 +60,14 @@ async function openDoorWithWeakSpots(page: Page, { kept }: { kept: boolean }) {
 /* The chip of Weak spots in the row of Suggestions. */
 const weakSpotsChip = (page: Page) => page.getByRole("group", { name: "Suggestions" }).getByRole("button", { name: /^Weak spots:/ });
 
+/* Opens Weak spots from its chip. The first tap shows its fact in the strip, and the second tap opens the Topic
+   (decision 02). */
+async function openWeakSpots(page: Page) {
+  await weakSpotsChip(page).click();
+  await expect(page.getByRole("button", { name: "Open Weak spots", exact: true })).toBeVisible();
+  await weakSpotsChip(page).click();
+}
+
 test.use({ viewport: { width: 375, height: 812 }, reducedMotion: "no-preference" });
 
 test("a tap on a personal Topic whose Answer is kept shows no step line on any frame (AT-8, ticket 49)", async ({ page }) => {
@@ -72,7 +80,7 @@ test("a tap on a personal Topic whose Answer is kept shows no step line on any f
     const lines = [...article.querySelectorAll("ol[aria-label='Steps'] li")].map((item) => item.textContent ?? "");
     return { lines, checked: (article.textContent ?? "").includes("Checked") };
   });
-  await weakSpotsChip(page).click();
+  await openWeakSpots(page);
   const frames = (await samplesWhenStill<{ lines: string[]; checked: boolean } | null>(page, 30)).filter((frame) => frame !== null);
   expect(frames.at(-1)?.checked, "the kept Answer ends checked").toBe(true);
   const withSteps = frames.filter((frame) => frame.lines.length > 0);
@@ -81,7 +89,7 @@ test("a tap on a personal Topic whose Answer is kept shows no step line on any f
 
 test("a fresh Answer of a personal Topic still waits on the live first line with the braille spinner (AT-65)", async ({ page }) => {
   await openDoorWithWeakSpots(page, { kept: false });
-  await weakSpotsChip(page).click();
+  await openWeakSpots(page);
   const step = page.getByRole("article", { name: "Weak spots" }).getByRole("list", { name: "Steps" }).getByRole("listitem").first();
   await expect(step).toHaveText(/Reading the league…/);
   await expect(step).toHaveAttribute("data-state", "live");
