@@ -13,9 +13,11 @@ from pathlib import Path
 import test_api
 from fakes import FakeJev
 from fastapi.testclient import TestClient
+from pydantic_ai.models.function import FunctionModel
 from test_api import CLIENT, HEADERS, _here
 from test_personal_topics import LIL_FRIDGE, Checks, Fetches, Writer, _api, _ask, _chunks, _text
-from test_start_sit import BEFORE_KICKOFF, RECORDED, espn_scoreboard, sleeper_scores
+from test_start_sit import BEFORE_KICKOFF, RECORDED, Edges, def_projections, espn_scoreboard, sleeper_scores
+from test_start_sit import Writer as LineupWriter
 
 from analyzer.sell_facts import sheet_players
 from analyzer.trade_jev import weak_starting_slots
@@ -525,3 +527,27 @@ def test_a_live_week_that_does_not_load_drops_only_the_start_or_sit_fact(setting
     assert response.status_code == 200
     body = response.json()
     assert "start_sit" not in body["facts"] and body["picks"]
+
+
+def test_the_key_check_reads_a_kept_start_or_sit_answer_from_the_live_week(settings, sources, fixture_raw_dir):
+    # The key of a Start or sit Answer comes from the live Sleeper week, as the tap reads it, not from the live league.
+    # The check of a kept Start or sit Answer is current until the week changes, and never a 500.
+    jev = FakeJev(answer=Checks([True]).answer, choose=Edges().choose)
+    live = dataclasses.replace(sources, fetch_sleeper=TwoWeeks(fixture_raw_dir).fetch,
+                               clock=lambda: BEFORE_KICKOFF.astimezone(CLIENT.tz), fetch_sleeper_scores=sleeper_scores,
+                               fetch_espn_scoreboard=espn_scoreboard, fetch_def_projections=def_projections)
+    writer = LineupWriter()
+    api = _api(settings, live, jev, Writer())
+    # Claude writes one plain line of the lineup, so the check passes and the store keeps the Answer.
+    api.app.state.personal_model = FunctionModel(stream_function=writer.stream)
+    # The first load is the live league of the key check, so the tap after it reads the live week 10.
+    weak = {"topic": "weak_spots", "roster_id": BO_GIRDS, "team": None, "key": "x"}
+    assert api.post(CURRENT, json={"answers": [weak]}, headers=HEADERS).status_code == 200
+    key = _key(_chunks(_ask(api, "start_sit", roster_id=BO_GIRDS)))
+    kept = {"topic": "start_sit", "roster_id": BO_GIRDS, "team": None, "key": key}
+    response = api.post(CURRENT, json={"answers": [kept, {**kept, "key": "x"}]}, headers=HEADERS)
+    assert response.status_code == 200, response.text
+    [now, stale] = response.json()["answers"]
+    assert now["key"] == key and now["current"] is True and now["kept_at"] is not None
+    assert stale["current"] is False
+    assert writer.calls == 1
