@@ -56,6 +56,10 @@ class LiveWeek:
     tz: ZoneInfo
     defenses: list[dict] = field(default_factory=list)
     stats: dict[int, list[dict]] = field(default_factory=dict)
+    # A memo of the defense strip of each position and the pass share of each NFL team. Every Fact sheet of a request
+    # reads them, so each one reads the season rows only once.
+    _strips: dict[str, list[dict]] = field(default_factory=dict, init=False, repr=False, compare=False)
+    _shares: dict[str | None, float | None] = field(default_factory=dict, init=False, repr=False, compare=False)
 
     @property
     def rosters(self) -> dict[int, list[str]]:
@@ -245,16 +249,6 @@ class LiveWeek:
         defenses from 1, the fewest allowed, and the league average, or None with no game of that defense."""
         place = defense_place(self._strip(position), opponent)
         return None if place["place"] is None else {"position": position, **place}
-
-    @cached_property
-    def _strips(self) -> dict[str, list[dict]]:
-        """The defense strip of each position that a Fact sheet read, so each strip reads the rows once."""
-        return {}
-
-    @cached_property
-    def _shares(self) -> dict[str | None, float | None]:
-        """The pass share of each NFL team that a Fact sheet read, so each share reads the rows once."""
-        return {}
 
     def _strip(self, position: str) -> list[dict]:
         if position not in self._strips:
