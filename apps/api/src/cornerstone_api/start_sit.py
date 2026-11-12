@@ -15,7 +15,7 @@ from cornerstone_api.comparison import COMPARISON_KIND, compare_facts, with_cite
 from cornerstone_api.free_wording import plain_text, sentences
 from cornerstone_api.game_lock import Kickoff, week_kickoffs
 from cornerstone_api.named_players import named_players
-from cornerstone_api.nfl_week import defense_strip, pass_share, saved_stats, usage_shares
+from cornerstone_api.nfl_week import defense_place, defense_strip, game_points, pass_share, saved_stats, usage_shares
 from cornerstone_api.personal_facts import PersonalFacts
 from cornerstone_api.personal_wording import FACT_SHEET_MEANINGS, SWAP_MEANING, compare_question, swap_question
 from cornerstone_api.trade_wording import option_keys
@@ -216,8 +216,7 @@ class LiveWeek:
         game = games.get(player.nfl_team or "")
         opponent = None if game is None else (game.away if game.home == player.nfl_team else game.home)
         allowed = {row["player_id"]: row["stats"].get("pts_allow") for row in self.defenses}
-        # Each team scores what the DEF projection of the other team allows.
-        team_points, opponent_points = allowed.get(opponent or ""), allowed.get(player.nfl_team or "")
+        team_points, opponent_points, margin = game_points(allowed.get(player.nfl_team or ""), allowed.get(opponent or ""))
         return {"player": player.name, "position": player.position, "nfl_team": player.nfl_team,
                 "opponent": opponent,
                 "kickoff": None if game is None else game.start.astimezone(self.tz).strftime("%a %-I:%M %p %Z"),
@@ -225,8 +224,7 @@ class LiveWeek:
                 "projected_stat_line": player.stat_line,
                 "defense_against_position": None if opponent is None else self._defense(opponent, player.position),
                 "team_projected_points": team_points, "opponent_projected_points": opponent_points,
-                "expected_margin": None if team_points is None or opponent_points is None
-                else round(team_points - opponent_points, 2),
+                "expected_margin": margin,
                 "team_pass_share": self._pass_share(player.nfl_team),
                 "league_pass_share": self._pass_share(None),
                 "last_3_weeks": {"weeks": self._usage_weeks, **usage_shares(
@@ -245,12 +243,8 @@ class LiveWeek:
     def _defense(self, opponent: str, position: str) -> dict | None:
         """The fantasy points per game that the defense of `opponent` allows to `position`, its place among the
         defenses from 1, the fewest allowed, and the league average, or None with no game of that defense."""
-        strip = self._strip(position)
-        place = next((i for i, row in enumerate(strip, start=1) if row["team"] == opponent), None)
-        if place is None:
-            return None
-        return {"position": position, "allowed_per_game": strip[place - 1]["allowed"], "place": place, "of": len(strip),
-                "league_average": round(sum(row["allowed"] for row in strip) / len(strip), 1)}
+        place = defense_place(self._strip(position), opponent)
+        return None if place["place"] is None else {"position": position, **place}
 
     @cached_property
     def _strips(self) -> dict[str, list[dict]]:

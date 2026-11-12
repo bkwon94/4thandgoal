@@ -5,7 +5,7 @@ defenses against a position, and the pass share of each team, as a data tool res
 import httpx
 
 from cornerstone_api.free_tools import WORD, SeasonData
-from cornerstone_api.nfl_week import defense_strip, pass_share, saved_stats
+from cornerstone_api.nfl_week import defense_place, defense_strip, game_points, pass_share, saved_stats
 
 # The kind of the block. The site picks the view of the NFL game card from it.
 NFL_GAME_KIND = "nfl_game"
@@ -87,33 +87,28 @@ def nfl_game(data: SeasonData, team: str, position: str | None = None) -> dict:
         return found
     week, mine, theirs = found
     (name, nickname), (other, other_nickname) = _names(mine), _names(theirs)
-    # Each team scores what the DEF projection of the other team allows.
-    points = theirs["stats"]["pts_allow"], mine["stats"]["pts_allow"]
-    margin = round(points[0] - points[1], 2)
+    team_points, opponent_points, margin = game_points(mine["stats"]["pts_allow"], theirs["stats"]["pts_allow"])
     stats = _saved_stats(data)
     strip = defense_strip(stats, position)
     lit = theirs["player_id"]
-    place = next((i for i, row in enumerate(strip, start=1) if row["team"] == lit), None)
+    defense = defense_place(strip, lit)
     shares = pass_share(stats, mine["player_id"]), pass_share(stats, lit), pass_share(stats, None)
-    average = round(sum(row["allowed"] for row in strip) / len(strip), 1) if strip else None
     block = {
         "kind": NFL_GAME_KIND, "week": week, "title": f"Week {week}: {nickname} vs {other_nickname}",
-        "sides": [{"code": mine["player_id"], "name": nickname, "projected": points[0]},
-                  {"code": lit, "name": other_nickname, "projected": points[1]}],
+        "sides": [{"code": mine["player_id"], "name": nickname, "projected": team_points},
+                  {"code": lit, "name": other_nickname, "projected": opponent_points}],
         "margin": margin,
-        "strip": {"position": position, "lit": lit, "average": average, "defenses": strip},
+        "strip": {"position": position, "lit": lit, "average": defense["league_average"], "defenses": strip},
         "pass_share": {"league": shares[2], "sides": [{"code": mine["player_id"], "share": shares[0]},
                                                       {"code": lit, "share": shares[1]}]},
     }
     return {
         "week": week, "live_week": data.raw().state.display_week, "team": name, "opponent": other,
         "what_each_field_means": GAME_MEANINGS,
-        "projected_points": {name: points[0], other: points[1]},
+        "projected_points": {name: team_points, other: opponent_points},
         "expected_margin": margin, "favorite": name if margin > 0 else other if margin < 0 else None,
         "defense_against_position": {
-            "position": position, "defense": other,
-            "allowed_per_game": next((row["allowed"] for row in strip if row["team"] == lit), None),
-            "place": place, "of": len(strip), "league_average": average},
+            "position": position, "defense": other, **defense},
         "pass_share": {name: shares[0], other: shares[1], "league": shares[2]},
         "block": block,
     }
