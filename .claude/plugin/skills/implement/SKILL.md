@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Build the tickets of one feature of this repo on its Spec branch, one Ticket branch and worktree per ticket, then review the change, record the evidence of each acceptance test, and open one PR to main. Use after cpc:to-tickets, when Brian names a feature under .scratch/ with a PRD, an ACCEPTANCE.md, and tickets.
+description: Build the tickets of one feature of this repo on its Spec branch, one Ticket branch and worktree per ticket, then review the change, record the evidence of each acceptance test, and open one PR to main. Use after 4ag:to-tickets, when Brian names a feature under .scratch/ with a PRD, an ACCEPTANCE.md, and tickets.
 argument-hint: '<feature slug>'
 ---
 
@@ -15,7 +15,7 @@ The agent records the evidence of each acceptance test. The agent never gives a 
 1. Check that these global skills are in the available skill list: `tdd`, `code-review`, `resolving-merge-conflicts`, `agent-browser`. The `cpc` skills ship with this skill, so do not check them.
 2. If one is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps.
 3. Run `gh auth status`. If it fails, stop. Tell Brian to run `gh auth login`.
-4. Check that `.scratch/<slug>/PRD.md`, `.scratch/<slug>/ACCEPTANCE.md`, and `.scratch/<slug>/issues/` exist on the Spec branch or on `main`. If one is missing, stop. Name the skill that writes it: `cpc:to-spec`, `cpc:to-acceptance`, or `cpc:to-tickets`.
+4. Check that `.scratch/<slug>/PRD.md`, `.scratch/<slug>/ACCEPTANCE.md`, and `.scratch/<slug>/issues/` exist on the Spec branch or on `main`. If one is missing, stop. Name the skill that writes it: `4ag:to-spec`, `4ag:to-acceptance`, or `4ag:to-tickets`.
 5. Read the PRD, `ACCEPTANCE.md`, each ticket, `docs/agents/issue-tracker.md`, and the Workflow section of `GLOSSARY.md`.
 
 ## The stages
@@ -43,6 +43,6 @@ If the Spec branch already has an open PR, read [`pr.md`](pr.md#a-second-start).
 
 ## The end
 
-Give Brian the PR address and the Test verdicts of the Judge. Brian needs to post no comment. He may check the work on the local dev server. A FAIL from Brian in a PR comment blocks the merge. Tell Brian to run `cpc:review <PR number>` for a FAIL or a review comment.
+Give Brian the PR address and the Test verdicts of the Judge. Brian needs to post no comment. He may check the work on the local dev server. A FAIL from Brian in a PR comment blocks the merge. Tell Brian to run `4ag:review <PR number>` for a FAIL or a review comment.
 
 If stage 4 ends with a BLOCKED test, no PR opens. Give Brian each BLOCKED test and the reason of the Judge.

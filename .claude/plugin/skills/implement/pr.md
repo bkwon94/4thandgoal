@@ -1,6 +1,6 @@
 # The PR
 
-Stage 5 of `cpc:implement`. One PR goes from the Spec branch `<slug>` to `main`. Brian merges it as a squash, when the check `verdict` is green. The check reads the Test verdicts of the Judge in `VERDICTS.md` (ADR 0026).
+Stage 5 of `4ag:implement`. One PR goes from the Spec branch `<slug>` to `main`. Brian merges it as a squash, when the check `verdict` is green. The check reads the Test verdicts of the Judge in `VERDICTS.md` (ADR 0026).
 
 ## The agent marker
 
@@ -59,7 +59,7 @@ Spec: `.scratch/<slug>/PRD.md`. Acceptance tests: `.scratch/<slug>/ACCEPTANCE.md
 
 The Judge, a fresh subagent that did not build the work, gave each Test verdict in [VERDICTS.md](<link base>VERDICTS.md). The check `verdict` passes when each test has PASS. Brian needs to post no comment.
 
-To block the merge, Brian posts one comment with the heading `Test verdicts` and a line `AT-<n>: FAIL <note>` for each failed test. Then run `cpc:review <PR number>`.
+To block the merge, Brian posts one comment with the heading `Test verdicts` and a line `AT-<n>: FAIL <note>` for each failed test. Then run `4ag:review <PR number>`.
 ````
 
 ## The full check
@@ -76,7 +76,7 @@ The CI check `Check` runs `make check` on the PR. It is the one full check of th
 
 The Spec branch has an open PR when `gh pr list --head <slug> --state open` lists one.
 
-1. If no ticket is `blocked`, stop. Tell Brian to run `cpc:review <PR number>`.
+1. If no ticket is `blocked`, stop. Tell Brian to run `4ag:review <PR number>`.
 2. Otherwise, read the PR comments for the decision of Brian on each blocked ticket. If a blocked ticket has no decision, stop and ask Brian.
 3. Build each blocked ticket and each ticket behind it with stage 1. A ticket branch that exists gets its worktree with `git worktree add .claude/worktrees/<slug>-<NN> <slug>-<NN>`, then a merge of `<slug>` into it.
 4. Run stage 2 with the fixed point at the head of the previous push.

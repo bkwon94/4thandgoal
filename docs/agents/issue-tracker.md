@@ -44,9 +44,9 @@ A feature after the One spec has this shape. Each part is a file or folder under
 3. `PRD.md`: the spec in prose.
 4. `ACCEPTANCE.md`: the acceptance tests, each named `AT-<n>`. The Judge gives the Test verdict of each test, and a FAIL from Brian overrides it (ADR 0026).
 5. `issues/<NN>-<slug>.md`: the tickets.
-6. `EVIDENCE.md`: the evidence of each acceptance test, with no Test verdict. `cpc:implement` writes it.
+6. `EVIDENCE.md`: the evidence of each acceptance test, with no Test verdict. `4ag:implement` writes it.
 7. `evidence/AT-<n>/`: the files of each test, such as the screenshots of a site test or the output of a pipeline command.
-8. `VERDICTS.md`: the Test verdict of each acceptance test, from the Judge. `cpc:implement` commits it alone, one commit per round.
+8. `VERDICTS.md`: the Test verdict of each acceptance test, from the Judge. `4ag:implement` commits it alone, one commit per round.
 
 A new feature uses one folder for both apps. It does not get `site/` and `pipeline/` subfolders.
 
@@ -57,7 +57,7 @@ ticket, Blocked by, and Hold. App is `site`, `pipeline`, or `both`.
 
 - An open ticket is a file under `issues/` whose Status is not `done` and not `wontfix`.
 - A PRD, a map, a decision ticket, an acceptance file, and an evidence file are not tickets.
-- A ticket in `in-review` or `blocked` is open. `cpc:implement` sets `in-review` after the merge into the spec branch. Before the push, the last commit of the spec branch sets each `in-review` ticket to `done`. So `in-review` exists only on a spec branch, and `main` sees `done` after the squash merge.
+- A ticket in `in-review` or `blocked` is open. `4ag:implement` sets `in-review` after the merge into the spec branch. Before the push, the last commit of the spec branch sets each `in-review` ticket to `done`. So `in-review` exists only on a spec branch, and `main` sees `done` after the squash merge.
 - A shared feature gets one row for each subfolder with an open ticket. The App of the row names the subfolder.
 - A feature with no subfolder gets one row.
 

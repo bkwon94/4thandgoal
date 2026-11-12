@@ -1,6 +1,6 @@
 {
   "extraKnownMarketplaces": {
-    "cpc-local": {
+    "4ag-local": {
       "source": {
         "source": "directory",
         "path": "./"
@@ -8,6 +8,6 @@
     }
   },
   "enabledPlugins": {
-    "cpc@cpc-local": true
+    "4ag@4ag-local": true
   }
 }
