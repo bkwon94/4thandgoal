@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from functools import cached_property
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from cornerstone_api.personal_facts import PART_NAMES
 from league.history import load_saved_weeks
@@ -20,6 +21,8 @@ from league.ranks import OUT_STATUSES, STATUS_WORDS
 from league.standings_table import season_records, standings_order, week_median
 from managers.grade import ManagerGrade
 
+# The time zone of a season with no league time zone, such as in a test.
+UTC_ZONE = ZoneInfo("UTC")
 # The stat keys of a game log line, by the plain name that the tool shows. A key missing from a line is a zero.
 GAME_STATS = {
     "pass_yards": "pass_yd", "pass_tds": "pass_td", "interceptions": "pass_int", "rush_attempts": "rush_att",
@@ -99,6 +102,8 @@ class SeasonData:
     # The live roster grades, as stack_up reads them. They load only when a tool reads them, because the live league
     # costs a snapshot load.
     fetch_grades: Callable[[], LeagueGrades] | None = None
+    # The time zone of the league, so a day of the moves reads as the managers read it.
+    tz: ZoneInfo = UTC_ZONE
     _raw: RawWeek | None = field(default=None, init=False, repr=False)
 
     @cached_property

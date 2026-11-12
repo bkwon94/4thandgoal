@@ -1,6 +1,6 @@
 """
-The block of a free answer: a list, a table, or a player card that Claude shows under its lead line through the display
-tool, and the plain sentence of each row, so the Jev check reads a block as it reads the text.
+The block of a free answer: a list, a table, or a player card that Claude writes, or a ready block that a data tool built,
+which Claude shows under its lead line through the display tool, and the plain sentence of each row of a written block.
 """
 from typing import Annotated, Literal
 
@@ -77,8 +77,16 @@ class PlayerBlock(_Shape):
     note: Note | None = None
 
 
+class ReadyBlock(_Shape):
+    """A block that a data tool built from the league data, such as the transaction feed, named by the `block_id` of
+    its tool result. Code builds it, so it may be any kind of block of the site, and Claude copies no value into it."""
+
+    kind: Literal["ready"]
+    block_id: Annotated[str, Field(min_length=1, max_length=LABEL_MAX * 2)]
+
+
 # The kind picks the shape, so a bad block fails its validation in the display tool and never reaches the page.
-Block = Annotated[ListBlock | TableBlock | PlayerBlock, Field(discriminator="kind")]
+Block = Annotated[ListBlock | TableBlock | PlayerBlock | ReadyBlock, Field(discriminator="kind")]
 BLOCK = TypeAdapter(Block)
 
 # What a row sentence of the check means. It rides in the check state beside the rows, so the check reads the block
@@ -94,7 +102,8 @@ BLOCK_MEANING = ("Each sentence of `answer` that starts with \"Row\" or \"The pl
 def row_sentences(block: Block | None) -> list[str]:
     """Each row of `block` as one plain sentence, such as "Row 1 of the list "Season points": Kenneth Walker III, RB,
     142.3." A player card gives its head, one sentence per stat, and its note."""
-    if block is None:
+    if block is None or isinstance(block, ReadyBlock):
+        # Code built a ready block from the tool results, so the check reads them and no row sentence.
         return []
     if isinstance(block, ListBlock):
         return [f"Row {row.rank} of the list \"{block.title}\": {row.name}, {row.tag}, {row.value}."
