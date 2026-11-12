@@ -24,23 +24,17 @@ Check: `launchctl list | grep cornerstone` prints nothing.
 
 A worktree of an open spec stays. The move step repairs it.
 
-First, list each worktree whose branch is merged into `origin/main`. The command fetches first, so the test sees the latest `main`. It removes nothing.
+The command fetches first, so the test sees the latest `main`. Then it removes each worktree whose branch is merged into `origin/main`, and prints the path and the branch of each one. It keeps the branch. It never uses `--force`, so it refuses to remove a worktree with changes and prints why.
 
 ```
-cd ~/repos/cpcfantasyfootball && git fetch origin && for wt in .claude/worktrees/*(N); do b=$(git -C "$wt" branch --show-current); [ -n "$b" ] || continue; if git merge-base --is-ancestor "$b" origin/main || [ -n "$(gh pr list --state merged --head "$b" --json number --jq '.[0].number')" ]; then echo "$wt $b"; fi; done
+cd ~/repos/cpcfantasyfootball && git fetch origin && for wt in .claude/worktrees/*(N); do b=$(git -C "$wt" branch --show-current); [ -n "$b" ] || continue; if git merge-base --is-ancestor "$b" origin/main || [ -n "$(gh pr list --state merged --head "$b" --json number --jq '.[0].number')" ]; then echo "remove $wt $b"; git worktree remove "$wt"; fi; done
 ```
 
 The `(N)` makes an empty glob match nothing. Without it, zsh stops with "no matches found" when `.claude/worktrees/` is empty.
 
-A squash merge leaves the branch out of `main`. The `gh pr list` test finds those branches.
+A squash merge leaves the branch out of `main`. The `gh pr list` test finds those branches. A detached worktree has no branch, so the command skips it.
 
-Read the list. Then remove each listed worktree. The command refuses to remove a worktree with changes.
-
-```
-git worktree remove .claude/worktrees/<name>
-```
-
-Check: `git worktree list` shows no listed worktree.
+Check: `git worktree list` shows no worktree that the command printed as `remove`, except one that it refused because of changes. Look at each refused worktree before step 3.
 
 ## 3. Move the folder
 
