@@ -267,3 +267,11 @@ def test_the_trade_ideas_topic_covers_a_follow_up_that_refines_earlier_trade_ide
     request = jev.requests[0]
     assert "follow-up that refines earlier trade ideas" in request.state["topics"]["trade_ideas"]
     assert "follow-up that refines earlier trade ideas" in request.questions["topic"].options["trade_ideas"]
+
+
+def test_the_nfl_games_data_and_the_yes_of_data_can_answer_name_how_one_nfl_game_looks(api, jev):
+    # B1: "How does the Bears game look this week?" got data_can_answer 0.30, at the cutoff, and 4 of 6 pages missed.
+    _ask(api, "who am i playing sunday")
+    request = jev.requests[0]
+    assert "how one NFL game looks" in request.state["data_sources"]["nfl_games"]
+    assert "how one NFL game looks" in request.questions["data_can_answer"].yes

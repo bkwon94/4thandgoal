@@ -80,7 +80,8 @@ def data_sources(season: int) -> dict[str, str]:
                                     "league team that held him that week.",
         "nfl_games": "Sleeper projections of each NFL game of this week and the next: the projected points of each "
                      "NFL team, the expected margin, the fantasy points that each defense allows by position, and the "
-                     "pass share of each NFL team. It holds no betting line, no spread, and no over under.",
+                     "pass share of each NFL team. It answers how one NFL game looks this week or next, such as "
+                     "'How does the Bears game look?'. It holds no betting line, no spread, and no over under.",
         "not_available": "Injury news, live game status, betting odds, news articles, expert opinions, and any season "
                          f"before {season}.",
     }
@@ -103,7 +104,8 @@ NOULS = {
     DATA_CAN_ANSWER: NoulQuestion(
         instructions="Can the data in `data_sources` answer `manager_question`?",
         yes="The data in `data_sources.league_data_this_season`, `data_sources.player_stats_this_season`, or "
-            "`data_sources.nfl_games` holds the facts that answer the question.",
+            "`data_sources.nfl_games` holds the facts that answer the question, such as how one NFL game looks this "
+            "week, as in 'How does the Bears game look?'.",
         no="The answer needs facts from `data_sources.not_available`, or facts that no source holds."),
     ABOUT_LEAGUE: NoulQuestion(
         instructions="Is `manager_question` about this fantasy league or about NFL football?",
