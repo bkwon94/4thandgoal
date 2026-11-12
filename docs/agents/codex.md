@@ -68,6 +68,7 @@ In the repo `bkwon94/4thandgoal`, open Settings, Rules, Rulesets, New branch rul
 - Enforcement status: Active
 - Target branches: Add target, Include default branch
 - Rule: Require status checks to pass, with the check `verdict`
+- Rules: Restrict deletions, Block force pushes, and Require a pull request before merging, with 0 approvals
 - Bypass list: Repository admin, with the mode Always
 
 Click Create.
@@ -86,7 +87,7 @@ Check 2: replace `<id>` with the id of the ruleset. Get the id from `gh api repo
 gh api repos/bkwon94/4thandgoal/rulesets/<id> --jq '.rules, .bypass_actors, .conditions'
 ```
 
-The output names `verdict` in the rule `required_status_checks`. It shows the admin role, `actor_id` 5, with `bypass_mode` `always`. It shows `~DEFAULT_BRANCH` in `conditions.ref_name.include`.
+The output holds the rules `deletion`, `non_fast_forward`, `required_status_checks`, and `pull_request`, and names `verdict` in `required_status_checks`. It shows the admin role, `actor_id` 5, with `bypass_mode` `always`. It shows `~DEFAULT_BRANCH` in `conditions.ref_name.include`.
 
 ## 6. Remove the stale files after the merge
 
