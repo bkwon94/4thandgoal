@@ -41,6 +41,22 @@ The repo plugin `4ag` takes an idea to a merged spec. Run its skills in this ord
 5. `4ag:implement <feature>` builds each ticket on its ticket branch, merges it into the spec branch, records the evidence in `EVIDENCE.md`, has the Judge write `VERDICTS.md`, and opens one PR to `main`.
 6. Brian posts no comment unless he gives a FAIL. `4ag:review <PR number>` does one round of feedback per run. The check `verdict` passes when each test has PASS from the Judge and no FAIL from Brian, and Brian merges.
 
+## The harness words
+
+The 4ag skills run in Claude Code and in Codex. The skill text uses neutral words. This table maps each one to the tool of each harness.
+
+| The skill says | Claude Code | Codex |
+| --- | --- | --- |
+| The skill `<name>` is in the available skill list | The skill list of the session names it. | The skill list names it, or `~/.agents/skills/<name>/SKILL.md` exists. Codex hides a skill whose `agents/openai.yaml` sets `allow_implicit_invocation: false`, such as `to-spec`. |
+| Load the skill `<name>` | The Skill tool. | A `$<name>` mention, or a read of the `SKILL.md` of the skill. |
+| Start a fresh subagent | The Agent tool with `subagent_type: general-purpose`. Never use `fork`, because a fork gets the context of the session. | `spawn_agent` with `fork_turns: "none"`. Keep at most 6 open at a time. Close each finished one with `close_agent`. |
+| With the strong model | `model: opus`. | `model: "gpt-6-astra"` with `reasoning_effort: "high"`. |
+| The global skill `research` | `mattpocock-skills:research`. | `research`. |
+
+Each other global skill has the same name in both harnesses.
+
+In Codex, start the session at the main checkout root, never in a worktree. Codex in a linked worktree cannot write its own gitdir.
+
 ## Tracker
 
 The tracker is local markdown, because the notes name league managers and the repo is public (ADR 0021).

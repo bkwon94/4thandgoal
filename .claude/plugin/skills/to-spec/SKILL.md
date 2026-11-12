@@ -16,7 +16,7 @@ Write the spec of one feature as `.scratch/<slug>/PRD.md`. Do not interview Bria
 
 ## Steps
 
-1. Call the Skill tool for `to-spec`. Do its steps 1 to 3, with the changes below.
+1. Load the skill `to-spec`. Do its steps 1 to 3, with the changes below.
 2. Its step 2 asks Brian to check the test seams. Do not stop for it. Name the seams under Testing Decisions, and Brian checks them with the spec.
 3. Use the words of `GLOSSARY.md`. Respect the ADRs in `docs/adr/` of the area that the spec changes.
 4. Record the choice of each open `spec` decision ticket under Implementation Decisions.

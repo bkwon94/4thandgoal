@@ -14,9 +14,13 @@ The agent records the evidence of each acceptance test. The agent never gives a 
 
 1. Check that these global skills are in the available skill list: `tdd`, `code-review`, `resolving-merge-conflicts`, `agent-browser`. The `cpc` skills ship with this skill, so do not check them.
 2. If one is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps.
-3. Run `gh auth status`. If it fails, stop. Tell Brian to run `gh auth login`.
-4. Check that `.scratch/<slug>/PRD.md`, `.scratch/<slug>/ACCEPTANCE.md`, and `.scratch/<slug>/issues/` exist on the Spec branch or on `main`. If one is missing, stop. Name the skill that writes it: `4ag:to-spec`, `4ag:to-acceptance`, or `4ag:to-tickets`.
-5. Read the PRD, `ACCEPTANCE.md`, each ticket, `docs/agents/issue-tracker.md`, and the Workflow section of `GLOSSARY.md`.
+3. Check that the sandbox allows a write to `.git` and a call of `gh`. Each probe is a read that changes nothing. Run these two commands in the main checkout:
+   - `test -w "$(git rev-parse --git-common-dir)"`
+   - `gh api repos/{owner}/{repo} --jq .name`
+4. If one fails, stop. Tell Brian that the session needs the permission profile `4ag` of `.codex/config.toml`. Quote the error. Make no worktree and no branch.
+5. Run `gh auth status`. If it fails, stop. Tell Brian to run `gh auth login`.
+6. Check that `.scratch/<slug>/PRD.md`, `.scratch/<slug>/ACCEPTANCE.md`, and `.scratch/<slug>/issues/` exist on the Spec branch or on `main`. If one is missing, stop. Name the skill that writes it: `4ag:to-spec`, `4ag:to-acceptance`, or `4ag:to-tickets`.
+7. Read the PRD, `ACCEPTANCE.md`, each ticket, `docs/agents/issue-tracker.md`, and the Workflow section of `GLOSSARY.md`.
 
 ## The stages
 
