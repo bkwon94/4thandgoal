@@ -2,7 +2,7 @@
  * The layout of the front door at / (or at the hidden /ask/ while the flag front_door is off) on the static export in out/ of the current CLIENT, in Chromium. It checks that
  * the 3 Suggestion chips show whole at each width, with no chip cut off at the edge of the row (AT-4 of front-door).
  * It also checks that one tap on Send sends while the keyboard is open (ticket 34), that Send closes the keyboard, and
- * that one tap on a Suggestion chip acts while the keyboard is open (ticket 37).
+ * that each tap on a Suggestion chip acts while the keyboard is open: the first shows its fact, the second opens it (ticket 37).
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
@@ -96,7 +96,7 @@ test.describe("Send on a phone with the keyboard open", () => {
     await expect(field, "Send closes the keyboard").not.toBeFocused();
   });
 
-  test("one tap on a Suggestion chip acts while the field has the focus (ticket 37)", async ({ page }) => {
+  test("each tap on a Suggestion chip acts while the field has the focus (ticket 37)", async ({ page }) => {
     await fakeKeyboard(page);
     await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
@@ -111,9 +111,14 @@ test.describe("Send on a phone with the keyboard open", () => {
     const name = (await chip.getAttribute("aria-label"))!;
     await field.tap();
     await expect(field).toBeFocused();
+    // The first tap shows the fact of the chip in the strip, and the keyboard stays open (decision 02).
     await chip.tap();
-    // A picked Topic drops off the Suggestions, so the chip is gone when the tap acted.
-    await expect(row.getByRole("button", { name }), "one tap on the chip picks it").toHaveCount(0);
+    await expect(chip, "one tap on the chip shows its fact").toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByRole("button", { name: `Open ${name.split(":")[0]}`, exact: true }), "the strip shows").toBeVisible();
+    await expect(field, "the first tap keeps the keyboard").toBeFocused();
+    // The second tap opens the Topic. A picked Topic drops off the Suggestions, so the chip is gone when the tap acted.
+    await chip.tap();
+    await expect(row.getByRole("button", { name }), "the second tap on the chip picks it").toHaveCount(0);
     await expect(field, "a chip closes the keyboard").not.toBeFocused();
   });
 });
