@@ -324,17 +324,22 @@ def _section_create(feature: str, queue: Queue) -> list[str]:
     return ["section", "create", "--name", feature, "--project", f"id:{queue.project_id}"]
 
 
+def _plan_task_add(title: str, feature: str, labels: list[str], description: str, queue: Queue) -> list[list[str]]:
+    """Make a task in the section of the feature, and first the section when it is missing. A command after a planned
+    `section create` names the section, because its id is not known yet."""
+    section = queue.sections.get(feature)
+    plan = [] if section else [_section_create(feature, queue)]
+    plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
+                 "--section", f"id:{section}" if section else feature,
+                 "--labels", ",".join(labels), "--description", description])
+    return plan
+
+
 def _plan_add(ticket: Ticket, queue: Queue) -> list[list[str]]:
-    """Make the task. A command after a planned `section create` names the section, because its id is not known yet."""
+    """Make the task of the ticket, and first each missing label."""
     labels = _labels(ticket, [])
     plan = [["label", "create", "--name", label] for label in labels if label not in queue.labels]
-    section = queue.sections.get(ticket.feature)
-    if section is None:
-        plan.append(_section_create(ticket.feature, queue))
-    plan.append(["task", "add", ticket.title, "--project", f"id:{queue.project_id}",
-                 "--section", f"id:{section}" if section else ticket.feature,
-                 "--labels", ",".join(labels), "--description", ticket.description])
-    return plan
+    return plan + _plan_task_add(ticket.title, ticket.feature, labels, ticket.description, queue)
 
 
 # The kinds of a wait task, each with its title. The section names the feature, so the title does not.
@@ -361,13 +366,7 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
     if kind == "merge-pr":
         lines.append(f"{PULL}/{number}")
     plan = [["label", "create", "--name", "ready-for-human"]] if "ready-for-human" not in queue.labels else []
-    section = queue.sections.get(feature)
-    if section is None:
-        plan.append(_section_create(feature, queue))
-    plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
-                 "--section", f"id:{section}" if section else feature,
-                 "--labels", "ready-for-human", "--description", "\n".join(lines)])
-    return plan
+    return plan + _plan_task_add(title, feature, ["ready-for-human"], "\n".join(lines), queue)
 
 
 MERGE_PR_TITLE = re.compile(r"^Merge PR #(\d+)$")
