@@ -28,8 +28,9 @@ export function StandingsLadder({ block, live }: { block: LadderBlock; live: boo
   const off = useMotionOff();
   return (
     <div className="flex min-w-0 flex-col gap-sp-2" data-block="ladder">
-      {/* The heads of the two number columns, so "62%" and "11-7" read without a guess. */}
-      <p aria-hidden className="m-0 grid grid-cols-[1.5rem_minmax(0,1fr)_minmax(3rem,26%)_2.5rem_2.75rem] gap-x-sp-3 font-mono text-meta leading-tight tracking-caps text-mute uppercase">
+      {/* The heads of the two number columns, so "62%" and "11-7" read without a guess. On a phone the odds bar is
+          narrower, so a team name such as "The Blue Tent" keeps more of its letters. */}
+      <p aria-hidden className="m-0 grid grid-cols-[1.5rem_minmax(0,1fr)_minmax(2.5rem,16%)_2.5rem_2.75rem] desktop:grid-cols-[1.5rem_minmax(0,1fr)_minmax(3rem,26%)_2.5rem_2.75rem] gap-x-sp-3 font-mono text-meta leading-tight tracking-caps text-mute uppercase">
         <span className="col-start-3">Odds</span>
         <span className="col-start-5 text-right">W-L</span>
       </p>
@@ -43,7 +44,7 @@ export function StandingsLadder({ block, live }: { block: LadderBlock; live: boo
               {...(row.you ? { "data-you": "" } : {})}
               {...(cut ? { "data-cut": "" } : {})}
               // The row on the playoff line trades its hairline for a rule in the ink, so the cut reads at a glance.
-              className={`relative grid grid-cols-[1.5rem_minmax(0,1fr)_minmax(3rem,26%)_2.5rem_2.75rem] items-center gap-x-sp-3 py-sp-2 ${cut ? "border-b-2 border-ink-2" : "border-b border-rule last:border-b-0"}`}
+              className={`relative grid grid-cols-[1.5rem_minmax(0,1fr)_minmax(2.5rem,16%)_2.5rem_2.75rem] desktop:grid-cols-[1.5rem_minmax(0,1fr)_minmax(3rem,26%)_2.5rem_2.75rem] items-center gap-x-sp-3 py-sp-2 ${cut ? "border-b-2 border-ink-2" : "border-b border-rule last:border-b-0"}`}
               {...(live ? riseIn(off, { delay: staggerOf(index) }) : {})}
             >
               <span aria-hidden className="font-mono text-meta leading-tight text-mute tabular-nums">{row.rank}</span>

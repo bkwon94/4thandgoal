@@ -69,12 +69,14 @@ export function SlotRanksView({ block, live }: { block: SlotRanksBlock; live: bo
         {block.rows.map((row, index) => (
           <motion.li
             key={row.position}
-            className="grid grid-cols-[2.5rem_minmax(0,1fr)_5.5rem] items-center gap-x-sp-3 border-b border-rule py-sp-3 last:border-b-0"
+            // The rank column fits "10th of 12" on one line at the larger type of the desktop, and every row keeps the
+            // same width so the bars line up.
+            className="grid grid-cols-[2.5rem_minmax(0,1fr)_6.5rem] items-center gap-x-sp-3 border-b border-rule py-sp-3 last:border-b-0"
             {...enter(index + 1)}
           >
             <span className="font-mono text-row leading-tight font-semibold text-ink">{row.position}</span>
             <Bar lean={leanOf(row.rank, block.teams)} live={live} index={index} />
-            <span className="text-right font-mono text-row leading-tight text-ink-2 tabular-nums">{row.label}</span>
+            <span className="text-right font-mono text-row leading-tight whitespace-nowrap text-ink-2 tabular-nums">{row.label}</span>
           </motion.li>
         ))}
       </ol>
