@@ -1,9 +1,11 @@
 /**
  * The shell of every page: the top band with the brand mark, the pill bar, the week chip, the actions, and the theme button,
- * and the dock at the bottom of a phone and a tablet. The top band stays on screen at every scroll.
+ * and the dock at the bottom of a phone and a tablet. A page with its own foot takes the menu button and its sheet in place
+ * of the dock and the week chip. The top band stays on screen at every scroll.
  */
 import type { ReactNode } from "react";
 import { Dock } from "./dock";
+import { MenuSheet } from "./menu-sheet";
 import { chipWeek, currentHref, type Brand, type SiteMenu } from "./nav";
 import { PillBar } from "./pill-bar";
 import { ThemeButton } from "./theme-button";
@@ -24,9 +26,12 @@ type TopBandProps = {
   // The buttons of the packages of the client, such as the egg button, just before the theme button. The app layer
   // passes them, so the shell names no package. A client with none passes none.
   actions?: ReactNode;
+  // The place of the pages under the desktop tier. "dock" is the dock at the bottom and the week chip in the band.
+  // "sheet" is the menu button in the band and the sheet it opens, for a page with its own foot, such as the front door.
+  nav?: "dock" | "sheet";
 };
 
-export function TopBand({ title, brand, menu, pageHref, children, actions }: TopBandProps) {
+export function TopBand({ title, brand, menu, pageHref, children, actions, nav = "dock" }: TopBandProps) {
   const current = currentHref(menu.items, menu.weeks, pageHref);
   const week = chipWeek(menu.weeks, pageHref);
   return (
@@ -35,7 +40,8 @@ export function TopBand({ title, brand, menu, pageHref, children, actions }: Top
           The band paints the page color in both themes. The hero is the one loud surface of a page.
           While the strip of weeks is open, the band grows by the height of the strip and the strip fills that space,
           so the page moves down and the strip covers no part of it, such as the page title. */}
-      <header className="sticky top-0 z-40 border-b border-rule bg-page text-ink has-[details[open]]:pb-strip">
+      {/* data-nav tells the CSS that a page with the sheet keeps no space for the dock (globals.css). */}
+      <header data-nav={nav} className="sticky top-0 z-40 border-b border-rule bg-page text-ink has-[details[open]]:pb-strip">
         {/* One row at every tier, so the band keeps one height at every width. On a phone and a tablet it holds the brand
             mark, the week chip, and the theme button. From the desktop tier the pill bar sits between them, with full labels. */}
         <div className="mx-auto flex max-w-band items-center gap-x-sp-3 px-gutter py-sp-2">
@@ -63,15 +69,16 @@ export function TopBand({ title, brand, menu, pageHref, children, actions }: Top
             className="min-w-0 flex-auto justify-center"
           />
           <div className="ml-auto flex flex-none items-center gap-sp-2">
-            {week !== undefined && <WeekChip weeks={menu.weeks} week={week} pageHref={pageHref} />}
+            {nav === "dock" && week !== undefined && <WeekChip weeks={menu.weeks} week={week} pageHref={pageHref} />}
             {actions}
             {/* The theme button needs the script, so it hides with scripts off. The negative margin lines the icon up with the edge. */}
-            <ThemeButton className="-mr-sp-3 [@media(scripting:none)]:hidden" />
+            <ThemeButton className={`${nav === "dock" ? "-mr-sp-3" : ""} [@media(scripting:none)]:hidden`} />
+            {nav === "sheet" && <MenuSheet items={menu.items} weeks={menu.weeks} current={current} pageHref={pageHref} />}
           </div>
         </div>
       </header>
       {children && <div className="mx-auto max-w-page px-gutter pt-sp-5">{children}</div>}
-      <Dock items={menu.items} current={current} />
+      {nav === "dock" && <Dock items={menu.items} current={current} />}
     </>
   );
 }

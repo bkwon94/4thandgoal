@@ -1,5 +1,6 @@
 /**
- * Tests for the shell: the top band, the pill bar, the dock, the week chip with the strip of weeks, and the theme button.
+ * Tests for the shell: the top band, the pill bar, the dock, the week chip with the strip of weeks, the theme button, and the
+ * header sheet of the front door.
  * They read what a reader sees by role and name, not the class names.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
@@ -211,5 +212,157 @@ describe("The week chip (AT-11)", () => {
   it("shows no chip for a client with no published week", () => {
     renderBand("/", { ...MENU, weeks: [] });
     expect(screen.queryByText(/^WK /)).toBeNull();
+  });
+});
+
+/* The top band of the front door: the header sheet in place of the dock and the week chip (decision 10). */
+function renderDoorBand(pageHref = "/", menu: SiteMenu = MENU) {
+  render(<TopBand title={TITLE} brand={BRAND} menu={menu} pageHref={pageHref} nav="sheet" />);
+}
+
+const menuButton = () => within(screen.getByRole("banner")).getByRole("button", { name: /^(Open|Close) the menu$/ });
+const sheet = () => screen.getByRole("navigation", { name: "Pages" });
+
+describe("The header sheet of the front door (AT-45, AT-47)", () => {
+  it("shows no dock and no week chip, and holds the menu button in the banner", () => {
+    renderDoorBand();
+    expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
+    expect(screen.queryByText(/^WK /, { selector: "summary" })).toBeNull();
+    expect(menuButton().getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("keeps the sheet closed and out of the accessibility tree until the button opens it", () => {
+    renderDoorBand();
+    expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+  });
+
+  it("opens the sheet with one row per page, each with an icon, its name, and its note, and a check on the open page", () => {
+    renderDoorBand("/");
+    fireEvent.click(menuButton());
+    const rows = within(sheet()).getAllByRole("link").filter((link) => !/^WK /.test(link.textContent ?? ""));
+    expect(rows.map((row) => [row.textContent, row.getAttribute("href")])).toEqual([
+      ["HomeAsk about your team", "/"],
+      ["Week 8Scores and recaps", "/2026/week-08/"],
+      ["Power RankingsThe league, ranked", "/rankings/"],
+      ["ManagersGrades and records", "/2026/managers/"],
+      ["Trade AnalyzerCheck a trade", "/analyze/"],
+    ]);
+    for (const row of rows) expect(row.querySelector("svg")).not.toBeNull();
+    expect(current(sheet())).toEqual(["HomeAsk about your team"]);
+    expect(within(sheet()).getByRole("link", { current: "page" }).querySelector("[data-check]")).not.toBeNull();
+    expect(within(sheet()).getAllByRole("link").filter((link) => link.querySelector("[data-check]"))).toHaveLength(1);
+  });
+
+  it("turns the button into the close button while the sheet is open", () => {
+    renderDoorBand();
+    fireEvent.click(menuButton());
+    expect(menuButton().getAttribute("aria-expanded")).toBe("true");
+    expect(menuButton().getAttribute("aria-label")).toBe("Close the menu");
+  });
+
+  it("moves the focus to the sheet on open", () => {
+    renderDoorBand();
+    fireEvent.click(menuButton());
+    expect(sheet().contains(document.activeElement)).toBe(true);
+  });
+
+  it("marks no row on a page that is no destination, such as /ask/", () => {
+    renderDoorBand("/ask/");
+    fireEvent.click(menuButton());
+    expect(current(sheet())).toEqual([]);
+    expect(sheet().querySelector("[data-check]")).toBeNull();
+  });
+
+  it("opens the latest report from the week row, and lists every week under Past weeks", () => {
+    renderDoorBand("/");
+    fireEvent.click(menuButton());
+    expect(within(sheet()).getByRole("link", { name: /^Week 8/ }).getAttribute("href")).toBe("/2026/week-08/");
+    const past = within(sheet()).getByRole("button", { name: "Past weeks" });
+    expect(past.getAttribute("aria-expanded")).toBe("false");
+    expect(within(sheet()).queryByRole("link", { name: "WK 07" })).toBeNull();
+    fireEvent.click(past);
+    expect(past.getAttribute("aria-expanded")).toBe("true");
+    const weeks = screen.getByRole("list", { name: "Past weeks" });
+    expect(linksIn(weeks)).toEqual([
+      ["WK 08", "/2026/week-08/"],
+      ["WK 07", "/2026/week-07/"],
+      ["WK 06", "/2026/week-06/"],
+    ]);
+  });
+
+  it("shows no Past weeks for a client with no published week", () => {
+    renderDoorBand("/", { items: MENU.items.filter((item) => item.kind !== "week"), weeks: [] });
+    fireEvent.click(menuButton());
+    expect(within(sheet()).queryByRole("button", { name: "Past weeks" })).toBeNull();
+  });
+
+  it("keeps the pill bar in the banner, so the desktop shows the pages inline (AT-50)", () => {
+    renderDoorBand("/");
+    expect(screen.getByRole("banner").contains(pillBar())).toBe(true);
+    expect(linksIn(pillBar())).toHaveLength(5);
+  });
+});
+
+describe("The header sheet closes four ways (AT-46)", () => {
+  function openSheet() {
+    renderDoorBand();
+    fireEvent.click(menuButton());
+    expect(sheet()).toBeTruthy();
+  }
+
+  function expectClosed() {
+    expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+    expect(menuButton().getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).toBe(menuButton());
+  }
+
+  it("closes by the X", () => {
+    openSheet();
+    fireEvent.click(menuButton());
+    expectClosed();
+  });
+
+  it("closes by a tap on the dimmed page", () => {
+    openSheet();
+    fireEvent.click(screen.getByTestId("menu-scrim"));
+    expectClosed();
+  });
+
+  it("closes by Escape", () => {
+    openSheet();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expectClosed();
+  });
+
+  it("closes by a swipe up", () => {
+    openSheet();
+    const panel = sheet();
+    fireEvent.pointerDown(panel, { pointerId: 1, clientY: 300, pointerType: "touch", isPrimary: true });
+    fireEvent.pointerMove(panel, { pointerId: 1, clientY: 240, pointerType: "touch", isPrimary: true });
+    fireEvent.pointerMove(panel, { pointerId: 1, clientY: 180, pointerType: "touch", isPrimary: true });
+    fireEvent.pointerUp(panel, { pointerId: 1, clientY: 180, pointerType: "touch", isPrimary: true });
+    expectClosed();
+  });
+
+  it("closes when a Tab moves the focus out of the sheet, and leaves the focus where it went", () => {
+    render(
+      <>
+        <TopBand title={TITLE} brand={BRAND} menu={MENU} pageHref="/" nav="sheet" />
+        <button type="button">After</button>
+      </>,
+    );
+    fireEvent.click(menuButton());
+    const after = screen.getByRole("button", { name: "After" });
+    fireEvent.blur(sheet(), { relatedTarget: after });
+    expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+  });
+
+  it("stays open after a short drag that does not reach the line of a close", () => {
+    openSheet();
+    const panel = sheet();
+    fireEvent.pointerDown(panel, { pointerId: 1, clientY: 300, pointerType: "touch", isPrimary: true, timeStamp: 0 });
+    fireEvent.pointerMove(panel, { pointerId: 1, clientY: 296, pointerType: "touch", isPrimary: true });
+    fireEvent.pointerUp(panel, { pointerId: 1, clientY: 296, pointerType: "touch", isPrimary: true });
+    expect(sheet()).toBeTruthy();
   });
 });
