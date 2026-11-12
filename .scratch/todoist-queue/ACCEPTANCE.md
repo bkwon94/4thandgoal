@@ -73,7 +73,7 @@ App: scripts
 Stories: 4, 24
 Given: the import of AT-1 is done, and the import of AT-2 ran after it
 When: the reader lists the labels, the sections, and the filters.
-Then: each of the 11 labels of the flow exists once, the section `Ideas` exists once with no task, and the filter "Waits on Brian" exists once with the query `#4thandgoal & @ready-for-human`.
+Then: each of the 12 labels of the flow exists once, the section `Ideas` exists once with no task that has a `4ag:` key line, and the filter "Waits on Brian" exists once with the query `#4thandgoal & @ready-for-human`.
 Evidence: `td label list`, `td section list 4thandgoal`, `td filter list`, and `td task list --project 4thandgoal --section Ideas`.
 
 AT-8: Decision tickets get labels by kind
@@ -335,3 +335,4 @@ Out of scope "The `done` tickets on `main`": AT-6
 ## Revisions
 
 - 2026-11-12: Brian approved a move of AT-1, AT-3, and AT-5 from `rankings` to `manager-pages`. The audit set every `rankings` ticket to `done`, so no `rankings` task enters the queue. `manager-pages` keeps an open ticket in both its `site/` and `pipeline/` subfolders, so the tests check the same behavior.
+- 2026-11-12: Brian approved a change of AT-7 from 11 to 12 labels, to match the PRD revision. The `Ideas` section may hold the buy low idea that the approved audit moved there, because that task has no `4ag:` key line.

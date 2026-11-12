@@ -21,7 +21,7 @@ Observation: The command ran as `import --dry-run`, because a real import would 
 App: scripts
 Then: the output lists zero `td` commands that write.
 Files: `evidence/AT-2/output.txt`
-Observation: The output lists 5 commands that write, and it ends with "5 commands planned, none sent.". The first two make the section `pick-reason` and the task of its ticket 01. Brian deleted that section on purpose after the real import, and `pick-reason` is a local branch with a feature folder and no merged PR. The other three are `td task update ... --labels` for the tasks of `readme-module-navigation` 02, `todoist-queue` 06, and `todoist-queue` 07. Their files changed to `blocked` and `in-review` after the import, so each update writes the flow status of its file.
+Observation: Brian chose to delete the local branch `pick-reason`, so the import no longer counts it as a live spec. A real `import` then sent 3 label updates, for `readme-module-navigation` 02 and `todoist-queue` 06 and 07, whose files changed after the first import. The next `import --dry-run` lists no command and ends with "0 commands planned, none sent.".
 
 ## AT-3: A shared feature gets one section
 
