@@ -81,7 +81,9 @@ test ! -e ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal && mv ~/.claude/
 
 If the command prints nothing and the new folder exists, stop. Look at the new folder. A session may have made it. Ask before you merge or remove it.
 
-Check: `ls ~/.claude/projects | grep -E 'cpcfantasyfootball|4thandgoal'` prints only the `4thandgoal` folder.
+Check: `test ! -e ~/.claude/projects/-Users-brian-kwon-repos-cpcfantasyfootball && test -d ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal && echo ok` prints `ok`.
+
+Claude keeps one more project folder for each worktree, named `-Users-brian-kwon-repos-cpcfantasyfootball--claude-worktrees-<name>`. Those folders stay where they are. The sessions of a worktree do not carry over.
 
 ## 6. Set the marketplace and the plugin
 
