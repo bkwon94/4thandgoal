@@ -253,5 +253,146 @@ class TheTdCall(unittest.TestCase):
         ])
 
 
+WAITS = {"tasks": "tasks-zz-waits.json", "sections": "sections-zz.json", "labels": "labels-flow.json"}
+PROJECT = "id:6j222rQrr58wHx9G"
+SECTION_ZZ = "id:6j2Gq9xWJwFvVfMx"
+
+
+class AWait(unittest.TestCase):
+
+    def test_a_wait_makes_its_section_its_label_and_its_task(self):
+        self.assertEqual(queue_script.plan_wait("zz-queue-check", "approve-prd", None, False, queue()), [
+            ["label", "create", "--name", "ready-for-human"],
+            ["section", "create", "--name", "zz-queue-check", "--project", PROJECT],
+            ["task", "add", "Approve PRD", "--project", PROJECT, "--section", "zz-queue-check",
+             "--labels", "ready-for-human", "--description", "4ag: zz-queue-check/wait/approve-prd"],
+        ])
+
+    def test_a_merge_pr_wait_goes_into_the_section_that_exists_and_links_to_the_pr(self):
+        self.assertEqual(queue_script.plan_wait("zz-queue-check", "merge-pr", 34, False, queue(**PUSHED)), [
+            ["task", "add", "Merge PR #34", "--project", PROJECT, "--section", SECTION_ZZ,
+             "--labels", "ready-for-human", "--description",
+             "4ag: zz-queue-check/wait/merge-pr\nhttps://github.com/bkwon94/4thandgoal/pull/34"],
+        ])
+
+    def test_each_kind_has_its_title(self):
+        for kind, title in (("approve-acceptance", "Approve ACCEPTANCE"), ("approve-tickets", "Approve tickets")):
+            with self.subTest(kind):
+                self.assertEqual(queue_script.plan_wait("zz-queue-check", kind, None, False, queue(**PUSHED))[-1][2],
+                                 title)
+
+    def test_a_second_wait_plans_nothing(self):
+        self.assertEqual(queue_script.plan_wait("zz-queue-check", "merge-pr", 34, False, queue(**WAITS)), [])
+
+    def test_a_wait_on_a_second_pr_makes_a_second_task(self):
+        plan = queue_script.plan_wait("zz-queue-check", "merge-pr", 35, False, queue(**WAITS))
+        self.assertEqual([command[:3] for command in plan], [["task", "add", "Merge PR #35"]])
+
+    def test_done_completes_the_wait_task(self):
+        self.assertEqual(queue_script.plan_wait("zz-queue-check", "merge-pr", 16, True, queue(**WAITS)),
+                         [["task", "complete", "id:6j2Gr5Fq2VxW8gPc"]])
+
+    def test_done_with_no_wait_task_plans_nothing(self):
+        self.assertEqual(queue_script.plan_wait("zz-queue-check", "approve-prd", None, True, queue(**WAITS)), [])
+
+
+def gh_state(name: str) -> str:
+    """The state of a PR from saved real output of `gh pr view N --json state`."""
+    return queue_script.pr_state((FIXTURES / "gh" / name).read_text())
+
+
+MERGED, CLOSED, OPEN = gh_state("pr-34-merged.json"), gh_state("pr-16-closed.json"), gh_state("pr-open.json")
+TASK_03 = "id:6j2Gr4hVq8Xm3Pcf"
+DECISION_02 = "id:6j2Gr4pW5gqH9fc7"
+WAIT_34 = "id:6j2Gr5Cw7RfJ4hQm"
+WAIT_16 = "id:6j2Gr5Fq2VxW8gPc"
+
+
+class TheMergeSweep(unittest.TestCase):
+    """The root is a git repo whose branch main holds the throwaway feature, because the sweep reads main."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name) / "repo"
+        shutil.copytree(ROOT, self.root)
+
+    def set_status(self, path: str, old: str, new: str) -> None:
+        file = self.root / ZZ / path
+        text = file.read_text()
+        self.assertIn(f"**Status:** {old}", text)
+        file.write_text(text.replace(f"**Status:** {old}", f"**Status:** {new}"))
+
+    def commit_main(self) -> None:
+        for args in (["init", "-q", "-b", "main"], ["add", "-A"],
+                     ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "fixture"]):
+            subprocess.run(["git", "-C", str(self.root), *args], check=True, env=queue_script._clean_git_env())
+
+    def sweep(self, states: dict[int, str]) -> list[list[str]]:
+        return queue_script.plan_sweep(self.root, queue(**WAITS), states)
+
+    def test_the_saved_gh_output_reads_as_each_state(self):
+        self.assertEqual((MERGED, CLOSED, OPEN), ("MERGED", "CLOSED", "OPEN"))
+
+    def test_the_sweep_reads_each_open_merge_pr_task(self):
+        self.assertEqual(queue_script.merge_prs(queue(**WAITS)), [34, 16, 13])
+
+    def test_a_merged_pr_completes_its_done_tickets_then_its_wait_task_and_a_closed_pr_gives_blocked(self):
+        self.commit_main()
+        self.assertEqual(self.sweep({34: MERGED, 16: CLOSED, 13: MERGED}), [
+            ["task", "complete", TASK_03],
+            ["task", "complete", WAIT_34],
+            ["task", "update", WAIT_16, "--labels", "phone,blocked"],
+        ])
+
+    def test_an_open_pr_changes_nothing(self):
+        self.commit_main()
+        self.assertEqual(self.sweep({34: OPEN, 16: OPEN, 13: OPEN}), [])
+
+    def test_a_ticket_done_only_off_main_keeps_its_task(self):
+        self.commit_main()
+        self.set_status("issues/02-zz-blocked.md", "blocked", "done")
+        self.assertNotIn(["task", "complete", TASK_02], self.sweep({34: MERGED, 16: OPEN, 13: OPEN}))
+
+    def test_the_section_is_archived_after_every_task_in_it_is_complete(self):
+        self.set_status("issues/01-zz-ready.md", "ready-for-agent", "done")
+        self.set_status("issues/02-zz-blocked.md", "blocked", "done")
+        self.set_status("decisions/01-grill-zz-question.md", "open", "done")
+        self.set_status("decisions/02-research-zz-question.md", "open", "done")
+        self.commit_main()
+        self.assertEqual(self.sweep({34: MERGED, 16: MERGED, 13: OPEN}), [
+            ["task", "complete", TASK_01],
+            ["task", "complete", TASK_02],
+            ["task", "complete", TASK_03],
+            ["task", "complete", DECISION_01],
+            ["task", "complete", DECISION_02],
+            ["task", "complete", WAIT_34],
+            ["task", "complete", WAIT_16],
+            ["section", "archive", SECTION_ZZ],
+        ])
+
+    def test_a_closed_pr_already_blocked_plans_nothing(self):
+        self.commit_main()
+        blocked = queue(**WAITS)
+        next(task for task in blocked.tasks if task["content"] == "Merge PR #16")["labels"] = ["blocked", "phone"]
+        self.assertEqual(queue_script.plan_sweep(self.root, blocked, {34: OPEN, 16: CLOSED, 13: OPEN}), [])
+
+    def test_a_root_with_no_main_completes_no_ticket(self):
+        self.assertEqual(self.sweep({34: MERGED, 16: OPEN, 13: OPEN}), [["task", "complete", WAIT_34]])
+
+
+class TheCommandLine(unittest.TestCase):
+
+    def test_a_merge_pr_wait_needs_the_pr_number(self):
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as exit_:
+            queue_script.main(["wait", "zz-queue-check", "merge-pr"])
+        self.assertEqual(exit_.exception.code, 2)
+
+    def test_an_unknown_kind_is_an_error(self):
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as exit_:
+            queue_script.main(["wait", "zz-queue-check", "approve-all"])
+        self.assertEqual(exit_.exception.code, 2)
+
+
 if __name__ == "__main__":
     unittest.main()
