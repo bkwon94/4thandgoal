@@ -1,10 +1,11 @@
 /**
  * The Zod schema of the matchup card, the block of Your last matchup and Your next matchup, and its line of plain text.
- * The pipeline owns the shape (ADR 0013), in packages/league/python/src/league/matchup_card.py. The live card of the API
- * shares it.
+ * The live card of the API shares the shape of the card.
  */
 import { z } from "zod";
 import { gap, num } from "@cpc/design/format/format";
+
+/* The pipeline owns the shape (ADR 0013), in packages/league/python/src/league/matchup_card.py. */
 
 /* The player of one side in one slot. The points are final for a played game and the projection for a game ahead. */
 const matchupPlayerSchema = z.object({ name: z.string(), position: z.string(), nfl_team: z.string().nullable(), points: z.number() });

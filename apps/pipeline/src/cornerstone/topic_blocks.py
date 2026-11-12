@@ -1,7 +1,6 @@
 """
 The blocks of the league Topics in topics.json: the data of the one card that a Topic Answer shows, keyed by `kind`.
-Each kind has a model and a builder here. The site holds the same union over `kind` (ADR 0013). The model of the
-matchup card lives in league.matchup_card, because the live card of the API shares it.
+Each kind has a model and a builder here. The site holds the same union over `kind` (ADR 0013).
 """
 import re
 from typing import Literal
@@ -9,6 +8,8 @@ from typing import Literal
 from pydantic import BaseModel
 
 from league.lineup import fill_slots
+
+# The model of the matchup card lives in league.matchup_card, because the live card of the API shares it.
 from league.matchup_card import (
     MatchupBlock,
     MatchupPlayer,
