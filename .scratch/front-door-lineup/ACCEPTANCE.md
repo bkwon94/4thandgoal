@@ -311,7 +311,7 @@ App: site
 Stories: 62, 64, 65, 67
 Given: The blocks of AT-1, AT-16, AT-19, and AT-22 to AT-35.
 When: The reader views each block.
-Then: Each block renders with no overflow and no overlap. Red marks Your team or the side that wins, and gray marks the rest. At 1280 px the blocks stack in the column of about 760 px.
+Then: Each block renders with no overflow and no overlap. Red marks Your team or the side that wins, and gray marks the rest. At 1280 px the blocks stack in the column of about 560 px.
 Evidence: site screenshots of each block.
 
 AT-39: The blocks honor reduced motion

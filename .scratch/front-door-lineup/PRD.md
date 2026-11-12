@@ -99,7 +99,7 @@ The Suggestions take one row of about 48 px: the Topic names only. A first tap s
 64. As a manager, I want red for my team or the side that wins and gray for the rest, so that the colors mean the same thing in every block.
 65. As a manager, I want each block to work in light and dark, so that it reads at night.
 66. As a manager who turns on reduced motion, I want the blocks to show with no motion, so that the page does not move.
-67. As a manager on a desktop, I want the blocks stacked in the column of about 760 px, so that the layout matches the phone.
+67. As a manager on a desktop, I want the blocks stacked in the column of about 560 px, so that the layout matches the phone.
 
 ### The Suggestions row
 
@@ -182,7 +182,7 @@ Code holds only facts and legal rules. It has no points cutoff and no screen by 
 
 Each block has a `kind`. The fifteen kinds: the lineup block, the two-player comparison, the NFL game card, the matchup card, the schedule strip, the standings ladder, the slot rank bars, the trade card, the rank mover list, the bye grid, the transaction feed, the recap card, the waiver list, the sell list, and the text block. The block schema of the site is one union over `kind`. The `list`, `table`, and `player` kinds of the free answer stay in the union, so a free answer that uses them now does not change.
 
-All blocks take the Ledger look. Rows keep a fixed order. A row with detail shows a chevron, opens taller in place, and its detail comes into focus from a blur. The other rows do not move. The first row with detail opens on arrival where the block says so. Red marks Your team or the side that wins, gray the rest, and the up and down colors of the site mark a move. Each block works in light and dark, on a phone and in the desktop column of about 760 px, and with reduced motion.
+All blocks take the Ledger look. Rows keep a fixed order. A row with detail shows a chevron, opens taller in place, and its detail comes into focus from a blur. The other rows do not move. The first row with detail opens on arrival where the block says so. Red marks Your team or the side that wins, gray the rest, and the up and down colors of the site mark a move. Each block works in light and dark, on a phone and in the desktop column of about 560 px, and with reduced motion.
 
 - **Lineup block:** the slots in Sleeper order. Each row shows the slot, the player, his team, the opponent, the kickoff, and the projection. A Swap row reads "Swap over K. Vidal" with the benched name struck through. A Q row shows the body part, the practice level, and the Pivot under a red rule. The first Swap or Q row opens on arrival. The "Can't play" line sits under the rows. The header holds the toggle "By projection" and "With N Swaps", and the digits of the total roll on the change.
 - **Two-player comparison:** one pair of bars for each fact, from a center line. The side that wins a fact is red. A dot marks each fact that the checked text cites. The pick closes the block: "Start J. Downs."
