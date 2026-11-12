@@ -61,10 +61,10 @@ Pass the path of each remaining worktree. Include a worktree outside the repo, s
 The command finds each outside worktree from the git records, which still hold their paths. Then it repairs them with the worktrees under `.claude/worktrees/`.
 
 ```
-cd ~/repos/4thandgoal && other=(${(f)"$(git worktree list --porcelain | awk '/^worktree /{print $2}' | grep -v -e '/repos/4thandgoal' -e '/repos/cpcfantasyfootball')"}) && git worktree repair .claude/worktrees/*(N) $other
+cd ~/repos/4thandgoal && { other=(${(f)"$(git worktree list --porcelain | awk '/^worktree /{print $2}' | grep -v -e '/repos/4thandgoal' -e '/repos/cpcfantasyfootball')"}); git worktree repair .claude/worktrees/*(N) $other; }
 ```
 
-The command is for zsh. The `(N)` makes an empty glob match nothing. Without it, zsh stops with "no matches found" when `.claude/worktrees/` is empty. The `${(f)...}` splits the outside paths into one word for each line.
+The command is for zsh. The `(N)` makes an empty glob match nothing. Without it, zsh stops with "no matches found" when `.claude/worktrees/` is empty. The `${(f)...}` splits the outside paths into one word for each line. With no outside worktree, the list is empty and `grep` exits 1, so the `;` makes the repair run all the same.
 
 Check: `git worktree list` shows `/Users/brian.kwon/repos/4thandgoal` and no line with `prunable`.
 
