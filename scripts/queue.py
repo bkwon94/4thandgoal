@@ -92,8 +92,7 @@ def checkout_reader(root: Path) -> Reader:
 def branch_reader(root: Path, branch: str) -> Reader:
     """Read the files of a branch of the repo at the root, with no checkout of that branch."""
     def read(path: str) -> str | None:
-        show = subprocess.run(["git", "-C", str(root), "show", f"{branch}:{path}"], capture_output=True, text=True,
-                              env=_clean_git_env())
+        show = _git(root, "show", f"{branch}:{path}")
         return show.stdout if show.returncode == 0 else None
     return read
 
@@ -128,6 +127,7 @@ def _on_main(root: Path, key: str) -> bool:
 
 
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
+    """Run one git command in the repo at the root, with no GIT_ variable from a hook."""
     return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, env=_clean_git_env())
 
 
@@ -399,8 +399,7 @@ def _done_on_main(root: Path, key: str) -> bool:
     """
     if not _on_main(root, key):
         return False
-    text = subprocess.run(["git", "-C", str(root), "show", f"main:{key}"], capture_output=True, text=True,
-                          env=_clean_git_env()).stdout
+    text = _git(root, "show", f"main:{key}").stdout
     return _status(text) == "done"
 
 
