@@ -24,10 +24,10 @@ Check: `launchctl list | grep cornerstone` prints nothing.
 
 A worktree of an open spec stays. The move step repairs it.
 
-First, list each worktree whose branch is merged into `main`. This command removes nothing.
+First, list each worktree whose branch is merged into `origin/main`. The command fetches first, so the test sees the latest `main`. It removes nothing.
 
 ```
-cd ~/repos/cpcfantasyfootball && for wt in .claude/worktrees/*; do b=$(git -C "$wt" branch --show-current); [ -n "$b" ] || continue; if git merge-base --is-ancestor "$b" main || [ -n "$(gh pr list --state merged --head "$b" --json number --jq '.[0].number')" ]; then echo "$wt $b"; fi; done
+cd ~/repos/cpcfantasyfootball && git fetch origin && for wt in .claude/worktrees/*; do b=$(git -C "$wt" branch --show-current); [ -n "$b" ] || continue; if git merge-base --is-ancestor "$b" origin/main || [ -n "$(gh pr list --state merged --head "$b" --json number --jq '.[0].number')" ]; then echo "$wt $b"; fi; done
 ```
 
 A squash merge leaves the branch out of `main`. The `gh pr list` test finds those branches.
