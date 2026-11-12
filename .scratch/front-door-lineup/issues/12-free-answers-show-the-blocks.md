@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-35.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] "What moves happened this week?" in cpc gives a free answer with the transaction feed (AT-35).
 - [x] A pytest shows that the free answer accepts each of the fifteen kinds.
