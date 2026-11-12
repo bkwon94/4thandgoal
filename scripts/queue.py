@@ -37,8 +37,9 @@ FLOW_LABELS = OPEN_STATUSES + ("wontfix", "decision") + APPS
 DECISION_KINDS = {"grill": "ready-for-human", "prototype": "ready-for-human", "research": "ready-for-agent",
                   "spec": "ready-for-agent"}
 
-# The metadata lines of a ticket, such as "**Status:** ready-for-agent".
-STATUS_LINE = re.compile(r"^\*\*Status:\*\*\s*(\S*)", re.MULTILINE)
+# The metadata lines of a ticket, such as "**Status:** ready-for-agent". The Status line may be plain or bold, as in
+# the tracker rule of the pipeline and of the site.
+STATUS_LINE = re.compile(r"^(?:\*\*)?Status:(?:\*\*)?[ \t]*(\S*)", re.MULTILINE)
 KIND_LINE = re.compile(r"^\*\*Kind:\*\*\s*(\S*)", re.MULTILINE)
 BLOCKED_LINE = re.compile(r"^\*\*Blocked by:\*\*\s*(.*?)\s*$", re.MULTILINE)
 WHAT_TO_BUILD = re.compile(r"^\*\*What to build:\*\*\s*(.+)$", re.MULTILINE)
@@ -195,8 +196,9 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
 
 
 def _status(text: str) -> str:
-    """The first word of the Status line of a ticket, with no trailing punctuation, or "" when it has none."""
-    return (_first(STATUS_LINE, text) or "").rstrip(".,;:")
+    """The first word of the Status line of a ticket, in lowercase with no trailing punctuation, or "" when it has
+    none. The tracker rule of the pipeline and of the site read it the same way."""
+    return (_first(STATUS_LINE, text) or "").lower().rstrip(".,;:")
 
 
 def _is_decision(path: Path) -> bool:
@@ -496,7 +498,7 @@ def write_statuses(root: Path, plan: list[tuple[str, str]], dry_run: bool) -> No
         text = path.read_text()
         print(f"pull {key}: {_status(text) or 'none'} -> {status}")
         if not dry_run:
-            path.write_text(re.sub(r"^\*\*Status:\*\*.*$", f"**Status:** {status}", text, count=1, flags=re.MULTILINE))
+            path.write_text(re.sub(r"^(?:\*\*)?Status:(?:\*\*)?.*$", f"**Status:** {status}", text, count=1, flags=re.MULTILINE))
     print(f"{len(plan)} file{'' if len(plan) == 1 else 's'}{' planned, none written' if dry_run else ' written'}.")
 
 

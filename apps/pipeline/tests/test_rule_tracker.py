@@ -28,7 +28,8 @@ STATUSES = {
     "needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "in-progress", "in-review", "blocked",
     *CLOSED,
 }
-STATUS = re.compile(r"^\*\*Status:\*\*\s*(\S*)")
+# A Status line may be plain or bold. scripts/queue.py and the site rule read it the same way.
+STATUS = re.compile(r"^(?:\*\*)?Status:(?:\*\*)?[ \t]*(\S*)")
 
 MISSING_RULE = "each feature with an open ticket has a row in docs/agents/state.md"
 STALE_RULE = "each row of docs/agents/state.md names a feature with an open ticket"
@@ -49,6 +50,11 @@ def _tracked_scratch_files(root: Path) -> list[str]:
     return result.stdout.splitlines()
 
 
+def _word(match: re.Match) -> str:
+    """The first word of a Status line, in lowercase with no trailing punctuation."""
+    return match.group(1).lower().rstrip(".,;:")
+
+
 # A ticket with no Status line has no triage yet, so it counts as open and its feature keeps a row.
 def _is_open(ticket: Path) -> bool:
     """A ticket is open when the first word of its Status is not done and not wontfix.
@@ -58,7 +64,7 @@ def _is_open(ticket: Path) -> bool:
     for line in ticket.read_text().splitlines():
         match = STATUS.match(line)
         if match:
-            return match.group(1).lower().rstrip(".,") not in CLOSED
+            return _word(match) not in CLOSED
     return True
 
 
@@ -158,7 +164,7 @@ def _odd_status_offenses(root: Path, tracked: list[str]) -> list[Offense]:
             match = STATUS.match(text)
             if not match:
                 continue
-            word = match.group(1).lower().rstrip(".,")
+            word = _word(match)
             if word not in STATUSES:
                 offenses.append(Offense(
                     path=path,
@@ -251,6 +257,18 @@ def test_a_ticket_with_no_status_line_passes(tmp_path):
     (issues / "01-zz.md").write_text("# 01: Zz\n\nNo status yet.\n")
     (issues / "02-zz.md").write_text("# 02: Zz\n\n**Status:** done 2026-10-24\n")
     assert _odd_status_offenses(tmp_path, [".scratch/zz-rule/issues/01-zz.md", ".scratch/zz-rule/issues/02-zz.md"]) == []
+
+
+def test_a_plain_status_line_and_a_capital_done_read_as_closed(tmp_path):
+    issues = tmp_path / ".scratch" / "zz-rule" / "issues"
+    issues.mkdir(parents=True)
+    (issues / "01-zz.md").write_text("# 01: Zz\n\nStatus: Done\n")
+    (issues / "02-zz.md").write_text("# 02: Zz\n\n**Status:** Done;\n")
+    (issues / "03-zz.md").write_text("# 03: Zz\n\nStatus: backlog\n")
+    tracked = [f".scratch/zz-rule/issues/0{n}-zz.md" for n in (1, 2, 3)]
+    assert _open_features(tmp_path, tracked[:2]) == set()
+    offenses = _odd_status_offenses(tmp_path, tracked)
+    assert [(offense.path, offense.line) for offense in offenses] == [(".scratch/zz-rule/issues/03-zz.md", 3)]
 
 
 def test_each_ticket_has_one_of_the_nine_statuses():

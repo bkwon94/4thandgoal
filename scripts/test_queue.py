@@ -232,12 +232,26 @@ class APullOfTheTriageOfBrian(unittest.TestCase):
 
     def test_a_closed_ticket_keeps_its_status(self):
         # A done ticket keeps its status label until the merge sweep, and only the flow reopens a closed ticket.
-        for line in ("**Status:** done", "**Status:** wontfix"):
+        for line in ("**Status:** done", "**Status:** wontfix", "**Status:** Done.", "Status: done"):
             with self.subTest(line):
                 self.status_line(line)
                 self.assertEqual(self.pull("tasks-zz-triaged.json"), [])
                 self.assertEqual(self.pull("tasks-empty.json", "completed-zz-01.json"), [])
                 self.ticket.write_text(self.ticket.read_text().replace(line, "**Status:** ready-for-agent"))
+
+    def test_a_plain_status_line_and_a_capital_first_word_read_like_the_tracker_rules(self):
+        for line, status in (("Status: Done", "done"), ("Status: in-review;", "in-review"),
+                             ("**Status:** Ready-for-human,", "ready-for-human")):
+            with self.subTest(line):
+                self.ticket.write_text(self.ticket.read_text().replace("**Status:** ready-for-agent", line))
+                self.assertEqual(load_ticket(self.root, self.ticket).status, status)
+                self.ticket.write_text(self.ticket.read_text().replace(line, "**Status:** ready-for-agent"))
+
+    def test_a_write_replaces_a_plain_status_line(self):
+        self.status_line("Status: ready-for-agent")
+        self.write([(f"{ZZ}/issues/01-zz-ready.md", "needs-info")])
+        self.assertIn("**Status:** needs-info\n", self.ticket.read_text())
+        self.assertNotIn("Status: ready-for-agent", self.ticket.read_text())
 
     def test_a_same_first_word_changes_nothing_and_keeps_the_text_after_it(self):
         self.status_line("**Status:** ready-for-human, since Brian asked on 2026-11-12")

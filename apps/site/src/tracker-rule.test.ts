@@ -55,10 +55,14 @@ function trackedTickets(root: string): Ticket[] {
     .map((path) => ({ path, source: readFileSync(join(root, path), "utf8") }));
 }
 
-/* The first word of the first Status line, so "done, deployed 2026-10-22" reads as done. A ticket with no Status line is open. */
+/*
+ * The first word of the first Status line, plain or bold, in lowercase with no trailing punctuation. So "Done." and
+ * "done, deployed 2026-10-22" read as done. A ticket with no Status line is open. The pipeline rule and
+ * scripts/queue.py read it the same way.
+ */
 function status(source: string): string {
-  const match = source.match(/^(?:\*\*)?Status:(?:\*\*)?\s*([^\s,.]+)/m);
-  return match ? match[1].toLowerCase() : "none";
+  const match = source.match(/^(?:\*\*)?Status:(?:\*\*)?[ \t]*(\S*)/m);
+  return match ? match[1].toLowerCase().replace(/[.,;:]+$/, "") : "none";
 }
 
 /*
@@ -130,7 +134,7 @@ function statusOffenses(tickets: Ticket[]): Offense[] {
       path,
       line,
       ruleId: STATUS_RULE_ID,
-      what: `The ticket has the status ${word}, and it is not one of the nine statuses.`,
+      what: `The ticket has the status ${word || "none"}, and it is not one of the nine statuses.`,
       rule: STATUS_RULE,
       adr: ADR,
       fix: `set the first word of the Status line to one of: ${STATUSES.join(", ")}.`,
@@ -164,6 +168,17 @@ describe("the tracker rule", () => {
       fakeTicket(".scratch/b/PRD.md", "Status: ready-for-agent"),
     ];
     expect(offenses(tickets, TABLE)).toEqual([]);
+  });
+
+  it("reads a plain Status line and a capital Done as closed, the same as the pipeline rule", () => {
+    const tickets = [
+      fakeTicket(".scratch/a/issues/01-x.md", "Status: Done"),
+      fakeTicket(".scratch/a/issues/02-y.md", "**Status:** Done;"),
+    ];
+    expect(offenses(tickets, TABLE)).toEqual([]);
+    expect(statusOffenses(tickets)).toEqual([]);
+    const odd = statusOffenses([fakeTicket(".scratch/a/issues/03-z.md", "Status: backlog")]);
+    expect(odd.map(({ line, ruleId }) => ({ line, ruleId }))).toEqual([{ line: 3, ruleId: "tracker/status" }]);
   });
 
   it("finds one offense at line 1 for a feature with an open ticket and no row", () => {
