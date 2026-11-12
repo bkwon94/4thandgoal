@@ -46,8 +46,9 @@ check-fast: ## Run the fast check of every app and package (BASE=<ref> runs only
 
 # One target per member, for the CI job of that member. Each one runs the full check of its member and ignores BASE,
 # because CI always runs every member. "make check" runs the same commands in sequence.
+# The -v flag lists each case, so the CI log names each test of the root scripts.
 check-scripts: ## Run the full check of the root scripts
-	@echo "==> scripts: check"; $(scripts-check)
+	@echo "==> scripts: check"; $(scripts-check) -v
 
 check-site: ## Run the full check of the site
 	@echo "==> site: check"; $(site-check)

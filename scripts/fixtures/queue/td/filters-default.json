@@ -1,0 +1,21 @@
+{
+  "results": [
+    {
+      "id": "2375407396",
+      "name": "Assigned to me",
+      "description": "",
+      "query": "assigned to: me",
+      "color": "charcoal",
+      "isFavorite": false
+    },
+    {
+      "id": "2375407397",
+      "name": "Priority 1",
+      "description": "",
+      "query": "priority 1",
+      "color": "charcoal",
+      "isFavorite": false
+    }
+  ],
+  "nextCursor": null
+}
