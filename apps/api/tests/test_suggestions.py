@@ -519,6 +519,40 @@ def test_an_empty_slot_counts_as_a_starter_who_cannot_play(settings, sources, fi
     assert _suggest(api, order=THURSDAY_ORDER, roster_id=11).json()["facts"]["start_sit"] == "1 can't play"
 
 
+# Roster 11 of cpc in the slot order QB, RB, RB, WR, WR, TE, FLEX, FLEX, DEF. Jacobs is Out, and A.J. Brown and George
+# Pickens are Questionable, in the recorded week 10.
+DAK_PICKS = 11
+JACOBS_BROWN_PICKENS = ["3294", "6813", "5850", "5859", "8137", "7002", "8136", "9500", "NO"]
+# The lineup of roster 11 after the drop of the Saints DEF on 2026-11-12: the WR slot and the DEF slot are empty, and
+# Jacobs, Brown, and Pickens sit on the bench.
+TWO_EMPTY_SLOTS = ["3294", "6813", "12495", "13296", "0", "7002", "8136", "9500", "0"]
+
+
+def _set_lineup(settings, sources, fixture_raw_dir, starters: list[str]) -> TestClient:
+    """An app whose live week 10 gives roster 11 the Sleeper starters of `starters`."""
+    weeks = TwoWeeks(fixture_raw_dir)
+    raw = weeks.weeks[1]
+    matchups = [m.model_copy(update={"starters": starters}) if m.roster_id == DAK_PICKS else m for m in raw.matchups]
+    weeks.weeks[1] = raw.model_copy(update={"matchups": matchups})
+    live = dataclasses.replace(sources, fetch_sleeper=weeks.fetch, clock=lambda: BEFORE_KICKOFF.astimezone(CLIENT.tz),
+                               fetch_sleeper_scores=sleeper_scores, fetch_espn_scoreboard=espn_scoreboard)
+    _publish_topics(settings)
+    return _api(settings, live, FakeJev(answer=Lifts().answer), Writer())
+
+
+def test_one_out_starter_and_two_q_starters_give_both_counts(settings, sources, fixture_raw_dir):
+    # AT-15: Jacobs starts Out, and Brown and Pickens start as Questionable, so the fact names both parts.
+    api = _set_lineup(settings, sources, fixture_raw_dir, JACOBS_BROWN_PICKENS)
+    assert _suggest(api, order=THURSDAY_ORDER, roster_id=DAK_PICKS).json()["facts"]["start_sit"] == "1 can't play, 2 Q"
+
+
+def test_the_fact_counts_the_empty_slots_and_no_player_on_the_bench(settings, sources, fixture_raw_dir):
+    # AT-15: two empty slots are two starters who cannot play. Jacobs, Brown, and Pickens sit on the bench, so they
+    # count in neither part.
+    api = _set_lineup(settings, sources, fixture_raw_dir, TWO_EMPTY_SLOTS)
+    assert _suggest(api, order=THURSDAY_ORDER, roster_id=DAK_PICKS).json()["facts"]["start_sit"] == "2 can't play"
+
+
 def test_a_live_week_that_does_not_load_drops_only_the_start_or_sit_fact(settings, sources):
     # The test sources give no kickoffs, as a down source does, so the other Suggestions still show.
     _publish_topics(settings)
