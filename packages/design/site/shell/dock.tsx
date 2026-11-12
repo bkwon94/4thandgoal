@@ -17,8 +17,9 @@ import {
 import { useKeyboardOpen } from "./keyboard";
 import type { NavItem, NavKind } from "./nav";
 
-/* The icon of each kind of destination. The label under the icon names the item, so each icon is decorative. */
-const ICONS: Record<Exclude<NavKind, "midseason">, LucideIcon> = {
+/* The icon of each kind of destination. The label under the icon names the item, so each icon is decorative.
+   The header sheet uses the same icons, so a page has one icon in the dock and in the sheet. */
+export const ICONS: Record<Exclude<NavKind, "midseason">, LucideIcon> = {
   home: HouseIcon,
   week: CalendarDaysIcon,
   rankings: TrophyIcon,

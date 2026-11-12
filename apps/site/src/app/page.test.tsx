@@ -27,6 +27,17 @@ afterEach(() => {
 });
 
 describe("the front door of cpc", () => {
+  it("has no dock and no week chip, and the menu button opens the sheet of pages (AT-45, AT-47)", () => {
+    render(<HomePage />);
+    expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
+    expect(screen.queryByText(/^WK /, { selector: "summary" })).toBeNull();
+    fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }));
+    const sheet = screen.getByRole("navigation", { name: "Pages" });
+    expect(within(sheet).getByRole("link", { name: /Ask about your team/ })).toBeTruthy();
+    expect(within(sheet).getByRole("link", { name: /Scores and recaps/ }).getAttribute("href")).toMatch(/^\/2026\/week-\d\d\/$/);
+    expect(within(sheet).getByRole("button", { name: "Past weeks" })).toBeTruthy();
+  });
+
   it("asks for Your team in a sheet that lists the 12 teams, with no skip, no close, and no login (AT-1)", async () => {
     render(<HomePage />);
     const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });

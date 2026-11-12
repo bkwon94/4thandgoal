@@ -424,3 +424,12 @@ describe("WeekPage with no median game", () => {
     expect(labels.slice(labels.indexOf("Trades"), labels.indexOf("Trades") + 2)).toEqual(["Trades", "Standings"]);
   });
 });
+
+describe("WeekPage keeps the dock and the week chip (AT-49)", () => {
+  it("shows the dock and the week chip, and no menu button", async () => {
+    await renderWeek7();
+    expect(screen.getByRole("navigation", { name: "Bottom menu" })).toBeTruthy();
+    expect(screen.getByText("WK 07", { selector: "summary" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Open the menu" })).toBeNull();
+  });
+});

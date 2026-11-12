@@ -334,8 +334,9 @@ export function FrontDoor({
 
   return (
     <>
-      {/* The Thread fills the view between the top band and the dock. Empty, it holds the ask box at its center. With
-          an Answer, it reads top to bottom, and the chips and the ask box sit at its foot, clear of the home bar. */}
+      {/* The Thread fills the view under the top band. Empty, it holds the ask box at its center. With an Answer, it
+          reads top to bottom, and the chips and the ask box sit at its foot on one solid surface that touches the bottom
+          edge. The surface pads its foot by the home bar, and drops that pad while the keyboard is open (decision 10). */}
       <section
         aria-label="Thread"
         style={{ "--door-dock": `${dockHeight}px` } as CSSProperties}
@@ -520,7 +521,7 @@ export function FrontDoor({
               ref={dock}
               layout={off ? false : "position"}
               transition={{ layout: GLIDE }}
-              className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter bg-page/90 px-gutter pt-sp-3 pb-sp-3 backdrop-blur-md desktop:bottom-0"}`}
+              className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter border-t border-rule bg-page px-gutter pt-sp-3 pb-[calc(var(--spacing-sp-3)+var(--spacing-door-safe))] desktop:bottom-0"}`}
               exit={off ? { opacity: 0, transition: fadeIn(FAST) } : undefined}
             >
               {!missed && (day === null || picks.length > 0 || moreOpen) ? (
