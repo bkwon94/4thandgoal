@@ -337,14 +337,14 @@ class TheTdCall(unittest.TestCase):
                          Path("/opt/td/bin"))
 
     def test_a_failed_call_names_its_error_code(self):
-        error = queue_script.TdError.from_stderr(td_json("error-auth.stderr"))
+        error = queue_script.QueueError.from_stderr(td_json("error-auth.stderr"))
         self.assertEqual(str(error), "AUTH_ERROR HTTP 401: Unauthorized")
 
     def test_a_failed_push_warns_in_one_line_and_exits_0(self):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             code = queue_script.report_failure("push", ".scratch/zz-queue-check/issues/02-zz-blocked.md",
-                                               queue_script.TdError.from_stderr(td_json("error-auth.stderr")))
+                                               queue_script.QueueError.from_stderr(td_json("error-auth.stderr")))
         self.assertEqual(code, 0)
         self.assertEqual(out.getvalue().splitlines(), [
             "warning: the queue push of .scratch/zz-queue-check/issues/02-zz-blocked.md failed: AUTH_ERROR HTTP 401: "

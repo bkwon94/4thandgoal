@@ -44,8 +44,9 @@ WHAT_TO_BUILD = re.compile(r"^\*\*What to build:\*\*\s*(.+)$", re.MULTILINE)
 NOT_PROSE = re.compile(r"^(#|\*\*[^*]+:\*\*|[A-Z][A-Za-z ]*: |[-*] |\d+\. )")
 H1 = re.compile(r"^#\s+(?:(\d+):\s*)?(.+?)\s*$", re.MULTILINE)
 SUMMARY_LIMIT = 500
-# A dead network can hang one `td` call for about 2 minutes, because the SDK retries. A push gives up sooner.
-TD_TIMEOUT = 10
+# A dead network can hang one `td` call for about 2 minutes, because the SDK retries. A push gives up sooner. A `gh`
+# call has the same limit.
+CALL_TIMEOUT = 10
 
 
 @dataclass(frozen=True)
@@ -237,7 +238,7 @@ def project_id(projects: dict) -> str:
     for project in projects["results"]:
         if project["name"] == PROJECT:
             return project["id"]
-    raise TdError("NO_PROJECT", f"Todoist has no project named {PROJECT}")
+    raise QueueError("NO_PROJECT", f"Todoist has no project named {PROJECT}")
 
 
 def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
@@ -567,15 +568,15 @@ def plan_import(root: Path, queue: Queue, filters: dict, prs: dict[str, list[dic
     return unique
 
 
-class TdError(Exception):
-    """A failed `td` call. Every failure of `td` exits 1, so the JSON error line on stderr names the cause."""
+class QueueError(Exception):
+    """A failed `td` or `gh` call. Every failure of `td` exits 1, so the JSON error line on stderr names the cause."""
 
     def __init__(self, code: str, message: str):
         super().__init__(f"{code} {message}")
         self.code = code
 
     @classmethod
-    def from_stderr(cls, stderr: str) -> "TdError":
+    def from_stderr(cls, stderr: str) -> "QueueError":
         for line in reversed(stderr.strip().splitlines()):
             try:
                 error = json.loads(line)["error"]
@@ -601,20 +602,20 @@ def td_bin_folder(home: Path, env: dict[str, str]) -> Path | None:
 
 
 def run_td(command: list[str]) -> dict:
-    """Run one `td` command with JSON output and return the JSON. A failure raises TdError."""
+    """Run one `td` command with JSON output and return the JSON. A failure raises QueueError."""
     env = dict(os.environ)
     folder = td_bin_folder(Path.home(), env)
     if folder:
         env["PATH"] = os.pathsep.join([str(folder), env.get("PATH", "")])
     td = str(folder / "td") if folder else "td"
     try:
-        run = subprocess.run([td, *command, "--json"], capture_output=True, text=True, env=env, timeout=TD_TIMEOUT)
+        run = subprocess.run([td, *command, "--json"], capture_output=True, text=True, env=env, timeout=CALL_TIMEOUT)
     except subprocess.TimeoutExpired:
-        raise TdError("TIMEOUT", f"td gave no answer in {TD_TIMEOUT} seconds") from None
+        raise QueueError("TIMEOUT", f"td gave no answer in {CALL_TIMEOUT} seconds") from None
     except FileNotFoundError:
-        raise TdError("NO_TD", "td is not in an nvm Node and not on the PATH") from None
+        raise QueueError("NO_TD", "td is not in an nvm Node and not on the PATH") from None
     if run.returncode != 0:
-        raise TdError.from_stderr(run.stderr)
+        raise QueueError.from_stderr(run.stderr)
     return json.loads(run.stdout) if run.stdout.strip() else {}
 
 
@@ -636,16 +637,16 @@ GH_FOLDERS = ("/opt/homebrew/bin", "/usr/local/bin")
 
 def run_gh(args: list[str], what: str) -> str:
     """Run one `gh` command and return its output. Each call names the repo, so it works from a temp root with no
-    remote. A failure raises TdError, so it warns like a failed `td` call."""
+    remote. A failure raises QueueError, so it warns like a failed `td` call."""
     gh = shutil.which("gh") or shutil.which("gh", path=os.pathsep.join(GH_FOLDERS)) or "gh"
     try:
-        run = subprocess.run([gh, *args, "--repo", REPO], capture_output=True, text=True, timeout=TD_TIMEOUT)
+        run = subprocess.run([gh, *args, "--repo", REPO], capture_output=True, text=True, timeout=CALL_TIMEOUT)
     except subprocess.TimeoutExpired:
-        raise TdError("GH_TIMEOUT", f"gh gave no answer about {what} in {TD_TIMEOUT} seconds") from None
+        raise QueueError("GH_TIMEOUT", f"gh gave no answer about {what} in {CALL_TIMEOUT} seconds") from None
     except FileNotFoundError:
-        raise TdError("NO_GH", "gh is not on the PATH") from None
+        raise QueueError("NO_GH", "gh is not on the PATH") from None
     if run.returncode != 0:
-        raise TdError("GH_ERROR", " ".join(run.stderr.split()) or f"gh failed about {what} with no message")
+        raise QueueError("GH_ERROR", " ".join(run.stderr.split()) or f"gh failed about {what} with no message")
     return run.stdout
 
 
@@ -660,7 +661,7 @@ def read_prs(branch: str) -> list[dict]:
                              f"the PRs of {branch}"))
 
 
-def report_failure(subcommand: str, target: str, error: TdError) -> int:
+def report_failure(subcommand: str, target: str, error: QueueError) -> int:
     """Print one warning line and return 0. A failed Todoist call never stops the work of a skill."""
     print(f"warning: the queue {subcommand} of {target} failed: {error}. The queue is behind the tracker.")
     return 0
@@ -763,7 +764,7 @@ def main(argv: list[str]) -> int:
         _, plan = args.plan(args)
         # A subcommand that writes files in place of `td` commands sets its own runner.
         getattr(args, "run", run_plan)(plan, args.dry_run)
-    except TdError as error:
+    except QueueError as error:
         return report_failure(args.subcommand, getattr(args, "target", args.subcommand), error)
     return 0
 
