@@ -54,13 +54,15 @@ Remove the copies when the spec merges. Step 6 does this.
 
 Why: `4ag:plan` checks for the skill `research`. In Codex, a skill counts when `~/.agents/skills/<name>/SKILL.md` exists. Codex lists it as `mattpocock-skills:research`, the same name as in Claude, because the link resolves into the Claude plugin cache and Codex keeps one entry for each real path.
 
+Run the `ln` one time only. A second run puts a link inside the target folder, and the check then reads a wrong path.
+
 The source is in the cache of the `mattpocock-skills` plugin. The path holds a version number. Change `1.3.1` if the plugin updates.
 
 ```
 mkdir -p ~/.agents/skills && ln -s ~/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/1.3.1/skills/engineering/research ~/.agents/skills/research
 ```
 
-Check: `test -f ~/.agents/skills/research/SKILL.md && echo ok` prints `ok`. Run the `ln` one time only: a second run puts a link inside the target folder.
+Check: `test -f ~/.agents/skills/research/SKILL.md && echo ok` prints `ok`.
 
 ## 5. Add the GitHub ruleset on `main`
 
