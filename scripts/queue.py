@@ -127,9 +127,10 @@ def _on_main(root: Path, key: str) -> bool:
     return _is_repo_top(root) and _git(root, "cat-file", "-e", f"main:{key}").returncode == 0
 
 
-def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
+def _git(root: Path, *args: str, timeout: float | None = None) -> subprocess.CompletedProcess:
     """Run one git command in the repo at the root, with no GIT_ variable from a hook."""
-    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, env=_clean_git_env())
+    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, env=_clean_git_env(),
+                          timeout=timeout)
 
 
 def _is_repo_top(root: Path) -> bool:
@@ -392,16 +393,28 @@ def pr_state(text: str) -> str:
     return json.loads(text)["state"]
 
 
-def _done_on_main(root: Path, key: str) -> bool:
-    """Whether the ticket is `done` on the branch main of the repo at the root.
+def _main_ref(root: Path) -> str | None:
+    """The ref of main that the sweep reads: origin/main when it exists, else the local main.
+
+    Brian merges on GitHub, so the local main is behind until a pull. The sweep handler fetches origin/main first. A
+    root that is not the top of a git repo has no main.
+    """
+    if not _is_repo_top(root):
+        return None
+    origin = _git(root, "rev-parse", "--verify", "--quiet", "refs/remotes/origin/main").returncode == 0
+    return "origin/main" if origin else "main"
+
+
+def _done_on_main(root: Path, ref: str | None, key: str) -> bool:
+    """Whether the ticket is `done` on the ref of main.
 
     The sweep reads main and not the checkout, because only a merge sets `done`. A root with no main holds no done
     ticket.
     """
-    if not _on_main(root, key):
+    if ref is None:
         return False
-    text = _git(root, "show", f"main:{key}").stdout
-    return _status(text) == "done"
+    show = _git(root, "show", f"{ref}:{key}")
+    return show.returncode == 0 and _status(show.stdout) == "done"
 
 
 def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[str]]:
@@ -416,6 +429,7 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
     plan: list[list[str]] = []
     completed: set[str] = set()
     swept: list[str] = []
+    ref = _main_ref(root)
 
     def complete(task: dict) -> None:
         if task["id"] not in completed:
@@ -430,7 +444,7 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
         if state == "MERGED":
             for task in queue.tasks:
                 key = _key(task) or ""
-                if key.startswith(f".scratch/{feature}/") and _done_on_main(root, key):
+                if key.startswith(f".scratch/{feature}/") and _done_on_main(root, ref, key):
                     complete(task)
             complete(wait)
             if feature not in swept:
@@ -703,9 +717,25 @@ def wait(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     return args.target, plan_wait(args.feature, args.kind, args.number, args.done, read_queue())
 
 
+def fetch_main(root: Path) -> None:
+    """Fetch main from origin, so the sweep sees each merge on GitHub. A failed fetch warns, and the sweep reads the
+    last fetched main."""
+    if not _is_repo_top(root):
+        return
+    try:
+        fetch = _git(root, "fetch", "--quiet", "origin", "main", timeout=CALL_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        error = f"no answer in {CALL_TIMEOUT} seconds"
+    else:
+        error = (" ".join(fetch.stderr.split()) or "no message") if fetch.returncode != 0 else None
+    if error:
+        print(f"warning: git fetch origin main failed: {error}. The sweep reads the last fetched main.")
+
+
 def sweep(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     # A failed read names what the sweep reads in the warning.
     args.target = "each open Merge PR task"
+    fetch_main(args.root)
     queue = read_queue()
     return "sweep", plan_sweep(args.root, queue, {number: read_pr_state(number) for number in merge_prs(queue)})
 

@@ -490,6 +490,31 @@ class TheMergeSweep(unittest.TestCase):
         next(task for task in blocked.tasks if task["content"] == "Merge PR #16")["labels"] = ["blocked", "phone"]
         self.assertEqual(queue_script.plan_sweep(self.root, blocked, {34: OPEN, 16: CLOSED, 13: OPEN}), [])
 
+    def git(self, *args: str) -> None:
+        subprocess.run(["git", "-C", str(self.root), *args], check=True, env=queue_script._clean_git_env())
+
+    def commit(self) -> None:
+        self.git("add", "-A")
+        self.git("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "next")
+
+    def test_the_sweep_reads_origin_main_when_it_exists(self):
+        # Brian merged on GitHub: origin/main has 01 done, and the local main is one commit behind.
+        self.commit_main()
+        self.set_status("issues/01-zz-ready.md", "ready-for-agent", "done")
+        self.commit()
+        self.git("update-ref", "refs/remotes/origin/main", "HEAD")
+        self.git("reset", "-q", "--hard", "HEAD~1")
+        self.assertIn(["task", "complete", TASK_01], self.sweep({34: MERGED, 16: OPEN, 13: OPEN}))
+
+    def test_the_sweep_reads_the_local_main_with_no_origin_main(self):
+        self.commit_main()
+        self.set_status("issues/01-zz-ready.md", "ready-for-agent", "done")
+        self.commit()
+        self.assertIn(["task", "complete", TASK_01], self.sweep({34: MERGED, 16: OPEN, 13: OPEN}))
+        # An origin/main that is behind wins over the local main, so 01 keeps its task.
+        self.git("update-ref", "refs/remotes/origin/main", "HEAD~1")
+        self.assertNotIn(["task", "complete", TASK_01], self.sweep({34: MERGED, 16: OPEN, 13: OPEN}))
+
     def test_a_root_with_no_main_completes_no_ticket(self):
         self.assertEqual(self.sweep({34: MERGED, 16: OPEN, 13: OPEN}), [["task", "complete", WAIT_34]])
 
