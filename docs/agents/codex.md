@@ -30,6 +30,10 @@ cd /Users/brian.kwon/repos/4thandgoal && codex
 
 Check: run `pwd` before you start Codex. It prints `/Users/brian.kwon/repos/4thandgoal`.
 
+To call a skill, type `$` and the part of the name after the colon, such as `$plan`, then choose `4ag:plan` from the list. The list does not match `$4ag`. A full `$4ag:plan` typed and sent also loads the skill.
+
+A running Codex keeps the skill list that it read at its start. Quit Codex and start it again after a change to `.agents/skills/` or to `~/.codex/config.toml`.
+
 ## 3. Copy the config before the merge of this spec
 
 Why: the main checkout on `main` does not have `.codex/config.toml` or `.agents/skills/` until a spec that adds them merges. Codex reads the config of the folder where it starts.
