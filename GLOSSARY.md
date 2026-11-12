@@ -184,6 +184,30 @@ _Avoid_: Intent, classification, dispatch
 The Answer to a question that this season's data cannot answer, such as injury news or a past season. It says what the site does not have and offers the 3 closest Topics. The API logs each one for 90 days (ADR 0031).
 _Avoid_: Error, fallback, no result, "I don't know"
 
+**Start or sit**:
+The Topic that gives Your team its starters for this fantasy week, with each Swap and each Pivot explained. It reads live data.
+_Avoid_: Lineup advice, sit/start, start em sit em
+
+**Week lineup**:
+The Lineup by this week's projection, scored with the league's own scoring, after the hard rules: slot eligibility, the bye, OUT, IR, or suspended, and the game lock. It is the base of the Start or sit Answer, before Jev judges.
+_Avoid_: Optimal lineup, projected lineup, best lineup
+
+**Swap**:
+A bench player that Jev starts over the starter of the Week lineup in a slot he can fill.
+_Avoid_: Upgrade, change, move
+
+**Pivot**:
+The bench player to start if a Questionable starter is ruled out.
+_Avoid_: Backup, handcuff (a handcuff is the backup of the same NFL team), fallback
+
+**Fact sheet**:
+The facts of one player that Jev reads for a Swap: the projection and its stat line, the defense against his position, the expected margin, the pass or run tilt of his team, his share, and his status.
+_Avoid_: Profile, scouting report, matchup data
+
+**Text block**:
+The block that holds the text of an Answer, with a small set of markdown marks. Code strips the marks before the Jev check.
+_Avoid_: Prose block (that is a brief of the pipeline), body, markdown
+
 ### The code
 
 **Part**:
