@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-4, AT-5, AT-6, AT
 
 **Blocked by:** 13
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A pytest with the Jev fake marks a Swap at 0.70 and keeps the starter at 0.69 (AT-5).
 - [x] A pytest with the Jev fake resolves the conflicts as AT-6 says (AT-6).
