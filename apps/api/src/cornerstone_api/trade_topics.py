@@ -23,6 +23,7 @@ from analyzer.stage import Stage
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from cornerstone_api.ask import QUESTION_MAX, YES, Asker, ClientAsker
 from cornerstone_api.chat_turns import Turn, Turns, with_turns
+from cornerstone_api.trade_block import check_block, ideas_block, rest_points
 from cornerstone_api.trade_wording import (
     AIM_POSITION,
     AIMS_POSITION,
@@ -287,6 +288,12 @@ def _teams(asker: ClientAsker, served: analyzer_routes.Served, roster_id: int) -
     return teams
 
 
+def _points(asker: Asker, served: analyzer_routes.Served) -> dict[str, float]:
+    """The projected points of each player for the rest of the season, for the bars of the trade card. The live
+    snapshot holds the projections ahead, and a repeat in the window of their cache fetches none."""
+    return rest_points(served.sources.snapshot(asker.season))
+
+
 class TradeCheckRequest(BaseModel):
     """The body of the trade check: the question as the manager typed it, and the roster id of Your team."""
 
@@ -320,7 +327,8 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
                                 lambda: analyzer_routes.analyze_trade(request, trade, served, step))
         if document is not None:
             _send_key(asker, served, emit, "trade_check", body.roster_id, gets.roster_id)
-            emit("data-answer", {"kind": "check", "document": document})
+            emit("data-answer", {"kind": "check", "document": document,
+                                 "block": check_block(document, _points(asker, served))})
 
     return stream(work)
 
@@ -378,7 +386,8 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
                                 lambda: analyzer_routes.find_trades(request, pair, served, step))
         if document is not None:
             _send_key(asker, served, emit, "trade_ideas", body.roster_id, partner)
-            emit("data-answer", {"kind": "ideas", "document": document})
+            emit("data-answer", {"kind": "ideas", "document": document,
+                                 "block": ideas_block(document, _points(asker, served))})
 
     return stream(work)
 

@@ -11,6 +11,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { recapBlockSchema, recapText } from "@/lib/data/blocks/recap-schema";
 import { VERY_SLOW, riseIn, staggerOf } from "./motion";
 import { RecapCard } from "./recap-card";
+import { TradeBlockView, tradeBlockSchema, tradeBlockText } from "./trade-block";
 
 const listBlockSchema = z.object({
   kind: z.literal("list"),
@@ -39,6 +40,7 @@ export const answerBlockSchema = z.discriminatedUnion("kind", [
   tableBlockSchema,
   playerBlockSchema,
   recapBlockSchema,
+  tradeBlockSchema,
 ]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
@@ -61,6 +63,8 @@ export function blockText(block: AnswerBlock): string {
       return [`${head}, ${block.can_play_now ? "can play now" : "can't play now"} (${block.status}).`, ...stats, ...(block.note ? [block.note] : [])].join(" ");
     }
     case "recap": return recapText(block);
+    case "trade":
+      return tradeBlockText(block);
   }
 }
 
@@ -199,5 +203,7 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
     case "player":
       return <PlayerView block={block} live={live} />;
     case "recap": return <RecapCard block={block} live={live} />;
+    case "trade":
+      return <TradeBlockView block={block} live={live} />;
   }
 }
