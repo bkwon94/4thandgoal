@@ -10,8 +10,8 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-4 and AT-5.
 
 **Status:** ready-for-agent
 
-- [ ] A test shows that `take` plans one update that puts the key line first and keeps the old description.
-- [ ] A test shows that `take` of an unknown name plans no command and exits 0.
-- [ ] `take` honors `--dry-run` and `--root`, like the other subcommands.
-- [ ] A real `take` on one task in `Bugs` keeps its id and its section.
-- [ ] `make check-fast` passes at the root.
+- [x] A test shows that `take` plans one update that puts the key line first and keeps the old description.
+- [x] A test shows that `take` of an unknown name plans no command and exits 0.
+- [x] `take` honors `--dry-run` and `--root`, like the other subcommands.
+- [x] A real `take` on one task in `Bugs` keeps its id and its section.
+- [x] `make check-fast` passes at the root.

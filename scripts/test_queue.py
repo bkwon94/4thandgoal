@@ -716,6 +716,69 @@ class AQuickFile(unittest.TestCase):
         self.assertEqual(plan, [["task", "complete", f"id:{task['id']}"], ["task", "complete", f"id:{wait['id']}"]])
 
 
+class ATake(unittest.TestCase):
+    """`take` claims the open task of a name in Bugs or Quick Wins by putting the key line first in its description."""
+
+    NAME = "Pick owner: week_moves names the first owner of a traded pick"
+    PATH = ".scratch/bugs/pick-owner.md"
+    TASK = {"id": "6j2Gr9TakeTask01", "content": NAME, "labels": ["bug"], "sectionId": "bugs-id",
+            "description": "It shows the first owner.\nSee week 8."}
+    SECTIONS = {"Bugs": "bugs-id", "Quick Wins": "qw-id", "Ideas": "ideas-id"}
+
+    def take(self, name: str, tasks: list[dict]):
+        return queue_script.plan_take(name, self.PATH, Queue("p1", self.SECTIONS, tasks, set()))
+
+    def test_a_take_plans_one_update_with_the_key_line_first_and_the_old_description_kept(self):
+        task, plan = self.take(self.NAME, [self.TASK])
+        self.assertEqual(task, self.TASK)
+        self.assertEqual(plan, [["task", "update", "id:6j2Gr9TakeTask01", "--description",
+                                 f"4ag: {self.PATH}\nIt shows the first owner.\nSee week 8."]])
+
+    def test_a_take_of_a_task_with_no_description_writes_the_key_line_alone(self):
+        _, plan = self.take(self.NAME, [{**self.TASK, "description": ""}])
+        self.assertEqual(option(plan[0], "--description"), f"4ag: {self.PATH}")
+
+    def test_a_take_in_quick_wins_finds_its_task(self):
+        _, plan = self.take(self.NAME, [{**self.TASK, "sectionId": "qw-id"}])
+        self.assertEqual(len(plan), 1)
+
+    def test_a_take_of_a_task_outside_the_two_sections_plans_nothing(self):
+        self.assertEqual(self.take(self.NAME, [{**self.TASK, "sectionId": "ideas-id"}]), (None, []))
+
+    def test_a_take_of_an_unknown_name_plans_nothing(self):
+        self.assertEqual(self.take("No such task", [self.TASK]), (None, []))
+
+    def test_a_take_of_a_task_with_the_key_line_plans_nothing(self):
+        keyed = {**self.TASK, "description": f"4ag: {self.PATH}\nIt shows the first owner."}
+        self.assertEqual(self.take(self.NAME, [keyed])[1], [])
+
+    def run_main(self, *argv: str) -> tuple[int, str]:
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = queue_script.main(list(argv))
+        return code, out.getvalue()
+
+    def test_a_take_prints_the_title_and_the_description_and_honors_dry_run_and_root(self):
+        read = lambda: Queue("p1", self.SECTIONS, [self.TASK], set())
+        original, queue_script.read_queue = queue_script.read_queue, read
+        self.addCleanup(setattr, queue_script, "read_queue", original)
+        code, out = self.run_main("take", self.NAME, self.PATH, "--dry-run", "--root", str(ROOT))
+        self.assertEqual(code, 0)
+        self.assertIn(self.NAME, out)
+        self.assertIn("It shows the first owner.", out)
+        self.assertIn("td task update id:6j2Gr9TakeTask01 --description", out)
+        self.assertIn("1 command planned, none sent.", out)
+
+    def test_a_take_of_an_unknown_name_prints_one_warning_and_exits_0(self):
+        read = lambda: Queue("p1", self.SECTIONS, [self.TASK], set())
+        original, queue_script.read_queue = queue_script.read_queue, read
+        self.addCleanup(setattr, queue_script, "read_queue", original)
+        code, out = self.run_main("take", "No such task", ".scratch/bugs/none.md", "--dry-run")
+        self.assertEqual(code, 0)
+        self.assertEqual(len([line for line in out.splitlines() if line.startswith("warning:")]), 1)
+        self.assertNotIn("td ", out)
+
+
 class TheCommandLine(unittest.TestCase):
 
     def test_a_merge_pr_wait_needs_the_pr_number(self):

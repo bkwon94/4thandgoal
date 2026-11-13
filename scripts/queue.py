@@ -384,6 +384,24 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
     return plan + _plan_task_add(title, feature, ["ready-for-human"], "\n".join(lines), queue)
 
 
+def plan_take(name: str, path: str, queue: Queue) -> tuple[dict | None, list[list[str]]]:
+    """The open task of the name in Bugs or Quick Wins, and the `td` command that puts the key line `4ag: <path>` first
+    in its description.
+
+    The update keeps the id, the section, the title, and the old description of the task. A task that has the key line
+    already needs no command. A name with no open task in the two sections gives None and no command.
+    """
+    sections = {queue.sections[section] for section in QUICK_SECTIONS.values() if section in queue.sections}
+    task = next((task for task in queue.tasks if task["content"] == name and task["sectionId"] in sections), None)
+    if task is None:
+        return None, []
+    key = f"4ag: {path}"
+    old = task.get("description") or ""
+    if old.split("\n")[0] == key:
+        return task, []
+    return task, [["task", "update", f"id:{task['id']}", "--description", f"{key}\n{old}" if old else key]]
+
+
 MERGE_PR_TITLE = re.compile(r"^Merge PR #(\d+)$")
 
 
@@ -731,6 +749,17 @@ def wait(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     return args.target, plan_wait(args.feature, args.kind, args.number, args.done, read_queue())
 
 
+def take(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
+    """Print the title and the description of the task, then plan its claim. A missing task warns and plans nothing."""
+    args.target = args.name
+    task, plan = plan_take(args.name, args.path, read_queue())
+    if task is None:
+        print(f"warning: the queue has no open task named {args.name!r} in Bugs or Quick Wins. Nothing changed.")
+    else:
+        print(f"{task['content']}\n{task.get('description') or ''}")
+    return args.name, plan
+
+
 def fetch_main(root: Path) -> None:
     """Fetch main from origin, so the sweep sees each merge on GitHub. A failed fetch warns, and the sweep reads the
     last fetched main."""
@@ -804,6 +833,11 @@ def main(argv: list[str]) -> int:
                                          help="write the triage in the queue into the Status lines of a feature")
     pull_parser.add_argument("feature", help="the feature slug, the folder under .scratch/")
     pull_parser.set_defaults(plan=pull)
+    take_parser = subcommands.add_parser("take", parents=[shared],
+                                         help="claim the open task of a name in Bugs or Quick Wins")
+    take_parser.add_argument("name", help="the title of the task")
+    take_parser.add_argument("path", help="the path of the quick file, which becomes the key line of the task")
+    take_parser.set_defaults(plan=take)
     import_parser = subcommands.add_parser("import", parents=[shared],
                                            help="load the open work, the labels, Ideas, and the filter into the queue")
     import_parser.set_defaults(plan=import_)
