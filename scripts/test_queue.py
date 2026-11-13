@@ -759,6 +759,18 @@ class AQuickFile(unittest.TestCase):
                                        {50: "MERGED"})
         self.assertEqual(plan, [["task", "complete", f"id:{task['id']}"], ["task", "complete", f"id:{wait['id']}"]])
 
+    def test_a_spec_section_odds_still_archives(self):
+        # A spec feature keeps its slug as its section name, and a merged PR archives it once every task is complete.
+        ticket = self.root / ".scratch" / "odds" / "issues" / "01-odds-ticket.md"
+        ticket.parent.mkdir(parents=True)
+        ticket.write_text("# 01: Odds ticket\n\n**Blocked by:** none\n\n**Status:** done\n")
+        self.commit_main()
+        task = {**self.TASK, "sectionId": "odds", "description": "4ag: .scratch/odds/issues/01-odds-ticket.md"}
+        wait = {**self.WAIT, "sectionId": "odds", "description": "4ag: odds/wait/merge-pr"}
+        plan = queue_script.plan_sweep(self.root, Queue("p1", {"odds": "odds"}, [task, wait], set()), {50: "MERGED"})
+        self.assertEqual(plan, [["task", "complete", f"id:{task['id']}"], ["task", "complete", f"id:{wait['id']}"],
+                                ["section", "archive", "id:odds"]])
+
 
 class ATake(unittest.TestCase):
     """`take` claims the open task of a name in Bugs or Quick Wins by putting the key line first in its description."""
