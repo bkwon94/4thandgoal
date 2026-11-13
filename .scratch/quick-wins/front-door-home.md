@@ -34,8 +34,20 @@ Test verdict: pending
 
 Done condition: with `front_door = true`, the client build writes a `_redirects` rule into the export that sends `/ask` and `/ask/` to `/` with a 301, and the export check fails when the rule is missing.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `59fc027c` with `apps/site/scripts/client-build.test.mjs` of `2614875c`, `pnpm exec vitest run scripts/client-build.test.mjs -t "writes a _redirects rule"` in `apps/site`
+
+```text
+ × writes a _redirects rule that sends /ask and /ask/ to / with the front door on, and none with it off
+Error: ENOENT: no such file or directory, open '.../apps/site/public/_redirects'
+ Tests  1 failed | 48 skipped (49)
+```
+
+Green: at `2614875c`, `pnpm exec vitest run scripts/client-build.test.mjs -t "writes a _redirects rule"` in `apps/site`
+
+```text
+ Tests  1 passed | 48 skipped (49)
+```
+
 Test verdict: pending
 
 ### 3. The passphrase sits on the team sheet, not in the chat
