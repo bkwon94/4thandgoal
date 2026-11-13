@@ -64,10 +64,10 @@ export function Suggestions({
     // No gap here: the strip and the panel each carry their own 8px above, so a shut strip adds no height to the foot.
     <div className="flex flex-col">
       {/* The row is one line at every state of the Thread, so the Thread gets the screen (decision 02). A chip shows
-          only a short name of its Topic, so "More" and 3 chips fit 375 px: a row that scrolls sideways hides a chip past
-          its edge. A chip can still shrink and cut its name with an ellipsis, but only as a guard for a very long name.
-          The bleed keeps the last chip clear of the gutter. The
-          4px pad above and below gives the press scale and the focus ring room in the scroll box, and the negative
+          only a short name of its Topic, and each pill keeps a full 16px side pad, so the text never touches its border.
+          A narrow screen may not fit "More" and 3 chips, so the row scrolls sideways and a chip may wait past the right
+          edge until a swipe. A chip never shrinks and never cuts its name. The bleed keeps the last chip clear of the
+          gutter. The 4px pad above and below gives the press scale and the focus ring room in the scroll box, and the negative
           margin keeps the row one 44px chip high. */}
       <div
         role="group"
@@ -84,7 +84,7 @@ export function Suggestions({
             setShown(null);
             onMore(!moreOpen);
           }}
-          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-1 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
         >
           <span>More</span>
           <ChevronDownIcon
@@ -126,9 +126,9 @@ export function Suggestions({
               animate={off ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }}
               transition={off ? fadeIn(FAST, index * STAGGER) : { ...CHIP_GLIDE, layout: GLIDE, opacity: fadeIn(FAST, index * STAGGER) }}
-              className="press door-sheen flex min-h-touch max-w-chip min-w-0 flex-initial snap-start items-center rounded-pill border border-door-hair bg-card px-sp-1 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+              className="press door-sheen flex min-h-touch flex-none snap-start items-center rounded-pill border border-door-hair bg-card px-sp-4 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
             >
-              <span aria-hidden className="max-w-full truncate text-body leading-tight font-semibold text-ink">
+              <span aria-hidden className="whitespace-nowrap text-body leading-tight font-semibold text-ink">
                 {topic.chip}
               </span>
             </SuggestionChip>

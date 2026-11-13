@@ -7,6 +7,10 @@ import { SITE_VIEWPORT as viewport } from "./viewport";
 
 describe("the viewport of the root layout", () => {
   it("covers the whole screen of an iPhone, so env(safe-area-inset-bottom) reaches the page (AT-47)", () => {
-    expect(viewport).toEqual({ width: "device-width", initialScale: 1, viewportFit: "cover" });
+    expect(viewport).toMatchObject({ width: "device-width", initialScale: 1, viewportFit: "cover" });
+  });
+
+  it("asks Chrome on Android to shrink the layout viewport with the keyboard, so the ask box sticks above it", () => {
+    expect(viewport.interactiveWidget).toBe("resizes-content");
   });
 });

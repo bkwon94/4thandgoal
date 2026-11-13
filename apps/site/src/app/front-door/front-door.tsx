@@ -10,6 +10,7 @@ import { type CSSProperties, Fragment, useEffect, useMemo, useRef, useState } fr
 import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { useKeyboardRaised } from "@cpc/design/shell/keyboard";
 import type { DoorAnswer, DoorTeam } from "@/lib/data/front-door-data";
 import { analyzeHref } from "@/lib/routes";
 import { type AskTarget, AskError, askRoute } from "./ask-api";
@@ -152,6 +153,10 @@ export function FrontDoor({
   // turn of the Thread reads it to hold the view under the Thread header (thread.tsx).
   const dock = useRef<HTMLDivElement>(null);
   const [dockHeight, setDockHeight] = useState(0);
+  // iOS Safari keeps the layout viewport at full height under the keyboard, so the dock at the center of an empty
+  // Thread can sit under it. While the keyboard covers the foot, the dock of an empty Thread pins right above it. A
+  // Thread with an entry needs no pin: its dock sticks to --spacing-door-foot, which then holds the keyboard inset.
+  const raised = useKeyboardRaised();
   useEffect(() => {
     const element = dock.current;
     if (!element || typeof ResizeObserver === "undefined") return;
@@ -184,6 +189,7 @@ export function FrontDoor({
   const picks = day === null ? [] : pickSuggestions(day, facts, opened, servedNow?.urgent ?? []);
   const avatars = Object.fromEntries(teams.map((candidate) => [candidate.id, candidate.avatar]));
   const empty = thread.length === 0;
+  const pinned = raised && empty;
   // A miss and a cap line show their 3 closest Topics, so the chips of the dock hide and the Topics show only once
   // (AT-13).
   const last = thread.at(-1)?.kind;
@@ -521,11 +527,14 @@ export function FrontDoor({
               // size animation would stretch the ask box and the chips on the way. With motion off, the dock mounts again
               // at its new place, so each part fades in there and the ask box never jumps at full opacity (AT-46). The
               // old dock fades out over the same moment, so the ask box never drops from full to none in one frame.
+              // In an empty Thread, while the keyboard covers the foot, the dock is fixed on the foot of the visual
+              // viewport: the root holds --spacing-door-foot as the height that the keyboard covers (globals.css). The
+              // same glide carries it there and back, and with motion off it jumps.
               key={off ? (empty ? "dock-center" : "dock-foot") : "dock"}
               ref={dock}
               layout={off ? false : "position"}
               transition={{ layout: GLIDE }}
-              className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter border-t border-rule bg-page px-gutter pt-sp-3 pb-[calc(var(--spacing-sp-3)+var(--spacing-door-safe))] desktop:bottom-0"}`}
+              className={`flex flex-col gap-sp-3 ${pinned ? "fixed inset-x-0 bottom-door-foot z-10 mx-auto w-full max-w-door border-t border-rule bg-page px-gutter py-sp-3" : empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter border-t border-rule bg-page px-gutter pt-sp-3 pb-[calc(var(--spacing-sp-3)+var(--spacing-door-safe))] desktop:bottom-0"}`}
               exit={off ? { opacity: 0, transition: fadeIn(FAST) } : undefined}
             >
               {!missed && (day === null || picks.length > 0 || moreOpen) ? (
@@ -545,13 +554,16 @@ export function FrontDoor({
                 {/* Send holds busy while a question routes, so a second tap never sends it twice. */}
                 <AskBox onAsk={ask} pending={thread.some((entry) => entry.kind === "pending")} />
               </motion.div>
-              {empty && (
+              {/* The team link stays out of a pinned dock, so the ask box sits right on the keyboard. */}
+              {empty && !pinned && (
                 <motion.div className="flex" {...riseIn(off, { delay: 0.16 })}>
                   {changeTeam}
                 </motion.div>
               )}
             </Dock>
             </AnimatePresence>
+            {/* A pinned dock leaves the flow, so a still box of its height holds its place and the Thread never jumps. */}
+            {pinned && <div aria-hidden style={{ height: dockHeight }} className="flex-none" />}
           </div>
         )}
       </section>

@@ -10,4 +10,7 @@ export const SITE_VIEWPORT: Viewport = {
   // With cover, env(safe-area-inset-bottom) holds the height of the home bar. The dock and the sheet of Your team
   // already add it, so no part sits under the bar (decision 07 of front-door).
   viewportFit: "cover",
+  // Chrome on Android then shrinks the layout viewport with the keyboard, so the ask box of the front door sticks right
+  // above it. iOS Safari ignores it, and the front door pins the ask box through the inset of the visual viewport.
+  interactiveWidget: "resizes-content",
 };
