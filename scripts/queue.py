@@ -72,11 +72,19 @@ def _feature(key: str) -> str:
 # A quick file sits in one shared folder, not in a feature folder. The folder names a fixed section of its own, and
 # the sweep never archives it, because Brian drops new tasks there from his phone.
 QUICK_SECTIONS = {"bugs": "Bugs", "quick-wins": "Quick Wins"}
+# A quick run lives on its own branch, `bug-<slug>` or `win-<slug>`, not on a spec branch named for its folder.
+QUICK_BRANCH_PREFIXES = {"bugs": "bug", "quick-wins": "win"}
 
 
 def section_name(feature: str) -> str:
     """The name of the queue section of a feature. A quick folder has a fixed name. Any other feature keeps its slug."""
     return QUICK_SECTIONS.get(feature, feature)
+
+
+def _section(feature: str, queue: "Queue") -> tuple[str, str | None]:
+    """The section name of the feature, and its id in the queue, or None when the queue has no such section."""
+    name = section_name(feature)
+    return name, queue.sections.get(name)
 
 
 def _app_words(text: str) -> tuple[str, ...]:
@@ -180,6 +188,7 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
     path = Path(key)
     number, name = H1.search(text).groups()
     number = number or path.name.split("-")[0]
+    quick = _is_quick(key)
     decision = _is_decision(path)
     status = _status(text)
     if decision and status == "open":
@@ -197,11 +206,16 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
         f"4ag: {key}",
         f"App: {', '.join(apps)}" if apps else None,
         f"Blocked by: {blocked}" if blocked else None,
-        f"{GITHUB}/{key}" if _on_main(root, key) else f"On the spec branch {feature}.",
+        f"{GITHUB}/{key}" if _on_main(root, key) else _branch_line(key),
         _summary(text),
     ]
+    if quick:
+        # A quick file has no number. Its slug is not a number, so the title is the H1 alone.
+        title = name
+    else:
+        title = f"Decision {number}: {name}" if decision else f"{number} {name}"
     return Ticket(
-        key=key, feature=feature, title=f"Decision {number}: {name}" if decision else f"{number} {name}",
+        key=key, feature=feature, title=title,
         status=status, decision=decision, apps=apps, description="\n".join(line for line in lines if line),
     )
 
@@ -210,6 +224,19 @@ def _status(text: str) -> str:
     """The first word of the Status line of a ticket, in lowercase with no trailing punctuation, or "" when it has
     none. The tracker rule of the pipeline and of the site read it the same way."""
     return (_first(STATUS_LINE, text) or "").lower().rstrip(".,;:")
+
+
+def _branch_line(key: str) -> str:
+    """The line that names the branch of a file off main: the branch of a quick run, or the spec branch of a feature."""
+    feature = _feature(key)
+    if _is_quick(key):
+        return f"On the branch {QUICK_BRANCH_PREFIXES[feature]}-{Path(key).stem}."
+    return f"On the spec branch {feature}."
+
+
+def _is_quick(key: str) -> bool:
+    """Whether the file of the key is a quick file, `.scratch/bugs/<slug>.md` or `.scratch/quick-wins/<slug>.md`."""
+    return _feature(key) in QUICK_SECTIONS
 
 
 def _is_decision(path: Path) -> bool:
@@ -270,28 +297,39 @@ def project_id(projects: dict) -> str:
 def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
     """The `td` commands that make the task of the ticket match its file. Each command omits the leading `td`.
 
-    No command sets the priority or the order, because the queue owns them.
+    No command sets the priority or the order, because the queue owns them. A quick file of several items can have
+    several tasks with its key line, one for each task that `take` claimed, so the push plans each of them. Two tasks
+    plan the same `label create` or `section create`, so the second copy drops out.
     """
-    task = task_of(queue.tasks, ticket.key)
+    tasks = [task for task in queue.tasks if _key(task) == ticket.key]
     closed = ticket.status in CLOSED_STATUSES
-    if task is None:
+    if not tasks:
         # A closed ticket never enters the queue.
         return [] if closed else _plan_add(ticket, queue)
+    plan: list[list[str]] = []
+    for task in tasks:
+        plan += [command for command in _plan_task_update(ticket, task, queue) if command not in plan]
+    return plan
 
+
+def _plan_task_update(ticket: Ticket, task: dict, queue: Queue) -> list[list[str]]:
+    """The `td` commands that make one task of the ticket match its file."""
     labels = _labels(ticket, task["labels"])
     plan = [["label", "create", "--name", label] for label in labels
             if label in FLOW_LABELS and label not in queue.labels]
     update = []
-    if task["content"] != ticket.title:
-        update += ["--content", ticket.title]
-    if _bare_links(task["description"]) != ticket.description:
-        update += ["--description", ticket.description]
+    # The task of a quick file is often a task that Brian filed and `take` claimed. It keeps the title and the text of
+    # Brian, so a push changes only its labels and its section.
+    if not _is_quick(ticket.key):
+        if task["content"] != ticket.title:
+            update += ["--content", ticket.title]
+        if _bare_links(task["description"]) != ticket.description:
+            update += ["--description", ticket.description]
     if set(labels) != set(task["labels"]):
         update += ["--labels", ",".join(labels)]
     if update:
         plan.append(["task", "update", f"id:{task['id']}", *update])
-    name = section_name(ticket.feature)
-    section = queue.sections.get(name)
+    name, section = _section(ticket.feature, queue)
     if section is None:
         plan.append(_section_create(name, queue))
         plan.append(["task", "move", f"id:{task['id']}", "--project", f"id:{queue.project_id}",
@@ -334,15 +372,14 @@ def _labels(ticket: Ticket, current: list[str]) -> list[str]:
     return others + flow + (["decision"] if ticket.decision else []) + list(ticket.apps)
 
 
-def _section_create(feature: str, queue: Queue) -> list[str]:
-    return ["section", "create", "--name", feature, "--project", f"id:{queue.project_id}"]
+def _section_create(name: str, queue: Queue) -> list[str]:
+    return ["section", "create", "--name", name, "--project", f"id:{queue.project_id}"]
 
 
 def _plan_task_add(title: str, feature: str, labels: list[str], description: str, queue: Queue) -> list[list[str]]:
     """Make a task in the section of the feature, and first the section when it is missing. A command after a planned
     `section create` names the section, because its id is not known yet."""
-    name = section_name(feature)
-    section = queue.sections.get(name)
+    name, section = _section(feature, queue)
     plan = [] if section else [_section_create(name, queue)]
     plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
                  "--section", f"id:{section}" if section else name,
@@ -384,22 +421,26 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
     return plan + _plan_task_add(title, feature, ["ready-for-human"], "\n".join(lines), queue)
 
 
-def plan_take(name: str, path: str, queue: Queue) -> tuple[dict | None, list[list[str]]]:
-    """The open task of the name in Bugs or Quick Wins, and the `td` command that puts the key line `4ag: <path>` first
-    in its description.
+def plan_take(name: str, path: str, queue: Queue) -> tuple[list[dict], list[list[str]]]:
+    """The open tasks of the name in Bugs or Quick Wins, and the `td` command that puts the key line `4ag: <path>` first
+    in the description of the one match.
 
-    The update keeps the id, the section, the title, and the old description of the task. A task that has the key line
-    already needs no command. A name with no open task in the two sections gives None and no command.
+    The update keeps the id, the section, the title, and the text of the task. An old key line from another run gives
+    way to the new one, so the task never holds two key lines. A task that has the key line already needs no command.
+    A name with no open task, or with more than one, plans no command, because a guess could claim the wrong task.
     """
     sections = {queue.sections[section] for section in QUICK_SECTIONS.values() if section in queue.sections}
-    task = next((task for task in queue.tasks if task["content"] == name and task["sectionId"] in sections), None)
-    if task is None:
-        return None, []
+    tasks = [task for task in queue.tasks if task["content"] == name and task["sectionId"] in sections]
+    if len(tasks) != 1:
+        return tasks, []
+    task = tasks[0]
     key = f"4ag: {path}"
     old = task.get("description") or ""
-    if old.split("\n")[0] == key:
-        return task, []
-    return task, [["task", "update", f"id:{task['id']}", "--description", f"{key}\n{old}" if old else key]]
+    if _key(task) == path:
+        return tasks, []
+    if _key(task) is not None:
+        old = old.split("\n", 1)[1] if "\n" in old else ""
+    return tasks, [["task", "update", f"id:{task['id']}", "--description", f"{key}\n{old}" if old else key]]
 
 
 MERGE_PR_TITLE = re.compile(r"^Merge PR #(\d+)$")
@@ -485,9 +526,10 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
                 plan.append(["task", "update", f"id:{wait['id']}", "--labels", ",".join(labels)])
 
     for feature in swept:
+        # A quick section stays, because Brian drops new tasks there. Each other feature keeps its slug as its name.
         if feature in QUICK_SECTIONS:
             continue
-        section = queue.sections.get(section_name(feature))
+        section = queue.sections.get(feature)
         if section and all(task["id"] in completed for task in queue.tasks if task["sectionId"] == section):
             plan.append(["section", "archive", f"id:{section}"])
     return plan
@@ -750,13 +792,17 @@ def wait(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
 
 
 def take(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
-    """Print the title and the description of the task, then plan its claim. A missing task warns and plans nothing."""
+    """Print the title and the description of the task, then plan its claim. A missing task, or a name with more than
+    one open task, warns and plans nothing."""
     args.target = args.name
-    task, plan = plan_take(args.name, args.path, read_queue())
-    if task is None:
+    tasks, plan = plan_take(args.name, args.path, read_queue())
+    if not tasks:
         print(f"warning: the queue has no open task named {args.name!r} in Bugs or Quick Wins. Nothing changed.")
+    elif len(tasks) > 1:
+        print(f"warning: the queue has {len(tasks)} open tasks named {args.name!r} in Bugs or Quick Wins. Rename one "
+              "in Todoist, then take it again. Nothing changed.")
     else:
-        print(f"{task['content']}\n{task.get('description') or ''}")
+        print(f"{tasks[0]['content']}\n{tasks[0].get('description') or ''}")
     return args.name, plan
 
 
