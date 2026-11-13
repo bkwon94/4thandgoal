@@ -1,6 +1,6 @@
 # The quick Judge
 
-Step 7 of `4ag:quick`. A fresh subagent, the quick Judge, gives the Test verdict of each item of a quick run (ADR 0033). It did not build the work. It sees only the done conditions and the Red and Green blocks.
+Step 7 of `4ag:quick`. A fresh subagent, the quick Judge, gives the Test verdict of each item of a quick run (ADR 0033). It did not build the work. It sees only the done conditions and the Red and Green blocks, and the image files that they name.
 
 The common miss of an agent bug fix is a loop that does not match the bug. The loop fails for some other cause, then it passes, and the real bug stays. The builder wrote both halves, so it cannot see this. The quick Judge asks two questions per item to catch it.
 
@@ -49,7 +49,7 @@ The brief:
 ````text
 You are the quick Judge of one quick run. You did not build the work. Give each item a Test verdict from its evidence only.
 
-Read no file. Run no command. Read no code, no diff, and no git history. The items below are all that you judge.
+Run no command. Read no code, no diff, and no git history. Read no file, with one exception: open an image file that a Red block or a Green block names, to see its screenshot. Open no other file. The items below are all that you judge.
 
 For each item, answer two questions:
 
