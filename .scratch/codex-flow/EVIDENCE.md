@@ -1,7 +1,7 @@
 # Codex flow: evidence
 
 Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests: `.scratch/codex-flow/ACCEPTANCE.md`.
-Built from: `d192e8a7`, on 2026-11-12. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
+Built from: `d192e8a7`, on 2026-11-12. AT-13 and AT-19 are recorded again from `42783a05`, on 2026-11-12. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
 Round time: 0 min for 0 site tests. No test takes screenshots. Each Codex run uses Codex CLI 0.167.2, the version installed now.
 
 ## AT-1: Codex lists the six 4ag skills
@@ -92,8 +92,9 @@ Observation: The root `make check-fast` exits 2 at the site member, whose rule n
 
 App: both
 Then: each of the six sessions reports that its "Before you start" check passed, and none names a missing skill or tool.
-Files: `evidence/AT-13/output.txt`
-Observation: At the main checkout root, `plan`, `to-spec`, and `implement` report that the check passed. `to-acceptance` and `to-tickets` stop there because `.scratch/codex-flow/PRD.md` is not on `main`, and at the Spec worktree root both report that the check passed. `review codex-flow` stops at step 3 because `gh pr view codex-flow` finds no PR, and it says no skill or tool is missing; `codex-flow` has no open PR until stage 5. `review 37`, on the open draft spec PR #37, reports that steps 1 to 3 pass, and stops before steps 4 and 5, which change a worktree.
+Files: `evidence/AT-13/output.txt`, `evidence/AT-13/review-all-steps.txt`
+Observation: `review-all-steps.txt` holds the `review` session, and `output.txt` holds the other five. At the main checkout root, `plan`, `to-spec`, and `implement` report that the check passed. `to-acceptance` and `to-tickets` stop there because `.scratch/codex-flow/PRD.md` is not on `main`, and at the Spec worktree root both report that the check passed. `review codex-flow` stops at step 3 because `gh pr view codex-flow` finds no PR, and it says no skill or tool is missing; `codex-flow` has no open PR until stage 5. `review 37`, on the open draft spec PR #37, reports that steps 1 to 3 pass, and stops before steps 4 and 5, which change a worktree.
+In `review-all-steps.txt`, `review 37` runs all five steps at the main checkout root and reports each as passed, with no missing skill or tool. Its log shows `git worktree list`, then `git pull --ff-only` in `.claude/worktrees/readme-module-navigation-public` with "Already up to date.", then a read of the PRD and ACCEPTANCE of `readme-module-navigation`.
 
 ## AT-14: A missing global skill stops the plan skill
 
@@ -134,8 +135,9 @@ Observation: Line 983 of `~/.codex/sessions/2026/11/12/rollout-2026-11-12T15-38-
 
 App: both
 Then: the `spawn_agent` call of the builder has `fork_turns: "none"`, and its brief names the absolute path of the ticket worktree.
-Files: `evidence/AT-19/output.txt`
+Files: `evidence/AT-19/output.txt`, `evidence/AT-19/brief-readback.txt`
 Observation: Line 57 of `rollout-2026-11-12T15-38-49-01a1d17c-07e9-7cf1-98a9-a8eeae498b80.jsonl` calls `spawn_agent` for `ticket01` with `fork_turns` `none` and `gpt-6-astra`, and line 375 of `rollout-2026-11-12T16-10-25-01a1d198-f957-7ca3-8dbd-f896cf6b6e4f.jsonl` does the same for `ticket02_records`. Each brief is encrypted in the log, so the log does not show its text. Each builder starts with the cwd of the main checkout, and its first command, about 5 to 6 seconds after the spawn, uses the absolute `workdir` `/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/readme-module-navigation-01` or `-02`.
+In `brief-readback.txt`, a `$4ag:implement` session at the main checkout root reads `build.md`, then calls `spawn_agent` for ticket 06 of codex-flow with `fork_turns` `none` and an encrypted message. The child makes no tool call and replies with the first three lines of its brief: "Build ticket 06 of the feature codex-flow in the 4thandgoal repo.", a blank line, and "Work only in the worktree /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow-06, on the branch codex-flow-06." No worktree or branch `codex-flow-06` exists after the run.
 
 ## AT-20: The GitHub ruleset guards `main`
 
