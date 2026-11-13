@@ -8,8 +8,11 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-30, AT-31.
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] The stream of How you stack up carries the slot rank bars with four rows only (AT-30).
 - [x] The stream of Weak spots carries the bye grid, and its red dots match the bye weeks of the starters (AT-31).
 - [ ] Site screenshots show both blocks.
+
+## Comments
+- Closes with the squash merge of the spec PR.

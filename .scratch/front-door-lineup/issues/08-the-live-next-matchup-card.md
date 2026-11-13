@@ -8,9 +8,12 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-25.
 
 **Blocked by:** 06
 
-**Status:** in-review
+**Status:** done
 
 - [x] The stream of Your next matchup carries a matchup card with the projected totals of the live week and a read time within the minute of the request (AT-25).
 - [x] The team with the higher projected total has odds above 50% (AT-25).
 - [x] A pytest shows that a starter on a bye lowers the projected total and the odds.
 - [ ] Site screenshots show the live card.
+
+## Comments
+- Closes with the squash merge of the spec PR.

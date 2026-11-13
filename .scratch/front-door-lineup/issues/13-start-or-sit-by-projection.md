@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] The cpc lineup shows QB, RB, RB, WR, WR, TE, FLEX, FLEX, DEF in order (AT-1).
 - [x] The norcal lineup shows three FLEX and no DEF (AT-2).
@@ -17,3 +17,6 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT
 - [x] An open row keeps the rows above it still, and the "Can't play" line names each such player (AT-9, AT-10).
 - [x] A player whose game has started is locked, and Start or sit calls only Sleeper, ESPN, TypeSafe, and Anthropic (AT-12, AT-53).
 - [ ] The design bar of the spec ran, and `critique` and `polish` found nothing open.
+
+## Comments
+- Closes with the squash merge of the spec PR.

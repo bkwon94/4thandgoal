@@ -8,9 +8,12 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-42, AT-43, AT-44.
 
 **Blocked by:** 03
 
-**Status:** in-review
+**Status:** done
 
 - [x] At 375 px the row is one line of about 48 px, with an empty Thread and with an Answer (AT-42).
 - [x] The first tap shows the strip, and the second tap opens the Topic (AT-43).
 - [x] A tap on another chip changes the strip and opens no Topic (AT-44).
 - [ ] The design bar of the spec ran, and `critique` and `polish` found nothing open.
+
+## Comments
+- Closes with the squash merge of the spec PR.

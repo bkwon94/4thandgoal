@@ -8,8 +8,11 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-33, AT-34.
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] A Trade check of one named trade shows the card with the Lean and no edge line (AT-34).
 - [x] Trade ideas shows one card with a row per offer, the first one open (AT-33).
 - [ ] Site screenshots show the card closed and open.
+
+## Comments
+- Closes with the squash merge of the spec PR.

@@ -8,8 +8,11 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-13, AT-14, AT-15.
 
 **Blocked by:** 13
 
-**Status:** in-review
+**Status:** done
 
 - [x] A pytest shows the order on Thursday, Sunday, Wednesday, and Monday (AT-13).
 - [x] A pytest or a live run shows Start or sit first on a Tuesday with a hole in the lineup (AT-14).
 - [x] The fact reads "N can't play, M Q" or "Next kickoff <day> <time>", and the Suggestions make no Jev call (AT-15).
+
+## Comments
+- Closes with the squash merge of the spec PR.

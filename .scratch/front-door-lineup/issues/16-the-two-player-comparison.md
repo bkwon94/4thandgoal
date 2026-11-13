@@ -8,9 +8,12 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-16, AT-17, AT-18.
 
 **Blocked by:** 14
 
-**Status:** in-review
+**Status:** done
 
 - [x] "Start <A> or <B>?" gives the comparison block and the pick (AT-16).
 - [x] A question with three WRs gives the lineup block for the WR and FLEX slots (AT-17).
 - [x] A question with a player off the roster gives a free answer (AT-18).
 - [ ] Site screenshots show the comparison block.
+
+## Comments
+- Closes with the squash merge of the spec PR.

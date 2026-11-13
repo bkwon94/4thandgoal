@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-45, AT-46, AT-47,
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The front door at 375 px has no dock and no week pill, and the menu button opens the sheet with the five rows and notes of the spec (AT-45, AT-47).
 - [x] Each of the four close ways closes the sheet, and the focus returns to the button (AT-46).
@@ -16,3 +16,6 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-45, AT-46, AT-47,
 - [x] The week report page and the rankings page keep the dock and the week pill (AT-49).
 - [ ] At 1280 px the header shows the pages inline and no menu button (AT-50).
 - [ ] The design bar of the spec ran, and `critique` and `polish` found nothing open.
+
+## Comments
+- Closes with the squash merge of the spec PR.

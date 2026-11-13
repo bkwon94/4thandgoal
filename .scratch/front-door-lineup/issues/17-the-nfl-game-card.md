@@ -8,7 +8,10 @@ Spec: `.scratch/front-door-lineup/PRD.md`. Acceptance tests AT-19.
 
 **Blocked by:** 12, 13
 
-**Status:** in-review
+**Status:** done
 
 - [x] "How does the Bears game look?" gives the NFL game card, and its margin equals the gap of the two DEF projections (AT-19).
 - [ ] Site screenshots show the card.
+
+## Comments
+- Closes with the squash merge of the spec PR.
