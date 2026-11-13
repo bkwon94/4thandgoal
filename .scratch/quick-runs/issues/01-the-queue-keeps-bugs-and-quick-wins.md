@@ -10,9 +10,9 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-6, AT-7, AT-8, AT-9, and
 
 **Status:** ready-for-agent
 
-- [ ] A push of a quick file under `.scratch/bugs/` plans a task in `Bugs` and no section `bugs`.
-- [ ] Two pushes of quick files under `.scratch/quick-wins/` into a queue with no `Quick Wins` make that section once.
-- [ ] A sweep after a merged PR completes the done quick task and its wait task, and plans no archive of `Bugs` or `Quick Wins`.
-- [ ] A sweep still archives the section of a spec feature, such as `odds`, after every task in it is complete.
-- [ ] A new tracker rule test shows that a tracked open quick file needs no row.
-- [ ] `make check-fast` passes at the root.
+- [x] A push of a quick file under `.scratch/bugs/` plans a task in `Bugs` and no section `bugs`.
+- [x] Two pushes of quick files under `.scratch/quick-wins/` into a queue with no `Quick Wins` make that section once.
+- [x] A sweep after a merged PR completes the done quick task and its wait task, and plans no archive of `Bugs` or `Quick Wins`.
+- [x] A sweep still archives the section of a spec feature, such as `odds`, after every task in it is complete.
+- [x] A new tracker rule test shows that a tracked open quick file needs no row.
+- [x] `make check-fast` passes at the root.

@@ -636,6 +636,86 @@ def words(command: list[str]) -> str:
     return " ".join(command)
 
 
+class AQuickFile(unittest.TestCase):
+    """A quick file is .scratch/bugs/<slug>.md or .scratch/quick-wins/<slug>.md. Its section name comes from a map."""
+
+    BUGS_SECTION = "6j2Gq9xBugsSect01"
+    TASK = {"id": "6j2Gr9QuickTask01", "content": "01 Fix the draw", "labels": [], "sectionId": BUGS_SECTION,
+            "description": "4ag: .scratch/bugs/fix-the-draw.md\nOn the spec branch.\n"}
+    WAIT = {"id": "6j2Gr9QuickWait01", "content": "Merge PR #50", "labels": ["ready-for-human"],
+            "sectionId": BUGS_SECTION, "description": "4ag: bugs/wait/merge-pr\nhttps://example.com/pull/50"}
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name) / "repo"
+        self.root.mkdir()
+
+    def quick_file(self, folder: str, slug: str, status: str = "in-progress") -> Path:
+        file = self.root / ".scratch" / folder / f"{slug}.md"
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(f"# Fix the {slug}\n\nKind: bug\nStatus: {status}\nBranch: `bug-{slug}`.\n")
+        return file
+
+    def commit_main(self) -> None:
+        for args in (["init", "-q", "-b", "main"], ["add", "-A"],
+                     ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "fixture"]):
+            subprocess.run(["git", "-C", str(self.root), *args], check=True, env=queue_script._clean_git_env())
+
+    def push(self, folder: str, slug: str, queue_: Queue) -> list[list[str]]:
+        file = self.quick_file(folder, slug)
+        return plan_push(load_ticket(self.root, file), queue_)
+
+    def test_a_bugs_file_goes_into_the_section_bugs_and_makes_no_section_bugs(self):
+        labels = queue().labels | set(queue_script.FLOW_LABELS)
+        existing = Queue("p1", {"Bugs": self.BUGS_SECTION}, [], labels)
+        add = self.push("bugs", "fix-the-draw", existing)[-1]
+        self.assertEqual(option(add, "--section"), f"id:{self.BUGS_SECTION}")
+        self.assertNotIn(["section", "create"], [command[:2] for command in self.push("bugs", "fix-the-draw", existing)])
+
+    def test_a_bugs_file_makes_the_section_with_its_mapped_name(self):
+        plan = self.push("bugs", "fix-the-draw", queue())
+        self.assertIn(["section", "create", "--name", "Bugs", "--project", "id:6j222rQrr58wHx9G"], plan)
+        self.assertEqual(option(plan[-1], "--section"), "Bugs")
+
+    def test_two_quick_wins_files_make_the_section_quick_wins_once(self):
+        first = self.push("quick-wins", "one", queue())
+        second = self.push("quick-wins", "two", queue())
+        # The first push makes the section. The queue read after it holds the section, so the second push does not.
+        made = Queue("p1", {"Quick Wins": "6j2Gq9xQuickWins1"}, [], queue().labels | set(queue_script.FLOW_LABELS))
+        third = self.push("quick-wins", "two", made)
+        self.assertEqual(sum(command[:2] == ["section", "create"] for command in first), 1)
+        self.assertEqual(sum(command[:2] == ["section", "create"] for command in second), 1)
+        self.assertEqual(sum(command[:2] == ["section", "create"] for command in third), 0)
+        self.assertEqual(option(first[-1], "--section"), "Quick Wins")
+        self.assertEqual(option(third[-1], "--section"), "id:6j2Gq9xQuickWins1")
+
+    def test_a_moved_quick_task_goes_to_its_mapped_section(self):
+        file = self.quick_file("quick-wins", "move-me")
+        task = {**self.TASK, "content": "move-me Fix the move-me", "sectionId": "other",
+                "description": "4ag: .scratch/quick-wins/move-me.md"}
+        plan = plan_push(load_ticket(self.root, file), Queue("p1", {}, [task], queue().labels))
+        self.assertIn(["task", "move", f"id:{task['id']}", "--project", "id:p1", "--section", "Quick Wins"], plan)
+
+    def test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs(self):
+        self.quick_file("bugs", "fix-the-draw", status="done")
+        self.commit_main()
+        both = Queue("p1", {"Bugs": self.BUGS_SECTION}, [self.TASK, self.WAIT], set())
+        self.assertEqual(queue_script.plan_sweep(self.root, both, {50: "MERGED"}), [
+            ["task", "complete", f"id:{self.TASK['id']}"],
+            ["task", "complete", f"id:{self.WAIT['id']}"],
+        ])
+
+    def test_a_sweep_never_archives_quick_wins(self):
+        self.quick_file("quick-wins", "one", status="done")
+        self.commit_main()
+        task = {**self.TASK, "sectionId": "qw", "description": "4ag: .scratch/quick-wins/one.md"}
+        wait = {**self.WAIT, "sectionId": "qw", "description": "4ag: quick-wins/wait/merge-pr"}
+        plan = queue_script.plan_sweep(self.root, Queue("p1", {"Quick Wins": "qw"}, [task, wait], set()),
+                                       {50: "MERGED"})
+        self.assertEqual(plan, [["task", "complete", f"id:{task['id']}"], ["task", "complete", f"id:{wait['id']}"]])
+
+
 class TheCommandLine(unittest.TestCase):
 
     def test_a_merge_pr_wait_needs_the_pr_number(self):

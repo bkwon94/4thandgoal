@@ -69,6 +69,16 @@ def _feature(key: str) -> str:
     return key.split("/")[1]
 
 
+# A quick file sits in one shared folder, not in a feature folder. The folder names a fixed section of its own, and
+# the sweep never archives it, because Brian drops new tasks there from his phone.
+QUICK_SECTIONS = {"bugs": "Bugs", "quick-wins": "Quick Wins"}
+
+
+def section_name(feature: str) -> str:
+    """The name of the queue section of a feature. A quick folder has a fixed name. Any other feature keeps its slug."""
+    return QUICK_SECTIONS.get(feature, feature)
+
+
 def _app_words(text: str) -> tuple[str, ...]:
     """The app labels that a text names, in the order of APPS. `both` names the site and the pipeline."""
     words = set(re.findall(r"[a-z]+", text.lower()))
@@ -280,11 +290,12 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
         update += ["--labels", ",".join(labels)]
     if update:
         plan.append(["task", "update", f"id:{task['id']}", *update])
-    section = queue.sections.get(ticket.feature)
+    name = section_name(ticket.feature)
+    section = queue.sections.get(name)
     if section is None:
-        plan.append(_section_create(ticket.feature, queue))
+        plan.append(_section_create(name, queue))
         plan.append(["task", "move", f"id:{task['id']}", "--project", f"id:{queue.project_id}",
-                     "--section", ticket.feature])
+                     "--section", name])
     elif task["sectionId"] != section:
         plan.append(["task", "move", f"id:{task['id']}", "--section", f"id:{section}"])
     # Only the merge sweep completes the task of a done ticket. A done decision ticket has no merge, so it completes
@@ -330,10 +341,11 @@ def _section_create(feature: str, queue: Queue) -> list[str]:
 def _plan_task_add(title: str, feature: str, labels: list[str], description: str, queue: Queue) -> list[list[str]]:
     """Make a task in the section of the feature, and first the section when it is missing. A command after a planned
     `section create` names the section, because its id is not known yet."""
-    section = queue.sections.get(feature)
-    plan = [] if section else [_section_create(feature, queue)]
+    name = section_name(feature)
+    section = queue.sections.get(name)
+    plan = [] if section else [_section_create(name, queue)]
     plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
-                 "--section", f"id:{section}" if section else feature,
+                 "--section", f"id:{section}" if section else name,
                  "--labels", ",".join(labels), "--description", description])
     return plan
 
@@ -455,7 +467,9 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
                 plan.append(["task", "update", f"id:{wait['id']}", "--labels", ",".join(labels)])
 
     for feature in swept:
-        section = queue.sections.get(feature)
+        if feature in QUICK_SECTIONS:
+            continue
+        section = queue.sections.get(section_name(feature))
         if section and all(task["id"] in completed for task in queue.tasks if task["sectionId"] == section):
             plan.append(["section", "archive", f"id:{section}"])
     return plan
