@@ -14,7 +14,7 @@ The orchestrator built the work, so it never writes a Test verdict of its own in
 
 ## Start the Judge
 
-Start one subagent with the Agent tool. Use `subagent_type: general-purpose` and `model: opus`. Never use `fork`, because a fork gets the context of the build.
+Start a fresh subagent with the strong model. A fresh subagent gets none of the context of the build.
 
 Give it the brief below, word for word, with the slug, the absolute path of the Spec worktree, and the two SHAs filled in. Add nothing to the brief. Give it no diff, no ticket, no PRD, no build note, and no summary of the work.
 

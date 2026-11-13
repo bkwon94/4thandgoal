@@ -20,5 +20,4 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 
 ## Holds
 
-- `verdict` is not yet a required check on `main`, so nothing blocks the merge of a spec PR with a FAIL. Brian adds it in Settings, Rules: a ruleset for `main` with `verdict` required, and the Repository admin role on the bypass list, so `publish` can still push to `main`.
 - Brian runs one `make publish` by hand under the hook before the week 9 publish.

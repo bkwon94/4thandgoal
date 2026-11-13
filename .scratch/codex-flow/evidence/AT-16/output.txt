@@ -1,0 +1,150 @@
+# Trust step that came first: Codex loads the project .codex/config.toml only for a trusted project. ~/.codex/config.toml holds it:
+$ grep -A1 '^\[projects."/Users/brian.kwon/repos/4thandgoal"\]' ~/.codex/config.toml
+[projects."/Users/brian.kwon/repos/4thandgoal"]
+trust_level = "trusted"
+[exit 0]
+
+$ cmp .codex/config.toml .claude/worktrees/codex-flow/.codex/config.toml && echo same   # the main checkout holds the branch copy
+same
+
+$ git worktree add .claude/worktrees/codex-flow-probe -b codex-flow-probe codex-flow
+Preparing worktree (new branch 'codex-flow-probe')
+Updating files: 100% (6238/6238), done.
+HEAD is now at d192e8a7 Mark codex-flow 06 in-review
+[exit 0]
+
+# Attempt 1: the probe worktree is fresh, with no node_modules and no .venv.
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at16.last.txt 'Run these two commands exactly, one after the other, and report the full output of each:
+1. git -C .claude/worktrees/codex-flow-probe commit --allow-empty -m probe
+2. gh api repos/{owner}/{repo} --jq .name
+Run nothing else.' < /dev/null
+[exit 0]
+Session header:
+workdir: /Users/brian.kwon/repos/4thandgoal
+model: gpt-6.1-sol
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+Last message:
+1. `git -C .claude/worktrees/codex-flow-probe commit --allow-empty -m probe`
+
+```text
+make check-fast..........................................................Failed
+- hook id: check-fast
+- exit code: 2
+
+  ==> scripts: check-fast
+  .............................................
+  ----------------------------------------------------------------------
+  Ran 45 tests in 0.943s
+
+  OK
+  ==> site: check-fast
+
+  > 4thandgoal-site@0.1.0 check:fast /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow-probe/apps/site
+  > CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && pnpm test
+
+  node:internal/modules/package_json_reader:256
+    throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+          ^
+
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'smol-toml' imported from /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow-probe/apps/site/scripts/client-build.mjs
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:256:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:854:18)
+      at defaultResolve (node:internal/modules/esm/resolve:984:11)
+      at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:780:12)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:704:25)
+      at ModuleLoader.resolve (node:internal/modules/esm/loader:687:38)
+      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:305:38)
+      at ModuleJob._link (node:internal/modules/esm/module_job:175:49) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }
+
+  Node.js v22.17.0
+   ELIFECYCLE  Command failed with exit code 1.
+   WARN   Local package.json exists, but node_modules missing, did you mean to install?
+  make: *** [check-fast] Error 1
+```
+
+2. `gh api repos/{owner}/{repo} --jq .name`
+
+```text
+4thandgoal
+```
+
+$ git log -1 --oneline codex-flow-probe   # after attempt 1
+d192e8a7 Mark codex-flow 06 in-review
+
+# The hook ran in the Codex shell with Node v22.17.0 and no node_modules in the probe worktree. A ticket builder runs pnpm install, uv sync, and the Node 24 PATH step first (build.md).
+$ cd .claude/worktrees/codex-flow-probe && pnpm install --frozen-lockfile && uv sync --all-packages   # with Node 24 first on PATH, run by the agent, not by Codex
+pnpm exit 0
+uv exit 0
+
+# Attempt 2: the same session command, with the Node 24 PATH step on the commit.
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at16b.last.txt 'Run these two commands exactly, one after the other, and report the full output of each:
+1. PATH=$HOME/.nvm/versions/node/v24.15.0/bin:$PATH git -C .claude/worktrees/codex-flow-probe commit --allow-empty -m probe
+2. gh api repos/{owner}/{repo} --jq .name
+Run nothing else.' < /dev/null
+[exit 0]
+Session header:
+workdir: /Users/brian.kwon/repos/4thandgoal
+model: gpt-6.1-sol
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+Last message:
+1. No output. The commit command remains active.
+
+2. Full output:
+```text
+4thandgoal
+```
+
+I started command 2 before command 1 finished. This did not meet your required sequence.
+
+$ git log -1 codex-flow-probe
+commit d192e8a762ca6e765e60992bd8de42ae7946551e
+Author: brianbuoy <brian.kwon@buoyhealth.com>
+Date:   Thu Nov 12 22:14:59 2026 -0500
+
+    Mark codex-flow 06 in-review
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+# Attempt 2 ended with the commit still live, and the end of the session stopped it. git log -1 --oneline codex-flow-probe printed d192e8a7 after it.
+# Attempt 3: the same command, with an instruction to wait for the hook.
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at16c.last.txt 'Run these two commands exactly, one after the other, and report the full output of each:
+1. PATH=$HOME/.nvm/versions/node/v24.15.0/bin:$PATH git -C .claude/worktrees/codex-flow-probe commit --allow-empty -m probe
+2. gh api repos/{owner}/{repo} --jq .name
+Command 1 runs a pre-commit hook that takes up to 5 minutes. Wait for command 1 to exit before you start command 2, and do not end your turn while it runs. Run nothing else.' < /dev/null
+[exit 0]
+Session header:
+workdir: /Users/brian.kwon/repos/4thandgoal
+model: gpt-6.1-sol
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+Last message:
+1. Exit code: `0`. Full output:
+
+```text
+make check-fast..........................................................Passed
+[codex-flow-probe 0c1915b3] probe
+```
+
+2. Exit code: `0`. Full output:
+
+```text
+4thandgoal
+```
+
+$ git log -1 codex-flow-probe
+commit 0c1915b3397e00fe7cb6930cbd7404f6cc740e1a
+Author: brianbuoy <brian.kwon@buoyhealth.com>
+Date:   Thu Nov 12 22:36:41 2026 -0500
+
+    probe
+
+# Ticket 02 holds an earlier proof of 2026-11-12: a default codex exec at the main checkout root committed 0e738e1c probe in the probe worktree with the hook passed, and gh api printed 4thandgoal.
+
+$ git worktree remove --force .claude/worktrees/codex-flow-probe && git branch -D codex-flow-probe
+Deleted branch codex-flow-probe (was 0c1915b3).
+[exit 0]

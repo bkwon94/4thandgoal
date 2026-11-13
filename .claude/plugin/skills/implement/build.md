@@ -9,6 +9,8 @@ A new worktree has no `node_modules` and no `.venv`, and the hook installs nothi
 1. `pnpm install --frozen-lockfile` at the root of the worktree.
 2. `uv sync --all-packages` at the root of the worktree.
 
+Put Node 24 or later first on PATH (see Commits in AGENTS.md). Your own merge commits and `make check-fast` runs need it too.
+
 ## Stage 1: the build
 
 ### The Spec branch
@@ -31,7 +33,7 @@ For each ticket `<NN>` of the frontier:
 
 1. Run `git worktree add .claude/worktrees/<slug>-<NN> -b <slug>-<NN> <slug>` in the main checkout.
 2. Do the setup of the worktree.
-3. Start one subagent with the Agent tool. Give it the brief below. Start the subagents of one frontier in one message, so they run in parallel.
+3. Start a fresh subagent. Give it the brief below. Start the subagents of one frontier at the same time, within the limit of the harness.
 
 The brief of the subagent:
 
@@ -39,10 +41,12 @@ The brief of the subagent:
 Build ticket <NN> of the feature <slug> in the 4thandgoal repo.
 
 Work only in the worktree <absolute path of .claude/worktrees/<slug>-<NN>>, on the branch <slug>-<NN>.
-Read CLAUDE.md, the CLAUDE.md of each app you change, .scratch/<slug>/PRD.md, .scratch/<slug>/ACCEPTANCE.md,
+Read AGENTS.md, the AGENTS.md of each app you change, .scratch/<slug>/PRD.md, .scratch/<slug>/ACCEPTANCE.md,
 and .scratch/<slug>/issues/<NN>-*.md.
 
-1. Call the Skill tool for `tdd`. Build the behavior of the ticket test-first, with real data and no mock.
+Put Node 24 or later first on PATH (see Commits in AGENTS.md).
+
+1. Load the skill `tdd`. Build the behavior of the ticket test-first, with real data and no mock.
 2. Tick each box of the ticket that a test or a real run proves. Leave the Status line as it is.
 3. Run `make check-fast BASE=<slug>` at the root of the worktree. It must pass.
 4. Commit with a plain `git commit`. The hook must pass. Never use --no-verify.
@@ -63,7 +67,7 @@ Merge one ticket at a time, in the Spec worktree. The other subagents continue m
 
 1. Write down the head of the Spec branch: `git rev-parse HEAD`. This is the head before the merge.
 2. Run `git merge --no-edit <slug>-<NN>`.
-3. If the merge has a conflict, resolve it yourself in the Spec worktree. Call the Skill tool for `resolving-merge-conflicts`. Start no subagent for the conflict: a send-back costs 10 to 40 minutes per ticket. Commit the merge with the hook. If the hook fails, go to step 5 with its output.
+3. If the merge has a conflict, resolve it yourself in the Spec worktree. Load the skill `resolving-merge-conflicts`. Start no subagent for the conflict: a send-back costs 10 to 40 minutes per ticket. Commit the merge with the hook. If the hook fails, go to step 5 with its output.
 4. Run `make check-fast BASE=main`. It takes about 1 minute. The full check runs in CI on the PR, so no ticket merge waits for it.
 5. If the check fails, run `git reset --hard <head before the merge>`. Only then send the failure to the subagent of the ticket, with the conflicted files and the red output. A red check never stays on the Spec branch.
 6. If the check passes, set the Status of the ticket to `in-review` in the Spec worktree. Commit it with the message `Mark <slug> <NN> in-review`. Then run `python3 scripts/queue.py push <path of the ticket>`.
@@ -83,13 +87,13 @@ If a subagent returns `STUCK`, or a ticket conflicts with the spec or an ADR:
 
 ## Stage 2: the review
 
-1. In the Spec worktree, call the Skill tool for `code-review`. The fixed point is `main`. The spec is `.scratch/<slug>/PRD.md`.
+1. In the Spec worktree, load the skill `code-review`. The fixed point is `main`. The spec is `.scratch/<slug>/PRD.md`.
 2. If you do not fix a finding, write down its id and the reason, such as a conflict with an ADR. The PR body lists it.
 3. List the files that each finding to fix changes.
 4. Sort the findings into groups that share no file. Two findings that share a file go in the same group. Give each group a letter: `a`, `b`, and so on.
 5. Check that no two groups share a file. Write the table of the groups, with the findings and the files of each.
 6. For each group, run `git worktree add .claude/worktrees/<slug>-fix-<letter> -b <slug>-fix-<letter> <slug>` in the main checkout. Do the setup of the worktree.
-7. Start one subagent per group with the Agent tool, all in one message, so they run in parallel. Give each one the brief below.
+7. Start a fresh subagent per group. Start the subagents of all groups at the same time, within the limit of the harness. Give each one the brief below.
 8. Merge each fix branch into the Spec branch under the merge rule of stage 1, one at a time. Read `<slug>-fix-<letter>` for `<slug>-<NN>`. Skip steps 6 and 9, the Status and the frontier.
 9. Run `make check-fast BASE=main` again. The CI check `Check` on the PR runs the full check.
 
@@ -99,7 +103,9 @@ The brief of a fix subagent:
 Fix the review findings of group <letter> of the feature <slug> in the 4thandgoal repo.
 
 Work only in the worktree <absolute path of .claude/worktrees/<slug>-fix-<letter>>, on the branch <slug>-fix-<letter>.
-Read CLAUDE.md, the CLAUDE.md of each app you change, and .scratch/<slug>/PRD.md.
+Read AGENTS.md, the AGENTS.md of each app you change, and .scratch/<slug>/PRD.md.
+
+Put Node 24 or later first on PATH (see Commits in AGENTS.md).
 
 The findings, each with its id, its text, and its files:
 <the findings of the group>

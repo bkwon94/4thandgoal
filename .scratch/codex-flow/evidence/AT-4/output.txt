@@ -1,0 +1,19 @@
+$ cat CLAUDE.md apps/site/CLAUDE.md apps/pipeline/CLAUDE.md
+@AGENTS.md
+@AGENTS.md
+@AGENTS.md
+[exit 0]
+
+$ git ls-files '*CLAUDE.md'
+CLAUDE.md
+apps/pipeline/CLAUDE.md
+apps/site/CLAUDE.md
+[exit 0]
+
+$ wc -l CLAUDE.md apps/site/CLAUDE.md apps/pipeline/CLAUDE.md
+       1 CLAUDE.md
+       1 apps/site/CLAUDE.md
+       1 apps/pipeline/CLAUDE.md
+       3 total
+[exit 0]
+

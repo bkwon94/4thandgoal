@@ -3,7 +3,9 @@ Prints the offenses of a rule test in one shape: the place and the rule id, what
 Every rule test uses it, so an agent reads one shape. It imports no pipeline code. See ADR 0014.
 """
 import os
+import subprocess
 from dataclasses import dataclass
+from pathlib import Path
 
 
 def clean_git_env() -> dict[str, str]:
@@ -16,6 +18,23 @@ def clean_git_env() -> dict[str, str]:
     for name in ("GIT_DIR", "GIT_INDEX_FILE", "GIT_WORK_TREE"):
         env.pop(name, None)
     return env
+
+
+def repo_root() -> Path:
+    """The repo root, from git. The rule tests read files there, not in apps/pipeline."""
+    result = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"],
+        cwd=Path(__file__).resolve().parent, check=True, capture_output=True, text=True, env=clean_git_env(),
+    )
+    return Path(result.stdout.strip())
+
+
+def tracked_files(root: Path) -> list[str]:
+    """The paths that git tracks, from the repo root. A staged file counts, so the hook sees a new one."""
+    result = subprocess.run(
+        ["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True, env=clean_git_env()
+    )
+    return result.stdout.splitlines()
 
 
 @dataclass(frozen=True)
