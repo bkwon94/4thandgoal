@@ -84,7 +84,7 @@ export function Suggestions({
             setShown(null);
             onMore(!moreOpen);
           }}
-          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-2 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-1 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
         >
           <span>More</span>
           <ChevronDownIcon
@@ -126,7 +126,7 @@ export function Suggestions({
               animate={off ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }}
               transition={off ? fadeIn(FAST, index * STAGGER) : { ...CHIP_GLIDE, layout: GLIDE, opacity: fadeIn(FAST, index * STAGGER) }}
-              className="press door-sheen flex min-h-touch max-w-chip min-w-0 flex-initial snap-start items-center rounded-pill border border-door-hair bg-card px-sp-2 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+              className="press door-sheen flex min-h-touch max-w-chip min-w-0 flex-initial snap-start items-center rounded-pill border border-door-hair bg-card px-sp-1 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
             >
               <span aria-hidden className="max-w-full truncate text-body leading-tight font-semibold text-ink">
                 {topic.chip}

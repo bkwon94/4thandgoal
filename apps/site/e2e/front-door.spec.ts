@@ -85,10 +85,13 @@ test("the 3 widest chip labels fit whole in one row with More at 375px (AT-42)",
     cut: [...element.querySelectorAll("button span")].filter((label) => label.scrollWidth > label.clientWidth).map((label) => label.textContent),
   }));
   const last = (await chips.last().boundingBox())!;
-  // The row has a 16 px gutter, so the last chip may end at 359 px.
-  console.log(`the row of ${widest.join(", ")} ends at ${Math.round(last.x + last.width)} px of 359 px at 375 px`);
+  // The row has a 16 px gutter, so the last chip may end at 359 px. Linux and Android render text wider than macOS, so
+  // the row keeps at least 8 px of slack on the test machine. A thin margin then fails here, not only on a wider font.
+  const end = Math.round(last.x + last.width);
+  console.log(`the row of ${widest.join(", ")} ends at ${end} px of 359 px at 375 px, ${359 - end} px of slack`);
   expect(fit.scrolls, "the Suggestions row scrolls sideways").toBe(false);
   expect(fit.cut, "no label cuts with an ellipsis").toEqual([]);
+  expect(end, "the row keeps at least 8 px of slack before 359 px").toBeLessThanOrEqual(359 - 8);
 });
 
 /* The phone of the run: its viewport and touch. A group cannot pick the browser, so the project keeps its own. */
