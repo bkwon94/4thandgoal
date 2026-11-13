@@ -293,10 +293,13 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
     plan = [["label", "create", "--name", label] for label in labels
             if label in FLOW_LABELS and label not in queue.labels]
     update = []
-    if task["content"] != ticket.title:
-        update += ["--content", ticket.title]
-    if _bare_links(task["description"]) != ticket.description:
-        update += ["--description", ticket.description]
+    # The task of a quick file is often a task that Brian filed and `take` claimed. It keeps the title and the text of
+    # Brian, so a push changes only its labels and its section.
+    if not _is_quick(ticket.key):
+        if task["content"] != ticket.title:
+            update += ["--content", ticket.title]
+        if _bare_links(task["description"]) != ticket.description:
+            update += ["--description", ticket.description]
     if set(labels) != set(task["labels"]):
         update += ["--labels", ",".join(labels)]
     if update:

@@ -701,6 +701,18 @@ class AQuickFile(unittest.TestCase):
         ticket = load_ticket(self.root, self.quick_file("bugs", "pick-owner"))
         self.assertEqual(ticket.title, "Fix the pick-owner")
 
+    def test_a_push_after_a_take_keeps_the_title_and_the_text_of_brian(self):
+        file = self.quick_file("bugs", "pick-owner")
+        filed = {"id": "6j2Gr9TakeTask01", "content": "Pick owner is wrong", "labels": ["phone"],
+                 "sectionId": self.BUGS_SECTION, "description": "It shows the first owner.\nSee week 8."}
+        sections = {"Bugs": self.BUGS_SECTION}
+        _, take = queue_script.plan_take("Pick owner is wrong", ".scratch/bugs/pick-owner.md",
+                                         Queue("p1", sections, [filed], set()))
+        # The queue after the take holds the description that the take wrote.
+        taken = {**filed, "description": option(take[0], "--description")}
+        plan = plan_push(load_ticket(self.root, file), Queue("p1", sections, [taken], set(queue_script.FLOW_LABELS)))
+        self.assertEqual(plan, [["task", "update", "id:6j2Gr9TakeTask01", "--labels", "phone,in-progress"]])
+
     def test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs(self):
         self.quick_file("bugs", "fix-the-draw", status="done")
         self.commit_main()
