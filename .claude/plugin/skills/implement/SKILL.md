@@ -12,7 +12,7 @@ The agent records the evidence of each acceptance test. The agent never gives a 
 
 ## Before you start
 
-1. Check that these global skills are in the available skill list: `tdd`, `code-review`, `resolving-merge-conflicts`, `agent-browser`. The `cpc` skills ship with this skill, so do not check them.
+1. Check that these global skills are in the available skill list: `tdd`, `code-review`, `resolving-merge-conflicts`, `agent-browser`. The `4ag` skills ship with this skill, so do not check them.
 2. If one is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps.
 3. Check that the sandbox allows a write to `.git` and a call of `gh`. Each probe is a read that changes nothing. Run these two commands in the main checkout:
    - `test -w "$(git rev-parse --git-common-dir)"`

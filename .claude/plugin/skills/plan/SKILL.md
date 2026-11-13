@@ -12,7 +12,7 @@ A decision ticket records a choice. It writes no product code. If you want to bu
 
 ## Before you start
 
-1. Check that these global skills are in the available skill list: `grilling`, `domain-modeling`, `research`, `prototype`. The `cpc` skills ship with this skill, so do not check them.
+1. Check that these global skills are in the available skill list: `grilling`, `domain-modeling`, `research`, `prototype`. The `4ag` skills ship with this skill, so do not check them.
 2. If one is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps.
 3. Read `docs/agents/issue-tracker.md` and the Workflow section of `GLOSSARY.md`.
 
