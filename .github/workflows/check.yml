@@ -80,17 +80,18 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ steps.playwright.outputs.version }}
+          # The key names the browsers, so a cache that holds Chromium alone does not hit.
+          key: ${{ runner.os }}-playwright-${{ steps.playwright.outputs.version }}-chromium-webkit
 
-      # The readability floor of the site runs in Chromium. Chromium alone is enough, because the floor reads layout and color.
-      - name: Install Chromium for the readability floor
+      # The readability floor reads layout and color in Chromium. The passphrase test runs in WebKit, for the iOS keyboard.
+      - name: Install Chromium and WebKit for the readability floor
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm --dir apps/site exec playwright install --with-deps chromium
+        run: pnpm --dir apps/site exec playwright install --with-deps chromium webkit
 
-      # The cache holds the browser only. The system packages of Chromium live outside it, so a hit installs them.
-      - name: Install the system packages of Chromium
+      # The cache holds the browsers only. The system packages of Chromium and WebKit live outside it, so a hit installs them.
+      - name: Install the system packages of Chromium and WebKit
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: pnpm --dir apps/site exec playwright install-deps chromium
+        run: pnpm --dir apps/site exec playwright install-deps chromium webkit
 
       - name: Run the check of the site
         run: make check-site
