@@ -5,7 +5,12 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 let open = false;
+let raised = false;
 const listeners = new Set<() => void>();
+
+/* An inset under this height is no keyboard: a toolbar of the browser or a rounding step can shrink the visual viewport
+   by a few px, and a part that pins above the keyboard must not jump for it. */
+const RAISED_MIN = 80;
 
 /* The root carries data-keyboard while the keyboard is open, so the CSS can move what sticks to the foot of the page. */
 function setOpen(next: boolean) {
@@ -20,9 +25,22 @@ function subscribe(listener: () => void) {
   return () => listeners.delete(listener);
 }
 
+/* Raised is true while the keyboard covers part of the layout viewport, so a part can pin itself right above it. */
+function setRaised(next: boolean) {
+  if (raised === next) return;
+  raised = next;
+  listeners.forEach((listener) => listener());
+}
+
 /* True while a field that opens the keyboard has the focus. The server render has no keyboard. */
 export function useKeyboardOpen(): boolean {
   return useSyncExternalStore(subscribe, () => open, () => false);
+}
+
+/* True while a field has the focus and the keyboard covers the foot of the layout viewport, as on iOS Safari. Then
+   --keyboard-inset holds the height that it covers. Where the layout viewport shrinks with the keyboard, it stays false. */
+export function useKeyboardRaised(): boolean {
+  return useSyncExternalStore(subscribe, () => raised, () => false);
 }
 
 /*
@@ -43,6 +61,7 @@ export function useKeyboardField() {
       if (!view) return;
       const inset = Math.max(0, root.clientHeight - view.height - view.offsetTop);
       root.style.setProperty("--keyboard-inset", `${Math.round(inset)}px`);
+      setRaised(inset >= RAISED_MIN);
     };
     place();
     // The keyboard opens over about 250 ms, and iOS scrolls the visual viewport to show the field, so each step places it again.
@@ -52,6 +71,7 @@ export function useKeyboardField() {
       view?.removeEventListener("resize", place);
       view?.removeEventListener("scroll", place);
       root.style.removeProperty("--keyboard-inset");
+      setRaised(false);
       setOpen(false);
     };
   }, [focused]);

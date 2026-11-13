@@ -4,6 +4,7 @@
  * sideways (AT-4 of front-door), and that the 3 widest chip labels show whole in that row at 375 px (AT-42).
  * It also checks that one tap on Send sends while the keyboard is open (ticket 34), that Send closes the keyboard, and
  * that each tap on a Suggestion chip acts while the keyboard is open: the first shows its fact, the second opens it (ticket 37).
+ * It checks that the ask box sits right above the keyboard of iOS, in the empty Thread and in a Thread with an entry.
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
@@ -178,5 +179,37 @@ test.describe("Send on a phone with the keyboard open", () => {
     await chip.tap();
     await expect(row.getByRole("button", { name }), "the second tap on the chip picks it").toHaveCount(0);
     await expect(field, "a chip closes the keyboard").not.toBeFocused();
+  });
+});
+
+test.describe("the ask box on a phone with the keyboard open", () => {
+  test.use({ ...phone, reducedMotion: "no-preference" });
+
+  /* The space between the foot of the ask box and the top of the fake keyboard, once the glide is still. */
+  async function gapOverKeyboard(page: Page) {
+    const form = page.getByRole("form", { name: "Ask" });
+    return form.evaluate((element) => Math.round(innerHeight - 336 - element.getBoundingClientRect().bottom));
+  }
+
+  test("the ask box sits right above the keyboard in the empty Thread and in a Thread with an entry", async ({ page }) => {
+    await fakeKeyboard(page);
+    await page.goto(`${server.url}${DOOR}`);
+    await page.getByRole("dialog").getByRole("button").first().tap();
+    const field = page.getByRole("textbox", { name: "Ask a question" });
+    // The empty Thread holds the ask box at its center. The focus pins it right above the keyboard: the dock pads it by 12 px.
+    await field.tap();
+    await expect.poll(() => gapOverKeyboard(page), { message: "the ask box of the empty Thread sits right above the keyboard" }).toBe(12);
+    // The blur gives the dock back its place at the center, with the team link under the ask box.
+    await field.blur();
+    await expect(page.getByRole("button", { name: /Change the team/ })).toBeVisible();
+    await expect.poll(() => gapOverKeyboard(page)).toBeLessThan(0);
+    // A first question gives the Thread an entry, so the dock sticks to the foot. The keyboard inset lifts it right above the keyboard.
+    await field.tap();
+    await field.fill("Who should I start?");
+    await page.getByRole("button", { name: "Send" }).tap();
+    await expect(page.getByRole("button", { name: "Clear" })).toBeVisible();
+    await field.tap();
+    await expect(field).toBeFocused();
+    await expect.poll(() => gapOverKeyboard(page), { message: "the ask box of the Thread sits right above the keyboard" }).toBe(12);
   });
 });
