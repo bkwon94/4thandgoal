@@ -1,5 +1,5 @@
-ACCEPTANCE.md: 5cf232e53990dba967c615c938aa1588964aefdd
-EVIDENCE.md: bd4256aa0ce47791a4873d7d7a959d8db295b96b
+ACCEPTANCE.md: 7a0da4c3422e11e1c47bfb530980ea18dec624a9
+EVIDENCE.md: b8d1961f33e28d9dee2379c8e43fc0518cf2711e
 
 Test verdicts
 AT-1: PASS
@@ -36,11 +36,11 @@ AT-31: PASS
 AT-32: PASS
 AT-33: PASS
 AT-34: PASS
-AT-35: FAIL The Then line needs a trade row in the answer to "What moves happened this week?", but `stream.txt` and the `this-week-*` shots have only free-agent rows, and the trade rows come from a different question about week 9.
+AT-35: PASS
 AT-36: PASS
 AT-37: PASS
-AT-38: FAIL The line "Red marks Your team" is not true in the AT-35 feed, where the `this-week-*` shots draw the Bo Girds row with the same gray dot and black name as every other team.
-AT-39: FAIL The Then line needs "no roll of digits", but the 22 test names in `output.txt` check only "no slide and no blur", and no file covers the digits.
+AT-38: PASS
+AT-39: PASS
 AT-40: PASS
 AT-41: PASS
 AT-42: PASS
