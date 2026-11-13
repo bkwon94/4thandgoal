@@ -127,3 +127,17 @@ enabled = false
 `cpc@cpc-local` is the old name of the same plugin, at the old folder `~/repos/cpcfantasyfootball`.
 
 Check: in a checkout that holds `.agents/skills/`, `codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*:' | sort | uniq -c` shows each of the six skills with the count 1.
+
+## 8. Add the skill `diagnosing-bugs`
+
+Why: `4ag:quick` checks for the skill `diagnosing-bugs`. In Codex, a skill counts when `~/.agents/skills/<name>/SKILL.md` exists. Codex lists it as `mattpocock-skills:diagnosing-bugs`, the same name as in Claude.
+
+Run the `ln` one time only. A second run puts a link inside the target folder, and the check then reads a wrong path.
+
+The source is in the cache of the `mattpocock-skills` plugin. The path holds a version number. Change `1.3.1` if the plugin updates.
+
+```
+mkdir -p ~/.agents/skills && ln -s ~/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/1.3.1/skills/engineering/diagnosing-bugs ~/.agents/skills/diagnosing-bugs
+```
+
+Check: `test -f ~/.agents/skills/diagnosing-bugs/SKILL.md && echo ok` prints `ok`.

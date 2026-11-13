@@ -41,6 +41,8 @@ The repo plugin `4ag` takes an idea to a merged spec. Run its skills in this ord
 5. `4ag:implement <feature>` builds each ticket on its ticket branch, merges it into the spec branch, records the evidence in `EVIDENCE.md`, has the Judge write `VERDICTS.md`, and opens one PR to `main`.
 6. Brian posts no comment unless he gives a FAIL. `4ag:review <PR number>` does one round of feedback per run. The check `verdict` passes when each test has PASS from the Judge and no FAIL from Brian, and Brian merges.
 
+A bug or a small change skips the spec flow. Run `4ag:quick <description or queue task>` instead. It writes a quick file of up to five items of one kind. It builds each item with `diagnosing-bugs` or `tdd`, has a fresh Judge give each Test verdict, and opens one PR. ADR 0033 sets the rules.
+
 ## The harness words
 
 The 4ag skills run in Claude Code and in Codex. The skill text uses neutral words. This table maps each one to the tool of each harness.
