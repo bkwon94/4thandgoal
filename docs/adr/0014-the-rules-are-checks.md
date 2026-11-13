@@ -78,7 +78,7 @@ The agent must choose to read the next level. A README also serves people and ea
 the rule in one place.
 
 `tests/test_rule_readmes.py` holds the rules. The rule ids are `readme/missing`, `readme/headings`,
-`readme/length`, and `readme/no-claude-md`. The `CLAUDE.md` rule reads `git ls-files`, so a staged
+`readme/length`, and `readme/no-nested-rules-file`. The last rule covers `CLAUDE.md` and `AGENTS.md`. It reads `git ls-files`, so a staged
 file counts. The test checks that each README exists and has the right shape. It cannot check that
 the text is true, so review checks that.
 

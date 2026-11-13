@@ -1,0 +1,45 @@
+# A direct instrument: the brief is encrypted in the session log, so the child reads the first three lines of its own brief back.
+# The session starts at the main checkout root, /Users/brian.kwon/repos/4thandgoal, on main, with the prep of the first round. Codex CLI: codex-cli 0.167.2. Spec worktree head: 42783a05.
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at19r2.last.txt '$4ag:implement codex-flow
+
+This is a test of one step only. Do not run "Before you start", and do not run any other stage.
+Do only stage 1 "Build one ticket" step 3 of build.md, for ticket 06 of codex-flow: start one fresh subagent exactly as that step says, with the brief of the subagent from build.md.
+In the brief, use <slug> = codex-flow, <NN> = 06, and the absolute worktree path /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow-06.
+Add one line at the end of the brief: "Do no work. Reply with only the first three lines of this brief, word for word."
+Do not run step 1 or step 2: do not make the worktree or the branch. Change no file.
+Wait for the subagent to reply. Then end with its reply, word for word, and the value of fork_turns that you used.' < /dev/null
+[exit 0]
+Last message of the parent:
+Build ticket 06 of the feature codex-flow in the 4thandgoal repo.
+
+Work only in the worktree /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow-06, on the branch codex-flow-06.
+
+fork_turns: "none"
+
+# Parent log: ~/.codex/sessions/2026/11/12/rollout-2026-11-12T22-50-57-01a1d307-aa90-7e91-ad3d-9225b8a390f8.jsonl
+# Child log:  ~/.codex/sessions/2026/11/12/rollout-2026-11-12T22-51-13-01a1d307-eaaa-7051-820e-8377a5ed6894.jsonl
+
+# The parent reads build.md, then calls spawn_agent. The brief (message) is encrypted, so only its length shows.
+$ jq -c 'select(.payload.type=="custom_tool_call" or .payload.type=="function_call") | {line: input_line_number, ts: .timestamp, name: .payload.name, input: (.payload.input // (.payload.arguments | fromjson | .message |= (.[0:16] + "...[encrypted, \(length) chars]")))}' rollout-2026-11-12T22-50-57-01a1d307-aa90-7e91-ad3d-9225b8a390f8.jsonl
+{"line":18,"ts":"2026-11-13T03:51:03.194Z","name":"exec","input":"text(await tools.exec_command({cmd:\"cat /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow/.claude/plugin/skills/implement/build.md\",max_output_tokens:10000}));\n"}
+{"line":23,"ts":"2026-11-13T03:51:13.829Z","name":"spawn_agent","input":{"task_name":"codex_flow_06","fork_turns":"none","message":"gAAAAABq9okxsIOS...[encrypted, 2040 chars]"}}
+{"line":29,"ts":"2026-11-13T03:51:16.401Z","name":"wait_agent","input":{"timeout_ms":10000,"message":null}}
+
+# The child session: its parent, its cwd, and its agent path.
+$ jq -c 'select(.type=="session_meta") | .payload | {id, parent_thread_id, cwd, thread_source, agent_path}' rollout-2026-11-12T22-51-13-01a1d307-eaaa-7051-820e-8377a5ed6894.jsonl
+{"id":"01a1d307-eaaa-7051-820e-8377a5ed6894","parent_thread_id":"01a1d307-aa90-7e91-ad3d-9225b8a390f8","cwd":"/Users/brian.kwon/repos/4thandgoal","thread_source":"subagent","agent_path":"/root/codex_flow_06"}
+
+# The child gets the brief as one NEW_TASK message (line 13), makes no tool call, and replies at line 17.
+$ jq -c 'select(.payload.type=="function_call" or .payload.type=="custom_tool_call") | input_line_number' rollout-2026-11-12T22-51-13-01a1d307-eaaa-7051-820e-8377a5ed6894.jsonl   # tool calls of the child
+(no output: the child makes no tool call)
+$ sed -n 17p rollout-2026-11-12T22-51-13-01a1d307-eaaa-7051-820e-8377a5ed6894.jsonl | jq -c '{ts: .timestamp, role: .payload.role, text: .payload.content[0].text}'
+{"ts":"2026-11-13T03:51:17.995Z","role":"assistant","text":"Build ticket 06 of the feature codex-flow in the 4thandgoal repo.\n\nWork only in the worktree /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow-06, on the branch codex-flow-06."}
+
+# The reply as the parent gets it (parent log line 36):
+$ sed -n 36p rollout-2026-11-12T22-50-57-01a1d307-aa90-7e91-ad3d-9225b8a390f8.jsonl | jq -c '{ts: .timestamp, author: .payload.author, recipient: .payload.recipient, text: .payload.content[0].text}'
+{"ts":"2026-11-13T03:51:18.386Z","author":"/root/codex_flow_06","recipient":"/root","text":"Message Type: FINAL_ANSWER\nTask name: /root\nSender: /root/codex_flow_06\nPayload:\nBuild ticket 06 of the feature codex-flow in the 4thandgoal repo.\n\nWork only in the worktree /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow-06, on the branch codex-flow-06."}
+
+# The parent made no worktree and no branch for ticket 06:
+$ git worktree list | grep codex-flow; git branch --list 'codex-flow*'
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow                                                                 42783a05 [codex-flow]
++ codex-flow

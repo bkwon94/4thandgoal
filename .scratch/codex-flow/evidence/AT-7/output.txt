@@ -1,0 +1,3 @@
+$ grep -rn 'Skill tool\|Agent tool' .claude/plugin/skills
+[exit 1]
+

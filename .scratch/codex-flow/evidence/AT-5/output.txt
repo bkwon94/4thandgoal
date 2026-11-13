@@ -1,0 +1,13 @@
+$ claude -p "In this repo, which branch does a ticket branch merge into, and with which git command?" < /dev/null
+A ticket branch merges into its spec branch, with `git merge --no-edit`. The merge happens only after the check passes.
+
+- **Ticket branch:** `<slug>-<NN>`. It is local, starts from the spec branch, and has its own worktree.
+- **Spec branch:** `<slug>`. It starts from `main`.
+- **After the tickets:** one PR goes from the spec branch to `main` as a squash merge.
+
+There is one exception. The tickets of the spec `.scratch/one/` still merge to `main`, because that spec builds the flow itself.
+
+The source is the "The flow" section of `AGENTS.md`, items 3 to 5.
+SessionEnd hook [bun run ${CLAUDE_PLUGIN_ROOT}/hooks/session-end.ts] failed: Hook cancelled
+[exit 0]
+

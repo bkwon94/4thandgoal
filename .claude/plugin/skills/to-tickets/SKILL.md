@@ -24,7 +24,7 @@ Then complete the wait task of the tests: `python3 scripts/queue.py wait <slug> 
 
 ## Steps
 
-1. Call the Skill tool for `to-tickets`. Do its steps 1 to 4, with the changes below.
+1. Load the skill `to-tickets`. Do its steps 1 to 4, with the changes below.
 2. In the breakdown that Brian approves, show the app of each ticket and the acceptance tests that it makes pass.
 3. After Brian approves, write one file for each ticket in the format below. Number from `01`, blockers first. Do not use the template of `to-tickets`.
 4. Give each acceptance test at least one ticket that makes it pass.

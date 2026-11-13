@@ -1,0 +1,12 @@
+$ git diff --name-only main...codex-flow -- apps/
+apps/pipeline/AGENTS.md
+apps/pipeline/CLAUDE.md
+apps/pipeline/tests/rule_report.py
+apps/pipeline/tests/test_rule_harness.py
+apps/pipeline/tests/test_rule_readmes.py
+apps/pipeline/tests/test_rule_tracker.py
+apps/site/AGENTS.md
+apps/site/CLAUDE.md
+apps/site/src/readme-rule.test.ts
+[exit 0]
+

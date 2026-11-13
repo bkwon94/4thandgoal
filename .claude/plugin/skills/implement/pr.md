@@ -24,7 +24,7 @@ A `blocked` ticket stays open, so its feature keeps its row.
 
 1. Push the Spec branch: `git push -u origin <slug>`.
 2. Get the base of the links: `gh repo view --json url --jq .url`, then `<url>/blob/<short sha>/.scratch/<slug>/`. The sha is the head after the last commit of stage 4.
-3. Write the body below to a file in the scratchpad.
+3. Write the body below to a file in a scratch folder outside the repo.
 4. Run `gh pr create --base main --head <slug> --title "<the PRD title>" --body-file <file>`. Add `--draft` if a ticket is `blocked`.
 5. Run `python3 scripts/queue.py wait <slug> merge-pr <PR number>`.
 

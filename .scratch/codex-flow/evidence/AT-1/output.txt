@@ -1,0 +1,31 @@
+$ codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*: [^\\]*(file: [^)]*)'
+\n- 4ag:implement: Build the tickets of one feature of this repo on its Spec branch, one Ticket branch and worktree per ticket, then review the change, record the evidence of each acceptance test, a (file: r38/4ag-implement/SKILL.md)
+\n- 4ag:plan: Take an idea for this repo to a map, decision tickets, a spec, acceptance tests, and tickets in the local tracker. Use when Brian gives an outcome statement for a new feature, or na (file: r38/4ag-plan/SKILL.md)
+\n- 4ag:review: Do one round of feedback on a spec PR of this repo. Read the open review comments, the Test verdicts of the Judge, and the latest Test verdicts comment of Brian, then make a correct (file: r38/4ag-review/SKILL.md)
+\n- 4ag:to-acceptance: Write the acceptance tests AT-1, AT-2, and so on of one feature of this repo as .scratch/<feature>/ACCEPTANCE.md, each with its app and its evidence. Use after 4ag:to-spec, before (file: r38/4ag-to-acceptance/SKILL.md)
+\n- 4ag:to-spec: Write the spec of one feature of this repo as .scratch/<feature>/PRD.md, in our header format, from the map, the decision tickets, and the conversation. Use after 4ag:plan clears  (file: r38/4ag-to-spec/SKILL.md)
+\n- 4ag:to-tickets: Break the spec of one feature of this repo into tracer-bullet tickets at .scratch/<feature>/issues/<NN>-<slug>.md, and add its row to docs/agents/state.md. Use after 4ag:to-acceptan (file: r38/4ag-to-tickets/SKILL.md)
+[exit 0]
+
+$ codex debug prompt-input "hi" | grep -o '`r38` = `[^`]*`'
+`r38` = `/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow/.agents/skills`
+[exit 0]
+
+$ for s in implement plan review to-acceptance to-tickets to-spec; do python3 -c "import os,sys; print(sys.argv[1], \"->\", os.path.realpath(sys.argv[1]))" .agents/skills/4ag-$s/SKILL.md; done
+.agents/skills/4ag-implement/SKILL.md -> /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow/.claude/plugin/skills/implement/SKILL.md
+.agents/skills/4ag-plan/SKILL.md -> /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow/.claude/plugin/skills/plan/SKILL.md
+.agents/skills/4ag-review/SKILL.md -> /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow/.claude/plugin/skills/review/SKILL.md
+.agents/skills/4ag-to-acceptance/SKILL.md -> /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow/.claude/plugin/skills/to-acceptance/SKILL.md
+.agents/skills/4ag-to-tickets/SKILL.md -> /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow/.claude/plugin/skills/to-tickets/SKILL.md
+.agents/skills/4ag-to-spec/SKILL.md -> /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow/.claude/plugin/skills/to-spec/SKILL.md
+[exit 0]
+
+$ codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*:' | sort | uniq -c
+   1 \n- 4ag:implement:
+   1 \n- 4ag:plan:
+   1 \n- 4ag:review:
+   1 \n- 4ag:to-acceptance:
+   1 \n- 4ag:to-spec:
+   1 \n- 4ag:to-tickets:
+[exit 0]
+

@@ -1,0 +1,38 @@
+$ TH=<scratch>/home14; mkdir -p $TH/.agents/skills $TH/.codex
+$ for s in grilling domain-modeling prototype; do ln -s ~/.agents/skills/$s $TH/.agents/skills/$s; done
+$ ln -s ~/.codex/auth.json $TH/.codex/auth.json; cp ~/.codex/config.toml $TH/.codex/config.toml
+# Why the temporary Codex home: with HOME set alone and CODEX_HOME at ~/.codex, Codex still lists mattpocock-skills:research from the enabled plugin cache ~/.codex/plugins/cache/claude-plugins-official/mattpocock-skills/1.3.1/skills/engineering/research. A '-c plugins."mattpocock-skills@claude-plugins-official".enabled=false' flag did not remove it.
+$ ls -l $TH/.agents/skills
+total 0
+lrwxr-xr-x  1 brian.kwon  wheel  48 Nov 12 22:28 domain-modeling -> /Users/brian.kwon/.agents/skills/domain-modeling
+lrwxr-xr-x  1 brian.kwon  wheel  41 Nov 12 22:28 grilling -> /Users/brian.kwon/.agents/skills/grilling
+lrwxr-xr-x  1 brian.kwon  wheel  42 Nov 12 22:28 prototype -> /Users/brian.kwon/.agents/skills/prototype
+
+$ cd <Spec worktree> && HOME=$TH codex debug prompt-input hi | grep -o '\n- [a-z0-9:-]*\(grilling\|prototype\|domain-modeling\|research\)[a-z:-]*: ' | sort -u
+\n- domain-modeling: 
+\n- grilling: 
+\n- prototype: 
+[exit 0]
+
+$ git status --short   # before the run
+?? .scratch/codex-flow/evidence/
+
+$ cd <Spec worktree> && HOME=$TH codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at14.last.txt '$4ag:plan codex-flow
+
+Run only the "Before you start" section of the skill. Stop after it, and report whether its check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+The check failed: `research` is absent from the available skill list and `~/.agents/skills/research/SKILL.md`.
+
+`grilling`, `domain-modeling`, and `prototype` are present. I stopped at step 2, as the skill requires.
+
+$ git status --short   # after the run
+?? .scratch/codex-flow/evidence/
+
+# The status before and after is the same: the untracked evidence folder of this stage.
+$ ls $TH/.codex/sessions/2026/11/12/
+ rollout-2026-11-12T22-29-51-01a1d2f4-5a44-7ff2-bbe6-2f5bf64b7fa9.jsonl
+
+$ grep -o '<skill>\n<name>[^<]*</name>\n<path>[^<]*</path>' $TH/.codex/sessions/2026/11/12/rollout-2026-11-12T22-29-51-01a1d2f4-5a44-7ff2-bbe6-2f5bf64b7fa9.jsonl
+<skill>\n<name>4ag:plan</name>\n<path>/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow/.claude/plugin/skills/plan/SKILL.md</path>
+[exit 0]
