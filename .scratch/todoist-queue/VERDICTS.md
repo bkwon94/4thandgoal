@@ -1,12 +1,12 @@
-ACCEPTANCE.md: eac8b24f17834306e8c0b8a3f7507e42ccde7def
-EVIDENCE.md: 5b9c076367b9452bab1ee709a763e730ecefd858
+ACCEPTANCE.md: 2ecfa2194b9bec41c48c814149e69231d2fdb82a
+EVIDENCE.md: 835cd43b64dbcf89bf6b32572e72f77b5c20dd84
 
 Test verdicts
 AT-1: PASS
 AT-2: PASS
 AT-3: PASS
 AT-4: PASS
-AT-5: FAIL The Then line asks for the key line, the app, the blockers, the link, and a summary in order, but the description in AT-5/output.txt has no blockers line.
+AT-5: PASS
 AT-6: PASS
 AT-7: PASS
 AT-8: PASS
@@ -31,6 +31,6 @@ AT-26: PASS
 AT-27: PASS
 AT-28: PASS
 AT-29: PASS
-AT-30: FAIL The Then line says both docs name the key line and the script, but AT-30/output.txt shows that `docs/agents/triage-labels.md` names neither.
+AT-30: PASS
 AT-31: PASS
 AT-32: PASS
