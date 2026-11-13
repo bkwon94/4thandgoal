@@ -15,4 +15,10 @@ Found in the final whole-branch review on 2026-10-26. None blocks the push.
 
 **Blocked by:** None.
 
-**Status:** needs-triage
+**Status:** wontfix
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12. Brian dropped it, because it fixes no real bug and changes nothing that a manager sees.
+Proof: No commit after 5b935d74 touches the three items, and `finder_search.py` still calls `season_rank` through `stats_through`, which includes the known games (item 3). Items 1 and 2 may be partly covered by the WOPR rows in the cache key and the stale `stats` flag in `snapshot.py`.
+Read 1 file: .scratch/todoist-queue/audit.md.

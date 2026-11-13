@@ -8,7 +8,13 @@ Spec: `.scratch/front-door/PRD.md`, story 34.
 
 **Blocked by:** none. The front-door spec ships with sells only. Brian, 2026-11-10.
 
-**Status:** needs-triage
+**Status:** wontfix
 
 - [ ] The Answer names at least one player on another roster to buy, with the reason.
 - [ ] The route reuses the sheet, the verifier, and the Jev checks of the sell high press.
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12. Brian deferred buy low, so it moves to the Ideas section of the queue.
+Proof: No buy-low code exists, and `front-door-lineup` PRD story 50 keeps the sell list only. Brian deferred buy low on 2026-11-10, so he may prefer `needs-triage` until he picks a spec.
+Read 1 file: .scratch/todoist-queue/audit.md.

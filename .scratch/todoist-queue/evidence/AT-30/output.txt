@@ -1,0 +1,116 @@
+$ cat docs/adr/0032-the-queue-is-a-view-and-the-tracker-stays-the-record.md
+# The queue is a view, and the tracker stays the record
+
+This ADR amends ADR 0021. ADR 0021 made the tracker local markdown under `.scratch/<feature>/`. It
+named one cost: the tracker has no board. Brian cannot see or change the current work with ease.
+We decided that a Todoist project, the queue, answers that cost. The tracker stays the record.
+
+## What each place owns
+
+- The tracker in `.scratch/` owns the content and the done-ness of each ticket. That means the body,
+  the blockers, the comments, and the `Status:` line. Only a merge sets `done`.
+- The queue owns priority, order, the triage statuses, and new ideas. The queue is a view and a
+  triage tool. It is not a record.
+- On a conflict, git wins for content and done-ness. The queue wins for the rest.
+
+## The change to ADR 0021
+
+ADR 0021 kept manager names out of every online tool except the pull requests. This ADR allows one
+exception. A private Todoist project may hold manager names. The project is private, so the reason
+for ADR 0021 still holds: no public place names a manager. The tracker stays in `.scratch/`.
+
+## The rules of the sync
+
+- The script `scripts/queue.py` is the only code that calls `td`. Each `4ag` skill calls the script.
+- A task holds a key line, `4ag: <path>`. The key line names the ticket file. Git holds no Todoist ID.
+- A failed `td` call prints one warning, and the skill continues.
+- CI never calls `td`. A GitHub Action cannot close a task. The merge sweep closes the tasks.
+
+## The cost
+
+The queue and the tracker can differ for a while. A pull before work on a feature brings the triage
+statuses into git. A push sends each flow status to the queue. If no `4ag` skill runs, the queue
+shows the old state until the next run.
+
+We rejected two alternatives:
+
+- **Todoist as the record.** It holds no branch, no commit link, and no check that CI can read.
+- **No queue.** It leaves the cost of ADR 0021 as it is.
+
+The details sit in `docs/agents/issue-tracker.md`, under "The queue".
+
+$ sed -n '/^## The queue/,/^## The state file/p' docs/agents/issue-tracker.md
+## The queue
+
+The queue is the private Todoist project `4thandgoal`. It is a view and a triage tool. The tracker in
+`.scratch/` stays the record (ADR 0032, which amends ADR 0021).
+
+**What each place owns.**
+
+- The tracker owns the body, the blockers, the comments, and the `Status:` line. Only a merge sets `done`.
+- The queue owns priority, order, the triage statuses, and new ideas.
+- On a conflict, git wins for content and done-ness. The queue wins for the rest.
+
+**The shape.** One section holds one feature. One top-level task holds one open ticket, one open decision
+ticket, or one wait task. The `Ideas` section holds new ideas.
+
+**The labels.** Each open task has one status label: `needs-triage`, `needs-info`, `ready-for-agent`,
+`ready-for-human`, `in-progress`, `in-review`, or `blocked`. A `done` task is complete and has no status label.
+A `wontfix` task is complete and has the label `wontfix`. `triage-labels.md` maps each status to its label.
+
+**The key line.** The first line of the task description is `4ag: <path>`. A ticket or a decision ticket uses
+its file path from the repo root, such as `4ag: .scratch/<feature>/issues/03-<slug>.md`. A wait task uses
+`4ag: <feature>/wait/<kind>`. A push finds the task by this line. Git holds no Todoist ID.
+
+**The script.** `scripts/queue.py` is the only code that calls `td`. It has the subcommands `push`, `pull`,
+`wait`, `sweep`, and `import`. A skill runs it as `python3 scripts/queue.py <subcommand>`. A failed `td` call
+prints one warning and exits 0. CI never calls `td`.
+
+## The state file
+
+$ sed -n '/^## The queue labels/,$p' docs/agents/triage-labels.md
+## The queue labels
+
+The queue is a Todoist project (ADR 0032). Each open task has one status label, and the label has the same
+name as the status. A push writes a flow status to the queue. A pull writes a triage status to git.
+
+The script `scripts/queue.py` writes and reads each label. It finds the ticket of a task by the key line, the first
+line of the task description: `4ag: <path of the ticket file>`. See "The queue" in `docs/agents/issue-tracker.md`.
+
+| Status               | Queue label       | Who sets it        | Task state |
+| -------------------- | ----------------- | ------------------ | ---------- |
+| `needs-triage`       | `needs-triage`    | Brian or a push    | open       |
+| `needs-info`         | `needs-info`      | Brian or a push    | open       |
+| `ready-for-agent`    | `ready-for-agent` | Brian or a push    | open       |
+| `ready-for-human`    | `ready-for-human` | Brian or a push    | open       |
+| `in-progress`        | `in-progress`     | a `4ag` skill      | open       |
+| `in-review`          | `in-review`       | a `4ag` skill      | open       |
+| `blocked`            | `blocked`         | a `4ag` skill      | open       |
+| `done`               | none              | the merge sweep    | complete   |
+| `wontfix`            | `wontfix`         | Brian or a push    | complete   |
+
+When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
+
+Edit the right-hand column to match whatever vocabulary you actually use.
+
+$ grep -n -i 'queue\|key line\|4ag: \|queue.py' docs/agents/triage-labels.md
+15:## The queue labels
+17:The queue is a Todoist project (ADR 0032). Each open task has one status label, and the label has the same
+18:name as the status. A push writes a flow status to the queue. A pull writes a triage status to git.
+20:The script `scripts/queue.py` writes and reads each label. It finds the ticket of a task by the key line, the first
+21:line of the task description: `4ag: <path of the ticket file>`. See "The queue" in `docs/agents/issue-tracker.md`.
+23:| Status               | Queue label       | Who sets it        | Task state |
+
+$ grep -n -A3 -E '^\*\*(Queue|Wait task|Merge sweep)\*\*:' GLOSSARY.md
+1208:**Queue**:
+1209-The Todoist project `4thandgoal`, where Brian sees and orders the open work. It owns priority, order, triage, and ideas. The tracker in `.scratch/` owns the content and done-ness of each ticket.
+1210-_Avoid_: Board, backlog, Todoist tracker, mirror
+1211-
+1212:**Wait task**:
+1213-A task in the queue that marks one step that waits on Brian, such as a PRD to approve or a PR to merge.
+1214-_Avoid_: Reminder, gate, approval task
+1215-
+1216:**Merge sweep**:
+1217-The step at the start of each `4ag` skill that finds each merged spec PR and closes its tasks in the queue.
+1218-_Avoid_: Sync, cleanup, close job
+

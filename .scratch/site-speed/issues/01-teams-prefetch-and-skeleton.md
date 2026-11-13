@@ -6,7 +6,7 @@
 
 **Blocked by:** None. The API cache lands on its own.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `src/app/page.tsx`: when `cpc.passphrase` is in local storage, fetch the teams for the current season and store the JSON in session storage under one key with the season and the time.
 - [x] `src/components/analyzer.tsx`: read that key first. Use it if it is under 5 minutes old, then fetch in the background and replace it. With no key, fetch as today.
@@ -15,3 +15,9 @@
 - [x] Tests read the screen: the skeleton shows before the teams, the stored teams show at once, the hours text.
 - [x] Check at 390 wide with `agent-browser`, with and without `reduced-motion`.
 - [ ] `pnpm test` passes with no failed test. Push to main deploys. The tests pass on branch `teams-prefetch`; the push to main is still open.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 590268f8.
+Proof: The commit merged in 84d3fabb on `main`, and `packages/analyzer/site/lib/teams-store.ts` and `waitText` in `api.ts` hold the behavior now.
+Read 1 file: .scratch/todoist-queue/audit.md.

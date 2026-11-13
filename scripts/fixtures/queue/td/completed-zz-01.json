@@ -1,0 +1,22 @@
+{
+  "results": [
+    {
+      "id": "6j2Gr4hP2xQ9c5Rw",
+      "content": "01 ZZ ready",
+      "description": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md\nOn the spec branch zz-queue-check.\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j2Gq9xWJwFvVfMx",
+      "parentId": null,
+      "labels": [
+        "ready-for-agent"
+      ],
+      "url": "https://app.todoist.com/app/task/01-zz-ready-6j2Gr4hP2xQ9c5Rw",
+      "responsibleUid": null,
+      "isUncompletable": false
+    }
+  ]
+}

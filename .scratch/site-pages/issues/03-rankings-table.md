@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Wide tokens for the rankings columns from the tablet tier sit next to the standings wide tokens, with a comment that gives the width the team track needs for the longest word beside the avatar at each tier.
 - [x] The column gap widens from the tablet tier. The phone grid and the 480px page tier are unchanged.
@@ -15,3 +15,9 @@
 - [x] The rankings page test checks the "Power Rankings" heading with weeks and in the empty state, and the week line that follows the chips. Tests that read "Power rankings" change with the casing.
 - [x] A browser check at 768 and 1280 shows the spaced columns and the longest name on one row height. At 390 the table is unchanged.
 - [x] `pnpm test`, `pnpm typecheck`, and `pnpm build` pass.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 442e8d58.
+Proof: The commits 442e8d58 and 4bae5201 merged in ba2fb98a; the site redesign 0a8b8868 replaced the table with the Ladder later.
+Read 1 file: .scratch/todoist-queue/audit.md.

@@ -6,7 +6,7 @@ Docs: https://platform.claude.com/docs/en/build-with-claude/prompt-caching
 
 **Blocked by:** None (can start immediately). Touches the parse path in the writer module that every call shares.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] The shared parse path sends the system prompt as a content block list with `cache_control` of type `ephemeral`, not as a plain string. A call with no system prompt sends none, as today.
 - [x] The analyzer call sets `ttl` to `1h` on its system block. The writer and the verifier use the default five minute lifetime.
@@ -17,3 +17,9 @@ Docs: https://platform.claude.com/docs/en/build-with-claude/prompt-caching
 - [x] A live check against the API: two analyze requests a minute apart, the second shows `cache_read_input_tokens` above zero in the log.
 - [x] The runbook notes the cache, the two lifetimes, and the write multipliers: 1.25x for five minutes, 2x for one hour, 0.05x on a read for Opus 5.5.
 - [x] `uv run pytest -q` passes with no failed test.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 6b0e1faf.
+Proof: Every box is ticked; "Cache the system prompt on every Claude call" is on `main`, and `apps/pipeline/tests/test_writer.py` asserts the `cache_control` shape and the `1h` TTL.
+Read 1 file: .scratch/todoist-queue/audit.md.

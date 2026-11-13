@@ -4,8 +4,14 @@
 
 **Blocked by:** None (can start immediately). Found on the real week 6 board, 2026-10-24.
 
-**Status:** needs-triage
+**Status:** done
 
 - [ ] A player behind an out backup with a healthy starter above is not sneaky.
 - [ ] A player behind an out starter is sneaky, as today.
 - [ ] A player with two out players above him is sneaky.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in dc564361.
+Proof: Front-door ticket 15 commit 071b6021 added `every_above_out` in `packages/waiver/python/src/waiver/buckets.py` with the out-backup test.
+Read 1 file: .scratch/todoist-queue/audit.md.

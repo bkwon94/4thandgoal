@@ -10,7 +10,7 @@ Never write the line `Test verdicts` in a comment. Never write `AT-<n>: PASS`, `
 
 ## Close the tickets
 
-Do this before the push. The squash merge of the PR then puts `done` on `main`.
+Do this before the push. The squash merge of the PR then puts `done` on `main`. Make no queue call here. The tasks stay `in-review` until the merge sweep.
 
 1. Set the Status of each `in-review` ticket to `done`.
 2. Add the close comment under `## Comments` of each ticket, per the close comment rule in `docs/agents/issue-tracker.md`. The text is "Closes with the squash merge of the spec PR."
@@ -26,6 +26,7 @@ A `blocked` ticket stays open, so its feature keeps its row.
 2. Get the base of the links: `gh repo view --json url --jq .url`, then `<url>/blob/<short sha>/.scratch/<slug>/`. The sha is the head after the last commit of stage 4.
 3. Write the body below to a file in the scratchpad.
 4. Run `gh pr create --base main --head <slug> --title "<the PRD title>" --body-file <file>`. Add `--draft` if a ticket is `blocked`.
+5. Run `python3 scripts/queue.py wait <slug> merge-pr <PR number>`.
 
 The body:
 

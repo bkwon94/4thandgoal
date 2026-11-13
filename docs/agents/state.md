@@ -11,37 +11,12 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 
 | Feature | App | Next ticket | Blocked by | Hold |
 | --- | --- | --- | --- | --- |
-| `agent-habits` | site | 03 close the site tickets whose merge main proves | none | |
-| `analyzer-multi-team` | site | 10 the headshot strip gap | none | |
-| `front-door` | both | 12 buy low targets from other rosters | none | |
-| `known-games` | pipeline | 08 the-site-renders-the-known-games-line | | |
-| `live-refetch` | both | 01 the live API rewrites the history of a patched week | none | |
-| `manager-pages` | site | 01 the past week keeps every rostered player | none | |
+| `manager-pages` | site | 11 the bench sentence and the odds change words | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
-| `modular` | site | 12 the fixtures carry every as-of key | none | |
 | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |
-| `one` | both | 11 rename the pipeline chapter to prose block | none | |
-| `next-week-byes` | site | 01 byes on the next-week games | the pipeline tracker | |
-| `next-week-byes` | pipeline | 06 two-chapters-fell-to-templates-in-the-week-7-rebuild | | |
-| `rankings` | site | 01 the reader and the route | none | |
-| `rankings` | pipeline | 01 the-formula | | |
-| `site-api` | pipeline | 10 prompt-caching | | |
-| `site-foundation` | site | 01 the tiers and the page column | none | |
-| `site-pages` | site | 01 the page shell | none | |
-| `site-report` | site | 01 the type scale, the measure, and the cards | none | |
-| `site-speed` | site | 01 the teams prefetch and the skeleton | none | |
-| `tone` | pipeline | 09 leftovers-after-the-second-rewrite | | |
-| `trade-grade-v3` | pipeline | 05 rebuild-week-6 | | Brian's review and the publish of week 6 |
-| `waiver` | site | 01 the route behind the flag | pipeline 01 the week file | |
-| `waiver` | pipeline | 09 usage-floor-for-ranked-buckets | | |
-| `week-8-fixes` | pipeline | 07 the-readmes-name-the-module-an-agent-needs | | |
-| `win-win` | site | 06 the shared API call hook | none | |
-
-## Notes
-
-- No merge on `main` proves known-games 08, so its Status stays open until Brian decides.
-- `main` holds the merge of branch `tone-09`, but tone 09 reads ready-for-human, so Brian decides its Status.
-- trade-grade-v3 05 may be done, because `main` holds the week 6 report, so Brian decides its Status.
+| `site-pages` | site | 09 the home page test reads a class name | none | |
+| `tone` | pipeline | 10 remove-names-is-case-sensitive | | |
+| `week-8-fixes` | pipeline | 08 the-scoring-component-fact-names-the-component | | |
 
 ## Holds
 

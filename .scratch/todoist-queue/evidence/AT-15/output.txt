@@ -1,0 +1,55 @@
+# Given: the file goes back to ready-for-agent. td reopens the task of AT-14, adds the comment "done in #34", and completes it.
+
+$ git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" checkout -- .scratch/zz-queue-check/issues/01-zz-ready.md; git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" status --short; grep -n Status "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/01-zz-ready.md
+7:**Status:** ready-for-agent
+[exit code: 0]
+
+$ td task uncomplete id:6j23xRjQqWW8r3cG
+Reopened: 01 ZZ ready (id:6j23xRjQqWW8r3cG)
+[exit code: 0]
+
+$ td comment add id:6j23xRjQqWW8r3cG --content 'done in #34'
+Added comment to "01 ZZ ready"
+ID: 6j23xhfwcmRJggPG
+[exit code: 0]
+
+$ td task complete id:6j23xRjQqWW8r3cG
+Completed: 01 ZZ ready (id:6j23xRjQqWW8r3cG)
+[exit code: 0]
+
+$ td comment list id:6j23xRjQqWW8r3cG --json
+{
+  "results": [
+    {
+      "id": "6j23xhfwcmRJggPG",
+      "content": "done in #34",
+      "postedAt": "2026-11-12T22:23:48.730Z",
+      "postedUid": "61452253",
+      "uidsToNotify": null,
+      "taskId": "6j23xRjQqWW8r3cG",
+      "fileAttachment": null,
+      "hasAttachment": false
+    }
+  ],
+  "nextCursor": null
+}
+[exit code: 0]
+# When:
+
+$ python3 scripts/queue.py pull zz-queue-check --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+pull .scratch/zz-queue-check/issues/01-zz-ready.md: ready-for-agent -> done
+1 file written.
+[exit code: 0]
+
+$ git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" diff
+diff --git a/.scratch/zz-queue-check/issues/01-zz-ready.md b/.scratch/zz-queue-check/issues/01-zz-ready.md
+index 5c2a3df..7e0fb09 100644
+--- a/.scratch/zz-queue-check/issues/01-zz-ready.md
++++ b/.scratch/zz-queue-check/issues/01-zz-ready.md
+@@ -4,4 +4,4 @@
+ 
+ **Blocked by:** none
+ 
+-**Status:** ready-for-agent
++**Status:** done
+[exit code: 0]

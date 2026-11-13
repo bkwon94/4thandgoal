@@ -1,0 +1,3 @@
+$ TODOIST_API_TOKEN=invalid python3 scripts/queue.py push "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/02-zz-blocked.md --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+warning: the queue push of .scratch/zz-queue-check/issues/02-zz-blocked.md failed: AUTH_ERROR HTTP 401: Unauthorized. The queue is behind the tracker.
+[exit code: 0]

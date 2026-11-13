@@ -11,7 +11,7 @@ motion, no ring, no sheet yet. A week folder with no file has no route, and old 
 
 **Blocked by:** Pipeline 01 The week file, thin.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `waiverOn` reads one env var in the config module, off by default, with a config test like the finder flag.
 - [x] With the flag off, the export has no waiver route and the masthead has no link.
@@ -19,3 +19,9 @@ motion, no ring, no sheet yet. A week folder with no file has no route, and old 
 - [x] The loader accepts a week with and without the file, and the types mirror the file.
 - [x] The list renders from a fixture file with the fallback headshot on a missing image.
 - [x] The page passes the export check.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in c80b0073.
+Proof: "Merge waiver-01: the waiver route behind the flag" is on `main`, and every box is checked; clients later removed the flag.
+Read 1 file: .scratch/todoist-queue/audit.md.

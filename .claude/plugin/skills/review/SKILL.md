@@ -10,6 +10,12 @@ Do one round of feedback on one spec PR. One run is one round. Brian starts the 
 
 The agent never writes a Test verdict. The Judge, a fresh subagent, gives each Test verdict in `VERDICTS.md`. A FAIL from Brian in a PR comment overrides the Judge (ADR 0026).
 
+## The queue
+
+Run each call at the root of the checkout or worktree. A failed call prints a warning and exits 0, so never stop on it. Name each missed push in the final report.
+
+Start with the merge sweep: `python3 scripts/queue.py sweep`.
+
 ## Before you start
 
 1. Check that these global skills are in the available skill list: `tdd`, `agent-browser`. If one is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps.
@@ -51,6 +57,7 @@ The agent never writes a Test verdict. The Judge, a fresh subagent, gives each T
 - Never write the line `Test verdicts`, and never write `AT-<n>: PASS`, `FAIL`, or `BLOCKED`, in a comment or a reply.
 - Brian resolves each thread. The agent does not.
 - Leave the tracker as it is. Set no ticket to `done`.
+- If a round changes the Status of a ticket, run `python3 scripts/queue.py push <path of the ticket>` for it.
 
 ## The end
 

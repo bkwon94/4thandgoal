@@ -1,0 +1,152 @@
+{
+  "results": [
+    {
+      "id": "6j2Gr4hP2xQ9c5Rw",
+      "content": "01 ZZ ready",
+      "description": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md\nOn the spec branch zz-queue-check.\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j2Gq9xWJwFvVfMx",
+      "parentId": null,
+      "labels": [
+        "ready-for-agent"
+      ],
+      "url": "https://app.todoist.com/app/task/01-zz-ready-6j2Gr4hP2xQ9c5Rw",
+      "responsibleUid": null,
+      "isUncompletable": false
+    },
+    {
+      "id": "6j2Gr4j3Vv8fMRgx",
+      "content": "02 ZZ blocked",
+      "description": "4ag: .scratch/zz-queue-check/issues/02-zz-blocked.md\nOn the spec branch zz-queue-check.\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j2Gq9xWJwFvVfMx",
+      "parentId": null,
+      "labels": [
+        "blocked"
+      ],
+      "url": "https://app.todoist.com/app/task/02-zz-blocked-6j2Gr4j3Vv8fMRgx",
+      "responsibleUid": null,
+      "isUncompletable": false
+    },
+    {
+      "id": "6j2Gr4hVq8Xm3Pcf",
+      "content": "03 ZZ done",
+      "description": "4ag: .scratch/zz-queue-check/issues/03-zz-done.md\nOn the spec branch zz-queue-check.\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j2Gq9xWJwFvVfMx",
+      "parentId": null,
+      "labels": [
+        "ready-for-agent"
+      ],
+      "url": "https://app.todoist.com/app/task/03-zz-done-6j2Gr4hVq8Xm3Pcf",
+      "responsibleUid": null,
+      "isUncompletable": false
+    },
+    {
+      "id": "6j2Gr4mFg7XCJqQ2",
+      "content": "Decision 01: Does the grill ZZ question need Brian?",
+      "description": "4ag: .scratch/zz-queue-check/decisions/01-grill-zz-question.md\nOn the spec branch zz-queue-check.\nA throwaway grill for the acceptance tests of the queue.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j2Gq9xWJwFvVfMx",
+      "parentId": null,
+      "labels": [
+        "ready-for-human",
+        "decision"
+      ],
+      "url": "https://app.todoist.com/app/task/decision-01-does-the-grill-zz-question-need-brian-6j2Gr4mFg7XCJqQ2",
+      "responsibleUid": null,
+      "isUncompletable": false
+    },
+    {
+      "id": "6j2Gr4pW5gqH9fc7",
+      "content": "Decision 02: What does the research ZZ question find?",
+      "description": "4ag: .scratch/zz-queue-check/decisions/02-research-zz-question.md\nBlocked by: 01\nOn the spec branch zz-queue-check.\nA throwaway research question for the acceptance tests of the queue.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j2Gq9xWJwFvVfMx",
+      "parentId": null,
+      "labels": [
+        "ready-for-agent",
+        "decision"
+      ],
+      "url": "https://app.todoist.com/app/task/decision-02-what-does-the-research-zz-question-find-6j2Gr4pW5gqH9fc7",
+      "responsibleUid": null,
+      "isUncompletable": false
+    },
+    {
+      "id": "6j2Gr5Cw7RfJ4hQm",
+      "content": "Merge PR #34",
+      "description": "4ag: zz-queue-check/wait/merge-pr\nhttps://github.com/bkwon94/4thandgoal/pull/34",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j2Gq9xWJwFvVfMx",
+      "parentId": null,
+      "labels": [
+        "ready-for-human"
+      ],
+      "url": "https://app.todoist.com/app/task/merge-pr-34-6j2Gr5Cw7RfJ4hQm",
+      "responsibleUid": null,
+      "isUncompletable": false
+    },
+    {
+      "id": "6j2Gr5Fq2VxW8gPc",
+      "content": "Merge PR #16",
+      "description": "4ag: zz-queue-check/wait/merge-pr\nhttps://github.com/bkwon94/4thandgoal/pull/16",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j2Gq9xWJwFvVfMx",
+      "parentId": null,
+      "labels": [
+        "ready-for-human",
+        "phone"
+      ],
+      "url": "https://app.todoist.com/app/task/merge-pr-16-6j2Gr5Fq2VxW8gPc",
+      "responsibleUid": null,
+      "isUncompletable": false
+    },
+    {
+      "id": "6j2Gr5Hk9TbN3rXw",
+      "content": "Merge PR #13",
+      "description": "4ag: midseason-report/wait/merge-pr\nhttps://github.com/bkwon94/4thandgoal/pull/13",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j2Gq9zMpR4cWv7H",
+      "parentId": null,
+      "labels": [
+        "ready-for-human"
+      ],
+      "url": "https://app.todoist.com/app/task/merge-pr-13-6j2Gr5Hk9TbN3rXw",
+      "responsibleUid": null,
+      "isUncompletable": false
+    }
+  ],
+  "nextCursor": null
+}

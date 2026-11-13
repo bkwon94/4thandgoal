@@ -1204,3 +1204,15 @@ _Avoid_: Proof, result, QA output
 **Evidence flag**:
 A note from Jev that the evidence of one acceptance test may not show what the test asks. It holds a reason and is never a Test verdict.
 _Avoid_: Pre-check, screen, pre-verdict, lint
+
+**Queue**:
+The Todoist project `4thandgoal`, where Brian sees and orders the open work. It owns priority, order, triage, and ideas. The tracker in `.scratch/` owns the content and done-ness of each ticket.
+_Avoid_: Board, backlog, Todoist tracker, mirror
+
+**Wait task**:
+A task in the queue that marks one step that waits on Brian, such as a PRD to approve or a PR to merge.
+_Avoid_: Reminder, gate, approval task
+
+**Merge sweep**:
+The step at the start of each `4ag` skill that finds each merged spec PR and closes its tasks in the queue.
+_Avoid_: Sync, cleanup, close job

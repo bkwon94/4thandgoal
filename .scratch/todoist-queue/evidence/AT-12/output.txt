@@ -1,0 +1,76 @@
+# Given: td sets the priority to p1. In the API JSON, p1 is "priority": 4.
+
+$ td task update id:6j23xRjQqWW8r3cG --priority p1
+Updated: 01 ZZ ready (id:6j23xRjQqWW8r3cG)
+[exit code: 0]
+# Before the push:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/01-"))]'
+[
+  {
+    "id": "6j23xRjQqWW8r3cG",
+    "content": "01 ZZ ready",
+    "description": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/01-zz-ready.md\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+    "priority": 4,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "in-review",
+      "phone"
+    ],
+    "url": "https://app.todoist.com/app/task/01-zz-ready-6j23xRjQqWW8r3cG",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+# When:
+
+$ python3 scripts/queue.py push "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/01-zz-ready.md --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+0 commands sent.
+[exit code: 0]
+# After the push:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/01-"))]'
+[
+  {
+    "id": "6j23xRjQqWW8r3cG",
+    "content": "01 ZZ ready",
+    "description": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/01-zz-ready.md\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+    "priority": 4,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "in-review",
+      "phone"
+    ],
+    "url": "https://app.todoist.com/app/task/01-zz-ready-6j23xRjQqWW8r3cG",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+
+$ td task view id:6j23xRjQqWW8r3cG
+01 ZZ ready
+
+ID:       6j23xRjQqWW8r3cG
+Priority: p1
+Project:  4thandgoal
+Labels:   in-review, phone
+URL:      https://app.todoist.com/app/task/6j23xRjQqWW8r3cG
+
+Description:
+4ag: .scratch/zz-queue-check/issues/01-zz-ready.md
+https://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/01-zz-ready.md
+https://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/01-zz-ready.md
+A throwaway ticket for the acceptance tests of the queue. It names no real work.
+[exit code: 0]

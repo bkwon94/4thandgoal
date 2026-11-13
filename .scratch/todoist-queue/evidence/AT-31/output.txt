@@ -1,0 +1,72 @@
+$ ls Makefile apps/*/Makefile; ls -R .github | head -30
+apps/api/Makefile
+apps/pipeline/Makefile
+apps/site/Makefile
+Makefile
+workflows
+
+.github/workflows:
+check.yml
+deploy-api.yml
+deploy-sites.yml
+refresh.yml
+verdict.yml
+[exit code: 0]
+
+$ grep -rn -e 'td ' -e 'queue.py' .github/ Makefile apps/*/Makefile
+[exit code: 1]
+
+$ grep -rn -w 'td' .github/ Makefile apps/*/Makefile
+[exit code: 1]
+
+$ grep -rn -e 'check-scripts' -e 'scripts-check' .github/ Makefile
+.github/workflows/check.yml:39:        run: make check-scripts
+Makefile:5:.PHONY: help check check-fast check-scripts check-site check-pipeline check-api check-packages
+Makefile:21:scripts-check = python3 -B -m unittest discover -s scripts -p 'test_*.py'
+Makefile:38:	echo "==> scripts: check"; $(scripts-check); \
+Makefile:44:	echo "==> scripts: check-fast"; $(scripts-check); \
+Makefile:50:check-scripts: ## Run the full check of the root scripts
+Makefile:51:	@echo "==> scripts: check"; $(scripts-check) -v
+[exit code: 0]
+
+$ grep -n -e 'subprocess' -e 'run_td' -e 'td_bin' scripts/test_queue.py
+11:import subprocess
+323:                subprocess.run(["git", "-C", str(root), *args], check=True, env=queue_script._clean_git_env())
+346:            self.assertEqual(queue_script.td_bin_folder(Path(home), {}),
+350:        self.assertEqual(queue_script.td_bin_folder(Path("/nowhere"), {"QUEUE_TD_BIN": "/opt/td/bin"}),
+442:            subprocess.run(["git", "-C", str(self.root), *args], check=True, env=queue_script._clean_git_env())
+494:        subprocess.run(["git", "-C", str(self.root), *args], check=True, env=queue_script._clean_git_env())
+549:        subprocess.run(["git", "-C", str(self.root), *args], check=True, env=queue_script._clean_git_env())
+[exit code: 0]
+# The one test that calls main() with a td read: it points QUEUE_TD_BIN at a folder with no td.
+
+$ sed -n '279,287p' scripts/test_queue.py
+    def test_a_failed_read_changes_no_file_and_warns_with_exit_0(self):
+        before = self.ticket.read_text()
+        out = io.StringIO()
+        with environment(QUEUE_TD_BIN=str(self.root / "no-td")), contextlib.redirect_stdout(out):
+            code = queue_script.main(["pull", "zz-queue-check", "--root", str(self.root)])
+        self.assertEqual(code, 0)
+        self.assertEqual(self.ticket.read_text(), before)
+        self.assertEqual(len(out.getvalue().splitlines()), 1)
+        self.assertTrue(out.getvalue().startswith("warning: the queue pull of zz-queue-check failed: NO_TD"))
+[exit code: 0]
+
+$ sed -n '30,45p' .github/workflows/check.yml
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Run the check of the root scripts
+        run: make check-scripts
+
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+[exit code: 0]

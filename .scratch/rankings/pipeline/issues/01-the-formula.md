@@ -6,7 +6,7 @@ Spec: `.scratch/rankings/pipeline/PRD.md`, sections "The formula" and "Glossary"
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The function returns twelve rows for every week from 1 to the given week of the fixture history.
 - [ ] The power ranks of a week are a permutation of 1 to 12. So is each component rank.
@@ -22,3 +22,7 @@ Spec: `.scratch/rankings/pipeline/PRD.md`, sections "The formula" and "Glossary"
 ## Comments
 
 - 2026-10-22: built on `rankings-formula` at `47a53dd`, two Opus reviews, one fix pass. Awaits Brian merge with `--no-ff`.
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 78f58d42.
+Proof: The merge of `rankings-formula` holds 47a53dd4 "Add the power rankings formula", and the formula lives now in `packages/rankings`.
+Read 1 file: .scratch/todoist-queue/audit.md.

@@ -1,0 +1,11 @@
+$ env -i HOME="$HOME" /usr/bin/python3 scripts/queue.py import --dry-run
+td section create --name pick-reason --project id:6j222rQrr58wHx9G
+td task add '01 The pick label names a signal the pick does not lead' --project id:6j222rQrr58wHx9G --section pick-reason --labels needs-triage,pipeline --description '4ag: .scratch/pick-reason/issues/01-the-pick-label-names-a-signal-the-pick-does-not-lead.md
+App: pipeline
+On the spec branch pick-reason.
+[The summary line is trimmed here, because it names league managers and the repo is public.]'
+td task update id:6j23MXf3jVmGQ9xG --labels blocked,site,pipeline
+td task update id:6j23McQ9XgPc84PG --labels in-review,site,pipeline
+td task update id:6j23McQPcqCFjf7p --labels in-review,site,pipeline
+5 commands planned, none sent.
+[exit code: 0]

@@ -33,7 +33,7 @@ Spec: pipeline repo `.scratch/rankings/pipeline/PRD.md`, section "The site". Thi
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The reader reads the fixture, throws on a schema version other than 1, and returns null when the file is missing. Tests like the week reader's.
 - [ ] `/rankings` renders twelve rows in rank order with rank, movement arrow and count, avatar, team, record, and four component ranks, in a component test on the fixture.
@@ -47,3 +47,7 @@ Spec: pipeline repo `.scratch/rankings/pipeline/PRD.md`, section "The site". Thi
 ## Comments
 
 - 2026-10-22: built on `rankings-route` at `db0fbf3`, two Opus reviews, one fix pass. Awaits Brian merge with `--no-ff`.
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in db0fbf3.
+Proof: The commit sits on `main` through the merge c6f2db70, and `_routes/rankings/` exists now.
+Read 1 file: .scratch/todoist-queue/audit.md.

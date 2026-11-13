@@ -16,3 +16,9 @@ so the writer cannot read it as a points rank.
 - [ ] A test shows the fact text.
 - [ ] `make golden` ran, and the golden diff is named in the close comment.
 - [ ] `make check` passes.
+
+## Comments
+
+Stays open in the audit of `todoist-queue` on 2026-11-12, as ready-for-agent. Brian kept it, because it fixes a real bug or changes what a manager sees.
+Proof: `COMPONENT_WORDS` in `packages/rankings/python/src/rankings/chapter.py` still maps `scoring` to "scoring", and `tests/test_sheet.py` still expects "5th in scoring".
+Read 1 file: .scratch/todoist-queue/audit.md.

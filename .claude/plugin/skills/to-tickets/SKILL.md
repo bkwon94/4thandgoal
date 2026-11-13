@@ -8,6 +8,14 @@ argument-hint: '<feature slug>'
 
 Break one spec into tickets at `.scratch/<slug>/issues/<NN>-<slug>.md`, and add the feature row to `docs/agents/state.md`. Each ticket builds on a Ticket branch `<slug>-<NN>` that merges into the Spec branch `<slug>`.
 
+## The queue
+
+Run each call at the root of the checkout or worktree. A failed call prints a warning and exits 0, so never stop on it. Name each missed push in the final report.
+
+Start with the merge sweep: `python3 scripts/queue.py sweep`.
+
+Then complete the wait task of the tests: `python3 scripts/queue.py wait <slug> approve-acceptance --done`.
+
 ## Before you start
 
 1. Check that the skill `to-tickets` is in the available skill list. If it is missing, stop. Tell Brian its name. Do not guess its steps.
@@ -24,6 +32,8 @@ Break one spec into tickets at `.scratch/<slug>/issues/<NN>-<slug>.md`, and add 
 6. Change the Tickets line of the PRD header to the ticket numbers, such as "Tickets: 01 to 04, in `issues/`."
 7. Stage the new files with `git add`. The tracker rules read only the tracked files.
 8. Run `make check-fast` at the root. It must pass before the commit.
+9. Present the written tickets to Brian for approval. Then run `python3 scripts/queue.py wait <slug> approve-tickets`.
+10. After Brian approves the tickets, run `python3 scripts/queue.py push <path>` for each ticket. Then run `python3 scripts/queue.py wait <slug> approve-tickets --done`.
 
 ## The ticket
 

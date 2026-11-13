@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] From the rail tier at 1152px the rail shows left of the page column, outside it, at a token width of about 180px, sticky under the compact bar. The column keeps its width.
 - [ ] Under the rail tier at 1152px the rail is hidden and the page is one column.
@@ -15,3 +15,9 @@
 - [ ] A new week page test, rendered with the real published data as the home page test is, covers: the nine chapters in order with their ids, the rail landmark and its nine links, the current state through a stubbed observer, and motion off at rest.
 - [ ] The tests pass. The typecheck, the build, and the export check pass.
 - [ ] Checked with agent-browser on the week 7 report at 1280 by 800 with reduced motion on, at the top and after a scroll to the standings, and at 768 by 1024 to show no rail. Screenshots as `05-rail-<state>-<width>.png` in the feature folder.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 04f80802.
+Proof: The commit "Add the chapter rail to the week page on a desktop" merged in b799b889 and 95d57c8d.
+Read 1 file: .scratch/todoist-queue/audit.md.

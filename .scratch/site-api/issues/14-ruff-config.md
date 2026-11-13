@@ -4,9 +4,15 @@
 
 **Blocked by:** None (can start immediately). Do it after the open feature branches merge, so the reformat does not conflict with them.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Add a `[tool.ruff]` section with the line length the code uses, about 120, and the rule set the team wants.
 - [ ] Fix or ignore every remaining finding with a reason per ignore.
 - [ ] Add a ruff step to the GitHub workflow.
 - [ ] `uv run ruff check src tests` is clean. `uv run pytest -q` passes with no failed test.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in eb429ecf.
+Proof: "Merge ruff-baseline: a ruff config at 120 columns and a clean baseline" is on `main`, and `make check` of the pipeline and the API runs `ruff check src tests` in CI.
+Read 1 file: .scratch/todoist-queue/audit.md.

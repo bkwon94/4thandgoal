@@ -20,6 +20,13 @@ const RULE = `each feature with an open ticket has one row in ${STATE_FILE}, and
 const ADR = "docs/adr/0016-the-rules-are-checks.md";
 const RULE_ID = "tracker/state-file";
 
+/* The nine statuses of a ticket. The first word of a Status line must be one of them. */
+const STATUSES = [
+  "needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "in-progress", "in-review", "blocked", "done", "wontfix",
+];
+const STATUS_RULE = "the first word of the Status line of a ticket is one of the nine statuses";
+const STATUS_RULE_ID = "tracker/status";
+
 type Ticket = { path: string; source: string };
 
 /* An open ticket of a feature. The app is the subfolder of a shared feature, or null for a feature with no subfolder. */
@@ -48,10 +55,14 @@ function trackedTickets(root: string): Ticket[] {
     .map((path) => ({ path, source: readFileSync(join(root, path), "utf8") }));
 }
 
-/* The first word of the first Status line, so "done, deployed 2026-10-22" reads as done. A ticket with no Status line is open. */
+/*
+ * The first word of the first Status line, plain or bold, in lowercase with no trailing punctuation. So "Done." and
+ * "done, deployed 2026-10-22" read as done. A ticket with no Status line is open. The pipeline rule and
+ * scripts/queue.py read it the same way.
+ */
 function status(source: string): string {
-  const match = source.match(/^(?:\*\*)?Status:(?:\*\*)?\s*([^\s,.]+)/m);
-  return match ? match[1].toLowerCase() : "none";
+  const match = source.match(/^(?:\*\*)?Status:(?:\*\*)?[ \t]*(\S*)/m);
+  return match ? match[1].toLowerCase().replace(/[.,;:]+$/, "") : "none";
 }
 
 /*
@@ -113,6 +124,24 @@ function offenses(tickets: Ticket[], stateSource: string): Offense[] {
   return [...missing, ...stale];
 }
 
+/* One offense for each ticket whose Status has a first word outside the nine statuses. A ticket with no Status line is legal and open. */
+function statusOffenses(tickets: Ticket[]): Offense[] {
+  return tickets.flatMap(({ path, source }) => {
+    const word = status(source);
+    if (word === "none" || STATUSES.includes(word)) return [];
+    const line = source.split("\n").findIndex((text) => /^(?:\*\*)?Status:/.test(text)) + 1;
+    return [{
+      path,
+      line,
+      ruleId: STATUS_RULE_ID,
+      what: `The ticket has the status ${word || "none"}, and it is not one of the nine statuses.`,
+      rule: STATUS_RULE,
+      adr: ADR,
+      fix: `set the first word of the Status line to one of: ${STATUSES.join(", ")}.`,
+    }];
+  });
+}
+
 function fakeTicket(path: string, statusLine: string): Ticket {
   return { path, source: `# A ticket\n\n${statusLine}\n` };
 }
@@ -141,6 +170,17 @@ describe("the tracker rule", () => {
     expect(offenses(tickets, TABLE)).toEqual([]);
   });
 
+  it("reads a plain Status line and a capital Done as closed, the same as the pipeline rule", () => {
+    const tickets = [
+      fakeTicket(".scratch/a/issues/01-x.md", "Status: Done"),
+      fakeTicket(".scratch/a/issues/02-y.md", "**Status:** Done;"),
+    ];
+    expect(offenses(tickets, TABLE)).toEqual([]);
+    expect(statusOffenses(tickets)).toEqual([]);
+    const odd = statusOffenses([fakeTicket(".scratch/a/issues/03-z.md", "Status: backlog")]);
+    expect(odd.map(({ line, ruleId }) => ({ line, ruleId }))).toEqual([{ line: 3, ruleId: "tracker/status" }]);
+  });
+
   it("finds one offense at line 1 for a feature with an open ticket and no row", () => {
     const tickets = [fakeTicket(".scratch/a/issues/01-x.md", "**Status:** done"), fakeTicket(".scratch/a/issues/02-y.md", "**Status:** triage")];
     const found = offenses(tickets, TABLE);
@@ -156,6 +196,24 @@ describe("the tracker rule", () => {
     expect(found.map(({ line, ruleId, fix }) => ({ line, ruleId, fix }))).toEqual([
       { line: 6, ruleId: "tracker/state-file", fix: "remove the row, because the feature is done." },
     ]);
+  });
+
+  it("finds a ticket at backlog, names it, and passes a ticket with no Status line", () => {
+    const tickets = [
+      fakeTicket(".scratch/zz-rule/issues/01-zz.md", "**Status:** backlog"),
+      { path: ".scratch/zz-rule/issues/02-zz.md", source: "# A ticket\n\nNo status yet.\n" },
+      fakeTicket(".scratch/zz-rule/issues/03-zz.md", "**Status:** done 2026-10-24"),
+    ];
+    const found = statusOffenses(tickets);
+    expect(found.map(({ path, line, ruleId }) => ({ path, line, ruleId }))).toEqual([
+      { path: ".scratch/zz-rule/issues/01-zz.md", line: 3, ruleId: "tracker/status" },
+    ]);
+    expect(found[0].what).toContain("backlog");
+  });
+
+  it("gives each tracked ticket one of the nine statuses", () => {
+    const found = statusOffenses(trackedTickets(ROOT));
+    if (found.length > 0) throw new Error(report(found));
   });
 
   it("finds one offense in a tracker folder on disk with one open ticket and an empty state file", () => {

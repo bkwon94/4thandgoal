@@ -4,7 +4,7 @@
 
 **Blocked by:** 05 The chapter rail
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] After the next week chapter, a footer row shows the prior week on the left and the next week on the right, each with the week number as the lead and the dates under it.
 - [ ] A missing prior or next week leaves its slot empty and the other link keeps its side.
@@ -13,3 +13,9 @@
 - [ ] The week page test covers: week 7 links week 6 on the left with an empty right slot; week 6 links week 5 on the left and week 7 on the right; each link shows the number and the dates; every link has the base path.
 - [ ] The tests pass. The typecheck, the build, and the export check pass.
 - [ ] Checked with agent-browser on the week 7 and week 6 reports at 390 by 844 and 1280 by 800 with reduced motion on. Screenshots as `06-footer-week<N>-<width>.png` in the feature folder.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 52763926.
+Proof: The commit "Add the week footer with links to the prior and the next week" merged in 49c735f9 and 95d57c8d.
+Read 1 file: .scratch/todoist-queue/audit.md.

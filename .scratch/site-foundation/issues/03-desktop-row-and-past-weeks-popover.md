@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 Tiers and the page column, 02 The destinations and the menu sheet
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] From 1024px the masthead shows the row and hides the menu button. Under 1024px it shows the button and hides the row.
 - [ ] The row lists Home, Week N, Power rankings, Trade analyzer, and a Past weeks trigger, in that order, from the same list the sheet renders.
@@ -15,3 +15,9 @@
 - [ ] With motion off the popover shows at rest.
 - [ ] Tests at the masthead seam cover the row links in order, the trigger, the popover items, and the current-page state. The existing tests pass.
 - [ ] Checked with agent-browser at 1280 by 800 and 768 by 1024 with reduced motion on. Screenshots of the row and the open popover in the feature folder.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in ed7c1d80.
+Proof: The commit "Add the desktop row and the Past weeks popover to the menu" merged in a5559600; the redesign 0a8b8868 changed the menu later.
+Read 1 file: .scratch/todoist-queue/audit.md.

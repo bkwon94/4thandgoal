@@ -17,6 +17,7 @@ A new worktree has no `node_modules` and no `.venv`, and the hook installs nothi
 2. Otherwise run `git worktree add .claude/worktrees/<slug> -b <slug> main`.
 3. Do the setup of the worktree.
 4. If `main` has commits that the Spec branch does not have, run `git merge --no-edit main` in the Spec worktree. A conflict stops the build: tell Brian.
+5. Run `python3 scripts/queue.py pull <slug>` in the Spec worktree. Commit each changed `Status:` line.
 
 ### The frontier
 
@@ -65,7 +66,7 @@ Merge one ticket at a time, in the Spec worktree. The other subagents continue m
 3. If the merge has a conflict, resolve it yourself in the Spec worktree. Call the Skill tool for `resolving-merge-conflicts`. Start no subagent for the conflict: a send-back costs 10 to 40 minutes per ticket. Commit the merge with the hook. If the hook fails, go to step 5 with its output.
 4. Run `make check-fast BASE=main`. It takes about 1 minute. The full check runs in CI on the PR, so no ticket merge waits for it.
 5. If the check fails, run `git reset --hard <head before the merge>`. Only then send the failure to the subagent of the ticket, with the conflicted files and the red output. A red check never stays on the Spec branch.
-6. If the check passes, set the Status of the ticket to `in-review` in the Spec worktree. Commit it with the message `Mark <slug> <NN> in-review`.
+6. If the check passes, set the Status of the ticket to `in-review` in the Spec worktree. Commit it with the message `Mark <slug> <NN> in-review`. Then run `python3 scripts/queue.py push <path of the ticket>`.
 7. Remove the ticket worktree: `git worktree remove .claude/worktrees/<slug>-<NN>`.
 8. In the Spec worktree, delete the branch: `git branch -d <slug>-<NN>`. The `-d` checks the merge into the Spec branch there.
 9. Find the frontier again, and build each new ticket.
@@ -74,7 +75,7 @@ Merge one ticket at a time, in the Spec worktree. The other subagents continue m
 
 If a subagent returns `STUCK`, or a ticket conflicts with the spec or an ADR:
 
-1. Set the Status of the ticket to `blocked` in the Spec worktree. Add the reason as a comment under `## Comments`. Commit.
+1. Set the Status of the ticket to `blocked` in the Spec worktree. Add the reason as a comment under `## Comments`. Commit. Then run `python3 scripts/queue.py push <path of the ticket>`.
 2. Remove the ticket worktree with `git worktree remove --force`. Keep the branch for a second start.
 3. Continue with each ticket that the blocked ticket does not block.
 

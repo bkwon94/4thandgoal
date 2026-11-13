@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 The destinations and the menu sheet, 03 The desktop row and the Past weeks popover
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Once the masthead leaves the viewport the bar slides in with the house ease-out at the press timing. Once the masthead returns the bar leaves along the same path.
 - [ ] The bar is 44px tall, takes the masthead's black, spans the viewport, and aligns its content to the page column.
@@ -14,3 +14,9 @@
 - [ ] With motion off the bar shows and hides with a cross-fade.
 - [ ] Tests at the masthead seam stub the observer: a report of the masthead out of view shows the bar, a report back in view hides it, and the bar's button opens the sheet. The existing tests pass.
 - [ ] Checked with agent-browser at 390 by 844 and 1280 by 800, scrolled past the masthead on the week 7 report, with reduced motion on. Screenshots in the feature folder.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 911899bf.
+Proof: The commit "Add the compact bar to the menu" merged in a5559600; the redesign 0a8b8868 changed the menu later.
+Read 1 file: .scratch/todoist-queue/audit.md.

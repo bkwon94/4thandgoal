@@ -1,0 +1,9 @@
+$ git branch -D pick-reason
+Deleted branch pick-reason (was 392ea4d6).
+$ python3 scripts/queue.py import
+td task update id:6j23MXf3jVmGQ9xG --labels blocked,site,pipeline
+td task update id:6j23McQ9XgPc84PG --labels in-review,site,pipeline
+td task update id:6j23McQPcqCFjf7p --labels in-review,site,pipeline
+3 commands sent.
+$ python3 scripts/queue.py import --dry-run
+0 commands planned, none sent.

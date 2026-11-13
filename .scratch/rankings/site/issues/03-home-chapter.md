@@ -6,7 +6,7 @@ Spec: pipeline repo `.scratch/rankings/pipeline/PRD.md`, section "The site".
 
 **Blocked by:** 01 The reader and the route.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The home page renders the chapter with the top three, the biggest mover, and the link, in a test on the fixture.
 - [ ] The chapter sits after Tools and before Weekly reports. The analyzer is the first item in the page.
@@ -18,3 +18,7 @@ Spec: pipeline repo `.scratch/rankings/pipeline/PRD.md`, section "The site".
 ## Comments
 
 - 2026-10-22: built on `rankings-home` at `746a5d0`, two Opus reviews, one fix pass. Awaits Brian merge with `--no-ff`.
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 746a5d0.
+Proof: Commit 746a5d01 "Add the power rankings chapter to the home page" sits on `main`; site-redesign and front-door later replaced the home page.
+Read 1 file: .scratch/todoist-queue/audit.md.
