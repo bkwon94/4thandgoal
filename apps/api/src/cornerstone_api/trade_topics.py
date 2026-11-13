@@ -29,8 +29,12 @@ from cornerstone_api.trade_wording import (
     AIM_POSITION,
     AIMS_POSITION,
     CONTEXT,
+    GETS_ALSO_NAMED,
+    GETS_ALSO_PLAYER,
     GETS_NAMED,
     GETS_PLAYER,
+    GIVES_ALSO_NAMED,
+    GIVES_ALSO_PLAYER,
     GIVES_NAMED,
     GIVES_PLAYER,
     IDEAS_CONTEXT,
@@ -91,17 +95,35 @@ def _send_key(asker: Asker, served: analyzer_routes.Served, emit: Emit, topic: T
 class Pick:
     """The pick of one side: the probability that the question names a player, and the top player of the Choice with
     his probability and his roster. A sure pick has both above YES, so the form fills only a player that Jev is sure
-    of."""
+    of.
+
+    `also` is the pick of a second player of the side, such as the second player of a 1-for-2 trade, when Jev is sure
+    that the question names two. A sure second player on another roster makes the side unsure, because the trade
+    check weighs a trade of two teams only."""
 
     named: float
     player_id: str
     name: str
     probability: float
     roster_id: int
+    also: "Pick | None" = None
 
     @property
     def sure(self) -> bool:
-        return self.named > YES and self.probability > YES
+        return (self.named > YES and self.probability > YES
+                and (self.second is None or self.second.roster_id == self.roster_id))
+
+    @property
+    def second(self) -> "Pick | None":
+        """The sure second player of the side, or None. A second pick of the first player is no second player."""
+        if self.also is None or not self.also.sure or self.also.player_id == self.player_id:
+            return None
+        return self.also
+
+    @property
+    def players(self) -> list["Pick"]:
+        """The pick of each player of the side: the first player, then the sure second player."""
+        return [self] if self.second is None else [self, self.second]
 
 
 def _top(probabilities: dict[str, float]) -> tuple[str, float]:
@@ -111,7 +133,7 @@ def _top(probabilities: dict[str, float]) -> tuple[str, float]:
 
 def pick_players(jev: Jev, question: str, teams: list[dict], asker: int, context: str = CONTEXT,
                  turns: list[Turn] | None = None, limit: bool = False) -> tuple[Pick, Pick, JevResponse]:
-    """One Jev request for the player that the manager gives and the player that the manager gets, over the real
+    """One Jev request for the players that the manager gives and the players that the manager gets, over the real
     rosters of `teams`, as the teams route gives them. `context` says what the manager asks for: a trade check by
     default, or trade ideas. The earlier `turns` of the Thread go in the state, so a follow-up reads like the whole
     question. With `limit`, the same request asks the questions of the limit of trade ideas, for `read_limit`. A failed
@@ -136,13 +158,18 @@ def pick_players(jev: Jev, question: str, teams: list[dict], asker: int, context
         questions |= limit_questions(give_options)
     answers = jev.ask(state, questions)
 
-    def side(named: str, choice: str, keys: dict[str, str]) -> Pick:
+    def side(named: str, choice: str, keys: dict[str, str], also: Pick | None = None) -> Pick:
         key, probability = _top(answers.choices[choice])
         pid = next(pid for pid, option in keys.items() if option == key)
         return Pick(named=answers.nouls[named], player_id=pid, name=_name(team_of[pid], pid), probability=probability,
-                    roster_id=team_of[pid]["roster_id"])
+                    roster_id=team_of[pid]["roster_id"], also=also)
 
-    return side(GIVES_NAMED, GIVES_PLAYER, give_keys), side(GETS_NAMED, GETS_PLAYER, get_keys), answers
+    def second(named: str, choice: str, keys: dict[str, str]) -> Pick | None:
+        return side(named, choice, keys) if answers.nouls[named] > YES else None
+
+    gives = side(GIVES_NAMED, GIVES_PLAYER, give_keys, second(GIVES_ALSO_NAMED, GIVES_ALSO_PLAYER, give_keys))
+    gets = side(GETS_NAMED, GETS_PLAYER, get_keys, second(GETS_ALSO_NAMED, GETS_ALSO_PLAYER, get_keys))
+    return gives, gets, answers
 
 
 @dataclass(frozen=True)
@@ -195,6 +222,13 @@ def ideas_anchor(gives: Pick, gets: Pick) -> tuple[Anchor, Pick] | None:
     if gets.sure and not gives.sure:
         return Anchor(player_id=gets.player_id, side="gets"), gets
     return None
+
+
+def _names(names: list[str]) -> str:
+    """The names as one phrase, such as "A and B" or "A, B, and C"."""
+    if len(names) <= 2:
+        return " and ".join(names)
+    return f"{', '.join(names[:-1])}, and {names[-1]}"
 
 
 def _name(team: dict, player_id: str) -> str:
@@ -305,8 +339,9 @@ class TradeCheckRequest(BaseModel):
 @router.post("/trade-check")
 def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
                 served: ServedClient) -> StreamingResponse:
-    """The trade check of a typed question. With two sure picks, the steps of the analyze press and its document.
-    With an unsure pick, the form of the Trade page with each sure player and no unsure one (AT-58)."""
+    """The trade check of a typed question. With two sure picks, the steps of the analyze press and its document. A
+    side with a sure second player gives or gets both. With an unsure pick, the form of the Trade page with each sure
+    player and no unsure one (AT-58)."""
     teams = _teams(asker, served, body.roster_id)
     question = body.question.strip()
 
@@ -317,13 +352,16 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
         if not (gives.sure and gets.sure):
             emit("data-answer", {"kind": "form", "form": {
                 "asker": body.roster_id, "partner": gets.roster_id if gets.sure else None,
-                "gives": [gives.player_id] if gives.sure else [], "gets": [gets.player_id] if gets.sure else []}})
+                "gives": [pick.player_id for pick in gives.players] if gives.sure else [],
+                "gets": [pick.player_id for pick in gets.players] if gets.sure else []}})
             return
         step = _step(emit)
-        step(f"Found {gives.name} and {gets.name}")
+        step(f"Found {_names([pick.name for pick in gives.players + gets.players])}")
         trade = ProposedTrade(season=asker.season, asker=body.roster_id, sides=[
-            TradeSide(roster_id=body.roster_id, gives=[GivenPlayer(player_id=gives.player_id, to=gets.roster_id)]),
-            TradeSide(roster_id=gets.roster_id, gives=[GivenPlayer(player_id=gets.player_id, to=body.roster_id)])])
+            TradeSide(roster_id=body.roster_id,
+                      gives=[GivenPlayer(player_id=pick.player_id, to=gets.roster_id) for pick in gives.players]),
+            TradeSide(roster_id=gets.roster_id,
+                      gives=[GivenPlayer(player_id=pick.player_id, to=body.roster_id) for pick in gets.players])])
         document = capped_press(asker, body.roster_id, emit,
                                 lambda: analyzer_routes.analyze_trade(request, trade, served, step))
         if document is not None:
