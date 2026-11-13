@@ -1,0 +1,86 @@
+$ git log --oneline -2; git ls-files .scratch/bugs; grep -n "at10\|bugs\|quick" docs/agents/state.md; echo "(state.md has no row for the probe)"
+8fb2f110 AT-10 probe: an open quick file with no row in state.md
+a41638d8 Merge branch 'quick-runs-fix-a' into quick-runs
+.scratch/bugs/at10-probe.md
+17:| `quick-runs` | both | 01 the queue keeps Bugs and Quick Wins | none | |
+(state.md has no row for the probe)
+exit: 0
+
+$ make check-fast BASE=quick-runs > /private/tmp/claude-503/cf.txt 2>&1; echo "make exit $?"; grep -n -i "tracker\|state.md\|open ticket\|nine statuses" /private/tmp/claude-503/cf.txt; echo "--- last 25 lines ---"; tail -25 /private/tmp/claude-503/cf.txt
+make exit 0
+150:uv run --exact --package cornerstone pytest -q tests/test_layers.py tests/test_rule_client.py tests/test_rule_harness.py tests/test_rule_ports.py tests/test_rule_publish.py tests/test_rule_readmes.py tests/test_rule_suppressions.py tests/test_rule_tracker.py
+--- last 25 lines ---
+uv run --exact --package cpc-sim pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-sim pytest -q
+...............                                                          [100%]
+15 passed in 0.63s
+==> packages/waiver: check-fast
+uv run --exact --package cpc-waiver ruff check src tests
+Uninstalled 1 package in 0.95ms
+Installed 1 package in 2ms
+All checks passed!
+uv run --exact --package cpc-waiver pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-waiver pytest -q
+...................................................................      [100%]
+67 passed, 1 deselected in 5.74s
+==> packages/week: check-fast
+uv run --exact --package cpc-week ruff check src tests
+Uninstalled 1 package in 0.86ms
+Installed 1 package in 4ms
+All checks passed!
+uv run --exact --package cpc-week pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-week pytest -q
+.......                                                                  [100%]
+7 passed in 1.50s
+exit: 0
+
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest tests/test_rule_tracker.py -v -k test_an_open_quick_file_needs_no_row
+Installed 13 packages in 8ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/qr-at10/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/qr-at10/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 10 items / 9 deselected / 1 selected
+
+tests/test_rule_tracker.py::test_an_open_quick_file_needs_no_row PASSED  [100%]
+
+======================= 1 passed, 9 deselected in 0.03s ========================
+exit: 0
+
+$ (cd /private/tmp/claude-503/qr-at10/apps/pipeline && uv run --exact --package cornerstone pytest tests/test_rule_tracker.py -v)
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/qr-at10/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/qr-at10/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 10 items
+
+tests/test_rule_tracker.py::test_each_open_feature_has_a_row PASSED      [ 10%]
+tests/test_rule_tracker.py::test_each_row_names_an_open_feature PASSED   [ 20%]
+tests/test_rule_tracker.py::test_the_rule_finds_an_open_feature_with_no_row PASSED [ 30%]
+tests/test_rule_tracker.py::test_an_open_quick_file_needs_no_row PASSED  [ 40%]
+tests/test_rule_tracker.py::test_the_rule_finds_a_row_with_no_open_ticket PASSED [ 50%]
+tests/test_rule_tracker.py::test_the_rule_counts_a_subfolder_ticket_for_its_app PASSED [ 60%]
+tests/test_rule_tracker.py::test_the_rule_finds_a_ticket_with_an_odd_status PASSED [ 70%]
+tests/test_rule_tracker.py::test_a_ticket_with_no_status_line_passes PASSED [ 80%]
+tests/test_rule_tracker.py::test_a_plain_status_line_and_a_capital_done_read_as_closed PASSED [ 90%]
+tests/test_rule_tracker.py::test_each_ticket_has_one_of_the_nine_statuses PASSED [100%]
+
+============================== 10 passed in 0.19s ==============================
+exit: 0
+
+$ grep -n "tracker" /private/tmp/claude-503/qr-at10/apps/site/src/tracker-rule.test.ts | head -5; echo "(the site rule test ran inside make check-fast: Test Files 145 passed, Tests 1506 passed)"
+12:/* The tracker and the state file sit at the repo root, so the rule asks git for the root and not the folder of the app. */
+21:const RULE_ID = "tracker/state-file";
+28:const STATUS_RULE_ID = "tracker/status";
+151:describe("the tracker rule", () => {
+181:    expect(odd.map(({ line, ruleId }) => ({ line, ruleId }))).toEqual([{ line: 3, ruleId: "tracker/status" }]);
+(the site rule test ran inside make check-fast: Test Files 145 passed, Tests 1506 passed)
+exit: 0
+

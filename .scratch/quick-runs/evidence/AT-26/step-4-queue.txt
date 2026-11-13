@@ -1,0 +1,14 @@
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py take "Pick owner: week_moves names the first owner of a traded pick" .scratch/bugs/pick-owner.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/bug-pick-owner
+4ag: .scratch/bugs/pick-owner.md
+week_moves in apps/api/src/cornerstone_api/free_tools.py names the receiver of a pick from pick.roster_id, the first owner. It must use owner_id. Low: the leagues do not trade draft picks yet.
+0 commands sent.
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py push .scratch/bugs/pick-owner.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/bug-pick-owner
+td task update id:6j29GCWH6fFqqVHp --labels in-progress
+1 command sent.
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py take "Depth sentence is hard to read" .scratch/quick-wins/depth-sentence.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/win-depth-sentence
+td task update id:6j29JqGx8w8m6mQG --description '4ag: .scratch/quick-wins/depth-sentence.md
+"Your depth is fine at every position, meaning no spare player inside the starter count past the starters." Source: DEPTH_MEANINGS in apps/api/src/cornerstone_api/personal_facts.py. Rewrite each phrase so a manager reads it in one pass.'
+1 command sent.
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py push .scratch/quick-wins/depth-sentence.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/win-depth-sentence
+td task update id:6j29JqGx8w8m6mQG --labels in-progress
+1 command sent.

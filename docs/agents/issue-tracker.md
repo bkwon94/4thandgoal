@@ -76,6 +76,38 @@ its file path from the repo root, such as `4ag: .scratch/<feature>/issues/03-<sl
 `wait`, `sweep`, and `import`. A skill runs it as `python3 scripts/queue.py <subcommand>`. A failed `td` call
 prints one warning and exits 0. CI never calls `td`.
 
+## The quick file
+
+A quick run (`4ag:quick`, ADR 0033) writes one quick file for up to five items of one kind. A run of Bugs
+writes `.scratch/bugs/<slug>.md`. A run of Quick wins writes `.scratch/quick-wins/<slug>.md`. The queue names
+the two folders as the sections `Bugs` and `Quick Wins`, and the sweep never archives them.
+
+A quick file is not under `issues/`, so it is no ticket and gets no row in `docs/agents/state.md`. It lives
+on one branch, `bug-<slug>` or `win-<slug>`, so the state file has nothing to track.
+
+```markdown
+# <Title>
+
+Kind: bug or quick-win
+Status: in-progress
+Branch: `bug-<slug>` or `win-<slug>`.
+Source: the queue task `<name>`, a handoff file, or the session of <date>.
+Boundary: the call on the four rules, in one line.
+
+## Items
+
+### 1. <Item title>
+
+Done condition: <one sentence>
+Method: diagnosing-bugs, tdd, or text only.
+Cause: <for a Bug, the cause the loop found>
+Red: <the command, and its output>
+Green: <the same command at the fixed commit, and its output>
+Test verdict: PASS, FAIL, BLOCKED, or none for a text-only item.
+
+## Comments
+```
+
 ## The state file
 
 `docs/agents/state.md` has one row for each feature with an open ticket. The columns are Feature, App, Next

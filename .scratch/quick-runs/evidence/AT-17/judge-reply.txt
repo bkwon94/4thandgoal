@@ -1,0 +1,1 @@
+Item 1: Test verdict: FAIL Question 1 is no: the red evidence shows an ImportError for `load_history`, not the wrong owner of a traded pick.

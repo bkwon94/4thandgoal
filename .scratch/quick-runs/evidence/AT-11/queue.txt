@@ -1,0 +1,8 @@
+$ python3 scripts/queue.py take "Pick owner: week_moves names the first owner of a traded pick" --dry-run (step 1)
+Pick owner: week_moves names the first owner of a traded pick
+4ag: .scratch/bugs/pick-owner.md
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py take "Pick owner: week_moves names the first owner of a traded pick" .scratch/bugs/pick-owner.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/bug-pick-owner
+week_moves in apps/api/src/cornerstone_api/free_tools.py names the receiver of a pick from pick.roster_id, the first owner. It must use owner_id. Low: the leagues do not trade draft picks yet.
+0 commands sent.
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py push .scratch/bugs/pick-owner.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/bug-pick-owner
+0 commands sent.

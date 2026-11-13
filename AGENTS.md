@@ -41,6 +41,8 @@ The repo plugin `4ag` takes an idea to a merged spec. Run its skills in this ord
 5. `4ag:implement <feature>` builds each ticket on its ticket branch, merges it into the spec branch, records the evidence in `EVIDENCE.md`, has the Judge write `VERDICTS.md`, and opens one PR to `main`.
 6. Brian posts no comment unless he gives a FAIL. `4ag:review <PR number>` does one round of feedback per run. The check `verdict` passes when each test has PASS from the Judge and no FAIL from Brian, and Brian merges.
 
+A bug or a small change skips the spec flow. Run `4ag:quick <description or queue task>` instead. It writes a quick file of up to five items of one kind. It builds each item with `diagnosing-bugs` or `tdd`, has a fresh Judge give each Test verdict, and opens one PR. ADR 0033 sets the rules.
+
 ## The harness words
 
 The 4ag skills run in Claude Code and in Codex. The skill text uses neutral words. This table maps each one to the tool of each harness.
@@ -53,9 +55,11 @@ The 4ag skills run in Claude Code and in Codex. The skill text uses neutral word
 | Start the subagents at the same time, within the limit of the harness | Several Agent tool calls in one message, so they run in parallel. | `spawn_agent` for at most 6 at a time. Close each finished one with `close_agent` before you start the next. |
 | Run it in the background | The Bash tool with `run_in_background`. | A background shell command. |
 | A scratch folder outside the repo, `<scratch>` | The scratchpad of the session. | `$TMPDIR`. |
+| With the default model | `model: sonnet`. | Set no `model`. The subagent uses the default model of the session. |
 | With the strong model | `model: opus`. | `model: "gpt-6-astra"` with `reasoning_effort: "high"`. |
 | The permission profile of the harness | The permission of the session itself. | The profile `4ag` in `.codex/config.toml`. The fix is in `docs/agents/codex.md`. |
 | The global skill `research` | `mattpocock-skills:research`. | `mattpocock-skills:research` in the skill list. It counts as present when `~/.agents/skills/research/SKILL.md` exists. |
+| The global skill `diagnosing-bugs` | `mattpocock-skills:diagnosing-bugs`. | `mattpocock-skills:diagnosing-bugs` in the skill list. It counts as present when `~/.agents/skills/diagnosing-bugs/SKILL.md` exists. Step 8 of `docs/agents/codex.md` installs it. |
 
 Each other global skill has the same name in both harnesses.
 

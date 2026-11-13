@@ -1,0 +1,22 @@
+$ git -C .claude/worktrees/quick-runs rev-parse --short HEAD   # the queue.py of this run
+8a55b056
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py sweep --root /Users/brian.kwon/repos/4thandgoal
+td task complete id:6j29GCWH6fFqqVHp
+td task complete id:6j2CQqwP3JV8vJ6G
+2 commands sent.
+exit: 0
+
+$ td section list 4thandgoal | grep -E "Bugs|Quick Wins"
+6j29GCJqM59vMP2G  Bugs
+6j29qJG7gF3jxW4p  Quick Wins
+
+$ td task list --project 4thandgoal --json | jq -r ".results[] | select(.id==\"6j29GCWH6fFqqVHp\" or .id==\"6j2CQqwP3JV8vJ6G\") | .id"   # the open tasks with the id of the quick task or the wait task
+(no output: neither task is open)
+
+$ td task list --project 4thandgoal --json | jq -r ".results[] | select(.sectionId==\"6j29GCJqM59vMP2G\") | .content"   # the open tasks in Bugs
+Front door trade drops the extra player of a 1-for-2 trade
+Theme: light choice does not stick after a reload
+Standings: the "Playoff line" label sits a little into row 7
+Matchup card: the other team's winning slot is gray
+Front door: the sticky team row is see-through
+Recaps: a paragraph with no clear subject, and an injury named twice

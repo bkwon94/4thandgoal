@@ -8,6 +8,8 @@ argument-hint: '<outcome statement> | <feature slug> [decision ticket number]'
 
 An idea arrives with fog: parts of the feature that are not specified yet. This skill writes a map of the fog, turns each fog item into a decision ticket, and clears one decision ticket per session. When no fog is left, it hands off to `4ag:to-spec`, `4ag:to-acceptance`, and `4ag:to-tickets`.
 
+A bug or a small change does not need a map. Send it to `4ag:quick`.
+
 A decision ticket records a choice. It writes no product code. If you want to build something, you are at the edge of the map: that is the spec.
 
 ## The queue

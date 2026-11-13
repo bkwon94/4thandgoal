@@ -1,0 +1,14 @@
+$ grep -n "4ag:quick" AGENTS.md .claude/plugin/skills/plan/SKILL.md
+AGENTS.md:44:A bug or a small change skips the spec flow. Run `4ag:quick <description or queue task>` instead. It writes a quick file of up to five items of one kind. It builds each item with `diagnosing-bugs` or `tdd`, has a fresh Judge give each Test verdict, and opens one PR. ADR 0033 sets the rules.
+.claude/plugin/skills/plan/SKILL.md:11:A bug or a small change does not need a map. Send it to `4ag:quick`.
+exit: 0
+
+$ grep -n "quick" docs/agents/issue-tracker.md docs/agents/codex.md
+docs/agents/issue-tracker.md:79:## The quick file
+docs/agents/issue-tracker.md:81:A quick run (`4ag:quick`, ADR 0033) writes one quick file for up to five items of one kind. A run of Bugs
+docs/agents/issue-tracker.md:82:writes `.scratch/bugs/<slug>.md`. A run of Quick wins writes `.scratch/quick-wins/<slug>.md`. The queue names
+docs/agents/issue-tracker.md:85:A quick file is not under `issues/`, so it is no ticket and gets no row in `docs/agents/state.md`. It lives
+docs/agents/issue-tracker.md:91:Kind: bug or quick-win
+docs/agents/codex.md:133:Why: `4ag:quick` checks for the skill `diagnosing-bugs`. In Codex, a skill counts when `~/.agents/skills/<name>/SKILL.md` exists. Codex lists it as `mattpocock-skills:diagnosing-bugs`, the same name as in Claude.
+exit: 0
+

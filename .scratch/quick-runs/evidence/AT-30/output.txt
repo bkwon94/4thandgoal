@@ -1,0 +1,20 @@
+$ git log -1 --stat bug-recap-subject
+commit 2c422bbdecf6e12a13b0d0ffddf9f8f577800ee9
+Author: brianbuoy <brian.kwon@buoyhealth.com>
+Date:   Fri Nov 13 14:02:02 2026 -0500
+
+    Boundary stop: the recap fix needs a new field in page.json
+
+ .scratch/bugs/recap-subject.md | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+$ git log --oneline main..bug-recap-subject
+2c422bbd Boundary stop: the recap fix needs a new field in page.json
+fe8957c2 Quick file: the Red block of item 1 of recap-subject
+7b75240f Red: a recap sentence that opens with a bare They names no team
+544a3a82 Quick run: Recaps: a paragraph with no clear subject, and an injury named twice
+
+$ gh pr list --head bug-recap-subject --state all
+(empty: no PR)
+$ git ls-remote --heads origin bug-recap-subject
+(empty: not pushed)

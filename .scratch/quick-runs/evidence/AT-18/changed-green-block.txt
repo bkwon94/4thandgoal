@@ -1,0 +1,6 @@
+Green: at `ef0265bb`, `cd apps/api && uv run --exact --package cpc-api pytest -q tests/test_free_tools.py`
+
+```text
+........                                                                 [100%]
+8 passed in 0.91s
+```

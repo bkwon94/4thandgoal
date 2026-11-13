@@ -1,0 +1,12 @@
+$ git branch --list 'bug-*' 'win-*'   # before
++ bug-pick-owner
+$ git status --short   # before
+?? .scratch/quick-runs/evidence/
+$ python3 scripts/queue.py take "add a page that shows the draft board of each season" .scratch/bugs/probe.md --dry-run   # step 1
+warning: the queue has no open task named 'add a page that shows the draft board of each season' in Bugs or Quick Wins. Nothing changed.
+0 commands planned, none sent.
+$ git branch --list 'bug-*' 'win-*'   # after
++ bug-pick-owner
+$ git status --short   # after
+?? .scratch/quick-runs/evidence/
+Note: bug-pick-owner is the branch of the real Bug run of AT-11. It existed before this test, as the before list shows.

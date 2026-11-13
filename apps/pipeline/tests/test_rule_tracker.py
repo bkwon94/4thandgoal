@@ -199,6 +199,19 @@ def test_the_rule_finds_an_open_feature_with_no_row(tmp_path):
     )]
 
 
+def test_an_open_quick_file_needs_no_row(tmp_path):
+    for folder in ("bugs", "quick-wins"):
+        quick = tmp_path / ".scratch" / folder
+        quick.mkdir(parents=True)
+        (quick / "fix-the-draw.md").write_text("# Fix the draw\n\nKind: bug\nStatus: in-progress\n")
+    state_path = tmp_path / "state.md"
+    state_path.write_text("| Feature | Next ticket | Blocked by | Hold |\n| --- | --- | --- | --- |\n")
+    tracked = [".scratch/bugs/fix-the-draw.md", ".scratch/quick-wins/fix-the-draw.md"]
+    assert _missing_row_offenses(tmp_path, tracked, state_path) == []
+    assert _stale_row_offenses(tmp_path, tracked, state_path) == []
+    assert _odd_status_offenses(tmp_path, tracked) == []
+
+
 def test_the_rule_finds_a_row_with_no_open_ticket(tmp_path):
     issues = tmp_path / ".scratch" / "odds" / "issues"
     issues.mkdir(parents=True)

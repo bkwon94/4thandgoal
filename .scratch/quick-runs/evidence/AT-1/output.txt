@@ -1,0 +1,72 @@
+$ claude -p "Print the exact name of every skill in your available skill list that starts with 4ag, one per line. Print nothing else." --max-turns 2
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+Warning: no stdin data received in 3s, proceeding without it. If piping from a slow command, redirect stdin explicitly: < /dev/null to skip, or wait longer.
+4ag:implement
+4ag:plan
+4ag:review
+4ag:to-acceptance
+4ag:to-spec
+4ag:to-tickets
+exit: 0
+
+$ readlink -f .claude/plugin/skills/quick/SKILL.md
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/.claude/plugin/skills/quick/SKILL.md
+exit: 0
+
+$ ls -la .claude/plugin/skills/quick/
+total 64
+drwxr-xr-x  5 brian.kwon  staff    160 Nov 13 13:18 .
+drwxr-xr-x  9 brian.kwon  staff    288 Nov 13 12:40 ..
+-rw-r--r--  1 brian.kwon  staff   7075 Nov 13 12:40 format.md
+-rw-r--r--  1 brian.kwon  staff   4835 Nov 13 13:18 judge.md
+-rw-r--r--  1 brian.kwon  staff  13705 Nov 13 13:18 SKILL.md
+exit: 0
+
+$ claude plugin list 2>&1 | grep -n -i -A4 "4ag"
+3:  ❯ 4ag@4ag-local
+4-    Version: 0.1.0
+5-    Read from: /Users/brian.kwon/repos/4thandgoal/.claude/plugin
+6-    Scope: user
+7-    Status: ✔ enabled
+--
+9:  ❯ 4ag@4ag-local
+10-    Version: 0.1.0
+11-    Read from: /Users/brian.kwon/repos/4thandgoal/.claude/plugin
+12-    Scope: project
+13-    Status: ✔ enabled
+--
+15:  ❯ 4ag@4ag-local
+16-    Version: 0.1.0
+17-    Read from: /Users/brian.kwon/repos/4thandgoal/.claude/plugin
+18-    Scope: project
+19-    Status: ✔ enabled
+--
+21:  ❯ 4ag@4ag-local
+22-    Version: 0.1.0
+23-    Read from: /Users/brian.kwon/repos/4thandgoal/.claude/plugin
+24-    Scope: project
+25-    Status: ✔ enabled
+--
+27:  ❯ 4ag@4ag-local
+28-    Version: 0.1.0
+29-    Read from: /Users/brian.kwon/repos/4thandgoal/.claude/plugin
+30-    Scope: project
+31-    Status: ✔ enabled
+exit: 0
+
+
+--- Second session: the plugin loaded from the head of quick-runs with --plugin-dir, because the marketplace 4ag-local points to the main checkout. ---
+$ git rev-parse --short HEAD
+a41638d8
+$ claude --plugin-dir "$PWD/.claude/plugin" -p "Print the exact name of every skill in your available skill list that starts with 4ag, one per line. Print nothing else." --max-turns 2
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+4ag:implement
+4ag:plan
+4ag:quick
+4ag:review
+4ag:to-acceptance
+4ag:to-spec
+4ag:to-tickets
+exit: 0
+$ readlink -f "$PWD/.claude/plugin/skills/quick/SKILL.md"
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/.claude/plugin/skills/quick/SKILL.md

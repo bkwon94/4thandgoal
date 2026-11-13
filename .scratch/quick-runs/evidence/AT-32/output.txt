@@ -1,0 +1,5 @@
+Note: origin/main replaces main, because the local main is one commit behind origin/main.
+
+$ git diff --stat origin/main...quick-runs -- .claude/plugin/skills/implement .claude/plugin/skills/review
+exit: 0
+

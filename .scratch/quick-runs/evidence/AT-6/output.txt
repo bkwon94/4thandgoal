@@ -1,0 +1,18 @@
+$ cat /private/tmp/claude-503/qr-at6/.scratch/bugs/at6-probe.md
+# AT-6 probe bug
+
+Status: in-progress
+
+A probe file for the push of a bug file.
+exit: 0
+
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py push .scratch/bugs/at6-probe.md --dry-run --root /private/tmp/claude-503/qr-at6
+td task add 'AT-6 probe bug' --project id:6j222rQrr58wHx9G --section id:6j29GCJqM59vMP2G --labels in-progress --description '4ag: .scratch/bugs/at6-probe.md
+On the branch bug-at6-probe.
+A probe file for the push of a bug file.'
+1 command planned, none sent.
+exit: 0
+
+
+$ td section list 4thandgoal | grep 6j29GCJqM59vMP2G
+6j29GCJqM59vMP2G  Bugs

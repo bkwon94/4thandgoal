@@ -1,0 +1,6 @@
+$ python3 scripts/queue.py take "No such task" .scratch/bugs/none.md --dry-run; echo $?
+warning: the queue has no open task named 'No such task' in Bugs or Quick Wins. Nothing changed.
+0 commands planned, none sent.
+0
+exit: 0
+

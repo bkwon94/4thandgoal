@@ -1,0 +1,7 @@
+$ git branch --list 'bug-*' 'win-*'
++ bug-pick-owner
++ win-depth-sentence
+
+$ git worktree list | grep -E "bug-|win-"
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/bug-pick-owner                                                             07fa416c [bug-pick-owner]
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/win-depth-sentence                                                         b43998d2 [win-depth-sentence]

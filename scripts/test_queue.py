@@ -636,6 +636,226 @@ def words(command: list[str]) -> str:
     return " ".join(command)
 
 
+class AQuickFile(unittest.TestCase):
+    """A quick file is .scratch/bugs/<slug>.md or .scratch/quick-wins/<slug>.md. Its section name comes from a map."""
+
+    BUGS_SECTION = "6j2Gq9xBugsSect01"
+    TASK = {"id": "6j2Gr9QuickTask01", "content": "01 Fix the draw", "labels": [], "sectionId": BUGS_SECTION,
+            "description": "4ag: .scratch/bugs/fix-the-draw.md\nOn the spec branch.\n"}
+    WAIT = {"id": "6j2Gr9QuickWait01", "content": "Merge PR #50", "labels": ["ready-for-human"],
+            "sectionId": BUGS_SECTION, "description": "4ag: bugs/wait/merge-pr\nhttps://example.com/pull/50"}
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name) / "repo"
+        self.root.mkdir()
+
+    def quick_file(self, folder: str, slug: str, status: str = "in-progress") -> Path:
+        file = self.root / ".scratch" / folder / f"{slug}.md"
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(f"# Fix the {slug}\n\nKind: bug\nStatus: {status}\nBranch: `bug-{slug}`.\n")
+        return file
+
+    def commit_main(self) -> None:
+        for args in (["init", "-q", "-b", "main"], ["add", "-A"],
+                     ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "fixture"]):
+            subprocess.run(["git", "-C", str(self.root), *args], check=True, env=queue_script._clean_git_env())
+
+    def push(self, folder: str, slug: str, queue_: Queue) -> list[list[str]]:
+        file = self.quick_file(folder, slug)
+        return plan_push(load_ticket(self.root, file), queue_)
+
+    def test_a_bugs_file_goes_into_the_section_bugs_and_makes_no_section_bugs(self):
+        labels = queue().labels | set(queue_script.FLOW_LABELS)
+        existing = Queue("p1", {"Bugs": self.BUGS_SECTION}, [], labels)
+        plan = self.push("bugs", "fix-the-draw", existing)
+        self.assertEqual(option(plan[-1], "--section"), f"id:{self.BUGS_SECTION}")
+        self.assertNotIn(["section", "create"], [command[:2] for command in plan])
+
+    def test_a_bugs_file_makes_the_section_with_its_mapped_name(self):
+        plan = self.push("bugs", "fix-the-draw", queue())
+        self.assertIn(["section", "create", "--name", "Bugs", "--project", "id:6j222rQrr58wHx9G"], plan)
+        self.assertEqual(option(plan[-1], "--section"), "Bugs")
+
+    def test_two_quick_wins_files_make_the_section_quick_wins_once(self):
+        first = self.push("quick-wins", "one", queue())
+        # The first push makes the section. The queue read after it holds the section, so the second push does not.
+        after = Queue("p1", {"Quick Wins": "6j2Gq9xQuickWins1"}, [], queue().labels | set(queue_script.FLOW_LABELS))
+        second = self.push("quick-wins", "two", after)
+        self.assertEqual(sum(command[:2] == ["section", "create"] for command in first), 1)
+        self.assertEqual(sum(command[:2] == ["section", "create"] for command in second), 0)
+        self.assertEqual(option(first[-1], "--section"), "Quick Wins")
+        self.assertEqual(option(second[-1], "--section"), "id:6j2Gq9xQuickWins1")
+
+    def test_a_moved_quick_task_goes_to_its_mapped_section(self):
+        file = self.quick_file("quick-wins", "move-me")
+        task = {**self.TASK, "content": "Fix the move-me", "sectionId": "other",
+                "description": "4ag: .scratch/quick-wins/move-me.md"}
+        plan = plan_push(load_ticket(self.root, file), Queue("p1", {}, [task], queue().labels))
+        self.assertIn(["task", "move", f"id:{task['id']}", "--project", "id:p1", "--section", "Quick Wins"], plan)
+
+    def test_a_quick_file_has_no_number_and_its_title_is_its_h1_alone(self):
+        ticket = load_ticket(self.root, self.quick_file("bugs", "pick-owner"))
+        self.assertEqual(ticket.title, "Fix the pick-owner")
+
+    def test_a_push_after_a_take_keeps_the_title_and_the_text_of_brian(self):
+        file = self.quick_file("bugs", "pick-owner")
+        filed = {"id": "6j2Gr9TakeTask01", "content": "Pick owner is wrong", "labels": ["phone"],
+                 "sectionId": self.BUGS_SECTION, "description": "It shows the first owner.\nSee week 8."}
+        sections = {"Bugs": self.BUGS_SECTION}
+        _, take = queue_script.plan_take("Pick owner is wrong", ".scratch/bugs/pick-owner.md",
+                                         Queue("p1", sections, [filed], set()))
+        # The queue after the take holds the description that the take wrote.
+        taken = {**filed, "description": option(take[0], "--description")}
+        plan = plan_push(load_ticket(self.root, file), Queue("p1", sections, [taken], set(queue_script.FLOW_LABELS)))
+        self.assertEqual(plan, [["task", "update", "id:6j2Gr9TakeTask01", "--labels", "phone,in-progress"]])
+
+    def test_a_new_quick_task_names_the_branch_of_its_run(self):
+        for folder, branch in (("bugs", "bug-fix-the-draw"), ("quick-wins", "win-fix-the-draw")):
+            with self.subTest(folder):
+                ticket = load_ticket(self.root, self.quick_file(folder, "fix-the-draw"))
+                self.assertIn(f"\nOn the branch {branch}.", ticket.description)
+
+    def test_a_push_labels_every_task_that_a_take_claimed_for_the_quick_file(self):
+        file = self.quick_file("bugs", "two-items")
+        key = "4ag: .scratch/bugs/two-items.md"
+        first = {"id": "6j2Gr9TakeTask01", "content": "First bug", "labels": [], "sectionId": self.BUGS_SECTION,
+                 "description": f"{key}\nThe first note."}
+        second = {**first, "id": "6j2Gr9TakeTask02", "content": "Second bug", "description": f"{key}\nThe second."}
+        plan = plan_push(load_ticket(self.root, file),
+                         Queue("p1", {"Bugs": self.BUGS_SECTION}, [first, second], set(queue_script.FLOW_LABELS)))
+        self.assertEqual(plan, [["task", "update", "id:6j2Gr9TakeTask01", "--labels", "in-progress"],
+                                ["task", "update", "id:6j2Gr9TakeTask02", "--labels", "in-progress"]])
+
+    def test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs(self):
+        self.quick_file("bugs", "fix-the-draw", status="done")
+        self.commit_main()
+        both = Queue("p1", {"Bugs": self.BUGS_SECTION}, [self.TASK, self.WAIT], set())
+        self.assertEqual(queue_script.plan_sweep(self.root, both, {50: "MERGED"}), [
+            ["task", "complete", f"id:{self.TASK['id']}"],
+            ["task", "complete", f"id:{self.WAIT['id']}"],
+        ])
+
+    def test_a_sweep_reads_the_feature_from_main_when_the_checkout_lacks_it(self):
+        # Brian merged on GitHub: origin/main holds the done quick file, and the checkout was never pulled.
+        self.quick_file("bugs", "fix-the-draw", status="done")
+        self.commit_main()
+        subprocess.run(["git", "-C", str(self.root), "update-ref", "refs/remotes/origin/main", "HEAD"], check=True,
+                       env=queue_script._clean_git_env())
+        shutil.rmtree(self.root / ".scratch" / "bugs")
+        both = Queue("p1", {"Bugs": self.BUGS_SECTION}, [self.TASK, self.WAIT], set())
+        self.assertEqual(queue_script.plan_sweep(self.root, both, {50: "MERGED"}), [
+            ["task", "complete", f"id:{self.TASK['id']}"],
+            ["task", "complete", f"id:{self.WAIT['id']}"],
+        ])
+
+    def test_a_sweep_never_archives_quick_wins(self):
+        self.quick_file("quick-wins", "one", status="done")
+        self.commit_main()
+        task = {**self.TASK, "sectionId": "qw", "description": "4ag: .scratch/quick-wins/one.md"}
+        wait = {**self.WAIT, "sectionId": "qw", "description": "4ag: quick-wins/wait/merge-pr"}
+        plan = queue_script.plan_sweep(self.root, Queue("p1", {"Quick Wins": "qw"}, [task, wait], set()),
+                                       {50: "MERGED"})
+        self.assertEqual(plan, [["task", "complete", f"id:{task['id']}"], ["task", "complete", f"id:{wait['id']}"]])
+
+    def test_a_spec_section_odds_still_archives(self):
+        # A spec feature keeps its slug as its section name, and a merged PR archives it once every task is complete.
+        ticket = self.root / ".scratch" / "odds" / "issues" / "01-odds-ticket.md"
+        ticket.parent.mkdir(parents=True)
+        ticket.write_text("# 01: Odds ticket\n\n**Blocked by:** none\n\n**Status:** done\n")
+        self.commit_main()
+        task = {**self.TASK, "sectionId": "odds", "description": "4ag: .scratch/odds/issues/01-odds-ticket.md"}
+        wait = {**self.WAIT, "sectionId": "odds", "description": "4ag: odds/wait/merge-pr"}
+        plan = queue_script.plan_sweep(self.root, Queue("p1", {"odds": "odds"}, [task, wait], set()), {50: "MERGED"})
+        self.assertEqual(plan, [["task", "complete", f"id:{task['id']}"], ["task", "complete", f"id:{wait['id']}"],
+                                ["section", "archive", "id:odds"]])
+
+
+class ATake(unittest.TestCase):
+    """`take` claims the open task of a name in Bugs or Quick Wins by putting the key line first in its description."""
+
+    NAME = "Pick owner: week_moves names the first owner of a traded pick"
+    PATH = ".scratch/bugs/pick-owner.md"
+    TASK = {"id": "6j2Gr9TakeTask01", "content": NAME, "labels": ["bug"], "sectionId": "bugs-id",
+            "description": "It shows the first owner.\nSee week 8."}
+    SECTIONS = {"Bugs": "bugs-id", "Quick Wins": "qw-id", "Ideas": "ideas-id"}
+
+    def stub_read_queue(self, tasks: list[dict]) -> None:
+        """Put the one fake of the port `read_queue` in place for the length of the test. It reads the tasks."""
+        original = queue_script.read_queue
+        queue_script.read_queue = lambda: Queue("p1", self.SECTIONS, tasks, set())
+        self.addCleanup(setattr, queue_script, "read_queue", original)
+
+    def take(self, name: str, tasks: list[dict]):
+        return queue_script.plan_take(name, self.PATH, Queue("p1", self.SECTIONS, tasks, set()))
+
+    def test_a_take_plans_one_update_with_the_key_line_first_and_the_old_description_kept(self):
+        tasks, plan = self.take(self.NAME, [self.TASK])
+        self.assertEqual(tasks, [self.TASK])
+        self.assertEqual(plan, [["task", "update", "id:6j2Gr9TakeTask01", "--description",
+                                 f"4ag: {self.PATH}\nIt shows the first owner.\nSee week 8."]])
+
+    def test_a_take_of_a_task_with_no_description_writes_the_key_line_alone(self):
+        _, plan = self.take(self.NAME, [{**self.TASK, "description": ""}])
+        self.assertEqual(option(plan[0], "--description"), f"4ag: {self.PATH}")
+
+    def test_a_take_in_quick_wins_finds_its_task(self):
+        _, plan = self.take(self.NAME, [{**self.TASK, "sectionId": "qw-id"}])
+        self.assertEqual(len(plan), 1)
+
+    def test_a_take_of_a_task_outside_the_two_sections_plans_nothing(self):
+        self.assertEqual(self.take(self.NAME, [{**self.TASK, "sectionId": "ideas-id"}]), ([], []))
+
+    def test_a_take_of_an_unknown_name_plans_nothing(self):
+        self.assertEqual(self.take("No such task", [self.TASK]), ([], []))
+
+    def test_a_take_of_a_task_with_the_key_line_plans_nothing(self):
+        keyed = {**self.TASK, "description": f"4ag: {self.PATH}\nIt shows the first owner."}
+        self.assertEqual(self.take(self.NAME, [keyed])[1], [])
+
+    def test_a_take_replaces_an_old_key_line_and_keeps_the_text_after_it(self):
+        keyed = {**self.TASK, "description": "4ag: .scratch/bugs/old-run.md\nIt shows the first owner."}
+        _, plan = self.take(self.NAME, [keyed])
+        self.assertEqual(option(plan[0], "--description"), f"4ag: {self.PATH}\nIt shows the first owner.")
+
+    def test_a_take_of_a_name_with_two_open_tasks_plans_nothing(self):
+        twin = {**self.TASK, "id": "6j2Gr9TakeTask02", "sectionId": "qw-id"}
+        tasks, plan = self.take(self.NAME, [self.TASK, twin])
+        self.assertEqual((tasks, plan), ([self.TASK, twin], []))
+
+    def test_a_take_of_a_name_with_two_open_tasks_prints_one_warning_and_exits_0(self):
+        self.stub_read_queue([self.TASK, {**self.TASK, "id": "6j2Gr9TakeTask02"}])
+        code, out = self.run_main("take", self.NAME, self.PATH, "--dry-run")
+        self.assertEqual(code, 0)
+        warnings = [line for line in out.splitlines() if line.startswith("warning:")]
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("2 open tasks", warnings[0])
+        self.assertNotIn("td ", out)
+
+    def run_main(self, *argv: str) -> tuple[int, str]:
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = queue_script.main(list(argv))
+        return code, out.getvalue()
+
+    def test_a_take_prints_the_title_and_the_description_and_honors_dry_run_and_root(self):
+        self.stub_read_queue([self.TASK])
+        code, out = self.run_main("take", self.NAME, self.PATH, "--dry-run", "--root", str(ROOT))
+        self.assertEqual(code, 0)
+        self.assertIn(self.NAME, out)
+        self.assertIn("It shows the first owner.", out)
+        self.assertIn("td task update id:6j2Gr9TakeTask01 --description", out)
+        self.assertIn("1 command planned, none sent.", out)
+
+    def test_a_take_of_an_unknown_name_prints_one_warning_and_exits_0(self):
+        self.stub_read_queue([self.TASK])
+        code, out = self.run_main("take", "No such task", ".scratch/bugs/none.md", "--dry-run")
+        self.assertEqual(code, 0)
+        self.assertEqual(len([line for line in out.splitlines() if line.startswith("warning:")]), 1)
+        self.assertNotIn("td ", out)
+
+
 class TheCommandLine(unittest.TestCase):
 
     def test_a_merge_pr_wait_needs_the_pr_number(self):

@@ -1214,11 +1214,11 @@ A statement of behavior that a reader checks on the finished work, with evidence
 _Avoid_: Test case, QA step, check, criterion
 
 **Test verdict**:
-The word PASS, FAIL, or BLOCKED that the Judge gives to one acceptance test. Only a test verdict counts toward a merge. A FAIL from Brian overrides it.
+The word PASS, FAIL, or BLOCKED that the Judge gives to one acceptance test, or to one done condition of a quick run. Only a test verdict counts toward a merge. A FAIL from Brian overrides it.
 _Avoid_: Verdict (alone), lean (that is the advice of the analyzer), result, approval, sign-off, status
 
 **Judge**:
-The subagent that reads only the acceptance tests and their evidence, and gives each test its Test verdict. It did not build the work.
+The subagent that reads only the acceptance tests and their evidence, and gives each test its Test verdict. In a quick run, it reads only the done conditions and their evidence. It did not build the work.
 _Avoid_: Grader, reviewer, checker, QA agent
 
 **Evidence**:
@@ -1240,3 +1240,19 @@ _Avoid_: Reminder, gate, approval task
 **Merge sweep**:
 The step at the start of each `4ag` skill that finds each merged spec PR and closes its tasks in the queue.
 _Avoid_: Sync, cleanup, close job
+
+**Quick run**:
+One run of `4ag:quick`: one branch, one PR, and up to five items of one kind, each a Bug or each a Quick win. It has no spec, no `ACCEPTANCE.md`, and no `verdict` gate (ADR 0033).
+_Avoid_: Hotfix, patch, mini-spec, small spec
+
+**Bug**:
+An item of a quick run where the code does not do what it should. A feedback loop must show it red before the fix.
+_Avoid_: Defect, issue, problem
+
+**Quick win**:
+An item of a quick run that changes behavior or text on purpose, where no bug exists.
+_Avoid_: Tweak, chore, small change, improvement
+
+**Done condition**:
+The one sentence that says when one item of a quick run is done. The Judge reads it. It is not an acceptance test.
+_Avoid_: Acceptance test, criterion, definition of done

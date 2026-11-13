@@ -1,0 +1,31 @@
+$ python3 -m unittest -v scripts.test_queue.AQuickFile.test_two_quick_wins_files_make_the_section_quick_wins_once scripts.test_queue.AQuickFile.test_a_bugs_file_goes_into_the_section_bugs_and_makes_no_section_bugs
+test_two_quick_wins_files_make_the_section_quick_wins_once (scripts.test_queue.AQuickFile.test_two_quick_wins_files_make_the_section_quick_wins_once) ... ok
+test_a_bugs_file_goes_into_the_section_bugs_and_makes_no_section_bugs (scripts.test_queue.AQuickFile.test_a_bugs_file_goes_into_the_section_bugs_and_makes_no_section_bugs) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.026s
+
+OK
+exit: 0
+
+
+--- The source of each test above, from scripts/test_queue.py at the head of quick-runs. Each assertion is the fact that `ok` proves. ---
+
+$ python3 -c "import inspect, scripts.test_queue as t; print(inspect.getsource(t.AQuickFile.test_two_quick_wins_files_make_the_section_quick_wins_once))"
+    def test_two_quick_wins_files_make_the_section_quick_wins_once(self):
+        first = self.push("quick-wins", "one", queue())
+        # The first push makes the section. The queue read after it holds the section, so the second push does not.
+        after = Queue("p1", {"Quick Wins": "6j2Gq9xQuickWins1"}, [], queue().labels | set(queue_script.FLOW_LABELS))
+        second = self.push("quick-wins", "two", after)
+        self.assertEqual(sum(command[:2] == ["section", "create"] for command in first), 1)
+        self.assertEqual(sum(command[:2] == ["section", "create"] for command in second), 0)
+        self.assertEqual(option(first[-1], "--section"), "Quick Wins")
+        self.assertEqual(option(second[-1], "--section"), "id:6j2Gq9xQuickWins1")
+
+$ python3 -c "import inspect, scripts.test_queue as t; print(inspect.getsource(t.AQuickFile.test_a_bugs_file_goes_into_the_section_bugs_and_makes_no_section_bugs))"
+    def test_a_bugs_file_goes_into_the_section_bugs_and_makes_no_section_bugs(self):
+        labels = queue().labels | set(queue_script.FLOW_LABELS)
+        existing = Queue("p1", {"Bugs": self.BUGS_SECTION}, [], labels)
+        plan = self.push("bugs", "fix-the-draw", existing)
+        self.assertEqual(option(plan[-1], "--section"), f"id:{self.BUGS_SECTION}")
+        self.assertNotIn(["section", "create"], [command[:2] for command in plan])

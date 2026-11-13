@@ -1,0 +1,10 @@
+$ git rev-parse --short HEAD   # head of bug-pick-owner after the fix
+8092dc8a
+$ cd apps/api && uv run --exact --package cpc-api pytest -q tests/test_week_moves.py
+Installed 17 packages in 17ms
+.                                                                        [100%]
+1 passed in 0.64s
+exit: 0
+
+$ diff of the Red and Green command lines in .scratch/bugs/pick-owner.md
+(no difference)

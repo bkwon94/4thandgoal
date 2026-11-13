@@ -1,0 +1,19 @@
+$ git branch --list 'bug-*'   # before
++ bug-pick-owner
+$ python3 scripts/queue.py take "Front door trade drops the extra player of a 1-for-2 trade" .scratch/bugs/probe.md --dry-run   # step 1
+Front door trade drops the extra player of a 1-for-2 trade
+$ python3 scripts/queue.py take "Pick owner: week_moves names the first owner of a traded pick" .scratch/bugs/probe.md --dry-run   # step 1
+Pick owner: week_moves names the first owner of a traded pick
+$ python3 scripts/queue.py take "Theme: light choice does not stick after a reload" .scratch/bugs/probe.md --dry-run   # step 1
+Theme: light choice does not stick after a reload
+$ python3 scripts/queue.py take "Standings: the "Playoff line" label sits a little into row 7" .scratch/bugs/probe.md --dry-run   # step 1
+Standings: the "Playoff line" label sits a little into row 7
+$ python3 scripts/queue.py take "Matchup card: the other team's winning slot is gray" .scratch/bugs/probe.md --dry-run   # step 1
+Matchup card: the other team's winning slot is gray
+$ python3 scripts/queue.py take "Front door: the sticky team row is see-through" .scratch/bugs/probe.md --dry-run   # step 1
+Front door: the sticky team row is see-through
+$ git branch --list 'bug-*' 'win-*'   # after
++ bug-pick-owner
+$ git status --short   # after
+?? .scratch/quick-runs/evidence/
+Note: bug-pick-owner is the branch of the real Bug run of AT-11. It existed before this test, as the before list shows.
