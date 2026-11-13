@@ -143,8 +143,8 @@ Observation: The prompt holds only item 2, the `tdd` item. In the file after the
 
 App: both
 Then: the commit sets `Status: done`, and the quick file holds a `Cause:` line and one close comment under `## Comments`.
-Files: `evidence/AT-20/output.txt`
-Observation: The last commit before the push, `ec33c29a`, changes only the quick file: it sets `Status: done` and adds one close comment of four lines under `## Comments`. The file holds the `Cause:` line from the earlier commit.
+Files: `evidence/AT-20/output.txt`, `evidence/AT-20/quick-file-at-close.txt`
+Observation: The last commit before the push, `ec33c29a`, changes only the quick file: it sets `Status: done` and adds one close comment of four lines under `## Comments`. The whole quick file at `ec33c29a`, in `quick-file-at-close.txt`, holds `Status: done`, the `Cause:` line of item 1, and the close comment under `## Comments`.
 
 ## AT-21: The real Bug run opens one PR with the Test verdicts
 
