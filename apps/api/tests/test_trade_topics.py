@@ -26,6 +26,8 @@ from cornerstone_api.trade_topics import NO_ONE_PLAYER
 from cornerstone_api.trade_wording import (
     AIM_POSITION,
     AIMS_POSITION,
+    GETS_ALSO_NAMED,
+    GETS_ALSO_PLAYER,
     GETS_NAMED,
     GETS_PLAYER,
     GIVES_NAMED,
@@ -81,7 +83,7 @@ PICKS = {
                AIMS_POSITION: 0.93, AIM_POSITION: "TE"},
     # Each Choice picks one player, so the second player that the manager gets has a Noul and a Choice of its own.
     ONE_FOR_TWO: {GIVES_NAMED: 0.97, GETS_NAMED: 0.96, GIVES_PLAYER: "Kyren Williams", GETS_PLAYER: "Chase Brown",
-                  "gets_also_named": 0.94, "gets_also_player": "DeVonta Smith"},
+                  GETS_ALSO_NAMED: 0.94, GETS_ALSO_PLAYER: "DeVonta Smith"},
 }
 
 
@@ -163,7 +165,7 @@ def test_the_stream_holds_each_player_pick_with_its_jev_answers(api):
     # AT-24 evidence: the route response with each player pick.
     [picks] = _of(_parts(_check(api, SURE_TRADE)), "data-picks")
     assert picks["gives"] == {"named": 0.97, "player_id": "8134", "name": "Khalil Shakir", "probability": 0.95,
-                              "sure": True, "roster_id": LIL_FRIDGE}
+                              "sure": True, "roster_id": LIL_FRIDGE, "also": None}
     assert picks["gets"]["player_id"] == "9997" and picks["gets"]["roster_id"] == BO_GIRDS and picks["gets"]["sure"]
 
 

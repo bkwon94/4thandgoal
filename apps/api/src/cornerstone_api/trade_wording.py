@@ -1,5 +1,5 @@
 """
-All the wording of the Jev pick of a typed trade check and of typed trade ideas: the state with the real rosters, the 4
+All the wording of the Jev pick of a typed trade check and of typed trade ideas: the state with the real rosters, the 8
 typed questions of the pick, and the 8 of the limit of trade ideas. trade_topics.py reads the answers with code.
 """
 import re
@@ -7,9 +7,10 @@ import re
 from league.jev_port import ChoiceQuestion, NoulQuestion
 
 CONTEXT = ("A manager of this 12-team fantasy football league typed `manager_question` into the ask box of the league "
-           "site. The manager asks about a trade of a player of `your_team` for a player of another team.")
+           "site. The manager asks about a trade of one or two players of `your_team` for one or two players of "
+           "another team.")
 
-# The context of trade ideas. The same 4 questions read it: the side whose Noul is sure names the player and the
+# The context of trade ideas. The same 8 questions read it: the side whose Noul is sure names the player and the
 # direction, a player that the manager gives or a player that the manager gets. The questions of the limit read it too,
 # so a follow-up such as "not a WR" reads as a limit on the trade ideas.
 IDEAS_CONTEXT = ("A manager of this 12-team fantasy football league typed `manager_question` into the ask box of the "
@@ -21,6 +22,12 @@ GIVES_NAMED = "gives_named"
 GIVES_PLAYER = "gives_player"
 GETS_NAMED = "gets_named"
 GETS_PLAYER = "gets_player"
+# The second player of a side, such as Devonta Smith in "Kyren Williams for Chase Brown and Devonta Smith". A Choice
+# picks one option, so the second player gets a Noul and a Choice of his own.
+GIVES_ALSO_NAMED = "gives_also_named"
+GIVES_ALSO_PLAYER = "gives_also_player"
+GETS_ALSO_NAMED = "gets_also_named"
+GETS_ALSO_PLAYER = "gets_also_player"
 
 NOULS = {
     GIVES_NAMED: NoulQuestion(
@@ -33,6 +40,16 @@ NOULS = {
         yes="The question names one player of a team in `other_teams`, by full name, last name, or a nickname, as the "
             "player that the manager gets.",
         no="The question names no player of `other_teams`, or names only a position, such as 'their WR'."),
+    GIVES_ALSO_NAMED: NoulQuestion(
+        instructions="Does `manager_question` name two players of `your_team.players` that the manager would give?",
+        yes="The question names two players of `your_team.players` as the players that the manager gives, such as "
+            "'Walker and Flowers for Henry'.",
+        no="The question names one player of `your_team.players` or none as a player that the manager gives."),
+    GETS_ALSO_NAMED: NoulQuestion(
+        instructions="Does `manager_question` name two players of `other_teams` that the manager would get?",
+        yes="The question names two players of `other_teams` as the players that the manager gets, such as "
+            "'Henry for Walker and Flowers'.",
+        no="The question names one player of `other_teams` or none as a player that the manager gets."),
 }
 
 
@@ -108,15 +125,26 @@ def option_keys(names: dict[str, str]) -> dict[str, str]:
 
 
 def pick_questions(gives: dict[str, str], gets: dict[str, str]) -> dict[str, NoulQuestion | ChoiceQuestion]:
-    """The 4 typed questions of one pick request: a Noul and a Choice per side. `gives` and `gets` hold the text of
-    each option by its key. The Noul asks whether the question names a player, because a Choice always picks one."""
+    """The 8 typed questions of one pick request: per side, a Noul and a Choice for the first player, and a Noul and a
+    Choice for the second player. `gives` and `gets` hold the text of each option by its key. Each Noul asks whether
+    the question names that player, because a Choice always picks one."""
     return {
         GIVES_NAMED: NOULS[GIVES_NAMED],
         GIVES_PLAYER: ChoiceQuestion(instructions="Which player of `your_team.players` would the manager give in the "
-                                                  "trade in `manager_question`?", options=gives),
+                                                  "trade in `manager_question`? If the question names two, pick the "
+                                                  "one named first.", options=gives),
+        GIVES_ALSO_NAMED: NOULS[GIVES_ALSO_NAMED],
+        GIVES_ALSO_PLAYER: ChoiceQuestion(instructions="Which player of `your_team.players` would the manager give in "
+                                                       "the trade in `manager_question`? If the question names two, "
+                                                       "pick the one named last.", options=gives),
         GETS_NAMED: NOULS[GETS_NAMED],
         GETS_PLAYER: ChoiceQuestion(instructions="Which player of `other_teams` would the manager get in the trade in "
-                                                 "`manager_question`?", options=gets),
+                                                 "`manager_question`? If the question names two, pick the one named "
+                                                 "first.", options=gets),
+        GETS_ALSO_NAMED: NOULS[GETS_ALSO_NAMED],
+        GETS_ALSO_PLAYER: ChoiceQuestion(instructions="Which player of `other_teams` would the manager get in the "
+                                                      "trade in `manager_question`? If the question names two, pick "
+                                                      "the one named last.", options=gets),
     }
 
 
