@@ -1,0 +1,159 @@
+$ cd apps/site && pnpm exec vitest run ../../packages/design/site/shell/top-band.test.tsx -t "AT-46" --reporter=verbose
+# Run at 2026-11-12T22:53:45Z UTC on 2adcc0c4.
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > TopBand > shows the brand mark as the home link, named by the title
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > TopBand > shows the title as the brand mark when the brand has no logo
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > TopBand > holds the theme button in the banner
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > TopBand > holds the actions of the app just before the theme button, and the dock keeps its five items
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The pill bar (AT-10) > lists every destination with its full label, in the order of the menu
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The pill bar (AT-10) > sits in the top band
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The pill bar (AT-10) > marks the open destination as the current page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > lists Home, Week N, Rankings, Managers, and Trade, each with an icon
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > leaves out the midseason report, so five items share the width of a phone
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > sits outside the top band, so it stays at the bottom of the viewport
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > marks the week of the open week page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > marks the week item on the page of an older week too
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > marks Managers on the page of one manager
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > marks no item on a page that is no destination, such as the 404 page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > reads WK 08 on a page that is not a week page, the latest week
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > reads the week of the open week page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > opens the strip of weeks on a tap, oldest first, with the chip week marked
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > closes the strip on Escape
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > closes the strip on a tap outside it
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > shows no chip for a client with no published week
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > shows no dock and no week chip, and holds the menu button in the banner
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > keeps the sheet closed and out of the accessibility tree until the button opens it
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > opens the sheet with one row per page, each with an icon, its name, and its note, and a check on the open page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > turns the button into the close button while the sheet is open
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > moves the focus to the sheet on open
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > marks no row on a page that is no destination, such as /ask/
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > opens the latest report from the week row, and lists every week under Past weeks
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > shows no Past weeks for a client with no published week
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > keeps the pill bar in the banner, so the desktop shows the pages inline (AT-50)
+ ✓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes by the X 99ms
+ ✓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes by a tap on the dimmed page 21ms
+ ✓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes by Escape 19ms
+ ✓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes by a swipe up 19ms
+ ✓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes when a Tab moves the focus out of the sheet, and leaves the focus where it went 16ms
+ ✓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > stays open after a short drag that does not reach the line of a close 14ms
+ Test Files  1 passed (1)
+      Tests  6 passed | 29 skipped (35)
+   Start at  17:53:46
+   Duration  667ms (environment 47%, tests 31%, import 18%, transform 4%)
+
+$ cd apps/site && pnpm exec vitest run ../../packages/design/site/shell/top-band.test.tsx -t "moves the focus to the sheet on open" --reporter=verbose
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > TopBand > shows the brand mark as the home link, named by the title
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > TopBand > shows the title as the brand mark when the brand has no logo
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > TopBand > holds the theme button in the banner
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > TopBand > holds the actions of the app just before the theme button, and the dock keeps its five items
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The pill bar (AT-10) > lists every destination with its full label, in the order of the menu
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The pill bar (AT-10) > sits in the top band
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The pill bar (AT-10) > marks the open destination as the current page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > lists Home, Week N, Rankings, Managers, and Trade, each with an icon
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > leaves out the midseason report, so five items share the width of a phone
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > sits outside the top band, so it stays at the bottom of the viewport
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > marks the week of the open week page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > marks the week item on the page of an older week too
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > marks Managers on the page of one manager
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The dock (AT-9) > marks no item on a page that is no destination, such as the 404 page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > reads WK 08 on a page that is not a week page, the latest week
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > reads the week of the open week page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > opens the strip of weeks on a tap, oldest first, with the chip week marked
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > closes the strip on Escape
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > closes the strip on a tap outside it
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The week chip (AT-11) > shows no chip for a client with no published week
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > shows no dock and no week chip, and holds the menu button in the banner
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > keeps the sheet closed and out of the accessibility tree until the button opens it
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > opens the sheet with one row per page, each with an icon, its name, and its note, and a check on the open page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > turns the button into the close button while the sheet is open
+ ✓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > moves the focus to the sheet on open 88ms
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > marks no row on a page that is no destination, such as /ask/
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > opens the latest report from the week row, and lists every week under Past weeks
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > shows no Past weeks for a client with no published week
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet of the front door (AT-45, AT-47) > keeps the pill bar in the banner, so the desktop shows the pages inline (AT-50)
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes by the X
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes by a tap on the dimmed page
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes by Escape
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes by a swipe up
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > closes when a Tab moves the focus out of the sheet, and leaves the focus where it went
+ ↓ ../../packages/design/site/shell/top-band.test.tsx > The header sheet closes four ways (AT-46) > stays open after a short drag that does not reach the line of a close
+ Test Files  1 passed (1)
+      Tests  1 passed | 34 skipped (35)
+   Start at  17:53:47
+   Duration  562ms (environment 55%, import 21%, tests 18%, transform 5%)
+
+# The source of the close tests above, from packages/design/site/shell/top-band.test.tsx at 2adcc0c4. expectClosed checks the focus is back on the menu button:
+describe("The header sheet closes four ways (AT-46)", () => {
+  function openSheet() {
+    renderDoorBand();
+    fireEvent.click(menuButton());
+    expect(sheet()).toBeTruthy();
+  }
+
+  function expectClosed() {
+    expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+    expect(menuButton().getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).toBe(menuButton());
+  }
+
+  it("closes by the X", () => {
+    openSheet();
+    fireEvent.click(menuButton());
+    expectClosed();
+  });
+
+  it("closes by a tap on the dimmed page", () => {
+    openSheet();
+    fireEvent.click(screen.getByTestId("menu-scrim"));
+    expectClosed();
+  });
+
+  it("closes by Escape", () => {
+    openSheet();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expectClosed();
+  });
+
+  it("closes by a swipe up", () => {
+    openSheet();
+    const panel = sheet();
+    fireEvent.pointerDown(panel, { pointerId: 1, clientY: 300, pointerType: "touch", isPrimary: true });
+    fireEvent.pointerMove(panel, { pointerId: 1, clientY: 240, pointerType: "touch", isPrimary: true });
+    fireEvent.pointerMove(panel, { pointerId: 1, clientY: 180, pointerType: "touch", isPrimary: true });
+    fireEvent.pointerUp(panel, { pointerId: 1, clientY: 180, pointerType: "touch", isPrimary: true });
+    expectClosed();
+  });
+
+  it("closes when a Tab moves the focus out of the sheet, and leaves the focus where it went", () => {
+    render(
+      <>
+        <TopBand title={TITLE} brand={BRAND} menu={MENU} pageHref="/" nav="sheet" />
+        <button type="button">After</button>
+      </>,
+    );
+    fireEvent.click(menuButton());
+    const after = screen.getByRole("button", { name: "After" });
+    fireEvent.blur(sheet(), { relatedTarget: after });
+    expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+  });
+
+  it("stays open after a short drag that does not reach the line of a close", () => {
+
+# The open test:
+
+  it("turns the button into the close button while the sheet is open", () => {
+    renderDoorBand();
+    fireEvent.click(menuButton());
+    expect(menuButton().getAttribute("aria-expanded")).toBe("true");
+    expect(menuButton().getAttribute("aria-label")).toBe("Close the menu");
+  });
+
+  it("moves the focus to the sheet on open", () => {
+    renderDoorBand();
+    fireEvent.click(menuButton());
+    expect(sheet().contains(document.activeElement)).toBe(true);
+  });
+
+  it("marks no row on a page that is no destination, such as /ask/", () => {
+    renderDoorBand("/ask/");

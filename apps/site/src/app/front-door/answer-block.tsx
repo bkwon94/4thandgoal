@@ -1,6 +1,6 @@
 /**
- * The block of a free answer: a ranked list, a small table, or a player card that Claude shows under its lead line,
- * in the style of the rows of the data block. It holds the shape of the `data-block` part and its short text for a turn.
+ * The block of an Answer: the schema union of every block kind, its short text for a turn, and its view.
+ * It holds the shape of the `data-block` part, which Claude shows under its lead line.
  */
 "use client";
 
@@ -8,7 +8,26 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { z } from "zod";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { ladderBlockSchema, ladderText } from "@/lib/data/blocks/ladder-schema";
+import { matchupBlockSchema, matchupText } from "@/lib/data/blocks/matchup-schema";
+import { rankMoversBlockSchema, rankMoversText } from "@/lib/data/blocks/rank-movers-schema";
+import { recapBlockSchema, recapText } from "@/lib/data/blocks/recap-schema";
+import { scheduleBlockSchema, scheduleText } from "@/lib/data/blocks/schedule-schema";
+import { ComparisonView, comparisonBlockSchema, comparisonText } from "./comparison-block";
+import { FeedView, feedBlockSchema, feedText } from "./feed-block";
+import { ByeGridView, byeGridBlockSchema, byeGridText } from "./bye-grid";
+import { LineupView, lineupBlockSchema, lineupText } from "./lineup-block";
+import { NflGameView, nflGameBlockSchema, nflGameText } from "./nfl-game-card";
 import { VERY_SLOW, riseIn, staggerOf } from "./motion";
+import { MatchupCard } from "./matchup-card";
+import { RankMoverList } from "./rank-mover-list";
+import { RecapCard } from "./recap-card";
+import { ScheduleStrip } from "./schedule-strip";
+import { TradeBlockView, tradeBlockSchema, tradeBlockText } from "./trade-block";
+import { SlotRanksView, slotRanksBlockSchema, slotRanksText } from "./slot-rank-bars";
+import { SellListView, sellListSchema, sellListText } from "./sell-list";
+import { StandingsLadder } from "./standings-ladder";
+import { WaiverListView, waiverListSchema, waiverListText } from "./waiver-list";
 
 const listBlockSchema = z.object({
   kind: z.literal("list"),
@@ -28,9 +47,29 @@ const playerBlockSchema = z.object({
   note: z.string().optional(),
 });
 
-/* The block of the `data-block` part of a free answer, as the API checks it. The kind picks the shape. A personal Topic
-   sends its own data block on the same part, and it has no kind, so it never reads as an answer block. */
-export const answerBlockSchema = z.discriminatedUnion("kind", [listBlockSchema, tableBlockSchema, playerBlockSchema]);
+/* The block contract of the site: one union over `kind`, for the `data-block` part of the API stream. The kind picks
+   the shape. A new block joins with its schema here, its line in blockText, and its view in BlockView, and TypeScript
+   flags a kind that misses either. A personal Topic sends its stats and rows on the same part as the kind "rows",
+   which is outside this union, so it never reads as an answer block. */
+export const answerBlockSchema = z.discriminatedUnion("kind", [
+  listBlockSchema,
+  tableBlockSchema,
+  playerBlockSchema,
+  recapBlockSchema,
+  tradeBlockSchema,
+  feedBlockSchema,
+  slotRanksBlockSchema,
+  byeGridBlockSchema,
+  waiverListSchema,
+  sellListSchema,
+  lineupBlockSchema,
+  matchupBlockSchema,
+  rankMoversBlockSchema,
+  ladderBlockSchema,
+  scheduleBlockSchema,
+  nflGameBlockSchema,
+  comparisonBlockSchema,
+]);
 export type AnswerBlock = z.infer<typeof answerBlockSchema>;
 
 /* The block of a data part, or null for a part of another shape. */
@@ -51,6 +90,34 @@ export function blockText(block: AnswerBlock): string {
       const stats = block.stats.map((stat) => `${stat.label} ${stat.value}.`);
       return [`${head}, ${block.can_play_now ? "can play now" : "can't play now"} (${block.status}).`, ...stats, ...(block.note ? [block.note] : [])].join(" ");
     }
+    case "recap":
+      return recapText(block);
+    case "trade":
+      return tradeBlockText(block);
+    case "feed":
+      return feedText(block);
+    case "slot_ranks":
+      return slotRanksText(block);
+    case "bye_grid":
+      return byeGridText(block);
+    case "waiver_list":
+      return waiverListText(block);
+    case "sell_list":
+      return sellListText(block);
+    case "lineup":
+      return lineupText(block);
+    case "matchup":
+      return matchupText(block);
+    case "rank_movers":
+      return rankMoversText(block);
+    case "ladder":
+      return ladderText(block);
+    case "schedule":
+      return scheduleText(block);
+    case "nfl_game":
+      return nflGameText(block);
+    case "comparison":
+      return comparisonText(block);
   }
 }
 
@@ -179,8 +246,8 @@ function PlayerView({ block, live }: { block: Extract<AnswerBlock, { kind: "play
   );
 }
 
-/* The component of each kind of block. */
-export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }) {
+/* The component of each kind of block. `you` is the name of Your team, for a block that names each team only by its name. */
+export function BlockView({ block, live, you }: { block: AnswerBlock; live: boolean; you?: string }) {
   switch (block.kind) {
     case "list":
       return <ListView block={block} live={live} />;
@@ -188,5 +255,33 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
       return <TableView block={block} live={live} />;
     case "player":
       return <PlayerView block={block} live={live} />;
+    case "recap":
+      return <RecapCard block={block} live={live} />;
+    case "trade":
+      return <TradeBlockView block={block} live={live} />;
+    case "feed":
+      return <FeedView block={block} live={live} you={you} />;
+    case "slot_ranks":
+      return <SlotRanksView block={block} live={live} />;
+    case "bye_grid":
+      return <ByeGridView block={block} live={live} />;
+    case "waiver_list":
+      return <WaiverListView block={block} live={live} />;
+    case "sell_list":
+      return <SellListView block={block} live={live} />;
+    case "lineup":
+      return <LineupView block={block} />;
+    case "matchup":
+      return <MatchupCard block={block} live={live} />;
+    case "rank_movers":
+      return <RankMoverList block={block} live={live} />;
+    case "ladder":
+      return <StandingsLadder block={block} live={live} />;
+    case "schedule":
+      return <ScheduleStrip block={block} live={live} />;
+    case "nfl_game":
+      return <NflGameView block={block} live={live} />;
+    case "comparison":
+      return <ComparisonView block={block} live={live} />;
   }
 }

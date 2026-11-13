@@ -1,0 +1,92 @@
+$ jq '.teams["6"][] | select(.topic=="week_recap") | .block' clients/cpc/published/2026/week-09/topics.json
+# Run at 2026-11-12T21:47:35Z UTC on 2adcc0c4, on topics.json version 2 rebuilt from the saved raw week 9 (see AT-40).
+{
+  "kind": "recap",
+  "score": 114.07,
+  "place": 3,
+  "teams": 12,
+  "opponent": "Teehee",
+  "opponent_score": 100.63,
+  "strip": [
+    {
+      "roster_id": 8,
+      "name": "Return of T Mac",
+      "score": 144.03,
+      "you": false
+    },
+    {
+      "roster_id": 1,
+      "name": "The Blue Tent",
+      "score": 132.68,
+      "you": false
+    },
+    {
+      "roster_id": 6,
+      "name": "Bo Girds",
+      "score": 114.07,
+      "you": true
+    },
+    {
+      "roster_id": 5,
+      "name": "London Cooking",
+      "score": 111.46,
+      "you": false
+    },
+    {
+      "roster_id": 9,
+      "name": "Maye d'force B with U",
+      "score": 106.71,
+      "you": false
+    },
+    {
+      "roster_id": 2,
+      "name": "All You Need Is Love",
+      "score": 106.39,
+      "you": false
+    },
+    {
+      "roster_id": 12,
+      "name": "Teehee",
+      "score": 100.63,
+      "you": false
+    },
+    {
+      "roster_id": 3,
+      "name": "Lil Fridge",
+      "score": 95.09,
+      "you": false
+    },
+    {
+      "roster_id": 10,
+      "name": "behold the lamb",
+      "score": 92.71,
+      "you": false
+    },
+    {
+      "roster_id": 4,
+      "name": "NFC Least",
+      "score": 86.79,
+      "you": false
+    },
+    {
+      "roster_id": 7,
+      "name": "To Infinity and Bijan",
+      "score": 83.08,
+      "you": false
+    },
+    {
+      "roster_id": 11,
+      "name": "Unsolicited Dak Picks",
+      "score": 64.65,
+      "you": false
+    }
+  ],
+  "median": 103.51,
+  "top": {
+    "name": "Kenneth Walker III",
+    "position": "RB",
+    "points": 34.3,
+    "projection": 20.07
+  },
+  "sentence": "Bo Girds held the lead over Teehee from Thursday all the way to Monday, and Kenneth Walker III and Matthew Golden each outscored the margin on his own."
+}

@@ -43,6 +43,7 @@ from cornerstone_api.claude_stream import (
     data,
     kept_text,
 )
+from cornerstone_api.comparison import COMPARISON_KIND
 from cornerstone_api.personal_facts import (
     PersonalFacts,
     PersonalTopic,
@@ -51,8 +52,13 @@ from cornerstone_api.personal_facts import (
     topic_facts,
 )
 from cornerstone_api.personal_wording import (
+    COMPARE_ASK,
     FACT_MEANINGS,
     INSTRUCTIONS,
+    SWAP_BENCH,
+    SWAP_MEANING,
+    SWAP_QUESTION,
+    SWAP_STARTER,
     TOPIC_ASKS,
     WAIVER_ADD,
     WAIVER_STASH,
@@ -60,6 +66,7 @@ from cornerstone_api.personal_wording import (
     rewrite_prompt,
     topic_prompt,
 )
+from cornerstone_api.start_sit import START_SIT, LiveWeek, checked_block, load_live_week
 from cornerstone_api.waiver_targets import judge
 from facts.writer import route_model
 from league.jev_port import Jev, JevError
@@ -91,6 +98,7 @@ CLOSEST: dict[str, list[str]] = {
     "weak_spots": ["stack_up", "waiver_targets", "trade_ideas"],
     "stack_up": ["weak_spots", "power_rankings", "your_season"],
     "waiver_targets": ["weak_spots", "stack_up", "trade_ideas"],
+    "start_sit": ["next_matchup", "weak_spots", "waiver_targets"],
 }
 
 AGENT = Agent(
@@ -127,6 +135,10 @@ def answer_key(topic: str, own: bool, facts: PersonalFacts, roster: list[str]) -
     if topic == "waiver_targets":
         # The Jev read picks the players that the Answer names, so a change of its wording gives a fresh Answer.
         body["judge"] = {"add": WAIVER_ADD, "stash": WAIVER_STASH}
+    if topic == START_SIT:
+        # The Jev read picks the Swaps that the Answer shows, so a change of its wording gives a fresh Answer.
+        body["judge"] = {"question": SWAP_QUESTION, "bench": SWAP_BENCH, "starter": SWAP_STARTER,
+                         "means": SWAP_MEANING}
     return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
 
 
@@ -203,6 +215,16 @@ async def load_live(served: Any, season: int, cache: LiveCache) -> Live:
         raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
 
 
+async def load_week(served: Any, season: int) -> LiveWeek:
+    """The live week of Start or sit for the client of `served`. Raises HTTPException 503 when Sleeper or the kickoffs
+    do not load."""
+    try:
+        return await anyio.to_thread.run_sync(load_live_week, served.sources, season)
+    except ValueError as error:
+        logger.warning("The live week of Start or sit did not load (%s)", error)
+        raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
+
+
 async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: PersonalFacts, key: str, own: bool,
                         your_team: str, model: Model | None, roster_id: int | None,
                         turns: list[Turn] | None = None, question: str | None = None) -> AsyncIterator[BaseChunk]:
@@ -221,7 +243,10 @@ async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: Per
     turns = turns or []
     instructions = turns_instructions(f"The facts are the league data now, before the games of week "
                                       f"{facts.slice['week']}.", turns)
-    writer = Writer(label=f"personal Topic {topic}", agent=AGENT, prompt=topic_prompt(topic, facts.slice, own, question),
+    # The comparison of two players has its own ask, because its slice holds two Fact sheets and not a lineup.
+    ask = COMPARE_ASK if facts.block.get("kind") == COMPARISON_KIND else None
+    writer = Writer(label=f"personal Topic {topic}", agent=AGENT,
+                    prompt=topic_prompt(topic, facts.slice, own, question, ask),
                     deps=None, instructions=instructions, model=model, rewrite=rewrite_prompt,
                     history=turn_messages(turns))
     checker = Checker(question=check_question(topic, team, question), your_team=your_team,
@@ -229,10 +254,17 @@ async def claude_answer(asker: Asker, store: AnswerStore, topic: str, facts: Per
     outcome = Outcome()
     async for chunk in checked_answer(asker, writer, checker, roster_id, outcome):
         yield chunk
+    block = facts.block
+    if outcome.end == "checked" and topic == START_SIT:
+        # Claude writes the reason of each Swap and the reason of a pick, so the block comes again after the check with
+        # the checked sentences of each Swap, or the dot on each fact that the checked text cites.
+        block = checked_block(facts.block, outcome.text)
+        if block != facts.block:
+            yield data("block", block)
     if outcome.end == "checked" and not turns and question is None:
         # The block goes with the text, so a kept waiver Answer shows the players of its Jev read with no second read.
-        await anyio.to_thread.run_sync(store.put, key, topic, facts.block["team"],
-                                       {"text": outcome.text, "block": facts.block}, asker.clock())
+        await anyio.to_thread.run_sync(store.put, key, topic, block["team"],
+                                       {"text": outcome.text, "block": block}, asker.clock())
 
 
 async def shown_facts(jev: Jev, topic: str, facts: PersonalFacts) -> PersonalFacts:
@@ -255,18 +287,23 @@ async def _capped(topic: str, hit: CapHit) -> AsyncIterator[BaseChunk]:
 
 
 async def answer_stream(facts: Callable[[], Awaitable[PersonalFacts]], key: str,
-                        text: Callable[[PersonalFacts], AsyncIterator[BaseChunk]]) -> AsyncIterator[BaseChunk]:
+                        text: Callable[[PersonalFacts], AsyncIterator[BaseChunk]],
+                        miss: list[str] | None = None) -> AsyncIterator[BaseChunk]:
     """The whole stream of one personal Topic: the data block from code first, the key of the Answer, then the text.
 
-    The stream starts before `facts` gives the facts to show, so the Jev read of the waiver targets runs inside it. A
-    failed read ends the stream with an error and no text.
+    The stream starts before `facts` gives the facts to show, so the Jev read of the waiver targets and of the Swaps
+    runs inside it. A failed read ends the stream with no block and no text: the honest miss with the closest Topics of
+    `miss`, or else an error.
     """
     yield StartChunk()
     try:
         shown = await facts()
     except JevError as error:
         logger.warning("The Jev read of a personal Topic failed (%s)", error)
-        yield ErrorChunk(error_text=STREAM_ERROR)
+        if miss is not None:
+            yield data("miss", {"closest": miss})
+        else:
+            yield ErrorChunk(error_text=STREAM_ERROR)
     else:
         yield data("block", shown.block)
         yield data("key", {"key": key})
@@ -284,14 +321,33 @@ async def _as_is(facts: PersonalFacts) -> PersonalFacts:
 async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClient,
                    request: Request) -> StreamingResponse:
     """The stream of one personal Topic for the team of the body. The facts come from the live snapshot, so the
-    Answer follows each waiver claim and trade."""
-    live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])
-    snapshot = live.snapshot
+    Answer follows each waiver claim and trade. Start or sit reads the live Sleeper week and its kickoffs instead."""
     subject = body.roster_id if body.team is None else body.team
-    if body.roster_id not in snapshot.rosters or subject not in snapshot.rosters:
-        raise HTTPException(status_code=422, detail="Pick your team again.")
-    facts, key = live.key(body.topic, body.roster_id, subject)
     own = subject == body.roster_id
+    if body.topic == START_SIT:
+        # Start or sit reads the live week and its kickoffs fresh for each Answer, because the game lock moves with the
+        # clock, so it reads no live league of the cache.
+        week = await load_week(served, asker.season)
+        rosters, team_name = week.rosters, week.team_name
+        facts_of: Callable[[], PersonalFacts] = lambda: week.facts(subject)
+        # The Jev read of the Swaps runs in the stream. A failed read gives the honest miss, never the lineup by
+        # projection, because a failed read is not a "keep the starter" (AT-20).
+        # A typed question that names two players of the roster gets the comparison, and three or more get the slots
+        # that they can fill.
+        question = body.question
+        judged: Callable[[], Awaitable[PersonalFacts]] = lambda: anyio.to_thread.run_sync(week.asked, asker.jev,
+                                                                                           subject, question)
+        miss: list[str] | None = CLOSEST[START_SIT]
+    else:
+        live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])
+        rosters, team_name = live.snapshot.rosters, lambda roster_id: live.snapshot.teams[roster_id].name
+        facts_of = lambda: live.facts(body.topic, subject)
+        judged = lambda: shown_facts(asker.jev, body.topic, facts)
+        miss = None
+    if body.roster_id not in rosters or subject not in rosters:
+        raise HTTPException(status_code=422, detail="Pick your team again.")
+    facts = facts_of()
+    key = answer_key(body.topic, own, facts, rosters[subject])
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
     # A typed question gets an Answer that fits its text and its chat, so it reads no kept Answer. Only a tap reads one,
     # so a tap never gets the Answer of a typed question, and one typed question never gets the Answer of another.
@@ -309,9 +365,9 @@ async def personal(body: PersonalRequest, asker: ClientAsker, served: ServedClie
         cap = hit
         stream = answer_stream(lambda: _as_is(facts), key, lambda _: _capped(body.topic, cap))
     else:
-        your_team = snapshot.teams[body.roster_id].name
+        your_team = team_name(body.roster_id)
         model = request.app.state.personal_model
-        stream = answer_stream(lambda: shown_facts(asker.jev, body.topic, facts), key,
+        stream = answer_stream(judged, key,
                                lambda shown: claude_answer(asker, store, body.topic, shown, key, own, your_team, model,
-                                                           body.roster_id, body.turns, body.question))
+                                                           body.roster_id, body.turns, body.question), miss)
     return adapter(AGENT, "").streaming_response(stream)

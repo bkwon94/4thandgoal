@@ -1,0 +1,92 @@
+$ jq '.teams["7"][] | select(.topic=="week_recap") | .block' clients/norcal/published/2026/week-09/topics.json
+# Run at 2026-11-12T21:47:35Z UTC on 2adcc0c4, on topics.json version 2 rebuilt from the saved raw week 9 (see AT-40).
+{
+  "kind": "recap",
+  "score": 155.38,
+  "place": 2,
+  "teams": 12,
+  "opponent": "kaiedmonds",
+  "opponent_score": 128.06,
+  "strip": [
+    {
+      "roster_id": 8,
+      "name": "Hock Tua 💦",
+      "score": 156.88,
+      "you": false
+    },
+    {
+      "roster_id": 7,
+      "name": "Bo Girds",
+      "score": 155.38,
+      "you": true
+    },
+    {
+      "roster_id": 5,
+      "name": "Skol Daddy",
+      "score": 136.24,
+      "you": false
+    },
+    {
+      "roster_id": 9,
+      "name": "kaiedmonds",
+      "score": 128.06,
+      "you": false
+    },
+    {
+      "roster_id": 6,
+      "name": "Mitseeker5000",
+      "score": 121.4,
+      "you": false
+    },
+    {
+      "roster_id": 10,
+      "name": "Davlionman",
+      "score": 117.46,
+      "you": false
+    },
+    {
+      "roster_id": 11,
+      "name": "Breece Mode",
+      "score": 115.86,
+      "you": false
+    },
+    {
+      "roster_id": 1,
+      "name": "puurdygood",
+      "score": 110.44,
+      "you": false
+    },
+    {
+      "roster_id": 4,
+      "name": "The Mean Machine",
+      "score": 104.78,
+      "you": false
+    },
+    {
+      "roster_id": 12,
+      "name": "The Dart Side",
+      "score": 91.2,
+      "you": false
+    },
+    {
+      "roster_id": 3,
+      "name": "BobBuckstein",
+      "score": 88.66,
+      "you": false
+    },
+    {
+      "roster_id": 2,
+      "name": "VarsityBlue2",
+      "score": 83.1,
+      "you": false
+    }
+  ],
+  "median": null,
+  "top": {
+    "name": "Kenneth Walker III",
+    "position": "RB",
+    "points": 36.3,
+    "projection": 21.77
+  },
+  "sentence": "Luther Burden III got hurt late in this one and is now listed Questionable."
+}

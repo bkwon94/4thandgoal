@@ -1,0 +1,32 @@
+$ cd apps/site && pnpm exec vitest run src/reduced-motion-blocks.test.tsx --reporter=verbose
+# Run at 2026-11-13T02:14:50Z UTC on 83d4afeb.
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+stderr | src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the list block at once, with no slide and no blur
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > has recorded data for every block kind 1ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the list block at once, with no slide and no blur 587ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the table block at once, with no slide and no blur 526ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the player block at once, with no slide and no blur 529ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the recap block at once, with no slide and no blur 815ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the trade block at once, with no slide and no blur 51ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the feed block at once, with no slide and no blur 587ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the slot_ranks block at once, with no slide and no blur 475ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the bye_grid block at once, with no slide and no blur 786ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the waiver_list block at once, with no slide and no blur 409ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the sell_list block at once, with no slide and no blur 409ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the lineup block at once, with no slide and no blur 46ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the matchup block at once, with no slide and no blur 464ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the rank_movers block at once, with no slide and no blur 470ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the ladder block at once, with no slide and no blur 460ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the schedule block at once, with no slide and no blur 276ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the nfl_game block at once, with no slide and no blur 574ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > shows the comparison block at once, with no slide and no blur 567ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > does not roll the digits of the lineup total with reduced motion, when the toggle changes the total 32ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > opens a row of the lineup block at once, with no slide and no blur 20ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > opens a row of the waiver_list block at once, with no slide and no blur 397ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > opens a row of the sell_list block at once, with no slide and no blur 404ms
+ ✓ src/reduced-motion-blocks.test.tsx > Reduced motion on the blocks of an Answer (AT-39) > opens a row of the trade block at once, with no slide and no blur 25ms
+ Test Files  1 passed (1)
+      Tests  23 passed (23)
+   Start at  21:14:51
+   Duration  9.90s (tests 91%, environment 5%, import 4%)

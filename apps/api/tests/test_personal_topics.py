@@ -20,10 +20,11 @@ from test_api import CLIENT, HEADERS, _cpc, _here
 
 from cornerstone_api.app import create_app
 from cornerstone_api.personal_topics import LIVE_CACHE_SECONDS, TRENDING_CACHE_SECONDS, LiveCache
-from cornerstone_api.personal_wording import FACT_MEANINGS, INSTRUCTIONS
+from cornerstone_api.personal_wording import FACT_MEANINGS, INSTRUCTIONS, TOPIC_ASKS
 from cornerstone_api.settings import Settings
 from cornerstone_api.waiver_targets import TOP_BY_ADDS, TOP_BY_REST_PER_POSITION, TOP_BY_WEEK_PER_POSITION
 from league.jev_port import JevError, NoulQuestion
+from league.nflverse import read_schedules
 from league.numbers import ordinal
 from league.provider.raw import RawTrending
 from league.provider.sleeper import load_raw
@@ -227,6 +228,17 @@ def test_the_check_reads_the_fact_meanings_of_the_instructions(settings, sources
     assert all(meaning in INSTRUCTIONS for meaning in FACT_MEANINGS.values())
 
 
+def test_the_instructions_say_nothing_about_a_thing_the_facts_do_not_have():
+    # B2: the check failed "No Swap entries came with your lineup" at 0.14 to 0.70, so the Answer became the honest miss.
+    assert "Say nothing about a thing that the facts do not have" in INSTRUCTIONS
+    assert "If the lineup has no Swap, no Questionable starter, or no `locked` player, say nothing" in TOPIC_ASKS["start_sit"]
+
+
+def test_the_personal_instructions_ask_for_only_the_final_answer_with_no_self_correction():
+    # C: a personal Answer shipped "... where you rank 11th of 12 teams... wait, that is not right: you".
+    assert "Write only the final answer. Never correct yourself in the text" in INSTRUCTIONS
+
+
 def test_a_failed_check_logs_each_failed_sentence_with_its_noul(settings, sources, caplog):
     # H17: the log shows which sentence failed and how sure the check was.
     writer = Writer()
@@ -311,6 +323,41 @@ def test_a_failed_jev_check_ends_the_stream_with_an_error_and_keeps_nothing(sett
 def _block(chunks: list[dict]) -> dict:
     [block] = [c["data"] for c in chunks if c["type"] == "data-block"]
     return block
+
+
+@pytest.mark.parametrize(("topic", "kind"), [("weak_spots", "rows"), ("stack_up", "rows"),
+                                             ("waiver_targets", "waiver_list")])
+def test_the_data_part_of_each_personal_topic_carries_a_kind(settings, sources, topic, kind):
+    # The block contract of the front door: every data block on the stream names its kind, so the site picks its view
+    # from the kind alone. The stats and rows of a personal Topic are the kind "rows", and the waiver targets show the
+    # waiver list.
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Checks([True]).answer), writer)
+    block = _block(_chunks(_ask(api, topic)))
+    assert block["kind"] == kind
+    assert block["topic"] == topic and {"rows", "fact"} <= set(block)
+
+
+class MarkedWriter(Writer):
+    """A stand-in for Claude that writes its text with the marks of the text block: bold, italic, and both lists."""
+
+    async def stream(self, messages: list[ModelMessage], info: AgentInfo) -> AsyncIterator[str]:
+        self.calls += 1
+        self.requests.append(messages)
+        yield ("Your **weakest** spot is *TE*.\n\n- Start __Trey McBride__.\n* Sit _Blake Corum_.\n\n"
+               "1. Check the TE slot.\n2) Check the snake_case_name and 5 * 3 * 2.")
+
+
+def test_the_jev_check_reads_the_text_with_no_markdown_marks(settings, sources):
+    # The text block shows the marks, so Jev reads the same plain sentences that the manager reads (decision 09).
+    # The manager still gets the text with its marks.
+    writer = MarkedWriter()
+    checks = Checks([True])
+    api = _api(settings, sources, FakeJev(answer=checks.answer), writer)
+    chunks = _chunks(_ask(api, "weak_spots"))
+    assert checks.states[0]["answer"] == ["Your weakest spot is TE.", "Start Trey McBride.", "Sit Blake Corum.",
+                                          "Check the TE slot.", "Check the snake_case_name and 5 * 3 * 2."]
+    assert _text(chunks).startswith("Your **weakest** spot is *TE*.")
 
 
 def test_how_you_stack_up_shows_the_four_parts_of_the_roster_grade_with_their_ranks(settings, sources):
@@ -681,7 +728,7 @@ def test_the_answer_reads_the_kept_players_only_best_first_and_the_block_lists_t
     chunks = _chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=reads.answer), writer),
                           "waiver_targets", roster_id=BO_GIRDS))
     block = _block(chunks)
-    assert [row["label"] for row in block["rows"]] == [COREY_KINER, "Kyler Murray"]
+    assert [row["name"] for row in block["rows"]] == [COREY_KINER, "Kyler Murray"]
     assert block["fact"] == "2 free agents worth a claim"
     facts = _facts(writer.requests[0])
     assert set(facts) == {"team", "teams_in_league", "week", "team_need", "kept_players"}
@@ -689,7 +736,40 @@ def test_the_answer_reads_the_kept_players_only_best_first_and_the_block_lists_t
                                                                      ("Kyler Murray", "stash for later weeks")]
     assert not any(name in json.dumps(facts) for name in WEAK_ADDS)
     assert "Quote no FAAB bid" in _prompt(writer.requests[0])
-    assert all("$" not in row["value"] for row in block["rows"])
+    assert "$" not in json.dumps(block["rows"])
+
+
+def _slot_he_fills(need: dict, player: dict) -> str:
+    """The slot of a free agent as a manager reads it off the need: an empty slot that takes him, else the starter with
+    the lowest week projection that he outprojects, else the bench."""
+    if player["empty_slots_he_fits"]:
+        return player["empty_slots_he_fits"][0]
+    beaten = [s for s in need["starters"] if s["player"] is not None and player["position"] in s["allows"]
+              and player["week_projection"] > s["week_projection"]]
+    return min(beaten, key=lambda s: (s["week_projection"], s["slot"]))["slot"] if beaten else "Bench"
+
+
+def test_waiver_targets_stream_the_waiver_list_with_the_slot_and_the_why_of_each_kept_player(week_9_repo, sources):
+    # AT-29: one row per free agent that the read kept, with the position, the NFL team, the projection, and the slot
+    # he fills, and the why that opens in place.
+    reads = Reads(add={COREY_KINER: 0.92}, stash={"Kyler Murray": 0.81})
+    block = _block(_chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=reads.answer), Writer()),
+                                "waiver_targets", roster_id=BO_GIRDS)))
+    assert block["kind"] == "waiver_list"
+    assert block["topic"] == "waiver_targets" and block["team"] == BO_GIRDS
+    assert block["fact"] == "2 free agents worth a claim" and block["empty"] is None
+    assert [row["name"] for row in block["rows"]] == [COREY_KINER, "Kyler Murray"]
+    for row in block["rows"]:
+        read = reads.players[row["name"]]
+        assert (row["position"], row["nfl_team"]) == (read["position"], read["nfl_team"])
+        assert row["projection"] == read["week_projection"]
+        assert row["slot"] == _slot_he_fills(reads.need, read)
+        assert row["why"] and all(isinstance(line, str) and line for line in row["why"])
+        assert not any(name in line.lower() for line in row["why"] for name in INNER_NAMES)
+    kiner, murray = block["rows"]
+    assert (kiner["kind"], murray["kind"]) == ("add", "stash")
+    # The why of Kiner says his role is open: both backs above him on the chart are out.
+    assert any("depth chart" in line for line in kiner["why"])
 
 
 def test_with_no_player_above_the_yes_line_the_answer_says_no_free_agent_beats_the_starters(week_9_repo, sources):
@@ -698,7 +778,7 @@ def test_with_no_player_above_the_yes_line_the_answer_says_no_free_agent_beats_t
                           "waiver_targets", roster_id=BO_GIRDS))
     block = _block(chunks)
     assert block["fact"] == "No free agent beats the starters this week"
-    assert block["rows"] == []
+    assert block["rows"] == [] and block["empty"] == "No free agent beats the starters this week"
     assert _facts(writer.requests[0])["kept_players"] == []
     assert "no free agent beats the starters" in _prompt(writer.requests[0])
     # It is a real Answer, checked and kept, not the honest miss.
@@ -713,7 +793,7 @@ def test_a_kept_waiver_answer_comes_back_with_its_block_and_no_jev_read(week_9_r
     first = _chunks(_ask(api, "waiver_targets", roster_id=BO_GIRDS))
     # The first tap reads each free agent, and its block lists the player that the read kept.
     assert _reads(jev)
-    assert [row["label"] for row in _block(first)["rows"]] == [COREY_KINER]
+    assert [row["name"] for row in _block(first)["rows"]] == [COREY_KINER]
     asked = len(jev.requests)
     second = _chunks(_ask(api, "waiver_targets", roster_id=BO_GIRDS))
     assert len(jev.requests) == asked
@@ -790,3 +870,47 @@ def test_a_row_with_a_hole_never_reads_a_depth_word_of_spare_players(settings, s
     held = [row for row in rows if "hole:" in row["note"]]
     assert held
     assert all(row["note"].startswith("thin · hole:") for row in held)
+
+
+def test_how_you_stack_up_carries_the_slot_rank_bars_with_four_rows_only(week_9_repo, sources):
+    # AT-30: the block of How you stack up holds the slot rank bars: QB, RB, WR, and TE of the roster grade, each with
+    # its rank in the league, and the grade with its read in the header. No FLEX rank and no DEF rank (decision 11).
+    writer = Writer()
+    block = _block(_chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=Checks([True]).answer), writer),
+                                "stack_up", roster_id=BO_GIRDS)))
+    facts = _facts(writer.requests[0])
+    bars = block["block"]
+    assert bars["kind"] == "slot_ranks"
+    assert [row["position"] for row in bars["rows"]] == ["QB", "RB", "WR", "TE"]
+    ranks = {slot["position"]: slot["rank"] for slot in facts["slot_ranks"]}
+    assert [(row["rank"], row["label"]) for row in bars["rows"]] == [
+        (ranks[position], f"{ordinal(ranks[position])} of 12") for position in ("QB", "RB", "WR", "TE")]
+    assert bars["teams"] == 12
+    assert bars["grade"] == facts["grade"]["letter"] and bars["read"] == facts["grade_read"]
+
+
+def test_weak_spots_carries_the_bye_grid_with_the_bye_weeks_of_the_nfl_schedules(week_9_repo, sources):
+    # AT-31: the block of Weak spots holds the bye grid: the starters, then the bench, against the next weeks, each with
+    # the bye week of his NFL team. The site draws a red dot where a starter meets his bye week.
+    writer = Writer()
+    block = _block(_chunks(_ask(_week_9_api(week_9_repo, sources, FakeJev(answer=Checks([True]).answer), writer),
+                                "weak_spots", roster_id=BO_GIRDS)))
+    grid = block["block"]
+    assert grid["kind"] == "bye_grid"
+    # The live week is 10, and the regular season of cpc ends in week 14.
+    assert grid["weeks"] == [10, 11, 12, 13, 14]
+    byes = {team: s.bye_week for team, s in read_schedules(FIXTURES / "nflverse" / "games.csv", 2026).items()}
+    week_9 = load_raw(WEEK_9_RAW)
+    [roster] = [r for r in week_9.rosters if r.roster_id == BO_GIRDS]
+    assert len(grid["players"]) == len(roster.players or [])
+    for player in grid["players"]:
+        assert player["bye"] == byes.get(player["nfl_team"])
+    starters = [player for player in grid["players"] if player["starter"]]
+    # The skill starters are the starters of the slice, and the cpc lineup starts a DEF too, so his bye counts.
+    assert [p["name"] for p in starters if p["slot"] != "DEF"] == [
+        s["player"] for s in _facts(writer.requests[0])["starters"] if s["player"] is not None]
+    assert [p["name"] for p in starters if p["slot"] == "DEF"] == ["Jacksonville Jaguars"]
+    # Bo Girds starts players whose NFL team has a bye in the weeks of the grid, so the grid has red dots to show:
+    # Kyren Williams and Matthew Golden in week 11, Zay Flowers in week 13, and Trey McBride in week 14.
+    assert sorted((p["bye"], p["name"]) for p in starters if p["bye"] in grid["weeks"]) == [
+        (11, "Kyren Williams"), (11, "Matthew Golden"), (13, "Zay Flowers"), (14, "Trey McBride")]

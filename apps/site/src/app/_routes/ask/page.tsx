@@ -4,10 +4,8 @@
  */
 import type { Metadata } from "next";
 import { pageTitle } from "@/app/shell-props";
+import { homeHref } from "@/lib/routes";
 import FrontDoorPage from "@/app/front-door/door-page";
-
-/* The path of the route. It matches no menu item, so no item of the menu shows as current. */
-const ASK_HREF = "/ask/";
 
 export const metadata: Metadata = {
   title: pageTitle(),
@@ -15,5 +13,5 @@ export const metadata: Metadata = {
 };
 
 export default function AskPage() {
-  return <FrontDoorPage pageHref={ASK_HREF} />;
+  return <FrontDoorPage pageHref={homeHref()} />;
 }

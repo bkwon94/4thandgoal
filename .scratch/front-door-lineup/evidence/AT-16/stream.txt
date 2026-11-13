@@ -1,0 +1,70 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"topic":"start_sit","roster_id":6,"question":"Start Kyren Williams or Blake Corum?"}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T22:15:13Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-B.
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"comparison","topic":"start_sit","team":6,"week":10,"players":[{"name":"K. Williams","player_id":"8150","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":15.6,"status":null},{"name":"B. Corum","player_id":"11586","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":10.5,"status":null}],"facts":[{"key":"projection","label":"Projection","values":[15.6,10.5],"shown":["15.6","10.5"],"winner":0,"cited":false},{"key":"defense","label":"Defense allows","values":[20.8,20.8],"shown":["20.8","20.8"],"winner":null,"cited":false},{"key":"team_points","label":"Team points","values":[24.5,24.5],"shown":["24.5","24.5"],"winner":null,"cited":false},{"key":"margin","label":"Expected margin","values":[9.5,9.5],"shown":["+9.5","+9.5"],"winner":null,"cited":false},{"key":"snap_share","label":"Snap share, 3 wk","values":[0.607,0.378],"shown":["61%","38%"],"winner":0,"cited":false},{"key":"target_share","label":"Target share, 3 wk","values":[0.074,0.042],"shown":["7%","4%"],"winner":0,"cited":false},{"key":"carry_share","label":"Carry share, 3 wk","values":[0.5,0.415],"shown":["50%","42%"],"winner":0,"cited":false},{"key":"pass_share","label":"Team pass share","values":[0.591,0.591],"shown":["59%","59%"],"winner":null,"cited":false}],"pick":0}}
+
+data: {"type":"data-key","data":{"key":"22326f7ab4fcf044e3946fab694e1d6d282e7364c89a6831b8177c2b48b8b110"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":"Start Kyren Willi","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":"ams. He","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" has","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" the","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" higher projection,","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" 15.6 to","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" ","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":"10.5 for Blake","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" Corum. Over","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" the last 3 weeks","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" he had a 61% snap","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" share and a 50% carry","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" share, while Corum had","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" 38% and 42%.","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" Both face","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" the same matchup, so the","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" g","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":"ap com","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":"es from their","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":" ro","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-delta","delta":"les.","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"text-end","id":"fb09c39a-9cb4-4fdd-a7dc-1ce70bbba6a8"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"data-block","data":{"kind":"comparison","topic":"start_sit","team":6,"week":10,"players":[{"name":"K. Williams","player_id":"8150","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":15.6,"status":null},{"name":"B. Corum","player_id":"11586","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":10.5,"status":null}],"facts":[{"key":"projection","label":"Projection","values":[15.6,10.5],"shown":["15.6","10.5"],"winner":0,"cited":true},{"key":"defense","label":"Defense allows","values":[20.8,20.8],"shown":["20.8","20.8"],"winner":null,"cited":false},{"key":"team_points","label":"Team points","values":[24.5,24.5],"shown":["24.5","24.5"],"winner":null,"cited":false},{"key":"margin","label":"Expected margin","values":[9.5,9.5],"shown":["+9.5","+9.5"],"winner":null,"cited":false},{"key":"snap_share","label":"Snap share, 3 wk","values":[0.607,0.378],"shown":["61%","38%"],"winner":0,"cited":true},{"key":"target_share","label":"Target share, 3 wk","values":[0.074,0.042],"shown":["7%","4%"],"winner":0,"cited":false},{"key":"carry_share","label":"Carry share, 3 wk","values":[0.5,0.415],"shown":["50%","42%"],"winner":0,"cited":true},{"key":"pass_share","label":"Team pass share","values":[0.591,0.591],"shown":["59%","59%"],"winner":null,"cited":false}],"pick":0}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T22:15:16Z UTC.

@@ -41,6 +41,8 @@ export function stepLine(tool: string, input: unknown): string {
       return week ? `Reading week ${week}` : "Reading the week";
     case "week_moves":
       return week ? `Reading the moves of week ${week}` : "Reading the moves of the week";
+    case "moves_feed":
+      return week ? `Reading the moves of week ${week}` : "Reading the moves of this week";
     case "season_moves":
       return "Reading every move of the season";
     case "team_roster":

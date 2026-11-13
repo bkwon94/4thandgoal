@@ -21,6 +21,64 @@
   }
  },
  {
+  "type": "data-block",
+  "data": {
+   "kind": "sell_list",
+   "team": 3,
+   "rows": [
+    {
+     "player_id": "8121",
+     "name": "Romeo Doubs",
+     "position": "WR",
+     "nfl_team": "NE",
+     "headshot": "https://sleepercdn.com/content/nfl/players/8121.jpg",
+     "season_rank": "WR54",
+     "recent_rank": "WR26",
+     "headline": "You can sell Romeo Doubs now: he is out until week 14, but his hot last four weeks still make him look good to another manager.",
+     "bullets": [
+      {
+       "text": "He is out now and not due back until week 14, so he gives your lineup nothing until then.",
+       "mark": "for"
+      },
+      {
+       "text": "He scored 10.7 points per game over the last four weeks against 8.4 over the season, and his Recent rank is WR26 against a Season rank of WR54. Another manager would pay for the hot month.",
+       "mark": "for"
+      },
+      {
+       "text": "The matchups ahead are soft, such as week 12 at LAC, 4th most points to WRs. He cannot use them while he is out, though.",
+       "mark": "even"
+      }
+     ]
+    },
+    {
+     "player_id": "8132",
+     "name": "Tyler Allgeier",
+     "position": "RB",
+     "nfl_team": "ARI",
+     "headshot": "https://sleepercdn.com/content/nfl/players/8132.jpg",
+     "season_rank": "RB22",
+     "recent_rank": null,
+     "headline": "You can sell Tyler Allgeier while his hot month hides a weaker season.",
+     "bullets": [
+      {
+       "text": "He scored 12.7 points per game over the last four weeks against 8.8 over the season. His Recent rank is RB18 and his Season rank is RB22.",
+       "mark": "for"
+      },
+      {
+       "text": "In your lineup he counts for 8.8 points per game now, a position rank of RB33, well short of what the hot month suggests.",
+       "mark": "for"
+      },
+      {
+       "text": "The schedule ahead is soft, starting with week 10 LAR at home, 29th most points to RBs, so the good run could last.",
+       "mark": "against"
+      }
+     ]
+    }
+   ],
+   "empty": null
+  }
+ },
+ {
   "type": "data-answer",
   "data": {
    "kind": "sell",

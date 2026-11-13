@@ -6,7 +6,8 @@ from dataclasses import dataclass
 from typing import Literal
 
 from analyzer.trade_jev import weak_slot_rows, weak_starting_slots
-from cornerstone_api.waiver_targets import waiver_facts
+from cornerstone_api.grade_blocks import bye_grid, slot_rank_bars
+from cornerstone_api.waiver_targets import WAIVER_LIST_KIND, waiver_facts, waiver_rows
 from league.lineup import cannot_play_now, lineup_now
 from league.numbers import ordinal
 from league.provider.raw import RawTrending
@@ -14,7 +15,7 @@ from league.season_inputs import SeasonInputs
 from league.snapshot import Snapshot
 from managers.grade import ManagerGrade, Starter, roster_grades, roster_starters
 
-PersonalTopic = Literal["weak_spots", "stack_up", "waiver_targets"]
+PersonalTopic = Literal["weak_spots", "stack_up", "waiver_targets", "start_sit"]
 
 # The fact groups of each personal Topic (decision 03). The slice holds only these groups.
 FACT_GROUPS: dict[str, tuple[str, ...]] = {
@@ -150,6 +151,11 @@ def trade_ideas_fact(snapshot: Snapshot, roster_id: int) -> str | None:
     return f"Offers for your {weak[0]}" if weak else None
 
 
+# The kind of the data block of a personal Topic that shows stats and rows. Every block on the stream names its kind, so
+# the site picks its view from the kind alone.
+ROWS_KIND = "rows"
+
+
 def _weak_slot(need: dict) -> str | None:
     """The first weak starting slot of the team, such as "QB", or None when it has none."""
     weak = need["weak_starting_slots"]
@@ -160,10 +166,8 @@ def _waiver_block(need: dict, read: int) -> dict:
     """The block of the waiver targets before the Jev read: the first weak slot and the count of free agents to read.
     The Suggestion shows its fact, so the fact costs no Jev call."""
     slot = _weak_slot(need)
-    return {"fact": f"Free agents for the {slot} slot" if slot else "Free agents to stash",
-            "stats": [{"label": "Weak slot", "value": slot or "None"},
-                      {"label": "Free agents read", "value": str(read)}],
-            "rows": []}
+    return {"kind": WAIVER_LIST_KIND, "fact": f"Free agents for the {slot} slot" if slot else "Free agents to stash",
+            "read": read, "rows": [], "empty": None}
 
 
 def judged_waiver(facts: PersonalFacts, kept: list[dict]) -> PersonalFacts:
@@ -171,17 +175,11 @@ def judged_waiver(facts: PersonalFacts, kept: list[dict]) -> PersonalFacts:
     and the block lists the kept players. With no kept player, the block says so plainly."""
     slice_ = {key: value for key, value in facts.slice.items() if key != "candidates"}
     read = len(facts.slice["candidates"])
-    slot = _weak_slot(facts.slice["team_need"])
     count = len(kept)
-    fact = (f"{count} free {'agent' if count == 1 else 'agents'} worth a claim" if kept
-            else "No free agent beats the starters this week")
-    block = {**facts.block, "fact": fact,
-             "stats": [{"label": "Weak slot", "value": slot or "None"},
-                       {"label": "Free agents read", "value": str(read)},
-                       {"label": "Worth a claim", "value": str(count)}],
-             "rows": [{"label": player["name"], "value": "",
-                       "note": " · ".join(part for part in (player["position"], player["nfl_team"]) if part),
-                       "roster_id": None, "you": False} for player in kept]}
+    empty = "No free agent beats the starters this week"
+    fact = f"{count} free {'agent' if count == 1 else 'agents'} worth a claim" if kept else empty
+    block = {**facts.block, "fact": fact, "read": read, "rows": waiver_rows(facts.slice["team_need"], kept),
+             "empty": None if kept else empty}
     return PersonalFacts(slice={**slice_, "kept_players": kept}, block=block)
 
 
@@ -215,7 +213,8 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
                  "stats": [{"label": "Weakest spot", "value": weakest},
                            {"label": "Rank", "value": rank},
                            {"label": "Holes", "value": str(hole_count)}],
-                 "rows": _slot_rows(snapshot, grade, mine, teams, empty)}
+                 "rows": _slot_rows(snapshot, grade, mine, teams, empty),
+                 "block": bye_grid(snapshot, roster_id, mine)}
     elif topic == "stack_up":
         best = _worst(grade)[-1]
         # The grade reads the live league, and the grade of the managers page reads the weekly build, so the two can
@@ -227,7 +226,8 @@ def topic_facts(topic: PersonalTopic, snapshot: Snapshot, roster_id: int, grades
                            {"label": "Best spot", "value": f"{best.position} {ordinal(best.rank)}"},
                            {"label": "Weakest spot", "value": f"{worst.position} {ordinal(worst.rank)}"}],
                  "rows": [{"label": PART_NAMES[part.key], "value": _of(part.rank, teams), "note": None,
-                           "roster_id": None, "you": False} for part in grade.parts]}
+                           "roster_id": None, "you": False} for part in grade.parts],
+                 "block": slot_rank_bars(grade, teams)}
     else:
         block = _waiver_block(groups["team_need"], len(groups["candidates"]))
-    return PersonalFacts(slice=slice_, block={"topic": topic, "team": roster_id, **block})
+    return PersonalFacts(slice=slice_, block={"kind": ROWS_KIND, "topic": topic, "team": roster_id, **block})

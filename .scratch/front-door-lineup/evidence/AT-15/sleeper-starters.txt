@@ -1,0 +1,71 @@
+# The Sleeper starters of week 10 of each team of cpc and norcal, with the injury_status of each starter from Sleeper /players/nfl.
+# Read-only GETs into the scratchpad: /v1/league/<id>/matchups/10 and /v1/players/nfl at 2026-11-12T20:46:39Z UTC; /v1/league/<id>/users, /rosters, and /v1/league/<id> at 2026-11-12T19:52:00Z UTC.
+# A slot reads <slot>:<player>(<NFL team>,<injury_status>). EMPTY is the Sleeper id "0", an empty slot. The list after the team name holds each status that is not None, and E for each empty slot.
+# The script is lineups.py in the scratchpad. Its full text is at the end.
+$ python3 -I lineups.py
+cpc 1 The Blue Tent ['IR']
+    QB:Brock Purdy(SF,None) | RB:Travis Etienne Jr.(NO,IR) | RB:Jadarian Price(SEA,None) | WR:Rashee Rice(KC,None) | WR:Christian Watson(GB,None) | TE:Brock Bowers(LV,None) | FLEX:Darren Waller(CAR,None) | FLEX:Jordyn Tyson(NO,None) | DEF:IND(IND,None)
+cpc 2 All You Need Is Love []
+    QB:Joe Burrow(CIN,None) | RB:Ashton Jeanty(LV,None) | RB:Zach Charbonnet(SEA,None) | WR:Ja'Marr Chase(CIN,None) | WR:Chris Olave(NO,None) | TE:Brenton Strange(JAX,None) | FLEX:Dylan Sampson(CLE,None) | FLEX:Jordan Addison(MIN,None) | DEF:MIN(MIN,None)
+cpc 3 Lil Fridge []
+    QB:Bryce Young(CAR,None) | RB:Christian McCaffrey(SF,None) | RB:Derrick Henry(BAL,None) | WR:Jaxon Smith-Njigba(SEA,None) | WR:Stefon Diggs(WAS,None) | TE:Travis Kelce(KC,None) | FLEX:Khalil Shakir(BUF,None) | FLEX:Tyler Allgeier(ARI,None) | DEF:GB(GB,None)
+cpc 4 NFC Least ['Questionable', 'Questionable']
+    QB:Kirk Cousins(MIN,None) | RB:Chase Brown(CIN,None) | RB:Cam Skattebo(NYG,None) | WR:Tetairoa McMillan(CAR,None) | WR:Jameson Williams(DET,None) | TE:Tyler Warren(IND,None) | FLEX:David Montgomery(HOU,Questionable) | FLEX:Hunter Henry(NE,Questionable) | DEF:KC(KC,None)
+cpc 5 Puka Deez... ['Questionable', 'Questionable']
+    QB:Josh Allen(BUF,None) | RB:Chuba Hubbard(CAR,None) | RB:James Cook III(BUF,None) | WR:Denzel Boston(CLE,Questionable) | WR:DK Metcalf(PIT,None) | TE:George Kittle(SF,None) | FLEX:Woody Marks(HOU,Questionable) | FLEX:Mike Gesicki(CIN,None) | DEF:SEA(SEA,None)
+cpc 6 Bo Girds []
+    QB:Aaron Rodgers(PIT,None) | RB:Kenneth Walker III(KC,None) | RB:Kyren Williams(LAR,None) | WR:Matthew Golden(GB,None) | WR:Parker Washington(JAX,None) | TE:Trey McBride(ARI,None) | FLEX:Zay Flowers(BAL,None) | FLEX:Blake Corum(LAR,None) | DEF:JAX(JAX,None)
+cpc 7 To Infinity and Bijan ['Questionable', 'Questionable', 'Questionable']
+    QB:Patrick Mahomes(KC,None) | RB:Breece Hall(NYJ,None) | RB:Zonovan Knight(ARI,Questionable) | WR:Malik Nabers(NYG,None) | WR:KC Concepcion Jr.(CLE,None) | TE:Harold Fannin Jr.(CLE,Questionable) | FLEX:Ryan Flournoy(DAL,None) | FLEX:Ladd McConkey(LAC,Questionable) | DEF:NYG(NYG,None)
+cpc 8 Return of T Mac ['Questionable', 'Questionable']
+    QB:Jordan Love(GB,None) | RB:Bijan Robinson(ATL,None) | RB:Jaylen Warren(PIT,None) | WR:CeeDee Lamb(DAL,None) | WR:Carnell Tate(TEN,Questionable) | TE:Tucker Kraft(GB,None) | FLEX:DeMario Douglas(NE,None) | FLEX:T.J. Hockenson(MIN,Questionable) | DEF:HOU(HOU,None)
+cpc 9 Maye d'force B with U []
+    QB:Drake Maye(NE,None) | RB:Jahmyr Gibbs(DET,None) | RB:Kaleb Johnson(GB,None) | WR:Jalen Coker(CAR,None) | WR:Justin Jefferson(MIN,None) | TE:Isaiah Likely(NYG,None) | FLEX:Jordan Watkins(SF,None) | FLEX:Emmett Johnson(KC,None) | DEF:SF(SF,None)
+cpc 10 behold the lamb []
+    QB:Jayden Daniels(WAS,None) | RB:Javonte Williams(DAL,None) | RB:Quinshon Judkins(CLE,None) | WR:Nico Collins(HOU,None) | WR:Drake London(ATL,None) | TE:Chig Okonkwo(WAS,None) | FLEX:Germie Bernard(PIT,None) | FLEX:Rico Dowdle(PIT,None) | DEF:LAR(LAR,None)
+cpc 11 Unsolicited Dak Picks ['E', 'E']
+    QB:C.J. Stroud(HOU,None) | RB:Jonathan Taylor(IND,None) | RB:Ollie Gordon II(MIA,None) | WR:Caleb Douglas(MIA,None) | WR:EMPTY | TE:Juwan Johnson(NO,None) | FLEX:Rachaad White(WAS,None) | FLEX:Josh Downs(KC,None) | DEF:EMPTY
+cpc 12 Teehee ['Questionable', 'Questionable', 'Questionable']
+    QB:Trevor Lawrence(JAX,None) | RB:Bhayshul Tuten(JAX,Questionable) | RB:Tony Pollard(TEN,None) | WR:Tee Higgins(CIN,None) | WR:Amon-Ra St. Brown(DET,Questionable) | TE:Sam LaPorta(DET,None) | FLEX:DJ Moore(BUF,None) | FLEX:Garrett Wilson(NYJ,Questionable) | DEF:BAL(BAL,None)
+norcal 1 puurdygood ['Questionable']
+    QB:Kirk Cousins(MIN,None) | RB:Rachaad White(WAS,None) | RB:Kyren Williams(LAR,None) | WR:Tetairoa McMillan(CAR,None) | WR:Nico Collins(HOU,None) | TE:Harold Fannin Jr.(CLE,Questionable) | FLEX:DJ Moore(BUF,None) | FLEX:Christian McCaffrey(SF,None) | FLEX:Brenton Strange(JAX,None)
+norcal 2 VarsityBlue2 ['Questionable', 'Questionable']
+    QB:Dak Prescott(DAL,None) | RB:Kimani Vidal(LAC,None) | RB:Cam Skattebo(NYG,None) | WR:Ladd McConkey(LAC,Questionable) | WR:Khalil Shakir(BUF,None) | TE:Sam LaPorta(DET,None) | FLEX:Mike Gesicki(CIN,None) | FLEX:Demarcus Robinson(SF,None) | FLEX:Dalton Kincaid(BUF,Questionable)
+norcal 3 BobBuckstein ['Questionable', 'Questionable']
+    QB:Josh Allen(BUF,None) | RB:Ashton Jeanty(LV,None) | RB:Tony Pollard(TEN,None) | WR:Amon-Ra St. Brown(DET,Questionable) | WR:Jalen Coker(CAR,None) | TE:Michael Mayer(LV,None) | FLEX:Germie Bernard(PIT,None) | FLEX:KC Concepcion Jr.(CLE,None) | FLEX:Bhayshul Tuten(JAX,Questionable)
+norcal 4 The Mean Machine ['Questionable']
+    QB:Brock Purdy(SF,None) | RB:Jonathan Taylor(IND,None) | RB:Tyler Allgeier(ARI,None) | WR:Jameson Williams(DET,None) | WR:Tee Higgins(CIN,None) | TE:Kyle Pitts Sr.(ATL,None) | FLEX:A.J. Brown(NE,Questionable) | FLEX:Juwan Johnson(NO,None) | FLEX:Mack Hollins(NE,None)
+norcal 5 Skol Daddy  ['Questionable', 'Questionable']
+    QB:Joe Burrow(CIN,None) | RB:Woody Marks(HOU,Questionable) | RB:Blake Corum(LAR,None) | WR:Malik Washington(MIA,None) | WR:Ja'Marr Chase(CIN,None) | TE:Brock Bowers(LV,None) | FLEX:Jaylen Warren(PIT,None) | FLEX:Corey Kiner(NE,None) | FLEX:T.J. Hockenson(MIN,Questionable)
+norcal 6 Mitseeker5000 ['Questionable', 'Questionable', 'Questionable', 'Questionable']
+    QB:Jared Goff(DET,Questionable) | RB:Javonte Williams(DAL,None) | RB:Rico Dowdle(PIT,None) | WR:Carnell Tate(TEN,Questionable) | WR:Chris Olave(NO,None) | TE:Travis Kelce(KC,None) | FLEX:Stefon Diggs(WAS,None) | FLEX:Chris Rodriguez Jr.(JAX,Questionable) | FLEX:Hunter Henry(NE,Questionable)
+norcal 7 Bo Girds []
+    QB:Trevor Lawrence(JAX,None) | RB:Kenneth Walker III(KC,None) | RB:Kaleb Johnson(GB,None) | WR:CeeDee Lamb(DAL,None) | WR:Zay Flowers(BAL,None) | TE:Isaiah Likely(NYG,None) | FLEX:Parker Washington(JAX,None) | FLEX:Tyler Higbee(LAR,None) | FLEX:Austin Ekeler(WAS,None)
+norcal 8 Hock Tua 💦 ['Questionable', 'Questionable']
+    QB:Patrick Mahomes(KC,None) | RB:Bijan Robinson(ATL,None) | RB:Ollie Gordon II(MIA,None) | WR:George Pickens(DAL,Questionable) | WR:Matthew Golden(GB,None) | TE:Trey McBride(ARI,None) | FLEX:DK Metcalf(PIT,None) | FLEX:Zach Charbonnet(SEA,None) | FLEX:Omar Cooper Jr.(NYJ,Questionable)
+norcal 9 kaiedmonds ['E']
+    QB:EMPTY | RB:James Cook III(BUF,None) | RB:Chuba Hubbard(CAR,None) | WR:Justin Jefferson(MIN,None) | WR:Christian Watson(GB,None) | TE:George Kittle(SF,None) | FLEX:Keenan Allen(SF,None) | FLEX:Jadarian Price(SEA,None) | FLEX:Rashee Rice(KC,None)
+norcal 10 Davlionman []
+    QB:C.J. Stroud(HOU,None) | RB:Jahmyr Gibbs(DET,None) | RB:Quinshon Judkins(CLE,None) | WR:Drake London(ATL,None) | WR:Malik Nabers(NYG,None) | TE:Pat Freiermuth(PIT,None) | FLEX:DeMario Douglas(NE,None) | FLEX:Braelon Allen(NYJ,None) | FLEX:Keon Coleman(BUF,None)
+norcal 11 Breece Mode ['Questionable']
+    QB:Jordan Love(GB,None) | RB:Derrick Henry(BAL,None) | RB:Breece Hall(NYJ,None) | WR:Jaxon Smith-Njigba(SEA,None) | WR:Tre Tucker(LV,None) | TE:Tyler Warren(IND,None) | FLEX:Jordyn Tyson(NO,None) | FLEX:Garrett Wilson(NYJ,Questionable) | FLEX:Chig Okonkwo(WAS,None)
+norcal 12 The Dart Side []
+    QB:Bryce Young(CAR,None) | RB:Chase Brown(CIN,None) | RB:Omarion Hampton(LAC,None) | WR:Caleb Douglas(MIA,None) | WR:Jordan Watkins(SF,None) | TE:Tucker Kraft(GB,None) | FLEX:Ja'Kobi Lane(BAL,None) | FLEX:Konata Mumpfield(LAR,None) | FLEX:Reggie Virgil(ARI,None)
+
+# lineups.py
+import json
+P=json.load(open("players.json"))
+for n in ["cpc","norcal"]:
+    m=json.load(open(f"m-{n}.json")); u={x["user_id"]:(x.get("metadata",{}).get("team_name") or x["display_name"]) for x in json.load(open(f"u-{n}.json"))}
+    r={x["roster_id"]:u.get(x["owner_id"],"?") for x in json.load(open(f"r-{n}.json"))}
+    slots=[s for s in json.load(open(f"l-{n}.json"))["roster_positions"] if s not in ("BN","IR","TAXI")]
+    for x in sorted(m,key=lambda x:x["roster_id"]):
+        st=x.get("starters") or []
+        out=[];flags=[]
+        for s,pid in zip(slots, st+["0"]*(len(slots)-len(st))):
+            if pid=="0": out.append(f"{s}:EMPTY"); flags.append("E"); continue
+            p=P.get(pid,{}); stt=p.get("injury_status")
+            out.append(f"{s}:{p.get('full_name',pid)}({p.get('team')},{stt})")
+            if stt: flags.append(stt)
+        print(n,x["roster_id"],r[x["roster_id"]],flags)
+        print("   "," | ".join(out))

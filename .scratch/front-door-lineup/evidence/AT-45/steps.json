@@ -1,0 +1,33 @@
+{
+  "route": "/ask/",
+  "steps": [
+    {
+      "wait": "text=Which team is yours?"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[aria-label=\"Suggestions\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "click": "button[aria-label=\"Open the menu\"]"
+    },
+    {
+      "wait": "[aria-label=\"Pages\"]"
+    },
+    {
+      "wait": 1200
+    }
+  ],
+  "widths": [
+    375,
+    768
+  ]
+}

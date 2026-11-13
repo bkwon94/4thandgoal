@@ -15,10 +15,12 @@ from analyzer.routes import ServedClient
 from analyzer.sell_facts import sell_sheet, sheet_players
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.ask import YES, Asker, ClientAsker
-from cornerstone_api.ask_wording import TOPICS
 from cornerstone_api.personal_facts import PersonalTopic, trade_ideas_fact
-from cornerstone_api.personal_topics import Live, claude_answer, load_live, shown_facts
+from cornerstone_api.personal_topics import Live, answer_key, claude_answer, load_live, load_week, shown_facts
+from cornerstone_api.start_sit import START_SIT, load_live_week
+from cornerstone_api.start_sit_fact import start_sit_fact
 from cornerstone_api.suggestion_wording import (
+    ABOUT,
     SELL_CHOICE,
     SELL_NOUL,
     lift_key,
@@ -54,14 +56,14 @@ _building: set[str] = set()
 
 
 class SuggestionsRequest(BaseModel):
-    """The body of the Suggestions: Your team, the 13 Topics in the order of the day of the manager, and the fact of
+    """The body of the Suggestions: Your team, the 14 Topics in the order of the day of the manager, and the fact of
     each Topic that the manager opened. The browser knows the day and keeps the opened Topics (decision 02)."""
 
     model_config = ConfigDict(extra="ignore")
 
     roster_id: int
-    order: list[str] = Field(min_length=1, max_length=len(TOPICS))
-    opened: dict[str, str] = Field(default_factory=dict, max_length=len(TOPICS))
+    order: list[str] = Field(min_length=1, max_length=len(ABOUT))
+    opened: dict[str, str] = Field(default_factory=dict, max_length=len(ABOUT))
 
 
 class KeyItem(BaseModel):
@@ -158,12 +160,24 @@ async def head_start(asker: Asker, store: AnswerStore, live: Live, topic: Person
         _building.discard(key)
 
 
+async def _start_sit_fact(served: ServedClient, season: int, roster_id: int):
+    """The fact of Start or sit from the live Sleeper week, with no Jev call. When Sleeper or the kickoffs do not load,
+    only Start or sit loses its fact, so the other Suggestions still show."""
+    try:
+        # The fact counts the holes and the Q starters, so it reads no Fact sheet.
+        week = await anyio.to_thread.run_sync(lambda: load_live_week(served.sources, season, fact_sheets=False))
+    except ValueError as error:
+        logger.warning("The live week of the Start or sit fact did not load (%s)", error)
+        return None
+    return start_sit_fact(week, roster_id)
+
+
 @router.post("/suggestions")
 async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: ServedClient, request: Request,
                       tasks: BackgroundTasks) -> dict:
     """The Suggestions of Your team: the fact of each Topic, the lift Noul of each, the urgent Topics, and the 3
     picks. When the top pick is a personal Topic, its Answer builds after the response. A failed Jev call is a 503."""
-    if any(key not in TOPICS for key in [*body.order, *body.opened]) or len(set(body.order)) != len(body.order):
+    if any(key not in ABOUT for key in [*body.order, *body.opened]) or len(set(body.order)) != len(body.order):
         raise HTTPException(status_code=422, detail="Unknown Topic.")
     live = await load_live(served, asker.season, request.app.state.live[request.path_params["slug"]])
     if body.roster_id not in live.snapshot.rosters:
@@ -175,6 +189,13 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
     ideas = trade_ideas_fact(live.snapshot, body.roster_id)
     if ideas is not None:
         facts["trade_ideas"] = ideas
+    kickoffs = {}
+    lineup = await _start_sit_fact(served, asker.season, body.roster_id)
+    if lineup is not None:
+        facts[START_SIT] = lineup.text
+        if lineup.kickoff is not None:
+            # The site shows the kickoff in the time zone of the browser, so it gets the time as epoch ms too.
+            kickoffs[START_SIT] = int(lineup.kickoff.timestamp() * 1000)
     team = live.snapshot.teams[body.roster_id].name
     try:
         sell, sell_choice, sell_clear = await anyio.to_thread.run_sync(sell_high_fact, asker.jev, live,
@@ -202,7 +223,7 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
         tasks.add_task(head_start, asker, store, live, start, body.roster_id, request.app.state.personal_model)
     # The sell high Noul joins the lift Nouls in the log, so a run shows why sell high has a fact or none.
     nouls = answers.nouls if sell_clear is None else {**answers.nouls, SELL_NOUL: sell_clear}
-    return {"picks": picks, "facts": facts, "lifts": lifts, "urgent": urgent, "head_start": start,
+    return {"picks": picks, "facts": facts, "kickoffs": kickoffs, "lifts": lifts, "urgent": urgent, "head_start": start,
             "jev": {"model": answers.model, "nouls": nouls, "choices": {SELL_CHOICE: sell_choice}}}
 
 
@@ -217,13 +238,19 @@ async def current(body: CurrentRequest, asker: ClientAsker, served: ServedClient
            for item in body.answers):
         raise HTTPException(status_code=422, detail="Pick your team again.")
     store: AnswerStore = request.app.state.kept[request.path_params["slug"]]
+    # Start or sit builds its Answer from the live Sleeper week and not from the live league, so its key comes from the
+    # same week, as the tap reads it. The week loads only when the Thread holds a Start or sit Answer.
+    week = await load_week(served, asker.season) if any(item.topic == START_SIT for item in body.answers) else None
 
     def check(item: KeyItem) -> dict:
         if item.topic in TRADE_TOPICS:
             key = trade_key(cast(TradeTopic, item.topic), rosters, item.roster_id, item.team)
             return {"key": item.key, "current": key == item.key, "kept_at": None}
         subject = item.roster_id if item.team is None else item.team
-        _, key = live.key(cast(PersonalTopic, item.topic), item.roster_id, subject)
+        if week is not None and item.topic == START_SIT:
+            key = answer_key(START_SIT, subject == item.roster_id, week.facts(subject), week.rosters[subject])
+        else:
+            _, key = live.key(cast(PersonalTopic, item.topic), item.roster_id, subject)
         return {"key": item.key, "current": key == item.key, "kept_at": store.kept_at(item.key)}
 
     return {"answers": [await anyio.to_thread.run_sync(check, item) for item in body.answers]}

@@ -1,0 +1,82 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"topic":"waiver_targets","roster_id":6}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T21:51:00Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-A.
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"waiver_list","topic":"waiver_targets","team":6,"fact":"1 free agent worth a claim","read":34,"rows":[{"name":"Devin Singletary","position":"RB","nfl_team":"NYG","projection":7.66,"slot":"FLEX2","kind":"add","why":["Worth a claim this week.","Projects 7.7 this week, over Audric Estime at 7.6 in your FLEX2 slot.","36.4 projected points for the rest of the season."]}],"empty":null}}
+
+data: {"type":"data-key","data":{"key":"648cbae1129e91e8cf261524d0f17a671ee04a999e504774bebadb9826807ef8"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":"Your best waiver add this","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" week is Devin Singlet","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":"ary, a running back for the","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" Giants. He is a health","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":"y add this week who","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" would replace Audric Est","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":"ime in your FLEX2","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" slot, since his week proj","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":"ection of 7.66 is","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" just above Estime's 7","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":".57. In week 9 ","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":"he carried the ball 21","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" times and played 93 perc","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":"ent of the snaps, though","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" Cam Skattebo","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" is still ahead of him on","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" the depth chart.","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" He is the only name","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" on","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" your","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" list of","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":" k","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-delta","delta":"ept players.","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"text-end","id":"f2fdf208-b7f2-4260-8200-10f438c17b8e"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T21:51:04Z UTC.

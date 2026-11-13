@@ -1,0 +1,66 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01JVh31zoMMMkLafTE6mKVgQ","toolName":"moves_feed"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01JVh31zoMMMkLafTE6mKVgQ","inputTextDelta":""}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01JVh31zoMMMkLafTE6mKVgQ","toolName":"moves_feed","input":{}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01JVh31zoMMMkLafTE6mKVgQ","output":{"week":10,"live_week":true,"what_each_field_means":{"week":"The fantasy week of the moves. The live week is the week now in play, which \"this week\" means.","moves_per_day":"The count of the moves on each day of the week, oldest day first, in the time zone of the league.","moves":"Each move of the week, newest first. `kind` is \"trade\", \"waiver\" for a waiver claim with its FAAB `bid`, or \"free_agent\" for a free agent add or a drop with no claim. A trade gives each team in `sides` with the players and the picks that it `got`. Another move gives its `team`, the players it `added`, and the players it `dropped`."},"moves_per_day":[{"day":"Wed Nov 11","moves":5}],"moves":[{"kind":"free_agent","day":"Wed Nov 11","team":"Puka Deez...","added":["Tutu Atwell"],"dropped":["Matthew Stafford"]},{"kind":"free_agent","day":"Wed Nov 11","team":"Bo Girds","added":["Aaron Rodgers"],"dropped":["Terrance Ferguson"]},{"kind":"free_agent","day":"Wed Nov 11","team":"To Infinity and Bijan","added":["Zonovan Knight"],"dropped":["Brian Thomas Jr."]},{"kind":"free_agent","day":"Wed Nov 11","team":"The Blue Tent","added":["Darren Waller"],"dropped":["Devaughn Vele"]},{"kind":"free_agent","day":"Wed Nov 11","team":"The Blue Tent","added":["Indianapolis Colts"],"dropped":[]}],"block_id":"moves_feed"}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"data-check","id":"check","data":{"state":"fixing"}}
+
+data: {"type":"data-fix","data":{}}
+
+data: {"type":"start-step"}
+
+data: {"type":"reasoning-start","id":"2ab31f8b-742d-4c2d-af7b-d5bc4e74e0e3","providerMetadata":{"pydantic_ai":{"signature":"","provider_name":"anthropic"}}}
+
+data: {"type":"reasoning-end","id":"2ab31f8b-742d-4c2d-af7b-d5bc4e74e0e3","providerMetadata":{"pydantic_ai":{"signature":"CAQSkAgKEAgTGAI4AUIIdGhpbmtpbmcSDFhvBwelTK8RV4ZmShoM6j5Nts/HDuKs0SYMIjAydEbTnDR1YZkm+UuXmchElNnfWjLLS0myeUvMpo2vYWchRLCwoBJ3SRFGiqS9Ue0qrQcCMUKDMKn4QwIObNMP/wfBkb1dty5NOc5Nd2M2m8oaCcagmUx+LLZaZzNI9TuCoT3xG0HR4phV33XD/rvl4Ukexu7vBk9h6Q2sijucLUJkUvY25fGrobUt6h+9TamwfUDa9l8SiYl/HirAj1oiH9novWgZcgUEl4P/rIFQnZg2PSYHQNnPvj1iP+Eu3LlTJFKKfXubyblMl6WVBqWiJxVtjYMLuZxb3tTLXS6HtkcNv+vUIDHssEXEsYMEgJ+0nrAfZrmAyFP4aPFua9on+nBB07sS3bxGABY9pJ0Vr70exYdbn3U3n7j9m02lRS3GjymzQTmYY8BsJ9R+zqwxZ65QaHhlqpepKUfDbN71WdX7QEPwtzL6hpIRhsGdOVfa6iLnl8qmzD2cyLsAzvX7KUx3Gnp182TKn2fWfNKb6fLTeXkHciWxwgK9ECsmXV3KczBtdD188HceQbhI/mTOLNH6cq+ZTtPqHEdYyZgjHiZkv4CkNA7CEN2MRfH3QmX569YiK4P/XP7Re+ecAmGYtl6UIbEwkwJ2kh0YoHweLOWBL54ce7EtJYswve/nzQmZZKZM0o+qAdv+6JPuGKxZIk/gxFPcyJgSrGzRcgKvCX3Q1hBYDWLTMBC2U4kAt9g7pMReWVmGCaUpRHaE+nQ9iM/kdhD6mXbhyjt/CH4pluOnYg90xkDhsReb0GLDgRPqarXTG3qs7vhGtk+Z95EBDPTp/RblDmC0e1z1YELm/ICz9lDK9X+fH8Cfd/z9jn5A7TwLy86qAa+u6H6ZSl5lypOzZGKibWPZ1Y5eLV3xs0HXSHaLI9DMcTiYYeFXlZOYARnKdoo+jl1Sk4zmDGF/gFKjuFvXeq1KdP+j1efsk0erDucra6OzVlq6PJ9pgMlEVBivPDv1YwiURwDqOdsD2oPFX6Uth5nRNbXfq52h0rrTvLuu2nFvkX3um3uGVFN3eK343fImXN2on6hsyqPKZtrAUS+6DYfuALe46C7ZDYHDiBmgWMA5aC/HTqpRcgvOeMCepfQPy/LHlhsKQF0kylyFq5Gc732FOuVEgpjGdd48r9pHKgB6nN6Ijl5aijsEv7eX9T8bKbYlKg7uX+2m7yaiZE3DhW5W2DX7joQtr04JmIojZfCMxUPZBL/qszWWtxZrXRDRCQ7ocJ7eRWeki6Sw/oLE8BG1/bR3waMmxwydLILE5FVb+xLsUAo5Pt31K15Dq7ULpS1x97BqbIakRL/x6CyhCSa4x73Snw16PxgB","provider_name":"anthropic"}}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"text-delta","delta":"Week","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"text-delta","delta":" 10 ","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"text-delta","delta":"has 5 moves,","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"text-delta","delta":" all on Wed","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"text-delta","delta":" Nov 11, and","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"text-delta","delta":" each one is a free agent move","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"text-delta","delta":". There are no trades or wa","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"text-delta","delta":"iver claims.","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"text-end","id":"43b836db-259f-465b-810f-9e2f548cbdbf"}
+
+data: {"type":"data-block","id":"block","data":{"kind":"feed","title":"Week 10 moves","days":[{"day":"Wed Nov 11","moves":5}],"rows":[{"kind":"free_agent","day":"Wed Nov 11","team":"Puka Deez...","added":["Tutu Atwell"],"dropped":["Matthew Stafford"]},{"kind":"free_agent","day":"Wed Nov 11","team":"Bo Girds","added":["Aaron Rodgers"],"dropped":["Terrance Ferguson"]},{"kind":"free_agent","day":"Wed Nov 11","team":"To Infinity and Bijan","added":["Zonovan Knight"],"dropped":["Brian Thomas Jr."]},{"kind":"free_agent","day":"Wed Nov 11","team":"The Blue Tent","added":["Darren Waller"],"dropped":["Devaughn Vele"]},{"kind":"free_agent","day":"Wed Nov 11","team":"The Blue Tent","added":["Indianapolis Colts"],"dropped":[]}],"more":0}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

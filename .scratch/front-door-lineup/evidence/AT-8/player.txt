@@ -1,0 +1,35 @@
+$ curl -s https://api.sleeper.app/v1/players/nfl | jq '.["3214"] | {player_id, full_name, team, position, status, injury_status, injury_body_part, injury_notes, injury_start_date, practice_participation, practice_description, news_updated}'
+# Fetched at 2026-11-12T22:55:17Z UTC on 2adcc0c4. Live week 2026 week 10. Hunter Henry starts at FLEX for NFC Least, cpc roster 4, in its Sleeper lineup and in the lineup of stream.txt.
+{
+  "player_id": "3214",
+  "full_name": "Hunter Henry",
+  "team": "NE",
+  "position": "TE",
+  "status": "Active",
+  "injury_status": "Questionable",
+  "injury_body_part": "Foot",
+  "injury_notes": null,
+  "injury_start_date": null,
+  "practice_participation": null,
+  "practice_description": null,
+  "news_updated": 1794519023764
+}
+# The same two fields for every Questionable starter of the 24 Sleeper lineups of week 10 (matchups/10 of cpc and norcal, fetched at the same time):
+{"full_name":"David Montgomery","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Hunter Henry","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Denzel Boston","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Woody Marks","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Zonovan Knight","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Harold Fannin Jr.","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Ladd McConkey","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Carnell Tate","injury_status":"Questionable","practice_participation":null}
+{"full_name":"T.J. Hockenson","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Bhayshul Tuten","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Tony Pollard","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Amon-Ra St. Brown","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Garrett Wilson","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Dalton Kincaid","injury_status":"Questionable","practice_participation":null}
+{"full_name":"A.J. Brown","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Chris Rodriguez Jr.","injury_status":"Questionable","practice_participation":null}
+{"full_name":"George Pickens","injury_status":"Questionable","practice_participation":null}
+{"full_name":"Omar Cooper Jr.","injury_status":"Questionable","practice_participation":null}

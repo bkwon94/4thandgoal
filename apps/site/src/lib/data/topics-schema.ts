@@ -3,6 +3,11 @@
  * of the front door for each team. The pipeline owns the shape (ADR 0013), in apps/pipeline/src/cornerstone/topics.py.
  */
 import { z } from "zod";
+import { ladderBlockSchema } from "./blocks/ladder-schema";
+import { matchupBlockSchema } from "./blocks/matchup-schema";
+import { rankMoversBlockSchema } from "./blocks/rank-movers-schema";
+import { recapBlockSchema } from "./blocks/recap-schema";
+import { scheduleBlockSchema } from "./blocks/schedule-schema";
 
 /* The 7 Topics that the weekly build answers. The other 6 Topics of the front door are live from the API. */
 export const LEAGUE_TOPICS = ["week_recap", "last_matchup", "next_matchup", "power_rankings", "playoff_race", "your_season", "leaders_trades"] as const;
@@ -21,18 +26,30 @@ export const topicRowSchema = z.object({
   you: z.boolean(),
 });
 
+/* The block of a league Topic: the data of its one card, one union over `kind`. A new kind joins with its schema in
+   blocks/ and one line here, and the answer block of the front door adds the same schema to its union. */
+export const topicBlockSchema = z.discriminatedUnion("kind", [
+  recapBlockSchema,
+  matchupBlockSchema,
+  rankMoversBlockSchema,
+  ladderBlockSchema,
+  scheduleBlockSchema,
+]);
+
 /* The Answer of one league Topic for one team. The fact is the line of its Suggestion, and the text holds the blurbs of
-   the week as they are, one paragraph each. */
+   the week as they are, one paragraph each. The block is new in version 2: it is null for a Topic with no card, and a
+   version 1 file has no block at all. */
 export const topicAnswerSchema = z.object({
   topic: leagueTopicSchema,
   fact: z.string(),
   stats: z.array(topicStatSchema),
   rows: z.array(topicRowSchema),
   text: z.array(z.string()),
+  block: topicBlockSchema.nullish(),
 });
 
 export const topicsFileSchema = z.object({
-  schema_version: z.literal(1),
+  schema_version: z.union([z.literal(1), z.literal(2)]),
   season: z.number(),
   week: z.number(),
   // The Answers of each team, keyed by roster id as text.
@@ -42,5 +59,6 @@ export const topicsFileSchema = z.object({
 export type LeagueTopic = z.infer<typeof leagueTopicSchema>;
 export type TopicStat = z.infer<typeof topicStatSchema>;
 export type TopicRow = z.infer<typeof topicRowSchema>;
+export type TopicBlock = z.infer<typeof topicBlockSchema>;
 export type TopicAnswer = z.infer<typeof topicAnswerSchema>;
 export type TopicsFile = z.infer<typeof topicsFileSchema>;

@@ -2,6 +2,7 @@
 The ask route of the front door: one Jev request per typed question, and the route table in code that reads its answers.
 The app mounts the router at /clients/<slug>/ behind the passphrase. A miss writes one entry in the miss log.
 """
+import dataclasses
 import logging
 import threading
 import time
@@ -28,6 +29,7 @@ from cornerstone_api.ask_wording import (
 from cornerstone_api.caps import Caps
 from cornerstone_api.chat_turns import Turn, Turns, with_turns
 from cornerstone_api.miss_log import MissLog
+from cornerstone_api.named_players import named_players
 from league.jev_port import Jev, JevError, JevResponse
 
 logger = logging.getLogger(__name__)
@@ -51,6 +53,10 @@ RouteKind = Literal["topic", "free", "miss", "refuse"]
 AskKind = Literal["topic", "free", "miss", "refuse", "cap"]
 # The team name of each roster of the league, by roster id. The app gives the live rosters of the client.
 Rosters = Callable[[], dict[int, str]]
+# The name of each rostered player by player id, for each roster of the league by roster id.
+RosterPlayers = Callable[[], dict[int, dict[str, str]]]
+# The Topic of the lineup of Your team. A typed start question about a player of another roster is not about it.
+START_SIT = "start_sit"
 
 
 @dataclass(frozen=True)
@@ -148,8 +154,8 @@ class FreeRoutes:
 
 @dataclass
 class Asker:
-    """The ask route of one client: its season, its Jev, its miss log, its rosters, its clock, its caps, and the free
-    routes it gave. Each client has its own Asker, so the free routes of one client never reach another."""
+    """The ask route of one client: its season, its Jev, its miss log, its rosters, its clock, its caps, the free
+    routes it gave, and the rostered players. Each client has its own Asker, so the free routes of one client never reach another."""
 
     season: int
     jev: Jev
@@ -158,6 +164,8 @@ class Asker:
     clock: Callable[[], datetime]
     caps: Caps
     free_routes: FreeRoutes = field(default_factory=FreeRoutes)
+    # The rostered players of the league. None reads no names, so a start question always stays with Start or sit.
+    roster_players: RosterPlayers | None = None
 
 
 def client_asker(request: Request) -> Asker:
@@ -182,6 +190,16 @@ class AskRequest(BaseModel):
     turns: Turns = Field(default_factory=list)
 
 
+def _names_other_rosters(asker: Asker, question: str, roster_id: int) -> bool:
+    """True when `question` names a player of a roster other than the roster of `roster_id`."""
+    if asker.roster_players is None:
+        return False
+    rosters = asker.roster_players()
+    own = rosters.get(roster_id, {})
+    others = {pid: name for other, players in rosters.items() if other != roster_id for pid, name in players.items()}
+    return bool(named_players(question, own, others).others)
+
+
 @router.post("/ask")
 def ask(body: AskRequest, asker: ClientAsker) -> dict:
     """The route of one typed question, with each Jev answer. A failed Jev request is a 503, never a "no"."""
@@ -194,6 +212,10 @@ def ask(body: AskRequest, asker: ClientAsker) -> dict:
     except JevError as error:
         logger.warning("The route of a question failed (%s)", type(error).__name__)
         raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
+    if route.kind == "topic" and route.topic == START_SIT and _names_other_rosters(asker, question, body.roster_id):
+        # Start or sit is about the lineup of Your team, so a question about a player of another roster goes to the
+        # free answer (AT-18).
+        route = dataclasses.replace(route, kind="free", topic=None, team=None, suggestion=None)
     if route.kind == "miss":
         asker.misses.write(question, body.roster_id, rosters[body.roster_id], route.closest, asker.clock())
     if route.kind == "free":

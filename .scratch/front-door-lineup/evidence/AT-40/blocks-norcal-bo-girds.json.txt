@@ -1,0 +1,653 @@
+$ jq '.teams["7"] | map({topic, block})' clients/norcal/published/2026/week-09/topics.json
+# Run at 2026-11-12T22:54:35Z UTC on 2adcc0c4, on topics.json version 2 rebuilt from the saved raw week 9 (output.txt).
+[
+  {
+    "topic": "week_recap",
+    "block": {
+      "kind": "recap",
+      "score": 155.38,
+      "place": 2,
+      "teams": 12,
+      "opponent": "kaiedmonds",
+      "opponent_score": 128.06,
+      "strip": [
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "score": 156.88,
+          "you": false
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "score": 155.38,
+          "you": true
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "score": 136.24,
+          "you": false
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "score": 128.06,
+          "you": false
+        },
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "score": 121.4,
+          "you": false
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "score": 117.46,
+          "you": false
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "score": 115.86,
+          "you": false
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "score": 110.44,
+          "you": false
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "score": 104.78,
+          "you": false
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "score": 91.2,
+          "you": false
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "score": 88.66,
+          "you": false
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "score": 83.1,
+          "you": false
+        }
+      ],
+      "median": null,
+      "top": {
+        "name": "Kenneth Walker III",
+        "position": "RB",
+        "points": 36.3,
+        "projection": 21.77
+      },
+      "sentence": "Luther Burden III got hurt late in this one and is now listed Questionable."
+    }
+  },
+  {
+    "topic": "last_matchup",
+    "block": {
+      "kind": "matchup",
+      "final": true,
+      "you": {
+        "roster_id": 7,
+        "name": "Bo Girds",
+        "score": 155.38
+      },
+      "them": {
+        "roster_id": 9,
+        "name": "kaiedmonds",
+        "score": 128.06
+      },
+      "odds": null,
+      "slots": [
+        {
+          "slot": "QB",
+          "you": {
+            "name": "Trevor Lawrence",
+            "position": "QB",
+            "nfl_team": "JAX",
+            "points": 15.58
+          },
+          "them": {
+            "name": "Caleb Williams",
+            "position": "QB",
+            "nfl_team": "CHI",
+            "points": 20.76
+          }
+        },
+        {
+          "slot": "RB",
+          "you": {
+            "name": "Kenneth Walker III",
+            "position": "RB",
+            "nfl_team": "KC",
+            "points": 36.3
+          },
+          "them": {
+            "name": "James Cook III",
+            "position": "RB",
+            "nfl_team": "BUF",
+            "points": 16.7
+          }
+        },
+        {
+          "slot": "RB",
+          "you": {
+            "name": "Austin Ekeler",
+            "position": "RB",
+            "nfl_team": "WAS",
+            "points": 5.4
+          },
+          "them": {
+            "name": "Chuba Hubbard",
+            "position": "RB",
+            "nfl_team": "CAR",
+            "points": 13.6
+          }
+        },
+        {
+          "slot": "WR",
+          "you": {
+            "name": "CeeDee Lamb",
+            "position": "WR",
+            "nfl_team": "DAL",
+            "points": 33.5
+          },
+          "them": {
+            "name": "Christian Watson",
+            "position": "WR",
+            "nfl_team": "GB",
+            "points": 30.1
+          }
+        },
+        {
+          "slot": "WR",
+          "you": {
+            "name": "Zay Flowers",
+            "position": "WR",
+            "nfl_team": "BAL",
+            "points": 5.3
+          },
+          "them": {
+            "name": "Justin Jefferson",
+            "position": "WR",
+            "nfl_team": "MIN",
+            "points": 8.8
+          }
+        },
+        {
+          "slot": "TE",
+          "you": {
+            "name": "Isaiah Likely",
+            "position": "TE",
+            "nfl_team": "NYG",
+            "points": 16.3
+          },
+          "them": {
+            "name": "George Kittle",
+            "position": "TE",
+            "nfl_team": "SF",
+            "points": 9.8
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Luther Burden III",
+            "position": "WR",
+            "nfl_team": "CHI",
+            "points": 20.7
+          },
+          "them": {
+            "name": "Jadarian Price",
+            "position": "RB",
+            "nfl_team": "SEA",
+            "points": 11.8
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Parker Washington",
+            "position": "WR",
+            "nfl_team": "JAX",
+            "points": 14.1
+          },
+          "them": {
+            "name": "Rashee Rice",
+            "position": "WR",
+            "nfl_team": "KC",
+            "points": 9.9
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Eli Raridon",
+            "position": "TE",
+            "nfl_team": "NE",
+            "points": 8.2
+          },
+          "them": {
+            "name": "Keenan Allen",
+            "position": "WR",
+            "nfl_team": "IND",
+            "points": 6.6
+          }
+        }
+      ]
+    }
+  },
+  {
+    "topic": "next_matchup",
+    "block": {
+      "kind": "matchup",
+      "final": false,
+      "you": {
+        "roster_id": 7,
+        "name": "Bo Girds",
+        "score": 129.18
+      },
+      "them": {
+        "roster_id": 10,
+        "name": "Davlionman",
+        "score": 123.6
+      },
+      "odds": null,
+      "slots": [
+        {
+          "slot": "QB",
+          "you": {
+            "name": "Trevor Lawrence",
+            "position": "QB",
+            "nfl_team": "JAX",
+            "points": 21.74
+          },
+          "them": {
+            "name": "C.J. Stroud",
+            "position": "QB",
+            "nfl_team": "HOU",
+            "points": 16.27
+          }
+        },
+        {
+          "slot": "RB",
+          "you": {
+            "name": "Kenneth Walker III",
+            "position": "RB",
+            "nfl_team": "KC",
+            "points": 21.04
+          },
+          "them": {
+            "name": "Jahmyr Gibbs",
+            "position": "RB",
+            "nfl_team": "DET",
+            "points": 24.65
+          }
+        },
+        {
+          "slot": "RB",
+          "you": {
+            "name": "Austin Ekeler",
+            "position": "RB",
+            "nfl_team": "WAS",
+            "points": 8.05
+          },
+          "them": {
+            "name": "Braelon Allen",
+            "position": "RB",
+            "nfl_team": "NYJ",
+            "points": 10.81
+          }
+        },
+        {
+          "slot": "WR",
+          "you": {
+            "name": "CeeDee Lamb",
+            "position": "WR",
+            "nfl_team": "DAL",
+            "points": 20.12
+          },
+          "them": {
+            "name": "Malik Nabers",
+            "position": "WR",
+            "nfl_team": "NYG",
+            "points": 16.85
+          }
+        },
+        {
+          "slot": "WR",
+          "you": {
+            "name": "Zay Flowers",
+            "position": "WR",
+            "nfl_team": "BAL",
+            "points": 16.25
+          },
+          "them": {
+            "name": "Drake London",
+            "position": "WR",
+            "nfl_team": "ATL",
+            "points": 16.44
+          }
+        },
+        {
+          "slot": "TE",
+          "you": {
+            "name": "Isaiah Likely",
+            "position": "TE",
+            "nfl_team": "NYG",
+            "points": 12.51
+          },
+          "them": {
+            "name": "Pat Freiermuth",
+            "position": "TE",
+            "nfl_team": "PIT",
+            "points": 10.88
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Parker Washington",
+            "position": "WR",
+            "nfl_team": "JAX",
+            "points": 15.31
+          },
+          "them": {
+            "name": "Quinshon Judkins",
+            "position": "RB",
+            "nfl_team": "CLE",
+            "points": 10.78
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Tyler Higbee",
+            "position": "TE",
+            "nfl_team": "LAR",
+            "points": 8.64
+          },
+          "them": {
+            "name": "Keon Coleman",
+            "position": "WR",
+            "nfl_team": "BUF",
+            "points": 8.83
+          }
+        },
+        {
+          "slot": "FLEX",
+          "you": {
+            "name": "Eli Raridon",
+            "position": "TE",
+            "nfl_team": "NE",
+            "points": 5.52
+          },
+          "them": {
+            "name": "DeMario Douglas",
+            "position": "WR",
+            "nfl_team": "NE",
+            "points": 8.09
+          }
+        }
+      ]
+    }
+  },
+  {
+    "topic": "power_rankings",
+    "block": {
+      "kind": "rank_movers",
+      "rows": [
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "rank": 1,
+          "move": 2,
+          "you": false
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "rank": 2,
+          "move": 5,
+          "you": false
+        },
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "rank": 3,
+          "move": -2,
+          "you": false
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "rank": 4,
+          "move": 1,
+          "you": false
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "rank": 5,
+          "move": 1,
+          "you": false
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "rank": 6,
+          "move": 4,
+          "you": true
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "rank": 7,
+          "move": -5,
+          "you": false
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "rank": 8,
+          "move": 0,
+          "you": false
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "rank": 9,
+          "move": -5,
+          "you": false
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "rank": 10,
+          "move": -1,
+          "you": false
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "rank": 11,
+          "move": 0,
+          "you": false
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "rank": 12,
+          "move": 0,
+          "you": false
+        }
+      ]
+    }
+  },
+  {
+    "topic": "playoff_race",
+    "block": {
+      "kind": "ladder",
+      "playoff_teams": 6,
+      "rows": [
+        {
+          "roster_id": 6,
+          "name": "Mitseeker5000",
+          "rank": 1,
+          "record": "6-3",
+          "odds": 92,
+          "you": false
+        },
+        {
+          "roster_id": 8,
+          "name": "Hock Tua 💦",
+          "rank": 2,
+          "record": "6-3",
+          "odds": 87,
+          "you": false
+        },
+        {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "rank": 3,
+          "record": "6-3",
+          "odds": 87,
+          "you": false
+        },
+        {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "rank": 4,
+          "record": "6-3",
+          "odds": 79,
+          "you": false
+        },
+        {
+          "roster_id": 11,
+          "name": "Breece Mode",
+          "rank": 5,
+          "record": "5-4",
+          "odds": 49,
+          "you": false
+        },
+        {
+          "roster_id": 9,
+          "name": "kaiedmonds",
+          "rank": 6,
+          "record": "5-4",
+          "odds": 68,
+          "you": false
+        },
+        {
+          "roster_id": 5,
+          "name": "Skol Daddy",
+          "rank": 7,
+          "record": "4-5",
+          "odds": 46,
+          "you": false
+        },
+        {
+          "roster_id": 7,
+          "name": "Bo Girds",
+          "rank": 8,
+          "record": "4-5",
+          "odds": 46,
+          "you": true
+        },
+        {
+          "roster_id": 3,
+          "name": "BobBuckstein",
+          "rank": 9,
+          "record": "4-5",
+          "odds": 40,
+          "you": false
+        },
+        {
+          "roster_id": 2,
+          "name": "VarsityBlue2",
+          "rank": 10,
+          "record": "3-6",
+          "odds": 3,
+          "you": false
+        },
+        {
+          "roster_id": 4,
+          "name": "The Mean Machine",
+          "rank": 11,
+          "record": "3-6",
+          "odds": 2,
+          "you": false
+        },
+        {
+          "roster_id": 12,
+          "name": "The Dart Side",
+          "rank": 12,
+          "record": "2-7",
+          "odds": 1,
+          "you": false
+        }
+      ]
+    }
+  },
+  {
+    "topic": "your_season",
+    "block": {
+      "kind": "schedule",
+      "playoff_teams": 6,
+      "teams": 12,
+      "rows": [
+        {
+          "week": 10,
+          "roster_id": 10,
+          "opponent": "Davlionman",
+          "rank": 4,
+          "record": "6-3"
+        },
+        {
+          "week": 11,
+          "roster_id": 4,
+          "opponent": "The Mean Machine",
+          "rank": 11,
+          "record": "3-6"
+        },
+        {
+          "week": 12,
+          "roster_id": 5,
+          "opponent": "Skol Daddy",
+          "rank": 7,
+          "record": "4-5"
+        },
+        {
+          "week": 13,
+          "roster_id": 1,
+          "opponent": "puurdygood",
+          "rank": 3,
+          "record": "6-3"
+        },
+        {
+          "week": 14,
+          "roster_id": 12,
+          "opponent": "The Dart Side",
+          "rank": 12,
+          "record": "2-7"
+        }
+      ]
+    }
+  },
+  {
+    "topic": "leaders_trades",
+    "block": null
+  }
+]

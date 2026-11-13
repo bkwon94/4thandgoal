@@ -1,0 +1,54 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/ask/free -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"question":"What moves happened in week 9?","roster_id":4,"week":10}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-13T02:13:02Z UTC. API: make -C apps/api api-evidence at 83d4afeb, ask folder ask-r3-K2.
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_011VYCsu6J5BPoqVSWsMNYtg","toolName":"moves_feed"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_011VYCsu6J5BPoqVSWsMNYtg","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_011VYCsu6J5BPoqVSWsMNYtg","inputTextDelta":"{\"week\""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_011VYCsu6J5BPoqVSWsMNYtg","inputTextDelta":": 9}"}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_011VYCsu6J5BPoqVSWsMNYtg","toolName":"moves_feed","input":{"week":9}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_011VYCsu6J5BPoqVSWsMNYtg","output":{"week":9,"live_week":false,"what_each_field_means":{"week":"The fantasy week of the moves. The live week is the week now in play, which \"this week\" means.","moves_per_day":"The count of the moves on each day of the week, oldest day first, in the time zone of the league.","moves":"Each move of the week, newest first. `kind` is \"trade\", \"waiver\" for a waiver claim with its FAAB `bid`, or \"free_agent\" for a free agent add or a drop with no claim. A trade gives each team in `sides` with the players and the picks that it `got`. Another move gives its `team`, the players it `added`, and the players it `dropped`."},"moves_per_day":[{"day":"Wed Nov 4","moves":9},{"day":"Thu Nov 5","moves":0},{"day":"Fri Nov 6","moves":4},{"day":"Sat Nov 7","moves":2},{"day":"Sun Nov 8","moves":2},{"day":"Mon Nov 9","moves":0},{"day":"Tue Nov 10","moves":4}],"moves":[{"kind":"free_agent","day":"Tue Nov 10","team":"Puka Deez...","added":[],"dropped":["Michael Wilson"]},{"kind":"free_agent","day":"Tue Nov 10","team":"All You Need Is Love","added":[],"dropped":["Darius Cooper"]},{"kind":"free_agent","day":"Tue Nov 10","team":"behold the lamb","added":[],"dropped":["Elijah Mitchell"]},{"kind":"free_agent","day":"Tue Nov 10","team":"The Blue Tent","added":[],"dropped":["Detroit Lions"]},{"kind":"free_agent","day":"Sun Nov 8","team":"behold the lamb","added":[],"dropped":["Elijah Mitchell"]},{"kind":"trade","day":"Sun Nov 8","sides":[{"team":"Puka Deez...","got":["Emeka Egbuka","Josh Allen","Puka Nacua"]},{"team":"behold the lamb","got":["Jayden Daniels","Nico Collins","Javonte Williams","Drake London"]}]},{"kind":"free_agent","day":"Sat Nov 7","team":"All You Need Is Love","added":["Darius Cooper"],"dropped":[]},{"kind":"free_agent","day":"Sat Nov 7","team":"All You Need Is Love","added":[],"dropped":["Kendre Miller"]},{"kind":"free_agent","day":"Fri Nov 6","team":"NFC Least","added":[],"dropped":["Tyjae Spears"]},{"kind":"free_agent","day":"Fri Nov 6","team":"Return of T Mac","added":["DJ Giddens"],"dropped":[]},{"kind":"trade","day":"Fri Nov 6","sides":[{"team":"NFC Least","got":["Tetairoa McMillan","Makai Lemon","Seth McGowan","Chase Brown"]},{"team":"Return of T Mac","got":["Rome Odunze","CeeDee Lamb","Jordan Mason"]}]},{"kind":"free_agent","day":"Fri Nov 6","team":"Return of T Mac","added":["DeMario Douglas"],"dropped":["Eli Raridon"]},{"kind":"free_agent","day":"Wed Nov 4","team":"To Infinity and Bijan","added":["New York Giants"],"dropped":["Tampa Bay Buccaneers"]},{"kind":"free_agent","day":"Wed Nov 4","team":"Teehee","added":["Chicago Bears"],"dropped":["New England Patriots"]},{"kind":"free_agent","day":"Wed Nov 4","team":"Unsolicited Dak Picks","added":["New Orleans Saints"],"dropped":["Washington Commanders"]},{"kind":"free_agent","day":"Wed Nov 4","team":"Return of T Mac","added":["Eli Raridon"],"dropped":[]},{"kind":"free_agent","day":"Wed Nov 4","team":"Return of T Mac","added":["Alec Pierce"],"dropped":["Greg Dulcich"]},{"kind":"free_agent","day":"Wed Nov 4","team":"Return of T Mac","added":["Greg Dulcich"],"dropped":[]},{"kind":"free_agent","day":"Wed Nov 4","team":"All You Need Is Love","added":["Kendre Miller"],"dropped":[]},{"kind":"free_agent","day":"Wed Nov 4","team":"behold the lamb","added":["Austin Ekeler"],"dropped":["Dameon Pierce"]},{"kind":"free_agent","day":"Wed Nov 4","team":"Maye d'force B with U","added":["Tyler Shough"],"dropped":[]}],"block_id":"moves_feed_week_9"}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"eae22a16-2e0b-4bb3-9321-4d367b9e2bc0"}
+
+data: {"type":"text-delta","delta":"Week 9 had 21","id":"eae22a16-2e0b-4bb3-9321-4d367b9e2bc0"}
+
+data: {"type":"text-delta","delta":" moves, including","id":"eae22a16-2e0b-4bb3-9321-4d367b9e2bc0"}
+
+data: {"type":"text-delta","delta":" two trades. Here is","id":"eae22a16-2e0b-4bb3-9321-4d367b9e2bc0"}
+
+data: {"type":"text-delta","delta":" the full fe","id":"eae22a16-2e0b-4bb3-9321-4d367b9e2bc0"}
+
+data: {"type":"text-delta","delta":"ed.","id":"eae22a16-2e0b-4bb3-9321-4d367b9e2bc0"}
+
+data: {"type":"text-end","id":"eae22a16-2e0b-4bb3-9321-4d367b9e2bc0"}
+
+data: {"type":"data-block","id":"block","data":{"kind":"feed","title":"Week 9 moves","days":[{"day":"Wed Nov 4","moves":9},{"day":"Thu Nov 5","moves":0},{"day":"Fri Nov 6","moves":4},{"day":"Sat Nov 7","moves":2},{"day":"Sun Nov 8","moves":2},{"day":"Mon Nov 9","moves":0},{"day":"Tue Nov 10","moves":4}],"rows":[{"kind":"free_agent","day":"Tue Nov 10","team":"Puka Deez...","added":[],"dropped":["Michael Wilson"]},{"kind":"free_agent","day":"Tue Nov 10","team":"All You Need Is Love","added":[],"dropped":["Darius Cooper"]},{"kind":"free_agent","day":"Tue Nov 10","team":"behold the lamb","added":[],"dropped":["Elijah Mitchell"]},{"kind":"free_agent","day":"Tue Nov 10","team":"The Blue Tent","added":[],"dropped":["Detroit Lions"]},{"kind":"free_agent","day":"Sun Nov 8","team":"behold the lamb","added":[],"dropped":["Elijah Mitchell"]},{"kind":"trade","day":"Sun Nov 8","sides":[{"team":"Puka Deez...","got":["Emeka Egbuka","Josh Allen","Puka Nacua"]},{"team":"behold the lamb","got":["Jayden Daniels","Nico Collins","Javonte Williams","Drake London"]}]},{"kind":"free_agent","day":"Sat Nov 7","team":"All You Need Is Love","added":["Darius Cooper"],"dropped":[]},{"kind":"free_agent","day":"Sat Nov 7","team":"All You Need Is Love","added":[],"dropped":["Kendre Miller"]},{"kind":"free_agent","day":"Fri Nov 6","team":"NFC Least","added":[],"dropped":["Tyjae Spears"]},{"kind":"free_agent","day":"Fri Nov 6","team":"Return of T Mac","added":["DJ Giddens"],"dropped":[]},{"kind":"trade","day":"Fri Nov 6","sides":[{"team":"NFC Least","got":["Tetairoa McMillan","Makai Lemon","Seth McGowan","Chase Brown"]},{"team":"Return of T Mac","got":["Rome Odunze","CeeDee Lamb","Jordan Mason"]}]},{"kind":"free_agent","day":"Fri Nov 6","team":"Return of T Mac","added":["DeMario Douglas"],"dropped":["Eli Raridon"]},{"kind":"free_agent","day":"Wed Nov 4","team":"To Infinity and Bijan","added":["New York Giants"],"dropped":["Tampa Bay Buccaneers"]},{"kind":"free_agent","day":"Wed Nov 4","team":"Teehee","added":["Chicago Bears"],"dropped":["New England Patriots"]},{"kind":"free_agent","day":"Wed Nov 4","team":"Unsolicited Dak Picks","added":["New Orleans Saints"],"dropped":["Washington Commanders"]},{"kind":"free_agent","day":"Wed Nov 4","team":"Return of T Mac","added":["Eli Raridon"],"dropped":[]},{"kind":"free_agent","day":"Wed Nov 4","team":"Return of T Mac","added":["Alec Pierce"],"dropped":["Greg Dulcich"]},{"kind":"free_agent","day":"Wed Nov 4","team":"Return of T Mac","added":["Greg Dulcich"],"dropped":[]},{"kind":"free_agent","day":"Wed Nov 4","team":"All You Need Is Love","added":["Kendre Miller"],"dropped":[]},{"kind":"free_agent","day":"Wed Nov 4","team":"behold the lamb","added":["Austin Ekeler"],"dropped":["Dameon Pierce"]}],"more":1}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-13T02:13:05Z UTC.

@@ -34,7 +34,7 @@ from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import ask as ask_routes
 from cornerstone_api import free_answer as free_routes
-from cornerstone_api import personal_topics, suggestions, trade_topics
+from cornerstone_api import next_matchup, personal_topics, suggestions, trade_topics
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.caps import Caps
@@ -198,13 +198,26 @@ def _rosters(client: Client, served: analyzer_routes.Served) -> Callable[[], dic
     return rosters
 
 
+def _roster_players(client: Client, served: analyzer_routes.Served) -> Callable[[], dict[int, dict[str, str]]]:
+    """The name of each rostered player of `client` by player id, per roster, from the teams route of the analyzer, so
+    it shares the cache of the live Sleeper rosters."""
+    season = client.values.latest_season
+
+    def players() -> dict[int, dict[str, str]]:
+        return {team["roster_id"]: {player["player_id"]: player["name"] for player in team["players"]}
+                for team in analyzer_routes.teams(season, served)["teams"]}
+
+    return players
+
+
 def _asker(settings: Settings, client: Client, served: analyzer_routes.Served, jev: Jev) -> ask_routes.Asker:
     """The ask route of one client. Its miss log is <slug>.sqlite and its caps are <slug>.caps.sqlite in the ask folder,
     on the volume on Fly, so each league keeps its own budget."""
     folder = ask_dir(settings)
     return ask_routes.Asker(season=client.values.latest_season, jev=jev, misses=MissLog(folder / f"{client.slug}.sqlite"),
                             rosters=_rosters(client, served), clock=lambda: datetime.now(client.tz),
-                            caps=Caps(folder / f"{client.slug}.caps.sqlite", client.slug))
+                            caps=Caps(folder / f"{client.slug}.caps.sqlite", client.slug),
+                            roster_players=_roster_players(client, served))
 
 
 def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) -> eggs_routes.Hunt:
@@ -298,6 +311,7 @@ def create_app(
     app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(free_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(personal_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
+    app.include_router(next_matchup.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     # The Suggestions and the key check are reads that cost no Claude call, so they check the passphrase and no limit.
     app.include_router(suggestions.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_read_guard)])
 

@@ -180,6 +180,30 @@ describe("the ask box of Lil Fridge", () => {
     expect(localStorage.getItem("cpc.passphrase")).toBeNull();
   });
 
+  /* The passphrase field opens the keyboard as the ask box does, so the foot moves above the keyboard for it (AT-51). */
+  it("marks the passphrase field as a keyboard field while it has the focus (AT-51)", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    const field = within(await screen.findByRole("form", { name: "League passphrase" })).getByLabelText("League passphrase");
+    act(() => field.blur());
+    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(false);
+    act(() => field.focus());
+    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(true);
+    act(() => field.blur());
+    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(false);
+  });
+
+  /* jsdom has no layout, so the test reads the scroll margin class. The WebKit run of the floor checks the place above
+     the foot (e2e/front-door-passphrase.spec.ts). */
+  it("keeps the passphrase box clear of the foot with a scroll margin as tall as the measured foot (AT-51)", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    const form = await screen.findByRole("form", { name: "League passphrase" });
+    expect(form.className).toContain("scroll-mb-[calc(var(--spacing-door-foot)+var(--door-dock,0px)");
+  });
+
   it("shows a retry line after a failed route, never a miss, and asks again on a tap", async () => {
     answerWith(null, 503);
     answerWith(route({ route: "topic", topic: "next_matchup" }));

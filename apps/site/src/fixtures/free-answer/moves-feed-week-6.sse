@@ -1,0 +1,68 @@
+data: {"type":"start"}
+
+data: {"type":"start-step"}
+
+data: {"type":"tool-input-start","toolCallId":"toolu_01JFsUgW5UoQN234mqPMDgST","toolName":"moves_feed"}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01JFsUgW5UoQN234mqPMDgST","inputTextDelta":""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01JFsUgW5UoQN234mqPMDgST","inputTextDelta":"{\"week\""}
+
+data: {"type":"tool-input-delta","toolCallId":"toolu_01JFsUgW5UoQN234mqPMDgST","inputTextDelta":": 6}"}
+
+data: {"type":"tool-input-available","toolCallId":"toolu_01JFsUgW5UoQN234mqPMDgST","toolName":"moves_feed","input":{"week":6}}
+
+data: {"type":"tool-output-available","toolCallId":"toolu_01JFsUgW5UoQN234mqPMDgST","output":{"week":6,"live_week":false,"what_each_field_means":{"week":"The fantasy week of the moves. The live week is the week now in play, which \"this week\" means.","moves_per_day":"The count of the moves on each day of the week, oldest day first, in the time zone of the league.","moves":"Each move of the week, newest first. `kind` is \"trade\", \"waiver\" for a waiver claim with its FAAB `bid`, or \"free_agent\" for a free agent add or a drop with no claim. A trade gives each team in `sides` with the players and the picks that it `got`. Another move gives its `team`, the players it `added`, and the players it `dropped`."},"moves_per_day":[{"day":"Wed Oct 14","moves":17},{"day":"Thu Oct 15","moves":2},{"day":"Fri Oct 16","moves":9},{"day":"Sat Oct 17","moves":4},{"day":"Sun Oct 18","moves":1},{"day":"Mon Oct 19","moves":0},{"day":"Tue Oct 20","moves":9},{"day":"Wed Oct 21","moves":14}],"moves":[{"kind":"waiver","day":"Wed Oct 21","team":"Bo Girds","added":["Terrance Ferguson"],"dropped":["Pat Freiermuth"],"bid":0},{"kind":"waiver","day":"Wed Oct 21","team":"Return of T Mac","added":["Seth McGowan"],"dropped":[],"bid":0},{"kind":"waiver","day":"Wed Oct 21","team":"Return of T Mac","added":["T.J. Hockenson"],"dropped":[],"bid":0},{"kind":"waiver","day":"Wed Oct 21","team":"To Infinity and Bijan","added":["Kyle Pitts Sr."],"dropped":["Kenyon Sadiq"],"bid":8},{"kind":"waiver","day":"Wed Oct 21","team":"Lil Fridge","added":["DeMario Douglas"],"dropped":["Dontayvion Wicks"],"bid":17},{"kind":"waiver","day":"Wed Oct 21","team":"NFC Least","added":["Omar Cooper Jr."],"dropped":["Rico Dowdle"],"bid":28},{"kind":"waiver","day":"Wed Oct 21","team":"NFC Least","added":["Tyrone Tracy Jr."],"dropped":["MarShawn Lloyd"],"bid":13},{"kind":"waiver","day":"Wed Oct 21","team":"Bo Girds","added":["Houston Texans"],"dropped":[],"bid":5},{"kind":"waiver","day":"Wed Oct 21","team":"Lil Fridge","added":["Tank Dell"],"dropped":[],"bid":7},{"kind":"waiver","day":"Wed Oct 21","team":"Maye d'force B with U","added":["Christian Kirk"],"dropped":["Jaleel McLaughlin"],"bid":1},{"kind":"waiver","day":"Wed Oct 21","team":"Unsolicited Dak Picks","added":["C.J. Stroud"],"dropped":[],"bid":1},{"kind":"waiver","day":"Wed Oct 21","team":"All You Need Is Love","added":["Minnesota Vikings"],"dropped":[],"bid":5},{"kind":"waiver","day":"Wed Oct 21","team":"Maye d'force B with U","added":["Brian Thomas Jr."],"dropped":["Tyler Allgeier"],"bid":0},{"kind":"waiver","day":"Wed Oct 21","team":"Teehee","added":["Bo Nix"],"dropped":["Tyjae Spears"],"bid":5},{"kind":"free_agent","day":"Tue Oct 20","team":"To Infinity and Bijan","added":[],"dropped":["Efton Chism III"]},{"kind":"trade","day":"Tue Oct 20","sides":[{"team":"To Infinity and Bijan","got":["Braelon Allen","Malik Nabers","Jared Goff","Breece Hall"]},{"team":"Return of T Mac","got":["Marvin Harrison Jr.","Brian Robinson Jr.","Bijan Robinson"]}]},{"kind":"free_agent","day":"Tue Oct 20","team":"NFC Least","added":[],"dropped":["Jalen Hurts"]},{"kind":"free_agent","day":"Tue Oct 20","team":"Return of T Mac","added":[],"dropped":["Los Angeles Rams"]},{"kind":"free_agent","day":"Tue Oct 20","team":"Bo Girds","added":[],"dropped":["Indianapolis Colts"]},{"kind":"free_agent","day":"Tue Oct 20","team":"Bo Girds","added":[],"dropped":["Cyrus Allen"]},{"kind":"free_agent","day":"Tue Oct 20","team":"Unsolicited Dak Picks","added":[],"dropped":["Sam Darnold"]},{"kind":"free_agent","day":"Tue Oct 20","team":"All You Need Is Love","added":[],"dropped":["Aaron Rodgers"]},{"kind":"free_agent","day":"Tue Oct 20","team":"All You Need Is Love","added":[],"dropped":["Jacksonville Jaguars"]},{"kind":"free_agent","day":"Sun Oct 18","team":"behold the lamb","added":["Cleveland Browns"],"dropped":["Houston Texans"]},{"kind":"free_agent","day":"Sat Oct 17","team":"NFC Least","added":["Hunter Henry"],"dropped":[]},{"kind":"free_agent","day":"Sat Oct 17","team":"NFC Least","added":[],"dropped":["Tank Dell"]},{"kind":"free_agent","day":"Sat Oct 17","team":"Unsolicited Dak Picks","added":[],"dropped":["Caleb Douglas"]},{"kind":"free_agent","day":"Sat Oct 17","team":"Lil Fridge","added":["Khalil Shakir"],"dropped":["T.J. Hockenson"]},{"kind":"trade","day":"Fri Oct 16","sides":[{"team":"Unsolicited Dak Picks","got":["Devaughn Vele","Josh Jacobs"]},{"team":"Teehee","got":["Bhayshul Tuten","Garrett Wilson"]}]},{"kind":"free_agent","day":"Fri Oct 16","team":"Bo Girds","added":["Cyrus Allen"],"dropped":["Brandin Cooks"]},{"kind":"free_agent","day":"Fri Oct 16","team":"To Infinity and Bijan","added":["Ryan Flournoy"],"dropped":["Najee Harris"]},{"kind":"free_agent","day":"Fri Oct 16","team":"To Infinity and Bijan","added":[],"dropped":["Joe Mixon"]},{"kind":"free_agent","day":"Fri Oct 16","team":"Bo Girds","added":["Brandin Cooks"],"dropped":[]},{"kind":"trade","day":"Fri Oct 16","sides":[{"team":"Bo Girds","got":["Lamar Jackson"]},{"team":"To Infinity and Bijan","got":["Patrick Mahomes","Brian Robinson Jr."]}]},{"kind":"waiver","day":"Fri Oct 16","team":"Unsolicited Dak Picks","added":["Kimani Vidal"],"dropped":[],"bid":1},{"kind":"waiver","day":"Fri Oct 16","team":"Return of T Mac","added":["TreVeyon Henderson"],"dropped":["Seth McGowan"],"bid":2},{"kind":"waiver","day":"Fri Oct 16","team":"behold the lamb","added":["Houston Texans"],"dropped":["Washington Commanders"],"bid":0},{"kind":"free_agent","day":"Thu Oct 15","team":"To Infinity and Bijan","added":["Najee Harris"],"dropped":[]},{"kind":"waiver","day":"Thu Oct 15","team":"NFC Least","added":["Kirk Cousins"],"dropped":["Najee Harris"],"bid":0},{"kind":"free_agent","day":"Wed Oct 14","team":"NFC Least","added":["Najee Harris"],"dropped":["C.J. Stroud"]},{"kind":"free_agent","day":"Wed Oct 14","team":"To Infinity and Bijan","added":[],"dropped":["Michael Mayer"]},{"kind":"trade","day":"Wed Oct 14","sides":[{"team":"NFC Least","got":["Cam Skattebo","Nico Collins"]},{"team":"To Infinity and Bijan","got":["Ladd McConkey","Rhamondre Stevenson"]}]},{"kind":"free_agent","day":"Wed Oct 14","team":"To Infinity and Bijan","added":["Darius Cooper"],"dropped":[]},{"kind":"trade","day":"Wed Oct 14","sides":[{"team":"To Infinity and Bijan","got":["Kenyon Sadiq"]},{"team":"Teehee","got":["Dalton Kincaid"]}]},{"kind":"free_agent","day":"Wed Oct 14","team":"Return of T Mac","added":["Seth McGowan"],"dropped":[]},{"kind":"free_agent","day":"Wed Oct 14","team":"To Infinity and Bijan","added":["Carolina Panthers"],"dropped":["Minnesota Vikings"]},{"kind":"trade","day":"Wed Oct 14","sides":[{"team":"NFC Least","got":["Jacory Croskey-Merritt","David Montgomery"]},{"team":"Teehee","got":["Omarion Hampton","Tony Pollard"]}]},{"kind":"free_agent","day":"Wed Oct 14","team":"Return of T Mac","added":["Dylan Sampson"],"dropped":["Ryan Flournoy"]},{"kind":"free_agent","day":"Wed Oct 14","team":"Return of T Mac","added":["Ryan Flournoy"],"dropped":["Adonai Mitchell"]},{"kind":"free_agent","day":"Wed Oct 14","team":"Bo Girds","added":["Pat Freiermuth"],"dropped":[]},{"kind":"free_agent","day":"Wed Oct 14","team":"Bo Girds","added":["Ja'Kobi Lane"],"dropped":["Brandin Cooks"]},{"kind":"free_agent","day":"Wed Oct 14","team":"Return of T Mac","added":["Adonai Mitchell"],"dropped":["Chris Godwin Jr."]},{"kind":"free_agent","day":"Wed Oct 14","team":"Maye d'force B with U","added":["Jaleel McLaughlin"],"dropped":["Kimani Vidal"]},{"kind":"free_agent","day":"Wed Oct 14","team":"All You Need Is Love","added":["Aaron Rodgers"],"dropped":["Kayshon Boutte"]},{"kind":"free_agent","day":"Wed Oct 14","team":"The Blue Tent","added":["Tampa Bay Buccaneers"],"dropped":["Cleveland Browns"]},{"kind":"free_agent","day":"Wed Oct 14","team":"Bo Girds","added":["Indianapolis Colts"],"dropped":["Cincinnati Bengals"]}],"block_id":"moves_feed_week_6"}}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":"Week 6 had 56","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" moves between","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" Oct 14 and","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" Oct 21. They","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" included ","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":"5 trades, a","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" run","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" of waiver claims with","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" FAAB bids, and","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" many","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" free agent adds and drops","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":". The full","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":" list is below","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-delta","delta":".","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"text-end","id":"b984f752-6685-4980-b3f1-60a41b24369e"}
+
+data: {"type":"data-block","id":"block","data":{"kind":"feed","title":"Week 6 moves","days":[{"day":"Wed Oct 14","moves":17},{"day":"Thu Oct 15","moves":2},{"day":"Fri Oct 16","moves":9},{"day":"Sat Oct 17","moves":4},{"day":"Sun Oct 18","moves":1},{"day":"Mon Oct 19","moves":0},{"day":"Tue Oct 20","moves":9},{"day":"Wed Oct 21","moves":14}],"rows":[{"kind":"waiver","day":"Wed Oct 21","team":"Bo Girds","added":["Terrance Ferguson"],"dropped":["Pat Freiermuth"],"bid":0},{"kind":"waiver","day":"Wed Oct 21","team":"Return of T Mac","added":["Seth McGowan"],"dropped":[],"bid":0},{"kind":"waiver","day":"Wed Oct 21","team":"Return of T Mac","added":["T.J. Hockenson"],"dropped":[],"bid":0},{"kind":"waiver","day":"Wed Oct 21","team":"To Infinity and Bijan","added":["Kyle Pitts Sr."],"dropped":["Kenyon Sadiq"],"bid":8},{"kind":"waiver","day":"Wed Oct 21","team":"Lil Fridge","added":["DeMario Douglas"],"dropped":["Dontayvion Wicks"],"bid":17},{"kind":"waiver","day":"Wed Oct 21","team":"NFC Least","added":["Omar Cooper Jr."],"dropped":["Rico Dowdle"],"bid":28},{"kind":"waiver","day":"Wed Oct 21","team":"NFC Least","added":["Tyrone Tracy Jr."],"dropped":["MarShawn Lloyd"],"bid":13},{"kind":"waiver","day":"Wed Oct 21","team":"Bo Girds","added":["Houston Texans"],"dropped":[],"bid":5},{"kind":"waiver","day":"Wed Oct 21","team":"Lil Fridge","added":["Tank Dell"],"dropped":[],"bid":7},{"kind":"waiver","day":"Wed Oct 21","team":"Maye d'force B with U","added":["Christian Kirk"],"dropped":["Jaleel McLaughlin"],"bid":1},{"kind":"waiver","day":"Wed Oct 21","team":"Unsolicited Dak Picks","added":["C.J. Stroud"],"dropped":[],"bid":1},{"kind":"waiver","day":"Wed Oct 21","team":"All You Need Is Love","added":["Minnesota Vikings"],"dropped":[],"bid":5},{"kind":"waiver","day":"Wed Oct 21","team":"Maye d'force B with U","added":["Brian Thomas Jr."],"dropped":["Tyler Allgeier"],"bid":0},{"kind":"waiver","day":"Wed Oct 21","team":"Teehee","added":["Bo Nix"],"dropped":["Tyjae Spears"],"bid":5},{"kind":"free_agent","day":"Tue Oct 20","team":"To Infinity and Bijan","added":[],"dropped":["Efton Chism III"]},{"kind":"trade","day":"Tue Oct 20","sides":[{"team":"To Infinity and Bijan","got":["Braelon Allen","Malik Nabers","Jared Goff","Breece Hall"]},{"team":"Return of T Mac","got":["Marvin Harrison Jr.","Brian Robinson Jr.","Bijan Robinson"]}]},{"kind":"free_agent","day":"Tue Oct 20","team":"NFC Least","added":[],"dropped":["Jalen Hurts"]},{"kind":"free_agent","day":"Tue Oct 20","team":"Return of T Mac","added":[],"dropped":["Los Angeles Rams"]},{"kind":"free_agent","day":"Tue Oct 20","team":"Bo Girds","added":[],"dropped":["Indianapolis Colts"]},{"kind":"free_agent","day":"Tue Oct 20","team":"Bo Girds","added":[],"dropped":["Cyrus Allen"]}],"more":36}}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

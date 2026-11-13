@@ -1,0 +1,62 @@
+$ curl -sN -X POST http://localhost:8080/clients/cpc/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"topic":"stack_up","roster_id":6}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T21:52:39Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-A.
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"rows","topic":"stack_up","team":6,"as_of":"as of today","fact":"Grade A, QB ranks 11th of 12","stats":[{"label":"Grade","value":"A"},{"label":"Best spot","value":"RB 2nd"},{"label":"Weakest spot","value":"QB 11th"}],"rows":[{"label":"Projection Ahead","value":"5th of 12","note":null,"roster_id":null,"you":false},{"label":"Season Production","value":"2nd of 12","note":null,"roster_id":null,"you":false},{"label":"Trade Value","value":"4th of 12","note":null,"roster_id":null,"you":false},{"label":"Depth And Holes","value":"6th of 12","note":null,"roster_id":null,"you":false}],"block":{"kind":"slot_ranks","grade":"A","read":"Strong at RB. Soft at QB.","teams":12,"rows":[{"position":"QB","rank":11,"label":"11th of 12"},{"position":"RB","rank":2,"label":"2nd of 12"},{"position":"WR","rank":5,"label":"5th of 12"},{"position":"TE","rank":5,"label":"5th of 12"}]}}}
+
+data: {"type":"data-key","data":{"key":"f3fb8293f533c5fe9ed1cb14d411a0b2c53293c67c55b80ef61f3b386c867ce3"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":"As","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" of today, your team has an A","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" grade. Your","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" best part is Season Production,","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" ","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":"ranked 2n","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":"d in","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" the league, and your we","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":"akest part is","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" Depth And Holes,","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" ","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":"ranked 6th. Your","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" best position is RB,","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" ranked 2nd,","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" and your weakest is","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" QB, ranked 11","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":"th of","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-delta","delta":" 12.","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"text-end","id":"c05e2e5d-13dc-4e92-8318-a88467a795ba"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T21:52:41Z UTC.

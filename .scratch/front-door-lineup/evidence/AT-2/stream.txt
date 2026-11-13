@@ -1,0 +1,22 @@
+$ curl -sN -X POST http://localhost:8080/clients/norcal/personal -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -H 'Origin: http://127.0.0.1:4173' -d '{"topic":"start_sit","roster_id":7}'
+# Live week from Sleeper state/nfl: 2026 week 10. Request at 2026-11-12T22:28:35Z UTC. API: make -C apps/api api-evidence at 2adcc0c4, ask folder ask-r3-E.
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":7,"week":10,"total":134.0,"swap_total":134.0,"rows":[{"slot":"QB","player":"Trevor Lawrence","player_id":"7523","position":"QB","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":24.6,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Kenneth Walker III","player_id":"8151","position":"RB","nfl_team":"KC","opponent":"ATL","kickoff":1794765600000,"projection":21.4,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Austin Ekeler","player_id":"4663","position":"RB","nfl_team":"WAS","opponent":"NYG","kickoff":1794532500000,"projection":8.5,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"CeeDee Lamb","player_id":"6786","position":"WR","nfl_team":"DAL","opponent":"SF","kickoff":1794777900000,"projection":20.2,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Zay Flowers","player_id":"9997","position":"WR","nfl_team":"BAL","opponent":"LAC","kickoff":1794878100000,"projection":16.4,"locked":false,"risk":null,"swap":null},{"slot":"TE","player":"Isaiah Likely","player_id":"8131","position":"TE","nfl_team":"NYG","opponent":"WAS","kickoff":1794532500000,"projection":12.3,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Parker Washington","player_id":"9487","position":"WR","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":14.7,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Tyler Higbee","player_id":"3271","position":"TE","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":8.6,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Kaleb Johnson","player_id":"12504","position":"RB","nfl_team":"GB","opponent":"MIN","kickoff":1794765600000,"projection":7.3,"locked":false,"risk":null,"swap":null}],"cannot_play":[{"name":"R. Wilson","status":"IR","body_part":"Finger"},{"name":"T. Ferguson","status":"IR","body_part":"Ankle"},{"name":"L. Burden III","status":"Bye","body_part":"Undisclosed"},{"name":"B. Aiyuk","status":"DNR","body_part":"Knee - ACL + MCL"},{"name":"J. Dobbins","status":"Bye","body_part":null}]}}
+
+data: {"type":"data-key","data":{"key":"d0bc2397059387944886ffdb005c54142821e7825a1e5da7129abbc8edf5872a"}}
+
+data: {"type":"text-start","id":"kept"}
+
+data: {"type":"text-delta","delta":"Your top starters this week are Trevor Lawrence at QB (24.6 projected points against a Tennessee defense that is 26th best of 32 against QBs), Kenneth Walker III at RB (21.4) and CeeDee Lamb at WR (20.2). Zay Flowers (16.4) and Parker Washington (14.7 at FLEX, facing the Titans, the worst defense against WRs) round out the core, and Isaiah Likely (12.3) starts at TE.\n\nFive players cannot play. Roman Wilson and Terrance Ferguson are on IR, Brandon Aiyuk is DNR with a knee injury, and Luther Burden III and J.K. Dobbins are on a bye.","id":"kept"}
+
+data: {"type":"text-end","id":"kept"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+
+
+# Response ended at 2026-11-12T22:28:35Z UTC.

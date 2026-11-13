@@ -1,0 +1,82 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"comparison","topic":"start_sit","team":6,"week":10,"players":[{"name":"M. Golden","player_id":"12501","position":"WR","nfl_team":"GB","opponent":"MIN","kickoff":1794765600000,"projection":12.9,"status":null},{"name":"K. Mumpfield","player_id":"12718","position":"WR","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":6.8,"status":null}],"facts":[{"key":"projection","label":"Projection","values":[12.9,6.8],"shown":["12.9","6.8"],"winner":0,"cited":false},{"key":"defense","label":"Defense allows","values":[25.3,32.2],"shown":["25.3","32.2"],"winner":1,"cited":false},{"key":"team_points","label":"Team points","values":[22.5,24.5],"shown":["22.5","24.5"],"winner":1,"cited":false},{"key":"margin","label":"Expected margin","values":[3.0,9.5],"shown":["+3.0","+9.5"],"winner":1,"cited":false},{"key":"snap_share","label":"Snap share, 3 wk","values":[0.817,0.453],"shown":["82%","45%"],"winner":0,"cited":false},{"key":"target_share","label":"Target share, 3 wk","values":[0.324,0.063],"shown":["32%","6%"],"winner":0,"cited":false},{"key":"pass_share","label":"Team pass share","values":[0.628,0.591],"shown":["63%","59%"],"winner":0,"cited":false}],"pick":1}}
+
+data: {"type":"data-key","data":{"key":"be4d51c1853875fd1132120a75bdb3a5653061dcfb6e6fde6af3396beadb09fc"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"Start ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"Konata ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"Mumpfield. ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"The ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"Arizona ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"defense ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"allows ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"32.2 ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"points ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"a ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"game ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"to ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"WRs, ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"and ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"his ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"team ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"is ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"projected ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"for ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"24.5 ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"points. ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"Matthew ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"Golden ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"has ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"the ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"higher ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"projection ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"at ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-delta","delta":"12.9. ","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"text-end","id":"0e215cc2-6a3c-497a-a550-36e137810811"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"data-block","data":{"kind":"comparison","topic":"start_sit","team":6,"week":10,"players":[{"name":"M. Golden","player_id":"12501","position":"WR","nfl_team":"GB","opponent":"MIN","kickoff":1794765600000,"projection":12.9,"status":null},{"name":"K. Mumpfield","player_id":"12718","position":"WR","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":6.8,"status":null}],"facts":[{"key":"projection","label":"Projection","values":[12.9,6.8],"shown":["12.9","6.8"],"winner":0,"cited":true},{"key":"defense","label":"Defense allows","values":[25.3,32.2],"shown":["25.3","32.2"],"winner":1,"cited":true},{"key":"team_points","label":"Team points","values":[22.5,24.5],"shown":["22.5","24.5"],"winner":1,"cited":true},{"key":"margin","label":"Expected margin","values":[3.0,9.5],"shown":["+3.0","+9.5"],"winner":1,"cited":false},{"key":"snap_share","label":"Snap share, 3 wk","values":[0.817,0.453],"shown":["82%","45%"],"winner":0,"cited":false},{"key":"target_share","label":"Target share, 3 wk","values":[0.324,0.063],"shown":["32%","6%"],"winner":0,"cited":false},{"key":"pass_share","label":"Team pass share","values":[0.628,0.591],"shown":["63%","59%"],"winner":0,"cited":false}],"pick":1}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

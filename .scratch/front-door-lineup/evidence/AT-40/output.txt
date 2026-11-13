@@ -1,0 +1,67 @@
+# The weekly build writes topics.json last, with write_topics. Only topics.json is rebuilt here, from the saved raw week 9, with no Sleeper call (the settings loader reads the saved league.json and refuses to fetch). Script: rebuild_topics.py, listed at the end.
+# Run from apps/pipeline of the Spec worktree at 2adcc0c4, on 2026-11-12 22:54 UTC. The build rankings files exist: clients/cpc/build/2026/rankings.json and clients/norcal/build/2026/rankings.json.
+$ uv run --exact --package cornerstone python /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7d81144a-e93d-4798-99be-fef5cc8ede43/scratchpad/scripts/rebuild_topics.py /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup cpc 2026 9
+client=cpc folder=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/clients/cpc league_week=parsed
+wrote /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/clients/cpc/published/2026/week-09/topics.json
+exit 0
+$ uv run --exact --package cornerstone python /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7d81144a-e93d-4798-99be-fef5cc8ede43/scratchpad/scripts/rebuild_topics.py /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup norcal 2026 9
+client=norcal folder=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/clients/norcal league_week=parsed
+wrote /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/clients/norcal/published/2026/week-09/topics.json
+exit 0
+
+# git diff --stat after the rebuild
+ clients/cpc/published/2026/week-09/topics.json    | 8296 +++++++++++++++++++--
+ clients/norcal/published/2026/week-09/topics.json | 8222 ++++++++++++++++++--
+ 2 files changed, 15304 insertions(+), 1214 deletions(-)
+
+$ jq '.schema_version' clients/cpc/published/2026/week-09/topics.json
+2
+$ jq -c '[.teams[] | .[] | {topic, kind: (.block.kind // null), stats: (.stats // null | if . == null then null else length end)}] | group_by(.topic) | map({topic: .[0].topic, kinds: (map(.kind) | unique), stats_lengths: (map(.stats) | unique), answers: length}) | .[]' clients/cpc/published/2026/week-09/topics.json
+{"topic":"last_matchup","kinds":["matchup"],"stats_lengths":[0],"answers":12}
+{"topic":"leaders_trades","kinds":[null],"stats_lengths":[0],"answers":12}
+{"topic":"next_matchup","kinds":["matchup"],"stats_lengths":[0],"answers":12}
+{"topic":"playoff_race","kinds":["ladder"],"stats_lengths":[4],"answers":12}
+{"topic":"power_rankings","kinds":["rank_movers"],"stats_lengths":[3],"answers":12}
+{"topic":"week_recap","kinds":["recap"],"stats_lengths":[3],"answers":12}
+{"topic":"your_season","kinds":["schedule"],"stats_lengths":[4],"answers":12}
+
+$ jq '.schema_version' clients/norcal/published/2026/week-09/topics.json
+2
+$ jq -c '[.teams[] | .[] | {topic, kind: (.block.kind // null), stats: (.stats // null | if . == null then null else length end)}] | group_by(.topic) | map({topic: .[0].topic, kinds: (map(.kind) | unique), stats_lengths: (map(.stats) | unique), answers: length}) | .[]' clients/norcal/published/2026/week-09/topics.json
+{"topic":"last_matchup","kinds":["matchup"],"stats_lengths":[0],"answers":12}
+{"topic":"leaders_trades","kinds":[null],"stats_lengths":[0],"answers":12}
+{"topic":"next_matchup","kinds":["matchup"],"stats_lengths":[0],"answers":12}
+{"topic":"playoff_race","kinds":["ladder"],"stats_lengths":[4],"answers":12}
+{"topic":"power_rankings","kinds":["rank_movers"],"stats_lengths":[3],"answers":12}
+{"topic":"week_recap","kinds":["recap"],"stats_lengths":[2],"answers":12}
+{"topic":"your_season","kinds":["schedule"],"stats_lengths":[4],"answers":12}
+
+# rebuild_topics.py
+"""
+Rebuild topics.json of a saved week in the published folder, from the saved raw week only.
+It never calls Sleeper: the settings loader reads the saved league file and raises if it is missing.
+"""
+import sys
+from pathlib import Path
+
+from cornerstone.pipeline import _saved_league_week
+from cornerstone.topics import write_topics
+from cornerstone.value_models import VALUE_MODELS
+from league.client import load_client
+from league.provider.raw import RawLeague
+from league.provider.sleeper import league_settings
+
+root, slug, season, week = Path(sys.argv[1]), sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+
+
+def saved_settings(league_id, cache):
+    if not cache.exists():
+        raise SystemExit(f"no saved league file at {cache}; refusing to fetch")
+    return league_settings(RawLeague.model_validate_json(cache.read_text(encoding="utf-8")))
+
+
+client = load_client(root, slug, season, saved_settings, VALUE_MODELS)
+league_week = _saved_league_week(client, season, week)
+print(f"client={slug} folder={client.folder} league_week={'parsed' if league_week else 'None'}")
+out = write_topics(client.folder / "published", season, week, league_week)
+print(f"wrote {out}")

@@ -1,0 +1,37 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -p no:xdist -v tests/test_start_sit.py::test_a_failed_jev_read_gives_the_honest_miss_with_no_lineup_and_no_swap tests/test_start_sit.py::test_a_failed_read_of_the_two_players_gives_the_honest_miss
+# Run at 2026-11-12T22:53:20Z UTC on 2adcc0c4.
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 2 items
+tests/test_start_sit.py::test_a_failed_jev_read_gives_the_honest_miss_with_no_lineup_and_no_swap PASSED [ 50%]
+tests/test_start_sit.py::test_a_failed_read_of_the_two_players_gives_the_honest_miss PASSED [100%]
+============================== 2 passed in 0.83s ===============================
+
+# The source of each test above, from apps/api/tests/test_start_sit.py at 2adcc0c4, so a reader sees what it asserts:
+
+def test_a_failed_jev_read_gives_the_honest_miss_with_no_lineup_and_no_swap(settings, sources):
+    # AT-20: a failed read is never "keep the starter", so no lineup shows and Claude writes nothing.
+    writer = Writer()
+    api = _api(settings, sources, writer=writer, jev=FakeJev(error=JevError("down")))
+    response = api.post(PERSONAL.format(slug="cpc"), json={"topic": "start_sit", "roster_id": BO_GIRDS["cpc"]},
+                        headers=HEADERS)
+    chunks = _chunks(response)
+    assert not any(c["type"] == "data-block" for c in chunks)
+    assert [c["data"] for c in chunks if c["type"] == "data-miss"] == [
+        {"closest": ["next_matchup", "weak_spots", "waiver_targets"]}]
+    assert not any(c["type"] == "error" for c in chunks)
+    assert writer.calls == 0
+
+
+
+def test_a_failed_read_of_the_two_players_gives_the_honest_miss(settings, sources):
+    api = _api(settings, sources, jev=FakeJev(error=JevError("down")))
+    chunks = _typed(api, "Start Golden or Mumpfield?")
+    assert not any(c["type"] == "data-block" for c in chunks)
+    assert [c["type"] for c in chunks if c["type"] == "data-miss"] == ["data-miss"]
+
+

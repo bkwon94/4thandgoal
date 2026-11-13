@@ -1,0 +1,12 @@
+# AT-9: Teehee (cpc roster 12), Start or sit, 375 x 900, light, at 2026-11-12T22:38:01.090Z. Tapped row index 3.
+index slot before_top after_top delta before_state after_state
+0 QB 206 206 0 no detail no detail
+1 RB 256 256 0 true true
+2 RB 378 378 0 no detail no detail
+3 WR 428 428 0 false true
+4 WR 478 531 53 no detail no detail
+5 TE 528 581 53 no detail no detail
+6 FLEX 577 631 54 false false
+7 FLEX 627 681 54 no detail no detail
+8 DEF 677 730 53 no detail no detail
+filter of the opened detail at about 30, 120, and 400 ms after the tap: blur(2.87534px) | blur(0.200458px) | none

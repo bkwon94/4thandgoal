@@ -20,6 +20,7 @@ beforeEach(() => readFixtureSite("cpc"));
 
 const PASSPHRASE = "cornerstone-test";
 const LIL_FRIDGE = 3;
+const BO_GIRDS = 6;
 const fetchStub = vi.fn();
 const streams: (() => Response)[] = [];
 
@@ -265,6 +266,31 @@ describe("the personal Topics of Lil Fridge", () => {
     expect(within(answer).queryByRole("link", { name: /Read the full report/ })).toBeNull();
   });
 
+  it("shows the waiver list of Bo Girds: each row with the position, the team, the projection, and the slot, and a tap opens the why (AT-29)", async () => {
+    // The stream that the API recorded for Bo Girds in week 10 with the real Jev and the real Claude.
+    localStorage.setItem("cpc.your-team", String(BO_GIRDS));
+    streams.push(() => sse(recorded("waiver-list")));
+    render(<HomePage />);
+    await tapInMore("Waiver targets");
+    const answer = await articleWith("Waiver targets", "Checked");
+    const list = within(answer).getByRole("list", { name: "2 free agents worth a claim" });
+    const [first, second] = within(list).getAllByRole("listitem");
+    const toggle = within(first).getByRole("button", { name: /J\.J\. McCarthy/ });
+    for (const part of ["QB · NYG", "16.9", "QB slot"]) expect(toggle.textContent).toContain(part);
+    expect(within(second).getByRole("button", { name: /Shedeur Sanders/ }).textContent).toContain("Bench");
+    // The row starts closed, so the why waits in place under it.
+    const panel = document.getElementById(toggle.getAttribute("aria-controls") ?? "")!;
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(panel.hasAttribute("hidden")).toBe(true);
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    await waitFor(() => expect(panel.hasAttribute("hidden")).toBe(false));
+    expect(panel.textContent).toContain("Projects 16.9 this week, over Malik Willis at 16.8 in your QB slot.");
+    expect(within(second).getByRole("button", { name: /Shedeur Sanders/ }).getAttribute("aria-expanded")).toBe("false");
+    // The list holds the why, so no stats and no rows show with it.
+    expect(answer.textContent).not.toContain("Free agents read");
+  });
+
   it("never names an inner tool, a rival, or the commissioner by name in the cards", async () => {
     for (const name of ["weak-spots", "stack-up-fixed", "waiver-targets"]) streams.push(() => sse(recorded(name)));
     render(<HomePage />);
@@ -330,5 +356,123 @@ describe("the links of the personal Topics", () => {
     const { loadFrontDoor } = await dataWithoutWaiver();
     expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].waiver_targets).toBeNull();
     expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].weak_spots).toBe(`/2026/managers/${LIL_FRIDGE}/`);
+  });
+});
+
+/* Start or sit plays the stream of the API test over the live Sleeper week 10 of cpc, recorded on 2026-11-12. */
+describe("Start or sit", () => {
+  const rowsOf = (answer: HTMLElement) => within(within(answer).getByRole("list", { name: "Week 10 lineup" })).getAllByRole("listitem");
+
+  it("shows the lineup of Bo Girds in the Sleeper order with the team, the opponent, the kickoff, and the projection (AT-1)", async () => {
+    streams.push(() => sse(recorded("start-sit")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    await waitFor(() => expect(personalCalls()).toHaveLength(1));
+    expect(JSON.parse(personalCalls()[0][1].body)).toMatchObject({ topic: "start_sit" });
+    const answer = await articleWith("Start or sit", "Week 10 lineup");
+    const rows = rowsOf(answer);
+    expect(rows.map((row) => row.getAttribute("data-slot"))).toEqual(["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "FLEX", "DEF"]);
+    const kickoff = new Intl.DateTimeFormat(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" }).format(new Date(1794792000000));
+    expect(rows[0].textContent).toBe(`QBAaron RodgersPIT vs CIN· ${kickoff}17.5`);
+    // With no Swap, the header shows the total by projection, with no toggle.
+    expect(answer.textContent).toContain("By projection 121.7");
+    expect(within(answer).queryByRole("group", { name: "Lineup total" })).toBeNull();
+  });
+
+  it("names each player who cannot play in one line under the rows (AT-10)", async () => {
+    streams.push(() => sse(recorded("start-sit")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Can't play:");
+    expect(answer.textContent).toContain("Can't play: L. Jackson IR (thumb)");
+    expect(rowsOf(answer).some((row) => row.textContent?.includes("Lamar Jackson"))).toBe(false);
+  });
+
+  it("opens the first Q row on arrival with the body part, the practice level, and the Pivot (AT-7, AT-8)", async () => {
+    streams.push(() => sse(recorded("start-sit-q")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Week 10 lineup");
+    const buttons = within(answer).getAllByRole("button", { expanded: true });
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0].textContent).toContain("Jared Goff");
+    const detail = document.getElementById(buttons[0].getAttribute("aria-controls") ?? "");
+    expect(detail?.getAttribute("aria-hidden")).toBe("false");
+    expect(detail?.textContent).toBe("Chest · No practice report yetStart J. Goff if he is active. If he is ruled out, start P. Mahomes.");
+  });
+
+  it("opens a closed row in place, so the rows above it keep their order and their state (AT-9)", async () => {
+    streams.push(() => sse(recorded("start-sit-q")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Week 10 lineup");
+    const before = rowsOf(answer).map((row) => row.textContent);
+    const [closed] = within(answer).getAllByRole("button", { expanded: false });
+    const row = closed.closest("li");
+    const above = rowsOf(answer).slice(0, rowsOf(answer).indexOf(row as HTMLElement));
+    const aboveState = above.map((item) => item.querySelector("button")?.getAttribute("aria-expanded") ?? null);
+    fireEvent.click(closed);
+    expect(closed.getAttribute("aria-expanded")).toBe("true");
+    // The detail opens inside its own row, under its line, so no row above it changes.
+    expect(row?.lastElementChild?.getAttribute("aria-hidden")).toBe("false");
+    expect(rowsOf(answer).map((item) => item.textContent)).toEqual(before);
+    expect(above.map((item) => item.querySelector("button")?.getAttribute("aria-expanded") ?? null)).toEqual(aboveState);
+  });
+
+  /* The total that the header shows now. The rolling digits are hidden from the reader of the screen, so the value is
+     on the label of the total. */
+  const totalOf = (answer: HTMLElement) => within(answer).getByRole("group", { name: "Lineup total" }).querySelector("[data-total]")?.getAttribute("data-total");
+
+  it("reads each Swap row as Swap over the benched starter, struck through, with the first Swap open with its reason (AT-4)", async () => {
+    streams.push(() => sse(recorded("start-sit-swap")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Swap over");
+    const rows = rowsOf(answer);
+    const [washington, mumpfield] = [rows[2], rows[4]];
+    expect(washington.textContent).toContain("Mike Washington Jr.");
+    expect(washington.textContent).toContain("Swap over K. Williams");
+    expect(washington.querySelector("s")?.textContent).toBe("K. Williams");
+    expect(mumpfield.querySelector("s")?.textContent).toBe("M. Golden");
+    // The first row with a Swap or a Q opens on arrival, and only that one.
+    const open = within(answer).getAllByRole("button", { expanded: true });
+    expect(open).toHaveLength(1);
+    expect(open[0].closest("li")).toBe(washington);
+    // The reason comes with the block after the check, and the open row shows it.
+    await waitFor(() => {
+      const detail = document.getElementById(open[0].getAttribute("aria-controls") ?? "");
+      expect(detail?.textContent).toContain("Mike Washington Jr. starts over Kyren Williams, because his role is larger this week.");
+    });
+    const text = (screen.getByRole("region", { name: "Thread" }).textContent ?? "").toLowerCase();
+    for (const word of ["jev", "advisor", "finder", "brian", "front door"]) expect(text).not.toContain(word);
+  });
+
+  it("toggles the total between By projection and With 2 Swaps, and the Swap total is the sum of the rows (AT-11)", async () => {
+    streams.push(() => sse(recorded("start-sit-swap")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const answer = await articleWith("Start or sit", "Swap over");
+    const toggle = within(answer).getByRole("group", { name: "Lineup total" });
+    const swaps = within(toggle).getByRole("button", { name: "With 2 Swaps" });
+    const projection = within(toggle).getByRole("button", { name: "By projection" });
+    // The lineup shows the Swaps, so the total with the Swaps shows first.
+    expect(swaps.getAttribute("aria-pressed")).toBe("true");
+    expect(totalOf(answer)).toBe("104.7");
+    const sum = rowsOf(answer).reduce((total, row) => total + Number(row.querySelector("[data-projection]")?.getAttribute("data-projection")), 0);
+    expect(sum.toFixed(1)).toBe("104.7");
+    fireEvent.click(projection);
+    expect(projection.getAttribute("aria-pressed")).toBe("true");
+    expect(totalOf(answer)).toBe("121.7");
+    fireEvent.click(swaps);
+    expect(totalOf(answer)).toBe("104.7");
+  });
+
+  it("gives the honest miss with no lineup when the read of the Swaps fails (AT-20)", async () => {
+    streams.push(() => sse(recorded("start-sit-miss")));
+    render(<HomePage />);
+    await tapInMore("Start or sit");
+    const miss = await articleWith("Start or sit", MISS_LEAD);
+    expect(within(miss).queryByRole("list", { name: "Week 10 lineup" })).toBeNull();
+    expect(miss.textContent).not.toContain("Swap");
   });
 });

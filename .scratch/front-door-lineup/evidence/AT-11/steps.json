@@ -1,0 +1,164 @@
+{
+  "route": "/ask/",
+  "steps": [
+    {
+      "wait": "text=Which team is yours?"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "click": "[role=dialog] button[aria-pressed]:not(:has-text(\"puurdygood\"))"
+    },
+    {
+      "wait": "input[aria-label=\"Ask a question\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "fill": {
+        "selector": "input[aria-label=\"Ask a question\"]",
+        "value": "Week recap"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Send\"]"
+    },
+    {
+      "wait": "input[type=password]"
+    },
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Ask with this passphrase\"]"
+    },
+    {
+      "wait": 2500
+    },
+    {
+      "click": "button[aria-label^=\"Your team:\"]"
+    },
+    {
+      "wait": "[role=dialog] button:has-text(\"puurdygood\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"puurdygood\")"
+    },
+    {
+      "wait": "[aria-label=\"Suggestions\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Start or sit:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Start or sit:\"]"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "wait": "article[aria-label=\"Start or sit\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "click": "[aria-label=\"Lineup total\"] button:has-text(\"By projection\")"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "scroll": "end"
+    },
+    {
+      "wait": 600
+    },
+    {
+      "scroll": "[aria-label=\"Lineup total\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "shot": "by-projection-total"
+    },
+    {
+      "scroll": "end"
+    },
+    {
+      "wait": 600
+    },
+    {
+      "scroll": "li[data-slot]:has-text(\"Boston\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "shot": "by-projection-swap"
+    },
+    {
+      "click": "[aria-label=\"Lineup total\"] button:has-text(\"With\")"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "scroll": "end"
+    },
+    {
+      "wait": 600
+    },
+    {
+      "scroll": "[aria-label=\"Lineup total\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "shot": "with-swaps-total"
+    },
+    {
+      "scroll": "end"
+    },
+    {
+      "wait": 600
+    },
+    {
+      "scroll": "li[data-slot]:has-text(\"Boston\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "shot": "with-swaps-swap"
+    }
+  ],
+  "widths": [
+    375
+  ],
+  "themes": [
+    "light"
+  ],
+  "clients": [
+    "norcal"
+  ]
+}

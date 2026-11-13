@@ -1,0 +1,25 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -p no:xdist -v tests/test_topics.py
+# Run at 2026-11-12T22:53:53Z UTC on 2adcc0c4.
+Uninstalled 8 packages in 79ms
+Installed 4 packages in 5ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 13 items
+tests/test_topics.py::test_the_build_writes_an_answer_of_each_league_topic_for_each_team PASSED [  7%]
+tests/test_topics.py::test_week_8_of_cpc_has_7_answers_for_each_of_the_12_teams_and_the_same_page PASSED [ 15%]
+tests/test_topics.py::test_a_league_answer_reuses_the_blurbs_and_the_data_of_the_week PASSED [ 23%]
+tests/test_topics.py::test_the_cpc_recap_block_holds_the_score_the_place_the_strip_and_the_median PASSED [ 30%]
+tests/test_topics.py::test_the_norcal_recap_block_has_no_median PASSED   [ 38%]
+tests/test_topics.py::test_the_cpc_last_matchup_block_holds_the_final_scores_slot_by_slot PASSED [ 46%]
+tests/test_topics.py::test_the_next_matchup_block_holds_the_projected_scores_of_week_10_in_both_leagues PASSED [ 53%]
+tests/test_topics.py::test_the_power_rankings_block_lists_each_team_with_its_rank_and_its_move PASSED [ 61%]
+tests/test_topics.py::test_the_cpc_ladder_block_lists_each_team_by_standing_with_its_odds_and_the_playoff_line PASSED [ 69%]
+tests/test_topics.py::test_the_cpc_schedule_block_lists_the_opponents_of_weeks_10_to_14_by_their_standing PASSED [ 76%]
+tests/test_topics.py::test_each_league_topic_but_leaders_and_trades_has_a_block_in_both_leagues PASSED [ 84%]
+tests/test_topics.py::test_the_matchup_topics_have_no_block_without_the_raw_week PASSED [ 92%]
+tests/test_topics.py::test_position_leaders_lists_one_leader_per_position_in_its_text_and_has_no_block PASSED [100%]
+============================== 13 passed in 4.65s ==============================

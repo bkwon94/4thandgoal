@@ -4,14 +4,16 @@ They feed the score known parts, and they read the grade of each entry on the fi
 The grade reads the projections ahead, so some tests build projections that put a player above or below the line.
 Other tests change the saved points or the chart values of one roster and read its parts against the league.
 """
+import json
 from datetime import date
 
 import pytest
-from cpc import cpc_client
+from cpc import ROOT, cpc_client
 
 from league.history import load_history
 from league.models import ChartValues, History, PastWeek
 from league.parse import parse_week
+from league.paths import client_dir
 from league.provider.sleeper import load_raw
 from league.season_inputs import SeasonInputs
 from league.snapshot import week_snapshot
@@ -333,3 +335,22 @@ def _slot(position, rank, depth="fine"):
 ])
 def test_the_grade_read_names_the_strong_deep_soft_and_thin_positions(slots, read):
     assert grade_read(slots, client=CLIENT) == read
+
+
+def test_the_grades_of_week_9_have_only_the_qb_rb_wr_and_te_slots():
+    """AT-52: the roster grade keeps four slots. The grades that the build makes from the raw week 9 of cpc, and the
+    grades of the published managers file of each client, have no DEF slot and no FLEX slot."""
+    raw = load_raw(client_dir(ROOT, "cpc") / "data" / "2026" / "week-09" / "raw")
+    history = client_dir(ROOT, "cpc") / "data" / "2026" / "history"
+    inputs = SeasonInputs(history=load_history(history, raw, week=9),
+                          snapshot=week_snapshot(raw, history, 9, client=CLIENT), projections_ahead=_ahead(raw))
+    entries = managers(inputs, parse_week(raw, week=9).teams)
+    assert len(entries) == 12
+    for entry in entries:
+        assert [slot.position for slot in entry.grade.slots] == ["QB", "RB", "WR", "TE"]
+    for slug in ("cpc", "norcal"):
+        published = client_dir(ROOT, slug) / "published" / "2026" / "managers.json"
+        body = json.loads(published.read_text(encoding="utf-8"))
+        assert body["through"] >= 9
+        for manager in body["managers"]:
+            assert [slot["position"] for slot in manager["grade"]["slots"]] == ["QB", "RB", "WR", "TE"]

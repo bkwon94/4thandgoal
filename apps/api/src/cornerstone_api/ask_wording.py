@@ -1,5 +1,5 @@
 """
-All the wording of the Jev route of the ask box: the 13 Topics, the data sources, the state, and the 7 typed questions.
+All the wording of the Jev route of the ask box: the 14 Topics, the data sources, the state, and the 7 typed questions.
 The route in ask.py decides with code from the answers. Change a question here and run the live route eval (AT-17).
 """
 import re
@@ -9,7 +9,7 @@ from league.jev_port import ChoiceQuestion, NoulQuestion
 CONTEXT = ("A manager of this 12-team fantasy football league typed `manager_question` "
            "into the ask box of the league site.")
 
-# The 13 Topics of the front door, by the key that the site uses, in the order of the table of the spec.
+# The 14 Topics of the front door, by the key that the site uses, in the order of the table of the spec.
 TOPICS = {
     "week_recap": "The recap of the last fantasy week for the whole league: scores, results, standout games, and the "
                   "weekly report.",
@@ -32,6 +32,9 @@ TOPICS = {
                    "trade ideas of the chat, such as 'not a WR', 'keep Walker', 'someone else', or 'what about for a "
                    "TE'.",
     "trade_check": "A check of one trade that the manager names: is it fair, and who wins it.",
+    "start_sit": "Who to start this week in the lineup of the manager's own team, with the reason: the whole lineup, or "
+                 "which of two or more players of the manager's own team to start, such as 'Start Downs or "
+                 "Pittman?'.",
 }
 
 # The Topics that cover one week. The state names that week in each, so a question about an older week reads as no fit.
@@ -44,7 +47,7 @@ WEEK_TOPICS = {
 
 
 def topics(week: int) -> dict[str, str]:
-    """The 13 Topics as the state shows them, with the latest week in each Topic that covers one week."""
+    """The 14 Topics as the state shows them, with the latest week in each Topic that covers one week."""
     return {key: WEEK_TOPICS[key].format(week=week) if key in WEEK_TOPICS else text for key, text in TOPICS.items()}
 
 
@@ -56,6 +59,11 @@ def about_topics(season: int, week: int) -> dict[str, str]:
                             "season. An older week needs another answer.",
         "any_team": "Each Topic answers for the manager's own team, or for the one team of the league that the "
                     "question names.",
+        "no_move_list": "No Topic lists the moves of the league one by one, such as the adds, the drops, the waiver "
+                        "claims, and the trades of this week. A question that asks what moves happened needs another "
+                        "answer.",
+        "no_nfl_game": "No Topic shows one NFL game, such as the Bears game or the Packers game. A question about how "
+                       "an NFL game looks needs another answer.",
     }
 
 
@@ -70,6 +78,10 @@ def data_sources(season: int) -> dict[str, str]:
         "player_stats_this_season": f"Sleeper stat lines of the {season} NFL season, one per NFL player per fantasy "
                                     "week so far: fantasy points, passing, rushing, and receiving stats, and the "
                                     "league team that held him that week.",
+        "nfl_games": "Sleeper projections of each NFL game of this week and the next: the projected points of each "
+                     "NFL team, the expected margin, the fantasy points that each defense allows by position, and the "
+                     "pass share of each NFL team. It answers how one NFL game looks this week or next, such as "
+                     "'How does the Bears game look?'. It holds no betting line, no spread, and no over under.",
         "not_available": "Injury news, live game status, betting odds, news articles, expert opinions, and any season "
                          f"before {season}.",
     }
@@ -91,8 +103,9 @@ NOULS = {
            "a fact outside the Topics."),
     DATA_CAN_ANSWER: NoulQuestion(
         instructions="Can the data in `data_sources` answer `manager_question`?",
-        yes="The data in `data_sources.league_data_this_season` or `data_sources.player_stats_this_season` holds the "
-            "facts that answer the question.",
+        yes="The data in `data_sources.league_data_this_season`, `data_sources.player_stats_this_season`, or "
+            "`data_sources.nfl_games` holds the facts that answer the question, such as how one NFL game looks this "
+            "week, as in 'How does the Bears game look?'.",
         no="The answer needs facts from `data_sources.not_available`, or facts that no source holds."),
     ABOUT_LEAGUE: NoulQuestion(
         instructions="Is `manager_question` about this fantasy league or about NFL football?",

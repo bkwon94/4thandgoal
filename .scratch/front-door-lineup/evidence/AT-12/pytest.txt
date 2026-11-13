@@ -1,0 +1,10 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -p no:xdist -v tests/test_start_sit.py::test_a_player_whose_game_has_started_keeps_his_sleeper_slot_and_no_bench_player_of_that_game_moves tests/test_start_sit.py::test_a_game_that_sleeper_marks_started_is_locked_before_its_kickoff_time tests/test_start_sit.py::test_a_locked_player_is_never_a_swap_and_never_loses_his_slot_to_one
+# Run at 2026-11-12T23:02:38Z on 2adcc0c4, in a detached worktree.
+============================= test session starts ==============================
+collecting ... collected 3 items
+
+tests/test_start_sit.py::test_a_player_whose_game_has_started_keeps_his_sleeper_slot_and_no_bench_player_of_that_game_moves PASSED [ 33%]
+tests/test_start_sit.py::test_a_game_that_sleeper_marks_started_is_locked_before_its_kickoff_time PASSED [ 66%]
+tests/test_start_sit.py::test_a_locked_player_is_never_a_swap_and_never_loses_his_slot_to_one PASSED [100%]
+
+============================== 3 passed in 1.25s ===============================

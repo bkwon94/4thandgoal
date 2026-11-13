@@ -17,6 +17,7 @@ import { type CheckState, type FreeResult, type FreeView, isKept, newPace, paced
 import { QuestionBubble, Surface, TopicChip } from "./miss-card";
 import { QUICK, SLOW, SMOOTH, STAGGER, VERY_SLOW, fadeIn } from "./motion";
 import { Steps } from "./steps";
+import { TextBlock, textWords } from "./text-block";
 
 /* The least time in ms that "Checking" and the fixing line hold on screen, so a fast check still reads as a check
    (AT-20, AT-21): two of --duration-slow, long enough to read one short word. */
@@ -108,17 +109,17 @@ export function useAnswerStream<V extends FreeView>({
 /* The line while Claude writes again after a failed check (decision 11). */
 export const FIXING_LINE = "Fixing a number…";
 
-/* The words of a text, each with the space after it. A word keeps its place by its index, so a word that grows as the
-   stream adds letters never plays its blur again. One read of the stream can hold many words, so the new words of a
+/* The text of an Answer as the text block, with its words. A word keeps its place by its index, so a word that grows as
+   the stream adds letters never plays its blur again. One read of the stream can hold many words, so the new words of a
    read sweep in one after another on --duration-stagger, and the whole read takes no more than --duration-very-slow
    (AT-44). A word that comes while a sweep runs starts after the last word of that sweep, so the words keep their
    order. Each word keeps the delay it got as it first showed, so a later render never plays its blur again. */
 function StreamText({ text, live }: { text: string; live: boolean }) {
-  const words = text.match(/\S+\s*/g) ?? [];
+  const count = textWords(text);
   const delays = useRef<number[]>([]);
   // The time that the last word of the sweep starts.
   const sweepEnd = useRef(0);
-  const fresh = words.length - delays.current.length;
+  const fresh = count - delays.current.length;
   if (live && fresh > 0) {
     const now = performance.now();
     const step = Math.min(STAGGER, VERY_SLOW / fresh) * 1000;
@@ -129,15 +130,12 @@ function StreamText({ text, live }: { text: string; live: boolean }) {
     }
     sweepEnd.current = at - step;
   }
-  return (
-    <p className="m-0 text-body leading-body text-ink">
-      {live ? words.map((word, index) => (
-        <span key={index} className="stream-word" style={{ animationDelay: `${Math.round(delays.current[index] ?? 0)}ms` }}>
-          {word}
-        </span>
-      )) : text}
-    </p>
+  const word = (token: string, index: number) => (
+    <span className="stream-word" style={{ animationDelay: `${Math.round(delays.current[index] ?? 0)}ms` }}>
+      {token}
+    </span>
   );
+  return <TextBlock text={text} className="text-ink" word={live ? word : undefined} />;
 }
 
 /* A line of work in flight. A band of the ink sweeps the mute text on a linear loop of 2 s, as the shimmer text of
@@ -185,7 +183,7 @@ function CheckMark({ state, live }: { state: CheckState; live: boolean }) {
 /* The body of a free answer: the steps, the text with its block, and the check. The steps wait until the check or the text comes,
    with `first` as the stand-in line before the first step. The text shows only with "Checked", and its words sweep in
    from a blur. A failed check shows the fixing line, and the checked rewrite takes its place. */
-export function FreeBody({ view, live, first }: { view: FreeView; live: boolean; first?: string }) {
+export function FreeBody({ view, live, first, you }: { view: FreeView; live: boolean; first?: string; you?: string }) {
   const off = useMotionOff();
   const fixing = view.second !== null;
   // The steps of the tool calls are done once the check or the text comes, so the wait ends there.
@@ -202,7 +200,7 @@ export function FreeBody({ view, live, first }: { view: FreeView; live: boolean;
               </p>
             )}
             {view.second && <StreamText text={view.second} live={live} />}
-            {view.second && view.answerBlock && <BlockView block={view.answerBlock} live={live} />}
+            {view.second && view.answerBlock && <BlockView block={view.answerBlock} live={live} you={you} />}
           </motion.div>
         ) : (
           view.first && (
@@ -213,7 +211,7 @@ export function FreeBody({ view, live, first }: { view: FreeView; live: boolean;
               className="flex flex-col gap-sp-4"
             >
               <StreamText text={view.first} live={live} />
-              {view.answerBlock && <BlockView block={view.answerBlock} live={live} />}
+              {view.answerBlock && <BlockView block={view.answerBlock} live={live} you={you} />}
             </motion.div>
           )
         )}
@@ -226,6 +224,8 @@ export function FreeBody({ view, live, first }: { view: FreeView; live: boolean;
 type Shared = {
   question: string;
   teamName: (team: number | null) => string | undefined;
+  /* The name of Your team, so a block that names each team by its name marks Your team in red. */
+  you?: string;
   onPick: (key: string, team: number | null) => void;
 };
 
@@ -242,7 +242,7 @@ function SuggestionChip({ suggestion, teamName, onPick }: { suggestion: FreeResu
 /* A free answer that the browser kept. It shows as it ended, with no stream and no API call. It takes the place of
    the live card when the stream ends, so its parts show at once with no fade, and the card never goes blank (AT-20). */
 export const FreeAnswerCard = forwardRef<HTMLElement, Shared & { result: FreeResult }>(function FreeAnswerCard(
-  { question, result, teamName, onPick },
+  { question, result, teamName, you, onPick },
   ref,
 ) {
   const view: FreeView = { steps: result.steps.map((line) => ({ line, done: true })), first: result.text, second: null, answerBlock: result.block ?? null, check: "checked", suggestion: result.suggestion, closest: null };
@@ -251,7 +251,7 @@ export const FreeAnswerCard = forwardRef<HTMLElement, Shared & { result: FreeRes
       <article key="kept" ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
         <QuestionBubble question={question} />
         <Surface>
-          <FreeBody view={view} live={false} />
+          <FreeBody view={view} live={false} you={you} />
           <SuggestionChip suggestion={result.suggestion} teamName={teamName} onPick={onPick} />
         </Surface>
       </article>
@@ -271,7 +271,7 @@ export const FreeAnswerLive = forwardRef<
     onMiss: (closest: string[]) => void;
     onError: () => void;
   }
->(function FreeAnswerLive({ question, target, passphrase, body, teamName, onPick, onDone, onMiss, onError }, ref) {
+>(function FreeAnswerLive({ question, target, passphrase, body, teamName, you, onPick, onDone, onMiss, onError }, ref) {
   // The question goes in the body, so the prompt of Claude is the question.
   const fields = useMemo(() => ({ question, ...body }), [question, body]);
   const { view, busy, kept } = useAnswerStream({
@@ -299,7 +299,7 @@ export const FreeAnswerLive = forwardRef<
       <QuestionBubble question={question} />
       <Surface>
         {/* A kept Answer of the API shows whole at once, with no stream of its words. */}
-        <FreeBody view={view} live={!kept} />
+        <FreeBody view={view} live={!kept} you={you} />
         {view.check === "checked" && <SuggestionChip suggestion={view.suggestion} teamName={teamName} onPick={onPick} />}
       </Surface>
     </article>

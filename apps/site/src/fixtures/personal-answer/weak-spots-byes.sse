@@ -1,0 +1,42 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"rows","topic":"weak_spots","team":6,"fact":"QB ranks 10th of 12","stats":[{"label":"Weakest spot","value":"QB"},{"label":"Rank","value":"10th of 12"},{"label":"Holes","value":"1"}],"rows":[{"label":"QB","value":"10th of 12","note":"fine","roster_id":null,"you":false},{"label":"RB","value":"6th of 12","note":"fine","roster_id":null,"you":false},{"label":"TE","value":"5th of 12","note":"fine","roster_id":null,"you":false},{"label":"WR","value":"4th of 12","note":"thin · hole: Malik Washington","roster_id":null,"you":false}],"block":{"kind":"bye_grid","weeks":[10,11,12,13,14],"players":[{"name":"Malik Willis","position":"QB","nfl_team":"MIA","slot":"QB","starter":true,"bye":6},{"name":"Kenneth Walker III","position":"RB","nfl_team":"KC","slot":"RB","starter":true,"bye":5},{"name":"Kyren Williams","position":"RB","nfl_team":"LAR","slot":"RB","starter":true,"bye":11},{"name":"Parker Washington","position":"WR","nfl_team":"JAX","slot":"WR","starter":true,"bye":7},{"name":"Zay Flowers","position":"WR","nfl_team":"BAL","slot":"WR","starter":true,"bye":13},{"name":"Trey McBride","position":"TE","nfl_team":"ARI","slot":"TE","starter":true,"bye":14},{"name":"Matthew Golden","position":"WR","nfl_team":"GB","slot":"FLEX","starter":true,"bye":11},{"name":"Malik Washington","position":"WR","nfl_team":"MIA","slot":"FLEX","starter":true,"bye":6},{"name":"Jacksonville Jaguars","position":"DEF","nfl_team":"JAX","slot":"DEF","starter":true,"bye":7},{"name":"Lamar Jackson","position":"QB","nfl_team":"BAL","slot":null,"starter":false,"bye":13},{"name":"Blake Corum","position":"RB","nfl_team":"LAR","slot":null,"starter":false,"bye":11},{"name":"Devin Singletary","position":"RB","nfl_team":"NYG","slot":null,"starter":false,"bye":8},{"name":"Mike Washington Jr.","position":"RB","nfl_team":"LV","slot":null,"starter":false,"bye":13},{"name":"Terrance Ferguson","position":"TE","nfl_team":"LAR","slot":null,"starter":false,"bye":11},{"name":"Antonio Williams","position":"WR","nfl_team":"WAS","slot":null,"starter":false,"bye":7}]}}}
+
+data: {"type":"data-key","data":{"key":"e6ebdc8dce533d18f3c97422b45b8138687bcb10deddaeff91cdda65dacfb595"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"Your ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"weakest ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"spot ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"is ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"QB, ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"which ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"ranks ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"10th ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"of ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-delta","delta":"12. ","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"text-end","id":"cb1a1774-56af-41e7-a304-aa2ff4e6b636"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

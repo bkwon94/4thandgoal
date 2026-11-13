@@ -1,0 +1,26 @@
+{
+  "route": "/2026/week-09/",
+  "steps": [
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "week"
+    },
+    {
+      "click": "nav[aria-label=\"Bottom menu\"] a[href*=\"ranking\"]"
+    },
+    {
+      "wait": "url"
+    },
+    {
+      "wait": 2000
+    },
+    {
+      "shot": "rankings"
+    }
+  ],
+  "widths": [
+    375
+  ]
+}

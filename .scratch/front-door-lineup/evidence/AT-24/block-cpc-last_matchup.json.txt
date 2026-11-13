@@ -1,0 +1,154 @@
+$ jq '.teams["6"][] | select(.topic=="last_matchup") | .block' clients/cpc/published/2026/week-09/topics.json
+# Run at 2026-11-12T21:47:36Z UTC on 2adcc0c4, on topics.json version 2 rebuilt from the saved raw week 9 (see AT-40).
+{
+  "kind": "matchup",
+  "final": true,
+  "you": {
+    "roster_id": 6,
+    "name": "Bo Girds",
+    "score": 114.07
+  },
+  "them": {
+    "roster_id": 12,
+    "name": "Teehee",
+    "score": 100.63
+  },
+  "odds": null,
+  "slots": [
+    {
+      "slot": "QB",
+      "you": {
+        "name": "Malik Willis",
+        "position": "QB",
+        "nfl_team": "MIA",
+        "points": 4.82
+      },
+      "them": {
+        "name": "Trevor Lawrence",
+        "position": "QB",
+        "nfl_team": "JAX",
+        "points": 13.58
+      }
+    },
+    {
+      "slot": "RB",
+      "you": {
+        "name": "Kenneth Walker III",
+        "position": "RB",
+        "nfl_team": "KC",
+        "points": 34.3
+      },
+      "them": {
+        "name": "Bhayshul Tuten",
+        "position": "RB",
+        "nfl_team": "JAX",
+        "points": 8.9
+      }
+    },
+    {
+      "slot": "RB",
+      "you": {
+        "name": "Kyren Williams",
+        "position": "RB",
+        "nfl_team": "LAR",
+        "points": 7.6
+      },
+      "them": {
+        "name": "Omarion Hampton",
+        "position": "RB",
+        "nfl_team": "LAC",
+        "points": 6.0
+      }
+    },
+    {
+      "slot": "WR",
+      "you": {
+        "name": "Parker Washington",
+        "position": "WR",
+        "nfl_team": "JAX",
+        "points": 13.1
+      },
+      "them": {
+        "name": "Tee Higgins",
+        "position": "WR",
+        "nfl_team": "CIN",
+        "points": 17.7
+      }
+    },
+    {
+      "slot": "WR",
+      "you": {
+        "name": "Zay Flowers",
+        "position": "WR",
+        "nfl_team": "BAL",
+        "points": 3.8
+      },
+      "them": {
+        "name": "Luther Burden III",
+        "position": "WR",
+        "nfl_team": "CHI",
+        "points": 17.2
+      }
+    },
+    {
+      "slot": "TE",
+      "you": {
+        "name": "Trey McBride",
+        "position": "TE",
+        "nfl_team": "ARI",
+        "points": 7.9
+      },
+      "them": {
+        "name": "Sam LaPorta",
+        "position": "TE",
+        "nfl_team": "DET",
+        "points": 5.2
+      }
+    },
+    {
+      "slot": "FLEX",
+      "you": {
+        "name": "Matthew Golden",
+        "position": "WR",
+        "nfl_team": "GB",
+        "points": 27.4
+      },
+      "them": {
+        "name": "Amon-Ra St. Brown",
+        "position": "WR",
+        "nfl_team": "DET",
+        "points": 12.6
+      }
+    },
+    {
+      "slot": "FLEX",
+      "you": {
+        "name": "Devin Singletary",
+        "position": "RB",
+        "nfl_team": "NYG",
+        "points": 4.9
+      },
+      "them": {
+        "name": "DJ Moore",
+        "position": "WR",
+        "nfl_team": "BUF",
+        "points": 5.1
+      }
+    },
+    {
+      "slot": "DEF",
+      "you": {
+        "name": "Jacksonville Jaguars",
+        "position": "DEF",
+        "nfl_team": "JAX",
+        "points": 10.25
+      },
+      "them": {
+        "name": "Chicago Bears",
+        "position": "DEF",
+        "nfl_team": "CHI",
+        "points": 14.35
+      }
+    }
+  ]
+}

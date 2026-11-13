@@ -1,0 +1,38 @@
+{
+  "route": "/ask/",
+  "steps": [
+    {
+      "wait": "text=Which team is yours?"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[aria-label=\"Suggestions\"]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "click": "[aria-label=\"Suggestions\"] > button:has-text(\"More\")"
+    },
+    {
+      "wait": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Week recap:\"]"
+    },
+    {
+      "wait": 500
+    },
+    {
+      "click": "ul[aria-label=\"All Topics\"] button:enabled[aria-label^=\"Week recap:\"]"
+    },
+    {
+      "wait": "[data-block=\"recap\"]"
+    },
+    {
+      "wait": 2500
+    }
+  ]
+}

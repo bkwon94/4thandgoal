@@ -27,6 +27,17 @@ afterEach(() => {
 });
 
 describe("the front door of cpc", () => {
+  it("has no dock and no week chip, and the menu button opens the sheet of pages (AT-45, AT-47)", () => {
+    render(<HomePage />);
+    expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
+    expect(screen.queryByText(/^WK /, { selector: "summary" })).toBeNull();
+    fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }));
+    const sheet = screen.getByRole("navigation", { name: "Pages" });
+    expect(within(sheet).getByRole("link", { name: /Ask about your team/ })).toBeTruthy();
+    expect(within(sheet).getByRole("link", { name: /Scores and recaps/ }).getAttribute("href")).toMatch(/^\/2026\/week-\d\d\/$/);
+    expect(within(sheet).getByRole("button", { name: "Past weeks" })).toBeTruthy();
+  });
+
   it("asks for Your team in a sheet that lists the 12 teams, with no skip, no close, and no login (AT-1)", async () => {
     render(<HomePage />);
     const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
@@ -130,7 +141,7 @@ async function suggestionChips() {
 describe("the Suggestions of Lil Fridge", () => {
   afterEach(() => vi.useRealTimers());
 
-  it("show 3 Suggestions, each with a Topic name and one number, and More lists all 13 Topics (AT-4)", async () => {
+  it("show 3 Suggestions, each with a Topic name and one number, and More lists all 14 Topics (AT-4)", async () => {
     onDay("2026-11-11T12:00:00");
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
@@ -152,6 +163,7 @@ describe("the Suggestions of Lil Fridge", () => {
       "Waiver targets",
       "How you stack up",
       "Weak spots",
+      "Start or sit",
       "Sell high or buy low",
       "Trade ideas",
       "Trade check",
@@ -172,6 +184,8 @@ describe("the Suggestions of Lil Fridge", () => {
     render(<HomePage />);
     const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"));
     expect(rankings).toBeTruthy();
+    // The first tap shows the fact, and the second tap opens the Topic.
+    fireEvent.click(rankings!);
     fireEvent.click(rankings!);
     expect(await screen.findByRole("article", { name: "Power rankings" })).toBeTruthy();
 
@@ -366,6 +380,8 @@ describe("the Thread of Lil Fridge", () => {
     const confirm = vi.spyOn(window, "confirm");
     render(<HomePage />);
     const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"))!;
+    // The first tap shows the fact, and the second tap opens the Topic.
+    fireEvent.click(rankings);
     fireEvent.click(rankings);
     await openTopic("Week recap");
     expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toHaveLength(2);
@@ -389,5 +405,26 @@ describe("the Thread of Lil Fridge", () => {
     render(<HomePage />);
     await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
     expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+  });
+});
+
+describe("a version 1 topics.json", () => {
+  it("renders each league Topic Answer as before, with its stats, rows, and text, and no block (AT-41)", async () => {
+    // The fixed copy of week 8 of cpc is a file of version 1, written before any Topic had a block.
+    const file = JSON.parse(readFileSync(join(__dirname, "..", "fixtures", "sites", "cpc", "public", "2026", "week-08", "topics.json"), "utf8"));
+    expect(file.schema_version).toBe(1);
+    const answers: { topic: string; stats: unknown[]; rows: { label: string; value: string }[]; text: string[] }[] = file.teams["3"];
+    expect(answers.some((answer) => "block" in answer)).toBe(false);
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    fireEvent.click((await suggestionChips())[0]);
+    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Your last matchup/ }));
+    const answer = await screen.findByRole("article", { name: "Your last matchup" });
+    const want = answers.find((item) => item.topic === "last_matchup")!;
+    const rows = within(answer).getAllByRole("listitem");
+    expect(rows.map((row) => row.textContent)).toEqual(want.rows.map((row) => expect.stringContaining(row.label)));
+    expect(rows[1].textContent).toContain(want.rows[1].value);
+    expect(answer.textContent).toContain(want.text[0]);
+    expect(answer.querySelector("[data-block]")).toBeNull();
   });
 });

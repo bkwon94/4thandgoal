@@ -1,0 +1,29 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -p no:xdist -v tests/test_start_sit.py::test_a_bench_player_takes_the_slot_at_a_probability_of_0_70_and_not_at_0_69
+# Run at 2026-11-12T22:53:11Z UTC on 2adcc0c4.
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 2 items
+tests/test_start_sit.py::test_a_bench_player_takes_the_slot_at_a_probability_of_0_70_and_not_at_0_69[0.7-swaps0] PASSED [ 50%]
+tests/test_start_sit.py::test_a_bench_player_takes_the_slot_at_a_probability_of_0_70_and_not_at_0_69[0.69-swaps1] PASSED [100%]
+============================== 2 passed in 0.99s ===============================
+
+# The source of each test above, from apps/api/tests/test_start_sit.py at 2adcc0c4, so a reader sees what it asserts:
+
+@pytest.mark.parametrize(("probability", "swaps"), [(0.70, {"Konata Mumpfield": "M. Golden"}), (0.69, {})])
+def test_a_bench_player_takes_the_slot_at_a_probability_of_0_70_and_not_at_0_69(settings, sources, probability, swaps):
+    # AT-5: Konata Mumpfield of the bench of Bo Girds over Matthew Golden, who starts at WR by projection. Each case
+    # runs in its own test, because a second tap of the same lineup reads the kept Answer of the first.
+    block = _block(_api(settings, sources, jev=_edges({("Konata Mumpfield", "Matthew Golden"): probability})))
+    assert _swaps(block) == swaps
+    if swaps:
+        [row] = [row for row in block["rows"] if row["player"] == "Konata Mumpfield"]
+        assert row["slot"] == "WR" and row["position"] == "WR" and row["nfl_team"] and row["kickoff"]
+        assert "Matthew Golden" not in {row["player"] for row in block["rows"]}
+    else:
+        assert "Matthew Golden" in {row["player"] for row in block["rows"]}
+
+

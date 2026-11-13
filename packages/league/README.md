@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The models, the client and its League settings, the paths, the history, nflverse, the snapshot, the lineup, the standings table, the chart, and the shared tunables (`cpc-league`, imported as `league`).
+- The models, the client and its League settings, the paths, the history, nflverse, the snapshot, the lineup, the model of the matchup card, the standings table, the chart, and the shared tunables (`cpc-league`, imported as `league`).
 - The headshot, the avatar, their default images, the Sleeper CDN headshot URL, and the manager page hrefs of the site (`@cpc/league`).
 - The Sleeper player ID is the one canonical player ID. Each other source maps its own ID to it, as `nflverse` does with the gsis ID.
 - The reception points of the League settings choose the points key: 0 gives `pts_std`, 0.5 `pts_half_ppr`, 1 `pts_ppr`.

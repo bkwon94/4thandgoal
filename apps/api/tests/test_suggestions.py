@@ -7,13 +7,17 @@ import json
 import logging
 import re
 import shutil
+from datetime import UTC, datetime
 from pathlib import Path
 
 import test_api
 from fakes import FakeJev
 from fastapi.testclient import TestClient
-from test_api import HEADERS, _here
+from pydantic_ai.models.function import FunctionModel
+from test_api import CLIENT, HEADERS, _here
 from test_personal_topics import LIL_FRIDGE, Checks, Fetches, Writer, _api, _ask, _chunks, _text
+from test_start_sit import BEFORE_KICKOFF, RECORDED, Edges, def_projections, espn_scoreboard, sleeper_scores
+from test_start_sit import Writer as LineupWriter
 
 from analyzer.sell_facts import sheet_players
 from analyzer.trade_jev import weak_starting_slots
@@ -398,3 +402,186 @@ def test_the_tap_after_the_open_reads_the_league_of_the_open_and_no_sleeper_data
     assert fetches.calls == loads
     assert writer.calls == 1
     assert _text(tap) and not any(c["type"].startswith("tool-") for c in tap)
+
+
+# The order of each day on the site (topics.ts). Start or sit leads Thursday to Sunday, and sits third on Wednesday.
+THURSDAY_ORDER = ["start_sit", "next_matchup", "trade_ideas", "sell_high", "weak_spots", "playoff_race", "week_recap",
+                  "last_matchup", "power_rankings", "your_season", "leaders_trades", "waiver_targets", "stack_up",
+                  "trade_check"]
+SUNDAY_ORDER = ["start_sit", "next_matchup", "weak_spots", "playoff_race", "week_recap", "last_matchup",
+                "power_rankings", "your_season", "leaders_trades", "waiver_targets", "stack_up", "sell_high",
+                "trade_ideas", "trade_check"]
+WEDNESDAY_ORDER = ["waiver_targets", "weak_spots", "start_sit", "power_rankings", "week_recap", "playoff_race",
+                   "last_matchup", "next_matchup", "your_season", "leaders_trades", "stack_up", "sell_high",
+                   "trade_ideas", "trade_check"]
+MONDAY_ORDER = ["next_matchup", "playoff_race", "power_rankings", "week_recap", "last_matchup", "your_season",
+                "leaders_trades", "waiver_targets", "stack_up", "weak_spots", "start_sit", "sell_high", "trade_ideas",
+                "trade_check"]
+TUESDAY_ORDER = ["week_recap", "last_matchup", "power_rankings", "playoff_race", "next_matchup", "your_season",
+                 "leaders_trades", "waiver_targets", "stack_up", "weak_spots", "start_sit", "sell_high", "trade_ideas",
+                 "trade_check"]
+# The roster of cpc that starts Travis Etienne Jr. on IR in the recorded live week 10, and no Questionable starter.
+ETIENNE_ON_IR = 1
+# The roster of cpc that starts David Montgomery and Hunter Henry, both Questionable, in the recorded week 10.
+TWO_Q = 4
+
+
+class TwoWeeks:
+    """The Sleeper fetch of a Suggestions test: the recorded week 6 for the first load, the live league that the cache
+    keeps, and the recorded live week 10 for each later load, the live week of the Start or sit fact. The week 6
+    fixture has the past weeks and the charts that a league snapshot reads. The week 10 recording has the kickoffs."""
+
+    def __init__(self, fixture_raw_dir):
+        self.weeks = [load_raw(fixture_raw_dir), load_raw(RECORDED / "cpc-week-10")]
+        self.calls = 0
+
+    def fetch(self, league_id: str):
+        self.calls += 1
+        return self.weeks[min(self.calls, 2) - 1], BEFORE_KICKOFF
+
+
+def _live_week_api(settings, sources, fixture_raw_dir, jev: FakeJev, now=BEFORE_KICKOFF) -> TestClient:
+    """An app whose Start or sit fact reads the recorded live week 10 of cpc: the Sleeper week of Thursday 2026-11-12
+    and its kickoffs."""
+    live = dataclasses.replace(sources, fetch_sleeper=TwoWeeks(fixture_raw_dir).fetch,
+                               clock=lambda: now.astimezone(CLIENT.tz), fetch_sleeper_scores=sleeper_scores,
+                               fetch_espn_scoreboard=espn_scoreboard)
+    _publish_topics(settings)
+    return _api(settings, live, jev, Writer())
+
+
+def test_start_or_sit_leads_thursday_with_the_next_kickoff_as_its_fact(settings, sources, fixture_raw_dir):
+    # AT-13 and AT-15: Bo Girds starts no player who cannot play and no Q, so the fact is the next kickoff of his lineup.
+    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer))
+    body = _suggest(api, order=THURSDAY_ORDER, roster_id=BO_GIRDS).json()
+    assert body["picks"][0] == "start_sit"
+    assert body["facts"]["start_sit"] == "Next kickoff Sun 1:00 PM"
+
+
+def test_start_or_sit_leads_sunday_before_the_early_games(settings, sources, fixture_raw_dir):
+    # AT-13: Sunday 2026-11-15 at noon in New York, before the 1:00 PM games of the lineup of Bo Girds.
+    sunday = datetime(2026, 11, 15, 17, 0, tzinfo=UTC)
+    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer), now=sunday)
+    body = _suggest(api, order=SUNDAY_ORDER, roster_id=BO_GIRDS).json()
+    assert body["picks"][0] == "start_sit"
+    assert body["facts"]["start_sit"] == "Next kickoff Sun 1:00 PM"
+
+
+def test_start_or_sit_is_third_on_wednesday_after_the_waiver_targets(settings, sources, fixture_raw_dir):
+    # AT-13: the claims come first on Wednesday.
+    wednesday = datetime(2026, 11, 11, 17, 0, tzinfo=UTC)
+    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer), now=wednesday)
+    body = _suggest(api, order=WEDNESDAY_ORDER, roster_id=BO_GIRDS).json()
+    assert body["picks"] == ["waiver_targets", "weak_spots", "start_sit"]
+
+
+def test_monday_keeps_the_order_of_today_with_start_or_sit_below_the_top_three(settings, sources, fixture_raw_dir):
+    # AT-13: Monday does not change, so the next matchup, the playoff race, and the power rankings lead.
+    monday = datetime(2026, 11, 16, 17, 0, tzinfo=UTC)
+    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer), now=monday)
+    body = _suggest(api, order=MONDAY_ORDER, roster_id=BO_GIRDS).json()
+    assert body["picks"] == ["next_matchup", "playoff_race", "power_rankings"]
+
+
+def test_a_starter_on_ir_lifts_start_or_sit_first_on_a_tuesday(settings, sources, fixture_raw_dir):
+    # AT-14: Etienne starts on IR, so the lift reads "1 can't play" and Start or sit leads the recap day.
+    tuesday = datetime(2026, 11, 10, 17, 0, tzinfo=UTC)
+    jev = FakeJev(answer=Lifts({"start_sit": 0.9}).answer)
+    api = _live_week_api(settings, sources, fixture_raw_dir, jev, now=tuesday)
+    body = _suggest(api, order=TUESDAY_ORDER, roster_id=ETIENNE_ON_IR).json()
+    assert body["picks"][0] == "start_sit" and body["urgent"] == ["start_sit"]
+    [lift] = [r for r in jev.requests if "lift_start_sit" in r.questions]
+    assert lift.state["topics"]["start_sit"]["name"] == "Start or sit"
+    assert lift.state["topics"]["start_sit"]["fact"] == body["facts"]["start_sit"] == "1 can't play"
+
+
+def test_the_fact_counts_the_q_starters_and_the_suggestions_ask_jev_nothing_for_it(settings, sources, fixture_raw_dir):
+    # AT-15: Montgomery and Hunter Henry start as Questionable. The fact comes from code, so Jev gets no question of it.
+    jev = FakeJev(answer=Lifts().answer)
+    api = _live_week_api(settings, sources, fixture_raw_dir, jev)
+    body = _suggest(api, order=THURSDAY_ORDER, roster_id=TWO_Q).json()
+    assert body["facts"]["start_sit"] == "2 Q"
+    assert "start_sit" not in body["kickoffs"]
+    asked = {key for request in jev.requests for key in request.questions}
+    assert asked == {*(f"lift_{topic}" for topic in body["facts"]), SELL_CHOICE, SELL_NOUL}
+
+
+def test_the_kickoff_fact_carries_the_kickoff_in_epoch_ms_for_the_browser(settings, sources, fixture_raw_dir):
+    # The site shows the kickoff in the time zone of the browser: Sunday 2026-11-15 at 18:00 UTC.
+    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer))
+    body = _suggest(api, order=THURSDAY_ORDER, roster_id=BO_GIRDS).json()
+    assert body["kickoffs"] == {"start_sit": int(datetime(2026, 11, 15, 18, 0, tzinfo=UTC).timestamp() * 1000)}
+
+
+def test_an_empty_slot_counts_as_a_starter_who_cannot_play(settings, sources, fixture_raw_dir):
+    # Roster 11 of cpc leaves one starting slot empty in the recorded week 10.
+    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer))
+    assert _suggest(api, order=THURSDAY_ORDER, roster_id=11).json()["facts"]["start_sit"] == "1 can't play"
+
+
+# Roster 11 of cpc in the slot order QB, RB, RB, WR, WR, TE, FLEX, FLEX, DEF. Jacobs is Out, and A.J. Brown and George
+# Pickens are Questionable, in the recorded week 10.
+DAK_PICKS = 11
+JACOBS_BROWN_PICKENS = ["3294", "6813", "5850", "5859", "8137", "7002", "8136", "9500", "NO"]
+# The lineup of roster 11 after the drop of the Saints DEF on 2026-11-12: the WR slot and the DEF slot are empty, and
+# Jacobs, Brown, and Pickens sit on the bench.
+TWO_EMPTY_SLOTS = ["3294", "6813", "12495", "13296", "0", "7002", "8136", "9500", "0"]
+
+
+def _set_lineup(settings, sources, fixture_raw_dir, starters: list[str]) -> TestClient:
+    """An app whose live week 10 gives roster 11 the Sleeper starters of `starters`."""
+    weeks = TwoWeeks(fixture_raw_dir)
+    raw = weeks.weeks[1]
+    matchups = [m.model_copy(update={"starters": starters}) if m.roster_id == DAK_PICKS else m for m in raw.matchups]
+    weeks.weeks[1] = raw.model_copy(update={"matchups": matchups})
+    live = dataclasses.replace(sources, fetch_sleeper=weeks.fetch, clock=lambda: BEFORE_KICKOFF.astimezone(CLIENT.tz),
+                               fetch_sleeper_scores=sleeper_scores, fetch_espn_scoreboard=espn_scoreboard)
+    _publish_topics(settings)
+    return _api(settings, live, FakeJev(answer=Lifts().answer), Writer())
+
+
+def test_one_out_starter_and_two_q_starters_give_both_counts(settings, sources, fixture_raw_dir):
+    # AT-15: Jacobs starts Out, and Brown and Pickens start as Questionable, so the fact names both parts.
+    api = _set_lineup(settings, sources, fixture_raw_dir, JACOBS_BROWN_PICKENS)
+    assert _suggest(api, order=THURSDAY_ORDER, roster_id=DAK_PICKS).json()["facts"]["start_sit"] == "1 can't play, 2 Q"
+
+
+def test_the_fact_counts_the_empty_slots_and_no_player_on_the_bench(settings, sources, fixture_raw_dir):
+    # AT-15: two empty slots are two starters who cannot play. Jacobs, Brown, and Pickens sit on the bench, so they
+    # count in neither part.
+    api = _set_lineup(settings, sources, fixture_raw_dir, TWO_EMPTY_SLOTS)
+    assert _suggest(api, order=THURSDAY_ORDER, roster_id=DAK_PICKS).json()["facts"]["start_sit"] == "2 can't play"
+
+
+def test_a_live_week_that_does_not_load_drops_only_the_start_or_sit_fact(settings, sources):
+    # The test sources give no kickoffs, as a down source does, so the other Suggestions still show.
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    response = _suggest(api, order=THURSDAY_ORDER)
+    assert response.status_code == 200
+    body = response.json()
+    assert "start_sit" not in body["facts"] and body["picks"]
+
+
+def test_the_key_check_reads_a_kept_start_or_sit_answer_from_the_live_week(settings, sources, fixture_raw_dir):
+    # The key of a Start or sit Answer comes from the live Sleeper week, as the tap reads it, not from the live league.
+    # The check of a kept Start or sit Answer is current until the week changes, and never a 500.
+    jev = FakeJev(answer=Checks([True]).answer, choose=Edges().choose)
+    live = dataclasses.replace(sources, fetch_sleeper=TwoWeeks(fixture_raw_dir).fetch,
+                               clock=lambda: BEFORE_KICKOFF.astimezone(CLIENT.tz), fetch_sleeper_scores=sleeper_scores,
+                               fetch_espn_scoreboard=espn_scoreboard, fetch_def_projections=def_projections)
+    writer = LineupWriter()
+    api = _api(settings, live, jev, Writer())
+    # Claude writes one plain line of the lineup, so the check passes and the store keeps the Answer.
+    api.app.state.personal_model = FunctionModel(stream_function=writer.stream)
+    # The first load is the live league of the key check, so the tap after it reads the live week 10.
+    weak = {"topic": "weak_spots", "roster_id": BO_GIRDS, "team": None, "key": "x"}
+    assert api.post(CURRENT, json={"answers": [weak]}, headers=HEADERS).status_code == 200
+    key = _key(_chunks(_ask(api, "start_sit", roster_id=BO_GIRDS)))
+    kept = {"topic": "start_sit", "roster_id": BO_GIRDS, "team": None, "key": key}
+    response = api.post(CURRENT, json={"answers": [kept, {**kept, "key": "x"}]}, headers=HEADERS)
+    assert response.status_code == 200, response.text
+    [now, stale] = response.json()["answers"]
+    assert now["key"] == key and now["current"] is True and now["kept_at"] is not None
+    assert stale["current"] is False
+    assert writer.calls == 1

@@ -6,7 +6,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { type CSSProperties, Fragment, useEffect, useRef, useState } from "react";
+import { type CSSProperties, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -28,7 +28,7 @@ import { Suggestions } from "./suggestions";
 import { TeamSheet } from "./team-sheet";
 import { type Entry, Thread, personalName } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
-import { type KeyItem, type ServedSuggestions, checkCurrent, fetchSuggestions, staleLine } from "./suggestions-api";
+import { type KeyItem, type ServedSuggestions, checkCurrent, fetchSuggestions, shownFacts, staleLine } from "./suggestions-api";
 import { dayOrder, pickSuggestions, topicName } from "./topics";
 import { TradeCard } from "./trade-answer";
 import { type TradeRead, type TradeRequest, type TradeSteps, addStep, endSteps, noSteps, streamTrade } from "./trade-api";
@@ -63,6 +63,8 @@ export function FrontDoor({
   const [day, setDay] = useState<number | null>(null);
   const [opened, setOpened] = useState<Record<string, string>>({});
   const [thread, setThread] = useState<Entry[]>([]);
+  // One source for the life of the page, so the live card of Your next matchup asks the API once per card.
+  const live = useMemo(() => ({ target: askTarget, passphrase: getPassphrase }), [askTarget]);
   const nextId = useRef(0);
   const [moreOpen, setMoreOpen] = useState(false);
   const newest = useRef<HTMLElement>(null);
@@ -334,8 +336,9 @@ export function FrontDoor({
 
   return (
     <>
-      {/* The Thread fills the view between the top band and the dock. Empty, it holds the ask box at its center. With
-          an Answer, it reads top to bottom, and the chips and the ask box sit at its foot, clear of the home bar. */}
+      {/* The Thread fills the view under the top band. Empty, it holds the ask box at its center. With an Answer, it
+          reads top to bottom, and the chips and the ask box sit at its foot on one solid surface that touches the bottom
+          edge. The surface pads its foot by the home bar, and drops that pad while the keyboard is open (decision 10). */}
       <section
         aria-label="Thread"
         style={{ "--door-dock": `${dockHeight}px` } as CSSProperties}
@@ -399,6 +402,7 @@ export function FrontDoor({
                   answers={answers}
                   avatars={avatars}
                   newest={newest}
+                  live={live}
                   renderOther={(entry, ref, morph) => {
                     switch (entry.kind) {
                       case "pending":
@@ -436,6 +440,7 @@ export function FrontDoor({
                         const shared = {
                           question: entry.question,
                           teamName: (id: number | null) => (id !== null && id !== team.id ? teams.find((other) => other.id === id)?.name : undefined),
+                          you: team.name,
                           onPick: (key: string, id: number | null) => open(key, id),
                         };
                         return entry.result ? (
@@ -520,17 +525,17 @@ export function FrontDoor({
               ref={dock}
               layout={off ? false : "position"}
               transition={{ layout: GLIDE }}
-              className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter bg-page/90 px-gutter pt-sp-3 pb-sp-3 backdrop-blur-md desktop:bottom-0"}`}
+              className={`flex flex-col gap-sp-3 ${empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter border-t border-rule bg-page px-gutter pt-sp-3 pb-[calc(var(--spacing-sp-3)+var(--spacing-door-safe))] desktop:bottom-0"}`}
               exit={off ? { opacity: 0, transition: fadeIn(FAST) } : undefined}
             >
               {!missed && (day === null || picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
                   {/* Until the browser reads the day, quiet placeholder chips hold the place of the chips. */}
-                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...facts }} moreOpen={moreOpen} wrap={empty} onMore={setMoreOpen} onPick={(key) => open(key)} />
+                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...shownFacts(facts, servedNow?.kickoffs ?? {}) }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
                 </motion.div>
               ) : null}
-              {/* The ask box glides on its own box too. The dock changes inside as it glides: the chips go from two lines
-                  to one row, and the dock gains its top pad and its bleed. The glide of the dock alone puts the ask box
+              {/* The ask box glides on its own box too. The dock changes inside as it glides: the dock gains its top pad
+                  and its bleed. The glide of the dock alone puts the ask box
                   about 40 px up and 16 px right at the start, so it would rise before it falls (ticket 46). */}
               <motion.div
                 {...riseIn(off, { delay: 0.08 })}

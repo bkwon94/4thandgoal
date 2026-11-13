@@ -1,0 +1,104 @@
+$ jq '.teams["6"][] | select(.topic=="playoff_race") | .block' clients/cpc/published/2026/week-09/topics.json
+# Run at 2026-11-12T21:47:36Z UTC on 2adcc0c4, on topics.json version 2 rebuilt from the saved raw week 9 (see AT-40).
+{
+  "kind": "ladder",
+  "playoff_teams": 6,
+  "rows": [
+    {
+      "roster_id": 2,
+      "name": "All You Need Is Love",
+      "rank": 1,
+      "record": "12-6",
+      "odds": 78,
+      "you": false
+    },
+    {
+      "roster_id": 6,
+      "name": "Bo Girds",
+      "rank": 2,
+      "record": "11-7",
+      "odds": 82,
+      "you": true
+    },
+    {
+      "roster_id": 5,
+      "name": "London Cooking",
+      "rank": 3,
+      "record": "11-7",
+      "odds": 80,
+      "you": false
+    },
+    {
+      "roster_id": 3,
+      "name": "Lil Fridge",
+      "rank": 4,
+      "record": "11-7",
+      "odds": 85,
+      "you": false
+    },
+    {
+      "roster_id": 1,
+      "name": "The Blue Tent",
+      "rank": 5,
+      "record": "11-7",
+      "odds": 76,
+      "you": false
+    },
+    {
+      "roster_id": 8,
+      "name": "Return of T Mac",
+      "rank": 6,
+      "record": "11-7",
+      "odds": 62,
+      "you": false
+    },
+    {
+      "roster_id": 9,
+      "name": "Maye d'force B with U",
+      "rank": 7,
+      "record": "10-8",
+      "odds": 80,
+      "you": false
+    },
+    {
+      "roster_id": 12,
+      "name": "Teehee",
+      "rank": 8,
+      "record": "8-10",
+      "odds": 49,
+      "you": false
+    },
+    {
+      "roster_id": 7,
+      "name": "To Infinity and Bijan",
+      "rank": 9,
+      "record": "8-10",
+      "odds": 6,
+      "you": false
+    },
+    {
+      "roster_id": 11,
+      "name": "Unsolicited Dak Picks",
+      "rank": 10,
+      "record": "6-12",
+      "odds": 1,
+      "you": false
+    },
+    {
+      "roster_id": 10,
+      "name": "behold the lamb",
+      "rank": 11,
+      "record": "6-12",
+      "odds": 2,
+      "you": false
+    },
+    {
+      "roster_id": 4,
+      "name": "NFC Least",
+      "rank": 12,
+      "record": "3-15",
+      "odds": 1,
+      "you": false
+    }
+  ]
+}

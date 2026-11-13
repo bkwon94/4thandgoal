@@ -1,0 +1,35 @@
+$ cd apps/site && pnpm exec vitest run src/app/page-trade.test.tsx -t "shows the plain line of a roster with no clear sell" --reporter=verbose
+# Run at 2026-11-12T22:44:15Z UTC on 2adcc0c4. No roster of cpc or norcal had an empty sell list at 22:24 to 22:46 UTC: the sell-high stream of each of the 24 rosters has "empty": null.
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+
+ ↓ src/app/page-trade.test.tsx > the trade check of Lil Fridge > sends the typed trade on to the trade check with Your team and the passphrase
+ ↓ src/app/page-trade.test.tsx > the trade check of Lil Fridge > shows the Lean, the Case, the top Bullets, and a Trade page link with the trade (AT-24)
+ ↓ src/app/page-trade.test.tsx > the trade check of Lil Fridge > leads the Case with the reason for the Lean, and the fairness line agrees with it (AT-25)
+ ↓ src/app/page-trade.test.tsx > the trade check of Lil Fridge > opens the Trade page and fills no unsure player for a trade with no named player (AT-58)
+ ↓ src/app/page-trade.test.tsx > the trade check of Lil Fridge > opens the Trade page with Your team for a tap on the trade check Topic, with no call
+ ↓ src/app/page-trade.test.tsx > the trade check of Lil Fridge > shows the line of a failed press and no Answer
+ ↓ src/app/page-trade.test.tsx > the trade ideas of Lil Fridge > shows the real offers of the find press for the weak spots of Lil Fridge (AT-26)
+ ↓ src/app/page-trade.test.tsx > the trade ideas of Lil Fridge > sends a typed question of trade ideas with the team it names as the partner
+ ↓ src/app/page-trade.test.tsx > the trade ideas of Lil Fridge > sends a typed question of trade ideas around one player, so the API can find him
+ ↓ src/app/page-trade.test.tsx > the trade ideas of Lil Fridge > sends a follow-up of trade ideas with the trade turn before it, so the API reads its limit (H18)
+ ↓ src/app/page-trade.test.tsx > the trade ideas of Lil Fridge > shows each plain step one by one before the whole Answer (AT-28)
+ ↓ src/app/page-trade.test.tsx > the trade ideas of Lil Fridge > names no inner tool and no manager word in any step or Answer
+ ↓ src/app/page-trade.test.tsx > the trade ideas of Lil Fridge > shows the near ideas with the reason under each, under a plain label, when no offer is a clear win (H21)
+ ↓ src/app/page-trade.test.tsx > the trade ideas of Lil Fridge > lists the near ideas after the picks under their own label (H21)
+ ↓ src/app/page-trade.test.tsx > the trade ideas of Lil Fridge > keeps the whole Answer in the Thread after a reload, at no cost
+ ↓ src/app/page-trade.test.tsx > sell high or buy low for Lil Fridge > names a player of the roster of Lil Fridge to sell, with the reason (AT-27)
+ ↓ src/app/page-trade.test.tsx > sell high or buy low for Lil Fridge > shows the sell list: each row with the player, his ranks, and the headline, and a tap opens the bullets (AT-32)
+ ↓ src/app/page-trade.test.tsx > sell high or buy low for Lil Fridge > sends a typed sell high question for Your team
+ ↓ src/app/page-trade.test.tsx > sell high or buy low for Lil Fridge > shows each plain step before the whole Answer
+ ✓ src/app/page-trade.test.tsx > sell high or buy low for Lil Fridge > shows the plain line of a roster with no clear sell 183ms
+ ↓ src/app/page-trade.test.tsx > sell high or buy low for Lil Fridge > names no inner tool and no manager word in any step or Answer
+ ↓ src/app/page-trade.test.tsx > an older trade Answer in the Thread > keeps a settled trade check whole, with its Lean and its link, when a new question lands
+ ↓ src/app/page-trade.test.tsx > an older trade Answer in the Thread > keeps a trade Answer in flight open, with its steps, under a newer question
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 22 skipped (23)
+   Start at  17:44:15
+   Duration  1.36s (environment 42%, import 33%, tests 14%, transform 11%)
+
+exit 0

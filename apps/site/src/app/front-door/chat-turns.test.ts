@@ -10,7 +10,7 @@ import { TURNS_MAX_CHARS, TURN_ANSWER_MAX, TURN_QUESTION_MAX, threadTurns, turns
 const LIL_FRIDGE = 3;
 const BO_GIRDS = 6;
 const teamName = (team: number) => (team === BO_GIRDS ? "Bo Girds" : undefined);
-const block = { topic: "weak_spots" as const, team: LIL_FRIDGE, fact: "RB is your weakest spot", stats: [], rows: [] };
+const block = { kind: "rows" as const, topic: "weak_spots" as const, team: LIL_FRIDGE, fact: "RB is your weakest spot", stats: [], rows: [] };
 const recap: DoorAnswer = { topic: "week_recap", fact: "Bo Girds scored 150", stats: [], rows: [], text: ["Bo Girds won.", "The median was 110."], href: null };
 const answers: Record<number, DoorAnswer[]> = { [LIL_FRIDGE]: [recap] };
 

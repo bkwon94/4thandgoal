@@ -10,24 +10,45 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import anyio
 import pytest
 from cpc import cpc_client
 from fakes import FakeJev
 from fastapi.testclient import TestClient
-from pydantic_ai.messages import ModelMessage, ModelRequest, ToolReturnPart, UserPromptPart
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelRequest,
+    ModelResponse,
+    TextPart,
+    ToolCallPart,
+    ToolReturnPart,
+    UserPromptPart,
+)
 from pydantic_ai.models.function import AgentInfo, DeltaToolCall, DeltaToolCalls, FunctionModel
+from test_nfl_game import CPC_HISTORY, RAW_WEEK_10, def_projections
+from test_start_sit import BEFORE_KICKOFF, espn_scoreboard, sleeper_scores
+from test_start_sit import RECORDED as START_SIT_RECORDED
 
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.app import create_app
 from cornerstone_api.ask import FREE_ROUTE_SECONDS, FreeRoutes
-from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt
+from cornerstone_api.claude_stream import kept_text
+from cornerstone_api.free_answer import AGENT, NO_READY_BLOCK, FreeDeps, shown_block
+from cornerstone_api.free_tools import SeasonData
+from cornerstone_api.free_topic import topic_block
+from cornerstone_api.free_wording import INSTRUCTIONS, rewrite_prompt, sentences
+from cornerstone_api.game_lock import week_kickoffs
+from cornerstone_api.grade_blocks import slot_rank_bars
 from cornerstone_api.personal_facts import PART_NAMES, live_grades
+from cornerstone_api.personal_topics import Live
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
+from cornerstone_api.start_sit import LiveWeek
 from cornerstone_api.value_models import VALUE_MODELS
 from league.history import load_saved_weeks
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.models import ChartValues, History
+from league.parse import team_name
 from league.provider.sleeper import load_raw
 from league.standings_table import season_records
 
@@ -40,6 +61,8 @@ ASK = "/clients/cpc/ask"
 LIL_FRIDGE = 3
 BO_GIRDS = 6
 INTERNAL = ("Jev", "Advisor", "Finder")
+# The live Sleeper week 10 of cpc, recorded on 2026-11-12 before the games, as Start or sit reads it.
+START_SIT_WEEK_10 = START_SIT_RECORDED / "cpc-week-10"
 
 # The route answers of each question, in the shape of the prototype run of decision 09. Each Noul missing is 0.01.
 ROUTES = {
@@ -53,6 +76,10 @@ ROUTES = {
                                 "close": ["power_rankings", "your_season"]},
     "who am i playing sunday": {"fits_topic": 0.94, "data_can_answer": 0.92, "about_league": 0.99,
                                 "topic": "next_matchup"},
+    "How does the Bears game look?": {"fits_topic": 0.2, "data_can_answer": 0.9, "about_league": 1.0,
+                                      "topic": "next_matchup", "close": ["start_sit"]},
+    "What moves happened this week?": {"fits_topic": 0.12, "data_can_answer": 0.95, "about_league": 1.0,
+                                       "topic": "position_leaders", "close": ["week_recap"]},
 }
 
 
@@ -96,8 +123,10 @@ def repo(tmp_path, fixture_history_root, fixture_nflverse_dir):
     return tmp_path
 
 
-def _api(repo: Path, raw_dir: Path, jev: FakeJev, model: FunctionModel, chart: ChartValues | None = None) -> TestClient:
-    """The test app. With `chart`, the live snapshot of the roster grades reads it, and the trending list is empty."""
+def _api(repo: Path, raw_dir: Path, jev: FakeJev, model: FunctionModel, chart: ChartValues | None = None,
+         def_projections=_no_network) -> TestClient:
+    """The test app. With `chart`, the live snapshot of the roster grades reads it, and the trending list is empty.
+    `def_projections` gives the Sleeper DEF projections of a week."""
     settings = Settings(passphrases={"cpc": PASSPHRASE}, repo=repo, result_cache_dir=repo / "results",
                         commissioner_keys={"cpc": "commissioner-test"}, ask_dir=repo / "ask",
                         rate_limit_per_minute=600)
@@ -105,7 +134,7 @@ def _api(repo: Path, raw_dir: Path, jev: FakeJev, model: FunctionModel, chart: C
     sources = Sources(client, fetch_sleeper=lambda league_id: (load_raw(raw_dir), NOW),
                       fetch_nflverse=_no_network, fetch_history_week=_no_network,
                       read_chart=_no_network if chart is None else lambda *args, **kwargs: chart,
-                      fetch_trending=list, clock=lambda: NOW)
+                      fetch_trending=list, clock=lambda: NOW, fetch_def_projections=def_projections)
     app = create_app(settings, [client], sources={"cpc": sources}, jev=jev)
     app.state.askers["cpc"].clock = lambda: NOW
     app.state.free_model = model
@@ -526,6 +555,24 @@ def test_the_instructions_ask_for_facts_only_with_no_advice_rating_or_opinion():
     assert "Give no advice, no rating, and no opinion word" in INSTRUCTIONS
 
 
+def test_the_instructions_say_nothing_about_a_thing_the_tool_results_do_not_have():
+    # B2: a typed start question got sentences such as "No Swap entries came with your lineup", and the check failed them.
+    assert "Never say that a lineup or a player has no swap, no injury status, or no lock" in INSTRUCTIONS
+
+
+def test_the_free_instructions_ask_for_only_the_final_answer_with_no_self_correction():
+    # C: a personal Answer shipped "... where you rank 11th of 12 teams... wait, that is not right: you".
+    assert "Write only the final answer. Never correct yourself in the text" in INSTRUCTIONS
+
+
+def test_an_abbreviation_inside_a_name_ends_no_sentence():
+    # B3: the split cut "Amon-Ra St. Brown" at "St.", and the check failed each half alone.
+    text = ("Start Amon-Ra St. Brown if he is active. KC Concepcion Jr. and T.J. Hockenson sit. "
+            "Brown is active, start him.")
+    assert sentences(text) == ["Start Amon-Ra St. Brown if he is active.", "KC Concepcion Jr. and T.J. Hockenson sit.",
+                               "Brown is active, start him."]
+
+
 def test_the_rewrite_removes_or_restates_each_failed_sentence_and_adds_no_claim():
     # H6: a rewrite that reworded a failed sentence kept it near the cutoff, and the second check failed it.
     prompt = rewrite_prompt(["Now is a good time to sell him."])
@@ -762,3 +809,277 @@ def test_the_instructions_pick_a_block_by_the_shape_of_the_answer_and_read_no_ti
     assert "2 teams or 2 players side by side" in INSTRUCTIONS
     assert "about one NFL player" in INSTRUCTIONS
     assert 'says "this season"' in INSTRUCTIONS
+
+
+# The kinds of the move of the recorded live week 6, as Sleeper sends them: the move feed shows each complete trade,
+# waiver claim, and free agent move, and no failed claim.
+MOVE_TYPES = ("trade", "waiver", "free_agent")
+
+
+def _feed(results: dict, prompts: int) -> dict:
+    return {"kind": "ready", "block_id": results["moves_feed"]["block_id"]}
+
+
+def test_a_question_about_the_moves_of_this_week_shows_the_transaction_feed_of_the_live_week(repo, fixture_raw_dir):
+    # AT-35: the feed reads the live week of Sleeper, which "this week" means, and code builds the block from it.
+    raw = load_raw(fixture_raw_dir)
+    moves = sorted((t for t in raw.transactions if t.status == "complete" and t.type in MOVE_TYPES),
+                   key=lambda t: -(t.model_extra or {}).get("status_updated", t.created))
+    checks = RowChecks()
+    script = Blocks([("moves_feed", {})], _feed, "Here are the moves of week 6.")
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=_choice), script.model())
+    chunks = _chunks(_ask(api, "What moves happened this week?"))
+    [feed] = _blocks(chunks)
+    assert feed["kind"] == "feed" and feed["title"] == "Week 6 moves"
+    # The strip counts every move of each day, and the rows come newest first, one per move.
+    assert sum(day["moves"] for day in feed["days"]) == len(moves) == len(feed["rows"]) + feed["more"]
+    assert [row["kind"] for row in feed["rows"]] == [t.type for t in moves][:len(feed["rows"])]
+    # A trade row shows what each side got: the 7-player trade of rosters 7 and 8.
+    trade = next(row for row in feed["rows"] if row["kind"] == "trade" and len(row["sides"]) == 2
+                 and sum(len(side["got"]) for side in row["sides"]) == 7)
+    assert {side["team"] for side in trade["sides"]} == {raw_team(raw, 7), raw_team(raw, 8)}
+    assert sorted(len(side["got"]) for side in trade["sides"]) == [3, 4]
+    # A waiver row names its team, the player it added, and its bid.
+    waiver = next(row for row in feed["rows"] if row["kind"] == "waiver")
+    assert waiver["team"] and waiver["added"] and "bid" in waiver
+    # Code built the block from the data, so the check reads the text against the moves and no row sentence.
+    assert "block_rows" not in checks.seen[0]
+    assert len(checks.seen[0]["tool_results"]["moves_feed"]["moves"]) == len(moves)
+    assert _text(chunks) == "Here are the moves of week 6."
+    assert "Reading" not in json.dumps(feed) and "block_id" not in feed
+
+
+def raw_team(raw, roster_id: int) -> str:
+    """The team name of a roster, from the name that its owner set in Sleeper."""
+    owner = next(roster.owner_id for roster in raw.rosters if roster.roster_id == roster_id)
+    return team_name(next(user for user in raw.users if user.user_id == owner))
+
+
+# The fifteen blocks of the spec, by the kind of each. The free answer reads no kind, so the kinds that the other
+# tickets give their blocks show here with no change.
+FIFTEEN_KINDS = ("lineup", "comparison", "nfl_game", "matchup", "schedule", "ladder", "slot_ranks", "trade",
+                 "rank_movers", "bye_grid", "feed", "recap", "waiver", "sell", "text")
+# The block that topic_block builds for each of its Topics, by the kind of the block. The matchup card shows twice: the
+# final card of the last game and the live card of the next game.
+TOPIC_KINDS = {"week_recap": "recap", "last_matchup": "matchup", "power_rankings": "rank_movers",
+               "playoff_race": "ladder", "your_season": "schedule", "weak_spots": "bye_grid", "stack_up": "slot_ranks",
+               "start_sit": "lineup", "next_matchup": "matchup"}
+# The kinds that topic_block does not build. moves_feed and nfl_game build the feed and the NFL game card, each in its
+# own test above. The rest need a Jev read or an analyzer run, so the free answer gives them as text.
+HAND_BUILT_KINDS = tuple(kind for kind in FIFTEEN_KINDS if kind not in TOPIC_KINDS.values())
+# The Topics file of the weekly build of cpc week 9, with the block of each league Topic, as the site fixture holds it.
+TOPICS_WEEK_9 = (Path(__file__).parents[3] / "apps" / "site" / "src" / "fixtures" / "recap" / "cpc" / "public" / "2026"
+                 / "week-09" / "topics.json")
+CPC_SIM = Path(__file__).parents[3] / "clients" / "cpc" / "published" / "2026" / "sim.json"
+
+
+def _published(folder: Path, week: int = 9) -> None:
+    """Put the Topics file of cpc week 9 and the sim of cpc in the published weeks of `folder`, at `week`."""
+    target = folder / "published" / "2026" / f"week-{week:02d}"
+    target.mkdir(parents=True, exist_ok=True)
+    shutil.copy(TOPICS_WEEK_9, target / "topics.json")
+    shutil.copy(CPC_SIM, folder / "published" / "2026" / "sim.json")
+
+
+def _shows(deps: FreeDeps, read: tuple[str, dict] | None, block_id: str) -> None:
+    """One run of Claude that makes the read `read`, if any, then shows the ready block `block_id`."""
+
+    def reply(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        returns = _returns(messages)
+        if read is not None and not returns:
+            return ModelResponse(parts=[ToolCallPart(read[0], json.dumps(read[1]), "read-1")])
+        if not any(part.tool_name == "show_block" for part in returns):
+            args = {"block": {"kind": "ready", "block_id": block_id}}
+            return ModelResponse(parts=[ToolCallPart("show_block", json.dumps(args), "show-1")])
+        return ModelResponse(parts=[TextPart("Here it is.")])
+
+    AGENT.run_sync("show it", deps=deps, model=FunctionModel(reply))
+
+
+def _shown_whole(deps: FreeDeps) -> dict:
+    """The block of the run, after a check that it shows whole, live and kept, with no row sentence."""
+    shown, rows = shown_block(deps)
+    assert rows == []
+
+    async def kept() -> list:
+        return [chunk async for chunk in kept_text("Here it is.", shown)]
+
+    [part] = [chunk for chunk in anyio.run(kept) if getattr(chunk, "type", "") == "data-block"]
+    assert part.data == shown
+    return shown
+
+
+@pytest.fixture
+def topic_data(tmp_path, repo, fixture_raw_dir, fixture_history_root, chart_week6) -> SeasonData:
+    """The data of a free answer of Bo Girds with each source of topic_block: the Topics file of cpc week 9, the live
+    league of the recorded week 6 with its chart, and the live Sleeper week 10 of cpc with its kickoffs. Each source
+    is recorded on its own date, so each block reads its own week."""
+    _published(tmp_path)
+    api = _api(repo, fixture_raw_dir, FakeJev(), Script("standings", {}, _leader).model(), chart_week6)
+    snapshot = api.app.state.sources["cpc"].snapshot(2026)
+    grades, starters = live_grades(snapshot)
+    live = Live(snapshot, grades, starters, [])
+    week = LiveWeek(raw=load_raw(START_SIT_WEEK_10), now=BEFORE_KICKOFF, tz=ET,
+                    kickoffs=week_kickoffs(2026, 10, sleeper_scores, espn_scoreboard))
+    return SeasonData(season=2026, week=9, teams={BO_GIRDS: "Bo Girds"}, history_root=fixture_history_root,
+                      points_key="pts_half_ppr", median_game=True, fetch_raw=lambda: load_raw(fixture_raw_dir),
+                      roster_id=BO_GIRDS, client_folder=tmp_path, fetch_personal=live.facts, fetch_week=lambda: week)
+
+
+@pytest.mark.parametrize(("topic", "kind"), TOPIC_KINDS.items())
+def test_the_free_answer_shows_the_block_that_topic_block_builds_for_each_topic(topic, kind, topic_data):
+    # Story 59: topic_block builds the block of the Topic from the data, the display tool shows it whole, live and
+    # kept, and the result keeps the facts for the check with no copy of the block.
+    deps = FreeDeps(data=topic_data)
+    _shows(deps, ("topic_block", {"topic": topic}), f"topic_block_{topic}")
+    shown = _shown_whole(deps)
+    assert shown["kind"] == kind
+    result = deps.results[f"topic_block_{topic}"]
+    assert result["topic"] == topic and result["team"] == "Bo Girds" and "block" not in result
+    assert result["block_id"] == f"topic_block_{topic}" and result["what_each_field_means"]
+
+
+@pytest.mark.parametrize("kind", HAND_BUILT_KINDS)
+def test_the_free_answer_shows_a_ready_block_of_each_kind_that_topic_block_does_not_build(kind, fixture_raw_dir,
+                                                                                        fixture_history_root):
+    # A data tool that builds a block of `kind` leaves it in the ready blocks of the answer by its block_id, and the
+    # display tool shows it whole, live and kept.
+    block = {"kind": kind, "title": f"A {kind} block", "rows": [{"name": "Bo Girds", "value": "114.07"}]}
+    data = SeasonData(season=2026, week=5, teams={BO_GIRDS: "Bo Girds"}, history_root=fixture_history_root,
+                      points_key="pts_half_ppr", median_game=True, fetch_raw=lambda: load_raw(fixture_raw_dir))
+    deps = FreeDeps(data=data, ready={f"{kind}_read": block})
+    _shows(deps, None, f"{kind}_read")
+    assert _shown_whole(deps) == block
+
+
+def test_the_league_topic_blocks_are_the_blocks_of_the_topics_file(topic_data):
+    published = json.loads(TOPICS_WEEK_9.read_text())["teams"][str(BO_GIRDS)]
+    for answer in published:
+        if answer["topic"] in TOPIC_KINDS and answer["topic"] != "next_matchup":
+            result = topic_block(topic_data, answer["topic"])
+            assert result["block"] == answer["block"] and result["fact"] == answer["fact"] and result["week"] == 9
+
+
+def test_the_lineup_and_the_live_card_are_by_projection_with_no_jev_read(topic_data):
+    # The free answer reads no Swap, so the lineup and Your side of the live card are the lineup by projection.
+    lineup = topic_block(topic_data, "start_sit")
+    card = topic_block(topic_data, "next_matchup")
+    assert lineup["block"]["total"] == lineup["block"]["swap_total"] == card["block"]["you"]["score"] == 121.7
+    assert not any(row["swap"] for row in lineup["block"]["rows"])
+    assert card["block"]["odds"] is not None and card["block"]["read_at"] and "read_at" not in card["card"]
+
+
+def test_the_grade_blocks_are_the_blocks_of_the_personal_topics(topic_data):
+    for topic in ("weak_spots", "stack_up"):
+        facts = topic_data.fetch_personal(topic, BO_GIRDS)
+        result = topic_block(topic_data, topic)
+        assert result["block"] == facts.block["block"] and result["team_facts"] == facts.slice
+
+
+def test_a_topic_block_with_no_source_or_no_week_says_so(fixture_raw_dir, fixture_history_root, tmp_path):
+    data = SeasonData(season=2026, week=9, teams={BO_GIRDS: "Bo Girds"}, history_root=fixture_history_root,
+                      points_key="pts_half_ppr", median_game=True, fetch_raw=lambda: load_raw(fixture_raw_dir),
+                      roster_id=BO_GIRDS, client_folder=tmp_path)
+    assert topic_block(data, "week_recap") == {"error": "No week up to week 9 has the weekly league Topics."}
+    assert topic_block(data, "stack_up") == {"error": "The live roster grades are not available."}
+    assert topic_block(data, "start_sit") == {"error": "The live week did not load."}
+    assert "error" in topic_block(data, "waiver_targets")
+
+
+def test_a_question_about_the_recap_shows_the_recap_block_of_the_weekly_build(repo, fixture_raw_dir):
+    # Story 59 at the route seam: a typed question gets the same block as the Topic, and the check reads its facts.
+    _published(repo, week=8)
+    checks = RowChecks()
+    script = Blocks([("topic_block", {"topic": "week_recap"})],
+                    lambda results, prompts: {"kind": "ready", "block_id": results["topic_block"]["block_id"]},
+                    "Here is the recap of your week.")
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=_choice), script.model())
+    chunks = _chunks(_ask(api, "how's Bo Girds doing", roster_id=BO_GIRDS))
+    [block] = _blocks(chunks)
+    [answer] = [each for each in json.loads(TOPICS_WEEK_9.read_text())["teams"][str(BO_GIRDS)]
+                if each["topic"] == "week_recap"]
+    assert block == answer["block"] and block["kind"] == "recap"
+    assert checks.seen[0]["tool_results"]["topic_block_week_recap"]["fact"] == answer["fact"]
+    assert "block_rows" not in checks.seen[0]
+    assert _text(chunks) == "Here is the recap of your week."
+
+
+def test_a_question_about_the_positions_of_your_roster_shows_the_slot_rank_bars_of_the_live_league(
+        repo, fixture_raw_dir, chart_week6):
+    # The slot rank bars come from the same live league as stack_up, for the team of the manager who asks.
+    script = Blocks([("topic_block", {"topic": "stack_up"})],
+                    lambda results, prompts: {"kind": "ready", "block_id": results["topic_block"]["block_id"]},
+                    "Here is the rank of each position of your roster.")
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=RowChecks().answer, choose=_choice), script.model(), chart_week6)
+    [block] = _blocks(_chunks(_ask(api, "how's Bo Girds doing", roster_id=BO_GIRDS)))
+    grades, _ = live_grades(api.app.state.sources["cpc"].snapshot(2026))
+    assert block == slot_rank_bars(grades[BO_GIRDS], 12)
+
+
+def test_a_ready_block_that_no_tool_built_gets_an_error_and_shows_nothing(fixture_raw_dir, fixture_history_root):
+    data = SeasonData(season=2026, week=5, teams={BO_GIRDS: "Bo Girds"}, history_root=fixture_history_root,
+                      points_key="pts_half_ppr", median_game=True, fetch_raw=lambda: load_raw(fixture_raw_dir))
+    deps = FreeDeps(data=data)
+    seen: list = []
+
+    def reply(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        returns = _returns(messages)
+        if not returns:
+            args = {"block": {"kind": "ready", "block_id": "made_up"}}
+            return ModelResponse(parts=[ToolCallPart("show_block", json.dumps(args), "show-1")])
+        seen.append(returns[-1].content)
+        return ModelResponse(parts=[TextPart("No block.")])
+
+    AGENT.run_sync("show it", deps=deps, model=FunctionModel(reply))
+    assert seen == [NO_READY_BLOCK] and shown_block(deps) is None
+
+
+def test_a_repeat_question_about_the_moves_streams_the_kept_feed_with_no_claude_call(repo, fixture_raw_dir):
+    # The key of a kept answer reads the moves again, and the ready block leaves the result the same way each time.
+    script = Blocks([("moves_feed", {})], _feed, "Here are the moves of week 6.")
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=RowChecks().answer, choose=_choice), script.model())
+    first = _chunks(_ask(api, "What moves happened this week?"))
+    second = _chunks(_ask(api, "What moves happened this week?"))
+    assert len(script.requests) == 3
+    assert _blocks(second) == _blocks(first) and _blocks(first)[0]["kind"] == "feed"
+
+
+def test_the_feed_of_a_saved_week_reads_its_saved_moves_and_a_week_with_none_says_so(repo, fixture_raw_dir):
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=Checks([True] * 2).answer, choose=_choice),
+               Script("standings", {}, _leader).model())
+    saved = _output(api, "moves_feed", {"week": 5})
+    assert saved["week"] == 5 and saved["live_week"] is False
+    assert sum(day["moves"] for day in saved["moves_per_day"]) == len(saved["moves"]) > 0
+    assert _output(api, "moves_feed", {"week": 12})["error"] == "Week 12 has no saved moves. The live week is week 6."
+
+
+@pytest.fixture
+def cpc_week_10(tmp_path, fixture_nflverse_dir):
+    """A repo with the saved weeks 1 to 9 of cpc, and the raw dir of the live cpc week 10, recorded on 2026-11-12."""
+    (tmp_path / "data" / "2026").mkdir(parents=True)
+    (tmp_path / "data" / "2026" / "history").symlink_to(CPC_HISTORY)
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
+    for cached in (tmp_path / "data" / "cache" / "nflverse").iterdir():
+        os.utime(cached)
+    return tmp_path, RAW_WEEK_10
+
+
+def test_a_question_about_the_bears_game_shows_the_nfl_game_card_with_the_gap_of_the_two_def_projections(cpc_week_10):
+    # AT-19: the Bears have a bye in week 10, so the card is their week 11 game, and code builds it from Sleeper.
+    repo, raw_dir = cpc_week_10
+    script = Blocks([("nfl_game", {"team": "Bears"})],
+                    lambda results, prompts: {"kind": "ready", "block_id": results["nfl_game"]["block_id"]},
+                    "Here is the Bears game of week 11.")
+    checks = RowChecks()
+    api = _api(repo, raw_dir, FakeJev(answer=checks.answer, choose=_choice), script.model(),
+               def_projections=def_projections)
+    chunks = _chunks(_ask(api, "How does the Bears game look?"))
+    [card] = _blocks(chunks)
+    assert card["kind"] == "nfl_game" and card["week"] == 11
+    bears, saints = (next(row for row in def_projections(2026, 11) if row["player_id"] == team) for team in ("CHI", "NO"))
+    assert card["margin"] == saints["stats"]["pts_allow"] - bears["stats"]["pts_allow"]
+    assert len(card["strip"]["defenses"]) == 32 and card["strip"]["lit"] == "NO"
+    assert len(card["pass_share"]["sides"]) == 2 and card["pass_share"]["league"] is not None
+    assert checks.seen[0]["tool_results"]["nfl_game_Bears"]["expected_margin"] == card["margin"]
+    assert _text(chunks) == "Here is the Bears game of week 11."
+    assert not any(word in json.dumps(card) for word in INTERNAL)

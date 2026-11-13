@@ -1,0 +1,32 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":6,"week":10,"total":121.7,"swap_total":121.7,"rows":[{"slot":"QB","player":"Aaron Rodgers","player_id":"96","position":"QB","nfl_team":"PIT","opponent":"CIN","kickoff":1794792000000,"projection":17.5,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Kenneth Walker III","player_id":"8151","position":"RB","nfl_team":"KC","opponent":"ATL","kickoff":1794765600000,"projection":20.1,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Kyren Williams","player_id":"8150","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":15.7,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Zay Flowers","player_id":"9997","position":"WR","nfl_team":"BAL","opponent":"LAC","kickoff":1794878100000,"projection":13.5,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Matthew Golden","player_id":"12501","position":"WR","nfl_team":"GB","opponent":"MIN","kickoff":1794765600000,"projection":12.9,"locked":false,"risk":null,"swap":null},{"slot":"TE","player":"Trey McBride","player_id":"8130","position":"TE","nfl_team":"ARI","opponent":"LAR","kickoff":1794776700000,"projection":11.7,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Parker Washington","player_id":"9487","position":"WR","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":12.8,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Blake Corum","player_id":"11586","position":"RB","nfl_team":"LAR","opponent":"ARI","kickoff":1794776700000,"projection":10.5,"locked":false,"risk":null,"swap":null},{"slot":"DEF","player":"Jacksonville Jaguars","player_id":"JAX","position":"DEF","nfl_team":"JAX","opponent":"TEN","kickoff":1794765600000,"projection":7.0,"locked":false,"risk":null,"swap":null}],"cannot_play":[{"name":"L. Jackson","status":"IR","body_part":"Thumb"}]}}
+
+data: {"type":"data-key","data":{"key":"a79095fe046745ca960094c932b987957ecf647fa80914d1f7026dd742297432"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"cbe6ddcf-f910-45c6-856e-b399a31e7ba5"}
+
+data: {"type":"text-delta","delta":"Start ","id":"cbe6ddcf-f910-45c6-856e-b399a31e7ba5"}
+
+data: {"type":"text-delta","delta":"your ","id":"cbe6ddcf-f910-45c6-856e-b399a31e7ba5"}
+
+data: {"type":"text-delta","delta":"lineup ","id":"cbe6ddcf-f910-45c6-856e-b399a31e7ba5"}
+
+data: {"type":"text-delta","delta":"by ","id":"cbe6ddcf-f910-45c6-856e-b399a31e7ba5"}
+
+data: {"type":"text-delta","delta":"projection. ","id":"cbe6ddcf-f910-45c6-856e-b399a31e7ba5"}
+
+data: {"type":"text-end","id":"cbe6ddcf-f910-45c6-856e-b399a31e7ba5"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

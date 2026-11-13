@@ -1,0 +1,32 @@
+data: {"type":"start"}
+
+data: {"type":"data-block","data":{"kind":"lineup","topic":"start_sit","team":7,"week":10,"total":90.3,"swap_total":90.3,"rows":[{"slot":"QB","player":"Jared Goff","player_id":"3163","position":"QB","nfl_team":"DET","opponent":"NE","kickoff":1794753000000,"projection":18.6,"locked":false,"risk":{"tag":"Q","body_part":"Chest","practice":"No practice report yet","pivot":"Start J. Goff if he is active. If he is ruled out, start P. Mahomes."},"swap":null},{"slot":"RB","player":"Breece Hall","player_id":"8155","position":"RB","nfl_team":"NYJ","opponent":"BUF","kickoff":1794765600000,"projection":10.3,"locked":false,"risk":null,"swap":null},{"slot":"RB","player":"Zonovan Knight","player_id":"8122","position":"RB","nfl_team":"ARI","opponent":"LAR","kickoff":1794776700000,"projection":7.5,"locked":false,"risk":{"tag":"Q","body_part":"Concussion","practice":"No practice report yet","pivot":"Start Z. Knight if he is active. If he is ruled out, start R. Stevenson."},"swap":null},{"slot":"WR","player":"Malik Nabers","player_id":"11632","position":"WR","nfl_team":"NYG","opponent":"WAS","kickoff":1794532500000,"projection":14.0,"locked":false,"risk":null,"swap":null},{"slot":"WR","player":"Ladd McConkey","player_id":"11635","position":"WR","nfl_team":"LAC","opponent":"BAL","kickoff":1794878100000,"projection":9.7,"locked":false,"risk":{"tag":"Q","body_part":"Back","practice":"No practice report yet","pivot":"Start L. McConkey if he is active. If he is ruled out, start R. Flournoy."},"swap":null},{"slot":"TE","player":"Harold Fannin Jr.","player_id":"12506","position":"TE","nfl_team":"CLE","opponent":"HOU","kickoff":1794765600000,"projection":9.3,"locked":false,"risk":{"tag":"Q","body_part":"Groin","practice":"No practice report yet","pivot":"Start H. Fannin Jr. if he is active. If he is ruled out, start K. Pitts Sr."},"swap":null},{"slot":"FLEX","player":"KC Concepcion Jr.","player_id":"13298","position":"WR","nfl_team":"CLE","opponent":"HOU","kickoff":1794765600000,"projection":8.2,"locked":false,"risk":null,"swap":null},{"slot":"FLEX","player":"Braelon Allen","player_id":"11576","position":"RB","nfl_team":"NYJ","opponent":"BUF","kickoff":1794765600000,"projection":7.4,"locked":false,"risk":null,"swap":null},{"slot":"DEF","player":"New York Giants","player_id":"NYG","position":"DEF","nfl_team":"NYG","opponent":"WAS","kickoff":1794532500000,"projection":5.3,"locked":false,"risk":null,"swap":null}],"cannot_play":[]}}
+
+data: {"type":"data-key","data":{"key":"aa62d1fc31338acae1c9699c2956a3c982383f11475a754796cbb2f945367fd1"}}
+
+data: {"type":"start-step"}
+
+data: {"type":"finish-step"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checking"}}
+
+data: {"type":"text-start","id":"44b28d29-37ae-467e-9d81-e42d9f86f56e"}
+
+data: {"type":"text-delta","delta":"Start ","id":"44b28d29-37ae-467e-9d81-e42d9f86f56e"}
+
+data: {"type":"text-delta","delta":"your ","id":"44b28d29-37ae-467e-9d81-e42d9f86f56e"}
+
+data: {"type":"text-delta","delta":"lineup ","id":"44b28d29-37ae-467e-9d81-e42d9f86f56e"}
+
+data: {"type":"text-delta","delta":"by ","id":"44b28d29-37ae-467e-9d81-e42d9f86f56e"}
+
+data: {"type":"text-delta","delta":"projection. ","id":"44b28d29-37ae-467e-9d81-e42d9f86f56e"}
+
+data: {"type":"text-end","id":"44b28d29-37ae-467e-9d81-e42d9f86f56e"}
+
+data: {"type":"data-check","id":"check","data":{"state":"checked"}}
+
+data: {"type":"finish","finishReason":"stop"}
+
+data: [DONE]
+

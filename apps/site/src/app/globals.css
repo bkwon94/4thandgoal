@@ -93,21 +93,23 @@
     /* The height of the top band: one 44px row, 8px above and below, and its 1px rule. The name is not "band", because
        max-w-band reads the container token of that name. */
     --spacing-band-height: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2) + 1px);
-    /* The front door: the empty Thread fills the view between the top band and the dock, so the ask box sits at its
-       center. The dock space and the home bar of an iPhone leave the view with the dock; the desktop tier has no dock. */
-    --spacing-door-fill: calc(100dvh - var(--spacing-band-height) - var(--spacing-dock-space) - env(safe-area-inset-bottom));
+    /* The front door: the empty Thread fills the view under the top band, so the ask box sits at its center. The front
+       door has no dock at any tier: the header sheet holds the pages (decision 10). */
+    --spacing-door-fill: calc(100dvh - var(--spacing-band-height));
     --spacing-door-fill-desktop: calc(100dvh - var(--spacing-band-height));
     /* The empty Thread pads its foot three times its head, so the ask box sits at the optical center, a little high. */
     --spacing-door-lift: calc(var(--spacing-sp-6) * 3);
-    /* The foot of a Thread with an Answer: the chips and the ask box stick above the dock and the home bar. */
-    --spacing-door-foot: calc(var(--spacing-dock-space) + env(safe-area-inset-bottom));
+    /* The foot of a Thread with an Answer: the chips and the ask box sit on one surface that touches the bottom edge.
+       The surface pads its foot by the home bar of an iPhone, so the ask box sits above the bar. */
+    --spacing-door-foot: 0px;
+    --spacing-door-safe: env(safe-area-inset-bottom);
     /* The Thread header sticks under the top band: one 44px row and 4px above and below. A new question scrolls to
        its top under both, so its bubble never hides behind them. */
     --spacing-door-head: calc(var(--spacing-touch) + 2 * var(--spacing-sp-1));
     /* The scroll-padding-top of html already keeps the top band clear, less its 1px rule. A scroll adds this margin to
        it, so the margin holds only the rule, the Thread header, and one step. */
     --spacing-door-under-head: calc(1px + var(--spacing-door-head) + var(--spacing-sp-2));
-    /* The list of all 13 Topics under "More" scrolls inside half the view, so the ask box stays on screen. */
+    /* The list of all 14 Topics under "More" scrolls inside half the view, so the ask box stays on screen. */
     --spacing-more: 50dvh;
     /* The ask box: a 44px send button in a 4px inset, so the whole box is a full tap target. */
     --spacing-send: var(--spacing-touch);
@@ -189,7 +191,7 @@
     /* The front door: the column of the empty Thread, and the sheet of Your team from the tablet tier up. */
     --container-door: 560px;
     --container-sheet: 440px;
-    /* A Suggestion chip: wide enough for a fact such as "You scored 80.11, 12th of 12", so one row holds two chips on a phone. */
+    /* The cap of a Suggestion chip: it holds a Topic name such as "Sell high or buy low", and a longer name cuts with an ellipsis. */
     --container-chip: 240px;
     /* The measure: the widest line of prose. About 68 characters keeps the eye on the next line at every tier.
        It is in ch, so the cap grows with the body size of the tier. Tables, grids, and score rows take no cap. */
@@ -234,6 +236,8 @@
        because a shadow of black reads on a dark page only as depth. */
     --color-scrim: rgb(0 0 0 / 0.45);
     --shadow-sheet: 0 -8px 40px -12px rgb(0 0 0 / 0.35);
+    /* The header sheet of the front door drops from the band, so its shadow falls down onto the dimmed page. */
+    --shadow-drop: 0 16px 32px -16px rgb(0 0 0 / 0.4);
     --shadow-ask: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.18);
 
     /* The look of the front door. Light keeps the surfaces of the brand. The .dark block below gives the "Night" look of
@@ -453,11 +457,17 @@
       padding-bottom: 0;
     }
     }
+  /* A page with the header sheet has no dock, so the body keeps no space for it. The foot of the front door holds the
+     home bar itself. */
+  body:has([data-nav="sheet"]) {
+    padding-bottom: 0;
+    }
   /* While the on-screen keyboard is open, the dock tucks away, so the foot of a Thread sticks right above the keyboard.
      --keyboard-inset is the part of the layout viewport that the keyboard covers (site/shell/keyboard.ts). The keyboard
      covers the home bar too, so the foot needs no safe area. */
   html[data-keyboard] {
     --spacing-door-foot: var(--keyboard-inset, 0px);
+    --spacing-door-safe: 0px;
     }
   :focus-visible {
     outline: 2px solid var(--color-accent);
@@ -1515,6 +1525,102 @@ html:not([data-hydrated]) [data-draw] {
         &[data-tucked] {
             translate: none;
         }
+    }
+}
+/* The header sheet of the front door drops from under the top band, as the panel reveal of transitions-dev: it opens
+   on --duration-fast with the drawer curve of iOS and closes faster, on --duration-quick, back up the way it came. A
+   drag sets an inline transform with no transition, and the release gives the transition back, so the sheet leaves
+   from where the finger let go. Visibility steps at the end of the close, so the closed sheet takes no tap and no focus.
+   Under reduced motion the sheet only fades, with no move. */
+@utility menu-sheet {
+    translate: 0 -100%;
+    opacity: 0;
+    visibility: hidden;
+    touch-action: none;
+    transition:
+        translate 180ms cubic-bezier(0.32, 0.72, 0, 1),
+        transform 180ms cubic-bezier(0.32, 0.72, 0, 1),
+        opacity 180ms ease-out,
+        visibility 180ms;
+    &[data-open] {
+        translate: 0 0;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition-duration: 280ms;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        translate: none;
+        transition:
+            opacity 150ms ease-out,
+            visibility 150ms !important;
+    }
+}
+/* The dim of the page under the open sheet. It fades in with the sheet and out a little faster. Under reduced motion
+   the fade stays, because it moves nothing. */
+@utility menu-scrim {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 180ms ease-out,
+        visibility 180ms;
+    &[data-open] {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition-duration: 280ms;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        transition:
+            opacity 150ms ease-out,
+            visibility 150ms !important;
+    }
+}
+/* The icon of the menu button turns into an X, as the icon swap of transitions-dev: the two icons share one cell and
+   cross-fade with a blur of --blur-small and a scale from 0.5, on --duration-fast. Under reduced motion they only fade. */
+@utility menu-icon {
+    display: grid;
+    & > svg {
+        grid-area: 1 / 1;
+        transition:
+            opacity 250ms ease-in-out,
+            filter 250ms ease-in-out,
+            scale 250ms ease-in-out;
+    }
+    & > svg:last-child,
+    &[data-open] > svg:first-child {
+        opacity: 0;
+        filter: blur(2px);
+        scale: 0.5;
+    }
+    &[data-open] > svg:last-child {
+        opacity: 1;
+        filter: blur(0);
+        scale: 1;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        & > svg {
+            scale: 1 !important;
+            filter: none !important;
+            transition: opacity 150ms ease-out !important;
+        }
+    }
+}
+/* The weeks under "Past weeks" grow on the grid rows, as the accordion of transitions-dev, on --duration-fast and
+   --ease-smooth-out. The chevron flips with them. Under reduced motion both step. */
+@utility menu-past {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 250ms cubic-bezier(0.22, 1, 0.36, 1);
+    &[data-open] {
+        grid-template-rows: 1fr;
+    }
+}
+@utility menu-chevron {
+    transition: scale 250ms cubic-bezier(0.22, 1, 0.36, 1);
+    &[data-open] {
+        scale: 1 -1;
     }
 }
 /* The Send Halo: a ring and a glow of the accent that grow with --halo, from 0 for an empty field to 1 for a full one.

@@ -69,6 +69,12 @@ def _no_history_fetch(league_id, season, week, out_dir):
     raise AssertionError(f"network call for history week {week}")
 
 
+def _no_kickoffs(season: int, week: int) -> dict:
+    """The scores source of a test with no recorded kickoffs. It fails as a down source does, so the live week of Start
+    or sit does not load, and a test makes no network call."""
+    raise OSError(f"no recorded kickoffs of week {week}")
+
+
 @pytest.fixture
 def repo(tmp_path, fixture_history_root, fixture_nflverse_dir):
     """A repo with the week 6 history, a fresh nflverse cache, and the cpc Playbook that the Advisor reads."""
@@ -101,6 +107,7 @@ def sources(fixture_raw_dir, chart_week6):
         fetch_history_week=_no_history_fetch,
         read_chart=lambda repo, season_start, week, lines, **_: chart_week6,
         clock=lambda: NOW, client=CLIENT, fetch_trending=_recorded_trending,
+        fetch_sleeper_scores=_no_kickoffs, fetch_espn_scoreboard=_no_kickoffs,
     )
 
 

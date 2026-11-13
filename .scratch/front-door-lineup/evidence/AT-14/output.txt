@@ -1,0 +1,26 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -p no:xdist -v tests/test_suggestions.py::test_a_starter_on_ir_lifts_start_or_sit_first_on_a_tuesday
+# Run at 2026-11-12T22:53:18Z UTC on 2adcc0c4.
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 1 item
+tests/test_suggestions.py::test_a_starter_on_ir_lifts_start_or_sit_first_on_a_tuesday PASSED [100%]
+============================== 1 passed in 0.74s ===============================
+
+# The source of each test above, from apps/api/tests/test_suggestions.py at 2adcc0c4, so a reader sees what it asserts:
+
+def test_a_starter_on_ir_lifts_start_or_sit_first_on_a_tuesday(settings, sources, fixture_raw_dir):
+    # AT-14: Etienne starts on IR, so the lift reads "1 can't play" and Start or sit leads the recap day.
+    tuesday = datetime(2026, 11, 10, 17, 0, tzinfo=UTC)
+    jev = FakeJev(answer=Lifts({"start_sit": 0.9}).answer)
+    api = _live_week_api(settings, sources, fixture_raw_dir, jev, now=tuesday)
+    body = _suggest(api, order=TUESDAY_ORDER, roster_id=ETIENNE_ON_IR).json()
+    assert body["picks"][0] == "start_sit" and body["urgent"] == ["start_sit"]
+    [lift] = [r for r in jev.requests if "lift_start_sit" in r.questions]
+    assert lift.state["topics"]["start_sit"]["name"] == "Start or sit"
+    assert lift.state["topics"]["start_sit"]["fact"] == body["facts"]["start_sit"] == "1 can't play"
+
+

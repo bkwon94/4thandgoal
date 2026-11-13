@@ -1,0 +1,34 @@
+$ cd apps/site && pnpm exec vitest run src/app/page.test.tsx -t "AT-41" --reporter=verbose
+# Run at 2026-11-12T22:53:44Z UTC on 2adcc0c4.
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-lineup/apps/site
+ ↓ src/app/page.test.tsx > the front door of cpc > has no dock and no week chip, and the menu button opens the sheet of pages (AT-45, AT-47)
+ ↓ src/app/page.test.tsx > the front door of cpc > asks for Your team in a sheet that lists the 12 teams, with no skip, no close, and no login (AT-1)
+ ↓ src/app/page.test.tsx > the front door of cpc > keeps Your team after a reload, so no sheet shows and the empty Thread asks about Lil Fridge (AT-2)
+ ↓ src/app/page.test.tsx > the front door of cpc > shows the ask box at the center of the empty Thread, with a send button that waits for a question
+ ↓ src/app/page.test.tsx > the front door of cpc > grows the halo of the send button as the field fills, full at 24 letters (decision 07)
+ ↓ src/app/page.test.tsx > the front door of cpc > opens the sheet again from the Thread, so a manager can change Your team
+ ↓ src/app/page.test.tsx > the front door of cpc > asks again when the stored team is no team of the league
+ ↓ src/app/page.test.tsx > the front door of cpc > shows no hero, no four numbers, no midseason takeover, and no tool tiles (AT-50)
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > show 3 Suggestions, each with a Topic name and one number, and More lists all 14 Topics (AT-4)
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > put the week recap first on a Tuesday (AT-5)
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > drop an opened Topic from the 3 Suggestions after a reload, and keep it in More (AT-7)
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > bring an opened Topic back when the week turns
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > show the power rankings Answer in the Thread with Read the full report to /rankings/ (AT-23)
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > link the Week recap Answer to its page
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > link the Your last matchup Answer to its page
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > link the Your next matchup Answer to its page
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > link the Playoff race Answer to its page
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > link the Your season Answer to its page
+ ↓ src/app/page.test.tsx > the Suggestions of Lil Fridge > link the Position leaders and recent trades Answer to its page
+ ↓ src/app/page.test.tsx > the front door of NorCal > lists the 12 teams of NorCal in the sheet
+ ↓ src/app/page.test.tsx > the Thread of Lil Fridge > keeps one Thread per team, so a change of Your team and a change back shows the first Thread again (AT-3)
+ ↓ src/app/page.test.tsx > the Thread of Lil Fridge > keeps each question and its Answer whole in the Thread, as a plain chat with no fold (AT-30)
+ ↓ src/app/page.test.tsx > the Thread of Lil Fridge > scrolls each new question to its top under the Thread header, and leaves the older Answers in place (AT-31)
+ ↓ src/app/page.test.tsx > the Thread of Lil Fridge > keeps the Thread after a closed tab on the same day (AT-32)
+ ↓ src/app/page.test.tsx > the Thread of Lil Fridge > starts an empty Thread when a rebuild publishes a later latest week (AT-33)
+ ↓ src/app/page.test.tsx > the Thread of Lil Fridge > empties the Thread at once on Clear, with no confirm, and keeps the opened Topics off the Suggestions (AT-36)
+ ✓ src/app/page.test.tsx > a version 1 topics.json > renders each league Topic Answer as before, with its stats, rows, and text, and no block (AT-41) 175ms
+ Test Files  1 passed (1)
+      Tests  1 passed | 26 skipped (27)
+   Start at  17:53:44
+   Duration  1.13s (environment 38%, import 34%, tests 17%, transform 11%)

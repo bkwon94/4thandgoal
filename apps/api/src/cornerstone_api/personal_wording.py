@@ -1,10 +1,11 @@
 """
 All the wording of a personal Topic: the instructions of Claude, the prompt of one Topic over its slice, the line that
-asks for a rewrite, and the Jev read of a waiver target. The check of each sentence is the free answer check.
+asks for a rewrite, the Jev read of a waiver target, and the Jev read of a Swap. The check of each sentence is the free
+answer check.
 """
 import json
 
-from league.jev_port import NoulQuestion
+from league.jev_port import ChoiceQuestion, NoulQuestion
 
 # What each fact of the slices means. Claude reads them as rules of INSTRUCTIONS, and the Jev check reads them in its
 # state, so the writer and the check read the same meaning of each fact.
@@ -36,6 +37,8 @@ Rules:
 """ + "".join(f"- {meaning}\n" for meaning in FACT_MEANINGS.values()) + """\
 - Use the depth words of `depth_means`, not your own.
 - Never do math on the numbers, and never guess what the facts do not say.
+- Write only the final answer. Never correct yourself in the text, such as with "wait" or "that is not right".
+- Say nothing about a thing that the facts do not have, such as a Swap, an injury status, or a lock.
 - Never name a tool, a file, a grade formula, or a data source. Never use a heading, a table, or a list.
 - Call the person who runs another team "the manager" of that team.
 """
@@ -51,6 +54,14 @@ TOPIC_ASKS = {
                       "of the last week, or the slot of `team_need` he fills, with at most one number. `kind` says if "
                       "he is an add this week or a stash for later weeks. Quote no FAAB bid. If `kept_players` is "
                       "empty, say plainly that no free agent beats the starters of the team this week.",
+    "start_sit": "Say who starts this week. `lineup` is the best legal lineup by projection with each Swap of "
+                 "`swap_means` in place, one entry per slot in the "
+                 "order of Sleeper, and each `projection` is in the points of the league. Name the top starters, each "
+                 "player of `cannot_play` with his status, and the `pivot` of each Questionable starter. A `locked` "
+                 "player's game has started, so he cannot move. For each Swap, the entry with `swap_over`, write one "
+                 "sentence that names both players by their full names and gives the reason from their two entries, "
+                 "such as the opponent or the stat line. If the lineup has no Swap, no Questionable starter, or no "
+                 "`locked` player, say nothing about that thing.",
 }
 
 # The two Nouls of the Jev read of one free agent, in one request with one state: the team need and his facts. An add
@@ -68,7 +79,49 @@ WAIVER_STASH = {
     "no": "{player} is a backup behind a healthy starter with a small role, so in later weeks he would still sit "
           "behind the starters of {team}."}
 
-TOPIC_NAMES = {"weak_spots": "Weak spots", "stack_up": "How you stack up", "waiver_targets": "Waiver targets"}
+# The Choice of one pair of a bench player and a starter whose slot he can fill (decision ticket 07). Its two options are
+# the two players, and the state holds the Fact sheet of each by his name.
+SWAP_QUESTION = ("Which player will score more fantasy points this week in the scoring of this league, as the {slot} "
+                 "of {team} in week {week}?")
+SWAP_BENCH = "{player}, on the bench of {team}. His Fact sheet is `players.{player}`."
+SWAP_STARTER = "{player}, the {slot} of {team} by projection. His Fact sheet is `players.{player}`."
+# The option of one player in the Choice of a typed "Start A or B?". The question is the Choice of a Swap, over the same
+# Fact sheets, and the pick is the player with the higher probability.
+COMPARE_OPTION = "{player}, a player of {team}. His Fact sheet is `players.{player}`."
+# What the comparison of two players asks of the text.
+COMPARE_ASK = ("Say which of the two players of `players` to start this week. `pick` is the player to start, from a "
+               "read of the two Fact sheets, or null when neither can play. Start with \"Start\" and the full name of "
+               "`pick`. Then give the reason in 1 to 3 short sentences from the facts of `facts` that favor him, each "
+               "with its number as `facts` shows it, such as 24%. A player in `cannot_play` cannot play this week.")
+# What a Swap means, in the slice of Start or sit, so Claude and the Jev check read the same meaning.
+SWAP_MEANING = ("An entry of `lineup` with `swap_over` is a Swap: its player starts in place of the player named in "
+                "`swap_over`, who has the higher projection and goes to the bench, because a read of the two Fact "
+                "sheets says its player will score more this week. `projected_total_with_swaps` is the projected "
+                "total of the lineup with the Swaps.")
+
+# What each fact of the Fact sheet of a player means, in the slice of Start or sit and in the state of the Jev read, so
+# Claude, the read, and the check read the same meaning.
+FACT_SHEET_MEANINGS = {
+    "projection": "The projected fantasy points of the player this week in the scoring of this league, from his "
+                  "`projected_stat_line`.",
+    "defense_against_position": "The fantasy points per game that the defense of `opponent` allows to the position of "
+                                "the player this season, its `place` among the defenses from 1, the fewest allowed, "
+                                "to `of`, the most allowed, and the league average. More allowed is a softer matchup.",
+    "team_projected_points": "The NFL points that the team of the player is projected to score this week: the "
+                             "`pts_allow` of the Sleeper DEF projection of `opponent`.",
+    "opponent_projected_points": "The NFL points that `opponent` is projected to score this week.",
+    "expected_margin": "`team_projected_points` minus `opponent_projected_points`, from the two Sleeper DEF "
+                       "projections. It is not a betting line. Below 0, the team of the player is projected behind.",
+    "team_pass_share": "The share of the plays of the team of the player this season that are passes: pass attempts "
+                       "over pass attempts and carries. `league_pass_share` is the share of all NFL teams.",
+    "last_3_weeks": "The share of the targets, the carries, and the offensive snaps of his NFL team that the player "
+                    "had in the games he played in `weeks`, the last 3 saved weeks. Null means he played no game then.",
+    "injury_status": "The injury status of Sleeper, such as Questionable, with `body_part` and the practice level "
+                     "`practice_participation`. Null `injury_status` means no injury status.",
+}
+
+TOPIC_NAMES = {"weak_spots": "Weak spots", "stack_up": "How you stack up", "waiver_targets": "Waiver targets",
+               "start_sit": "Start or sit"}
 
 REWRITE = """\
 A check found that these sentences of your Answer do not follow from the facts:
@@ -77,13 +130,14 @@ Write the whole Answer again. Keep only what the facts say, with the same rules.
 """
 
 
-def topic_prompt(topic: str, facts: dict, own: bool, question: str | None = None) -> str:
+def topic_prompt(topic: str, facts: dict, own: bool, question: str | None = None, ask: str | None = None) -> str:
     """The prompt of one Topic: what to write, the typed question if the manager typed one, whom it addresses, and the
-    slice as JSON with sorted keys, so the same facts give the same prompt."""
+    slice as JSON with sorted keys, so the same facts give the same prompt. `ask` takes the place of the ask of the
+    Topic, as the comparison of two players does for Start or sit."""
     voice = ("The manager of this team asks, so call the team \"your team\" or \"you\"." if own
              else f"The manager of another team asks, so call this team {facts['team']}.")
     typed = "" if question is None else f"The manager asks: \"{question}\". Answer that question from the facts.\n"
-    return (f"Topic: {TOPIC_NAMES[topic]}.\n{TOPIC_ASKS[topic]}\n{typed}{voice}\n\nFacts:\n"
+    return (f"Topic: {TOPIC_NAMES[topic]}.\n{ask or TOPIC_ASKS[topic]}\n{typed}{voice}\n\nFacts:\n"
             f"{json.dumps(facts, sort_keys=True, indent=1)}")
 
 
@@ -102,3 +156,21 @@ def waiver_questions(player: str, team: str, week: int) -> dict[str, NoulQuestio
     fill = {"player": player, "team": team, "week": week}
     return {key: NoulQuestion(q["text"].format(**fill), q["yes"].format(**fill), q["no"].format(**fill))
             for key, q in (("add", WAIVER_ADD), ("stash", WAIVER_STASH))}
+
+
+def swap_question(slot: str, team: str, week: int, bench: tuple[str, str],
+                  starter: tuple[str, str]) -> ChoiceQuestion:
+    """The Choice of one pair: `bench` and `starter` each hold the option key and the name of the player. The bench
+    player comes first, so a reader of the options finds him there."""
+    fill = {"slot": slot, "team": team}
+    return ChoiceQuestion(instructions=SWAP_QUESTION.format(week=week, **fill),
+                          options={bench[0]: SWAP_BENCH.format(player=bench[1], **fill),
+                                   starter[0]: SWAP_STARTER.format(player=starter[1], **fill)})
+
+
+def compare_question(slot: str, team: str, week: int, first: tuple[str, str],
+                     second: tuple[str, str]) -> ChoiceQuestion:
+    """The Choice of a typed "Start A or B?": the question of a Swap, with one option per player in the order of the
+    question. `first` and `second` each hold the option key and the name of the player."""
+    return ChoiceQuestion(instructions=SWAP_QUESTION.format(slot=slot, team=team, week=week),
+                          options={key: COMPARE_OPTION.format(player=name, team=team) for key, name in (first, second)})

@@ -1,0 +1,4 @@
+# AT-51: WebKit (Playwright webkit), 393 x 852, mobile, touch, light, at 2026-11-12T22:38:12.395Z. Bo Girds of cpc with the Week recap Answer in the Thread, then a typed question that shows the passphrase box.
+# The run focuses the passphrase box, then sets the keyboard height: the viewport goes from 852 to 516 px tall.
+{"viewport":516,"visual":516,"box":{"top":315,"bottom":369},"foot":{"top":381,"bottom":516},"focused":true,"keyboardAttr":true}
+box above the foot: true; box in view: true
