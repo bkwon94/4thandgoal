@@ -719,6 +719,17 @@ class AQuickFile(unittest.TestCase):
                 ticket = load_ticket(self.root, self.quick_file(folder, "fix-the-draw"))
                 self.assertIn(f"\nOn the branch {branch}.", ticket.description)
 
+    def test_a_push_labels_every_task_that_a_take_claimed_for_the_quick_file(self):
+        file = self.quick_file("bugs", "two-items")
+        key = "4ag: .scratch/bugs/two-items.md"
+        first = {"id": "6j2Gr9TakeTask01", "content": "First bug", "labels": [], "sectionId": self.BUGS_SECTION,
+                 "description": f"{key}\nThe first note."}
+        second = {**first, "id": "6j2Gr9TakeTask02", "content": "Second bug", "description": f"{key}\nThe second."}
+        plan = plan_push(load_ticket(self.root, file),
+                         Queue("p1", {"Bugs": self.BUGS_SECTION}, [first, second], set(queue_script.FLOW_LABELS)))
+        self.assertEqual(plan, [["task", "update", "id:6j2Gr9TakeTask01", "--labels", "in-progress"],
+                                ["task", "update", "id:6j2Gr9TakeTask02", "--labels", "in-progress"]])
+
     def test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs(self):
         self.quick_file("bugs", "fix-the-draw", status="done")
         self.commit_main()

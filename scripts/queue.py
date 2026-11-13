@@ -291,14 +291,23 @@ def project_id(projects: dict) -> str:
 def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
     """The `td` commands that make the task of the ticket match its file. Each command omits the leading `td`.
 
-    No command sets the priority or the order, because the queue owns them.
+    No command sets the priority or the order, because the queue owns them. A quick file of several items can have
+    several tasks with its key line, one for each task that `take` claimed, so the push plans each of them. Two tasks
+    plan the same `label create` or `section create`, so the second copy drops out.
     """
-    task = task_of(queue.tasks, ticket.key)
+    tasks = [task for task in queue.tasks if _key(task) == ticket.key]
     closed = ticket.status in CLOSED_STATUSES
-    if task is None:
+    if not tasks:
         # A closed ticket never enters the queue.
         return [] if closed else _plan_add(ticket, queue)
+    plan: list[list[str]] = []
+    for task in tasks:
+        plan += [command for command in _plan_task_update(ticket, task, queue) if command not in plan]
+    return plan
 
+
+def _plan_task_update(ticket: Ticket, task: dict, queue: Queue) -> list[list[str]]:
+    """The `td` commands that make one task of the ticket match its file."""
     labels = _labels(ticket, task["labels"])
     plan = [["label", "create", "--name", label] for label in labels
             if label in FLOW_LABELS and label not in queue.labels]
