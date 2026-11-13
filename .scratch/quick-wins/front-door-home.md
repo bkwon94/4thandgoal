@@ -54,8 +54,25 @@ Test verdict: pending
 
 Done condition: on a first visit with no stored passphrase, the team sheet asks for the team and then the passphrase, the chat Thread never shows the passphrase card, a passphrase already stored (for example from the analyzer) skips that step, and the header menu sheet holds a row to change it.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `e9c941ff` with `apps/site/src/app/page-ask.test.tsx` of `31ea0936`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase on the team sheet"` in `apps/site`
+
+```text
+ × asks for the team and then the passphrase on a first visit, and never in the Thread
+ × asks on the sheet when a question has no passphrase, then sends the question
+ × brings back the passphrase step as wrong after a 401, forgets the wrong one, and asks again after a new one
+ × changes the passphrase from a row of the header menu, and keeps the old one on a close
+ × marks the passphrase field of the sheet as a keyboard field while it has the focus (AT-51)
+TestingLibraryElementError: Unable to find role="dialog" and name "What is the league passphrase?"
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Change the league passphrase/`
+ Tests  5 failed | 1 passed | 15 skipped (21)
+```
+
+Green: at `31ea0936`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase on the team sheet"` in `apps/site`
+
+```text
+ Tests  6 passed | 15 skipped (21)
+```
+
 Test verdict: pending
 
 ## Comments
