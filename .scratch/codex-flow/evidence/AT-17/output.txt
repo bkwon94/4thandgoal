@@ -1,0 +1,52 @@
+$ git log --oneline main..readme-module-navigation-private
+94e7f9b1 Close the completed readme-module-navigation ticket
+4920a180 Record the Test verdicts of the Judge
+8800b549 Record six README navigation trials and audit gaps
+84a87ae7 Clarify cold trial skill catalog accounting
+0669d2f8 Record the Test verdicts of the Judge
+b575875b Record the evidence of readme-module-navigation
+85d54d46 Mark navigation documents in-review and cold trials blocked
+dad744db docs: connect app maps to module owners and tests
+6240a252 docs: plan README module navigation tickets
+3d67e6ea docs: record cold-agent navigation test procedure
+b0af7f2a docs: record README navigation coverage decision
+2317b798 docs: record README navigation task set
+5c980518 docs: map README module navigation decisions
+[exit 0]
+
+$ git reflog show readme-module-navigation-private
+94e7f9b1 readme-module-navigation-private@{0}: Branch: renamed refs/heads/readme-module-navigation to refs/heads/readme-module-navigation-private
+94e7f9b1 readme-module-navigation-private@{1}: commit: Close the completed readme-module-navigation ticket
+4920a180 readme-module-navigation-private@{2}: commit: Record the Test verdicts of the Judge
+8800b549 readme-module-navigation-private@{3}: merge readme-module-navigation-02: Fast-forward
+0669d2f8 readme-module-navigation-private@{4}: commit: Record the Test verdicts of the Judge
+b575875b readme-module-navigation-private@{5}: commit: Record the evidence of readme-module-navigation
+85d54d46 readme-module-navigation-private@{6}: commit: Mark navigation documents in-review and cold trials blocked
+dad744db readme-module-navigation-private@{7}: merge readme-module-navigation-01: Fast-forward
+6240a252 readme-module-navigation-private@{8}: commit: docs: plan README module navigation tickets
+3d67e6ea readme-module-navigation-private@{9}: commit: docs: record cold-agent navigation test procedure
+b0af7f2a readme-module-navigation-private@{10}: commit: docs: record README navigation coverage decision
+2317b798 readme-module-navigation-private@{11}: commit: docs: record README navigation task set
+5c980518 readme-module-navigation-private@{12}: commit: docs: map README module navigation decisions
+17f45a15 readme-module-navigation-private@{13}: branch: Created from main
+[exit 0]
+
+$ git log --oneline main..readme-module-navigation
+c4075810 Record the Test verdicts of the public-copy Judge
+01e6d4ef Prepare public README navigation evidence with private context redacted
+[exit 0]
+
+$ git ls-tree --name-only readme-module-navigation-private .scratch/readme-module-navigation/EVIDENCE.md .scratch/readme-module-navigation/VERDICTS.md
+.scratch/readme-module-navigation/EVIDENCE.md
+.scratch/readme-module-navigation/VERDICTS.md
+[exit 0]
+
+$ git ls-tree --name-only readme-module-navigation .scratch/readme-module-navigation/EVIDENCE.md .scratch/readme-module-navigation/VERDICTS.md
+.scratch/readme-module-navigation/EVIDENCE.md
+.scratch/readme-module-navigation/VERDICTS.md
+[exit 0]
+
+$ gh pr view 37 --json url,state,isDraft,headRefName,baseRefName,title
+{"baseRefName":"main","headRefName":"readme-module-navigation","isDraft":true,"state":"OPEN","title":"README module navigation","url":"https://github.com/bkwon94/4thandgoal/pull/37"}
+[exit 0]
+

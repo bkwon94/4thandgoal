@@ -1,0 +1,3 @@
+$ git ls-files | grep codex-plugin
+[exit 1]
+

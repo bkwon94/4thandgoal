@@ -1,0 +1,15 @@
+$ grep -n 'cpc:\|~/.Codex' AGENTS.md apps/site/AGENTS.md apps/pipeline/AGENTS.md
+[exit 1]
+
+$ git ls-files '*AGENTS.md'
+AGENTS.md
+apps/pipeline/AGENTS.md
+apps/site/AGENTS.md
+[exit 0]
+
+$ ls -l AGENTS.md apps/site/AGENTS.md apps/pipeline/AGENTS.md
+-rw-r--r--  1 brian.kwon  staff  6238 Nov 12 22:11 AGENTS.md
+-rw-r--r--  1 brian.kwon  staff  2590 Nov 11 23:01 apps/pipeline/AGENTS.md
+-rw-r--r--  1 brian.kwon  staff  1968 Nov 11 23:01 apps/site/AGENTS.md
+[exit 0]
+

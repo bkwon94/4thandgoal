@@ -1,0 +1,143 @@
+# Round 1: each session starts at the main checkout root, /Users/brian.kwon/repos/4thandgoal, on main.
+# The main checkout holds the untracked prep: .codex/config.toml, the three AGENTS.md files copied from codex-flow at d192e8a7, and .agents/skills/4ag-<name> links into the Spec worktree.
+# The profile 4ag of .codex/config.toml applies, because the project is trusted in ~/.codex/config.toml.
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at13.plan.last.txt '$4ag:plan codex-flow
+
+Run only the "Before you start" section of the skill. Stop after it, and report whether its check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+Brian, the check passed.
+
+- All required skills are available: `grilling`, `domain-modeling`, `research`, and `prototype`.
+- I read `docs/agents/issue-tracker.md` and the Workflow section of `GLOSSARY.md`.
+
+I stopped after “Before you start.” No files changed.
+
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at13.to-spec.last.txt '$4ag:to-spec codex-flow
+
+Run only the "Before you start" section of the skill. Stop after it, and report whether its check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+Brian, the check passes.
+
+- `to-spec` exists at `~/.agents/skills/to-spec/SKILL.md`.
+- `.scratch/codex-flow/MAP.md` is absent in the current worktree, so no decision tickets require review.
+
+I stop after “Before you start.”
+
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at13.to-acceptance.last.txt '$4ag:to-acceptance codex-flow
+
+Run only the "Before you start" section of the skill. Stop after it, and report whether its check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+Brian, the check fails: `.scratch/codex-flow/PRD.md` is missing in the current worktree.
+
+Run `4ag:to-spec codex-flow` first. This section requires no global skill or extra tool. I stop here.
+
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at13.to-tickets.last.txt '$4ag:to-tickets codex-flow
+
+Run only the "Before you start" section of the skill. Stop after it, and report whether its check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+Brian, the check fails at step 2 in the current worktree.
+
+- `to-tickets` is available at `~/.agents/skills/to-tickets/SKILL.md`.
+- `.scratch/codex-flow/PRD.md` is missing. `4ag:to-spec` writes it.
+- `.scratch/codex-flow/ACCEPTANCE.md` is missing. `4ag:to-acceptance` writes it.
+
+I stop here. No files change.
+
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at13.implement.last.txt '$4ag:implement codex-flow
+
+Run only the "Before you start" section of the skill. Stop after it, and report whether its check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+Brian, “Before you start” passed.
+
+- All four global skills are available.
+- The `.git` write probe and `gh` API call pass.
+- `gh auth status` passes.
+- The Spec branch holds all required files.
+- I read the spec, acceptance tests, six tickets, tracker rules, and Workflow terms.
+
+I stopped before the build stage. No files, branches, or worktrees changed.
+
+
+
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at13.review.last.txt '$4ag:review codex-flow
+
+Run only the "Before you start" section of the skill. Stop after it, and report whether its check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+Brian, the check stops at step 3.
+
+- `tdd` and `agent-browser` are available.
+- `gh auth status` passes.
+- `gh pr view codex-flow` fails: no pull request exists for that branch.
+
+No skill or tool is missing. I stop before worktree setup.
+
+# Round 2: the main checkout on main has no .scratch/codex-flow/, so these two sessions run again at the Spec worktree root. Neither section commits or calls gh.
+$ cd /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at13w.to-acceptance.last.txt '$4ag:to-acceptance codex-flow
+
+Run only the "Before you start" section of the skill. Stop after it, and report whether its check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+Brian, the “Before you start” check passed.
+
+`.scratch/codex-flow/PRD.md` exists. I read the spec and this conversation. This section requires no global skill or extra tool.
+
+I stopped before the Steps section. No files changed.
+
+$ cd /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at13w.to-tickets.last.txt '$4ag:to-tickets codex-flow
+
+Run only the "Before you start" section of the skill. Stop after it, and report whether its check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+Brian, the “Before you start” check passed.
+
+- The global `to-tickets` skill exists.
+- `PRD.md` and `ACCEPTANCE.md` exist.
+- I read both files, `issue-tracker.md`, and `state.md`.
+
+No required skill or tool is missing. I stopped before “Steps” and changed no files.
+
+# codex-flow has no open PR yet. Stage 5 of 4ag:implement opens it.
+$ gh pr list --head codex-flow --state open
+[exit 0]
+$ ls -l ~/.agents/skills/research ~/.agents/skills/grilling ~/.agents/skills/domain-modeling ~/.agents/skills/prototype ~/.agents/skills/tdd ~/.agents/skills/code-review ~/.agents/skills/resolving-merge-conflicts -d
+drwxr-xr-x  4 brian.kwon  staff  128 Jul 14 12:27 /Users/brian.kwon/.agents/skills/code-review
+drwxr-xr-x  6 brian.kwon  staff  192 Jul 27 16:57 /Users/brian.kwon/.agents/skills/domain-modeling
+drwxr-xr-x  4 brian.kwon  staff  128 Jul 27 16:57 /Users/brian.kwon/.agents/skills/grilling
+drwxr-xr-x  5 brian.kwon  staff  160 May  7  2026 /Users/brian.kwon/.agents/skills/prototype
+lrwxr-xr-x  1 brian.kwon  staff  115 Nov 12 12:33 /Users/brian.kwon/.agents/skills/research -> /Users/brian.kwon/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/1.3.1/skills/engineering/research
+drwxr-xr-x  4 brian.kwon  staff  128 Jul 14 11:38 /Users/brian.kwon/.agents/skills/resolving-merge-conflicts
+drwxr-xr-x  8 brian.kwon  staff  256 May  7  2026 /Users/brian.kwon/.agents/skills/tdd
+[exit 0]
+
+# Round 3: the review skill with an open spec PR. #37 is the open draft spec PR of readme-module-navigation, from the Codex run of AT-17. Steps 4 and 5 add a worktree and pull, so the session stops after step 3.
+$ cd /Users/brian.kwon/repos/4thandgoal && codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="low"' -o <scratch>/at13r.last.txt '$4ag:review 37
+
+Run only steps 1 to 3 of the "Before you start" section of the skill. Do not run steps 4 and 5, because they change a worktree. Stop after step 3, and report whether each check passed or which skill or tool is missing.' < /dev/null
+[exit 0]
+Last message:
+Brian, all three checks pass.
+
+1. `tdd` and `agent-browser` appear in the available skill list.
+2. `gh auth status` succeeds as `bkwon94`.
+3. [PR #37](https://github.com/bkwon94/4thandgoal/pull/37) is open and targets `main`. Its head branch is `readme-module-navigation`.
+
+I stop after step 3. No worktree changes occur.
+
+$ git worktree list   # the same before and after the run
+/Users/brian.kwon/repos/4thandgoal                                                                                                    17f45a15 [main]
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/6d42e2b2-0a8b-4a83-8539-41d47147e51d/scratchpad/evidence/codex-flow-flags  d192e8a7 (detached HEAD)
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/fa1bf6f7-2ca2-49eb-b517-d84024187277/scratchpad/main-before        1d7bfc0d (detached HEAD)
+/private/tmp/readme-navigation-trial-root                                                                                             dad744db (detached HEAD)
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/codex-flow                                                                       d192e8a7 [codex-flow]
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/front-door-fix-8                                                                 1da48ca5 (detached HEAD)
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/midseason-live                                                                   f3547bd4 [midseason-live]
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/midseason-preview                                                                ebc361e0 (detached HEAD)
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/midseason-report                                                                 b7b9ae87 [midseason-report]
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/readme-module-navigation                                                         94e7f9b1 [readme-module-navigation-private]
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/readme-module-navigation-public                                                  c4075810 [readme-module-navigation]

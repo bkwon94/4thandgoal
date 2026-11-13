@@ -1,0 +1,27 @@
+$ git diff --stat -M main...codex-flow -- .claude/plugin/skills
+ .claude/plugin/skills/implement/SKILL.md    | 12 ++++++++----
+ .claude/plugin/skills/implement/build.md    | 20 +++++++++++++-------
+ .claude/plugin/skills/implement/evidence.md |  4 ++--
+ .claude/plugin/skills/implement/judge.md    |  2 +-
+ .claude/plugin/skills/implement/pr.md       |  2 +-
+ .claude/plugin/skills/plan/SKILL.md         | 10 +++++-----
+ .claude/plugin/skills/plan/build-out.md     |  6 +++---
+ .claude/plugin/skills/review/github.md      |  6 +++---
+ .claude/plugin/skills/to-spec/SKILL.md      |  2 +-
+ .claude/plugin/skills/to-tickets/SKILL.md   |  2 +-
+ 10 files changed, 38 insertions(+), 28 deletions(-)
+[exit 0]
+
+$ git diff --name-status -M main...codex-flow -- .claude/plugin/skills
+M	.claude/plugin/skills/implement/SKILL.md
+M	.claude/plugin/skills/implement/build.md
+M	.claude/plugin/skills/implement/evidence.md
+M	.claude/plugin/skills/implement/judge.md
+M	.claude/plugin/skills/implement/pr.md
+M	.claude/plugin/skills/plan/SKILL.md
+M	.claude/plugin/skills/plan/build-out.md
+M	.claude/plugin/skills/review/github.md
+M	.claude/plugin/skills/to-spec/SKILL.md
+M	.claude/plugin/skills/to-tickets/SKILL.md
+[exit 0]
+
