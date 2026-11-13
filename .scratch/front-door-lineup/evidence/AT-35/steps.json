@@ -8,7 +8,7 @@
       "wait": 1200
     },
     {
-      "click": "[role=dialog] button:has-text(\"Bo Girds\")"
+      "click": "[role=dialog] button:has-text(\"NFC Least\")"
     },
     {
       "wait": "[aria-label=\"Suggestions\"]"
@@ -19,7 +19,7 @@
     {
       "fill": {
         "selector": "input[aria-label=\"Ask a question\"]",
-        "value": "What moves happened this week?"
+        "value": "What moves happened in week 9?"
       }
     },
     {
@@ -41,40 +41,28 @@
       "wait": 1500
     },
     {
-      "wait": "article[aria-label=\"What moves happened this week?\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
-    },
-    {
-      "wait": 1500
-    },
-    {
-      "shot": "this-week"
-    },
-    {
-      "click": "button:has-text(\"Clear\")"
-    },
-    {
-      "wait": 800
-    },
-    {
-      "fill": {
-        "selector": "input[aria-label=\"Ask a question\"]",
-        "value": "What moves happened in week 9?"
-      }
-    },
-    {
-      "click": "button[aria-label=\"Send\"]"
-    },
-    {
-      "wait": 1500
-    },
-    {
       "wait": "article[aria-label=\"What moves happened in week 9?\"]:not([aria-busy=\"true\"]):not(:has(input[type=password]))"
     },
     {
       "wait": 1500
     },
     {
-      "shot": "week-9"
+      "wait": "[data-block=\"feed\"] [data-you]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "scroll": "end"
+    },
+    {
+      "wait": 600
+    },
+    {
+      "scroll": "[data-block=\"feed\"] li:has-text(\"Kendre Miller\"):has-text(\"Sat\")"
+    },
+    {
+      "wait": 1200
     }
   ]
 }
