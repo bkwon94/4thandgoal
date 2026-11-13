@@ -1,7 +1,7 @@
 # Front door trade drops the extra player of a 1-for-2 trade
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-trade-extra-player`.
 Source: the queue task `Front door trade drops the extra player of a 1-for-2 trade`.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -33,3 +33,8 @@ Green: at `a62168c0`, `cd apps/api && uv run --exact --package cpc-api pytest -q
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-trade-extra-player`. Commits: `a79f8498`, `a62168c0`. Date: 2026-11-13.
+All 41 tests of `apps/api/tests/test_trade_topics.py` pass, and the loop of item 1 went red at `a79f8498`, then green at `a62168c0`.
+The fix adds an `"also"` key to each pick in the `data-picks` stream part, and trade ideas still read only the first pick of a side.
+Read 4 files: apps/api/src/cornerstone_api/trade_topics.py, apps/api/src/cornerstone_api/trade_wording.py, apps/api/tests/test_trade_topics.py, .scratch/bugs/trade-extra-player.md.
