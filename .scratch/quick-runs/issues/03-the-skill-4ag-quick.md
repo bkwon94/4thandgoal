@@ -12,8 +12,8 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, and AT-11
 
 - [x] The plugin holds the skill, the quick file format, and the brief of the quick Judge, in the neutral harness words of `AGENTS.md`.
 - [x] A tracked symlink makes the skill a Codex skill, and the harness rule passes.
-- [ ] The skill stops and names the skill when `diagnosing-bugs` or `tdd` is missing.
-- [ ] A mixed input starts two runs, and a feature request or six items make no branch.
-- [ ] The real Bug run on "Pick owner: week_moves names the first owner of a traded pick" goes from the task to an open PR, with red and green evidence and a Test verdict.
-- [ ] The quick Judge gives FAIL to a planted red loop of another failure and to a planted green loop of another command.
+- [x] The skill stops and names the skill when `diagnosing-bugs` or `tdd` is missing.
+- [x] A mixed input starts two runs, and a feature request or six items make no branch.
+- [x] The real Bug run on "Pick owner: week_moves names the first owner of a traded pick" goes from the task to an open PR, with red and green evidence and a Test verdict.
+- [x] The quick Judge gives FAIL to a planted red loop of another failure and to a planted green loop of another command.
 - [x] `make check-fast` passes at the root.
