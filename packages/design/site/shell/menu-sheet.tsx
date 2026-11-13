@@ -1,11 +1,12 @@
 /**
  * The menu button of the top band and the sheet of pages that it opens, on a page that has no dock, such as the front door.
- * The sheet drops from under the band with one row per page, the week row, and "Past weeks". From the desktop tier the pill bar takes its place.
+ * The sheet drops from under the band with one row per page, the week row, "Past weeks", and the rows that the page adds.
+ * From the desktop tier the pill bar takes its place.
  */
 "use client";
 
-import { CheckIcon, ChevronDownIcon, MenuIcon, XIcon } from "lucide-react";
-import { type PointerEvent as ReactPointerEvent, useEffect, useId, useRef, useState } from "react";
+import { CheckIcon, ChevronDownIcon, type LucideIcon, MenuIcon, XIcon } from "lucide-react";
+import { type PointerEvent as ReactPointerEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { ICONS } from "./dock";
 import { weekChipLabel, type NavItem, type NavKind, type WeekLink } from "./nav";
 
@@ -40,11 +41,14 @@ type MenuSheetProps = {
   current?: string;
   // The href of the open page.
   pageHref?: string;
+  // The rows that the page adds under the pages, each a MenuRow, such as the row of the front door that changes the
+  // passphrase. The app passes them, so the shell names no page.
+  rows?: ReactNode;
 };
 
 type Drag = { id: number; startY: number; lastY: number; lastT: number; speed: number; moving: boolean };
 
-export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetProps) {
+export function MenuSheet({ items: all, weeks, current, pageHref, rows }: MenuSheetProps) {
   const items = all.filter((item): item is NavItem & { kind: SheetKind } => item.kind !== "midseason");
   const [open, setOpen] = useState(false);
   const [pastOpen, setPastOpen] = useState(false);
@@ -188,13 +192,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
                     aria-current={here ? "page" : undefined}
                     className="press flex min-h-dock items-center gap-sp-3 rounded-tile px-sp-2 text-ink no-underline hover-fine:bg-raised aria-[current=page]:bg-raised"
                   >
-                    <span aria-hidden className="flex size-touch flex-none items-center justify-center rounded-tile bg-raised text-ink-2">
-                      <Icon className="size-sp-5" />
-                    </span>
-                    <span className="flex min-w-0 flex-auto flex-col">
-                      <span className="truncate text-body leading-tight font-semibold">{item.label}</span>
-                      <span className="truncate text-meta leading-tight text-mute">{NOTES[item.kind]}</span>
-                    </span>
+                    <RowFace icon={Icon} label={item.label} note={NOTES[item.kind]} />
                     {here && <CheckIcon aria-hidden data-check="" className="size-sp-5 flex-none text-accent-ink" strokeWidth={2.5} />}
                   </a>
                   {item === week && weeks.length > 0 && (
@@ -203,10 +201,40 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
                 </li>
               );
             })}
+            {/* A row of the page acts on the page, so the sheet closes once the row acts, and the page takes the focus. */}
+            {rows && <li onClick={() => setOpen(false)}>{rows}</li>}
           </ul>
         </nav>
       </div>
     </>
+  );
+}
+
+/* The icon tile, the name, and the note of one row of the sheet. */
+function RowFace({ icon: Icon, label, note }: { icon: LucideIcon; label: string; note: string }) {
+  return (
+    <>
+      <span aria-hidden className="flex size-touch flex-none items-center justify-center rounded-tile bg-raised text-ink-2">
+        <Icon className="size-sp-5" />
+      </span>
+      <span className="flex min-w-0 flex-auto flex-col">
+        <span className="truncate text-body leading-tight font-semibold">{label}</span>
+        <span className="truncate text-meta leading-tight text-mute">{note}</span>
+      </span>
+    </>
+  );
+}
+
+/* A row of the sheet that acts on the page in place of a link, with the look of the row of a page. */
+export function MenuRow({ icon, label, note, onClick }: { icon: LucideIcon; label: string; note: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="press flex min-h-dock w-full items-center gap-sp-3 rounded-tile px-sp-2 text-left text-ink hover-fine:bg-raised"
+    >
+      <RowFace icon={icon} label={label} note={note} />
+    </button>
   );
 }
 

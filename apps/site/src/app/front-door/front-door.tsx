@@ -1,6 +1,7 @@
 /**
- * The front door at /: the sheet that asks for Your team on the first visit, then the Thread with the Suggestions and
- * the ask box. A tap on a Suggestion puts its Answer in the Thread, and a typed question goes to the route of the API.
+ * The front door at /: the sheet that asks for Your team and the league passphrase on the first visit, then the Thread
+ * with the Suggestions and the ask box. A tap on a Suggestion puts its Answer in the Thread, and a typed question goes
+ * to the route of the API.
  * The browser keeps Your team, the opened Topics, the league passphrase, and one Thread per team for the week.
  */
 "use client";
@@ -19,13 +20,14 @@ import { Dock } from "./dock";
 import { turnsBefore } from "./chat-turns";
 import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem, ideasRequestOf, itemOfError, itemOfRoute, tradePartner, tradeRequestOf } from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
-import { CapCard, MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
+import { CapCard, MissCard, NoteCard, PendingCard } from "./miss-card";
 import { keepFocus, closeKeyboard } from "./keyboard-tap";
 import { FAST, GLIDE, fadeIn, riseIn } from "./motion";
 import { PersonalAnswerCard, PersonalAnswerLive } from "./personal-answer";
 import { PERSONAL_LINES, isPersonal } from "./personal-stream";
 import { getOpened, markOpened } from "./opened-store";
 import { Suggestions } from "./suggestions";
+import { onPassphraseRow } from "./passphrase-row";
 import { TeamSheet } from "./team-sheet";
 import { type Entry, Thread, personalName } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
@@ -72,6 +74,12 @@ export function FrontDoor({
   // undefined until the browser reads its store. The static page cannot know Your team, so it renders no team and no sheet.
   const [teamId, setTeamId] = useState<number | null | undefined>(undefined);
   const [picking, setPicking] = useState(false);
+  // The passphrase step of the sheet, while it shows. `leave` is the label of the way out of a step that the header menu
+  // opened, or null for a step that a question or a first visit needs. The ref runs what waits for the passphrase.
+  const [passStep, setPassStep] = useState<{ wrong: boolean; leave: string | null } | null>(null);
+  const afterPassphrase = useRef<(() => void) | null>(null);
+  // A new passphrase asks the API for the Suggestions again, so a first visit gets them once the step ends.
+  const [passphraseCount, setPassphraseCount] = useState(0);
   const [hour, setHour] = useState<number | null>(null);
   // The live facts and the urgent Topics of Your team from the API, once it answers. Until then, and with no
   // passphrase, the Suggestions come from the facts of the weekly build alone.
@@ -119,7 +127,10 @@ export function FrontDoor({
     return () => {
       live = false;
     };
-  }, [teamId, day, askTarget]);
+  }, [teamId, day, askTarget, passphraseCount]);
+
+  // The row of the header menu opens the passphrase step, so a manager can change the passphrase.
+  useEffect(() => onPassphraseRow(() => setPassStep({ wrong: false, leave: getPassphrase() ? "Keep the current one" : "Not now" })), []);
 
   // The site asks the API whether the key of each personal and trade Answer of the Thread is still current. The check
   // costs nothing. It runs again only when the set of kept Answers changes. A trade Answer with no key never checks.
@@ -182,7 +193,7 @@ export function FrontDoor({
   }, [thread, off, dockHeight]);
 
   const team = teams.find((candidate) => candidate.id === teamId) ?? null;
-  const sheetOpen = teamId === null || picking;
+  const sheetOpen = teamId === null || picking || passStep !== null;
   const mine = team ? (answers[team.id] ?? []) : [];
   const servedNow = served && team && served.team === team.id ? served.suggestions : null;
   const facts = { ...Object.fromEntries(mine.map((answer) => [answer.topic, answer.fact])), ...servedNow?.facts };
@@ -223,9 +234,20 @@ export function FrontDoor({
         onCap: (line) => put(id, { kind: "cap", question, line, closest }),
       });
     } catch (error) {
-      if (error instanceof AskError && error.status === 401) clearPassphrase();
+      // A wrong passphrase brings back the passphrase step, and the Topic runs again in its place after a new one.
+      if (error instanceof AskError && error.status === 401) {
+        put(id, { kind: "pending", question });
+        return askPassphrase(true, (fresh) => void runTrade(id, question, request, fresh, closest));
+      }
       put(id, itemOfError(error, question));
     }
+  };
+  /* Show the passphrase step of the sheet, and run `then` with the new passphrase once the manager types it. A wrong
+     passphrase leaves the store, so the step has no way out but a new one. */
+  const askPassphrase = (wrong: boolean, then: ((passphrase: string) => void) | null = null) => {
+    if (wrong) clearPassphrase();
+    afterPassphrase.current = then && (() => then(getPassphrase() ?? ""));
+    setPassStep({ wrong, leave: null });
   };
   /* Open the Answer of a Topic for `of`, Your team by default, or for the team that a typed question named. */
   const open = (key: string, of: number | null = null) => {
@@ -242,7 +264,7 @@ export function FrontDoor({
         return;
       }
       const passphrase = getPassphrase();
-      if (!passphrase) return void put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
+      if (!passphrase) return askPassphrase(false, () => open(key, of));
       // A trade Topic of Your team drops off the Suggestions until the API serves a new fact for it.
       if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
       // A tapped Topic has no closest Topics of its own, so a cap line offers the Suggestions of the day. A trade
@@ -256,7 +278,7 @@ export function FrontDoor({
     if (isPersonal(key)) {
       setMoreOpen(false);
       const name = topicName(key);
-      if (!getPassphrase()) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
+      if (!getPassphrase()) askPassphrase(false, () => open(key, of));
       else {
         // A personal Topic of Your team drops off the Suggestions until the API serves a new fact for it.
         if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
@@ -282,11 +304,9 @@ export function FrontDoor({
   const send = async (id: number, question: string, append = false) => {
     if (!team) return;
     const passphrase = getPassphrase();
-    if (!passphrase) {
-      put(id, { kind: "passphrase", question, wrong: false }, append);
-      return;
-    }
     put(id, { kind: "pending", question }, append);
+    // The question waits in its place while the sheet asks for the passphrase, then goes.
+    if (!passphrase) return askPassphrase(false, () => void send(id, question));
     try {
       const turns = turnsOf(id);
       const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns });
@@ -297,7 +317,8 @@ export function FrontDoor({
       if (mode === "ideas") return void (await runTrade(id, question, ideasRequestOf(route, question, team.id, turns), passphrase, route.closest));
       put(id, itemOfRoute(route, question, team.id, answers));
     } catch (error) {
-      if (error instanceof AskError && error.status === 401) clearPassphrase();
+      // A wrong passphrase brings back the passphrase step, and the question goes again in its place after a new one.
+      if (error instanceof AskError && error.status === 401) return askPassphrase(true, () => void send(id, question));
       put(id, itemOfError(error, question));
     }
   };
@@ -306,6 +327,9 @@ export function FrontDoor({
     void send(nextId.current++, question, true);
   };
   const pick = (id: number) => {
+    // A first visit asks for the passphrase right after the team, unless the browser keeps one, such as from the trade
+    // analyzer. A change of the team never asks.
+    if (teamId === null && !getPassphrase()) askPassphrase(false);
     setYourTeam(id);
     setTeamId(id);
     // Each team keeps its own opened Topics and its own Thread, so a quick look at another team never erases a Thread.
@@ -413,18 +437,6 @@ export function FrontDoor({
                     switch (entry.kind) {
                       case "pending":
                         return <PendingCard ref={ref} question={entry.question} />;
-                      case "passphrase":
-                        return (
-                          <PassphraseCard
-                            ref={ref}
-                            question={entry.question}
-                            wrong={entry.wrong}
-                            onPassphrase={(value) => {
-                              setPassphrase(value);
-                              void send(entry.id, entry.question);
-                            }}
-                          />
-                        );
                       case "trade": {
                         const since = entry.read ? stale[entry.read.key] : undefined;
                         const { answer } = entry;
@@ -568,7 +580,32 @@ export function FrontDoor({
         )}
       </section>
       <AnimatePresence>
-        {teamId !== undefined && sheetOpen && <TeamSheet key="sheet" siteName={siteName} teams={teams} current={team?.id ?? null} onPick={pick} />}
+        {teamId !== undefined && sheetOpen && (
+          <TeamSheet
+            key="sheet"
+            siteName={siteName}
+            teams={teams}
+            current={team?.id ?? null}
+            onPick={pick}
+            // The step shows once a team is picked, so a first visit asks for the team and then the passphrase.
+            passphrase={
+              passStep && team && !picking
+                ? {
+                    wrong: passStep.wrong,
+                    leave: passStep.leave ? { label: passStep.leave, onLeave: () => setPassStep(null) } : undefined,
+                    onPassphrase: (value) => {
+                      setPassphrase(value);
+                      setPassStep(null);
+                      setPassphraseCount((count) => count + 1);
+                      const then = afterPassphrase.current;
+                      afterPassphrase.current = null;
+                      then?.();
+                    },
+                  }
+                : null
+            }
+          />
+        )}
       </AnimatePresence>
     </>
   );

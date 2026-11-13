@@ -10,6 +10,7 @@ import { askTarget } from "@/lib/config";
 import { homeHref } from "@/lib/routes";
 import { shellProps } from "@/app/shell-props";
 import { FrontDoor } from "@/app/front-door/front-door";
+import { PassphraseRow } from "@/app/front-door/passphrase-row";
 
 /* `pageHref` is the path of the page. The front door is Home, so the hidden /ask/ passes the Home path too, and the Home row shows the check. */
 export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: string }) {
@@ -18,7 +19,8 @@ export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: st
     <>
       {/* The front door has its own foot, the Suggestions and the ask box, so the pages sit in the header sheet in place of
           the dock, and the week chip leaves: the Answers are about the live week (decision 10). */}
-      <TopBand {...shellProps()} pageHref={pageHref} nav="sheet" />
+      {/* The header sheet holds a row that changes the league passphrase, which the front door asks for on the team sheet. */}
+      <TopBand {...shellProps()} pageHref={pageHref} nav="sheet" sheetRows={door ? <PassphraseRow /> : undefined} />
       {/* The strip of each package under the top band, edge to edge, such as the egg banner after an egg drop. */}
       {homeBanners.map((Banner, index) => (
         <Banner key={index} />

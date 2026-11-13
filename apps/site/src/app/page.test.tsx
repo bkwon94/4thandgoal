@@ -51,6 +51,8 @@ describe("the front door of cpc", () => {
   });
 
   it("keeps Your team after a reload, so no sheet shows and the empty Thread asks about Lil Fridge (AT-2)", async () => {
+    // A stored passphrase skips the passphrase step of the sheet, so the pick of the team closes it.
+    localStorage.setItem("cpc.passphrase", "cornerstone-test");
     render(<HomePage />);
     const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
     fireEvent.click(within(sheet).getByRole("button", { name: /Lil Fridge/ }));

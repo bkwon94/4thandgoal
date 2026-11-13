@@ -1,14 +1,17 @@
 /**
- * The sheet that asks for Your team on the first visit. It lists the teams of the league by name, with no skip, no close,
- * and no login, because every Suggestion of the front door comes from Your team (decision 08).
+ * The sheet that asks for Your team on the first visit, then for the league passphrase when the browser keeps none. It
+ * lists the teams of the league by name, with no skip, no close, and no login, because every Suggestion of the front door
+ * comes from Your team (decision 08). The passphrase step comes back on a wrong passphrase and from the header menu.
  */
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { ArrowUpIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { useKeyboardField } from "@cpc/design/shell/keyboard";
 import type { DoorTeam } from "@/lib/data/front-door-data";
-import { FAST, QUICK, SHEET_SPRING, SMOOTH, fadeIn, staggerOf } from "./motion";
+import { FAST, QUICK, SHEET_SPRING, SMOOTH, fadeIn, riseIn, staggerOf } from "./motion";
 
 /* The check lands, then the sheet leaves, so the tap reads as done before the page changes. */
 const PICK_BEAT_MS = 420;
@@ -20,14 +23,32 @@ function ordinal(n: number): string {
   return `${n}${{ 1: "st", 2: "nd", 3: "rd" }[n % 10] ?? "th"}`;
 }
 
-export function TeamSheet({ siteName, teams, current, onPick }: { siteName: string; teams: DoorTeam[]; current: number | null; onPick: (id: number) => void }) {
+/* The passphrase step: `wrong` after the API turned the last one down. Only a step that the header menu opened has
+   `leave`, the way out with no new passphrase. A question or a first visit needs the passphrase, so its step has none. */
+export type PassphraseStep = { wrong: boolean; leave?: { label: string; onLeave: () => void }; onPassphrase: (value: string) => void };
+
+export function TeamSheet({
+  siteName,
+  teams,
+  current,
+  onPick,
+  passphrase = null,
+}: {
+  siteName: string;
+  teams: DoorTeam[];
+  current: number | null;
+  onPick: (id: number) => void;
+  // The passphrase step in place of the list of teams, or null for the list.
+  passphrase?: PassphraseStep | null;
+}) {
   const off = useMotionOff();
   const [chosen, setChosen] = useState<number | null>(current);
   const panel = useRef<HTMLDivElement>(null);
 
-  // The sheet takes the focus, and the page under it stops its scroll while the sheet is open.
+  // The sheet takes the focus, and the page under it stops its scroll while the sheet is open. A passphrase step that
+  // opens the sheet focuses its own field first, so the sheet leaves the focus there.
   useEffect(() => {
-    panel.current?.focus({ preventScroll: true });
+    if (!panel.current?.contains(document.activeElement)) panel.current?.focus({ preventScroll: true });
     const root = document.documentElement;
     const before = root.style.overflow;
     root.style.overflow = "hidden";
@@ -42,10 +63,12 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
     window.setTimeout(() => onPick(id), PICK_BEAT_MS);
   };
 
-  // The sheet is modal, so Tab cycles inside it. It has no close, so Escape does nothing.
+  // The sheet is modal, so Tab cycles inside it. The list of teams has no close, so Escape leaves only a passphrase step
+  // with a way out.
   const trap = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape") passphrase?.leave?.onLeave();
     if (event.key !== "Tab") return;
-    const buttons = [...(panel.current?.querySelectorAll<HTMLButtonElement>("button") ?? [])];
+    const buttons = [...(panel.current?.querySelectorAll<HTMLElement>("button:not(:disabled), input") ?? [])];
     const first = buttons[0];
     const last = buttons.at(-1);
     if (!first || !last) return;
@@ -60,7 +83,9 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-scrim tablet:items-center tablet:p-sp-6"
+      // The foot of the sheet is --spacing-door-foot, which holds the height of the keyboard while a field has the focus, so the
+      // passphrase field sits right above the keyboard on iOS (globals.css).
+      className="fixed inset-x-0 top-0 bottom-door-foot z-50 flex items-end justify-center bg-scrim tablet:items-center tablet:p-sp-6"
       // With motion off, the scrim and the sheet show at once, so a scan of the floor never reads them in mid-fade.
       initial={off ? false : { opacity: 0 }}
       animate={{ opacity: 1, transition: fadeIn(FAST) }}
@@ -70,8 +95,8 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
         ref={panel}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="your-team-title"
-        aria-describedby="your-team-line"
+        aria-labelledby={passphrase ? "passphrase-title" : "your-team-title"}
+        aria-describedby={passphrase ? "passphrase-line" : "your-team-line"}
         tabIndex={-1}
         onKeyDown={trap}
         className="flex max-h-[88dvh] w-full max-w-sheet flex-col rounded-t-hero border border-b-0 border-rule bg-card text-ink shadow-sheet outline-none tablet:max-h-[80dvh] tablet:rounded-hero tablet:border-b"
@@ -81,6 +106,14 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
       >
         {/* The grabber says "sheet" to a thumb. The sheet has no close, so the grabber drags nothing. */}
         <span aria-hidden className="mx-auto mt-sp-2 h-sp-1 w-sp-6 flex-none rounded-pill bg-rule tablet:hidden" />
+        {/* The steps cross-fade in the same sheet, so the passphrase reads as the next step of the team, not a new sheet. */}
+        <AnimatePresence mode="wait" initial={false}>
+        {passphrase ? (
+          <motion.div key="passphrase" className="flex min-h-0 flex-col" {...riseIn(off)} exit={{ opacity: 0, transition: fadeIn(QUICK) }}>
+            <PassphraseForm siteName={siteName} step={passphrase} />
+          </motion.div>
+        ) : (
+        <motion.div key="team" className="flex min-h-0 flex-col" initial={false} exit={{ opacity: 0, transition: fadeIn(QUICK) }}>
         <div className="flex flex-none flex-col gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3">
           <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{siteName}</span>
           <h2 id="your-team-title" className="m-0 text-score leading-tight font-bold tracking-tight">
@@ -123,8 +156,76 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
             );
           })}
         </ul>
+        </motion.div>
+        )}
+        </AnimatePresence>
       </motion.div>
     </motion.div>
+  );
+}
+
+/* The step of the league passphrase. The ask box needs it, so only managers of the league ask. The browser keeps it,
+   under the same key as the trade analyzer, so a manager types it once. */
+function PassphraseForm({ siteName, step }: { siteName: string; step: PassphraseStep }) {
+  const [value, setValue] = useState("");
+  const typed = value.trim();
+  // The field opens the keyboard as the ask box does, so the foot of the sheet moves above the keyboard for it.
+  const keyboard = useKeyboardField();
+  return (
+    <>
+      <div className="flex flex-none flex-col gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3">
+        <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{siteName}</span>
+        <h2 id="passphrase-title" className="m-0 text-score leading-tight font-bold tracking-tight">
+          What is the league passphrase?
+        </h2>
+        <p id="passphrase-line" className="m-0 text-lead leading-body text-ink-2">
+          {step.wrong ? "That passphrase did not match. Type the league passphrase again." : "Type it once. This phone keeps it."}
+        </p>
+      </div>
+      {/* The end of the step keeps the home bar of an iPhone clear. The keyboard covers the home bar, so the pad drops then. */}
+      <div className="flex flex-col gap-sp-2 px-sp-5 pt-sp-1 pb-[calc(var(--spacing-sp-4)+var(--spacing-door-safe))] tablet:pb-sp-4">
+        <form
+          aria-label="League passphrase"
+          className="flex min-h-ask items-center gap-sp-2 rounded-pill border border-rule bg-page py-sp-1 pr-sp-1 pl-sp-5 transition-[border-color] duration-150 focus-within:border-ink"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (typed) step.onPassphrase(typed);
+          }}
+        >
+          <input
+            type="password"
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+            aria-label="League passphrase"
+            placeholder="League passphrase"
+            autoComplete="current-password"
+            // The step follows a tap on a team, a question, or the menu row, so the next keys go to the field.
+            autoFocus
+            enterKeyHint="done"
+            onFocus={keyboard.onFocus}
+            onBlur={keyboard.onBlur}
+            className="min-w-0 flex-1 bg-transparent text-lead leading-tight text-ink outline-none placeholder:text-mute focus-visible:outline-none"
+          />
+          <button
+            type="submit"
+            aria-label="Use this passphrase"
+            disabled={!typed}
+            className="press flex size-send flex-none items-center justify-center rounded-full bg-accent text-on-dark transition-colors duration-150 disabled:bg-raised disabled:text-mute"
+          >
+            <ArrowUpIcon aria-hidden className="size-sp-5" strokeWidth={2.25} />
+          </button>
+        </form>
+        {step.leave && (
+          <button
+            type="button"
+            onClick={step.leave.onLeave}
+            className="press flex min-h-touch items-center self-center rounded-pill px-sp-3 text-meta leading-tight font-semibold text-mute hover-fine:text-ink"
+          >
+            {step.leave.label}
+          </button>
+        )}
+      </div>
+    </>
   );
 }
 
