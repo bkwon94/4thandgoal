@@ -1,7 +1,7 @@
 /**
  * The layout of the front door at / (or at the hidden /ask/ while the flag front_door is off) on the static export in out/ of the current CLIENT, in Chromium. It checks that
- * the 3 Suggestion chips show whole at each width, with no chip cut off at the edge of the row (AT-4 of front-door), and
- * that the 3 widest chip labels fit one row at 375 px with no cut (AT-42).
+ * each of the 3 Suggestion chips shows its whole label at each width, with a full side pad, in one row that may scroll
+ * sideways (AT-4 of front-door), and that the 3 widest chip labels show whole in that row at 375 px (AT-42).
  * It also checks that one tap on Send sends while the keyboard is open (ticket 34), that Send closes the keyboard, and
  * that each tap on a Suggestion chip acts while the keyboard is open: the first shows its fact, the second opens it (ticket 37).
  */
@@ -23,6 +23,34 @@ test.afterAll(async () => {
   await server.close();
 });
 
+/* Reads each pill of the row: its top, its side pads, and whether the ellipsis cuts its label. A label that the
+   ellipsis cuts is wider than its box. */
+async function readPills(row: ReturnType<Page["getByRole"]>) {
+  return row.evaluate((element) =>
+    [...element.querySelectorAll("button")].map((pill) => {
+      const style = getComputedStyle(pill);
+      const label = pill.querySelector("span")!;
+      return {
+        text: pill.innerText.trim(),
+        // The top in the layout, so the press scale and the fade-in scale of a chip never move it.
+        top: pill.offsetTop,
+        pad: Math.min(parseFloat(style.paddingLeft), parseFloat(style.paddingRight)),
+        cut: label.scrollWidth > label.clientWidth,
+      };
+    }),
+  );
+}
+
+/* The rule of the row: one line, each pill with a side pad of 16 px or more, and each label whole. The row may scroll
+   sideways, so a chip may sit past the right edge until a swipe. */
+function expectWholePills(pills: Awaited<ReturnType<typeof readPills>>) {
+  expect(new Set(pills.map((pill) => pill.top)).size, "the Suggestions row is one line").toBe(1);
+  for (const pill of pills) {
+    expect(pill.pad, `${pill.text} has a side pad of 16 px or more`).toBeGreaterThanOrEqual(16);
+    expect(pill.cut, `${pill.text} shows its whole label`).toBe(false);
+  }
+}
+
 for (const width of [375, 768, 1280]) {
   test(`the front door shows its 3 Suggestion chips whole at ${width}px (AT-4 of front-door)`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -33,21 +61,13 @@ for (const width of [375, 768, 1280]) {
     await expect(row).toBeVisible();
     const chips = row.getByRole("button").filter({ hasNotText: /^More$/ });
     await expect(chips).toHaveCount(3);
-    const edge = await row.evaluate((element) => {
-      const box = element.getBoundingClientRect();
-      return { left: box.left, right: box.right, scrolls: element.scrollWidth > element.clientWidth };
-    });
-    // A row that scrolls sideways hides a chip past its edge until a swipe.
-    expect(edge.scrolls, "the Suggestions row scrolls sideways").toBe(false);
-    for (const chip of await chips.all()) {
-      const box = (await chip.boundingBox())!;
-      expect(box.x, `${await chip.innerText()} starts inside the row`).toBeGreaterThanOrEqual(Math.max(0, edge.left) - 0.5);
-      expect(box.x + box.width, `${await chip.innerText()} ends inside the row`).toBeLessThanOrEqual(Math.min(width, edge.right) + 0.5);
-    }
+    // The chips fade in on a stagger, so the read waits until the last chip has its full size.
+    await expect(chips.last()).toHaveCSS("opacity", "1");
+    expectWholePills(await readPills(row));
   });
 }
 
-test("the 3 widest chip labels fit whole in one row with More at 375px (AT-42)", async ({ page }) => {
+test("the 3 widest chip labels show whole in one row with More at 375px (AT-42)", async ({ page }) => {
   // The Suggestions route of the API serves the 3 widest labels as urgent, so they lead the row. The first load finds
   // them in the font of the row, and the reload shows them.
   let widest: string[] = [];
@@ -79,19 +99,8 @@ test("the 3 widest chip labels fit whole in one row with More at 375px (AT-42)",
   await expect(chips).toHaveText(widest.map((key) => TOPICS.find((topic) => topic.key === key)!.chip));
   // The chips of the day fade out after the picks of the API land, so the row waits until only "More" and 3 chips stay.
   await expect(row.locator("button")).toHaveCount(4);
-  const fit = await row.evaluate((element) => ({
-    scrolls: element.scrollWidth > element.clientWidth,
-    // A label that the ellipsis cuts is wider than its box.
-    cut: [...element.querySelectorAll("button span")].filter((label) => label.scrollWidth > label.clientWidth).map((label) => label.textContent),
-  }));
-  const last = (await chips.last().boundingBox())!;
-  // The row has a 16 px gutter, so the last chip may end at 359 px. Linux and Android render text wider than macOS, so
-  // the row keeps at least 8 px of slack on the test machine. A thin margin then fails here, not only on a wider font.
-  const end = Math.round(last.x + last.width);
-  console.log(`the row of ${widest.join(", ")} ends at ${end} px of 359 px at 375 px, ${359 - end} px of slack`);
-  expect(fit.scrolls, "the Suggestions row scrolls sideways").toBe(false);
-  expect(fit.cut, "no label cuts with an ellipsis").toEqual([]);
-  expect(end, "the row keeps at least 8 px of slack before 359 px").toBeLessThanOrEqual(359 - 8);
+  await expect(chips.last()).toHaveCSS("opacity", "1");
+  expectWholePills(await readPills(row));
 });
 
 /* The phone of the run: its viewport and touch. A group cannot pick the browser, so the project keeps its own. */

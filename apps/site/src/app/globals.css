@@ -191,8 +191,6 @@
     /* The front door: the column of the empty Thread, and the sheet of Your team from the tablet tier up. */
     --container-door: 560px;
     --container-sheet: 440px;
-    /* The cap of a Suggestion chip: it holds a Topic name such as "Sell high or buy low", and a longer name cuts with an ellipsis. */
-    --container-chip: 240px;
     /* The measure: the widest line of prose. About 68 characters keeps the eye on the next line at every tier.
        It is in ch, so the cap grows with the body size of the tier. Tables, grids, and score rows take no cap. */
     --container-measure: 68ch;

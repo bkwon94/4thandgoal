@@ -6,9 +6,9 @@
 /* The kind says who builds the Answer: the weekly build, the API live, or the trade judge. */
 export type TopicKind = "league" | "personal" | "judgment";
 
-/* The chip is the short name on a Suggestion chip. "More" and 3 whole names do not fit 375 px, so a chip shows one or
-   two words. The 3 widest chips must fit beside "More" at 375 px, about 190 px of text. The full name shows in "More",
-   in the strip, in the question, and to a screen reader (decision 02). */
+/* The chip is the short name on a Suggestion chip. A whole name makes a wide chip, so a chip shows one or two words
+   and the row scrolls sideways less. The full name shows in "More", in the strip, in the question, and to a screen
+   reader (decision 02). */
 export type Topic = { key: string; name: string; chip: string; kind: TopicKind };
 
 /* The order of the table of the spec. "More" lists the Topics in this order. */
