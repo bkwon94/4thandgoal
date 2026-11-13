@@ -1,0 +1,36 @@
+ACCEPTANCE.md: c6c51a8aebb12a143ab3c8c2e3d23aa937f1fa1d
+EVIDENCE.md: 11b8c1f9992b61773b2888a88563fb1e27bc8a53
+
+Test verdicts
+AT-1: PASS
+AT-2: PASS
+AT-3: PASS
+AT-4: PASS
+AT-5: PASS
+AT-6: PASS
+AT-7: PASS
+AT-8: PASS
+AT-9: PASS
+AT-10: PASS
+AT-11: PASS
+AT-12: PASS
+AT-13: PASS
+AT-14: PASS
+AT-15: PASS
+AT-16: PASS
+AT-17: PASS
+AT-18: PASS
+AT-19: PASS
+AT-20: FAIL The Then line needs the quick file to hold a `Cause:` line, but `git show` of `ec33c29a` shows only the status change and the comments, with no `Cause:` line in any hunk, so the files do not show it.
+AT-21: PASS
+AT-22: PASS
+AT-23: PASS
+AT-24: PASS
+AT-25: PASS
+AT-26: PASS
+AT-27: PASS
+AT-28: PASS
+AT-29: PASS
+AT-30: PASS
+AT-31: PASS
+AT-32: PASS
