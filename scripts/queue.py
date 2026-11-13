@@ -72,6 +72,8 @@ def _feature(key: str) -> str:
 # A quick file sits in one shared folder, not in a feature folder. The folder names a fixed section of its own, and
 # the sweep never archives it, because Brian drops new tasks there from his phone.
 QUICK_SECTIONS = {"bugs": "Bugs", "quick-wins": "Quick Wins"}
+# A quick run lives on its own branch, `bug-<slug>` or `win-<slug>`, not on a spec branch named for its folder.
+QUICK_BRANCH_PREFIXES = {"bugs": "bug", "quick-wins": "win"}
 
 
 def section_name(feature: str) -> str:
@@ -198,7 +200,7 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
         f"4ag: {key}",
         f"App: {', '.join(apps)}" if apps else None,
         f"Blocked by: {blocked}" if blocked else None,
-        f"{GITHUB}/{key}" if _on_main(root, key) else f"On the spec branch {feature}.",
+        f"{GITHUB}/{key}" if _on_main(root, key) else _branch_line(key),
         _summary(text),
     ]
     if quick:
@@ -216,6 +218,14 @@ def _status(text: str) -> str:
     """The first word of the Status line of a ticket, in lowercase with no trailing punctuation, or "" when it has
     none. The tracker rule of the pipeline and of the site read it the same way."""
     return (_first(STATUS_LINE, text) or "").lower().rstrip(".,;:")
+
+
+def _branch_line(key: str) -> str:
+    """The line that names the branch of a file off main: the branch of a quick run, or the spec branch of a feature."""
+    feature = _feature(key)
+    if _is_quick(key):
+        return f"On the branch {QUICK_BRANCH_PREFIXES[feature]}-{Path(key).stem}."
+    return f"On the spec branch {feature}."
 
 
 def _is_quick(key: str) -> bool:

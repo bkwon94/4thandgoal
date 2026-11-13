@@ -713,6 +713,12 @@ class AQuickFile(unittest.TestCase):
         plan = plan_push(load_ticket(self.root, file), Queue("p1", sections, [taken], set(queue_script.FLOW_LABELS)))
         self.assertEqual(plan, [["task", "update", "id:6j2Gr9TakeTask01", "--labels", "phone,in-progress"]])
 
+    def test_a_new_quick_task_names_the_branch_of_its_run(self):
+        for folder, branch in (("bugs", "bug-fix-the-draw"), ("quick-wins", "win-fix-the-draw")):
+            with self.subTest(folder):
+                ticket = load_ticket(self.root, self.quick_file(folder, "fix-the-draw"))
+                self.assertIn(f"\nOn the branch {branch}.", ticket.description)
+
     def test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs(self):
         self.quick_file("bugs", "fix-the-draw", status="done")
         self.commit_main()
