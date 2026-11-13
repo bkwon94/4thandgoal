@@ -9,6 +9,8 @@ A new worktree has no `node_modules` and no `.venv`, and the hook installs nothi
 1. `pnpm install --frozen-lockfile` at the root of the worktree.
 2. `uv sync --all-packages` at the root of the worktree.
 
+Put Node 24 or later first on PATH (see Commits in AGENTS.md). Your own merge commits and `make check-fast` runs need it too.
+
 ## Stage 1: the build
 
 ### The Spec branch
@@ -41,8 +43,7 @@ Work only in the worktree <absolute path of .claude/worktrees/<slug>-<NN>>, on t
 Read AGENTS.md, the AGENTS.md of each app you change, .scratch/<slug>/PRD.md, .scratch/<slug>/ACCEPTANCE.md,
 and .scratch/<slug>/issues/<NN>-*.md.
 
-The prek hook needs Node 24 first on PATH. Homebrew Node 22.17 fails on the `.ts` files.
-Prefix each `make` and `git commit` with `PATH=$HOME/.nvm/versions/node/v24.15.0/bin:$PATH`.
+Put Node 24 or later first on PATH (see Commits in AGENTS.md).
 
 1. Load the skill `tdd`. Build the behavior of the ticket test-first, with real data and no mock.
 2. Tick each box of the ticket that a test or a real run proves. Leave the Status line as it is.
@@ -103,8 +104,7 @@ Fix the review findings of group <letter> of the feature <slug> in the 4thandgoa
 Work only in the worktree <absolute path of .claude/worktrees/<slug>-fix-<letter>>, on the branch <slug>-fix-<letter>.
 Read AGENTS.md, the AGENTS.md of each app you change, and .scratch/<slug>/PRD.md.
 
-The prek hook needs Node 24 first on PATH. Homebrew Node 22.17 fails on the `.ts` files.
-Prefix each `make` and `git commit` with `PATH=$HOME/.nvm/versions/node/v24.15.0/bin:$PATH`.
+Put Node 24 or later first on PATH (see Commits in AGENTS.md).
 
 The findings, each with its id, its text, and its files:
 <the findings of the group>

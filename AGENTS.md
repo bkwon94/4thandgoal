@@ -77,4 +77,5 @@ after this file, then reads one ticket in the tracker.
 ## Commits
 
 The prek hook runs `pnpm check:fast` of the site, then `make check-fast` of the pipeline and of the API, before each commit.
+The prek hook needs Node 24 or later first on PATH, because Node 22.17 cannot read the `.ts` files of `packages/design`.
 Never commit with `--no-verify`.
