@@ -1,0 +1,26 @@
+"""
+The moves of one week in a free answer: the saved weeks 1 to 9 of cpc, with one draft pick added to a real trade of
+week 5, because no saved trade of cpc moves a pick yet.
+"""
+import json
+import shutil
+
+from test_nfl_game import CPC_HISTORY, RAW_WEEK_10
+
+from cornerstone_api.free_tools import SeasonData, week_moves
+from league.provider.sleeper import load_raw
+
+
+def test_a_traded_pick_goes_to_the_roster_that_receives_it(tmp_path):
+    history = tmp_path / "history"
+    shutil.copytree(CPC_HISTORY, history)
+    path = history / "week-05" / "transactions.json"
+    transactions = json.loads(path.read_text())
+    trade = next(t for t in transactions if t["type"] == "trade" and t["roster_ids"] == [2, 6])
+    # Sleeper keeps the first owner of a pick in roster_id and the roster that receives it in owner_id.
+    trade["draft_picks"] = [{"season": "2027", "round": 2, "roster_id": 2, "previous_owner_id": 2, "owner_id": 6}]
+    path.write_text(json.dumps(transactions))
+    data = SeasonData(season=2026, week=9, teams={}, history_root=history, points_key="pts_half_ppr",
+                      median_game=True, fetch_raw=lambda: load_raw(RAW_WEEK_10))
+    moved = next(t for t in week_moves(data, 5)["trades"] if t["teams"] == ["roster 2", "roster 6"])
+    assert moved["draft_picks"] == ["2027 round 2 to roster 6"]

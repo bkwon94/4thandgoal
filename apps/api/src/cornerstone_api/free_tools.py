@@ -224,7 +224,8 @@ def week_moves(data: SeasonData, week: int) -> dict:
         {"teams": [_team(data, rid) for rid in trade.roster_ids],
          "players_moved": [{"player": data.name(pid), "to": _team(data, to), "from": _team(data, trade.drops.get(pid, to))}
                            for pid, to in trade.adds.items()],
-         "draft_picks": [f"{pick.season} round {pick.round} to {_team(data, pick.roster_id)}" for pick in trade.draft_picks]}
+         # Sleeper keeps the first owner of a pick in roster_id, and the roster that receives it in owner_id.
+         "draft_picks": [f"{pick.season} round {pick.round} to {_team(data, pick.owner_id)}" for pick in trade.draft_picks]}
         for trade in past.trades
     ]
     adds = [{"player": data.name(move.player_id), "team": _team(data, move.roster_id),
