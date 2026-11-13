@@ -93,7 +93,7 @@ Show Brian each run: the branch, the path of the quick file, the `Boundary:` lin
 Build the items in sequence, in the worktree of the run, one fresh subagent per item. The order is the order of the quick file.
 
 1. For a Bug, start a fresh subagent with the strong model. Give it the brief of a Bug below.
-2. For a Quick win with `Method: tdd`, start a fresh subagent with the default model of the harness, such as `sonnet` in Claude Code. Give it the brief of a Quick win below.
+2. For a Quick win with `Method: tdd`, start a fresh subagent with the default model. Give it the brief of a Quick win below.
 3. For a `text only` item, make the change yourself. Commit it. Fill the item as [`format.md`](format.md#a-text-only-item) shows.
 4. After each subagent, read the item in the quick file. Check that it has a `Red:` block, a `Green:` block, and for a Bug a `Cause:` line. Check that `git status --short` shows no change.
 5. Run `make check-fast BASE=main` in the worktree after the last item. It must pass.
