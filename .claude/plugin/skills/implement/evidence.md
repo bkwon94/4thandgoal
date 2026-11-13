@@ -14,7 +14,7 @@ The evidence states what the instrument showed. It holds no PASS, no FAIL, and n
 
 Run one full check for each spec (`.scratch/fast-cycle/decisions/05-grill-local-full-check.md`). It adds no wall time, because the evidence stage takes longer than the check.
 
-1. Start it first, before the first test. Run `make check` in the Spec worktree with the Bash tool `run_in_background`. Write the output to a log file outside the repo, such as `make check > <scratchpad>/<slug>-check.log 2>&1`. Use the session scratchpad if one exists, else `/tmp/<slug>-check.log`. A log in the repo is an untracked file, so the first step of stage 4 fails and the log can get into an evidence commit.
+1. Start it first, before the first test. Run `make check` in the Spec worktree, and run it in the background. Write the output to a log file in a scratch folder outside the repo, such as `make check > <scratch>/<slug>-check.log 2>&1`. A log in the repo is an untracked file, so the first step of stage 4 fails and the log can get into an evidence commit.
 2. Write down the start time.
 3. Do not start the evidence of a test until the run is live.
 
@@ -105,7 +105,7 @@ A test of both apps gets the pipeline files and the shots of its `steps.json`.
 An Evidence flag is advice from Jev about a test. It is never a Test verdict, and the Judge never sees it (ADR 0031). The command is `uv run --exact --package cornerstone cornerstone evidence-flags <slug> [AT-<n> ...]`.
 
 1. Run it on every site test after the runner round, once each test has its entry in `EVIDENCE.md`. Run it on each pipeline test after its `output.txt` is saved.
-2. Never run it in the Spec worktree while the background check is live. Run it in a detached worktree of the head commit: `git worktree add --detach <scratchpad>/<slug>-flags HEAD`. Run `uv sync --all-packages` there first. Add `--root <absolute path of the Spec worktree>`, so the command reads the evidence in place. Remove the detached worktree when you are done.
+2. Never run it in the Spec worktree while the background check is live. Run it in a detached worktree of the head commit: `git worktree add --detach <scratch>/<slug>-flags HEAD`. Run `uv sync --all-packages` there first. Add `--root <absolute path of the Spec worktree>`, so the command reads the evidence in place. Remove the detached worktree when you are done.
 3. The command writes `.scratch/<slug>/FLAGS.md`. Each entry has the heading `## AT-<n>, question (<key>)`, then `Question:`, `Probability:`, `Reason:`, and `Action: open`. With `--root`, it writes the file in the Spec worktree.
 4. The command logs `Evidence flags: <tests> tests, <flags> flags, <errors> errors, <tokens> input tokens`. A missing key or a Jev error gives no flag and exit 0. Go on.
 

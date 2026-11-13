@@ -51,6 +51,8 @@ The 4ag skills run in Claude Code and in Codex. The skill text uses neutral word
 | Load the skill `<name>` | The Skill tool. | A `$<name>` mention, or a read of the `SKILL.md` of the skill. |
 | Start a fresh subagent | The Agent tool with `subagent_type: general-purpose`. Never use `fork`, because a fork gets the context of the session. | `spawn_agent` with `fork_turns: "none"`. Keep at most 6 open at a time. Close each finished one with `close_agent`. |
 | Start the subagents at the same time, within the limit of the harness | Several Agent tool calls in one message, so they run in parallel. | `spawn_agent` for at most 6 at a time. Close each finished one with `close_agent` before you start the next. |
+| Run it in the background | The Bash tool with `run_in_background`. | A background shell command. |
+| A scratch folder outside the repo, `<scratch>` | The scratchpad of the session. | `$TMPDIR`. |
 | With the strong model | `model: opus`. | `model: "gpt-6-astra"` with `reasoning_effort: "high"`. |
 | The permission profile of the harness | The permission of the session itself. | The profile `4ag` in `.codex/config.toml`. The fix is in `docs/agents/codex.md`. |
 | The global skill `research` | `mattpocock-skills:research`. | `mattpocock-skills:research` in the skill list. It counts as present when `~/.agents/skills/research/SKILL.md` exists. |
