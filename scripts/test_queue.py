@@ -692,10 +692,14 @@ class AQuickFile(unittest.TestCase):
 
     def test_a_moved_quick_task_goes_to_its_mapped_section(self):
         file = self.quick_file("quick-wins", "move-me")
-        task = {**self.TASK, "content": "move-me Fix the move-me", "sectionId": "other",
+        task = {**self.TASK, "content": "Fix the move-me", "sectionId": "other",
                 "description": "4ag: .scratch/quick-wins/move-me.md"}
         plan = plan_push(load_ticket(self.root, file), Queue("p1", {}, [task], queue().labels))
         self.assertIn(["task", "move", f"id:{task['id']}", "--project", "id:p1", "--section", "Quick Wins"], plan)
+
+    def test_a_quick_file_has_no_number_and_its_title_is_its_h1_alone(self):
+        ticket = load_ticket(self.root, self.quick_file("bugs", "pick-owner"))
+        self.assertEqual(ticket.title, "Fix the pick-owner")
 
     def test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs(self):
         self.quick_file("bugs", "fix-the-draw", status="done")

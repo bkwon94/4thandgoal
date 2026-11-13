@@ -180,6 +180,7 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
     path = Path(key)
     number, name = H1.search(text).groups()
     number = number or path.name.split("-")[0]
+    quick = _is_quick(key)
     decision = _is_decision(path)
     status = _status(text)
     if decision and status == "open":
@@ -200,8 +201,13 @@ def ticket_of(root: Path, key: str, text: str, read: Reader) -> Ticket:
         f"{GITHUB}/{key}" if _on_main(root, key) else f"On the spec branch {feature}.",
         _summary(text),
     ]
+    if quick:
+        # A quick file has no number. Its slug is not a number, so the title is the H1 alone.
+        title = name
+    else:
+        title = f"Decision {number}: {name}" if decision else f"{number} {name}"
     return Ticket(
-        key=key, feature=feature, title=f"Decision {number}: {name}" if decision else f"{number} {name}",
+        key=key, feature=feature, title=title,
         status=status, decision=decision, apps=apps, description="\n".join(line for line in lines if line),
     )
 
@@ -210,6 +216,11 @@ def _status(text: str) -> str:
     """The first word of the Status line of a ticket, in lowercase with no trailing punctuation, or "" when it has
     none. The tracker rule of the pipeline and of the site read it the same way."""
     return (_first(STATUS_LINE, text) or "").lower().rstrip(".,;:")
+
+
+def _is_quick(key: str) -> bool:
+    """Whether the file of the key is a quick file, `.scratch/bugs/<slug>.md` or `.scratch/quick-wins/<slug>.md`."""
+    return _feature(key) in QUICK_SECTIONS
 
 
 def _is_decision(path: Path) -> bool:
