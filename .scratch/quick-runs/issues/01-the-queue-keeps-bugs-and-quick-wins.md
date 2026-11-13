@@ -8,7 +8,7 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-6, AT-7, AT-8, AT-9, and
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A push of a quick file under `.scratch/bugs/` plans a task in `Bugs` and no section `bugs`.
 - [x] Two pushes of quick files under `.scratch/quick-wins/` into a queue with no `Quick Wins` make that section once.
