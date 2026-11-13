@@ -59,6 +59,7 @@ The 4ag skills run in Claude Code and in Codex. The skill text uses neutral word
 | With the strong model | `model: opus`. | `model: "gpt-6-astra"` with `reasoning_effort: "high"`. |
 | The permission profile of the harness | The permission of the session itself. | The profile `4ag` in `.codex/config.toml`. The fix is in `docs/agents/codex.md`. |
 | The global skill `research` | `mattpocock-skills:research`. | `mattpocock-skills:research` in the skill list. It counts as present when `~/.agents/skills/research/SKILL.md` exists. |
+| The global skill `diagnosing-bugs` | `mattpocock-skills:diagnosing-bugs`. | `mattpocock-skills:diagnosing-bugs` in the skill list. It counts as present when `~/.agents/skills/diagnosing-bugs/SKILL.md` exists. Step 8 of `docs/agents/codex.md` installs it. |
 
 Each other global skill has the same name in both harnesses.
 

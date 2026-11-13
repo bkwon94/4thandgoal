@@ -22,7 +22,7 @@ The steps below hold the other calls.
 
 Write no file and make no branch before these checks pass.
 
-1. Check that these global skills are in the available skill list: `diagnosing-bugs`, `tdd`. The `4ag` skills ship with this skill, so do not check them.
+1. Check that these global skills are in the available skill list: `diagnosing-bugs` and `tdd`. The table "The harness words" in `AGENTS.md` gives the name of `diagnosing-bugs` in each harness. The `4ag` skills ship with this skill, so do not check them.
 2. If one is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps. In Codex, the install step of `diagnosing-bugs` is step 8 of `docs/agents/codex.md`.
 3. Check that the sandbox allows a write to `.git` and a call of `gh`. Run these two commands in the main checkout:
    - `test -w "$(git rev-parse --git-common-dir)"`
