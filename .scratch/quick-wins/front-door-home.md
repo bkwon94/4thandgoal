@@ -78,3 +78,4 @@ Test verdict: pending
 ## Comments
 
 - Item 1 was text only at the go. The flag switch failed 10 site tests that pin the repo clients to `front_door = false`, so item 1 moved to tdd.
+- Item 1 also failed the 3 floor tests "covers no page title", because they opened `/`, which has no week chip on the front door. Fix `79c24cc9` opens the latest week page. Floor: cpc 153 passed, 7 skipped; norcal 149 passed.
