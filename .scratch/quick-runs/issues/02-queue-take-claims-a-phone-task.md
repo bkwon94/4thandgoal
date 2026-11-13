@@ -8,7 +8,7 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-4 and AT-5.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A test shows that `take` plans one update that puts the key line first and keeps the old description.
 - [x] A test shows that `take` of an unknown name plans no command and exits 0.
