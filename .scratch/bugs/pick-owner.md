@@ -1,7 +1,7 @@
 # Pick owner: week_moves names the first owner of a traded pick
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-pick-owner`.
 Source: the queue task `Pick owner: week_moves names the first owner of a traded pick`.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -32,3 +32,8 @@ Green: at `ef0265bb`, `cd apps/api && uv run --exact --package cpc-api pytest -q
 Test verdict: PASS
 
 ## Comments
+
+- Closes with the squash merge of the PR of `bug-pick-owner`. Commits: `87342a8a`, `ef0265bb`. Date: 2026-11-13.
+- The loop `tests/test_week_moves.py` went red at `87342a8a` with `roster 2 != roster 6`, then green at `ef0265bb` with 1 passed; `make check-fast` ran 2012 tests.
+- No saved cpc trade moves a draft pick, so the loop adds one pick to the real week 5 trade in a copy of the history.
+- Read 5 files: AGENTS.md, apps/api/src/cornerstone_api/free_tools.py, apps/api/tests/test_week_moves.py, .scratch/bugs/pick-owner.md, .claude/plugin/skills/quick/format.md.
