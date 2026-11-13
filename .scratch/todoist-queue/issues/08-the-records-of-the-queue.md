@@ -8,9 +8,15 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-30 and AT-31.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] ADR 0032 exists, says it amends ADR 0021, and appears in `docs/adr/README.md` if that file lists the ADRs.
 - [x] `docs/agents/issue-tracker.md` names the queue, its labels, the key line, and the script.
 - [x] `docs/agents/triage-labels.md` gives the queue label of each status.
 - [x] A grep of `.github/` and the Makefiles finds `td` and the script only in the `scripts-check` target.
+
+## Comments
+
+Closes with the squash merge of the spec PR. The branch `todoist-queue` holds commit `13594587`, built on 2026-11-12.
+Proof: ADR 0032 and the two docs name the queue, its labels, the key line, and the script, as AT-30 records.
+Read 3 files: .scratch/todoist-queue/PRD.md, .scratch/todoist-queue/ACCEPTANCE.md, .scratch/todoist-queue/VERDICTS.md.

@@ -8,9 +8,15 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-29.
 
 **Blocked by:** 04 and 05
 
-**Status:** in-review
+**Status:** done
 
 - [x] Each of the six skills starts with the merge sweep.
 - [x] Each row of the push table has a call in its skill, at its step.
 - [x] Each skill tells the agent to name each missed push in the final report.
 - [x] A grep of the skills for the script, laid beside the push table, shows no gap.
+
+## Comments
+
+Closes with the squash merge of the spec PR. The branch `todoist-queue` holds commit `4e169391`, built on 2026-11-12.
+Proof: A grep of the skills beside the push table shows no gap, as AT-29 records.
+Read 3 files: .scratch/todoist-queue/PRD.md, .scratch/todoist-queue/ACCEPTANCE.md, .scratch/todoist-queue/VERDICTS.md.

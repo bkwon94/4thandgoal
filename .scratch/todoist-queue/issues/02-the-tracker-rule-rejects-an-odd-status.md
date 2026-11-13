@@ -8,9 +8,15 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-28.
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] A new case in each tracker rule test fails a ticket at `backlog` and names it.
 - [x] A ticket with no `Status:` line still passes.
 - [x] A planted ticket at `backlog` fails both rules by name in a real run, and the planted file is removed after.
 - [x] `make check-fast` passes on the audited tracker.
+
+## Comments
+
+Closes with the squash merge of the spec PR. The branch `todoist-queue` holds commit `b222009b`, built on 2026-11-12.
+Proof: Both tracker rules pass with 3 new pipeline tests and 2 new site tests, and both pass on the real tree.
+Read 3 files: .scratch/todoist-queue/PRD.md, .scratch/todoist-queue/ACCEPTANCE.md, .scratch/todoist-queue/VERDICTS.md.

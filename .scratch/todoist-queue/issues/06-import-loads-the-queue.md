@@ -8,7 +8,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Blocked by:** 01, 03, and 05
 
-**Status:** in-review
+**Status:** done
 
 - [x] The unit tests check the plan of `import`, including the choice of the live spec branches.
 - [x] The real import loads `12 Drop awards from the managers entry` in the section `manager-pages` with `ready-for-agent`, `pipeline`, and the full description.
@@ -18,3 +18,9 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 - [x] Each label, `Ideas`, and the filter exist once after a second import.
 - [x] A second `import --dry-run` plans zero writes, and it runs under `env -i` with no `td` error.
 - [x] `make check-scripts` passes and lists the cases of the script tests.
+
+## Comments
+
+Closes with the squash merge of the spec PR. The branch `todoist-queue` holds commit `247d53c4`, built on 2026-11-12.
+Proof: The root scripts pass 114 tests, and the real import loaded the queue, with a second dry run of 0 commands.
+Read 3 files: .scratch/todoist-queue/PRD.md, .scratch/todoist-queue/ACCEPTANCE.md, .scratch/todoist-queue/VERDICTS.md.

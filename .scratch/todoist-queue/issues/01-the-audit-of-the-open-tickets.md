@@ -8,7 +8,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-26 and AT-27.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] `audit.md` lists each open ticket of `main` once, under its feature, with a result.
 - [x] Each `done` line names a commit that exists in `git log`.
@@ -23,3 +23,7 @@ Built on the spec branch `todoist-queue` on 2026-11-12. Three audit agents wrote
 Proof: 71 tickets audited, 44 done, 21 wontfix, 6 open; each named commit passed `git cat-file -e`.
 Later: ticket 06 adds buy low from `front-door` 12 to the Ideas section after the import makes it.
 Read 3 files: .scratch/todoist-queue/audit.md, docs/agents/state.md, docs/agents/issue-tracker.md.
+
+Closes with the squash merge of the spec PR. The branch `todoist-queue` holds commit `9bb3994b`, built on 2026-11-12.
+Proof: The audit report `audit.md` holds each approved line, and the tracker rules pass on the audited tree.
+Read 3 files: .scratch/todoist-queue/PRD.md, .scratch/todoist-queue/ACCEPTANCE.md, .scratch/todoist-queue/VERDICTS.md.

@@ -8,7 +8,7 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-8, AT-9, AT-10, AT-11
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [ ] The unit tests check the plan of `push` with real ticket files and saved real `td` JSON, with no mock and no network.
 - [x] A second `push` of the same file plans zero writes.
@@ -18,3 +18,9 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-8, AT-9, AT-10, AT-11
 - [x] A real `push` with an invalid token exits 0 with one warning line that names the ticket.
 - [x] `--dry-run` sends nothing, and the task count stays the same.
 - [x] A new comment in the file adds no Todoist comment and does not change the description.
+
+## Comments
+
+Closes with the squash merge of the spec PR. The branch `todoist-queue` holds commit `57c275bb`, built on 2026-11-12.
+Proof: The root scripts pass 114 tests, and AT-8 to AT-13 hold real runs on the throwaway feature.
+Read 3 files: .scratch/todoist-queue/PRD.md, .scratch/todoist-queue/ACCEPTANCE.md, .scratch/todoist-queue/VERDICTS.md.

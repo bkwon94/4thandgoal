@@ -8,10 +8,16 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-17, AT-18, AT-19, AT-
 
 **Blocked by:** 03
 
-**Status:** in-review
+**Status:** done
 
 - [x] The unit tests check the plan of `wait` and `sweep` with saved real `td` and `gh` JSON, including an open PR.
 - [x] A real `wait` makes `Approve PRD` with `ready-for-human`, and `--done` completes it.
 - [x] A real `sweep` with the merged PR #34 completes the task of the done zz ticket and the wait task, and leaves the blocked zz ticket open.
 - [x] A real `sweep` archives the zz section once every task in it is complete.
 - [x] A real `sweep` with the closed PR #16 gives its wait task `blocked`.
+
+## Comments
+
+Closes with the squash merge of the spec PR. The branch `todoist-queue` holds commit `88dd050c`, built on 2026-11-12.
+Proof: The root scripts pass 114 tests, and AT-18 to AT-22 hold real wait and sweep runs.
+Read 3 files: .scratch/todoist-queue/PRD.md, .scratch/todoist-queue/ACCEPTANCE.md, .scratch/todoist-queue/VERDICTS.md.

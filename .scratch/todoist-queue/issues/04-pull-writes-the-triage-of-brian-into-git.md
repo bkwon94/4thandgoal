@@ -8,10 +8,16 @@ Spec: `.scratch/todoist-queue/PRD.md`. Acceptance tests AT-13, AT-14, AT-15, and
 
 **Blocked by:** 03
 
-**Status:** in-review
+**Status:** done
 
 - [ ] The unit tests check the plan of `pull` with saved real `td` JSON for a label change, a completion, and a completion with a `done` comment.
 - [x] A real `pull` on the throwaway feature writes `needs-info` from a label change.
 - [x] A real `pull` writes `wontfix` from a completed task with no comment.
 - [x] A real `pull` writes `done` from a completed task with the comment "done in #34".
 - [x] A real `pull` with an invalid token leaves `git status` of the temp root clean.
+
+## Comments
+
+Closes with the squash merge of the spec PR. The branch `todoist-queue` holds commit `589fb31e`, built on 2026-11-12.
+Proof: The root scripts pass 114 tests, and AT-14 to AT-17 hold real pulls on the throwaway feature.
+Read 3 files: .scratch/todoist-queue/PRD.md, .scratch/todoist-queue/ACCEPTANCE.md, .scratch/todoist-queue/VERDICTS.md.
