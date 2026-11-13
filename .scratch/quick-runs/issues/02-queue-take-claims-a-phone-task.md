@@ -8,10 +8,17 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-4 and AT-5.
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test shows that `take` plans one update that puts the key line first and keeps the old description.
 - [x] A test shows that `take` of an unknown name plans no command and exits 0.
 - [x] `take` honors `--dry-run` and `--root`, like the other subcommands.
 - [x] A real `take` on one task in `Bugs` keeps its id and its section.
 - [x] `make check-fast` passes at the root.
+
+## Comments
+
+- Closes with the squash merge of the spec PR of `quick-runs`. Commits: `0aaed552`, with the review fix `934b4338`. Date: 2026-11-13.
+- `ATake` has 8 tests, and a real `take` on a scratch task kept its id and section; AT-4 and AT-5 have PASS.
+- An unknown name prints the shared line "0 commands planned, none sent." after the warning.
+- Read 5 files: AGENTS.md, .scratch/quick-runs/PRD.md, .scratch/quick-runs/ACCEPTANCE.md, scripts/queue.py, scripts/test_queue.py.

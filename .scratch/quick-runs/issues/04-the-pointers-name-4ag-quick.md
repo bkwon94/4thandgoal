@@ -8,7 +8,7 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-31 and AT-32.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] `AGENTS.md` names `4ag:quick` in The flow.
 - [x] `4ag:plan` points a bug or a small change to `4ag:quick` in one line.
@@ -16,3 +16,10 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-31 and AT-32.
 - [x] `docs/agents/codex.md` gives the install step of `diagnosing-bugs`.
 - [x] The skill files of `4ag:implement` and `4ag:review` do not change.
 - [x] `make check-fast` passes at the root.
+
+## Comments
+
+- Closes with the squash merge of the spec PR of `quick-runs`. Commits: `390e1278`. Date: 2026-11-13.
+- No unit test reads a pointer; the grep of AT-31 and the empty diff of AT-32 have PASS.
+- None.
+- Read 6 files: AGENTS.md, .scratch/quick-runs/PRD.md, .scratch/quick-runs/ACCEPTANCE.md, .claude/plugin/skills/plan/SKILL.md, docs/agents/issue-tracker.md, docs/agents/codex.md.
