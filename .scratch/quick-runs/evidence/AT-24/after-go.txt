@@ -1,0 +1,10 @@
+$ td task view id:6j29GCWH6fFqqVHp --json | jq "{id, content, sectionId, labels}"   # after go
+{
+  "id": "6j29GCWH6fFqqVHp",
+  "content": "Pick owner: week_moves names the first owner of a traded pick",
+  "sectionId": "6j29GCJqM59vMP2G",
+  "labels": [
+    "in-progress"
+  ]
+}
+The id before AT-4 is 6j29GCWH6fFqqVHp; see evidence/AT-4/output.txt.

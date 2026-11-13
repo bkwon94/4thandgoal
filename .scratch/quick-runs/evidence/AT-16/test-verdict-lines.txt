@@ -1,0 +1,2 @@
+$ grep -n "^Test verdict:" .scratch/bugs/pick-owner.md
+32:Test verdict: PASS

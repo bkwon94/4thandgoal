@@ -1,0 +1,9 @@
+$ td task list --project 4thandgoal --json   # the tasks in the section Bugs (6j29GCJqM59vMP2G) after the PR opens
+6j29GCV824P9cxXG | Front door trade drops the extra player of a 1-for-2 trade | 
+6j29GCWH6fFqqVHp | Pick owner: week_moves names the first owner of a traded pick | in-progress
+6j29JprhR2Q8rX6p | Theme: light choice does not stick after a reload | 
+6j29Jq2rrVwF45cp | Standings: the "Playoff line" label sits a little into row 7 | 
+6j29Jq5xC73CVWFp | Matchup card: the other team's winning slot is gray | 
+6j29Jq7RjHhHP9jp | Front door: the sticky team row is see-through | 
+6j29JqC3r9VrmfjG | Recaps: a paragraph with no clear subject, and an injury named twice | blocked
+6j2CQqwP3JV8vJ6G | Merge PR #41 | ready-for-human

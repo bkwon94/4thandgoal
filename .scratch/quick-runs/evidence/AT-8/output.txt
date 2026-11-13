@@ -1,0 +1,32 @@
+$ python3 -m unittest -v scripts.test_queue.AQuickFile.test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs scripts.test_queue.AQuickFile.test_a_sweep_never_archives_quick_wins
+test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs (scripts.test_queue.AQuickFile.test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs) ... ok
+test_a_sweep_never_archives_quick_wins (scripts.test_queue.AQuickFile.test_a_sweep_never_archives_quick_wins) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.122s
+
+OK
+exit: 0
+
+
+--- The source of each test above, from scripts/test_queue.py at the head of quick-runs. Each assertion is the fact that `ok` proves. ---
+
+$ python3 -c "import inspect, scripts.test_queue as t; print(inspect.getsource(t.AQuickFile.test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs))"
+    def test_a_sweep_completes_the_done_quick_task_and_its_wait_task_and_never_archives_bugs(self):
+        self.quick_file("bugs", "fix-the-draw", status="done")
+        self.commit_main()
+        both = Queue("p1", {"Bugs": self.BUGS_SECTION}, [self.TASK, self.WAIT], set())
+        self.assertEqual(queue_script.plan_sweep(self.root, both, {50: "MERGED"}), [
+            ["task", "complete", f"id:{self.TASK['id']}"],
+            ["task", "complete", f"id:{self.WAIT['id']}"],
+        ])
+
+$ python3 -c "import inspect, scripts.test_queue as t; print(inspect.getsource(t.AQuickFile.test_a_sweep_never_archives_quick_wins))"
+    def test_a_sweep_never_archives_quick_wins(self):
+        self.quick_file("quick-wins", "one", status="done")
+        self.commit_main()
+        task = {**self.TASK, "sectionId": "qw", "description": "4ag: .scratch/quick-wins/one.md"}
+        wait = {**self.WAIT, "sectionId": "qw", "description": "4ag: quick-wins/wait/merge-pr"}
+        plan = queue_script.plan_sweep(self.root, Queue("p1", {"Quick Wins": "qw"}, [task, wait], set()),
+                                       {50: "MERGED"})
+        self.assertEqual(plan, [["task", "complete", f"id:{task['id']}"], ["task", "complete", f"id:{wait['id']}"]])

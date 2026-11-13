@@ -1,0 +1,45 @@
+$ td task view id:6j29GCWH6fFqqVHp   # before
+Pick owner: week_moves names the first owner of a traded pick
+
+ID:       6j29GCWH6fFqqVHp
+Priority: p4
+Project:  4thandgoal
+URL:      https://app.todoist.com/app/task/6j29GCWH6fFqqVHp
+
+Description:
+week_moves in apps/api/src/cornerstone_api/free_tools.py names the receiver of a
+pick from pick.roster_id, the first owner. It must use owner_id. Low: the
+leagues do not trade draft picks yet.
+
+$ python3 scripts/queue.py take "Pick owner: week_moves names the first owner of a traded pick" .scratch/bugs/pick-owner.md
+Pick owner: week_moves names the first owner of a traded pick
+week_moves in apps/api/src/cornerstone_api/free_tools.py names the receiver of a pick from pick.roster_id, the first owner. It must use owner_id. Low: the leagues do not trade draft picks yet.
+td task update id:6j29GCWH6fFqqVHp --description '4ag: .scratch/bugs/pick-owner.md
+week_moves in apps/api/src/cornerstone_api/free_tools.py names the receiver of a pick from pick.roster_id, the first owner. It must use owner_id. Low: the leagues do not trade draft picks yet.'
+1 command sent.
+exit: 0
+
+$ td task view id:6j29GCWH6fFqqVHp   # after
+Pick owner: week_moves names the first owner of a traded pick
+
+ID:       6j29GCWH6fFqqVHp
+Priority: p4
+Project:  4thandgoal
+URL:      https://app.todoist.com/app/task/6j29GCWH6fFqqVHp
+
+Description:
+4ag: .scratch/bugs/pick-owner.md week_moves in
+apps/api/src/cornerstone_api/free_tools.py names the receiver of a pick from
+pick.roster_id, the first owner. It must use owner_id. Low: the leagues do not
+trade draft picks yet.
+
+$ td task view id:6j29GCWH6fFqqVHp --json | jq "{id, content, sectionId, description}"   # after, raw
+{
+  "id": "6j29GCWH6fFqqVHp",
+  "content": "Pick owner: week_moves names the first owner of a traded pick",
+  "sectionId": "6j29GCJqM59vMP2G",
+  "description": "4ag: .scratch/bugs/pick-owner.md\nweek_moves in apps/api/src/cornerstone_api/free_tools.py names the receiver of a pick from pick.roster_id, the first owner. It must use owner_id. Low: the leagues do not trade draft picks yet."
+}
+
+$ td section list 4thandgoal | grep 6j29GCJqM59vMP2G
+6j29GCJqM59vMP2G  Bugs

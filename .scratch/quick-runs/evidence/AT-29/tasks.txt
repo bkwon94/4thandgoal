@@ -1,0 +1,7 @@
+Front door trade drops the extra player of a 1-for-2 trade
+Pick owner: week_moves names the first owner of a traded pick
+Theme: light choice does not stick after a reload
+Standings: the "Playoff line" label sits a little into row 7
+Matchup card: the other team's winning slot is gray
+Front door: the sticky team row is see-through
+Recaps: a paragraph with no clear subject, and an injury named twice

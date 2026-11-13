@@ -1,0 +1,12 @@
+$ git rev-parse --short HEAD
+87342a8a
+$ cd apps/api && uv run --exact --package cpc-api pytest -q tests/test_week_moves.py
+E         
+E         At index 0 diff: '2027 round 2 to roster 2' != '2027 round 2 to roster 6'
+E         Use -v to get more diff
+
+tests/test_week_moves.py:26: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_week_moves.py::test_a_traded_pick_goes_to_the_roster_that_receives_it
+1 failed in 0.75s
+exit: not captured (the zsh shell had no PIPESTATUS); the summary line above shows "1 failed".

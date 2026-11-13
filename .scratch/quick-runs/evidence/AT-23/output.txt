@@ -1,0 +1,27 @@
+$ gh api repos/{owner}/{repo}/commits/ec33c29ab03e215af5f2f2ee0dad0e81f59dd696/status --jq '.statuses[] | {context, state, description}'
+{"context":"verdict","description":"No .scratch/bug-pick-owner/ACCEPTANCE.md, so this PR needs no Test verdict.","state":"success"}
+
+
+$ gh run view 43490144638 --log | grep -v "\[36;1m" | grep -iE "needs no Test verdict|not a spec|no .scratch"
+verdict: success: No .scratch/bug-pick-owner/ACCEPTANCE.md, so this PR needs no Test verdict.
+
+--- The lines of .github/workflows/verdict.yml at the PR head that decide a spec PR. ---
+$ git show origin/main:.github/workflows/verdict.yml | grep -n -B2 -A4 'ACCEPTANCE'
+34-    steps:
+35-      # The run always reads the script from main. A PR that edits scripts/verdict.py must not judge itself.
+36:      # The ACCEPTANCE.md, EVIDENCE.md, and VERDICTS.md of the PR are data. The run reads them through the API and
+37-      # runs no code of the PR.
+38-      - name: Check out the verdict script
+39-        uses: actions/checkout@v7
+40-        with:
+--
+83-          raw="Accept: application/vnd.github.raw"
+84-
+85:          # A Spec branch <slug> has .scratch/<slug>/ACCEPTANCE.md. A PR with no such file is not a spec PR,
+86-          # such as a records PR, so it needs no Test verdict and passes.
+87-          dir=".scratch/$slug"
+88:          path="$dir/ACCEPTANCE.md"
+89-          mkdir -p "$dir"
+90-          if ! get "$path" -H "$raw" "$contents/$path?ref=$sha"; then
+91-            post success "No $path, so this PR needs no Test verdict."
+92-            exit 0

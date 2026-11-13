@@ -1,0 +1,19 @@
+$ python3 scripts/queue.py sweep
+0 commands sent.
+$ test -w "$(git rev-parse --git-common-dir)" && echo ok
+ok
+$ gh api repos/{owner}/{repo} --jq .name
+4thandgoal
+$ python3 scripts/queue.py take "Pick owner: week_moves names the first owner of a traded pick" .scratch/bugs/probe.md --dry-run
+Pick owner: week_moves names the first owner of a traded pick
+4ag: .scratch/bugs/pick-owner.md
+week_moves in apps/api/src/cornerstone_api/free_tools.py names the receiver of a pick from pick.roster_id, the first owner. It must use owner_id. Low: the leagues do not trade draft picks yet.
+td task update id:6j29GCWH6fFqqVHp --description '4ag: .scratch/bugs/probe.md
+week_moves in apps/api/src/cornerstone_api/free_tools.py names the receiver of a pick from pick.roster_id, the first owner. It must use owner_id. Low: the leagues do not trade draft picks yet.'
+1 command planned, none sent.
+$ python3 scripts/queue.py take "Depth sentence is hard to read" .scratch/bugs/probe.md --dry-run
+Depth sentence is hard to read
+"Your depth is fine at every position, meaning no spare player inside the starter count past the starters." Source: DEPTH_MEANINGS in apps/api/src/cornerstone_api/personal_facts.py. Rewrite each phrase so a manager reads it in one pass.
+td task update id:6j29JqGx8w8m6mQG --description '4ag: .scratch/bugs/probe.md
+"Your depth is fine at every position, meaning no spare player inside the starter count past the starters." Source: DEPTH_MEANINGS in apps/api/src/cornerstone_api/personal_facts.py. Rewrite each phrase so a manager reads it in one pass.'
+1 command planned, none sent.

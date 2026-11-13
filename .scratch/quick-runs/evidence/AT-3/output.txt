@@ -1,0 +1,84 @@
+$ ls /private/tmp/claude-503/qr-home/.agents/skills/diagnosing-bugs/SKILL.md
+"/private/tmp/claude-503/qr-home/.agents/skills/diagnosing-bugs/SKILL.md": No such file or directory (os error 2)
+exit: 2
+
+$ git status --short | grep -v "^?? .scratch/quick-runs/evidence/"; echo "(lines for .scratch/quick-runs/evidence/ left out: they are the evidence files)"
+(lines for .scratch/quick-runs/evidence/ left out: they are the evidence files)
+exit: 0
+
+$ git branch --list "bug-*"; echo "(before the session)"
++ bug-pick-owner
+(before the session)
+exit: 0
+
+$ HOME=/private/tmp/claude-503/qr-home perl -e 'alarm 300; exec @ARGV' codex exec '$4ag:quick fix the pick owner bug' 2>&1 < /dev/null | tail -60
+## 6. Remove the stale files after such a spec merges
+
+Why: the merge of such a spec brings tracked files at `AGENTS.md`, `apps/site/AGENTS.md`, and `.codex/config.toml`. The untracked files at those paths make `git pull` fail. The untracked `.agents/skills/` symlinks from step 3 also go.
+
+Do this at the main checkout root, after such a spec merges and before `git pull`.
+
+**Warning: run this only after such a spec merges, and only in the main checkout.** The commands delete untracked files. Before the merge, they remove the files that step 3 makes.
+
+```
+rm AGENTS.md apps/site/AGENTS.md .codex/config.toml
+find .agents/skills -type l -exec rm {} + 2>/dev/null
+```
+
+Check: `git status --short` shows none of these files. Then run `git pull`. It succeeds.
+
+## 7. Turn off the cached 4ag plugin in Codex
+
+Why: a cached copy of the plugin lists each `4ag:` skill a second time. Codex then loads neither skill for a plain `$4ag:<name>`, and the cached copy goes stale after each change to a skill. The `.agents/skills/` links of the repo replace it.
+
+In `~/.codex/config.toml`, set these two values:
+
+```
+[plugins."4ag@4ag-local"]
+enabled = false
+
+[plugins."cpc@cpc-local"]
+enabled = false
+```
+
+`cpc@cpc-local` is the old name of the same plugin, at the old folder `~/repos/cpcfantasyfootball`.
+
+Check: in a checkout that holds `.agents/skills/`, `codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*:' | sort | uniq -c` shows each of the six skills with the count 1.
+
+## 8. Add the skill `diagnosing-bugs`
+
+Why: `4ag:quick` checks for the skill `diagnosing-bugs`. In Codex, a skill counts when `~/.agents/skills/<name>/SKILL.md` exists. Codex lists it as `mattpocock-skills:diagnosing-bugs`, the same name as in Claude.
+
+Run the `ln` one time only. A second run puts a link inside the target folder, and the check then reads a wrong path.
+
+The source is in the cache of the `mattpocock-skills` plugin. The path holds a version number. Change `1.3.1` if the plugin updates.
+
+```
+mkdir -p ~/.agents/skills && ln -s ~/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/1.3.1/skills/engineering/diagnosing-bugs ~/.agents/skills/diagnosing-bugs
+```
+
+Check: `test -f ~/.agents/skills/diagnosing-bugs/SKILL.md && echo ok` prints `ok`.
+
+codex
+Brian, the required `diagnosing-bugs` skill is absent. No files or branches change.
+
+[4ag:quick](.claude/plugin/skills/quick/SKILL.md) requires: “If one is missing, stop.”
+
+Follow step 8 in [docs/agents/codex.md](docs/agents/codex.md). Then restart Codex at the main checkout with the `4ag` permission profile. This session permits reads only.
+tokens used
+15,541
+Brian, the required `diagnosing-bugs` skill is absent. No files or branches change.
+
+[4ag:quick](.claude/plugin/skills/quick/SKILL.md) requires: “If one is missing, stop.”
+
+Follow step 8 in [docs/agents/codex.md](docs/agents/codex.md). Then restart Codex at the main checkout with the `4ag` permission profile. This session permits reads only.
+exit: 0
+
+$ git status --short | grep -v "^?? .scratch/quick-runs/evidence/"; echo "(lines for .scratch/quick-runs/evidence/ left out)"
+(lines for .scratch/quick-runs/evidence/ left out)
+exit: 0
+
+$ git branch --list 'bug-*'
++ bug-pick-owner
+exit: 0
+

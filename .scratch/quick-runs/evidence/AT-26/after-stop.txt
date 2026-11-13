@@ -1,0 +1,6 @@
+$ git worktree remove --force .claude/worktrees/bug-pick-owner && git branch -D bug-pick-owner
+Deleted branch bug-pick-owner (was 07fa416c).
+$ git worktree remove --force .claude/worktrees/win-depth-sentence && git branch -D win-depth-sentence
+Deleted branch win-depth-sentence (was b43998d2).
+$ git branch --list 'bug-*' 'win-*'
+(empty)

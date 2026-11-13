@@ -1,0 +1,2 @@
+$ gh pr view 41 --json title,body > pr41.json && python3 evidence/AT-22/check.py pr41.json   # at the root of the worktree
+Clients: cpc, norcal. Checked 43 names. Hits: none.

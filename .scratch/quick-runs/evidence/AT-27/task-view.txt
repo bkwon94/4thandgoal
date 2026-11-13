@@ -1,0 +1,12 @@
+$ td task view id:6j29JqGx8w8m6mQG --json | jq "{id, content, sectionId, labels, description}"
+{
+  "id": "6j29JqGx8w8m6mQG",
+  "content": "Depth sentence is hard to read",
+  "sectionId": "6j29qJG7gF3jxW4p",
+  "labels": [
+    "in-progress"
+  ],
+  "description": "4ag: .scratch/quick-wins/depth-sentence.md\n\"Your depth is fine at every position, meaning no spare player inside the starter count past the starters.\" Source: DEPTH_MEANINGS in apps/api/src/cornerstone_api/personal_facts.py. Rewrite each phrase so a manager reads it in one pass."
+}
+$ td section list 4thandgoal | grep 6j29qJG7gF3jxW4p
+6j29qJG7gF3jxW4p  Quick Wins

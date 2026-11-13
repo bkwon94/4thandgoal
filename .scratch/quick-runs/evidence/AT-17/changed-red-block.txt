@@ -1,0 +1,13 @@
+Red: at `87342a8a`, `cd apps/api && uv run --exact --package cpc-api pytest -q tests/test_week_moves.py`
+
+```text
+==================================== ERRORS ====================================
+__________________ ERROR collecting tests/test_week_moves.py ___________________
+ImportError while importing test module 'apps/api/tests/test_week_moves.py'.
+tests/test_week_moves.py:9: in <module>
+    from cornerstone_api.free_tools import week_moves, load_history
+E   ImportError: cannot import name 'load_history' from 'cornerstone_api.free_tools'
+=========================== short test summary info ============================
+ERROR tests/test_week_moves.py
+1 error in 0.52s
+```

@@ -1,0 +1,8 @@
+$ python3 scripts/queue.py take "Depth sentence is hard to read" --dry-run (step 1)
+Depth sentence is hard to read
+4ag: .scratch/quick-wins/depth-sentence.md
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py take "Depth sentence is hard to read" .scratch/quick-wins/depth-sentence.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/win-depth-sentence
+"Your depth is fine at every position, meaning no spare player inside the starter count past the starters." Source: DEPTH_MEANINGS in apps/api/src/cornerstone_api/personal_facts.py. Rewrite each phrase so a manager reads it in one pass.
+0 commands sent.
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py push .scratch/quick-wins/depth-sentence.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/win-depth-sentence
+0 commands sent.

@@ -1,0 +1,7 @@
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py take "Recaps: a paragraph with no clear subject, and an injury named twice" .scratch/bugs/recap-subject.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/bug-recap-subject
+1 command sent.
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/quick-runs/scripts/queue.py push .scratch/bugs/recap-subject.md --root /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/bug-recap-subject
+td task update id:6j29JqC3r9VrmfjG --labels in-progress
+1 command sent.
+td task update id:6j29JqC3r9VrmfjG --labels blocked
+1 command sent.

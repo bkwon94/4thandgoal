@@ -1,0 +1,7 @@
+$ git worktree list | grep bug-
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/bug-pick-owner                                                             16a7f819 [bug-pick-owner]
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/bug-recap-subject                                                          544a3a82 [bug-recap-subject]
+$ git branch --list 'bug-*'
++ bug-pick-owner
++ bug-recap-subject
+Note: bug-recap-subject is the separate run of AT-30. The run of AT-11 is bug-pick-owner, with one worktree. No branch bug-pick-owner-<NN> exists.
