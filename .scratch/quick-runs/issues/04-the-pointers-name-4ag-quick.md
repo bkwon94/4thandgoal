@@ -8,7 +8,7 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-31 and AT-32.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `AGENTS.md` names `4ag:quick` in The flow.
 - [x] `4ag:plan` points a bug or a small change to `4ag:quick` in one line.
