@@ -5,7 +5,7 @@ Date: 2026-11-13
 Apps: neither. The work changes the `4ag` plugin, `scripts/queue.py`, `AGENTS.md`, and `docs/agents/`. The site and the pipeline do not change.
 Spec branch: `quick-runs`.
 Source: the map `.scratch/quick-runs/MAP.md` and decision ticket 01. ADR 0033, which amends ADR 0026.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 04, in `issues/`.
 
 ## Problem Statement
 
