@@ -488,6 +488,16 @@ def _done_on_main(root: Path, ref: str | None, key: str) -> bool:
     return show.returncode == 0 and _status(show.stdout) == "done"
 
 
+def _root_holds(root: Path, ref: str | None, feature: str) -> bool:
+    """Whether the root holds the folder of the feature, in the checkout or on the ref of main.
+
+    Brian merges on GitHub, so the checkout may be behind main and lack a feature that main holds.
+    """
+    if (root / ".scratch" / feature).is_dir():
+        return True
+    return ref is not None and _git(root, "cat-file", "-e", f"{ref}:.scratch/{feature}").returncode == 0
+
+
 def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[str]]:
     """The `td` commands that close the tasks of each merged spec PR, given the state of the PR of each wait task.
 
@@ -509,7 +519,7 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
 
     for wait in queue.tasks:
         feature = _wait_feature(wait)
-        if feature is None or not (root / ".scratch" / feature).is_dir():
+        if feature is None or not _root_holds(root, ref, feature):
             continue
         state = states.get(int(MERGE_PR_TITLE.match(wait["content"]).group(1)))
         if state == "MERGED":

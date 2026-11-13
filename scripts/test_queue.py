@@ -737,6 +737,19 @@ class AQuickFile(unittest.TestCase):
             ["task", "complete", f"id:{self.WAIT['id']}"],
         ])
 
+    def test_a_sweep_reads_the_feature_from_main_when_the_checkout_lacks_it(self):
+        # Brian merged on GitHub: origin/main holds the done quick file, and the checkout was never pulled.
+        self.quick_file("bugs", "fix-the-draw", status="done")
+        self.commit_main()
+        subprocess.run(["git", "-C", str(self.root), "update-ref", "refs/remotes/origin/main", "HEAD"], check=True,
+                       env=queue_script._clean_git_env())
+        shutil.rmtree(self.root / ".scratch" / "bugs")
+        both = Queue("p1", {"Bugs": self.BUGS_SECTION}, [self.TASK, self.WAIT], set())
+        self.assertEqual(queue_script.plan_sweep(self.root, both, {50: "MERGED"}), [
+            ["task", "complete", f"id:{self.TASK['id']}"],
+            ["task", "complete", f"id:{self.WAIT['id']}"],
+        ])
+
     def test_a_sweep_never_archives_quick_wins(self):
         self.quick_file("quick-wins", "one", status="done")
         self.commit_main()
