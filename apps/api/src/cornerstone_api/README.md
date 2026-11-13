@@ -10,7 +10,7 @@
 - The trade Topics of the front door at `/clients/<slug>/trade-check` and `/clients/<slug>/trade-ideas`, behind the passphrase, in `trade_topics.py`. A typed trade check has one Jev request that picks the player of each side from the real rosters, with its words in `trade_wording.py`. An unsure pick gives the form of the Trade page. Each route streams a plain step for each stage of the Advisor, then the whole Answer, in the event stream of the AI SDK. Trade ideas runs whatever the `finder` flag says. Sell high at `/clients/<slug>/sell-high` streams the same way, with the sell high press of the `analyzer` package.
 - The free answer of the ask box at `/clients/<slug>/ask/free`, behind the passphrase. The route runs again first, so only a question that Jev routes to a free answer reaches Claude. Claude Sonnet 5.5 runs at `low` effort through Pydantic AI, with the tools of `free_tools.py` over the saved weeks of this season and at most 4 tool calls. The text streams through `VercelAIAdapter` to `useChat` of the site. After the last word, one Jev request checks each sentence against the tool results, with one rewrite and then the honest miss. `free_wording.py` holds every word sent to Claude and to Jev for it. Each typed question carries the earlier turns of its Thread, cut to about 8,000 tokens, as Jev state for the route and as earlier messages for Claude, with a cache mark. The check never reads them. `chat_turns.py` holds them and their words.
 - The refresh route that a daily cron pings.
-- The passphrase check of each client, from `CORNERSTONE_PASSPHRASE_<SLUG>`, the commissioner key check of each client of the eggs package, from `CORNERSTONE_COMMISSIONER_KEY_<SLUG>`, the rate limit of each address, the limit of the egg check of each address, the state of each client, and the settings from the environment.
+- The passphrase check of each client, from `CORNERSTONE_PASSPHRASE_<SLUG>`, the commissioner key check of each client of the eggs package, from `CORNERSTONE_COMMISSIONER_KEY_<SLUG>`, the rate limit of each address, the limit of the egg check of each address, the state of each client, and the settings from the environment. [caps.py](caps.py) owns daily answer allowances per team and local calendar day. [test_caps.py](../../tests/test_caps.py) checks team isolation and the next-day reset.
 - The terms are in `GLOSSARY.md`.
 
 ## Ports
@@ -19,6 +19,6 @@
 
 ## Does not do
 
-- It holds no grade rule and no prompt of the trade analyzer. The `analyzer` package holds them, with the grade limit and the caches. The only prompt here is the free answer of `free_wording.py`.
+- It holds no grade rule and no prompt of the trade analyzer. The [analyzer owner](../../../../packages/analyzer/README.md) holds them, with the grade limit and the caches. The only prompt here is the free answer of `free_wording.py`.
 - It imports no pipeline code. Only its tests read the fixtures of the pipeline tests.
 - It imports nothing from the output layer of ADR 0010, so it writes no page.

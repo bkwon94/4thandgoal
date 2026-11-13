@@ -1,0 +1,21 @@
+{
+  "call_id": "exec-783f9237-e72f-4b65-bee6-5e6b85692ab8",
+  "process_id": "83319",
+  "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+  "started_at_ms": 1794518810931,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "nl -ba packages/analyzer/site/form/team-picker.tsx"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "nl -ba packages/analyzer/site/form/team-picker.tsx",
+      "name": "team-picker.tsx",
+      "path": "packages/analyzer/site/form/team-picker.tsx"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

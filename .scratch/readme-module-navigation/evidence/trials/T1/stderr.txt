@@ -1,0 +1,3 @@
+Reading additional input from stdin...
+2026-11-12T21:25:16.567433Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: default backend - 404")
+2026-11-12T21:25:16.600220Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: {\"detail\":\"Not Found\"}")

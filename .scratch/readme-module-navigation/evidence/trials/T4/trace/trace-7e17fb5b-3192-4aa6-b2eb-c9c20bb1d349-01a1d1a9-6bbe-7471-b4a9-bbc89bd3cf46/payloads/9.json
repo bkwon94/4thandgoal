@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-dbbd3ba6-2113-45f5-b1de-c5a6e1faf8ad",
+  "process_id": "33406",
+  "turn_id": "01a1d1a9-7027-7e21-baa9-b492e6d9ba77",
+  "started_at_ms": 1794518911879,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "pwd; ls -la; cat AGENTS.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "pwd; ls -la; cat AGENTS.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

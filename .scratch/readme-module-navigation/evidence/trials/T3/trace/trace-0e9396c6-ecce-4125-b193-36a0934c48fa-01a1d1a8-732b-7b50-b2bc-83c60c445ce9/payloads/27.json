@@ -1,0 +1,8 @@
+{
+  "tool_name": "exec_command",
+  "tool_namespace": null,
+  "payload": {
+    "type": "function",
+    "arguments": "{\"cmd\":\"cat /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md packages/week/python/src/week/sheet/README.md\",\"max_output_tokens\":5000}"
+  }
+}

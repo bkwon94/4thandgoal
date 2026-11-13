@@ -1,0 +1,8 @@
+{
+  "tool_name": "exec_command",
+  "tool_namespace": null,
+  "payload": {
+    "type": "function",
+    "arguments": "{\"cmd\":\"rg -n 'readme-module-navigation|cold-agent' /Users/brian.kwon/.codex/memories/MEMORY.md\",\"max_output_tokens\":1200}"
+  }
+}

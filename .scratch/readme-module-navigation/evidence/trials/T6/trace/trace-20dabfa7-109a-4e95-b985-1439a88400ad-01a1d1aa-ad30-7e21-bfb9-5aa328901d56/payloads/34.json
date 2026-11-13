@@ -1,0 +1,28 @@
+{
+  "call_id": "exec-dab9b3ed-14cc-4316-b7bb-a82d4e73d97f",
+  "process_id": "1928",
+  "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+  "completed_at_ms": 1794519013687,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat packages/analyzer/README.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "cat packages/analyzer/README.md",
+      "name": "README.md",
+      "path": "packages/analyzer/README.md"
+    }
+  ],
+  "source": "unified_exec_startup",
+  "aggregated_output": "# analyzer: the trade analyzer and the trade finder\n\n## Knows\n\n- The proposed trade of `trade.py`, the Measures and `Side` of `measures.py`, and the trade facts (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`, and the team facts of `team_facts.py`. The Finder search of `finder_search.py`: the partner filter, the targets, the offers, and the shortlist, with its Jev requests in waves by `jev_waves.py`. The Finder pick of `finder_pick.py`: one sheet per shortlist offer, the Advisor pick of up to 3 trades with a headline and Bullets, and the fallback to the shortlist with fact lines. The sell high pick of `sell_high.py`: the sheet of one roster in `sell_facts.py`, with the trade value, the lineup value, the trend of the last 4 weeks, and the schedule ahead of each player side by side, and the Advisor pick of up to 3 players to sell with the guards and the Jev checks of the read.\n- The rule prompts `prompts/advisor.md`, `prompts/finder_pick.md`, `prompts/finder_pick_repair.md`, and `prompts/sell_high.md`, and the numbers of `tunables.py`.\n- The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit. The sell high press of the front door is there too, with no route of its own.\n- [GradeLimiter in ratelimit.py](python/src/analyzer/ratelimit.py) counts grades per client and address and saves daily counts across restarts. [API integration tests](../../apps/api/tests/test_api.py) check the restart limit and HTTP 429. Each client has its own result cache, so the roster ids of two leagues never share a grade.\n- The cache key reads the points key of the League settings of the client, such as `pts_ppr` for a full PPR league.\n- The [form owner](site/form/README.md), the finder, the API client, the passphrase, the teams store, and the team picker of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.\n- Package values, under `[values.analyzer]`: `finder`, the trade finder on the analyzer page. The default is false.\n- The model of its package values in `values.py`, and its exported JSON Schema `values.schema.json`. `make schema` rewrites the file.\n\n## Ports\n\n- `SnapshotSource` in `routes.py`: the live snapshots of one client. The API app gives its `Sources`, and a test gives fixture-backed ones.\n- `Analyzer` and `FinderPicker` in `routes.py`: the Advisor calls of the grade and of the Finder pick. Each takes an optional `Stage` of `stage.py`, a plain line per stage for the front door. A test gives a stub call. The Advisor takes the Jev port of `league`, and a test gives `FakeJev`. `FinderSearch` in `routes.py` is the Finder search with the real Jev, and a test gives a search with `FakeJev`. `SellHighPicker` in `routes.py` is the sell high pick, and a test gives a stub call.\n\n## Does not do\n\n- It imports no app and no other core package, only `league` and `facts`. `tests/test_layers.py` of the pipeline checks it.\n- It mounts no route. The [API owner](../../apps/api/src/cornerstone_api/README.md) mounts the routes at `/clients/<slug>/` and loads each client. That owner also controls daily answer allowances through `caps.py`.\n- Of a client folder, it reads the voice folder `prompts/` with the Playbook `playbook.md`, and the playoff odds in `published/<season>/rankings.json`.\n- It writes no published file.\n",
+  "exit_code": 0,
+  "duration": {
+    "secs": 0,
+    "nanos": 4541
+  },
+  "status": "completed"
+}

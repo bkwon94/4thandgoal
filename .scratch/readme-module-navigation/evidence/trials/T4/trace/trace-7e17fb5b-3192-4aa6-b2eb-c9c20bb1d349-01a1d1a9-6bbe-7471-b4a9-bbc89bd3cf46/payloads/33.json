@@ -1,0 +1,27 @@
+{
+  "call_id": "exec-5e8d5c6e-0fd6-48d7-b9eb-19785196f29f",
+  "process_id": "90555",
+  "turn_id": "01a1d1a9-7027-7e21-baa9-b492e6d9ba77",
+  "started_at_ms": 1794518928792,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "nl -ba apps/pipeline/src/cornerstone/publish.py; nl -ba apps/pipeline/tests/test_rule_publish.py"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "nl -ba apps/pipeline/src/cornerstone/publish.py",
+      "name": "publish.py",
+      "path": "apps/pipeline/src/cornerstone/publish.py"
+    },
+    {
+      "type": "read",
+      "cmd": "nl -ba apps/pipeline/tests/test_rule_publish.py",
+      "name": "test_rule_publish.py",
+      "path": "apps/pipeline/tests/test_rule_publish.py"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

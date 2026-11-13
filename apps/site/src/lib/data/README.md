@@ -2,6 +2,7 @@
 
 ## Knows
 
+- [week-data.ts](week-data.ts) owns the archive. `listWeekSummaries` sorts seasons and weeks numerically, newest first. [week-data.test.ts](week-data.test.ts) checks cross-season order and weeks 2 and 10.
 - One loader per published file: the week page file, the rankings file, the managers file, `waiver.json`, `midseason.json`, and `sim.json`.
 - Where each file sits under `public/`, and which week folders hold `waiver.json`.
 - The join of the managers file with the last week of the rankings file.
@@ -16,7 +17,7 @@
 
 ## Does not do
 
-- It owns no shape. The pipeline owns each shape, and each package holds the schema of its own file (ADR 0013).
+- It owns no shape. The [pipeline](../../../../pipeline/README.md) owns each shape, and each package holds the schema of its own file (ADR 0013).
 - It runs in no browser. Only the app layer and `next.config.ts` call a loader (ADR 0012).
 - It writes no file. The pipeline publishes every file under `public/`.
 - It formats no number. Each package holds its own formats.

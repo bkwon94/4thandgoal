@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_0be35e0c055c1851016af62ed842b887d18e6476005f7e8b3c",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 36192,
+    "cached_input_tokens": 32640,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 94,
+    "reasoning_output_tokens": 27,
+    "total_tokens": 36286
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_0be35e0c055c1851016af62edae28c87d19c5485ecec561ac0",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 2f6223b8e10d32be5b69d4227ec6235af91423573ab4ededa464b474642fdd19; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_0be35e0c055c1851016af62edb078487d1a7816eee26df133c",
+      "status": "completed",
+      "call_id": "call_713e19fe9e304f9891840b9ff7801f15",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"nl -ba apps/site/src/lib/data/week-data.ts\",\"max_output_tokens\":4500}));\ntext(await tools.exec_command({cmd:\"nl -ba apps/site/src/lib/data/week-data.test.ts\",\"max_output_tokens\":4500}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+        "create_time": 1794518747.0329227
+      }
+    }
+  ]
+}

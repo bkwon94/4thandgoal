@@ -1,0 +1,21 @@
+{
+  "call_id": "exec-8a117b47-aad6-4db7-a3fa-72efdce4851c",
+  "process_id": "94260",
+  "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+  "started_at_ms": 1794519020787,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "sed -n '1100,1200p' apps/api/tests/test_api.py"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "sed -n '1100,1200p' apps/api/tests/test_api.py",
+      "name": "test_api.py",
+      "path": "apps/api/tests/test_api.py"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

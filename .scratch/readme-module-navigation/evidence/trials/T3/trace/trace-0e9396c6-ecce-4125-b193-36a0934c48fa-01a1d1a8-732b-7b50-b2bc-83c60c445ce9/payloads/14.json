@@ -1,0 +1,57 @@
+{
+  "type": "response.create",
+  "model": "gpt-6-astra",
+  "stream": true,
+  "previous_response_id": "resp_094adc91ad05790d016af62f3c118487d1b1357016a662470f",
+  "input": [
+    {
+      "type": "custom_tool_call_output",
+      "id": "ctco_01a1d1a8-9583-74f2-a849-a4007a3e2b69",
+      "call_id": "call_e611caa514a34c1fb8cdde605e135bee",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.3 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"a61906\",\"wall_time_seconds\":0.000064917,\"exit_code\":0,\"original_token_count\":1198,\"output\":\"/private/tmp/readme-navigation-trial-root\\nCLAUDE.md\\napps/api/src/cornerstone_api/README.md\\napps/api/README.md\\npackages/analyzer/site/lib/README.md\\npackages/analyzer/site/form/README.md\\npackages/analyzer/README.md\\npackages/league/README.md\\ndocs/adr/README.md\\ndocs/adr/0003-roster-fit-reads-depth-by-position-rank.md\\npackages/league/python/src/league/projection.py\\napps/site/README.md\\npackages/league/python/src/league/provider/README.md\\npackages/managers/site/fixtures/README.md\\npackages/managers/site/schema/README.md\\npackages/managers/site/page/roster.tsx\\npackages/managers/site/page/README.md\\npackages/managers/README.md\\npackages/week/site/fixtures/README.md\\npackages/week/site/parts/README.md\\npackages/waiver/README.md\\npackages/week/site/schema/README.md\\npackages/waiver/python/src/waiver/projection.py\\npackages/week/site/chapters/README.md\\npackages/week/README.md\\napps/site/CLAUDE.md\\npackages/eggs/site/lib/README.md\\napps/site/src/lib/data/README.md\\napps/site/src/lib/README.md\\npackages/eggs/site/board/README.md\\npackages/eggs/site/hunt/README.md\\npackages/eggs/site/listener/README.md\\npackages/eggs/README.md\\napps/site/src/fixtures/sites/README.md\\npackages/midseason/site/act-three/README.md\\npackages/midseason/site/act-one/README.md\\npackages/midseason/site/home/README.md\\npackages/midseason/README.md\\npackages/midseason/site/report/README.md\\nclients/cpc/data/2026/week-09/raw/projections.json\\nclients/cpc/data/2026/week-09/raw/rosters.json\\nclients/cpc/data/2026/week-09/raw/projections_ahead.json\\npackages/midseason/site/fixtures/README.md\\nclients/cpc/data/2026/week-07/raw/projections.json\\nclients/cpc/data/2026/week-07/raw/rosters.json\\nclients/cpc/data/2026/week-07/raw/projections_ahead.json\\npackages/midseason/site/schema/README.md\\nclients/cpc/data/2026/week-06/raw/projections.json\\nclients/cpc/data/2026/week-06/raw/rosters.json\\nclients/cpc/data/2026/week-06/raw/projections_ahead.json\\npackages/midseason/site/act-two/README.md\\nclients/cpc/data/2026/week-08/raw/projections.json\\nclients/cpc/data/2026/week-08/raw/rosters.json\\nclients/cpc/data/2026/week-08/raw/projections_ahead.json\\npackages/facts/README.md\\nclients/cpc/data/2026/history/week-06/projections.json\\npackages/sim/site/schema/README.md\\npackages/sim/README.md\\nclients/cpc/data/2026/history/week-01/projections.json\\npackages/sim/site/fixtures/README.md\\nclients/cpc/data/2026/history/week-08/projections.json\\nclients/cpc/data/2026/history/week-05/projections.json\\nclients/cpc/data/2026/history/week-09/projections.json\\nclients/cpc/data/2026/history/week-07/projections.json\\nclients/cpc/data/2026/history/week-02/projections.json\\napps/pipeline/src/cornerstone/sheet/README.md\\napps/pipeline/src/cornerstone/README.md\\nclients/cpc/data/2026/history/week-03/projections.json\\napps/pipeline/CLAUDE.md\\napps/pipeline/README.md\\npackages/design/site/lib/README.md\\npackages/design/site/format/README.md\\npackages/design/site/brand/README.md\\npackages/week/python/src/week/sheet/README.md\\npackages/design/site/shell/README.md\\npackages/design/site/parts/README.md\\npackages/design/site/hooks/README.md\\npackages/rankings/README.md\\npackages/design/site/ui/README.md\\npackages/design/README.md\\npackages/rankings/site/chapters/README.md\\npackages/rankings/site/schema/README.md\\npackages/sim/site/replay/README.md\\nclients/norcal/data/2026/week-08/raw/projections.json\\nclients/norcal/data/2026/week-08/raw/rosters.json\\nclients/norcal/data/2026/week-08/raw/projections_ahead.json\\nclients/cpc/data/2026/history/week-04/projections.json\\nclients/norcal/data/2026/history/week-08/projections.json\\nclients/norcal/data/2026/week-09/raw/projections.json\\nclients/norcal/data/2026/week-09/raw/rosters.json\\nclients/norcal/data/2026/week-09/raw/projections_ahead.json\\napps/pipeline/tests/fixtures/2026/history/week-04/projections.json\\npackages/rankings/site/fixtures/README.md\\napps/pipeline/tests/fixtures/2026/history/week-01/projections.json\\napps/pipeline/tests/fixtures/2026/history/week-03/projections.json\\napps/pipeline/tests/fixtures/2026/history/week-05/projections.json\\napps/pipeline/tests/fixtures/2026/history/week-02/projections.json\\napps/pipeline/tests/fixtures/2026/week-06/raw/projections_ahead.json\\napps/pipeline/tests/fixtures/2026/week-06/raw/rosters.json\\napps/pipeline/tests/fixtures/2026/week-06/raw/projections.json\\napps/pipeline/tests/fixtures/midseason/cpc-rosters-now.json\\nclients/norcal/data/2026/history/week-09/projections.json\\nclients/norcal/data/2026/history/week-04/projections.json\\nclients/norcal/data/2026/history/week-07/projections.json\\nclients/norcal/data/2026/history/week-06/projections.json\\nclients/norcal/data/2026/history/week-01/projections.json\\nclients/norcal/data/2026/history/week-05/projections.json\\nclients/norcal/data/2026/history/week-03/projections.json\\nclients/norcal/data/2026/history/week-02/projections.json\\n\"}"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+        "create_time": 1794518848.89976
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "medium",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1a8-732b-7b50-b2bc-83c60c445ce9",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "guardian_credits_requested": "true",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1a8-732b-7b50-b2bc-83c60c445ce9\",\"thread_id\":\"01a1d1a8-732b-7b50-b2bc-83c60c445ce9\",\"agent_name\":\"/root\",\"turn_id\":\"01a1d1a8-76cb-7533-b014-7e3d0f3cc65c\",\"window_id\":\"01a1d1a8-732b-7b50-b2bc-83c60c445ce9:0\",\"window_number\":0,\"context_window_id\":\"01a1d1a8-7343-7833-a135-531037c644bc\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"root_turn_id\":\"01a1d1a8-76cb-7533-b014-7e3d0f3cc65c\",\"thread_source\":\"user\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518841080,\"analytics_enabled\":true,\"model\":\"gpt-6-astra\",\"reasoning_effort\":\"medium\"}",
+    "mcp_attribution": "{\"status\":\"none\"}",
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true",
+    "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+    "thread_id": "01a1d1a8-732b-7b50-b2bc-83c60c445ce9",
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657",
+    "session_id": "01a1d1a8-732b-7b50-b2bc-83c60c445ce9",
+    "x-codex-window-id": "01a1d1a8-732b-7b50-b2bc-83c60c445ce9:0",
+    "x-codex-ws-stream-request-start-ms": "1794518848980",
+    "root_turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "tool_name": "exec_command",
+  "tool_namespace": null,
+  "payload": {
+    "type": "function",
+    "arguments": "{\"cmd\":\"nl -ba packages/analyzer/site/form/team-picker.tsx\",\"max_output_tokens\":6500}"
+  }
+}

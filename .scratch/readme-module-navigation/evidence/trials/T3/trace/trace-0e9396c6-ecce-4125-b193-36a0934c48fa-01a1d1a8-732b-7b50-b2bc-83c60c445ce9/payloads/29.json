@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-d725d45a-ab77-4adc-85f6-fc84e44c95d7",
+  "process_id": "42330",
+  "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+  "started_at_ms": 1794518866793,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md packages/week/python/src/week/sheet/README.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "cat /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md packages/week/python/src/week/sheet/README.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

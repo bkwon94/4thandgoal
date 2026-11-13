@@ -1,0 +1,11 @@
+Reading additional input from stdin...
+2026-11-12T21:26:01.693988Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: {\"detail\":\"Not Found\"}")
+2026-11-12T21:26:01.703715Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: default backend - 404")
+2026-11-12T21:26:01.862266Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: default backend - 404")
+2026-11-12T21:26:01.885539Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: {\"detail\":\"Not Found\"}")
+2026-11-12T21:26:29.628825Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: {\"detail\":\"Not Found\"}")
+2026-11-12T21:26:29.645851Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: default backend - 404")
+2026-11-12T21:26:32.588040Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: {\"detail\":\"Not Found\"}")
+2026-11-12T21:26:32.588001Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: default backend - 404")
+2026-11-12T21:26:32.589168Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: default backend - 404")
+2026-11-12T21:26:32.599750Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: {\"detail\":\"Not Found\"}")

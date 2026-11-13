@@ -1,0 +1,89 @@
+{
+  "type": "session_configured",
+  "session_id": "01a1d1aa-10a7-7293-a822-239beb9975a4",
+  "thread_id": "01a1d1aa-10a7-7293-a822-239beb9975a4",
+  "thread_source": "user",
+  "model": "gpt-6-astra",
+  "model_provider_id": "openai",
+  "approval_policy": "never",
+  "approvals_reviewer": "user",
+  "permission_profile": {
+    "type": "managed",
+    "file_system": {
+      "type": "restricted",
+      "entries": [
+        {
+          "path": {
+            "type": "special",
+            "value": {
+              "kind": "root"
+            }
+          },
+          "access": "read"
+        },
+        {
+          "path": {
+            "type": "path",
+            "path": "/tmp/readme-navigation-trial-root"
+          },
+          "access": "write"
+        },
+        {
+          "path": {
+            "type": "special",
+            "value": {
+              "kind": "slash_tmp"
+            }
+          },
+          "access": "write"
+        },
+        {
+          "path": {
+            "type": "special",
+            "value": {
+              "kind": "tmpdir"
+            }
+          },
+          "access": "write"
+        },
+        {
+          "path": {
+            "type": "path",
+            "path": "/tmp/readme-navigation-trial-root/.git"
+          },
+          "access": "read",
+          "missing_path_behavior": "skip"
+        },
+        {
+          "path": {
+            "type": "path",
+            "path": "/tmp/readme-navigation-trial-root/.agents"
+          },
+          "access": "read",
+          "missing_path_behavior": "skip"
+        },
+        {
+          "path": {
+            "type": "path",
+            "path": "/tmp/readme-navigation-trial-root/.codex"
+          },
+          "access": "read",
+          "missing_path_behavior": "skip"
+        },
+        {
+          "path": {
+            "type": "path",
+            "path": "/tmp/readme-navigation-trial-root/.aws"
+          },
+          "access": "read",
+          "missing_path_behavior": "skip"
+        }
+      ]
+    },
+    "network": "restricted"
+  },
+  "active_permission_profile": {
+    "id": ":workspace"
+  },
+  "cwd": "/tmp/readme-navigation-trial-root"
+}

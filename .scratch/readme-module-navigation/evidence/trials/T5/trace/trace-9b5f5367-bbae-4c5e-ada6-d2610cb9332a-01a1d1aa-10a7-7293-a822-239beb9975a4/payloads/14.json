@@ -1,0 +1,83 @@
+{
+  "type": "response.create",
+  "model": "gpt-6-astra",
+  "stream": true,
+  "previous_response_id": "resp_00c4956a5bae023a016af62fa58e8c87d1b2a796105867972f",
+  "input": [
+    {
+      "type": "custom_tool_call_output",
+      "id": "ctco_01a1d1aa-2e55-78a2-a6f2-558a1baf356e",
+      "call_id": "call_ac11d96494d149aa8426603663859827",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.3 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"f967ed\",\"wall_time_seconds\":0.000011166,\"exit_code\":0,\"original_token_count\":534,\"output\":\"/private/tmp/readme-navigation-trial-root\\nCLAUDE.md\\npackages/midseason/site/act-three/README.md\\ndocs/adr/README.md\\npackages/midseason/site/report/README.md\\npackages/midseason/site/fixtures/README.md\\npackages/midseason/site/schema/README.md\\npackages/midseason/site/act-two/README.md\\npackages/midseason/site/act-one/README.md\\npackages/midseason/site/home/README.md\\npackages/midseason/README.md\\npackages/rankings/site/fixtures/README.md\\npackages/rankings/site/schema/README.md\\npackages/rankings/site/chapters/README.md\\npackages/rankings/README.md\\npackages/league/README.md\\npackages/week/site/fixtures/README.md\\npackages/league/python/src/league/provider/README.md\\npackages/waiver/README.md\\npackages/week/site/parts/README.md\\npackages/week/site/schema/README.md\\npackages/week/site/chapters/README.md\\npackages/week/README.md\\npackages/managers/site/fixtures/README.md\\npackages/managers/site/schema/README.md\\npackages/analyzer/python/src/analyzer/ratelimit.py\\npackages/week/python/src/week/sheet/README.md\\npackages/managers/site/page/README.md\\npackages/managers/README.md\\npackages/sim/site/replay/README.md\\npackages/design/site/lib/README.md\\npackages/design/site/format/README.md\\npackages/design/site/parts/README.md\\npackages/eggs/site/lib/README.md\\npackages/design/site/hooks/README.md\\npackages/eggs/site/board/README.md\\npackages/design/site/brand/README.md\\npackages/eggs/site/hunt/README.md\\npackages/design/site/shell/README.md\\npackages/eggs/site/listener/README.md\\npackages/eggs/README.md\\npackages/design/site/ui/README.md\\npackages/design/README.md\\npackages/facts/README.md\\npackages/sim/README.md\\npackages/sim/site/schema/README.md\\npackages/analyzer/README.md\\npackages/analyzer/site/form/README.md\\npackages/sim/site/fixtures/README.md\\npackages/analyzer/site/lib/README.md\\napps/api/src/cornerstone_api/README.md\\napps/api/README.md\\napps/site/README.md\\napps/site/CLAUDE.md\\napps/site/src/lib/data/README.md\\napps/site/src/lib/README.md\\napps/site/src/app/fonts/budget.ts\\napps/pipeline/src/cornerstone/sheet/README.md\\napps/pipeline/src/cornerstone/README.md\\napps/pipeline/CLAUDE.md\\napps/pipeline/README.md\\napps/site/src/fixtures/sites/README.md\\n\"}"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+        "create_time": 1794518953.557079
+      }
+    },
+    {
+      "type": "message",
+      "id": "msg_01a1d1aa-2f0e-7ab1-b64d-435a5c0a2354",
+      "role": "developer",
+      "content": [
+        {
+          "type": "input_text",
+          "text": "<tools>\nAdded deferred tool namespaces:\n- mcp__computer_history\n</tools>"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+        "create_time": 1794518953.742518,
+        "content_item_kinds": [
+          "tools.deferred_namespaces"
+        ],
+        "content_item_metadata": [
+          {
+            "provenance": {
+              "type": "tool",
+              "namespace": "tool_search"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "medium",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1aa-10a7-7293-a822-239beb9975a4",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "x-codex-window-id": "01a1d1aa-10a7-7293-a822-239beb9975a4:0",
+    "session_id": "01a1d1aa-10a7-7293-a822-239beb9975a4",
+    "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1aa-10a7-7293-a822-239beb9975a4\",\"thread_id\":\"01a1d1aa-10a7-7293-a822-239beb9975a4\",\"agent_name\":\"/root\",\"turn_id\":\"01a1d1aa-14ea-7821-bb12-b153630100bb\",\"window_id\":\"01a1d1aa-10a7-7293-a822-239beb9975a4:0\",\"window_number\":0,\"context_window_id\":\"01a1d1aa-12c8-7123-8020-e9769777adbf\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"root_turn_id\":\"01a1d1aa-14ea-7821-bb12-b153630100bb\",\"thread_source\":\"user\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518947112,\"analytics_enabled\":true,\"model\":\"gpt-6-astra\",\"reasoning_effort\":\"medium\"}",
+    "guardian_credits_requested": "true",
+    "x-codex-ws-stream-request-start-ms": "1794518953777",
+    "root_turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+    "mcp_attribution": "{\"status\":\"none\"}",
+    "thread_id": "01a1d1aa-10a7-7293-a822-239beb9975a4",
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

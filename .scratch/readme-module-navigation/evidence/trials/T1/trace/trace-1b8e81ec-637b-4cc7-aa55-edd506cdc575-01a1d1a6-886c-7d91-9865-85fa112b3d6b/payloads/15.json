@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_0be35e0c055c1851016af62ec3818487d19e58495a6110f153",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 29701,
+    "cached_input_tokens": 29440,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 201,
+    "reasoning_output_tokens": 142,
+    "total_tokens": 29902
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_0be35e0c055c1851016af62ecb44b487d18fb05740f278520e",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 eff169bfee7be9e3d94b053cdad4c6dc429566ccc771c792df9111f8ab7a6771; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_0be35e0c055c1851016af62ecb44a487d18df11b5e3f1c6821",
+      "status": "completed",
+      "call_id": "call_9b0c34a394b14932aac23153ff708053",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat CLAUDE.md\",\"max_output_tokens\":5000}));\ntext(await tools.exec_command({cmd:\"cat ~/.Codex/output-styles/ste.md\",\"max_output_tokens\":4000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+        "create_time": 1794518731.2764244
+      }
+    }
+  ]
+}

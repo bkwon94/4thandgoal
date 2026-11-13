@@ -1,0 +1,26 @@
+{
+  "response_id": "resp_0d63bdccdb669eee016af62f1b2ce887d1bd19cfbb8db13cc3",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 40125,
+    "cached_input_tokens": 38016,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 39,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 40164
+  },
+  "output_items": [
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_0d63bdccdb669eee016af62f1ccc9887d1b2856aee3a1f6598",
+      "status": "completed",
+      "call_id": "call_6a03cc51dd5c48fcbcd2a7e6d0ec3980",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"nl -ba packages/analyzer/site/form/team-picker.test.tsx\",max_output_tokens:6500}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+        "create_time": 1794518812.8046963
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "response_id": "resp_0be35e0c055c1851016af62ebf05ec87d182c6de6c5f4c5afe",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 29496,
+    "cached_input_tokens": 13312,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 62,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 29558
+  },
+  "output_items": [
+    {
+      "type": "message",
+      "status": "completed",
+      "id": "msg_0be35e0c055c1851016af62ec06ef087d19dc021f4aafa6f86",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "Brian, I will follow the README links and count each file read. I will skip the suspended state and ticket reads.\n",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "phase": "commentary",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+        "create_time": 1794518720.4416602
+      }
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_0be35e0c055c1851016af62ec138bc87d18fd7e42b3d16f82d",
+      "status": "completed",
+      "call_id": "call_5d17634e40ef412c841eaad1b5a3a837",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"pwd; ls -a\",\"max_output_tokens\":2000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+        "create_time": 1794518721.235264
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "call_id": "exec-fe6f0e47-512d-4969-aab9-b72d61623d3c",
+  "process_id": "36329",
+  "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+  "completed_at_ms": 1794518769474,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "pwd; ls -a"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "pwd; ls -a"
+    }
+  ],
+  "source": "unified_exec_startup",
+  "aggregated_output": "/private/tmp/readme-navigation-trial-root\n.\n..\n.claude\n.claude-plugin\n.git\n.github\n.gitignore\n.pre-commit-config.yaml\n.python-version\n.scratch\nCLAUDE.md\nGLOSSARY.md\nMakefile\napps\nclients\ndata\ndocs\npackages\npnpm-lock.yaml\npnpm-workspace.yaml\npyproject.toml\nscripts\nuv.lock\n",
+  "exit_code": 0,
+  "duration": {
+    "secs": 0,
+    "nanos": 6083
+  },
+  "status": "completed"
+}

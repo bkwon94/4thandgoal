@@ -1,0 +1,8 @@
+{
+  "tool_name": "exec_command",
+  "tool_namespace": null,
+  "payload": {
+    "type": "function",
+    "arguments": "{\"cmd\":\"pwd; rg --files -g 'AGENTS.md' -g 'README.md' -g 'CLAUDE.md' -g '*allowance*' -g '*quota*' -g '*budget*' -g '*limit*'\",\"max_output_tokens\":4000}"
+  }
+}

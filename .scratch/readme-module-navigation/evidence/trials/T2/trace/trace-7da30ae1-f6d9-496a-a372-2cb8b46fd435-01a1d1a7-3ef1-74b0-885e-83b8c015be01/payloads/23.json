@@ -1,0 +1,8 @@
+{
+  "tool_name": "spawn_agent",
+  "tool_namespace": "collaboration",
+  "payload": {
+    "type": "function",
+    "arguments": "{\"task_name\":\"trace_owner\",\"fork_turns\":\"none\",\"model\":\"gpt-6.1-sol\",\"message\":\"[REDACTED: opaque encrypted context or body; original fragment SHA256 224697c89118f4c771d57d71538ec985240128eefeda1ef62a77737dee5cbc03; full original remains local]\"}"
+  }
+}

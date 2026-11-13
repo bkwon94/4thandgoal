@@ -1,0 +1,57 @@
+{
+  "type": "response.create",
+  "model": "gpt-6-astra",
+  "stream": true,
+  "previous_response_id": "resp_0be35e0c055c1851016af62ebf05ec87d182c6de6c5f4c5afe",
+  "input": [
+    {
+      "type": "custom_tool_call_output",
+      "id": "ctco_01a1d1a6-aab3-7831-8575-955c699a05da",
+      "call_id": "call_5d17634e40ef412c841eaad1b5a3a837",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.4 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"9441b3\",\"wall_time_seconds\":0.000007125,\"exit_code\":0,\"original_token_count\":68,\"output\":\"/private/tmp/readme-navigation-trial-root\\n.\\n..\\n.claude\\n.claude-plugin\\n.git\\n.github\\n.gitignore\\n.pre-commit-config.yaml\\n.python-version\\n.scratch\\nCLAUDE.md\\nGLOSSARY.md\\nMakefile\\napps\\nclients\\ndata\\ndocs\\npackages\\npnpm-lock.yaml\\npnpm-workspace.yaml\\npyproject.toml\\nscripts\\nuv.lock\\n\"}"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+        "create_time": 1794518723.251957
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "medium",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1a6-886c-7d91-9865-85fa112b3d6b",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "mcp_attribution": "{\"status\":\"none\"}",
+    "thread_id": "01a1d1a6-886c-7d91-9865-85fa112b3d6b",
+    "session_id": "01a1d1a6-886c-7d91-9865-85fa112b3d6b",
+    "x-codex-window-id": "01a1d1a6-886c-7d91-9865-85fa112b3d6b:0",
+    "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657",
+    "x-codex-ws-stream-request-start-ms": "1794518723318",
+    "root_turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1a6-886c-7d91-9865-85fa112b3d6b\",\"thread_id\":\"01a1d1a6-886c-7d91-9865-85fa112b3d6b\",\"agent_name\":\"/root\",\"turn_id\":\"01a1d1a6-910b-7053-8367-8c958dab6b00\",\"window_id\":\"01a1d1a6-886c-7d91-9865-85fa112b3d6b:0\",\"window_number\":0,\"context_window_id\":\"01a1d1a6-8aa2-7fb0-a8a4-2dbe90c63234\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"root_turn_id\":\"01a1d1a6-910b-7053-8367-8c958dab6b00\",\"thread_source\":\"user\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518716711,\"analytics_enabled\":true,\"model\":\"gpt-6-astra\",\"reasoning_effort\":\"medium\"}",
+    "guardian_credits_requested": "true",
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

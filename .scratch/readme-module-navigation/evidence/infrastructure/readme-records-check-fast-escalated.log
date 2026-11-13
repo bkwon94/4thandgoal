@@ -1,0 +1,261 @@
+==> scripts: check-fast
+.............................................
+----------------------------------------------------------------------
+Ran 45 tests in 0.727s
+
+OK
+==> site: check-fast
+
+> 4thandgoal-site@0.1.0 check:fast /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/readme-module-navigation-02/apps/site
+> CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && pnpm test
+
+(node:11824) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> 4thandgoal-site@0.1.0 typecheck /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/readme-module-navigation-02/apps/site
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+
+> 4thandgoal-site@0.1.0 test /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/readme-module-navigation-02/apps/site
+> vitest run
+
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/readme-module-navigation-02/apps/site
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ Test Files  131 passed (131)
+      Tests  1334 passed (1334)
+   Start at  16:40:51
+   Duration  135.21s (tests 72%, environment 19%, import 8%)
+
+    Isolate  131 workers spawned · ~457ms startup each (spawn + environment, per file)
+             at least ~29.45s faster with isolate: false — reuses workers across files instead of one per file
+
+==> pipeline: check-fast
+uv run --exact --package cornerstone ruff check src tests
+Installed 13 packages in 8ms
+All checks passed!
+uv run --exact --package cornerstone pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cornerstone pytest -q tests/test_layers.py tests/test_rule_client.py tests/test_rule_ports.py tests/test_rule_publish.py tests/test_rule_readmes.py tests/test_rule_suppressions.py tests/test_rule_tracker.py
+.................................................                        [100%]
+49 passed in 1.53s
+==> api: check-fast
+uv run --exact --package cpc-api ruff check src tests
+Uninstalled 4 packages in 2ms
+Installed 8 packages in 11ms
+All checks passed!
+uv run --exact --package cpc-api pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-api pytest -q tests/test_rule_api.py
+.....                                                                    [100%]
+5 passed in 0.10s
+==> packages/analyzer: check-fast
+uv run --exact --package cpc-analyzer ruff check src tests
+Uninstalled 14 packages in 44ms
+All checks passed!
+uv run --exact --package cpc-analyzer pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-analyzer pytest -q
+..............................                                           [100%]
+30 passed in 0.89s
+==> packages/design: check-fast
+The site check covers it.
+==> packages/eggs: check-fast
+uv run --exact --package cpc-eggs ruff check src tests
+Uninstalled 2 packages in 1ms
+Installed 1 package in 2ms
+All checks passed!
+uv run --exact --package cpc-eggs pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-eggs pytest -q
+.....................................                                    [100%]
+37 passed in 0.21s
+==> packages/facts: check-fast
+uv run --exact --package cpc-facts ruff check src tests
+Uninstalled 4 packages in 12ms
+Installed 1 package in 1ms
+All checks passed!
+uv run --exact --package cpc-facts pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-facts pytest -q
+...............                                                          [100%]
+15 passed in 0.54s
+==> packages/league: check-fast
+uv run --exact --package cpc-league ruff check src tests
+Uninstalled 1 package in 0.49ms
+All checks passed!
+uv run --exact --package cpc-league pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-league pytest -q
+...........                                                              [100%]
+11 passed in 0.12s
+==> packages/managers: check-fast
+uv run --exact --package cpc-managers ruff check src tests
+Installed 2 packages in 1ms
+All checks passed!
+uv run --exact --package cpc-managers pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-managers pytest -q
+...                                                                      [100%]
+3 passed in 0.01s
+==> packages/midseason: check-fast
+uv run --exact --package cpc-midseason ruff check src tests
+Uninstalled 1 package in 0.53ms
+Installed 1 package in 1ms
+All checks passed!
+uv run --exact --package cpc-midseason pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-midseason pytest -q
+........................................................................ [ 54%]
+............................................................             [100%]
+132 passed in 0.69s
+==> packages/rankings: check-fast
+uv run --exact --package cpc-rankings ruff check src tests
+Uninstalled 1 package in 0.53ms
+Installed 1 package in 1ms
+All checks passed!
+uv run --exact --package cpc-rankings pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-rankings pytest -q
+.........                                                                [100%]
+9 passed in 0.07s
+==> packages/sim: check-fast
+uv run --exact --package cpc-sim ruff check src tests
+Uninstalled 1 package in 0.53ms
+Installed 1 package in 2ms
+All checks passed!
+uv run --exact --package cpc-sim pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-sim pytest -q
+...............                                                          [100%]
+15 passed in 0.21s
+==> packages/waiver: check-fast
+uv run --exact --package cpc-waiver ruff check src tests
+Uninstalled 1 package in 0.52ms
+Installed 1 package in 1ms
+All checks passed!
+uv run --exact --package cpc-waiver pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-waiver pytest -q
+...................................................................      [100%]
+67 passed, 1 deselected in 2.82s
+==> packages/week: check-fast
+uv run --exact --package cpc-week ruff check src tests
+Uninstalled 1 package in 0.48ms
+Installed 1 package in 2ms
+All checks passed!
+uv run --exact --package cpc-week pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-week pytest -q
+.......                                                                  [100%]
+7 passed in 0.57s

@@ -1,0 +1,4 @@
+{
+  "type": "warning",
+  "message": "failed to parse plugin hooks config /Users/brian.kwon/.codex/plugins/cache/honcho/honcho/0.4.0/hooks/hooks.json: unknown field `modules`, expected `description` or `hooks` at line 3 column 11"
+}

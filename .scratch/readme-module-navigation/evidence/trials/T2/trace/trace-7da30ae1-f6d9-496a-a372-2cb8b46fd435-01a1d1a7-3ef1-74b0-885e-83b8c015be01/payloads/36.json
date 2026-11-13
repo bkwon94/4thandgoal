@@ -1,0 +1,8 @@
+{
+  "type": "direct_response",
+  "response_item": {
+    "type": "function_call_output",
+    "call_id": "call_f7968167ed174c019f722c26ed2f4d3d",
+    "output": ""
+  }
+}

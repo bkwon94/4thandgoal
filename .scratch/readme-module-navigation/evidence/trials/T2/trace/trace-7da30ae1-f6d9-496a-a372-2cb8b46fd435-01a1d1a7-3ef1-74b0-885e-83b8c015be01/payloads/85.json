@@ -1,0 +1,27 @@
+{
+  "response_id": "resp_0d63bdccdb669eee016af62f14a24887d1867659fb887abe9c",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 37995,
+    "cached_input_tokens": 37120,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 123,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 38118
+  },
+  "output_items": [
+    {
+      "type": "function_call",
+      "status": "completed",
+      "id": "fc_0d63bdccdb669eee016af62f163a3c87d1b7337865d7dfeaae",
+      "name": "send_message",
+      "namespace": "collaboration",
+      "arguments": "{\"target\":\"/root\",\"message\":\"[REDACTED: opaque encrypted context or body; original fragment SHA256 7bc9fd6e51a25cf90a87288dfb0e3d0b2759ba60651308d7f9973450e476e2b7; full original remains local]\"}",
+      "call_id": "call_0dcacd30a43a43c0b2494b30eb59894c",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+        "create_time": 1794518806.2335668
+      }
+    }
+  ]
+}

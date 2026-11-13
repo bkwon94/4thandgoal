@@ -1,0 +1,9 @@
+{
+  "command": "NODE_OPTIONS=--experimental-strip-types make check",
+  "cwd": "/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/readme-module-navigation",
+  "start": "2026-11-12T20:54:16.841501+00:00",
+  "head": "85d54d463a6bb111bb37c58bd810c24d1d9f4131",
+  "implementation": "dad744db4f3b49732adc1586e08c34be2f381f73",
+  "end": "2026-11-12T20:56:41.866026+00:00",
+  "exit_code": 2
+}

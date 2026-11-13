@@ -1,0 +1,8 @@
+{
+  "tool_name": "send_message",
+  "tool_namespace": "collaboration",
+  "payload": {
+    "type": "function",
+    "arguments": "{\"target\":\"trace_owner\",\"message\":\"[REDACTED: opaque encrypted context or body; original fragment SHA256 e0190bc40653159a819e740668787dca32e3e14f2b14d1661df108e7f378d77a; full original remains local]\"}"
+  }
+}

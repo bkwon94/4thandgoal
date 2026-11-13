@@ -1,0 +1,56 @@
+{
+  "response_id": "resp_094adc91ad05790d016af62f5334cc87d1b0ed9308ac172c4f",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 37197,
+    "cached_input_tokens": 34304,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 301,
+    "reasoning_output_tokens": 39,
+    "total_tokens": 37498
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_094adc91ad05790d016af62f575cd487d19a0857c341ba86e9",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 5b54b7b861c6896087fb5dd5276f9fe546ca7c4ef2c38439d9a45442ccb15a75; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c"
+      },
+      "content": []
+    },
+    {
+      "type": "message",
+      "status": "completed",
+      "id": "msg_094adc91ad05790d016af62f5780e087d1a87534283453fcee",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "The app map points to `week.sheet`. Its owner README names `base.py` and `test_sheet.py` for this exact behavior.\n",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "phase": "commentary",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+        "create_time": 1794518871.5107362
+      }
+    },
+    {
+      "type": "function_call",
+      "status": "completed",
+      "id": "fc_094adc91ad05790d016af62f5836a887d18c8689f384efffaa",
+      "name": "spawn_agent",
+      "namespace": "collaboration",
+      "arguments": "{\"task_name\":\"check_owner\",\"fork_turns\":\"all\",\"message\":\"[REDACTED: opaque encrypted context or body; original fragment SHA256 51f38762eab945f17f36854720236744451fc4115162d5aea89b1e92be59a584; full original remains local]\"}",
+      "call_id": "call_8e87e53646e34daaa4931e7e51b603b9",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+        "create_time": 1794518872.2179248
+      }
+    }
+  ]
+}

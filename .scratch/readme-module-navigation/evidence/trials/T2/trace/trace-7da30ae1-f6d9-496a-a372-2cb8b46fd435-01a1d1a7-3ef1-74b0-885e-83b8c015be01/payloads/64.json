@@ -1,0 +1,18 @@
+{
+  "response": {
+    "Result": {
+      "cell_id": "g2:3",
+      "content_items": [
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"c2d1c0\",\"wall_time_seconds\":0.000342917,\"exit_code\":0,\"original_token_count\":521,\"output\":\"# Cornerstone site\\n\\nThe Next.js site. It builds one client, named by the env value `CLIENT`. The build copies `clients/$CLIENT/published/`\\ninto `public/`, and the site renders each `public/<season>/week-NN/page.json` and its images.\\nThe root CLAUDE.md holds the style, the flow, and the tracker.\\n\\nFor module ownership, start with the [app map](README.md). Follow its owner README links to the module and test.\\n\\n## Commands\\n\\nRun these in `apps/site/`.\\n\\n- Install: `pnpm install`\\n- Dev server: `CLIENT=cpc pnpm dev`\\n- Build the static export: `CLIENT=cpc pnpm build`. The `prebuild` step checks `client.toml` and writes the generated files.\\n- Test: `pnpm test`. The tests read the generated files, so run `pnpm check:fast` or a build first.\\n- Check the export: `CLIENT=cpc pnpm check:export`. Run it after `pnpm build`, with the same `CLIENT`.\\n- Check the readability floor: `CLIENT=cpc pnpm check:floor`. Run it after `pnpm build`, with the same `CLIENT`. Add `-g <route>` to check one page.\\n- Test the rules of the floor: `pnpm test:floor`. It needs Chromium once: `pnpm exec playwright install chromium`.\\n- Check all: `pnpm check`. It runs the fast check, the rules of the floor, then the build, `check:export`, and `check:floor` of each client under `clients/`. Then it builds the fixture client of the midseason report and runs the floor of the report on it. CI runs it on every push.\\n- Fast check: `pnpm check:fast`. It runs the client build of `cpc`, typecheck, and test. The hook runs it.\\n\\n## Rules\\n\\n- The hook does not run `pnpm install`. In a new worktree with no `node_modules`, run `pnpm install` first.\\n- The pipeline owns the shape of each published file. Change the schema in `packages/<package>/site/schema/` and the pipeline writer together (ADR 0013).\\n- Never edit a file with a `GENERATED` first line. Change `client.toml` or `scripts/client-build.mjs`, and build again.\\n- A component takes data and returns markup. It reads no file, no env, and no config (ADR 0012).\\n- Each package folder holds a README with the headings Knows, Ports, and Does not do (ADR 0016).\\n\"}"
+        }
+      ],
+      "error_text": null,
+      "code_mode_host_duration": {
+        "secs": 0,
+        "nanos": 242278000
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "tool_name": "send_message",
+  "tool_namespace": "collaboration",
+  "payload": {
+    "type": "function",
+    "arguments": "{\"target\":\"/root\",\"message\":\"[REDACTED: opaque encrypted context or body; original fragment SHA256 7bc9fd6e51a25cf90a87288dfb0e3d0b2759ba60651308d7f9973450e476e2b7; full original remains local]\"}"
+  }
+}

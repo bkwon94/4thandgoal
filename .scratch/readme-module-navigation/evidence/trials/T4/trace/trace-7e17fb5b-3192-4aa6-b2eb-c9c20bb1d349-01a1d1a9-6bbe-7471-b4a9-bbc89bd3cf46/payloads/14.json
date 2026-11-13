@@ -1,0 +1,57 @@
+{
+  "type": "response.create",
+  "model": "gpt-6-astra",
+  "stream": true,
+  "previous_response_id": "resp_05afccdec9b8600b016af62f7c49f487d19a58b20bb03147a7",
+  "input": [
+    {
+      "type": "custom_tool_call_output",
+      "id": "ctco_01a1d1a9-8b8b-7421-931f-8b06741729da",
+      "call_id": "call_bfd224b4c02045e4a30d52fae5489bc1",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.1 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"50de89\",\"wall_time_seconds\":0.000003,\"exit_code\":1,\"original_token_count\":398,\"output\":\"/private/tmp/readme-navigation-trial-root\\ntotal 840\\ndrwxr-xr-x   23 brian.kwon  wheel     736 Nov 12 16:24 .\\ndrwxrwxrwt  302 root        wheel    9664 Nov 12 16:28 ..\\ndrwxr-xr-x    4 brian.kwon  wheel     128 Nov 12 16:24 .claude\\ndrwxr-xr-x    3 brian.kwon  wheel      96 Nov 12 16:24 .claude-plugin\\n-rw-r--r--    1 brian.kwon  wheel      87 Nov 12 16:24 .git\\ndrwxr-xr-x    3 brian.kwon  wheel      96 Nov 12 16:24 .github\\n-rw-r--r--    1 brian.kwon  wheel    1003 Nov 12 16:24 .gitignore\\n-rw-r--r--    1 brian.kwon  wheel     586 Nov 12 16:24 .pre-commit-config.yaml\\n-rw-r--r--    1 brian.kwon  wheel       5 Nov 12 16:24 .python-version\\ndrwxr-xr-x   54 brian.kwon  wheel    1728 Nov 12 16:24 .scratch\\n-rw-r--r--    1 brian.kwon  wheel    4425 Nov 12 16:24 CLAUDE.md\\n-rw-r--r--    1 brian.kwon  wheel   62019 Nov 12 16:24 GLOSSARY.md\\n-rw-r--r--    1 brian.kwon  wheel    4033 Nov 12 16:24 Makefile\\ndrwxr-xr-x    5 brian.kwon  wheel     160 Nov 12 16:24 apps\\ndrwxr-xr-x    4 brian.kwon  wheel     128 Nov 12 16:24 clients\\ndrwxr-xr-x    3 brian.kwon  wheel      96 Nov 12 16:24 data\\ndrwxr-xr-x    4 brian.kwon  wheel     128 Nov 12 16:24 docs\\ndrwxr-xr-x   13 brian.kwon  wheel     416 Nov 12 16:24 packages\\n-rw-r--r--    1 brian.kwon  wheel  172060 Nov 12 16:24 pnpm-lock.yaml\\n-rw-r--r--    1 brian.kwon  wheel     255 Nov 12 16:24 pnpm-workspace.yaml\\n-rw-r--r--    1 brian.kwon  wheel     317 Nov 12 16:24 pyproject.toml\\ndrwxr-xr-x    7 brian.kwon  wheel     224 Nov 12 16:24 scripts\\n-rw-r--r--    1 brian.kwon  wheel  149873 Nov 12 16:24 uv.lock\\ncat: AGENTS.md: No such file or directory\\n\"}"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a9-7027-7e21-baa9-b492e6d9ba77",
+        "create_time": 1794518911.883751
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "medium",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1a9-6bbe-7471-b4a9-bbc89bd3cf46",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "thread_id": "01a1d1a9-6bbe-7471-b4a9-bbc89bd3cf46",
+    "guardian_credits_requested": "true",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1a9-6bbe-7471-b4a9-bbc89bd3cf46\",\"thread_id\":\"01a1d1a9-6bbe-7471-b4a9-bbc89bd3cf46\",\"agent_name\":\"/root\",\"turn_id\":\"01a1d1a9-7027-7e21-baa9-b492e6d9ba77\",\"window_id\":\"01a1d1a9-6bbe-7471-b4a9-bbc89bd3cf46:0\",\"window_number\":0,\"context_window_id\":\"01a1d1a9-6e2e-7b32-86ca-2bf63a54d9ba\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"root_turn_id\":\"01a1d1a9-7027-7e21-baa9-b492e6d9ba77\",\"thread_source\":\"user\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518904883,\"analytics_enabled\":true,\"model\":\"gpt-6-astra\",\"reasoning_effort\":\"medium\"}",
+    "mcp_attribution": "{\"status\":\"none\"}",
+    "turn_id": "01a1d1a9-7027-7e21-baa9-b492e6d9ba77",
+    "session_id": "01a1d1a9-6bbe-7471-b4a9-bbc89bd3cf46",
+    "x-codex-window-id": "01a1d1a9-6bbe-7471-b4a9-bbc89bd3cf46:0",
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true",
+    "x-codex-ws-stream-request-start-ms": "1794518911902",
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657",
+    "root_turn_id": "01a1d1a9-7027-7e21-baa9-b492e6d9ba77"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

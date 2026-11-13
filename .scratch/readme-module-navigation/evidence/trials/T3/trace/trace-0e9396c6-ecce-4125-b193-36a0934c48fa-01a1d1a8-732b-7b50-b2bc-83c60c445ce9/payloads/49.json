@@ -1,0 +1,21 @@
+{
+  "call_id": "exec-755482d6-e732-4d59-9b15-19c0ab3529c6",
+  "process_id": "41013",
+  "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+  "started_at_ms": 1794518887222,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "rg -n -A 55 -B 3 'def test_.*(current|added|additions|lock)|def projected_totals' packages/week/python/src/week/sheet/base.py apps/pipeline/tests/test_sheet.py"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "search",
+      "cmd": "rg -n -A 55 -B 3 'def test_.*(current|added|additions|lock)|def projected_totals' packages/week/python/src/week/sheet/base.py apps/pipeline/tests/test_sheet.py",
+      "query": "def test_.*(current|added|additions|lock)|def projected_totals",
+      "path": "base.py"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

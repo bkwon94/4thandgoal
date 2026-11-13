@@ -1,0 +1,10 @@
+{
+  "type": "code_mode_response",
+  "value": {
+    "chunk_id": "4428f4",
+    "wall_time_seconds": 0.081123834,
+    "exit_code": 1,
+    "original_token_count": 20,
+    "output": "cat: /Users/brian.kwon/.Codex/output-styles/ste.md: No such file or directory\n"
+  }
+}

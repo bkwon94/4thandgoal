@@ -1,0 +1,21 @@
+{
+  "call_id": "exec-cc9c749b-696b-4e70-a427-05833e1adb85",
+  "process_id": "82026",
+  "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+  "started_at_ms": 1794518732492,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat CLAUDE.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "cat CLAUDE.md",
+      "name": "CLAUDE.md",
+      "path": "CLAUDE.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

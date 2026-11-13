@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_016a32cefd2e3640016af62fe9b34487d1bfe51e5f7e90bddf",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 41519,
+    "cached_input_tokens": 34944,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 56,
+    "reasoning_output_tokens": 11,
+    "total_tokens": 41575
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_016a32cefd2e3640016af62feb06a887d1ab56365eae1448c2",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 d53a67ed2dfc470a4e3c8c9326e28064a492dc0c5561a4e4a8351daaad757d38; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_016a32cefd2e3640016af62feb59f487d1b605dee4015da2ea",
+      "status": "completed",
+      "call_id": "call_c05045fb25b745f6b6063838117d6a7f",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"sed -n '1100,1200p' apps/api/tests/test_api.py\",\"max_output_tokens\":2400}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+        "create_time": 1794519019.3549886
+      }
+    }
+  ]
+}

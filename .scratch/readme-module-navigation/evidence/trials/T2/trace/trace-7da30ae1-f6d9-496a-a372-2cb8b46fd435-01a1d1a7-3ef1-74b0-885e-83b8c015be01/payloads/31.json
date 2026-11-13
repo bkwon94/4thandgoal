@@ -1,0 +1,48 @@
+{
+  "type": "response.create",
+  "model": "gpt-6-astra",
+  "stream": true,
+  "previous_response_id": "resp_00d4f3ddbdf1525c016af62ef6bf6887d19527b13f1e012d72",
+  "input": [
+    {
+      "type": "function_call_output",
+      "id": "fco_01a1d1a7-ad88-7c92-b305-de7009f7c8ec",
+      "call_id": "call_70c7b6bf618045a48ef275fca65e8a58",
+      "output": "{\"task_name\":\"/root/trace_owner\"}",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518789.51208
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "medium",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "guardian_credits_requested": "true",
+    "thread_id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "mcp_attribution": "{\"status\":\"none\"}",
+    "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657",
+    "root_turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+    "x-codex-ws-stream-request-start-ms": "1794518789553",
+    "x-codex-window-id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01:0",
+    "session_id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"thread_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"agent_name\":\"/root\",\"turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"window_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01:0\",\"window_number\":0,\"context_window_id\":\"01a1d1a7-3ef5-7e81-a8fd-a5881e0c6293\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"root_turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"thread_source\":\"user\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518762019,\"analytics_enabled\":true,\"model\":\"gpt-6-astra\",\"reasoning_effort\":\"medium\"}",
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

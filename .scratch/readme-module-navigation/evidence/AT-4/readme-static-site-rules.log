@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/readme-module-navigation/apps/site
+
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  15:53:42
+   Duration  1.05s (environment 93%, tests 4%, transform 1%, import 1%, worker 1%)
+

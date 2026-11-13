@@ -6,6 +6,8 @@ This tool builds a weekly report page for the Cornerstone fantasy football leagu
 league data from Sleeper. It writes the chapters of the report and writes the page data. The site in `apps/site` renders the pages.
 The root CLAUDE.md holds the style, the flow, and the tracker. `GLOSSARY.md` names the chapter of prose a "Prose block".
 
+For module ownership, start with the [app map](README.md). Follow its owner README links to the module and test.
+
 ## Commands
 
 Run these in `apps/pipeline/`. Run `make help` for the full list.

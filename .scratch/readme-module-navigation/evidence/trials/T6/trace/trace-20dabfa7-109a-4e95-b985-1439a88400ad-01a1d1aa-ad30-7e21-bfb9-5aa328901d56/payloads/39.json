@@ -1,0 +1,8 @@
+{
+  "tool_name": "exec_command",
+  "tool_namespace": null,
+  "payload": {
+    "type": "function",
+    "arguments": "{\"cmd\":\"cat packages/analyzer/python/src/analyzer/ratelimit.py; rg -n -C 12 'restart|429|grade_limit|GradeLimiter' apps/api/tests/test_api.py\",\"max_output_tokens\":5500}"
+  }
+}

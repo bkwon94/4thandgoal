@@ -1,0 +1,26 @@
+{
+  "response_id": "resp_0be35e0c055c1851016af62ed21ec087d1819eb485c222f9b0",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 32748,
+    "cached_input_tokens": 31232,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 91,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 32839
+  },
+  "output_items": [
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_0be35e0c055c1851016af62ed470c487d1b3f06ba3986fb852",
+      "status": "completed",
+      "call_id": "call_49573c1aad6c4a0b8aeb236836f53c2b",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat ~/.claude/rules/communication/simplified-technical-english.md\",\"max_output_tokens\":4500}));\ntext(await tools.exec_command({cmd:\"cat apps/site/CLAUDE.md\",\"max_output_tokens\":4000}));\ntext(await tools.exec_command({cmd:\"cat apps/site/src/lib/data/README.md\",\"max_output_tokens\":3000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+        "create_time": 1794518740.4500089
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-60649f41-7c71-47db-8daa-449e6fcf30ce",
+  "process_id": "80845",
+  "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+  "started_at_ms": 1794518967018,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md apps/api/src/cornerstone_api/README.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "cat /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md apps/api/src/cornerstone_api/README.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

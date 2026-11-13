@@ -1,0 +1,21 @@
+{
+  "call_id": "exec-dab9b3ed-14cc-4316-b7bb-a82d4e73d97f",
+  "process_id": "1928",
+  "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+  "started_at_ms": 1794519013687,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat packages/analyzer/README.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "cat packages/analyzer/README.md",
+      "name": "README.md",
+      "path": "packages/analyzer/README.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

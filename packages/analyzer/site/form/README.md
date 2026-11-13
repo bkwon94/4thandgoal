@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The analyzer page body: the passphrase dialog, the trade form, and the result.
+- The analyzer page body: the passphrase dialog, the trade form, and the result. [team-picker.tsx](team-picker.tsx) restores selected-team focus after Change my team. [team-picker.test.tsx](team-picker.test.tsx) checks the selected radio.
 - The trade form, the Stack: the hero, the teams row, a card for each side, the sheets, the grade bar with its Ready halo, the fold line, the sweep, and the error box.
 - The result of one analyze document: the read hero with the Lean on its 5-step scale, the Case, and the fairness line, the swap card, one tab per side, and the Bullet rows in `bullet-rows.tsx`, which the Finder card reuses.
 - The trade finder, with an optional partner and up to three picks of the Advisor, each with a headline, the swap, and the Bullet rows. After a fallback, each trade of the shortlist shows its fact lines. The teams prefetch of the home page.
@@ -18,7 +18,7 @@
 
 ## Does not do
 
-- It grades no trade. The site API grades it, and this folder shows the answer.
+- It grades no trade. The [analyzer Python owner](../../README.md) grades it through the site API, and this folder shows the answer.
 - It shows no roster grade. The roster grade lives in the managers part of the site.
 - It defines no API shape. `../lib/schemas/api.ts` holds the response schemas.
 - It reads no file, no env, and no config, and it imports no app. The page gives the API target and the finder flag.

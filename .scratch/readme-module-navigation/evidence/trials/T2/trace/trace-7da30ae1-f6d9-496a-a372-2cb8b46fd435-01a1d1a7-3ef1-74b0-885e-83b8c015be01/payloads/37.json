@@ -1,0 +1,37 @@
+{
+  "response_id": "resp_00d4f3ddbdf1525c016af62f05c82487d1b17cefa40e6bc204",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 31712,
+    "cached_input_tokens": 31488,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 76,
+    "reasoning_output_tokens": 22,
+    "total_tokens": 31788
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_00d4f3ddbdf1525c016af62f08297c87d19253898471ff1191",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 4b055c4e4daa5c0bf6c635a3d46b6a98fe3fb8372fa32cde7c3cde60a66a4cd4; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7"
+      },
+      "content": []
+    },
+    {
+      "type": "function_call",
+      "status": "completed",
+      "id": "fc_00d4f3ddbdf1525c016af62f084bac87d194f71e3e9ad51c67",
+      "name": "send_message",
+      "namespace": "collaboration",
+      "arguments": "{\"target\":\"trace_owner\",\"message\":\"[REDACTED: opaque encrypted context or body; original fragment SHA256 e0190bc40653159a819e740668787dca32e3e14f2b14d1661df108e7f378d77a; full original remains local]\"}",
+      "call_id": "call_f7968167ed174c019f722c26ed2f4d3d",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518792.3001056
+      }
+    }
+  ]
+}

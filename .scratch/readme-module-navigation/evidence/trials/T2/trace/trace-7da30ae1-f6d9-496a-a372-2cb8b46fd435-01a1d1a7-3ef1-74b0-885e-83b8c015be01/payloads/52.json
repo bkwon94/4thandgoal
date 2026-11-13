@@ -1,0 +1,21 @@
+{
+  "call_id": "exec-a07037db-3225-4d59-a159-4c7fae8e5a18",
+  "process_id": "91218",
+  "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+  "started_at_ms": 1794518797999,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "cat /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md",
+      "name": "simplified-technical-english.md",
+      "path": "/Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

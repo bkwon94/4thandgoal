@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_00d4f3ddbdf1525c016af62ef1c9a887d1b41da8835484344b",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 29695,
+    "cached_input_tokens": 8064,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 128,
+    "reasoning_output_tokens": 71,
+    "total_tokens": 29823
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_00d4f3ddbdf1525c016af62ef58b9487d186887127bf33eff8",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 70d4bd6f7a211e5bbc99510c7d89392ab00e94bc3be019724850d7699609f8c2; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_00d4f3ddbdf1525c016af62ef58b8887d19e0cecd93370a32d",
+      "status": "completed",
+      "call_id": "call_6ca86afae9d14c7abc2435c7727f3577",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat CLAUDE.md ~/.Codex/output-styles/ste.md ~/.Codex/rules/communication/simplified-technical-english.md\",\"max_output_tokens\":6500}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518773.560347
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_00c4956a5bae023a016af62fb7841887d1b39f262bc121d625",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 35289,
+    "cached_input_tokens": 31872,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 83,
+    "reasoning_output_tokens": 32,
+    "total_tokens": 35372
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_00c4956a5bae023a016af62fb96d8087d1b2414c22daa931d5",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 fd2849c379e18e2cc2925b2122b9ebef75b7dbf0d2114c5e9de49a7e60e770ea; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_00c4956a5bae023a016af62fb9968c87d18b73f0bcc0c8d207",
+      "status": "completed",
+      "call_id": "call_7116ec2e415e416791b11de0bdb4807c",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"nl -ba apps/api/src/cornerstone_api/caps.py; nl -ba apps/api/tests/test_caps.py\",\"max_output_tokens\":5000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+        "create_time": 1794518969.5921466
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-b767a4fa-15ea-466a-88f8-9fbf60d3d327",
+  "process_id": "48506",
+  "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+  "started_at_ms": 1794518848888,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "pwd; rg --files -g AGENTS.md -g CLAUDE.md -g README.md -g '*playoff*' -g '*roster*' -g '*projection*'"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "pwd; rg --files -g AGENTS.md -g CLAUDE.md -g README.md -g '*playoff*' -g '*roster*' -g '*projection*'"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

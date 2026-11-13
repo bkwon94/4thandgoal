@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-5c345469-f1a6-4886-999c-c91c99ba32a6",
+  "process_id": "78235",
+  "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+  "started_at_ms": 1794518743196,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat ~/.claude/rules/communication/simplified-technical-english.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "cat ~/.claude/rules/communication/simplified-technical-english.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

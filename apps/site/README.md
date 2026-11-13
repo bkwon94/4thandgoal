@@ -4,6 +4,12 @@ The Cornerstone League Weekly site. Each client serves at `<slug>.4thandgoal.app
 This repo holds the Next.js source. The Python pipeline in `apps/pipeline` publishes each week's `page.json` and images into `clients/<slug>/published/`. The build
 copies the published data of one client into `public/`. The site renders every page, the home page included, from that JSON.
 
+## Module map
+
+- File loaders: the [data owner](src/lib/data/README.md) reads published files and builds the week archive.
+- App routes: [src/app](src/app/) composes pages from loaders and package parts. Generated routes follow the client package list.
+- Package parts: the [analyzer owner](../../packages/analyzer/README.md) owns the trade UI and API client. Its [form owner](../../packages/analyzer/site/form/README.md) owns team choice and focus. Parts take data and return markup.
+
 ## Install
 
 Use Node 22 or newer. The `.nvmrc` pins 22.

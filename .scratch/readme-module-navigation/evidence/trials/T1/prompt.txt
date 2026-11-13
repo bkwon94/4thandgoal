@@ -1,0 +1,20 @@
+The week archive must put the newest season first, then order its weeks by number.
+
+1. Start at the repository root.
+2. Follow repository and external instructions, except for the trial exception below.
+3. For this trial only, do not read `.scratch/` or `docs/agents/state.md`.
+4. The trial exception suspends normal state and ticket reads.
+5. Find the module that owns the requested behavior and its relevant test file.
+6. Use at most ten distinct file reads.
+7. Count partial reads, READMEs, and automatically loaded instruction files. Exclude automatic skill catalog metadata from this count; actual file reads and loaded instructions still count.
+8. Count external files, including external instructions.
+9. Count every file exposed by a content search.
+10. Content-search results count even when they show only matching filenames.
+11. Count each distinct file once.
+12. Repeated reads add no further count.
+13. Filename listings that enumerate pathnames without a content search cost no file reads.
+14. The eleventh distinct file fails the run.
+15. Return the chosen module path and test path.
+16. Give a reason for each choice.
+17. Return an ordered, complete file-read log.
+18. Record evidence without a Test verdict.

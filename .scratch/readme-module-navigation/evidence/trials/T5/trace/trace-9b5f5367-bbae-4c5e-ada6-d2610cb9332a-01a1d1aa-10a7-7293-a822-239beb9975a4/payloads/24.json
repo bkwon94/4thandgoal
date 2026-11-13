@@ -1,0 +1,26 @@
+{
+  "response_id": "resp_00c4956a5bae023a016af62fb2a9dc87d1ab88c1390f493100",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 31974,
+    "cached_input_tokens": 30208,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 58,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 32032
+  },
+  "output_items": [
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_00c4956a5bae023a016af62fb5efc887d19c9b1422f47e16f3",
+      "status": "completed",
+      "call_id": "call_ed8128f0615c4058ba0811e99729ff47",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md apps/api/src/cornerstone_api/README.md\",\"max_output_tokens\":4500}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+        "create_time": 1794518965.9447503
+      }
+    }
+  ]
+}

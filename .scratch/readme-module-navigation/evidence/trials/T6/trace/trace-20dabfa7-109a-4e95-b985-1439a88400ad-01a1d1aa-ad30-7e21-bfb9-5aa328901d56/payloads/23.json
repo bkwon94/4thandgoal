@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_016a32cefd2e3640016af62fdc5d3087d18d83a1353ca5cc00",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 31261,
+    "cached_input_tokens": 29696,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 103,
+    "reasoning_output_tokens": 22,
+    "total_tokens": 31364
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_016a32cefd2e3640016af62fe02f8c87d1ae9ded72c2058db7",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 96c47dd58bdb4b8eb0f8f33589584295b094bacd596fcc1e6c5eff1d063ec072; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_016a32cefd2e3640016af62fe02f7487d19139895ab8d86469",
+      "status": "completed",
+      "call_id": "call_242f190e0cd94a83b7d9bfbf3feec1fc",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat ~/.claude/rules/communication/simplified-technical-english.md; rg -n 'readme-module-navigation|readme-navigation' /Users/brian.kwon/.codex/memories/MEMORY.md; cat apps/api/README.md\",\"max_output_tokens\":5000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+        "create_time": 1794519008.193535
+      }
+    }
+  ]
+}

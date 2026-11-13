@@ -3,6 +3,11 @@
 This repo builds the weekly report site for the Cornerstone fantasy football league. The
 data comes from Sleeper. The public site of CPC is at https://cpc.4thandgoal.app/
 
+## Module map
+
+- Build and publish orchestration: the [cornerstone owner](src/cornerstone/README.md) joins the weekly stages and controls publish commits.
+- Domain packages: the [week owner](../../packages/week/README.md) owns weekly facts and page data. Its [sheet owner](../../packages/week/python/src/week/sheet/README.md) owns roster projections. Packages hold domain rules; the app joins their outputs.
+
 ## Commands
 
 Each command that reads a league names its client with `--client <slug>`, such as `--client cpc`. A command with no

@@ -1,0 +1,27 @@
+{
+  "response_id": "resp_00d4f3ddbdf1525c016af62f22391c87d19ad22f6f0b3bb75e",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 32251,
+    "cached_input_tokens": 31744,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 21,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 32272
+  },
+  "output_items": [
+    {
+      "type": "function_call",
+      "status": "completed",
+      "id": "fc_00d4f3ddbdf1525c016af62f247ad487d19f4a81a4a541d7c9",
+      "name": "wait_agent",
+      "namespace": "collaboration",
+      "arguments": "{\"timeout_ms\":10000}",
+      "call_id": "call_027b05b783df4cec8907a4f0b50264e2",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518820.4881175
+      }
+    }
+  ]
+}

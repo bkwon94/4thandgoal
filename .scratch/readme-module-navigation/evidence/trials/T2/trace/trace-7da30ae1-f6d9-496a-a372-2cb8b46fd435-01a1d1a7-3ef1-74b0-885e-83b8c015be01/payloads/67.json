@@ -1,0 +1,26 @@
+{
+  "response_id": "resp_0d63bdccdb669eee016af62f12136887d19b57286d67c929a9",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 37309,
+    "cached_input_tokens": 36480,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 37,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 37346
+  },
+  "output_items": [
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_0d63bdccdb669eee016af62f13c48487d1820d8b9212ee7923",
+      "status": "completed",
+      "call_id": "call_498fe6b7dd28411b9e53af15fc7a9c13",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"nl -ba packages/analyzer/site/form/README.md\",max_output_tokens:5000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+        "create_time": 1794518803.8609924
+      }
+    }
+  ]
+}

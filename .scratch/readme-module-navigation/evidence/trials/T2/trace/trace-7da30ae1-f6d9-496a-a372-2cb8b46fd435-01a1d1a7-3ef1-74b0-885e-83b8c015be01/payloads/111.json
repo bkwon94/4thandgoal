@@ -1,0 +1,8 @@
+{
+  "type": "direct_response",
+  "response_item": {
+    "type": "function_call_output",
+    "call_id": "call_a13e2e7136b94795b19cbf17355cd9a0",
+    "output": "{\"message\":\"Wait completed.\",\"timed_out\":false}"
+  }
+}

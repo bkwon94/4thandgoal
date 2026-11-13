@@ -1,0 +1,6 @@
+Reading additional input from stdin...
+2026-11-12T21:27:20.539149Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: default backend - 404")
+2026-11-12T21:27:20.559337Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: {\"detail\":\"Not Found\"}")
+2026-11-12T21:27:20.905191Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: default backend - 404")
+2026-11-12T21:27:20.930660Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when UnexpectedServerResponse("HTTP 404: {\"detail\":\"Not Found\"}")
+2026-11-12T21:27:57.138487Z ERROR codex_core::tools::router: error=collab spawn failed: Fatal error: failed to load model context for thread 01a1d1a8-732b-7b50-b2bc-83c60c445ce9: invalid thread-store request: no rollout found for thread id 01a1d1a8-732b-7b50-b2bc-83c60c445ce9

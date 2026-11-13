@@ -1,0 +1,60 @@
+{
+  "type": "response.create",
+  "model": "gpt-6.1-sol",
+  "stream": true,
+  "previous_response_id": "resp_0d63bdccdb669eee016af62f1b2ce887d1bd19cfbb8db13cc3",
+  "input": [
+    {
+      "type": "custom_tool_call_output",
+      "id": "ctco_01a1d1a8-0ba3-7351-88ff-542551fc3536",
+      "call_id": "call_6a03cc51dd5c48fcbcd2a7e6d0ec3980",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.2 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"44d59b\",\"wall_time_seconds\":0.000003458,\"exit_code\":0,\"original_token_count\":596,\"output\":\"     1\\t/**\\n     2\\t * Tests for the team picker avatar. A missing avatar and a failed avatar both show the default image.\\n     3\\t */\\n     4\\timport { cleanup, fireEvent, render, screen } from \\\"@testing-library/react\\\";\\n     5\\timport { useState } from \\\"react\\\";\\n     6\\timport { afterEach, describe, expect, it } from \\\"vitest\\\";\\n     7\\timport { AVATAR_FALLBACK } from \\\"@cpc/league/images\\\";\\n     8\\timport type { Team } from \\\"../lib/api\\\";\\n     9\\timport { TeamPicker } from \\\"./team-picker\\\";\\n    10\\t\\n    11\\tconst DEFAULT_SRC = AVATAR_FALLBACK;\\n    12\\t\\n    13\\tfunction team(avatar: string | null): Team {\\n    14\\t  return { roster_id: 1, team: \\\"Gridiron Ghosts\\\", manager: \\\"Ana\\\", avatar, players: [] };\\n    15\\t}\\n    16\\t\\n    17\\tfunction renderPicker(avatar: string | null) {\\n    18\\t  const { container } = render(\\n    19\\t    <TeamPicker label=\\\"My team\\\" teams={[team(avatar)]} value={null} disabledId={null} onChange={() => {}} />,\\n    20\\t  );\\n    21\\t  return container.querySelector(\\\"img\\\") as HTMLImageElement;\\n    22\\t}\\n    23\\t\\n    24\\tafterEach(cleanup);\\n    25\\t\\n    26\\tdescribe(\\\"TeamPicker avatar\\\", () => {\\n    27\\t  it(\\\"renders the default avatar when the team has none\\\", () => {\\n    28\\t    expect(renderPicker(null).getAttribute(\\\"src\\\")).toBe(DEFAULT_SRC);\\n    29\\t  });\\n    30\\t\\n    31\\t  it(\\\"swaps to the default avatar when a real avatar fails to load\\\", () => {\\n    32\\t    const img = renderPicker(\\\"https://cdn.test/a.png\\\");\\n    33\\t    expect(img.getAttribute(\\\"src\\\")).toBe(\\\"https://cdn.test/a.png\\\");\\n    34\\t    fireEvent.error(img);\\n    35\\t    expect(img.getAttribute(\\\"src\\\")).toBe(DEFAULT_SRC);\\n    36\\t  });\\n    37\\t});\\n    38\\t\\n    39\\t/* The parent owns the choice, so the test holds it in state like the trade form does. */\\n    40\\tfunction ControlledPicker() {\\n    41\\t  const [value, setValue] = useState<number | null>(null);\\n    42\\t  return <TeamPicker label=\\\"My team\\\" teams={[team(null)]} value={value} disabledId={null} onChange={setValue} />;\\n    43\\t}\\n    44\\t\\n    45\\tdescribe(\\\"TeamPicker focus\\\", () => {\\n    46\\t  it(\\\"moves focus to the checked radio after a click on Change my team\\\", () => {\\n    47\\t    render(<ControlledPicker />);\\n    48\\t    fireEvent.click(screen.getByRole(\\\"radio\\\"));\\n    49\\t    fireEvent.click(screen.getByRole(\\\"button\\\", { name: \\\"Change my team\\\" }));\\n    50\\t    expect(document.activeElement).toBe(screen.getByRole(\\\"radio\\\", { checked: true }));\\n    51\\t  });\\n    52\\t});\\n\"}"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+        "create_time": 1794518813.60371
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "low",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "x-codex-ws-stream-request-start-ms": "1794518813714",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"thread_id\":\"01a1d1a7-ad0c-71e3-a022-246e76593f24\",\"agent_name\":\"/root/trace_owner\",\"turn_id\":\"01a1d1a7-ad82-7053-97f7-e5919bccc49e\",\"window_id\":\"01a1d1a7-ad0c-71e3-a022-246e76593f24:0\",\"window_number\":0,\"context_window_id\":\"01a1d1a7-ad0e-7342-8086-eeac60e85ba5\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"parent_thread_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"parent_turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"root_turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"subagent_kind\":\"thread_spawn\",\"thread_source\":\"subagent\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518789546,\"analytics_enabled\":true,\"model\":\"gpt-6.1-sol\",\"reasoning_effort\":\"low\"}",
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true",
+    "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+    "root_turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+    "thread_id": "01a1d1a7-ad0c-71e3-a022-246e76593f24",
+    "x-openai-subagent": "collab_spawn",
+    "x-codex-parent-thread-id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "session_id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657",
+    "mcp_attribution": "{\"status\":\"none\"}",
+    "guardian_credits_requested": "true",
+    "parent_turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+    "x-codex-window-id": "01a1d1a7-ad0c-71e3-a022-246e76593f24:0"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

@@ -1,0 +1,252 @@
+diff --git a/CLAUDE.md b/CLAUDE.md
+index 8e9b08d2..e6607a70 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -2,9 +2,12 @@
+ 
+ This repo holds three apps. The site and the pipeline each have a CLAUDE.md with its own commands and rules. Read the one for the app you change.
+ 
+-- `apps/site/` is the Next.js site. Its build copies `clients/<slug>/published/` of one client into `public/` and renders each `page.json` and its images.
+-- `apps/pipeline/` is the Python pipeline. It builds each week and publishes it into `clients/<slug>/published/`.
+-- `apps/api/` is the API of the trade analyzer. It imports the pipeline and deploys to Fly. Run `make help` in it.
++- [Site](apps/site/README.md) in `apps/site/` is the Next.js site. Its build copies `clients/<slug>/published/` of one client into `public/` and renders each `page.json` and its images.
++- [Pipeline](apps/pipeline/README.md) in `apps/pipeline/` is the Python pipeline. It builds each week and publishes it into `clients/<slug>/published/`.
++- [API](apps/api/README.md) in `apps/api/` serves the trade analyzer and deploys to Fly. Its product code imports no pipeline code. Run `make help` in it.
++
++For module ownership, follow root instructions → app README → owner README → module and test.
++Choose the responsibility in the app map, then follow its owner links.
+ 
+ The root holds one uv workspace and one pnpm workspace, each with one lock file: `uv.lock` and `pnpm-lock.yaml`.
+ Run `uv sync --all-packages` and `pnpm install` at the root. A member runs with `uv run --exact --package <name>`.
+diff --git a/apps/api/README.md b/apps/api/README.md
+new file mode 100644
+index 00000000..92e69926
+--- /dev/null
++++ b/apps/api/README.md
+@@ -0,0 +1,17 @@
++# Cornerstone API
++
++The FastAPI app serves each client through domain packages and deploys to Fly.
++Its product code imports no pipeline code.
++API tests reuse pipeline fixtures and README-rule helpers; these test dependencies do not define product ownership.
++
++## Module map
++
++- HTTP composition: the [API owner](src/cornerstone_api/README.md) creates the app and mounts client routes in [app.py](src/cornerstone_api/app.py).
++- App state and limits: the [API owner](src/cornerstone_api/README.md) owns client state, access checks, and daily answer allowances.
++- Analyzer routes: the [analyzer owner](../../packages/analyzer/README.md) owns trade grades, caches, and persistent grade limits. The API mounts those routes.
++
++## Commands
++
++Run `make help` in `apps/api/` for the app commands.
++Run `make check-fast` for lint, types, and rules.
++Run `make check` for lint, types, and all tests.
+diff --git a/apps/api/src/cornerstone_api/README.md b/apps/api/src/cornerstone_api/README.md
+index 5d7e2557..0815e0d9 100644
+--- a/apps/api/src/cornerstone_api/README.md
++++ b/apps/api/src/cornerstone_api/README.md
+@@ -10,7 +10,7 @@
+ - The trade Topics of the front door at `/clients/<slug>/trade-check` and `/clients/<slug>/trade-ideas`, behind the passphrase, in `trade_topics.py`. A typed trade check has one Jev request that picks the player of each side from the real rosters, with its words in `trade_wording.py`. An unsure pick gives the form of the Trade page. Each route streams a plain step for each stage of the Advisor, then the whole Answer, in the event stream of the AI SDK. Trade ideas runs whatever the `finder` flag says. Sell high at `/clients/<slug>/sell-high` streams the same way, with the sell high press of the `analyzer` package.
+ - The free answer of the ask box at `/clients/<slug>/ask/free`, behind the passphrase. The route runs again first, so only a question that Jev routes to a free answer reaches Claude. Claude Sonnet 5.5 runs at `low` effort through Pydantic AI, with the tools of `free_tools.py` over the saved weeks of this season and at most 4 tool calls. The text streams through `VercelAIAdapter` to `useChat` of the site. After the last word, one Jev request checks each sentence against the tool results, with one rewrite and then the honest miss. `free_wording.py` holds every word sent to Claude and to Jev for it. Each typed question carries the earlier turns of its Thread, cut to about 8,000 tokens, as Jev state for the route and as earlier messages for Claude, with a cache mark. The check never reads them. `chat_turns.py` holds them and their words.
+ - The refresh route that a daily cron pings.
+-- The passphrase check of each client, from `CORNERSTONE_PASSPHRASE_<SLUG>`, the commissioner key check of each client of the eggs package, from `CORNERSTONE_COMMISSIONER_KEY_<SLUG>`, the rate limit of each address, the limit of the egg check of each address, the state of each client, and the settings from the environment.
++- The passphrase check of each client, from `CORNERSTONE_PASSPHRASE_<SLUG>`, the commissioner key check of each client of the eggs package, from `CORNERSTONE_COMMISSIONER_KEY_<SLUG>`, the rate limit of each address, the limit of the egg check of each address, the state of each client, and the settings from the environment. [caps.py](caps.py) owns daily answer allowances per team and local calendar day. [test_caps.py](../../tests/test_caps.py) checks team isolation and the next-day reset.
+ - The terms are in `GLOSSARY.md`.
+ 
+ ## Ports
+@@ -19,6 +19,6 @@
+ 
+ ## Does not do
+ 
+-- It holds no grade rule and no prompt of the trade analyzer. The `analyzer` package holds them, with the grade limit and the caches. The only prompt here is the free answer of `free_wording.py`.
++- It holds no grade rule and no prompt of the trade analyzer. The [analyzer owner](../../../../packages/analyzer/README.md) holds them, with the grade limit and the caches. The only prompt here is the free answer of `free_wording.py`.
+ - It imports no pipeline code. Only its tests read the fixtures of the pipeline tests.
+ - It imports nothing from the output layer of ADR 0010, so it writes no page.
+diff --git a/apps/pipeline/CLAUDE.md b/apps/pipeline/CLAUDE.md
+index 7f50ce0f..5870aed4 100644
+--- a/apps/pipeline/CLAUDE.md
++++ b/apps/pipeline/CLAUDE.md
+@@ -6,6 +6,8 @@ This tool builds a weekly report page for the Cornerstone fantasy football leagu
+ league data from Sleeper. It writes the chapters of the report and writes the page data. The site in `apps/site` renders the pages.
+ The root CLAUDE.md holds the style, the flow, and the tracker. `GLOSSARY.md` names the chapter of prose a "Prose block".
+ 
++For module ownership, start with the [app map](README.md). Follow its owner README links to the module and test.
++
+ ## Commands
+ 
+ Run these in `apps/pipeline/`. Run `make help` for the full list.
+diff --git a/apps/pipeline/README.md b/apps/pipeline/README.md
+index 964589b2..df03d13a 100644
+--- a/apps/pipeline/README.md
++++ b/apps/pipeline/README.md
+@@ -3,6 +3,11 @@
+ This repo builds the weekly report site for the Cornerstone fantasy football league. The
+ data comes from Sleeper. The public site of CPC is at https://cpc.4thandgoal.app/
+ 
++## Module map
++
++- Build and publish orchestration: the [cornerstone owner](src/cornerstone/README.md) joins the weekly stages and controls publish commits.
++- Domain packages: the [week owner](../../packages/week/README.md) owns weekly facts and page data. Its [sheet owner](../../packages/week/python/src/week/sheet/README.md) owns roster projections. Packages hold domain rules; the app joins their outputs.
++
+ ## Commands
+ 
+ Each command that reads a league names its client with `--client <slug>`, such as `--client cpc`. A command with no
+diff --git a/apps/pipeline/src/cornerstone/README.md b/apps/pipeline/src/cornerstone/README.md
+index 19d70b25..1f362764 100644
+--- a/apps/pipeline/src/cornerstone/README.md
++++ b/apps/pipeline/src/cornerstone/README.md
+@@ -2,7 +2,7 @@
+ 
+ ## Knows
+ 
+-- The weekly build: fetch from the provider, parse, build the fact sheet, write, verify, render, and publish.
++- The weekly build: fetch from the provider, parse, build the fact sheet, write, verify, render, and publish. [publish.py](publish.py) owns `run_publish` and limits commits to the client season paths. [test_rule_publish.py](../../tests/test_rule_publish.py) checks stray files and other seasons.
+ - The `advisor-eval` command of the CLI. The `analyzer` package holds the fact sheet, the Advisor, and the Finder.
+ - The build of each week and the season files. The `rankings`, `managers`, and `waiver` packages hold their own rules.
+ - The build and the publish of the midseason report: `midseason` runs the sim through `season_sim.py`, reads the pairs left through `season_schedule.py`, and writes the draft and the review file, and `midseason-publish` checks each blurb again and commits `midseason.json` and `sim.json`.
+@@ -19,6 +19,6 @@
+ 
+ ## Does not do
+ 
+-- It never imports `cornerstone_api`. That package serves the trade analyzer over HTTP.
++- It never imports `cornerstone_api`. The [API owner](../../../api/src/cornerstone_api/README.md) serves the trade analyzer over HTTP.
+ - It builds no HTML. The site repo builds the HTML from each published file.
+ - No module reads a global client. The CLI or the API entry builds the Client once with `load_client` and passes it down.
+diff --git a/apps/site/CLAUDE.md b/apps/site/CLAUDE.md
+index 6724c0c1..04ca566d 100644
+--- a/apps/site/CLAUDE.md
++++ b/apps/site/CLAUDE.md
+@@ -4,6 +4,8 @@ The Next.js site. It builds one client, named by the env value `CLIENT`. The bui
+ into `public/`, and the site renders each `public/<season>/week-NN/page.json` and its images.
+ The root CLAUDE.md holds the style, the flow, and the tracker.
+ 
++For module ownership, start with the [app map](README.md). Follow its owner README links to the module and test.
++
+ ## Commands
+ 
+ Run these in `apps/site/`.
+diff --git a/apps/site/README.md b/apps/site/README.md
+index 61952008..55e9c8ef 100644
+--- a/apps/site/README.md
++++ b/apps/site/README.md
+@@ -4,6 +4,12 @@ The Cornerstone League Weekly site. Each client serves at `<slug>.4thandgoal.app
+ This repo holds the Next.js source. The Python pipeline in `apps/pipeline` publishes each week's `page.json` and images into `clients/<slug>/published/`. The build
+ copies the published data of one client into `public/`. The site renders every page, the home page included, from that JSON.
+ 
++## Module map
++
++- File loaders: the [data owner](src/lib/data/README.md) reads published files and builds the week archive.
++- App routes: [src/app](src/app/) composes pages from loaders and package parts. Generated routes follow the client package list.
++- Package parts: the [analyzer owner](../../packages/analyzer/README.md) owns the trade UI and API client. Its [form owner](../../packages/analyzer/site/form/README.md) owns team choice and focus. Parts take data and return markup.
++
+ ## Install
+ 
+ Use Node 22 or newer. The `.nvmrc` pins 22.
+diff --git a/apps/site/src/lib/data/README.md b/apps/site/src/lib/data/README.md
+index 905b234c..eb4d9f05 100644
+--- a/apps/site/src/lib/data/README.md
++++ b/apps/site/src/lib/data/README.md
+@@ -2,6 +2,7 @@
+ 
+ ## Knows
+ 
++- [week-data.ts](week-data.ts) owns the archive. `listWeekSummaries` sorts seasons and weeks numerically, newest first. [week-data.test.ts](week-data.test.ts) checks cross-season order and weeks 2 and 10.
+ - One loader per published file: the week page file, the rankings file, the managers file, `waiver.json`, `midseason.json`, and `sim.json`.
+ - Where each file sits under `public/`, and which week folders hold `waiver.json`.
+ - The join of the managers file with the last week of the rankings file.
+@@ -16,7 +17,7 @@
+ 
+ ## Does not do
+ 
+-- It owns no shape. The pipeline owns each shape, and each package holds the schema of its own file (ADR 0013).
++- It owns no shape. The [pipeline](../../../../pipeline/README.md) owns each shape, and each package holds the schema of its own file (ADR 0013).
+ - It runs in no browser. Only the app layer and `next.config.ts` call a loader (ADR 0012).
+ - It writes no file. The pipeline publishes every file under `public/`.
+ - It formats no number. Each package holds its own formats.
+diff --git a/packages/analyzer/README.md b/packages/analyzer/README.md
+index d327ac34..b9c35600 100644
+--- a/packages/analyzer/README.md
++++ b/packages/analyzer/README.md
+@@ -5,9 +5,9 @@
+ - The proposed trade of `trade.py`, the Measures and `Side` of `measures.py`, and the trade facts (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`, and the team facts of `team_facts.py`. The Finder search of `finder_search.py`: the partner filter, the targets, the offers, and the shortlist, with its Jev requests in waves by `jev_waves.py`. The Finder pick of `finder_pick.py`: one sheet per shortlist offer, the Advisor pick of up to 3 trades with a headline and Bullets, and the fallback to the shortlist with fact lines. The sell high pick of `sell_high.py`: the sheet of one roster in `sell_facts.py`, with the trade value, the lineup value, the trend of the last 4 weeks, and the schedule ahead of each player side by side, and the Advisor pick of up to 3 players to sell with the guards and the Jev checks of the read.
+ - The rule prompts `prompts/advisor.md`, `prompts/finder_pick.md`, `prompts/finder_pick_repair.md`, and `prompts/sell_high.md`, and the numbers of `tunables.py`.
+ - The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit. The sell high press of the front door is there too, with no route of its own.
+-- The grade limit counts per client and per address. Each client has its own result cache, so the roster ids of two leagues never share a grade.
++- [GradeLimiter in ratelimit.py](python/src/analyzer/ratelimit.py) counts grades per client and address and saves daily counts across restarts. [API integration tests](../../apps/api/tests/test_api.py) check the restart limit and HTTP 429. Each client has its own result cache, so the roster ids of two leagues never share a grade.
+ - The cache key reads the points key of the League settings of the client, such as `pts_ppr` for a full PPR league.
+-- The trade form, the finder, the API client, the passphrase, the teams store, and the team picker of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.
++- The [form owner](site/form/README.md), the finder, the API client, the passphrase, the teams store, and the team picker of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.
+ - Package values, under `[values.analyzer]`: `finder`, the trade finder on the analyzer page. The default is false.
+ - The model of its package values in `values.py`, and its exported JSON Schema `values.schema.json`. `make schema` rewrites the file.
+ 
+@@ -19,6 +19,6 @@
+ ## Does not do
+ 
+ - It imports no app and no other core package, only `league` and `facts`. `tests/test_layers.py` of the pipeline checks it.
+-- It mounts no route. The API app mounts the routes at `/clients/<slug>/` and loads each client.
++- It mounts no route. The [API owner](../../apps/api/src/cornerstone_api/README.md) mounts the routes at `/clients/<slug>/` and loads each client. That owner also controls daily answer allowances through `caps.py`.
+ - Of a client folder, it reads the voice folder `prompts/` with the Playbook `playbook.md`, and the playoff odds in `published/<season>/rankings.json`.
+ - It writes no published file.
+diff --git a/packages/analyzer/site/form/README.md b/packages/analyzer/site/form/README.md
+index eff63a0f..1ef20f54 100644
+--- a/packages/analyzer/site/form/README.md
++++ b/packages/analyzer/site/form/README.md
+@@ -2,7 +2,7 @@
+ 
+ ## Knows
+ 
+-- The analyzer page body: the passphrase dialog, the trade form, and the result.
++- The analyzer page body: the passphrase dialog, the trade form, and the result. [team-picker.tsx](team-picker.tsx) restores selected-team focus after Change my team. [team-picker.test.tsx](team-picker.test.tsx) checks the selected radio.
+ - The trade form, the Stack: the hero, the teams row, a card for each side, the sheets, the grade bar with its Ready halo, the fold line, the sweep, and the error box.
+ - The result of one analyze document: the read hero with the Lean on its 5-step scale, the Case, and the fairness line, the swap card, one tab per side, and the Bullet rows in `bullet-rows.tsx`, which the Finder card reuses.
+ - The trade finder, with an optional partner and up to three picks of the Advisor, each with a headline, the swap, and the Bullet rows. After a fallback, each trade of the shortlist shows its fact lines. The teams prefetch of the home page.
+@@ -18,7 +18,7 @@
+ 
+ ## Does not do
+ 
+-- It grades no trade. The site API grades it, and this folder shows the answer.
++- It grades no trade. The [analyzer Python owner](../../README.md) grades it through the site API, and this folder shows the answer.
+ - It shows no roster grade. The roster grade lives in the managers part of the site.
+ - It defines no API shape. `../lib/schemas/api.ts` holds the response schemas.
+ - It reads no file, no env, and no config, and it imports no app. The page gives the API target and the finder flag.
+diff --git a/packages/week/README.md b/packages/week/README.md
+index 25a1fe4e..2aa93d6c 100644
+--- a/packages/week/README.md
++++ b/packages/week/README.md
+@@ -2,7 +2,7 @@
+ 
+ ## Knows
+ 
+-- The sheet chapters except rankings, the league and matchup facts, and the page writer of `page.json` (`cpc-week`, imported as `week`).
++- The [sheet owner](python/src/week/sheet/README.md) holds roster projections. The sheet chapters except rankings, the league and matchup facts, and the page writer of `page.json` (`cpc-week`, imported as `week`).
+ - The week chapters, the schema and the types of `page.json`, and `who` (`@cpc/week`). The loader of `page.json` stays in the site app, because it reads files.
+ - The median text in `prompts/median.md`. The writer and the verifier get it only when the league scores a median game.
+ - A league with no median game has no MED facts, no median part in the impact fact, and no Median Game chapter.
+@@ -17,6 +17,6 @@
+ ## Does not do
+ 
+ - It imports no app and no core package, only `league` and `facts`. `tests/test_layers.py` of the pipeline checks it.
+-- It holds no odds engine and no power rankings. The rankings source gives them through the chapter port.
++- It holds no odds engine and no power rankings. The [rankings owner](../rankings/README.md) gives them through the chapter port. Roster projections belong to the sheet, not that odds engine.
+ - It writes no rankings, managers, or waiver file. Each package writes its own.
+ - It sends no Claude call of its own. The writer and the verifier of `facts` write and check each blurb.
+diff --git a/packages/week/python/src/week/sheet/README.md b/packages/week/python/src/week/sheet/README.md
+index 955bc73d..3e93a64b 100644
+--- a/packages/week/python/src/week/sheet/README.md
++++ b/packages/week/python/src/week/sheet/README.md
+@@ -6,6 +6,7 @@
+ - It builds the bundle that each chapter reads, and it writes and reads the bundle file.
+ - The entry: outside this folder, a module imports only `week.sheet` or `week.sheet.base`.
+ - A league with no median game gets no MED facts, no median part in the impact fact, and no Median Game chapter.
++- [base.py](base.py) owns `projected_totals`, which reads current roster players, including additions after the scored week. [test_sheet.py](../../../../../../apps/pipeline/tests/test_sheet.py) checks additions and drops after lineup lock.
+ - The terms are in `GLOSSARY.md`.
+ 
+ ## Ports
+@@ -17,6 +18,6 @@
+ 
+ - It writes no prose and makes no Claude call. `facts/writer.py` writes each blurb.
+ - It checks no blurb. `facts/verifier.py` does.
+-- It holds no odds engine and no rankings chapter. The rankings source gives both through the chapter port.
++- It holds no odds engine and no rankings chapter. The [rankings owner](../../../../../rankings/README.md) gives both through the chapter port.
+ - It writes no page. `week/page.py` writes `page.json`.
+ - It builds no fact sheet of a proposed trade. `cornerstone/trade_facts.py` does.

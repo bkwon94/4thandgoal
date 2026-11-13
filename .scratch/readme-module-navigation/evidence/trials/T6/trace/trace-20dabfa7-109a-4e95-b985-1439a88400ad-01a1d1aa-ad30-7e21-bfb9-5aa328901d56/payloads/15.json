@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_016a32cefd2e3640016af62fd1fdb887d1b45ac7efd937a9ad",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 29696,
+    "cached_input_tokens": 29312,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 217,
+    "reasoning_output_tokens": 148,
+    "total_tokens": 29913
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_016a32cefd2e3640016af62fdab64087d1aa69b238b2bac689",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 6db931fbf6cabbc6d435e79f8cedb54a38464ed41d3ee85c6bda47892380f4a6; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_016a32cefd2e3640016af62fdadc6087d1902a7c1e6be2208f",
+      "status": "completed",
+      "call_id": "call_0996a556c14e40e5b4bb4a3fdff04cda",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat /Users/brian.kwon/.Codex/output-styles/ste.md /Users/brian.kwon/.Codex/rules/communication/simplified-technical-english.md CLAUDE.md\",\"max_output_tokens\":6500}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+        "create_time": 1794519002.8638928
+      }
+    }
+  ]
+}

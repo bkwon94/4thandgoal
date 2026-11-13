@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_016a32cefd2e3640016af62fe5f0a087d18bd12c5d4dfb8a4d",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 35004,
+    "cached_input_tokens": 33920,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 82,
+    "reasoning_output_tokens": 16,
+    "total_tokens": 35086
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_016a32cefd2e3640016af62fe8232087d1a3565b281c2caf92",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 1f2d73e4e5b5a42b8d96ae1a8ea872f7f8f5daddd8366db064c872e97c904f4b; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_016a32cefd2e3640016af62fe8231487d19061e5dd1c0a0da2",
+      "status": "completed",
+      "call_id": "call_24901e3184bd44c7b79ba35f93152573",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat packages/analyzer/python/src/analyzer/ratelimit.py; rg -n -C 12 'restart|429|grade_limit|GradeLimiter' apps/api/tests/test_api.py\",\"max_output_tokens\":5500}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+        "create_time": 1794519016.1436214
+      }
+    }
+  ]
+}

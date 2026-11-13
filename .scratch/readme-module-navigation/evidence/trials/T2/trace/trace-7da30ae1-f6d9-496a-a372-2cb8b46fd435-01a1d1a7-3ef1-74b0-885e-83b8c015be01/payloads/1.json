@@ -1,0 +1,14 @@
+{
+  "thread_id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+  "agent_path": "/root",
+  "task_name": null,
+  "nickname": null,
+  "agent_role": null,
+  "session_source": "exec",
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "rollout_path": null,
+  "model": "gpt-6-astra",
+  "provider_name": "openai",
+  "approval_policy": "never",
+  "sandbox_policy": "WorkspaceWrite { writable_roots: [], network_access: false, exclude_tmpdir_env_var: false, exclude_slash_tmp: false }"
+}

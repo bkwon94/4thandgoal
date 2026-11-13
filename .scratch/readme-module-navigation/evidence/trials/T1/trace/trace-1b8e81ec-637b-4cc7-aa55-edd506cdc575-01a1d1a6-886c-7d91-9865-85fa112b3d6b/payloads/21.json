@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-35cdbb22-53e5-455b-93c1-edc866a1a9f4",
+  "process_id": "88582",
+  "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+  "started_at_ms": 1794518732712,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat ~/.Codex/output-styles/ste.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "cat ~/.Codex/output-styles/ste.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

@@ -1,0 +1,45 @@
+{
+  "response_id": "resp_00d4f3ddbdf1525c016af62eec9e4087d1aaec6bd962731c46",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 29495,
+    "cached_input_tokens": 13312,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 57,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 29552
+  },
+  "output_items": [
+    {
+      "type": "message",
+      "status": "completed",
+      "id": "msg_00d4f3ddbdf1525c016af62ef0071887d1b55bcf1229dde134",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "Brian, I will follow the README links and track each file read within the ten-file limit.\n",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "phase": "commentary",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518768.0360088
+      }
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_00d4f3ddbdf1525c016af62ef0876887d188013d71607f185f",
+      "status": "completed",
+      "call_id": "call_152b91d0e2494e5aa4d5ddb5fab1f4fb",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"pwd; ls -a\",\"max_output_tokens\":2000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518768.5416148
+      }
+    }
+  ]
+}

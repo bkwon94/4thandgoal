@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-1ba6c2ef-9d66-4085-b1a7-da9b42719321",
+  "process_id": "3809",
+  "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+  "started_at_ms": 1794518962257,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat /Users/brian.kwon/.Codex/output-styles/ste.md /Users/brian.kwon/.Codex/rules/communication/simplified-technical-english.md CLAUDE.md apps/api/README.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "cat /Users/brian.kwon/.Codex/output-styles/ste.md /Users/brian.kwon/.Codex/rules/communication/simplified-technical-english.md CLAUDE.md apps/api/README.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

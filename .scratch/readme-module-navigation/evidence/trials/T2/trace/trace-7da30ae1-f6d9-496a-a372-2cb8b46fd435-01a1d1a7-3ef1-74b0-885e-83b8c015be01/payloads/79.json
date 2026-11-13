@@ -1,0 +1,37 @@
+{
+  "response_id": "resp_00d4f3ddbdf1525c016af62f164da487d19991c87730848bd4",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 31867,
+    "cached_input_tokens": 31616,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 31,
+    "reasoning_output_tokens": 8,
+    "total_tokens": 31898
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_00d4f3ddbdf1525c016af62f17d86087d1974786dad3731b2b",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 9565f04938c1fb7f2a3d736c45bb89d853d60c2a46debdd0d0cacf867716c50c; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7"
+      },
+      "content": []
+    },
+    {
+      "type": "function_call",
+      "status": "completed",
+      "id": "fc_00d4f3ddbdf1525c016af62f181ff487d18aaa2dfff2011bac",
+      "name": "wait_agent",
+      "namespace": "collaboration",
+      "arguments": "{\"timeout_ms\":10000}",
+      "call_id": "call_fec14365684646ee98e33e5b86fd34f3",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518808.1300528
+      }
+    }
+  ]
+}

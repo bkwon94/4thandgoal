@@ -1,0 +1,8 @@
+{
+  "type": "direct_response",
+  "response_item": {
+    "type": "function_call_output",
+    "call_id": "call_37fcb1e243a646c784c68798cfd2ce02",
+    "output": "{\"message\":\"Wait timed out.\\n\\nRequested timeout of 1000ms was clamped to the minimum of 10000ms.\",\"timed_out\":true}"
+  }
+}

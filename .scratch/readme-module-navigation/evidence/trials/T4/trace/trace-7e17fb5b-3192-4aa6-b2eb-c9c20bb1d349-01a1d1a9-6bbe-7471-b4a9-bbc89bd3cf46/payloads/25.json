@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-ee01d56d-dc6d-4951-96ad-dca2d752d1cb",
+  "process_id": "23729",
+  "turn_id": "01a1d1a9-7027-7e21-baa9-b492e6d9ba77",
+  "started_at_ms": 1794518924375,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat apps/pipeline/CLAUDE.md apps/pipeline/src/cornerstone/README.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "cat apps/pipeline/CLAUDE.md apps/pipeline/src/cornerstone/README.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

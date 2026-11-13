@@ -1,0 +1,37 @@
+{
+  "response_id": "resp_00d4f3ddbdf1525c016af62ef6bf6887d19527b13f1e012d72",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 31173,
+    "cached_input_tokens": 29696,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 517,
+    "reasoning_output_tokens": 58,
+    "total_tokens": 31690
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_00d4f3ddbdf1525c016af62efb5c5c87d1bb5f6aae675823a8",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 620257641908287028dfc177eb95c52fdc78f0f4d104e676d4c802925a0cd53a; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7"
+      },
+      "content": []
+    },
+    {
+      "type": "function_call",
+      "status": "completed",
+      "id": "fc_00d4f3ddbdf1525c016af62efb7fb087d1b08292eb5a2df75d",
+      "name": "spawn_agent",
+      "namespace": "collaboration",
+      "arguments": "{\"task_name\":\"trace_owner\",\"fork_turns\":\"none\",\"model\":\"gpt-6.1-sol\",\"message\":\"[REDACTED: opaque encrypted context or body; original fragment SHA256 224697c89118f4c771d57d71538ec985240128eefeda1ef62a77737dee5cbc03; full original remains local]\"}",
+      "call_id": "call_70c7b6bf618045a48ef275fca65e8a58",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518779.5149682
+      }
+    }
+  ]
+}

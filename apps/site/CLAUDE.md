@@ -4,6 +4,8 @@ The Next.js site. It builds one client, named by the env value `CLIENT`. The bui
 into `public/`, and the site renders each `public/<season>/week-NN/page.json` and its images.
 The root CLAUDE.md holds the style, the flow, and the tracker.
 
+For module ownership, start with the [app map](README.md). Follow its owner README links to the module and test.
+
 ## Commands
 
 Run these in `apps/site/`.

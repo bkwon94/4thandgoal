@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_094adc91ad05790d016af62f4bb8ac87d18d52d6b2d005ab3a",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 34415,
+    "cached_input_tokens": 31104,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 96,
+    "reasoning_output_tokens": 36,
+    "total_tokens": 34511
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_094adc91ad05790d016af62f5207e487d186884b907629c3a6",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 b4d8822cbafe4d950f0bb36cee6adb5fda2cc7224ebea361e7ed19712eab3e10; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_094adc91ad05790d016af62f522c6487d1b791366d715881d0",
+      "status": "completed",
+      "call_id": "call_bdc2b9384ad6476594284ce4c6f29360",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md packages/week/python/src/week/sheet/README.md\",\"max_output_tokens\":5000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+        "create_time": 1794518866.1856415
+      }
+    }
+  ]
+}

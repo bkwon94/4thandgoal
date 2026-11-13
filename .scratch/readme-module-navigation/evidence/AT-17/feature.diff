@@ -1,0 +1,1168 @@
+diff --git a/.scratch/readme-module-navigation/ACCEPTANCE.md b/.scratch/readme-module-navigation/ACCEPTANCE.md
+new file mode 100644
+index 00000000..fb3affef
+--- /dev/null
++++ b/.scratch/readme-module-navigation/ACCEPTANCE.md
+@@ -0,0 +1,365 @@
++# README module navigation: acceptance tests
++
++Spec: `.scratch/readme-module-navigation/PRD.md`.
++
++Status: approved by Brian on 2026-11-12.
++
++The Judge gives each test its Test verdict in `VERDICTS.md`.
++The fresh Judge reads only this file and the evidence.
++The evidence agent gives no Test verdict.
++Every test needs PASS, with no FAIL from Brian, before merge under ADR 0026.
++
++## Evidence format
++
++Brian approves terminal traces and file evidence for site-owned documentation tests on 2026-11-12.
++This replaces the acceptance skill's screenshots at 375, 768, and 1280 px in both themes.
++These tests inspect files and agent navigation, with no browser output.
++Use document excerpts, diffs, command output, and complete agent traces.
++
++Use real repository files and real agent trials.
++These checks require no football week fixture.
++Do not introduce mock implementations or mock modes.
++This file defines tests; it records no completed trial, evidence, or Test verdict.
++
++## Shared fixtures
++
++Use the implementation revision for every document check and all six cold trials.
++Record its full commit identifier.
++Record the base revision for document preservation and scope comparisons.
++
++The evidence and this acceptance file hold the expected answers.
++Cold agents must not receive either.
++
++### Approved document inventory
++
++Only these 13 product documents belong to this feature.
++
++| ID | Document | Approved role |
++| --- | --- | --- |
++| D1 | `CLAUDE.md` | Link all three app READMEs, state the navigation rule, and correct the API dependency claim. |
++| D2 | `apps/site/CLAUDE.md` | Point to the site README for module ownership; retain commands and rules. |
++| D3 | `apps/pipeline/CLAUDE.md` | Point to the pipeline README for module ownership; retain commands and rules. |
++| D4 | `apps/site/README.md` | Map file loaders, app routes, and package parts; link the data and analyzer owners. |
++| D5 | `apps/pipeline/README.md` | Separate build and publish orchestration from domain packages; link cornerstone and week owners. |
++| D6 | `apps/api/README.md` | Add the app README; map HTTP composition, app state and limits, and analyzer routes. |
++| D7 | `apps/site/src/lib/data/README.md` | Name the archive module, its responsibility, and its test. |
++| D8 | `apps/pipeline/src/cornerstone/README.md` | Name the publish module, its commit boundary, and its rule test. |
++| D9 | `apps/api/src/cornerstone_api/README.md` | Name answer caps and their test; distinguish analyzer grade limits. |
++| D10 | `packages/analyzer/README.md` | Link the form owner; name the Python rate-limit owner and its API integration test. |
++| D11 | `packages/analyzer/site/form/README.md` | Name the team picker, its focus responsibility, and its test. |
++| D12 | `packages/week/README.md` | Link the sheet owner; distinguish roster projections from the rankings odds engine. |
++| D13 | `packages/week/python/src/week/sheet/README.md` | Name `projected_totals` in `base.py` and its pipeline sheet test. |
++
++D7 through D13 are the seven owner or module READMEs.
++D4 through D6 are app READMEs.
++App READMEs have no whole-file line cap.
++
++### Approved tasks and expected answers
++
++T1 — Site archive
++
++Prompt: The week archive must put the newest season first, then order its weeks by number.
++Module: `apps/site/src/lib/data/week-data.ts`
++Test: `apps/site/src/lib/data/week-data.test.ts`
++Module reason: `listWeekSummaries` sorts season and week numerically.
++Test reason: The test crosses seasons and compares weeks 2 and 10.
++
++T2 — Site picker
++
++Prompt: After I select Change my team, keyboard focus must return to my selected team.
++Module: `packages/analyzer/site/form/team-picker.tsx`
++Test: `packages/analyzer/site/form/team-picker.test.tsx`
++Module reason: The picker restores focus after its list opens.
++Test reason: The test checks the selected radio after the Change button.
++
++T3 — Pipeline roster projections
++
++Prompt: The roster projection behind playoff odds must use current players, including additions after the scored week.
++Module: `packages/week/python/src/week/sheet/base.py`
++Test: `apps/pipeline/tests/test_sheet.py`
++Module reason: `projected_totals` reads the current roster.
++Test reason: The test adds one player and removes another after lineup lock.
++
++T4 — Pipeline publish
++
++Prompt: Publish one week without a commit of stray files or data from another season.
++Module: `apps/pipeline/src/cornerstone/publish.py`
++Test: `apps/pipeline/tests/test_rule_publish.py`
++Module reason: `run_publish` constrains each commit to season paths.
++Test reason: Tests cover stray files, other seasons, and files outside season folders.
++
++T5 — API answer caps
++
++Prompt: A team's daily answer allowance must reset tomorrow without a reset of another team's allowance today.
++Module: `apps/api/src/cornerstone_api/caps.py`
++Test: `apps/api/tests/test_caps.py`
++Module reason: `Caps` counts answers by roster and local calendar day.
++Test reason: The test separates yesterday's count from another team's count.
++
++T6 — API grade limits
++
++Prompt: The daily trade-grade limit must survive an API restart.
++Module: `packages/analyzer/python/src/analyzer/ratelimit.py`
++Test: `apps/api/tests/test_api.py`
++Module reason: `GradeLimiter` saves daily counts.
++Test reason: The test creates another app and checks that the next grade returns 429.
++
++### Common procedure for cold agents
++
++Give each agent this procedure and exactly one approved task prompt.
++
++1. Start at the repository root.
++2. Follow repository and external instructions, except for the trial exception below.
++3. For this trial only, do not read `.scratch/` or `docs/agents/state.md`.
++4. The trial exception suspends normal state and ticket reads.
++5. Find the module that owns the requested behavior and its relevant test file.
++6. Use at most ten distinct file reads.
++7. Count partial reads, READMEs, and automatically loaded instruction files.
++8. Count external files, including external instructions.
++9. Count every file exposed by a content search.
++10. Content-search results count even when they show only matching filenames.
++11. Count each distinct file once.
++12. Repeated reads add no further count.
++13. Filename listings that enumerate pathnames without a content search cost no file reads.
++14. The eleventh distinct file fails the run.
++15. Return the chosen module path and test path.
++16. Give a reason for each choice.
++17. Return an ordered, complete file-read log.
++18. Record evidence without a Test verdict.
++
++### Auditor procedure
++
++Run one fresh agent per task, for six runs total.
++Use the same model and repository revision for all six.
++Start every agent at the repository root.
++Give no inherited history or expected answers.
++Give only the approved task prompt and common procedure.
++Other applicable instructions still apply and count toward file exposure.
++
++Record the model, revision, start directory, task prompt, and common procedure for each run.
++Record the full launch context and automatic context inventory.
++Record all tool calls and returned content.
++Preserve the agent's chosen paths, both reasons, and ordered read log.
++Compare each log with the full tool trace and automatic context inventory.
++Include instruction files that load without a tool call.
++Count every file exposed by a content search, even when results show only matching filenames.
++Only pathname enumeration without a content search counts as a free filename listing.
++Preserve failed runs.
++
++The auditor supplies evidence.
++The Judge supplies Test verdicts.
++
++## Tests
++
++AT-1: Instruction entry links
++App: site, pipeline, API
++Stories: 1, 3, 5
++Given: D1 through D3 at the implementation revision.
++When: The reader follows their module-navigation instructions.
++Then: Instructions provide the approved root-to-app entry links.
++Evidence: Exact excerpts and resolved relative links from D1 to D4, D5, and D6, and D2/D3 to their app READMEs.
++Evidence: Include D1's root instructions → app README → owner README → module and test navigation rule.
++
++AT-2: App responsibility maps
++App: site, pipeline, API
++Stories: 2, 3, 7
++Given: D4 through D6 and their roles in the approved document inventory.
++When: The reader follows each app's responsibility map.
++Then: Each app map separates its approved responsibilities and links their owners directly.
++Evidence: Map excerpts, relative link targets, and target existence checks.
++Evidence: Show site file loaders, app routes, and package parts, with data and analyzer owner links.
++Evidence: Show pipeline build/publish orchestration versus domain packages, with cornerstone and week owner links.
++Evidence: Show API HTTP composition, app state/limits, and analyzer routes, with their owner links.
++
++AT-3: Owner destinations and boundaries
++App: site, pipeline, API
++Stories: 4, 5, 7
++Given: D7 through D13 and the six approved module/test pairs.
++When: The reader follows the owner maps for those six responsibilities.
++Then: Each owner map places its module, responsibility, and relevant test together.
++Evidence: Owner-map excerpts with resolved relative Markdown links to the real module and test files.
++Evidence: Include analyzer's form-owner link and Python rate-limit owner with its API integration test.
++Evidence: Include week's sheet-owner link and its boundary with the rankings odds engine.
++Evidence: Include the API owner's distinction between answer caps and analyzer grade limits.
++Evidence: Show the other owner under `Does not do` for responsibilities that belong elsewhere.
++
++AT-4: Owner README shape
++App: site, pipeline, API
++Stories: 6
++Given: The seven owner or module READMEs D7 through D13.
++When: The reader checks their document shape.
++Then: Every owner README meets the existing shape and 24-line rules.
++Evidence: Numbered full contents and physical line totals for all seven documents, with blank lines included.
++Evidence: Show a one-line title, then `Knows`, `Ports`, and `Does not do`, in that order.
++Evidence: Show test pointers within those sections, without an extra test heading.
++Evidence: Include D13 explicitly, because existing automated rules do not scan it.
++Evidence: Include commands and output for the existing README rules, without test-code changes.
++Evidence: Rule files are `apps/site/src/readme-rule.test.ts`, `apps/pipeline/tests/test_rule_readmes.py`, and `apps/api/tests/test_rule_api.py`.
++
++AT-5: Existing document duties
++App: site, pipeline, API
++Stories: 16, 23
++Given: The base and implementation versions of the approved documents.
++When: The reader compares their existing responsibilities and instruction duties.
++Then: Existing responsibilities and normal instruction duties remain intact.
++Evidence: Before/after excerpts for revised responsibilities and instruction sections.
++Evidence: Show that site and pipeline instructions retain their commands and rules.
++Evidence: Show that normal work still requires state and ticket reads.
++Evidence: Show that the trial exception applies only to cold-agent trials.
++
++AT-6: API dependency statement
++App: API
++Stories: 14
++Given: D1 and the API app README at the implementation revision.
++When: The reader reads the API dependency statement in root instructions.
++Then: Root instructions state that API product code imports no pipeline code.
++Evidence: Exact root and API README excerpts, with the root diff.
++Evidence: Distinguish shared README-rule test helpers from API product dependencies.
++
++AT-7: Archive destination
++App: site
++Stories: 8, 22
++Given: One fresh agent receives T1 under the common procedure.
++When: The agent performs the archive navigation task.
++Then: The agent identifies the approved archive module and test within ten distinct file reads.
++Evidence: T1's actual prompt, both chosen paths, both reasons, ordered read log, full trace, automatic context inventory, and audit.
++Evidence: Compare both choices and reasons with T1's expected answers above.
++
++AT-8: Picker focus destination
++App: site
++Stories: 9, 22
++Given: One fresh agent receives T2 under the common procedure.
++When: The agent performs the picker navigation task.
++Then: The agent identifies the approved picker module and test within ten distinct file reads.
++Evidence: T2's actual prompt, both chosen paths, both reasons, ordered read log, full trace, automatic context inventory, and audit.
++Evidence: Compare both choices and reasons with T2's expected answers above.
++
++AT-9: Current-roster projection destination
++App: pipeline
++Stories: 10, 22
++Given: One fresh agent receives T3 under the common procedure.
++When: The agent performs the roster-projection navigation task.
++Then: The agent identifies the approved projection module and test within ten distinct file reads.
++Evidence: T3's actual prompt, both chosen paths, both reasons, ordered read log, full trace, automatic context inventory, and audit.
++Evidence: Compare both choices and reasons with T3's expected answers above.
++
++AT-10: Publish boundary destination
++App: pipeline
++Stories: 11, 22
++Given: One fresh agent receives T4 under the common procedure.
++When: The agent performs the publish navigation task.
++Then: The agent identifies the approved publish module and test within ten distinct file reads.
++Evidence: T4's actual prompt, both chosen paths, both reasons, ordered read log, full trace, automatic context inventory, and audit.
++Evidence: Compare both choices and reasons with T4's expected answers above.
++
++AT-11: Answer-cap destination
++App: API
++Stories: 12, 22
++Given: One fresh agent receives T5 under the common procedure.
++When: The agent performs the answer-cap navigation task.
++Then: The agent identifies the approved answer-cap module and test within ten distinct file reads.
++Evidence: T5's actual prompt, both chosen paths, both reasons, ordered read log, full trace, automatic context inventory, and audit.
++Evidence: Compare both choices and reasons with T5's expected answers above.
++
++AT-12: Persistent grade-limit destination
++App: API
++Stories: 13, 22
++Given: One fresh agent receives T6 under the common procedure.
++When: The agent performs the grade-limit navigation task.
++Then: The agent identifies the approved grade-limit module and test within ten distinct file reads.
++Evidence: T6's actual prompt, both chosen paths, both reasons, ordered read log, full trace, automatic context inventory, and audit.
++Evidence: Compare both choices and reasons with T6's expected answers above.
++
++AT-13: Cold trial conditions
++App: site, pipeline, API
++Stories: 17, 18
++Given: The launch and context records for T1 through T6.
++When: The auditor compares those records with the approved cold-start procedure.
++Then: The six trials meet every approved cold-start condition.
++Evidence: A six-run manifest with one fresh agent per task, one model, one revision, and repository-root start directories.
++Evidence: Preserve each exact task prompt and the common procedure.
++Evidence: Show no inherited history, expected answers, `.scratch/` content, or `docs/agents/state.md` content.
++Evidence: Account for all other applicable repository and external instructions in each context inventory.
++
++AT-14: Complete file exposure audit
++App: site, pipeline, API
++Stories: 19, 20
++Given: All six ordered read logs, complete tool traces, and automatic context inventories.
++When: The auditor reconciles each log with its trace and inventory.
++Then: Each audited read log accounts for every exposed file under the approved count rules.
++Evidence: Per-run ordered file inventories, trace references, automatic-load references, and final distinct-file totals.
++Evidence: Count partial, README, instruction, external, and automatic file exposure.
++Evidence: Count every file exposed by a content search, even when results show only matching filenames.
++Evidence: Count repeated file reads once and pathname enumeration without a content search zero times.
++Evidence: Identify any eleventh distinct file as a failed run, without a Test verdict.
++Evidence: Explain every difference between an agent's log and the audited inventory.
++
++AT-15: Failed evidence remains
++App: site, pipeline, API
++Stories: 21
++Given: The complete trial manifest and recorded trial outputs.
++When: The auditor checks the evidence archive against the manifest.
++Then: Every failed run remains in the evidence record.
++Evidence: Link every run to its full retained output, read log, trace, context inventory, and audit.
++Evidence: Identify unsuccessful runs without their removal or replacement in the record.
++Evidence: If no run fails, record that fact against the complete six-run manifest.
++Evidence: This test requires no artificial failure or additional trial.
++
++AT-16: Approved document scope
++App: site, pipeline, API
++Stories: 15
++Given: The base-to-implementation product-document diff and approved inventory D1 through D13.
++When: The reader reviews the scope of the documentation changes.
++Then: Product-document changes stay within the 13 approved documents and six approved task routes.
++Evidence: The full changed-file list and product-document diff, mapped to D1 through D13 and T1 through T6.
++Evidence: Separate feature tracker and evidence records from product-document changes.
++
++AT-17: No product or deferred-scope change
++App: site, pipeline, API
++Stories: none
++Given: The full feature diff and historical ticket 07's state.
++When: The reader checks the feature against the excluded scope.
++Then: The feature introduces none of the listed out-of-scope changes.
++Evidence: Full changed-file list and diff show no module move, code edit, test-code edit, schema change, or API contract change.
++Evidence: Product documents contain no task-specific answer table or exhaustive package expansion.
++Evidence: No root README or separate API instruction file appears.
++Evidence: Deferred provider-refresh, saved-data, prompt-test, fact-selection, and build-behavior gaps remain outside the feature.
++Evidence: Historical ticket 07 remains open.
++
++## Trace
++
++Story 1: AT-1
++Story 2: AT-2
++Story 3: AT-1, AT-2
++Story 4: AT-3
++Story 5: AT-1, AT-3
++Story 6: AT-4
++Story 7: AT-2, AT-3
++Story 8: AT-7
++Story 9: AT-8
++Story 10: AT-9
++Story 11: AT-10
++Story 12: AT-11
++Story 13: AT-12
++Story 14: AT-6
++Story 15: AT-16
++Story 16: AT-5
++Story 17: AT-13
++Story 18: AT-13
++Story 19: AT-14
++Story 20: AT-14
++Story 21: AT-15
++Story 22: AT-7, AT-8, AT-9, AT-10, AT-11, AT-12
++Story 23: AT-5, AT-13
++
++No story lacks a test.
++
++Out of scope "Module moves, code edits, test-code changes, and product behavior changes": AT-17
++Out of scope "Documentation beyond the 13 approved documents or task paths beyond the six approved tasks": AT-16, AT-17
++Out of scope "Exhaustive package coverage or task-specific answer tables in product documentation": AT-17
++Out of scope "Historical ticket 07 gaps for provider refresh, saved data, prompt tests, fact selection, and build behavior": AT-17
++Out of scope "Completion of historical ticket 07, which stays open": AT-17
++
++## Revisions
++
++None yet.
+diff --git a/.scratch/readme-module-navigation/MAP.md b/.scratch/readme-module-navigation/MAP.md
+new file mode 100644
+index 00000000..dcc8391c
+--- /dev/null
++++ b/.scratch/readme-module-navigation/MAP.md
+@@ -0,0 +1,54 @@
++# README module navigation: map
++
++App: site, pipeline, and API, with relevant packages.
++Spec branch: `readme-module-navigation`.
++
++## DESTINATION
++
++READMEs name the module an agent needs, so the agent finds it without a read of most of the repo.
++One spec defines the README and agent instruction edits, plus the test that proves this outcome.
++
++## DECISIONS SO FAR
++
++Brian confirms these bounds for Stage 1:
++
++- The scope covers all three apps and relevant packages. Decision 02 records the approved coverage.
++- Edits affect READMEs and agent instructions only. No module moves or code changes belong to this feature.
++- Cold agents start at the repo root with representative tasks from each app.
++- Each agent reads at most 10 files, including instructions and READMEs, and records every file read.
++- Each agent names the correct target module and relevant test file, with reasons for both choices.
++
++Brian approves the six tasks and expected module and test paths in `decisions/01-grill-representative-task-set.md`.
++Each app has one app-owned task and one package-owned task.
++This set gives representative coverage; it does not cover every package.
++The pipeline projection task covers a historical gap from ticket 07 at its current package path.
++Brian approves the 13-document coverage and navigation structure in `decisions/02-grill-readme-coverage-and-structure.md`.
++The route follows root instructions, app README, owner README, then the module and its test.
++Owner READMEs keep `Knows`, `Ports`, and `Does not do`, with module responsibilities and test pointers together.
++Each owner or module README in scope has at most 24 physical lines, with blank lines included.
++App READMEs have concise navigation sections and no whole-file cap.
++The scope includes an API app README and the root correction that the API imports no pipeline code.
++Brian approves the cold-agent test procedure in `decisions/03-grill-cold-agent-test-procedure.md`.
++One fresh agent runs each of the six approved tasks, with the same model and repository revision.
++Agents receive their task prompt and common procedure, with no inherited history or expected answers.
++A test-only exception suspends state and ticket reads. Cold agents cannot read `.scratch/` or `docs/agents/state.md`.
++Each distinct file counts once, including partial reads, automatic instruction loads, external instructions, and files exposed by content search.
++Filename listings cost no file reads. An eleventh distinct file fails the run.
++All six agents must find the correct module and test within the limit, with reasons and ordered, complete read logs.
++An auditor checks the logs against tool traces and the automatic context inventory. Failed runs remain evidence.
++The Judge supplies the acceptance tests' Test verdicts.
++
++Source: `.scratch/week-8-fixes/issues/07-the-readmes-name-the-module-an-agent-needs.md`.
++That ticket supplies prior evidence and candidate gaps; its paths and details need a current check.
++
++## NOT YET SPECIFIED
++
++None.
++
++## OUT OF SCOPE
++
++- Module moves, code changes, and test code changes exceed the confirmed scope.
++- Product behavior changes do not serve the navigation outcome.
++- The remaining historical ticket 07 gaps exceed the six approved routes and need separate scope decisions.
++  They cover provider refresh, saved data, prompt tests, fact selection, and build behavior. Brian keeps ticket 07 open.
++- Work beyond the map and open decision tickets belongs to later skill stages.
+diff --git a/.scratch/readme-module-navigation/PRD.md b/.scratch/readme-module-navigation/PRD.md
+new file mode 100644
+index 00000000..c4d677e0
+--- /dev/null
++++ b/.scratch/readme-module-navigation/PRD.md
+@@ -0,0 +1,201 @@
++# README module navigation
++
++Status: ready-for-agent
++Date: 2026-11-12
++Apps: site renders published pages. Pipeline builds and publishes weekly data. API serves answers and trade grades through domain packages.
++Spec branch: `readme-module-navigation`.
++Source: the map `.scratch/readme-module-navigation/MAP.md` and decision tickets 01 to 03. ADRs 0018, 0019, 0021, and 0026.
++Tickets: 01 to 02, in `issues/`.
++
++## Problem Statement
++
++An agent needs to find the module that owns a behavior and the test that checks it.
++The repo spans three apps and domain packages, but its README links do not give a complete path to each owner.
++An agent can read many files before it finds both destinations.
++The root instructions also claim that the API imports pipeline code, which misstates its dependency boundary.
++
++Existing README rules check document shape and size.
++They do not prove that a fresh agent can find the correct module and test within a small read budget.
++Historical ticket 07 identifies pipeline gaps, but it does not define representative tasks across all three apps.
++
++## Solution
++
++Connect root instructions, app READMEs, owner READMEs, and their modules and tests through relative Markdown links.
++Group the maps by responsibility, so an agent can choose the owner from the behavior it must change.
++Keep each owner README short, with the module, its responsibility, and its relevant test together.
++
++Use the 13 documents from decision 02 to support the six tasks from decision 01.
++Each app has one task with an app-owned module and one task with a package-owned module.
++Run the cold-agent procedure from decision 03 against those paths.
++All six agents must find the correct module and test within ten distinct file reads, with reasons and complete read logs.
++
++## User Stories
++
++1. As an agent, I want app links at the repo root, so that I can choose the relevant app.
++2. As an agent, I want app maps by responsibility, so that I can find the owner of a behavior.
++3. As an agent, I want direct owner links, so that I can skip unrelated folders.
++4. As an agent, I want module responsibilities beside test pointers, so that I can find both destinations together.
++5. As an agent, I want relative Markdown links, so that I can follow the maps within my checkout.
++6. As an agent, I want short owner READMEs, so that I can read the necessary context quickly.
++7. As an agent, I want clear responsibility boundaries, so that I can choose between nearby owners.
++8. As a site agent, I want the archive owner and test, so that I can check season and week order.
++9. As a site agent, I want the picker owner and test, so that I can check selected-team focus.
++10. As a pipeline agent, I want the projection owner and test, so that I can check current roster use.
++11. As a pipeline agent, I want the publish owner and test, so that I can check commit scope.
++12. As an API agent, I want the answer-cap owner and test, so that I can check daily team isolation.
++13. As an API agent, I want the grade-limit owner and test, so that I can check persistence across restarts.
++14. As an agent, I want accurate API dependencies, so that I do not search the pipeline for API ownership.
++15. As Brian, I want the approved document scope, so that this feature does not expand into unrelated gaps.
++16. As Brian, I want existing responsibilities preserved, so that short READMEs do not lose useful context.
++17. As Brian, I want six fresh agents, so that prior answers do not affect the trials.
++18. As Brian, I want one model and revision, so that all six trials use the same conditions.
++19. As Brian, I want all file exposure counted, so that the read budget reflects each agent's actual context.
++20. As an auditor, I want complete traces and context inventories, so that I can check every read log.
++21. As Brian, I want failed runs preserved, so that the evidence shows unsuccessful trials too.
++22. As the Judge, I want path choices and reasons, so that I can assess each acceptance test independently.
++23. As an agent, I want normal instructions preserved, so that the trial exception does not change ordinary work.
++
++## Implementation Decisions
++
++### Coverage and ownership
++
++- Limit product-document edits to the 13 documents in decision 02 and the six task paths in decision 01.
++- Add the API app README. Add no root README or separate API instruction file.
++- Root instructions link all three app READMEs and state the navigation rule.
++- Correct the root claim about API dependencies: the API imports no pipeline code.
++- Site and pipeline instructions point to their app README for module ownership. Their commands and rules keep their current role.
++
++The site map distinguishes file loaders, app routes, and package parts.
++It links the data and analyzer owners.
++The pipeline map distinguishes build and publish orchestration from domain packages.
++It links the cornerstone and week owners.
++The API map distinguishes HTTP composition, app state and limits, and analyzer routes.
++It links their owner READMEs.
++
++Owner maps name the archive module, picker focus, publish boundary, current-roster projections, answer caps, and persistent grade limits.
++The analyzer map links its form owner and names the Python rate-limit owner with its API integration test.
++The week map links its sheet owner and distinguishes roster projections from the rankings odds engine.
++The API owner distinguishes daily answer caps from analyzer grade limits.
++Preserve unrelated responsibilities in each document.
++
++### Navigation and document shape
++
++- Follow root instructions, app README, owner README, then the module and its test.
++- Group app maps by responsibility. Do not repeat the six task answers as a lookup table.
++- Link directly to relevant owner READMEs, so an agent need not read each intermediate folder.
++- Place each module, its responsibility, and its test together, with relative Markdown links.
++- Name the other owner under `Does not do` when a responsibility belongs elsewhere.
++
++Each owner README has a one-line title, then `Knows`, `Ports`, and `Does not do`, in that order.
++Test pointers sit within these sections and add no extra heading.
++Each owner or module README in scope has at most 24 physical lines, including blank lines.
++This bound includes the week sheet README, although existing automated rules do not scan it.
++App READMEs have concise navigation sections and no whole-file line cap.
++
++### Instruction boundary
++
++Normal work keeps the state and ticket read requirements.
++The cold-agent trials alone suspend those reads, because the tracker holds expected answers.
++All other repository and external instructions still apply during the trials.
++The test procedure must account for automatic instruction loads within the read budget.
++No module move, code edit, test-code edit, schema change, or API contract change belongs to this feature.
++
++## Testing Decisions
++
++### Seams and prior art
++
++The primary seam is an agent's visible behavior from the repository root.
++The test asks whether the documentation leads that agent to the correct module and relevant test within the read budget.
++A good trial checks path choices, reasons, and actual file exposure.
++It does not infer success from the presence of links alone.
++
++Existing README rule tests supply the document-shape seam.
++The site rule checks package roots, direct package site folders, and selected site source folders.
++It also permits app-root instruction files and rejects deeper instruction files.
++The Python rules check package roots and app source folders with an initializer.
++The API reuses those Python rules for its source folders.
++These checks enforce the existing title, section order, and 24-line limit where they apply.
++They do not scan nested package Python folders or impose a whole-file cap on app READMEs.
++
++Use those existing rules without test-code changes.
++Check relative links, stated responsibilities, and the 24-line bound across every owner README in scope.
++Include the week sheet README in that check.
++The exact existing rule files appear under Further Notes.
++The six behavior tests remain reference destinations; this feature does not change their assertions or implementations.
++No mock implementation or mock mode belongs to these checks.
++
++### Approved tasks
++
++Use each behavior prompt from decision 01 exactly as written.
++The expected paths and reasons stay with the auditor, outside the cold agent's context.
++
++| App | Cold-agent behavior prompt |
++| --- | --- |
++| Site | The week archive must put the newest season first, then order its weeks by number. |
++| Site | After I select Change my team, keyboard focus must return to my selected team. |
++| Pipeline | The roster projection behind playoff odds must use current players, including additions after the scored week. |
++| Pipeline | Publish one week without a commit of stray files or data from another season. |
++| API | A team's daily answer allowance must reset tomorrow without a reset of another team's allowance today. |
++| API | The daily trade-grade limit must survive an API restart. |
++
++### Cold start and read budget
++
++Run one fresh agent per approved task, for six runs total.
++All six runs use the same model and repository revision.
++Each agent starts at the repository root, with no inherited history or expected answers.
++Each agent receives only its approved task prompt and the common procedure.
++The trial exception forbids reads of `.scratch/` and `docs/agents/state.md`.
++The exception applies only to these trials; normal work keeps the state and ticket rules.
++
++Count each distinct file once, including partial reads, READMEs, and automatically loaded instruction files.
++Count external files too, including external instructions.
++Count every file exposed by a content search.
++Repeated reads of one file add no further count.
++Filename listings expose names only and cost no file reads.
++The eleventh distinct file fails the run.
++
++### Evidence and Test verdicts
++
++Each agent names the correct target module and relevant test file within ten distinct file reads.
++It gives reasons for both choices and an ordered, complete read log.
++All six runs must meet those conditions against the expected answers in decision 01.
++Preserve failed runs as evidence.
++
++The auditor compares each read log with the complete tool trace and the automatic context inventory.
++The inventory accounts for instruction files that load without a tool call.
++Each run's evidence contains its path choices, reasons, complete read log, and audit record.
++The procedure records evidence and gives no Test verdict.
++The fresh Judge gives each acceptance test its Test verdict under ADR 0026.
++Brian's FAIL overrides the Judge.
++
++These sections define future checks; they report no completed trial, evidence record, or Test verdict.
++
++## Out of Scope
++
++- Module moves, code edits, test-code changes, and product behavior changes.
++- Documentation beyond the 13 approved documents or task paths beyond the six approved tasks.
++- Exhaustive package coverage or task-specific answer tables in product documentation.
++- Historical ticket 07 gaps for provider refresh, saved data, prompt tests, fact selection, and build behavior.
++- Completion of historical ticket 07, which stays open.
++
++## Further Notes
++
++The approved source records fix the exact scope and expected answers:
++
++- [Decision 01](decisions/01-grill-representative-task-set.md) records all six target modules, test files, and reasons.
++- [Decision 02](decisions/02-grill-readme-coverage-and-structure.md) records the exact 13-document list and each document's role.
++- [Decision 03](decisions/03-grill-cold-agent-test-procedure.md) records the common procedure and the test-only tracker exception.
++- [The map](MAP.md) records the destination, approved decisions, and deferred scope.
++
++The existing rule files are `apps/site/src/readme-rule.test.ts`, `apps/pipeline/tests/test_rule_readmes.py`, and `apps/api/tests/test_rule_api.py`.
++The API rule imports the pipeline's README rule helpers; that test reuse does not make the API import pipeline product code.
++
++Historical source: `.scratch/week-8-fixes/issues/07-the-readmes-name-the-module-an-agent-needs.md`.
++The approved projection task covers one historical gap at its current week package path.
++The old app-local projection path no longer names its owner.
++The remaining historical gaps need separate scope decisions.
++
++The local tracker follows ADR 0021.
++The spec branch and ticket branches follow ADR 0019.
++This spec creates no acceptance tests, ticket list, state row, evidence record, or Test verdict.
++After Brian approves this spec, `4ag:to-acceptance readme-module-navigation` is next.
+diff --git a/.scratch/readme-module-navigation/decisions/01-grill-representative-task-set.md b/.scratch/readme-module-navigation/decisions/01-grill-representative-task-set.md
+new file mode 100644
+index 00000000..c564a792
+--- /dev/null
++++ b/.scratch/readme-module-navigation/decisions/01-grill-representative-task-set.md
+@@ -0,0 +1,46 @@
++# 01: Which tasks prove that agents find the right module?
++
++Map: `.scratch/readme-module-navigation/MAP.md`.
++
++**Kind:** grill
++
++**Blocked by:** none
++
++**Status:** done
++
++## Question
++
++Which representative tasks, correct target modules, and relevant test files define success for site, pipeline, and API?
++Brian chooses the task set and its breadth across relevant packages.
++The spec needs expected answers with reasons, so the test measures the correct destination for each task.
++Check candidate paths against the current repo before Brian decides.
++The source ticket supplies candidate pipeline gaps, but it does not define the task set for all three apps.
++
++## Decision
++
++Brian approves these six tasks and their expected module and test paths.
++The prompts contain no module paths, so each cold agent must find the owner.
++
++| App | Cold-agent behavior prompt | Expected target module | Relevant test file | Reason |
++| --- | --- | --- | --- | --- |
++| Site | The week archive must put the newest season first, then order its weeks by number. | `apps/site/src/lib/data/week-data.ts` | `apps/site/src/lib/data/week-data.test.ts` | `listWeekSummaries` sorts season and week numerically. The test crosses seasons and compares weeks 2 and 10. |
++| Site | After I select Change my team, keyboard focus must return to my selected team. | `packages/analyzer/site/form/team-picker.tsx` | `packages/analyzer/site/form/team-picker.test.tsx` | The picker restores focus after its list opens. The test checks the selected radio after the Change button. |
++| Pipeline | The roster projection behind playoff odds must use current players, including additions after the scored week. | `packages/week/python/src/week/sheet/base.py` | `apps/pipeline/tests/test_sheet.py` | `projected_totals` reads the current roster. The test adds one player and removes another after lineup lock. |
++| Pipeline | Publish one week without a commit of stray files or data from another season. | `apps/pipeline/src/cornerstone/publish.py` | `apps/pipeline/tests/test_rule_publish.py` | `run_publish` constrains each commit to season paths. Tests cover stray files, other seasons, and files outside season folders. |
++| API | A team's daily answer allowance must reset tomorrow without a reset of another team's allowance today. | `apps/api/src/cornerstone_api/caps.py` | `apps/api/tests/test_caps.py` | `Caps` counts answers by roster and local calendar day. The test separates yesterday's count from another team's count. |
++| API | The daily trade-grade limit must survive an API restart. | `packages/analyzer/python/src/analyzer/ratelimit.py` | `apps/api/tests/test_api.py` | `GradeLimiter` saves daily counts. The test creates another app and checks that the next grade returns 429. |
++
++The task set has two tasks per app: one app-owned module and one package-owned module.
++It covers data reads, interaction, publish boundaries, calculations, account limits, and saved state.
++This set gives representative coverage; it does not cover every package.
++Provider refresh rules, prompt rules, and saved-data layout fall outside this sample.
++
++The projection task covers a historical gap from ticket 07.
++Its current owner is the `week` package, at the path above.
++The old app-local `sheet/base.py` path no longer exists.
++Current source and tests confirm all six module and test pairs.
++
++Brian approves the task set and its breadth.
++Decision 02 still sets precise README coverage and structure.
++Decision 03 still sets the cold-agent test procedure.
++This decision adds no procedure choices.
+diff --git a/.scratch/readme-module-navigation/decisions/02-grill-readme-coverage-and-structure.md b/.scratch/readme-module-navigation/decisions/02-grill-readme-coverage-and-structure.md
+new file mode 100644
+index 00000000..f9787114
+--- /dev/null
++++ b/.scratch/readme-module-navigation/decisions/02-grill-readme-coverage-and-structure.md
+@@ -0,0 +1,81 @@
++# 02: Which README structure and coverage guide an agent?
++
++Map: `.scratch/readme-module-navigation/MAP.md`.
++
++**Kind:** grill
++
++**Blocked by:** 01
++
++**Status:** done
++
++## Question
++
++Which READMEs and agent instructions must connect the repo root to the modules and tests in the task set?
++Brian chooses the precise coverage and the navigation structure across all three apps and relevant packages.
++The choice includes the links, module responsibilities, test pointers, and README size limits that the spec requires.
++Check the existing README rules and the source ticket before Brian decides which constraints apply.
++Keep module moves and code changes outside this choice.
++
++## Decision
++
++Brian approves this route: root instructions, app README, owner README, then the module and its test.
++The maps group responsibilities and name each owner. They do not repeat the six task answers as a lookup table.
++Each owner README names the module, its responsibility, and its relevant test together, with relative Markdown links.
++
++### Coverage
++
++The scope covers these 13 documents and the six approved task routes from decision 01.
++
++| Level | Document | Role |
++| --- | --- | --- |
++| Root | `CLAUDE.md` | Link all three app READMEs. State the navigation rule. Correct the claim that the API imports the pipeline. |
++| App instructions | `apps/site/CLAUDE.md` | Point to the app README for module ownership. Keep commands and rules here. |
++| App instructions | `apps/pipeline/CLAUDE.md` | Point to the app README for module ownership. Keep commands and rules here. |
++| App | `apps/site/README.md` | Map file loaders, app routes, and package components. Link the data and analyzer READMEs. |
++| App | `apps/pipeline/README.md` | Map build and publish orchestration versus domain packages. Link the cornerstone and week READMEs. |
++| App | `apps/api/README.md` | Add this README. Map HTTP composition, app state and limits, and analyzer routes. Link their owner READMEs. |
++| App module | `apps/site/src/lib/data/README.md` | Name `week-data.ts`, its archive responsibility, and its test. |
++| App module | `apps/pipeline/src/cornerstone/README.md` | Name `publish.py`, its commit boundary, and its rule test. |
++| App module | `apps/api/src/cornerstone_api/README.md` | Distinguish daily answer caps from analyzer grade limits. Name `caps.py` and its test. |
++| Package | `packages/analyzer/README.md` | Link the form folder. Name the Python rate-limit module and its API integration test. |
++| Package module | `packages/analyzer/site/form/README.md` | Name the team picker, its focus responsibility, and its test. |
++| Package | `packages/week/README.md` | Link the sheet folder. Distinguish roster projections from the rankings odds engine. |
++| Package module | `packages/week/python/src/week/sheet/README.md` | Name `projected_totals` in `base.py` and the pipeline sheet test. |
++
++The root needs no README. The API needs no separate instruction file for these routes.
++The app maps link directly to the relevant owner README, so an agent need not read every intermediate folder.
++The existing instructions to read the state and the ticket remain in force.
++Decision 03 records Brian's approved test-only exception to these reads for cold-agent trials.
++Decision 03 sets the test procedure and the file-count rules.
++
++### Structure and size
++
++Each owner README keeps a one-line title, then `Knows`, `Ports`, and `Does not do`, in that order.
++Test pointers sit within these sections. They add no extra heading.
++`Does not do` names the other owner when a responsibility lies elsewhere.
++Each owner or module README that this feature touches has at most 24 physical lines, with blank lines included.
++This bound also applies to the week sheet README, beyond the current automated check's scope.
++App READMEs gain concise navigation sections. They have no whole-file line cap.
++Agent instructions keep their current role and gain the navigation links.
++
++The current site and Python rules enforce a 24-line maximum for the package READMEs they cover.
++The site rule covers package roots, direct package `site/` folders, and selected site source folders.
++The Python rules cover app source folders with `__init__.py` and package roots.
++The API reuses the Python README rules. These checks do not scan nested package Python folders.
++Root and app READMEs have no current size cap.
++The site rule permits `CLAUDE.md` at each app root, but not in deeper folders.
++
++The cornerstone, cornerstone_api, analyzer, and analyzer/site/form READMEs already have 24 lines.
++Their edits must fit within that bound without removal of unrelated responsibilities.
++The API README says the API imports no pipeline code. The root instruction correction brings these statements into agreement.
++
++### Deferred historical gaps
++
++Brian keeps the remaining gaps from `.scratch/week-8-fixes/issues/07-the-readmes-name-the-module-an-agent-needs.md` separate and open.
++These gaps cover provider refresh, saved data, prompt tests, fact selection, and build behavior.
++They exceed the six approved task routes and need separate scope decisions.
++The projection route covers one historical gap at its current package path.
++This feature does not complete ticket 07.
++
++Brian approves this coverage, structure, size policy, and deferral.
++This decision changes no README, agent instruction, code, or test procedure.
+diff --git a/.scratch/readme-module-navigation/decisions/03-grill-cold-agent-test-procedure.md b/.scratch/readme-module-navigation/decisions/03-grill-cold-agent-test-procedure.md
+new file mode 100644
+index 00000000..ef76b62b
+--- /dev/null
++++ b/.scratch/readme-module-navigation/decisions/03-grill-cold-agent-test-procedure.md
+@@ -0,0 +1,59 @@
++# 03: How does the cold agent test count files?
++
++Map: `.scratch/readme-module-navigation/MAP.md`.
++
++**Kind:** grill
++
++**Blocked by:** 01, 02
++
++**Status:** done
++
++## Question
++
++Which test procedure proves that a cold agent finds the correct module and test within the inclusive 10-file limit?
++Brian chooses the allowed starting context, search rules, file count rules, and number of trials per task.
++The count includes instructions and READMEs; each agent records every file read.
++Resolve how partial reads, search results, repeated reads, and files outside the repo count toward the limit.
++Define what makes an agent cold and how the test withholds expected answers.
++The evidence must show each agent's path choices, reasons, and complete read record.
++The procedure supplies evidence; the Judge gives each acceptance test its Test verdict.
++
++## Decision
++
++Brian approves the procedure below for the six tasks from decision 01.
++
++### Cold start and tracker exception
++
++Each task has one fresh agent at the repository root, with no inherited history or expected answers.
++Each agent receives only its approved behavior prompt and the common test procedure.
++Repository and external instructions still apply, except for the test-only exception below.
++
++The test-only exception suspends the normal state and ticket reads for these trials.
++Cold agents cannot read `.scratch/` or `docs/agents/state.md`, because the tracker holds the expected answers.
++This exception applies only to the cold-agent trials. Normal work keeps the state and ticket rules from decision 02.
++All other instruction and README reads count toward the ten-file limit.
++
++### Trials and success conditions
++
++Run one fresh agent per approved task, for six runs in total.
++All six runs use the same model and repository revision.
++Each run must name the correct target module and relevant test file within ten distinct file reads.
++Each agent gives reasons for both choices and an ordered, complete file-read log.
++All six runs must meet these conditions. Keep failed runs as evidence.
++The procedure records evidence. The Judge supplies each acceptance test's Test verdict.
++
++### File count and audit
++
++Each distinct file counts once, including partial reads, READMEs, and automatically loaded instruction files.
++Files outside the repository count too, including external instruction files.
++Repeated reads of the same file add no further count.
++Every file that content search exposes counts toward the limit.
++Filename listings expose names only and cost no file reads.
++The eleventh distinct file fails the run.
++
++The auditor compares each agent's ordered read log with the complete tool trace.
++The audit also uses the automatic context inventory to account for instruction files that load without a tool call.
++The evidence includes each agent's path choices, reasons, complete read log, and the audit record.
++
++Brian approves this procedure and its test-only exception to the state and ticket rules from decision 02.
++This decision defines the trials. It does not run them or change product documentation or code.
+diff --git a/.scratch/readme-module-navigation/issues/01-connect-all-six-navigation-routes.md b/.scratch/readme-module-navigation/issues/01-connect-all-six-navigation-routes.md
+new file mode 100644
+index 00000000..db714f7e
+--- /dev/null
++++ b/.scratch/readme-module-navigation/issues/01-connect-all-six-navigation-routes.md
+@@ -0,0 +1,24 @@
++# 01: Connect all six navigation routes
++
++Spec: `.scratch/readme-module-navigation/PRD.md`. Acceptance tests AT-1 through AT-6, AT-16, and AT-17. Supplies routes for AT-7 through AT-12.
++
++**App:** both.
++
++**What to build:** An agent follows each approved behavior from root instructions to its app, owner, module, and test. The six routes cover the site, pipeline, and API through the 13 approved documents.
++
++**Blocked by:** none.
++
++**Status:** ready-for-agent
++
++- [x] Root and app instructions link their approved app maps and state the navigation rule.
++- [x] All three app maps group responsibilities and link their owners directly.
++- [x] Every approved owner map places each module, responsibility, and relevant test together through valid relative Markdown links.
++- [x] Owner maps name the other owner under `Does not do` where a responsibility belongs elsewhere.
++- [x] All seven owner READMEs meet the approved title, section order, and 24-physical-line bound, with blank lines included.
++- [x] Existing README rules pass without test-code changes. The explicit line check includes the week sheet owner.
++- [x] Existing document duties remain intact. Normal work keeps the state and ticket reads.
++- [x] Root instructions state that API product code imports no pipeline code. Shared test helpers remain a separate concern.
++- [x] Product-document changes stay within the 13 approved documents and six approved task routes.
++- [x] The diff contains no product-code, test-code, schema, or API contract changes, module moves, or unapproved document additions.
++- [x] Product documents contain no task-specific answer table or exhaustive package expansion. Deferred historical gaps remain outside this feature.
++- [x] Historical ticket 07 remains open. Ticket 02 supplies the final document evidence and six cold-agent trials.
+diff --git a/.scratch/readme-module-navigation/issues/02-prove-all-six-routes-with-cold-agents.md b/.scratch/readme-module-navigation/issues/02-prove-all-six-routes-with-cold-agents.md
+new file mode 100644
+index 00000000..c1e2a29e
+--- /dev/null
++++ b/.scratch/readme-module-navigation/issues/02-prove-all-six-routes-with-cold-agents.md
+@@ -0,0 +1,26 @@
++# 02: Prove all six routes with cold agents
++
++Spec: `.scratch/readme-module-navigation/PRD.md`. Acceptance tests AT-7 through AT-15. Final evidence also covers AT-1 through AT-6, AT-16, and AT-17.
++
++**App:** both.
++
++**What to build:** Six real cold agents find the approved modules and tests through the site, pipeline, and API routes. Complete evidence shows their choices, reasons, file exposure, and compliance with the approved procedure.
++
++**Blocked by:** 01.
++
++**Status:** ready-for-agent
++
++- [ ] The manifest records one fresh agent for each approved task, one model, and one fixed implementation revision.
++- [ ] Every document check uses that same implementation revision. The record includes its full commit identifier and the base revision.
++- [ ] Each agent starts at the repository root with no inherited history or expected answers.
++- [ ] Each agent receives exactly its approved task prompt and the common procedure. The record preserves both in full.
++- [ ] The launch context preserves applicable instructions. The trial exception excludes tracker answers and suspends only state and ticket reads.
++- [ ] Each run names the approved module and test within ten distinct file reads, with a reason for each choice.
++- [ ] Each run preserves its full launch context, automatic context inventory, complete tool trace, and ordered read log.
++- [ ] Each audit reconciles the log with the trace and context inventory. It explains every difference and states the distinct-file total.
++- [ ] The audit counts partial, README, instruction, external, automatic, and content-search exposure under the approved procedure.
++- [ ] Repeated reads count once. Pathname enumeration without a content search counts zero files. An eleventh distinct file marks a failed run.
++- [ ] The evidence preserves every run, including each failed run. This ticket adds no artificial failure or extra trial set.
++- [ ] Final document evidence covers links, duties, boundaries, shape, line counts, existing rule results, scope, and the API dependency claim.
++- [ ] Final scope evidence separates tracker and evidence records from product-document changes. Historical ticket 07 remains open.
++- [ ] The evidence agent records evidence without a Test verdict. The fresh Judge step remains part of `4ag:implement`.
+diff --git a/CLAUDE.md b/CLAUDE.md
+index 8e9b08d2..e6607a70 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -2,9 +2,12 @@
+ 
+ This repo holds three apps. The site and the pipeline each have a CLAUDE.md with its own commands and rules. Read the one for the app you change.
+ 
+-- `apps/site/` is the Next.js site. Its build copies `clients/<slug>/published/` of one client into `public/` and renders each `page.json` and its images.
+-- `apps/pipeline/` is the Python pipeline. It builds each week and publishes it into `clients/<slug>/published/`.
+-- `apps/api/` is the API of the trade analyzer. It imports the pipeline and deploys to Fly. Run `make help` in it.
++- [Site](apps/site/README.md) in `apps/site/` is the Next.js site. Its build copies `clients/<slug>/published/` of one client into `public/` and renders each `page.json` and its images.
++- [Pipeline](apps/pipeline/README.md) in `apps/pipeline/` is the Python pipeline. It builds each week and publishes it into `clients/<slug>/published/`.
++- [API](apps/api/README.md) in `apps/api/` serves the trade analyzer and deploys to Fly. Its product code imports no pipeline code. Run `make help` in it.
++
++For module ownership, follow root instructions → app README → owner README → module and test.
++Choose the responsibility in the app map, then follow its owner links.
+ 
+ The root holds one uv workspace and one pnpm workspace, each with one lock file: `uv.lock` and `pnpm-lock.yaml`.
+ Run `uv sync --all-packages` and `pnpm install` at the root. A member runs with `uv run --exact --package <name>`.
+diff --git a/apps/api/README.md b/apps/api/README.md
+new file mode 100644
+index 00000000..92e69926
+--- /dev/null
++++ b/apps/api/README.md
+@@ -0,0 +1,17 @@
++# Cornerstone API
++
++The FastAPI app serves each client through domain packages and deploys to Fly.
++Its product code imports no pipeline code.
++API tests reuse pipeline fixtures and README-rule helpers; these test dependencies do not define product ownership.
++
++## Module map
++
++- HTTP composition: the [API owner](src/cornerstone_api/README.md) creates the app and mounts client routes in [app.py](src/cornerstone_api/app.py).
++- App state and limits: the [API owner](src/cornerstone_api/README.md) owns client state, access checks, and daily answer allowances.
++- Analyzer routes: the [analyzer owner](../../packages/analyzer/README.md) owns trade grades, caches, and persistent grade limits. The API mounts those routes.
++
++## Commands
++
++Run `make help` in `apps/api/` for the app commands.
++Run `make check-fast` for lint, types, and rules.
++Run `make check` for lint, types, and all tests.
+diff --git a/apps/api/src/cornerstone_api/README.md b/apps/api/src/cornerstone_api/README.md
+index 5d7e2557..0815e0d9 100644
+--- a/apps/api/src/cornerstone_api/README.md
++++ b/apps/api/src/cornerstone_api/README.md
+@@ -10,7 +10,7 @@
+ - The trade Topics of the front door at `/clients/<slug>/trade-check` and `/clients/<slug>/trade-ideas`, behind the passphrase, in `trade_topics.py`. A typed trade check has one Jev request that picks the player of each side from the real rosters, with its words in `trade_wording.py`. An unsure pick gives the form of the Trade page. Each route streams a plain step for each stage of the Advisor, then the whole Answer, in the event stream of the AI SDK. Trade ideas runs whatever the `finder` flag says. Sell high at `/clients/<slug>/sell-high` streams the same way, with the sell high press of the `analyzer` package.
+ - The free answer of the ask box at `/clients/<slug>/ask/free`, behind the passphrase. The route runs again first, so only a question that Jev routes to a free answer reaches Claude. Claude Sonnet 5.5 runs at `low` effort through Pydantic AI, with the tools of `free_tools.py` over the saved weeks of this season and at most 4 tool calls. The text streams through `VercelAIAdapter` to `useChat` of the site. After the last word, one Jev request checks each sentence against the tool results, with one rewrite and then the honest miss. `free_wording.py` holds every word sent to Claude and to Jev for it. Each typed question carries the earlier turns of its Thread, cut to about 8,000 tokens, as Jev state for the route and as earlier messages for Claude, with a cache mark. The check never reads them. `chat_turns.py` holds them and their words.
+ - The refresh route that a daily cron pings.
+-- The passphrase check of each client, from `CORNERSTONE_PASSPHRASE_<SLUG>`, the commissioner key check of each client of the eggs package, from `CORNERSTONE_COMMISSIONER_KEY_<SLUG>`, the rate limit of each address, the limit of the egg check of each address, the state of each client, and the settings from the environment.
++- The passphrase check of each client, from `CORNERSTONE_PASSPHRASE_<SLUG>`, the commissioner key check of each client of the eggs package, from `CORNERSTONE_COMMISSIONER_KEY_<SLUG>`, the rate limit of each address, the limit of the egg check of each address, the state of each client, and the settings from the environment. [caps.py](caps.py) owns daily answer allowances per team and local calendar day. [test_caps.py](../../tests/test_caps.py) checks team isolation and the next-day reset.
+ - The terms are in `GLOSSARY.md`.
+ 
+ ## Ports
+@@ -19,6 +19,6 @@
+ 
+ ## Does not do
+ 
+-- It holds no grade rule and no prompt of the trade analyzer. The `analyzer` package holds them, with the grade limit and the caches. The only prompt here is the free answer of `free_wording.py`.
++- It holds no grade rule and no prompt of the trade analyzer. The [analyzer owner](../../../../packages/analyzer/README.md) holds them, with the grade limit and the caches. The only prompt here is the free answer of `free_wording.py`.
+ - It imports no pipeline code. Only its tests read the fixtures of the pipeline tests.
+ - It imports nothing from the output layer of ADR 0010, so it writes no page.
+diff --git a/apps/pipeline/CLAUDE.md b/apps/pipeline/CLAUDE.md
+index 7f50ce0f..5870aed4 100644
+--- a/apps/pipeline/CLAUDE.md
++++ b/apps/pipeline/CLAUDE.md
+@@ -6,6 +6,8 @@ This tool builds a weekly report page for the Cornerstone fantasy football leagu
+ league data from Sleeper. It writes the chapters of the report and writes the page data. The site in `apps/site` renders the pages.
+ The root CLAUDE.md holds the style, the flow, and the tracker. `GLOSSARY.md` names the chapter of prose a "Prose block".
+ 
++For module ownership, start with the [app map](README.md). Follow its owner README links to the module and test.
++
+ ## Commands
+ 
+ Run these in `apps/pipeline/`. Run `make help` for the full list.
+diff --git a/apps/pipeline/README.md b/apps/pipeline/README.md
+index 964589b2..df03d13a 100644
+--- a/apps/pipeline/README.md
++++ b/apps/pipeline/README.md
+@@ -3,6 +3,11 @@
+ This repo builds the weekly report site for the Cornerstone fantasy football league. The
+ data comes from Sleeper. The public site of CPC is at https://cpc.4thandgoal.app/
+ 
++## Module map
++
++- Build and publish orchestration: the [cornerstone owner](src/cornerstone/README.md) joins the weekly stages and controls publish commits.
++- Domain packages: the [week owner](../../packages/week/README.md) owns weekly facts and page data. Its [sheet owner](../../packages/week/python/src/week/sheet/README.md) owns roster projections. Packages hold domain rules; the app joins their outputs.
++
+ ## Commands
+ 
+ Each command that reads a league names its client with `--client <slug>`, such as `--client cpc`. A command with no
+diff --git a/apps/pipeline/src/cornerstone/README.md b/apps/pipeline/src/cornerstone/README.md
+index 19d70b25..1f362764 100644
+--- a/apps/pipeline/src/cornerstone/README.md
++++ b/apps/pipeline/src/cornerstone/README.md
+@@ -2,7 +2,7 @@
+ 
+ ## Knows
+ 
+-- The weekly build: fetch from the provider, parse, build the fact sheet, write, verify, render, and publish.
++- The weekly build: fetch from the provider, parse, build the fact sheet, write, verify, render, and publish. [publish.py](publish.py) owns `run_publish` and limits commits to the client season paths. [test_rule_publish.py](../../tests/test_rule_publish.py) checks stray files and other seasons.
+ - The `advisor-eval` command of the CLI. The `analyzer` package holds the fact sheet, the Advisor, and the Finder.
+ - The build of each week and the season files. The `rankings`, `managers`, and `waiver` packages hold their own rules.
+ - The build and the publish of the midseason report: `midseason` runs the sim through `season_sim.py`, reads the pairs left through `season_schedule.py`, and writes the draft and the review file, and `midseason-publish` checks each blurb again and commits `midseason.json` and `sim.json`.
+@@ -19,6 +19,6 @@
+ 
+ ## Does not do
+ 
+-- It never imports `cornerstone_api`. That package serves the trade analyzer over HTTP.
++- It never imports `cornerstone_api`. The [API owner](../../../api/src/cornerstone_api/README.md) serves the trade analyzer over HTTP.
+ - It builds no HTML. The site repo builds the HTML from each published file.
+ - No module reads a global client. The CLI or the API entry builds the Client once with `load_client` and passes it down.
+diff --git a/apps/site/CLAUDE.md b/apps/site/CLAUDE.md
+index 6724c0c1..04ca566d 100644
+--- a/apps/site/CLAUDE.md
++++ b/apps/site/CLAUDE.md
+@@ -4,6 +4,8 @@ The Next.js site. It builds one client, named by the env value `CLIENT`. The bui
+ into `public/`, and the site renders each `public/<season>/week-NN/page.json` and its images.
+ The root CLAUDE.md holds the style, the flow, and the tracker.
+ 
++For module ownership, start with the [app map](README.md). Follow its owner README links to the module and test.
++
+ ## Commands
+ 
+ Run these in `apps/site/`.
+diff --git a/apps/site/README.md b/apps/site/README.md
+index 61952008..55e9c8ef 100644
+--- a/apps/site/README.md
++++ b/apps/site/README.md
+@@ -4,6 +4,12 @@ The Cornerstone League Weekly site. Each client serves at `<slug>.4thandgoal.app
+ This repo holds the Next.js source. The Python pipeline in `apps/pipeline` publishes each week's `page.json` and images into `clients/<slug>/published/`. The build
+ copies the published data of one client into `public/`. The site renders every page, the home page included, from that JSON.
+ 
++## Module map
++
++- File loaders: the [data owner](src/lib/data/README.md) reads published files and builds the week archive.
++- App routes: [src/app](src/app/) composes pages from loaders and package parts. Generated routes follow the client package list.
++- Package parts: the [analyzer owner](../../packages/analyzer/README.md) owns the trade UI and API client. Its [form owner](../../packages/analyzer/site/form/README.md) owns team choice and focus. Parts take data and return markup.
++
+ ## Install
+ 
+ Use Node 22 or newer. The `.nvmrc` pins 22.
+diff --git a/apps/site/src/lib/data/README.md b/apps/site/src/lib/data/README.md
+index 905b234c..eb4d9f05 100644
+--- a/apps/site/src/lib/data/README.md
++++ b/apps/site/src/lib/data/README.md
+@@ -2,6 +2,7 @@
+ 
+ ## Knows
+ 
++- [week-data.ts](week-data.ts) owns the archive. `listWeekSummaries` sorts seasons and weeks numerically, newest first. [week-data.test.ts](week-data.test.ts) checks cross-season order and weeks 2 and 10.
+ - One loader per published file: the week page file, the rankings file, the managers file, `waiver.json`, `midseason.json`, and `sim.json`.
+ - Where each file sits under `public/`, and which week folders hold `waiver.json`.
+ - The join of the managers file with the last week of the rankings file.
+@@ -16,7 +17,7 @@
+ 
+ ## Does not do
+ 
+-- It owns no shape. The pipeline owns each shape, and each package holds the schema of its own file (ADR 0013).
++- It owns no shape. The [pipeline](../../../../pipeline/README.md) owns each shape, and each package holds the schema of its own file (ADR 0013).
+ - It runs in no browser. Only the app layer and `next.config.ts` call a loader (ADR 0012).
+ - It writes no file. The pipeline publishes every file under `public/`.
+ - It formats no number. Each package holds its own formats.
+diff --git a/docs/agents/state.md b/docs/agents/state.md
+index 6a735dbb..736f236f 100644
+--- a/docs/agents/state.md
++++ b/docs/agents/state.md
+@@ -25,6 +25,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
+ | `next-week-byes` | pipeline | 06 two-chapters-fell-to-templates-in-the-week-7-rebuild | | |
+ | `rankings` | site | 01 the reader and the route | none | |
+ | `rankings` | pipeline | 01 the-formula | | |
++| `readme-module-navigation` | both | 01 connect all six navigation routes | none | |
+ | `site-api` | pipeline | 10 prompt-caching | | |
+ | `site-foundation` | site | 01 the tiers and the page column | none | |
+ | `site-pages` | site | 01 the page shell | none | |
+diff --git a/packages/analyzer/README.md b/packages/analyzer/README.md
+index d327ac34..b9c35600 100644
+--- a/packages/analyzer/README.md
++++ b/packages/analyzer/README.md
+@@ -5,9 +5,9 @@
+ - The proposed trade of `trade.py`, the Measures and `Side` of `measures.py`, and the trade facts (`cpc-analyzer`, imported as `analyzer`). The read of the Advisor in `advisor.py`, with the Jev answers of `trade_jev.py`, and the team facts of `team_facts.py`. The Finder search of `finder_search.py`: the partner filter, the targets, the offers, and the shortlist, with its Jev requests in waves by `jev_waves.py`. The Finder pick of `finder_pick.py`: one sheet per shortlist offer, the Advisor pick of up to 3 trades with a headline and Bullets, and the fallback to the shortlist with fact lines. The sell high pick of `sell_high.py`: the sheet of one roster in `sell_facts.py`, with the trade value, the lineup value, the trend of the last 4 weeks, and the schedule ahead of each player side by side, and the Advisor pick of up to 3 players to sell with the guards and the Jev checks of the read.
+ - The rule prompts `prompts/advisor.md`, `prompts/finder_pick.md`, `prompts/finder_pick_repair.md`, and `prompts/sell_high.md`, and the numbers of `tunables.py`.
+ - The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit. The sell high press of the front door is there too, with no route of its own.
+-- The grade limit counts per client and per address. Each client has its own result cache, so the roster ids of two leagues never share a grade.
++- [GradeLimiter in ratelimit.py](python/src/analyzer/ratelimit.py) counts grades per client and address and saves daily counts across restarts. [API integration tests](../../apps/api/tests/test_api.py) check the restart limit and HTTP 429. Each client has its own result cache, so the roster ids of two leagues never share a grade.
+ - The cache key reads the points key of the League settings of the client, such as `pts_ppr` for a full PPR league.
+-- The trade form, the finder, the API client, the passphrase, the teams store, and the team picker of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.
++- The [form owner](site/form/README.md), the finder, the API client, the passphrase, the teams store, and the team picker of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.
+ - Package values, under `[values.analyzer]`: `finder`, the trade finder on the analyzer page. The default is false.
+ - The model of its package values in `values.py`, and its exported JSON Schema `values.schema.json`. `make schema` rewrites the file.
+ 
+@@ -19,6 +19,6 @@
+ ## Does not do
+ 
+ - It imports no app and no other core package, only `league` and `facts`. `tests/test_layers.py` of the pipeline checks it.
+-- It mounts no route. The API app mounts the routes at `/clients/<slug>/` and loads each client.
++- It mounts no route. The [API owner](../../apps/api/src/cornerstone_api/README.md) mounts the routes at `/clients/<slug>/` and loads each client. That owner also controls daily answer allowances through `caps.py`.
+ - Of a client folder, it reads the voice folder `prompts/` with the Playbook `playbook.md`, and the playoff odds in `published/<season>/rankings.json`.
+ - It writes no published file.
+diff --git a/packages/analyzer/site/form/README.md b/packages/analyzer/site/form/README.md
+index eff63a0f..1ef20f54 100644
+--- a/packages/analyzer/site/form/README.md
++++ b/packages/analyzer/site/form/README.md
+@@ -2,7 +2,7 @@
+ 
+ ## Knows
+ 
+-- The analyzer page body: the passphrase dialog, the trade form, and the result.
++- The analyzer page body: the passphrase dialog, the trade form, and the result. [team-picker.tsx](team-picker.tsx) restores selected-team focus after Change my team. [team-picker.test.tsx](team-picker.test.tsx) checks the selected radio.
+ - The trade form, the Stack: the hero, the teams row, a card for each side, the sheets, the grade bar with its Ready halo, the fold line, the sweep, and the error box.
+ - The result of one analyze document: the read hero with the Lean on its 5-step scale, the Case, and the fairness line, the swap card, one tab per side, and the Bullet rows in `bullet-rows.tsx`, which the Finder card reuses.
+ - The trade finder, with an optional partner and up to three picks of the Advisor, each with a headline, the swap, and the Bullet rows. After a fallback, each trade of the shortlist shows its fact lines. The teams prefetch of the home page.
+@@ -18,7 +18,7 @@
+ 
+ ## Does not do
+ 
+-- It grades no trade. The site API grades it, and this folder shows the answer.
++- It grades no trade. The [analyzer Python owner](../../README.md) grades it through the site API, and this folder shows the answer.
+ - It shows no roster grade. The roster grade lives in the managers part of the site.
+ - It defines no API shape. `../lib/schemas/api.ts` holds the response schemas.
+ - It reads no file, no env, and no config, and it imports no app. The page gives the API target and the finder flag.
+diff --git a/packages/week/README.md b/packages/week/README.md
+index 25a1fe4e..2aa93d6c 100644
+--- a/packages/week/README.md
++++ b/packages/week/README.md
+@@ -2,7 +2,7 @@
+ 
+ ## Knows
+ 
+-- The sheet chapters except rankings, the league and matchup facts, and the page writer of `page.json` (`cpc-week`, imported as `week`).
++- The [sheet owner](python/src/week/sheet/README.md) holds roster projections. The sheet chapters except rankings, the league and matchup facts, and the page writer of `page.json` (`cpc-week`, imported as `week`).
+ - The week chapters, the schema and the types of `page.json`, and `who` (`@cpc/week`). The loader of `page.json` stays in the site app, because it reads files.
+ - The median text in `prompts/median.md`. The writer and the verifier get it only when the league scores a median game.
+ - A league with no median game has no MED facts, no median part in the impact fact, and no Median Game chapter.
+@@ -17,6 +17,6 @@
+ ## Does not do
+ 
+ - It imports no app and no core package, only `league` and `facts`. `tests/test_layers.py` of the pipeline checks it.
+-- It holds no odds engine and no power rankings. The rankings source gives them through the chapter port.
++- It holds no odds engine and no power rankings. The [rankings owner](../rankings/README.md) gives them through the chapter port. Roster projections belong to the sheet, not that odds engine.
+ - It writes no rankings, managers, or waiver file. Each package writes its own.
+ - It sends no Claude call of its own. The writer and the verifier of `facts` write and check each blurb.
+diff --git a/packages/week/python/src/week/sheet/README.md b/packages/week/python/src/week/sheet/README.md
+index 955bc73d..3e93a64b 100644
+--- a/packages/week/python/src/week/sheet/README.md
++++ b/packages/week/python/src/week/sheet/README.md
+@@ -6,6 +6,7 @@
+ - It builds the bundle that each chapter reads, and it writes and reads the bundle file.
+ - The entry: outside this folder, a module imports only `week.sheet` or `week.sheet.base`.
+ - A league with no median game gets no MED facts, no median part in the impact fact, and no Median Game chapter.
++- [base.py](base.py) owns `projected_totals`, which reads current roster players, including additions after the scored week. [test_sheet.py](../../../../../../apps/pipeline/tests/test_sheet.py) checks additions and drops after lineup lock.
+ - The terms are in `GLOSSARY.md`.
+ 
+ ## Ports
+@@ -17,6 +18,6 @@
+ 
+ - It writes no prose and makes no Claude call. `facts/writer.py` writes each blurb.
+ - It checks no blurb. `facts/verifier.py` does.
+-- It holds no odds engine and no rankings chapter. The rankings source gives both through the chapter port.
++- It holds no odds engine and no rankings chapter. The [rankings owner](../../../../../rankings/README.md) gives both through the chapter port.
+ - It writes no page. `week/page.py` writes `page.json`.
+ - It builds no fact sheet of a proposed trade. `cornerstone/trade_facts.py` does.

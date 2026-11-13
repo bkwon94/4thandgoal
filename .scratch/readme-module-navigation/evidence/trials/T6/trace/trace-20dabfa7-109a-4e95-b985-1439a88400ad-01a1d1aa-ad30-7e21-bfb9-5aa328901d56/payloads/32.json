@@ -1,0 +1,36 @@
+{
+  "response_id": "resp_016a32cefd2e3640016af62fe2263087d1b7a4101fef20dd30",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 34003,
+    "cached_input_tokens": 31232,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 66,
+    "reasoning_output_tokens": 31,
+    "total_tokens": 34069
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_016a32cefd2e3640016af62fe52cb087d19e9f436586a1d52d",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 6fe662240ca457289c40b91912513831ba401b4ae7006ddb4c1a7e26be38115d; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589"
+      },
+      "content": []
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_016a32cefd2e3640016af62fe52ca487d1b2f3d8160196625d",
+      "status": "completed",
+      "call_id": "call_7c072ab33ad34d63bce5211d0575c444",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat packages/analyzer/README.md\",\"max_output_tokens\":3500}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+        "create_time": 1794519013.182146
+      }
+    }
+  ]
+}

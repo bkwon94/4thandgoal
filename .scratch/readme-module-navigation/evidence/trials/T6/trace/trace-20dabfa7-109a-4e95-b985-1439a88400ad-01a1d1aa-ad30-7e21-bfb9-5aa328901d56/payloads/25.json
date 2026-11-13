@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-3c02d999-9470-44a7-83d9-545941573337",
+  "process_id": "98868",
+  "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+  "started_at_ms": 1794519009844,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat ~/.claude/rules/communication/simplified-technical-english.md; rg -n 'readme-module-navigation|readme-navigation' /Users/brian.kwon/.codex/memories/MEMORY.md; cat apps/api/README.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "cat ~/.claude/rules/communication/simplified-technical-english.md; rg -n 'readme-module-navigation|readme-navigation' /Users/brian.kwon/.codex/memories/MEMORY.md; cat apps/api/README.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

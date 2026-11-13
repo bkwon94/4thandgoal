@@ -1,0 +1,28 @@
+{
+  "call_id": "exec-b6efb634-6601-482a-8cf0-3fd7abe80e8a",
+  "process_id": "93084",
+  "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+  "completed_at_ms": 1794518801676,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat apps/site/CLAUDE.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "cat apps/site/CLAUDE.md",
+      "name": "CLAUDE.md",
+      "path": "apps/site/CLAUDE.md"
+    }
+  ],
+  "source": "unified_exec_startup",
+  "aggregated_output": "# Cornerstone site\n\nThe Next.js site. It builds one client, named by the env value `CLIENT`. The build copies `clients/$CLIENT/published/`\ninto `public/`, and the site renders each `public/<season>/week-NN/page.json` and its images.\nThe root CLAUDE.md holds the style, the flow, and the tracker.\n\nFor module ownership, start with the [app map](README.md). Follow its owner README links to the module and test.\n\n## Commands\n\nRun these in `apps/site/`.\n\n- Install: `pnpm install`\n- Dev server: `CLIENT=cpc pnpm dev`\n- Build the static export: `CLIENT=cpc pnpm build`. The `prebuild` step checks `client.toml` and writes the generated files.\n- Test: `pnpm test`. The tests read the generated files, so run `pnpm check:fast` or a build first.\n- Check the export: `CLIENT=cpc pnpm check:export`. Run it after `pnpm build`, with the same `CLIENT`.\n- Check the readability floor: `CLIENT=cpc pnpm check:floor`. Run it after `pnpm build`, with the same `CLIENT`. Add `-g <route>` to check one page.\n- Test the rules of the floor: `pnpm test:floor`. It needs Chromium once: `pnpm exec playwright install chromium`.\n- Check all: `pnpm check`. It runs the fast check, the rules of the floor, then the build, `check:export`, and `check:floor` of each client under `clients/`. Then it builds the fixture client of the midseason report and runs the floor of the report on it. CI runs it on every push.\n- Fast check: `pnpm check:fast`. It runs the client build of `cpc`, typecheck, and test. The hook runs it.\n\n## Rules\n\n- The hook does not run `pnpm install`. In a new worktree with no `node_modules`, run `pnpm install` first.\n- The pipeline owns the shape of each published file. Change the schema in `packages/<package>/site/schema/` and the pipeline writer together (ADR 0013).\n- Never edit a file with a `GENERATED` first line. Change `client.toml` or `scripts/client-build.mjs`, and build again.\n- A component takes data and returns markup. It reads no file, no env, and no config (ADR 0012).\n- Each package folder holds a README with the headings Knows, Ports, and Does not do (ADR 0016).\n",
+  "exit_code": 0,
+  "duration": {
+    "secs": 0,
+    "nanos": 342917
+  },
+  "status": "completed"
+}

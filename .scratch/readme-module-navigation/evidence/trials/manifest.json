@@ -1,0 +1,141 @@
+{
+  "model": "gpt-6-astra",
+  "implementation_revision": "dad744db4f3b49732adc1586e08c34be2f381f73",
+  "initial_directory": "/tmp/readme-navigation-trial-root",
+  "runs": [
+    {
+      "task": "T1",
+      "command_argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--json",
+        "-c",
+        "project_doc_fallback_filenames=[\"CLAUDE.md\"]",
+        "-C",
+        "/tmp/readme-navigation-trial-root",
+        "-m",
+        "gpt-6-astra",
+        "The week archive must put the newest season first, then order its weeks by number.\n\n1. Start at the repository root.\n2. Follow repository and external instructions, except for the trial exception below.\n3. For this trial only, do not read `.scratch/` or `docs/agents/state.md`.\n4. The trial exception suspends normal state and ticket reads.\n5. Find the module that owns the requested behavior and its relevant test file.\n6. Use at most ten distinct file reads.\n7. Count partial reads, READMEs, and automatically loaded instruction files. Exclude automatic skill catalog metadata from this count; actual file reads and loaded instructions still count.\n8. Count external files, including external instructions.\n9. Count every file exposed by a content search.\n10. Content-search results count even when they show only matching filenames.\n11. Count each distinct file once.\n12. Repeated reads add no further count.\n13. Filename listings that enumerate pathnames without a content search cost no file reads.\n14. The eleventh distinct file fails the run.\n15. Return the chosen module path and test path.\n16. Give a reason for each choice.\n17. Return an ordered, complete file-read log.\n18. Record evidence without a Test verdict.\n"
+      ],
+      "cwd": "/tmp/readme-navigation-trial-root",
+      "revision": "dad744db4f3b49732adc1586e08c34be2f381f73",
+      "prompt_sha256": "5905ef87644df5efe670ff37441da164b2ac5112bf40623870df1134cfa4d4e3",
+      "started_at": "2026-11-12T21:25:13.068623+00:00",
+      "exit_code": 0,
+      "ended_at": "2026-11-12T21:26:00.881854+00:00"
+    },
+    {
+      "task": "T2",
+      "command_argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--json",
+        "-c",
+        "project_doc_fallback_filenames=[\"CLAUDE.md\"]",
+        "-C",
+        "/tmp/readme-navigation-trial-root",
+        "-m",
+        "gpt-6-astra",
+        "After I select Change my team, keyboard focus must return to my selected team.\n\n1. Start at the repository root.\n2. Follow repository and external instructions, except for the trial exception below.\n3. For this trial only, do not read `.scratch/` or `docs/agents/state.md`.\n4. The trial exception suspends normal state and ticket reads.\n5. Find the module that owns the requested behavior and its relevant test file.\n6. Use at most ten distinct file reads.\n7. Count partial reads, READMEs, and automatically loaded instruction files. Exclude automatic skill catalog metadata from this count; actual file reads and loaded instructions still count.\n8. Count external files, including external instructions.\n9. Count every file exposed by a content search.\n10. Content-search results count even when they show only matching filenames.\n11. Count each distinct file once.\n12. Repeated reads add no further count.\n13. Filename listings that enumerate pathnames without a content search cost no file reads.\n14. The eleventh distinct file fails the run.\n15. Return the chosen module path and test path.\n16. Give a reason for each choice.\n17. Return an ordered, complete file-read log.\n18. Record evidence without a Test verdict.\n"
+      ],
+      "cwd": "/tmp/readme-navigation-trial-root",
+      "revision": "dad744db4f3b49732adc1586e08c34be2f381f73",
+      "prompt_sha256": "28d89910bc69c24a50bfb7a0f2e11198692d92aa2207e8d0c4998266d0c3b55a",
+      "started_at": "2026-11-12T21:26:00.883356+00:00",
+      "exit_code": 0,
+      "ended_at": "2026-11-12T21:27:19.398705+00:00"
+    },
+    {
+      "task": "T3",
+      "command_argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--json",
+        "-c",
+        "project_doc_fallback_filenames=[\"CLAUDE.md\"]",
+        "-C",
+        "/tmp/readme-navigation-trial-root",
+        "-m",
+        "gpt-6-astra",
+        "The roster projection behind playoff odds must use current players, including additions after the scored week.\n\n1. Start at the repository root.\n2. Follow repository and external instructions, except for the trial exception below.\n3. For this trial only, do not read `.scratch/` or `docs/agents/state.md`.\n4. The trial exception suspends normal state and ticket reads.\n5. Find the module that owns the requested behavior and its relevant test file.\n6. Use at most ten distinct file reads.\n7. Count partial reads, READMEs, and automatically loaded instruction files. Exclude automatic skill catalog metadata from this count; actual file reads and loaded instructions still count.\n8. Count external files, including external instructions.\n9. Count every file exposed by a content search.\n10. Content-search results count even when they show only matching filenames.\n11. Count each distinct file once.\n12. Repeated reads add no further count.\n13. Filename listings that enumerate pathnames without a content search cost no file reads.\n14. The eleventh distinct file fails the run.\n15. Return the chosen module path and test path.\n16. Give a reason for each choice.\n17. Return an ordered, complete file-read log.\n18. Record evidence without a Test verdict.\n"
+      ],
+      "cwd": "/tmp/readme-navigation-trial-root",
+      "revision": "dad744db4f3b49732adc1586e08c34be2f381f73",
+      "prompt_sha256": "581b72fb283b2af34a8a2acc28d2a767ce9689e11c713b96bf6f14393e632557",
+      "started_at": "2026-11-12T21:27:19.403208+00:00",
+      "exit_code": 0,
+      "ended_at": "2026-11-12T21:28:23.403002+00:00"
+    },
+    {
+      "task": "T4",
+      "command_argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--json",
+        "-c",
+        "project_doc_fallback_filenames=[\"CLAUDE.md\"]",
+        "-C",
+        "/tmp/readme-navigation-trial-root",
+        "-m",
+        "gpt-6-astra",
+        "Publish one week without a commit of stray files or data from another season.\n\n1. Start at the repository root.\n2. Follow repository and external instructions, except for the trial exception below.\n3. For this trial only, do not read `.scratch/` or `docs/agents/state.md`.\n4. The trial exception suspends normal state and ticket reads.\n5. Find the module that owns the requested behavior and its relevant test file.\n6. Use at most ten distinct file reads.\n7. Count partial reads, READMEs, and automatically loaded instruction files. Exclude automatic skill catalog metadata from this count; actual file reads and loaded instructions still count.\n8. Count external files, including external instructions.\n9. Count every file exposed by a content search.\n10. Content-search results count even when they show only matching filenames.\n11. Count each distinct file once.\n12. Repeated reads add no further count.\n13. Filename listings that enumerate pathnames without a content search cost no file reads.\n14. The eleventh distinct file fails the run.\n15. Return the chosen module path and test path.\n16. Give a reason for each choice.\n17. Return an ordered, complete file-read log.\n18. Record evidence without a Test verdict.\n"
+      ],
+      "cwd": "/tmp/readme-navigation-trial-root",
+      "revision": "dad744db4f3b49732adc1586e08c34be2f381f73",
+      "prompt_sha256": "3dc7061fc52927edb84385abae38298380fb1cf657bd01f4883e584b9dd2907e",
+      "started_at": "2026-11-12T21:28:23.405937+00:00",
+      "exit_code": 0,
+      "ended_at": "2026-11-12T21:29:05.448741+00:00"
+    },
+    {
+      "task": "T5",
+      "command_argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--json",
+        "-c",
+        "project_doc_fallback_filenames=[\"CLAUDE.md\"]",
+        "-C",
+        "/tmp/readme-navigation-trial-root",
+        "-m",
+        "gpt-6-astra",
+        "A team's daily answer allowance must reset tomorrow without a reset of another team's allowance today.\n\n1. Start at the repository root.\n2. Follow repository and external instructions, except for the trial exception below.\n3. For this trial only, do not read `.scratch/` or `docs/agents/state.md`.\n4. The trial exception suspends normal state and ticket reads.\n5. Find the module that owns the requested behavior and its relevant test file.\n6. Use at most ten distinct file reads.\n7. Count partial reads, READMEs, and automatically loaded instruction files. Exclude automatic skill catalog metadata from this count; actual file reads and loaded instructions still count.\n8. Count external files, including external instructions.\n9. Count every file exposed by a content search.\n10. Content-search results count even when they show only matching filenames.\n11. Count each distinct file once.\n12. Repeated reads add no further count.\n13. Filename listings that enumerate pathnames without a content search cost no file reads.\n14. The eleventh distinct file fails the run.\n15. Return the chosen module path and test path.\n16. Give a reason for each choice.\n17. Return an ordered, complete file-read log.\n18. Record evidence without a Test verdict.\n"
+      ],
+      "cwd": "/tmp/readme-navigation-trial-root",
+      "revision": "dad744db4f3b49732adc1586e08c34be2f381f73",
+      "prompt_sha256": "6715ea0b47a7682087350f09471976d19eb63d800bea48e10727ca2d480078f8",
+      "started_at": "2026-11-12T21:29:05.457724+00:00",
+      "exit_code": 0,
+      "ended_at": "2026-11-12T21:29:45.306222+00:00"
+    },
+    {
+      "task": "T6",
+      "command_argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--json",
+        "-c",
+        "project_doc_fallback_filenames=[\"CLAUDE.md\"]",
+        "-C",
+        "/tmp/readme-navigation-trial-root",
+        "-m",
+        "gpt-6-astra",
+        "The daily trade-grade limit must survive an API restart.\n\n1. Start at the repository root.\n2. Follow repository and external instructions, except for the trial exception below.\n3. For this trial only, do not read `.scratch/` or `docs/agents/state.md`.\n4. The trial exception suspends normal state and ticket reads.\n5. Find the module that owns the requested behavior and its relevant test file.\n6. Use at most ten distinct file reads.\n7. Count partial reads, READMEs, and automatically loaded instruction files. Exclude automatic skill catalog metadata from this count; actual file reads and loaded instructions still count.\n8. Count external files, including external instructions.\n9. Count every file exposed by a content search.\n10. Content-search results count even when they show only matching filenames.\n11. Count each distinct file once.\n12. Repeated reads add no further count.\n13. Filename listings that enumerate pathnames without a content search cost no file reads.\n14. The eleventh distinct file fails the run.\n15. Return the chosen module path and test path.\n16. Give a reason for each choice.\n17. Return an ordered, complete file-read log.\n18. Record evidence without a Test verdict.\n"
+      ],
+      "cwd": "/tmp/readme-navigation-trial-root",
+      "revision": "dad744db4f3b49732adc1586e08c34be2f381f73",
+      "prompt_sha256": "e719491695e276490e3a4ea513b5fdf5ae912bbb5a566c6407baf01e730aad12",
+      "started_at": "2026-11-12T21:29:45.311286+00:00",
+      "exit_code": 0,
+      "ended_at": "2026-11-12T21:30:40.118292+00:00"
+    }
+  ],
+  "clarification": "Brian approves exclusion of automatic skill catalog metadata. Actual file reads and loaded instructions still count.",
+  "ended_at": "2026-11-12T21:30:40.119957+00:00"
+}

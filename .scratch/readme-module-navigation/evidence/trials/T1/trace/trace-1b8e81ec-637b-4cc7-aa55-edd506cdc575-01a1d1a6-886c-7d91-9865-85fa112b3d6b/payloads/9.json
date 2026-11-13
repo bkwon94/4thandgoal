@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-012975ca-0911-4ab2-93bb-e61b52fb09ab",
+  "process_id": "45382",
+  "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+  "started_at_ms": 1794518723227,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "pwd; ls -a"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "pwd; ls -a"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

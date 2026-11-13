@@ -1,0 +1,56 @@
+{
+  "response_id": "resp_00d4f3ddbdf1525c016af62f18f70c87d1bee50fcfe912e74e",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 32057,
+    "cached_input_tokens": 31616,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 60,
+    "reasoning_output_tokens": 11,
+    "total_tokens": 32117
+  },
+  "output_items": [
+    {
+      "type": "reasoning",
+      "id": "rs_00d4f3ddbdf1525c016af62f1b022887d18e64816360dba415",
+      "summary": [],
+      "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 b441212cf367ce8b0e327779319d9ef0726d041ce300f4d7288b09e25cdd6ccd; full original remains local]",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7"
+      },
+      "content": []
+    },
+    {
+      "type": "message",
+      "status": "completed",
+      "id": "msg_00d4f3ddbdf1525c016af62f1b022087d19c90c6013d09cb4a",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "The app map points to the form owner. Its README names the team picker module and test.\n",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "phase": "commentary",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518811.016122
+      }
+    },
+    {
+      "type": "function_call",
+      "status": "completed",
+      "id": "fc_00d4f3ddbdf1525c016af62f1b925087d1852268760b11e0b5",
+      "name": "wait_agent",
+      "namespace": "collaboration",
+      "arguments": "{\"timeout_ms\":10000}",
+      "call_id": "call_a13e2e7136b94795b19cbf17355cd9a0",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518811.575244
+      }
+    }
+  ]
+}

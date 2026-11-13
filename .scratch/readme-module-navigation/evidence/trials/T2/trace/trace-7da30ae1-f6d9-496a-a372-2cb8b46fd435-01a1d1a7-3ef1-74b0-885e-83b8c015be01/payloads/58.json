@@ -1,0 +1,26 @@
+{
+  "response_id": "resp_0d63bdccdb669eee016af62f0e830087d1951c0da8531e17f7",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 36641,
+    "cached_input_tokens": 34176,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 34,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 36675
+  },
+  "output_items": [
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_0d63bdccdb669eee016af62f10f68c87d1b2b17496523a3ad3",
+      "status": "completed",
+      "call_id": "call_a13ee2c3daf94269b9b6f2ecc51870af",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"cat apps/site/CLAUDE.md\",max_output_tokens:5000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+        "create_time": 1794518800.9684474
+      }
+    }
+  ]
+}

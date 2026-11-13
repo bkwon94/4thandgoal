@@ -1,0 +1,27 @@
+{
+  "call_id": "exec-5ca24d1e-1c8a-4bb5-be5d-be1299f19e83",
+  "process_id": "37757",
+  "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+  "started_at_ms": 1794519017271,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat packages/analyzer/python/src/analyzer/ratelimit.py; rg -n -C 12 'restart|429|grade_limit|GradeLimiter' apps/api/tests/test_api.py"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "cat packages/analyzer/python/src/analyzer/ratelimit.py",
+      "name": "ratelimit.py",
+      "path": "packages/analyzer/python/src/analyzer/ratelimit.py"
+    },
+    {
+      "type": "search",
+      "cmd": "rg -n -C 12 'restart|429|grade_limit|GradeLimiter' apps/api/tests/test_api.py",
+      "query": "restart|429|grade_limit|GradeLimiter",
+      "path": "test_api.py"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

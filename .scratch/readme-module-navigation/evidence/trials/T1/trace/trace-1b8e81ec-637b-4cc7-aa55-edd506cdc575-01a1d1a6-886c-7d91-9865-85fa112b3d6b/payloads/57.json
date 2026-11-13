@@ -1,0 +1,21 @@
+{
+  "call_id": "exec-7d3e65cb-1493-437b-8ae4-9d85f44176ac",
+  "process_id": "45615",
+  "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+  "started_at_ms": 1794518747830,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "nl -ba apps/site/src/lib/data/week-data.ts"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "nl -ba apps/site/src/lib/data/week-data.ts",
+      "name": "week-data.ts",
+      "path": "apps/site/src/lib/data/week-data.ts"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

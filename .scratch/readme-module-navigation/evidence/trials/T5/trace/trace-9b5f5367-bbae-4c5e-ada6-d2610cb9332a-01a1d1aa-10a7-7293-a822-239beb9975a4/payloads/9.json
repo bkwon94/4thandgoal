@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-de52ae05-1506-49c7-bdee-3c1061a35c37",
+  "process_id": "40097",
+  "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+  "started_at_ms": 1794518953544,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "pwd; rg --files -g 'AGENTS.md' -g 'README.md' -g 'CLAUDE.md' -g '*allowance*' -g '*quota*' -g '*budget*' -g '*limit*'"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "pwd; rg --files -g 'AGENTS.md' -g 'README.md' -g 'CLAUDE.md' -g '*allowance*' -g '*quota*' -g '*budget*' -g '*limit*'"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

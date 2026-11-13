@@ -1,0 +1,10 @@
+{
+  "type": "code_mode_response",
+  "value": {
+    "chunk_id": "e7988e",
+    "wall_time_seconds": 0.030768833,
+    "exit_code": 1,
+    "original_token_count": 79,
+    "output": "ls: /Users/brian.kwon/.Codex/rules/communication/simplified-technical-english.md: No such file or directory\ndrwxr-xr-x  74 brian.kwon  staff  2368 Nov 12 16:23 /Users/brian.kwon/.Codex\n-rw-r--r--   1 brian.kwon  staff  8355 Aug  5 11:34 /Users/brian.kwon/.claude/rules/communication/simplified-technical-english.md\n"
+  }
+}

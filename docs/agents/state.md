@@ -25,6 +25,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `next-week-byes` | pipeline | 06 two-chapters-fell-to-templates-in-the-week-7-rebuild | | |
 | `rankings` | site | 01 the reader and the route | none | |
 | `rankings` | pipeline | 01 the-formula | | |
+| `readme-module-navigation` | both | 02 prove all six routes with cold agents | cold trial conditions and T2 audit | |
 | `site-api` | pipeline | 10 prompt-caching | | |
 | `site-foundation` | site | 01 the tiers and the page column | none | |
 | `site-pages` | site | 01 the page shell | none | |

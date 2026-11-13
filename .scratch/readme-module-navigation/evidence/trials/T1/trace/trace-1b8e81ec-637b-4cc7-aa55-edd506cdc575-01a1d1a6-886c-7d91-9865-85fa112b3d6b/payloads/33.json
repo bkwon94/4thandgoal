@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-ffb4b13c-eb4d-41c9-83e2-9c9ba9d27374",
+  "process_id": "27904",
+  "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+  "started_at_ms": 1794518737487,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "ls -ld ~/.Codex ~/.claude/rules/communication/simplified-technical-english.md ~/.Codex/rules/communication/simplified-technical-english.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "ls -ld ~/.Codex ~/.claude/rules/communication/simplified-technical-english.md ~/.Codex/rules/communication/simplified-technical-english.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

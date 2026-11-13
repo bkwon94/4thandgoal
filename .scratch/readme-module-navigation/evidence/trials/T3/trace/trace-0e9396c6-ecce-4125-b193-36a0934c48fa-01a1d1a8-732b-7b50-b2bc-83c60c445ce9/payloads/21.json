@@ -1,0 +1,21 @@
+{
+  "call_id": "exec-e6e6ed2a-e66a-4ab3-b8d0-a7383bde934e",
+  "process_id": "99294",
+  "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+  "started_at_ms": 1794518859388,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "rg -n 'readme-module-navigation|cold-agent' /Users/brian.kwon/.codex/memories/MEMORY.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "search",
+      "cmd": "rg -n 'readme-module-navigation|cold-agent' /Users/brian.kwon/.codex/memories/MEMORY.md",
+      "query": "readme-module-navigation|cold-agent",
+      "path": "MEMORY.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

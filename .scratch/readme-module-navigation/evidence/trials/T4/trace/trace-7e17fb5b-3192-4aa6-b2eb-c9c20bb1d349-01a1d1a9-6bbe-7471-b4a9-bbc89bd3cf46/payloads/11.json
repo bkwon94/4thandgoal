@@ -1,0 +1,10 @@
+{
+  "type": "code_mode_response",
+  "value": {
+    "chunk_id": "50de89",
+    "wall_time_seconds": 3e-6,
+    "exit_code": 1,
+    "original_token_count": 398,
+    "output": "/private/tmp/readme-navigation-trial-root\ntotal 840\ndrwxr-xr-x   23 brian.kwon  wheel     736 Nov 12 16:24 .\ndrwxrwxrwt  302 root        wheel    9664 Nov 12 16:28 ..\ndrwxr-xr-x    4 brian.kwon  wheel     128 Nov 12 16:24 .claude\ndrwxr-xr-x    3 brian.kwon  wheel      96 Nov 12 16:24 .claude-plugin\n-rw-r--r--    1 brian.kwon  wheel      87 Nov 12 16:24 .git\ndrwxr-xr-x    3 brian.kwon  wheel      96 Nov 12 16:24 .github\n-rw-r--r--    1 brian.kwon  wheel    1003 Nov 12 16:24 .gitignore\n-rw-r--r--    1 brian.kwon  wheel     586 Nov 12 16:24 .pre-commit-config.yaml\n-rw-r--r--    1 brian.kwon  wheel       5 Nov 12 16:24 .python-version\ndrwxr-xr-x   54 brian.kwon  wheel    1728 Nov 12 16:24 .scratch\n-rw-r--r--    1 brian.kwon  wheel    4425 Nov 12 16:24 CLAUDE.md\n-rw-r--r--    1 brian.kwon  wheel   62019 Nov 12 16:24 GLOSSARY.md\n-rw-r--r--    1 brian.kwon  wheel    4033 Nov 12 16:24 Makefile\ndrwxr-xr-x    5 brian.kwon  wheel     160 Nov 12 16:24 apps\ndrwxr-xr-x    4 brian.kwon  wheel     128 Nov 12 16:24 clients\ndrwxr-xr-x    3 brian.kwon  wheel      96 Nov 12 16:24 data\ndrwxr-xr-x    4 brian.kwon  wheel     128 Nov 12 16:24 docs\ndrwxr-xr-x   13 brian.kwon  wheel     416 Nov 12 16:24 packages\n-rw-r--r--    1 brian.kwon  wheel  172060 Nov 12 16:24 pnpm-lock.yaml\n-rw-r--r--    1 brian.kwon  wheel     255 Nov 12 16:24 pnpm-workspace.yaml\n-rw-r--r--    1 brian.kwon  wheel     317 Nov 12 16:24 pyproject.toml\ndrwxr-xr-x    7 brian.kwon  wheel     224 Nov 12 16:24 scripts\n-rw-r--r--    1 brian.kwon  wheel  149873 Nov 12 16:24 uv.lock\ncat: AGENTS.md: No such file or directory\n"
+  }
+}

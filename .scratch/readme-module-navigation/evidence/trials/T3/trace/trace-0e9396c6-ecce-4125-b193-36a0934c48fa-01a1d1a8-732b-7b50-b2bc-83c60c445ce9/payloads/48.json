@@ -1,0 +1,8 @@
+{
+  "tool_name": "exec_command",
+  "tool_namespace": null,
+  "payload": {
+    "type": "function",
+    "arguments": "{\"cmd\":\"rg -n -A 55 -B 3 'def test_.*(current|added|additions|lock)|def projected_totals' packages/week/python/src/week/sheet/base.py apps/pipeline/tests/test_sheet.py\",\"max_output_tokens\":4000}"
+  }
+}

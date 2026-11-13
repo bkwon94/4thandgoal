@@ -1,0 +1,19 @@
+{
+  "call_id": "exec-a1f51433-cb5f-4f68-967c-a64ff0153017",
+  "process_id": "48065",
+  "turn_id": "01a1d1a9-7027-7e21-baa9-b492e6d9ba77",
+  "started_at_ms": 1794518919887,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "cat ~/.Codex/output-styles/ste.md ~/.Codex/rules/communication/simplified-technical-english.md ~/.claude/rules/communication/simplified-technical-english.md CLAUDE.md apps/pipeline/README.md"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "unknown",
+      "cmd": "cat ~/.Codex/output-styles/ste.md ~/.Codex/rules/communication/simplified-technical-english.md ~/.claude/rules/communication/simplified-technical-english.md CLAUDE.md apps/pipeline/README.md"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

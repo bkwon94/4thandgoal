@@ -1,0 +1,28 @@
+{
+  "call_id": "exec-7d3e65cb-1493-437b-8ae4-9d85f44176ac",
+  "process_id": "45615",
+  "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+  "completed_at_ms": 1794518747831,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "nl -ba apps/site/src/lib/data/week-data.ts"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "nl -ba apps/site/src/lib/data/week-data.ts",
+      "name": "week-data.ts",
+      "path": "apps/site/src/lib/data/week-data.ts"
+    }
+  ],
+  "source": "unified_exec_startup",
+  "aggregated_output": "     1\t/**\n     2\t * Reads the week page JSON files from public/ at build time.\n     3\t * The week folder is the data folder, so the route and the images share one path.\n     4\t */\n     5\timport { existsSync, readdirSync } from \"node:fs\";\n     6\timport { join } from \"node:path\";\n     7\t// Relative imports, not the @ alias: next.config imports the readers, which import this module.\n     8\timport { weekHref } from \"../routes\";\n     9\timport { parseVersioned } from \"./published-file\";\n    10\timport { weekPageSchema } from \"@cpc/week/schema/week\";\n    11\timport type { WeekPage, WeekSummary } from \"@cpc/week/schema/week-types\";\n    12\t\n    13\t/* The build and the tests both run from the repo root, so public/ sits under the working folder. */\n    14\tconst PUBLIC_DIR = join(process.cwd(), \"public\");\n    15\tconst SEASON_DIR = /^\\d{4}$/;\n    16\tconst WEEK_DIR = /^week-\\d{2}$/;\n    17\t\n    18\t/* The route params are the folder names, for example { season: \"2026\", week: \"week-06\" }. */\n    19\texport type WeekRef = { season: string; week: string };\n    20\t\n    21\tfunction dirsMatching(dir: string, pattern: RegExp): string[] {\n    22\t  return readdirSync(dir, { withFileTypes: true })\n    23\t    .filter((entry) => entry.isDirectory() && pattern.test(entry.name))\n    24\t    .map((entry) => entry.name)\n    25\t    .sort();\n    26\t}\n    27\t\n    28\t/* Every week folder that holds a page.json. A folder with only images is not a week page yet. */\n    29\texport function listWeeks(): WeekRef[] {\n    30\t  return dirsMatching(PUBLIC_DIR, SEASON_DIR).flatMap((season) =>\n    31\t    dirsMatching(join(PUBLIC_DIR, season), WEEK_DIR)\n    32\t      .filter((week) => existsSync(join(PUBLIC_DIR, season, week, \"page.json\")))\n    33\t      .map((week) => ({ season, week })),\n    34\t  );\n    35\t}\n    36\t\n    37\t/* The page JSON layout version this site reads. */\n    38\tconst SCHEMA_VERSION = 2;\n    39\t\n    40\t/* A schema change must fail the build loud, so a page never renders from keys it misreads. */\n    41\texport function loadWeek(season: string, week: string): WeekPage {\n    42\t  // The version check runs first, so a layout change reads as a version error and not as a list of bad fields.\n    43\t  return parseVersioned(join(PUBLIC_DIR, season, week, \"page.json\"), SCHEMA_VERSION, weekPageSchema);\n    44\t}\n    45\t\n    46\t/* Every published week, newest first. The sort reads the folder names as numbers, so week-10 follows week-09. */\n    47\texport function listWeekSummaries(): WeekSummary[] {\n    48\t  return listWeeks()\n    49\t    .sort((a, b) => Number(b.season) - Number(a.season) || weekNumberOf(b.week) - weekNumberOf(a.week))\n    50\t    .map(({ season, week }) => {\n    51\t      const page = loadWeek(season, week);\n    52\t      return {\n    53\t        number: page.week,\n    54\t        dates: page.dates,\n    55\t        href: weekHref(season, week),\n    56\t        pickTeams: [page.pick.sides[0].team.name, page.pick.sides[1].team.name] as [string, string],\n    57\t      };\n    58\t    });\n    59\t}\n    60\t\n    61\t/* The number in a folder name such as week-06. */\n    62\texport function weekNumberOf(week: string): number {\n    63\t  return Number(week.slice(\"week-\".length));\n    64\t}\n",
+  "exit_code": 0,
+  "duration": {
+    "secs": 0,
+    "nanos": 6041
+  },
+  "status": "completed"
+}

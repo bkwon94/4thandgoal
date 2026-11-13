@@ -1,0 +1,60 @@
+{
+  "type": "response.create",
+  "model": "gpt-6.1-sol",
+  "stream": true,
+  "previous_response_id": "resp_0d63bdccdb669eee016af62f0e830087d1951c0da8531e17f7",
+  "input": [
+    {
+      "type": "custom_tool_call_output",
+      "id": "ctco_01a1d1a7-dd1a-7b02-8674-2d24174bfb7d",
+      "call_id": "call_a13ee2c3daf94269b9b6f2ecc51870af",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.2 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"c2d1c0\",\"wall_time_seconds\":0.000342917,\"exit_code\":0,\"original_token_count\":521,\"output\":\"# Cornerstone site\\n\\nThe Next.js site. It builds one client, named by the env value `CLIENT`. The build copies `clients/$CLIENT/published/`\\ninto `public/`, and the site renders each `public/<season>/week-NN/page.json` and its images.\\nThe root CLAUDE.md holds the style, the flow, and the tracker.\\n\\nFor module ownership, start with the [app map](README.md). Follow its owner README links to the module and test.\\n\\n## Commands\\n\\nRun these in `apps/site/`.\\n\\n- Install: `pnpm install`\\n- Dev server: `CLIENT=cpc pnpm dev`\\n- Build the static export: `CLIENT=cpc pnpm build`. The `prebuild` step checks `client.toml` and writes the generated files.\\n- Test: `pnpm test`. The tests read the generated files, so run `pnpm check:fast` or a build first.\\n- Check the export: `CLIENT=cpc pnpm check:export`. Run it after `pnpm build`, with the same `CLIENT`.\\n- Check the readability floor: `CLIENT=cpc pnpm check:floor`. Run it after `pnpm build`, with the same `CLIENT`. Add `-g <route>` to check one page.\\n- Test the rules of the floor: `pnpm test:floor`. It needs Chromium once: `pnpm exec playwright install chromium`.\\n- Check all: `pnpm check`. It runs the fast check, the rules of the floor, then the build, `check:export`, and `check:floor` of each client under `clients/`. Then it builds the fixture client of the midseason report and runs the floor of the report on it. CI runs it on every push.\\n- Fast check: `pnpm check:fast`. It runs the client build of `cpc`, typecheck, and test. The hook runs it.\\n\\n## Rules\\n\\n- The hook does not run `pnpm install`. In a new worktree with no `node_modules`, run `pnpm install` first.\\n- The pipeline owns the shape of each published file. Change the schema in `packages/<package>/site/schema/` and the pipeline writer together (ADR 0013).\\n- Never edit a file with a `GENERATED` first line. Change `client.toml` or `scripts/client-build.mjs`, and build again.\\n- A component takes data and returns markup. It reads no file, no env, and no config (ADR 0012).\\n- Each package folder holds a README with the headings Knows, Ports, and Does not do (ADR 0016).\\n\"}"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+        "create_time": 1794518801.690217
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "low",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "session_id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "x-codex-window-id": "01a1d1a7-ad0c-71e3-a022-246e76593f24:0",
+    "x-codex-parent-thread-id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "thread_id": "01a1d1a7-ad0c-71e3-a022-246e76593f24",
+    "root_turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"thread_id\":\"01a1d1a7-ad0c-71e3-a022-246e76593f24\",\"agent_name\":\"/root/trace_owner\",\"turn_id\":\"01a1d1a7-ad82-7053-97f7-e5919bccc49e\",\"window_id\":\"01a1d1a7-ad0c-71e3-a022-246e76593f24:0\",\"window_number\":0,\"context_window_id\":\"01a1d1a7-ad0e-7342-8086-eeac60e85ba5\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"parent_thread_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"parent_turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"root_turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"subagent_kind\":\"thread_spawn\",\"thread_source\":\"subagent\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518789546,\"analytics_enabled\":true,\"model\":\"gpt-6.1-sol\",\"reasoning_effort\":\"low\"}",
+    "mcp_attribution": "{\"status\":\"none\"}",
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657",
+    "x-codex-ws-stream-request-start-ms": "1794518801810",
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true",
+    "guardian_credits_requested": "true",
+    "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+    "x-openai-subagent": "collab_spawn",
+    "parent_turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

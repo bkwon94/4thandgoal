@@ -1,0 +1,9 @@
+{
+  "model": null,
+  "reasoning_effort": null,
+  "event_id": "call_f7968167ed174c019f722c26ed2f4d3d",
+  "occurred_at_ms": 1794518793755,
+  "agent_thread_id": "01a1d1a7-ad0c-71e3-a022-246e76593f24",
+  "agent_path": "/root/trace_owner",
+  "kind": "interacted"
+}

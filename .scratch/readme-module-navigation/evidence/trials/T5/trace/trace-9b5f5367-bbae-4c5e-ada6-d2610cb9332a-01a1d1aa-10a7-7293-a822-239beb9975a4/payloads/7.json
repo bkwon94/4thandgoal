@@ -1,0 +1,45 @@
+{
+  "response_id": "resp_00c4956a5bae023a016af62fa58e8c87d1b2a796105867972f",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 29489,
+    "cached_input_tokens": 13312,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 103,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 29592
+  },
+  "output_items": [
+    {
+      "type": "message",
+      "status": "completed",
+      "id": "msg_00c4956a5bae023a016af62fa7028087d19b7b1fab42e231b5",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "Brian, I will follow the README links and track each file read within the ten-file limit.",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "phase": "commentary",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+        "create_time": 1794518951.0185935
+      }
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_00c4956a5bae023a016af62fa7d48487d1a6f19d3ae9ec208f",
+      "status": "completed",
+      "call_id": "call_ac11d96494d149aa8426603663859827",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"pwd; rg --files -g 'AGENTS.md' -g 'README.md' -g 'CLAUDE.md' -g '*allowance*' -g '*quota*' -g '*budget*' -g '*limit*'\",\"max_output_tokens\":4000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+        "create_time": 1794518951.8340974
+      }
+    }
+  ]
+}

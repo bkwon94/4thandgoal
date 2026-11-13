@@ -1,0 +1,27 @@
+{
+  "call_id": "exec-c7c9e091-9ed0-432a-800e-50871ad361cd",
+  "process_id": "64306",
+  "turn_id": "01a1d1aa-14ea-7821-bb12-b153630100bb",
+  "started_at_ms": 1794518970394,
+  "command": [
+    "/bin/zsh",
+    "-lc",
+    "nl -ba apps/api/src/cornerstone_api/caps.py; nl -ba apps/api/tests/test_caps.py"
+  ],
+  "cwd": "/tmp/readme-navigation-trial-root",
+  "parsed_cmd": [
+    {
+      "type": "read",
+      "cmd": "nl -ba apps/api/src/cornerstone_api/caps.py",
+      "name": "caps.py",
+      "path": "apps/api/src/cornerstone_api/caps.py"
+    },
+    {
+      "type": "read",
+      "cmd": "nl -ba apps/api/tests/test_caps.py",
+      "name": "test_caps.py",
+      "path": "apps/api/tests/test_caps.py"
+    }
+  ],
+  "source": "unified_exec_startup"
+}

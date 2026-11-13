@@ -1,0 +1,18 @@
+{
+  "response": {
+    "Result": {
+      "cell_id": "g2:4",
+      "content_items": [
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"d4a5ee\",\"wall_time_seconds\":0.000004791,\"exit_code\":0,\"original_token_count\":525,\"output\":\"     1\\t# packages/analyzer/site/form: the trade analyzer and the trade finder\\n     2\\t\\n     3\\t## Knows\\n     4\\t\\n     5\\t- The analyzer page body: the passphrase dialog, the trade form, and the result. [team-picker.tsx](team-picker.tsx) restores selected-team focus after Change my team. [team-picker.test.tsx](team-picker.test.tsx) checks the selected radio.\\n     6\\t- The trade form, the Stack: the hero, the teams row, a card for each side, the sheets, the grade bar with its Ready halo, the fold line, the sweep, and the error box.\\n     7\\t- The result of one analyze document: the read hero with the Lean on its 5-step scale, the Case, and the fairness line, the swap card, one tab per side, and the Bullet rows in `bullet-rows.tsx`, which the Finder card reuses.\\n     8\\t- The trade finder, with an optional partner and up to three picks of the Advisor, each with a headline, the swap, and the Bullet rows. After a fallback, each trade of the shortlist shows its fact lines. The teams prefetch of the home page.\\n     9\\t- `useRequest`, the guard of a call from a part to the API: the run id, the abort controller, and the unmounted flag.\\n    10\\t\\n    11\\t## Ports\\n    12\\t\\n    13\\t- The site API, through the client in `../lib/api.ts`. The calls are teams, analyze, and find, at `/clients/<slug>/`.\\n    14\\t- The passphrase in local storage, through `../lib/passphrase.ts`.\\n    15\\t- The teams list in session storage, through `../lib/teams-store.ts`.\\n    16\\t- GoatCounter events, through `packages/design/site/lib/usage.ts`.\\n    17\\t- Player headshots from the Sleeper CDN. The URL comes in the teams answer of the site API.\\n    18\\t\\n    19\\t## Does not do\\n    20\\t\\n    21\\t- It grades no trade. The [analyzer Python owner](../../README.md) grades it through the site API, and this folder shows the answer.\\n    22\\t- It shows no roster grade. The roster grade lives in the managers part of the site.\\n    23\\t- It defines no API shape. `../lib/schemas/api.ts` holds the response schemas.\\n    24\\t- It reads no file, no env, and no config, and it imports no app. The page gives the API target and the finder flag.\\n\"}"
+        }
+      ],
+      "error_text": null,
+      "code_mode_host_duration": {
+        "secs": 0,
+        "nanos": 123797250
+      }
+    }
+  }
+}

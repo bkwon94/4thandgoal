@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The weekly build: fetch from the provider, parse, build the fact sheet, write, verify, render, and publish.
+- The weekly build: fetch from the provider, parse, build the fact sheet, write, verify, render, and publish. [publish.py](publish.py) owns `run_publish` and limits commits to the client season paths. [test_rule_publish.py](../../tests/test_rule_publish.py) checks stray files and other seasons.
 - The `advisor-eval` command of the CLI. The `analyzer` package holds the fact sheet, the Advisor, and the Finder.
 - The build of each week and the season files. The `rankings`, `managers`, and `waiver` packages hold their own rules.
 - The build and the publish of the midseason report: `midseason` runs the sim through `season_sim.py`, reads the pairs left through `season_schedule.py`, and writes the draft and the review file, and `midseason-publish` checks each blurb again and commits `midseason.json` and `sim.json`.
@@ -19,6 +19,6 @@
 
 ## Does not do
 
-- It never imports `cornerstone_api`. That package serves the trade analyzer over HTTP.
+- It never imports `cornerstone_api`. The [API owner](../../../api/src/cornerstone_api/README.md) serves the trade analyzer over HTTP.
 - It builds no HTML. The site repo builds the HTML from each published file.
 - No module reads a global client. The CLI or the API entry builds the Client once with `load_client` and passes it down.

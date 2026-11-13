@@ -1,0 +1,26 @@
+{
+  "response_id": "resp_094adc91ad05790d016af62f62809487d1b3ecff7584f23b30",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 44340,
+    "cached_input_tokens": 37504,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 73,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 44413
+  },
+  "output_items": [
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_094adc91ad05790d016af62f656dbc87d1aeca80e73526f0da",
+      "status": "completed",
+      "call_id": "call_b4b2c7c2bbf845778f8bf46d58a54313",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"rg -n -A 55 -B 3 'def test_.*(current|added|additions|lock)|def projected_totals' packages/week/python/src/week/sheet/base.py apps/pipeline/tests/test_sheet.py\",\"max_output_tokens\":4000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a8-76cb-7533-b014-7e3d0f3cc65c",
+        "create_time": 1794518885.4373212
+      }
+    }
+  ]
+}

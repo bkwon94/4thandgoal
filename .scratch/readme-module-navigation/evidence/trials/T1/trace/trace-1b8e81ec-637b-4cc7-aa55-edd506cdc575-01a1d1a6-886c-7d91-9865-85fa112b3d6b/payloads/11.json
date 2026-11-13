@@ -1,0 +1,10 @@
+{
+  "type": "code_mode_response",
+  "value": {
+    "chunk_id": "9441b3",
+    "wall_time_seconds": 7.125e-6,
+    "exit_code": 0,
+    "original_token_count": 68,
+    "output": "/private/tmp/readme-navigation-trial-root\n.\n..\n.claude\n.claude-plugin\n.git\n.github\n.gitignore\n.pre-commit-config.yaml\n.python-version\n.scratch\nCLAUDE.md\nGLOSSARY.md\nMakefile\napps\nclients\ndata\ndocs\npackages\npnpm-lock.yaml\npnpm-workspace.yaml\npyproject.toml\nscripts\nuv.lock\n"
+  }
+}

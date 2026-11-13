@@ -1,0 +1,61 @@
+{
+  "type": "response.create",
+  "model": "gpt-6-astra",
+  "stream": true,
+  "previous_response_id": "resp_0be35e0c055c1851016af62ed842b887d18e6476005f7e8b3c",
+  "input": [
+    {
+      "type": "custom_tool_call_output",
+      "id": "ctco_01a1d1a7-0b24-7351-8fe2-5d146b5885d5",
+      "call_id": "call_713e19fe9e304f9891840b9ff7801f15",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.2 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"45b38f\",\"wall_time_seconds\":0.000006041,\"exit_code\":0,\"original_token_count\":800,\"output\":\"     1\\t/**\\n     2\\t * Reads the week page JSON files from public/ at build time.\\n     3\\t * The week folder is the data folder, so the route and the images share one path.\\n     4\\t */\\n     5\\timport { existsSync, readdirSync } from \\\"node:fs\\\";\\n     6\\timport { join } from \\\"node:path\\\";\\n     7\\t// Relative imports, not the @ alias: next.config imports the readers, which import this module.\\n     8\\timport { weekHref } from \\\"../routes\\\";\\n     9\\timport { parseVersioned } from \\\"./published-file\\\";\\n    10\\timport { weekPageSchema } from \\\"@cpc/week/schema/week\\\";\\n    11\\timport type { WeekPage, WeekSummary } from \\\"@cpc/week/schema/week-types\\\";\\n    12\\t\\n    13\\t/* The build and the tests both run from the repo root, so public/ sits under the working folder. */\\n    14\\tconst PUBLIC_DIR = join(process.cwd(), \\\"public\\\");\\n    15\\tconst SEASON_DIR = /^\\\\d{4}$/;\\n    16\\tconst WEEK_DIR = /^week-\\\\d{2}$/;\\n    17\\t\\n    18\\t/* The route params are the folder names, for example { season: \\\"2026\\\", week: \\\"week-06\\\" }. */\\n    19\\texport type WeekRef = { season: string; week: string };\\n    20\\t\\n    21\\tfunction dirsMatching(dir: string, pattern: RegExp): string[] {\\n    22\\t  return readdirSync(dir, { withFileTypes: true })\\n    23\\t    .filter((entry) => entry.isDirectory() && pattern.test(entry.name))\\n    24\\t    .map((entry) => entry.name)\\n    25\\t    .sort();\\n    26\\t}\\n    27\\t\\n    28\\t/* Every week folder that holds a page.json. A folder with only images is not a week page yet. */\\n    29\\texport function listWeeks(): WeekRef[] {\\n    30\\t  return dirsMatching(PUBLIC_DIR, SEASON_DIR).flatMap((season) =>\\n    31\\t    dirsMatching(join(PUBLIC_DIR, season), WEEK_DIR)\\n    32\\t      .filter((week) => existsSync(join(PUBLIC_DIR, season, week, \\\"page.json\\\")))\\n    33\\t      .map((week) => ({ season, week })),\\n    34\\t  );\\n    35\\t}\\n    36\\t\\n    37\\t/* The page JSON layout version this site reads. */\\n    38\\tconst SCHEMA_VERSION = 2;\\n    39\\t\\n    40\\t/* A schema change must fail the build loud, so a page never renders from keys it misreads. */\\n    41\\texport function loadWeek(season: string, week: string): WeekPage {\\n    42\\t  // The version check runs first, so a layout change reads as a version error and not as a list of bad fields.\\n    43\\t  return parseVersioned(join(PUBLIC_DIR, season, week, \\\"page.json\\\"), SCHEMA_VERSION, weekPageSchema);\\n    44\\t}\\n    45\\t\\n    46\\t/* Every published week, newest first. The sort reads the folder names as numbers, so week-10 follows week-09. */\\n    47\\texport function listWeekSummaries(): WeekSummary[] {\\n    48\\t  return listWeeks()\\n    49\\t    .sort((a, b) => Number(b.season) - Number(a.season) || weekNumberOf(b.week) - weekNumberOf(a.week))\\n    50\\t    .map(({ season, week }) => {\\n    51\\t      const page = loadWeek(season, week);\\n    52\\t      return {\\n    53\\t        number: page.week,\\n    54\\t        dates: page.dates,\\n    55\\t        href: weekHref(season, week),\\n    56\\t        pickTeams: [page.pick.sides[0].team.name, page.pick.sides[1].team.name] as [string, string],\\n    57\\t      };\\n    58\\t    });\\n    59\\t}\\n    60\\t\\n    61\\t/* The number in a folder name such as week-06. */\\n    62\\texport function weekNumberOf(week: string): number {\\n    63\\t  return Number(week.slice(\\\"week-\\\".length));\\n    64\\t}\\n\"}"
+        },
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"b579b0\",\"wall_time_seconds\":0.000003542,\"exit_code\":0,\"original_token_count\":924,\"output\":\"     1\\t/**\\n     2\\t * Tests for the week data loader against the real public/ folder.\\n     3\\t * The week 6 JSON is the fixture, so these tests break if the publish layout changes.\\n     4\\t */\\n     5\\timport { mkdtempSync, mkdirSync, writeFileSync } from \\\"node:fs\\\";\\n     6\\timport { tmpdir } from \\\"node:os\\\";\\n     7\\timport { join } from \\\"node:path\\\";\\n     8\\timport { afterEach, describe, expect, it, vi } from \\\"vitest\\\";\\n     9\\timport { weekPageJson } from \\\"@/fixtures/week-page-json\\\";\\n    10\\timport { listWeeks, listWeekSummaries, loadWeek } from \\\"./week-data\\\";\\n    11\\t\\n    12\\tdescribe(\\\"listWeeks\\\", () => {\\n    13\\t  it(\\\"lists week 6 of 2026 by its folder names\\\", () => {\\n    14\\t    expect(listWeeks()).toContainEqual({ season: \\\"2026\\\", week: \\\"week-06\\\" });\\n    15\\t  });\\n    16\\t});\\n    17\\t\\n    18\\tdescribe(\\\"loadWeek\\\", () => {\\n    19\\t  it(\\\"reads the week 6 page JSON\\\", () => {\\n    20\\t    const page = loadWeek(\\\"2026\\\", \\\"week-06\\\");\\n    21\\t    expect(page.week).toBe(6);\\n    22\\t    expect(page.season).toBe(2026);\\n    23\\t    expect(page.pick.sides[0].team.name).toBe(\\\"behold the lamb\\\");\\n    24\\t    expect(page.avatars[\\\"10\\\"]).toBe(\\\"avatars/10.jpg\\\");\\n    25\\t  });\\n    26\\t});\\n    27\\t\\n    28\\tdescribe(\\\"loadWeek schema check\\\", () => {\\n    29\\t  afterEach(() => {\\n    30\\t    vi.restoreAllMocks();\\n    31\\t  });\\n    32\\t\\n    33\\t  it(\\\"throws when the schema version is not 2\\\", async () => {\\n    34\\t    // A temp public/ folder holds a page at the old version.\\n    35\\t    const root = mkdtempSync(join(tmpdir(), \\\"week-data-\\\"));\\n    36\\t    mkdirSync(join(root, \\\"public\\\", \\\"2026\\\", \\\"week-01\\\"), { recursive: true });\\n    37\\t    writeFileSync(join(root, \\\"public\\\", \\\"2026\\\", \\\"week-01\\\", \\\"page.json\\\"), JSON.stringify({ schema_version: 1 }));\\n    38\\t    vi.spyOn(process, \\\"cwd\\\").mockReturnValue(root);\\n    39\\t    // The module reads the working folder when it loads, so reset it to pick up the temp folder.\\n    40\\t    vi.resetModules();\\n    41\\t    const { loadWeek: load } = await import(\\\"./week-data\\\");\\n    42\\t    expect(() => load(\\\"2026\\\", \\\"week-01\\\")).toThrow(/schema_version 1/);\\n    43\\t  });\\n    44\\t});\\n    45\\t\\n    46\\tdescribe(\\\"listWeekSummaries\\\", () => {\\n    47\\t  it(\\\"summarizes week 6 with its dates, its link, and the teams of its Matchup of the Week\\\", () => {\\n    48\\t    expect(listWeekSummaries()).toContainEqual({\\n    49\\t      number: 6,\\n    50\\t      dates: \\\"Oct 15 – Oct 19, 2026\\\",\\n    51\\t      href: \\\"/2026/week-06/\\\",\\n    52\\t      pickTeams: [\\\"behold the lamb\\\", \\\"Bo Girds\\\"],\\n    53\\t    });\\n    54\\t  });\\n    55\\t\\n    56\\t  it(\\\"sorts the newest week first\\\", () => {\\n    57\\t    const numbers = listWeekSummaries().map((summary) => summary.number);\\n    58\\t    expect(numbers).toEqual([...numbers].sort((a, b) => b - a));\\n    59\\t  });\\n    60\\t\\n    61\\t  it(\\\"sorts by season, then by week, as numbers\\\", async () => {\\n    62\\t    // A temp public/ folder holds weeks 2 and 10 of 2026 and week 1 of 2027.\\n    63\\t    const root = mkdtempSync(join(tmpdir(), \\\"week-data-\\\"));\\n    64\\t    for (const [season, week, number] of [\\n    65\\t      [\\\"2026\\\", \\\"week-02\\\", 2],\\n    66\\t      [\\\"2026\\\", \\\"week-10\\\", 10],\\n    67\\t      [\\\"2027\\\", \\\"week-01\\\", 1],\\n    68\\t    ] as const) {\\n    69\\t      mkdirSync(join(root, \\\"public\\\", season, week), { recursive: true });\\n    70\\t      writeFileSync(\\n    71\\t        join(root, \\\"public\\\", season, week, \\\"page.json\\\"),\\n    72\\t        weekPageJson({ week: number, dates: \\\"d\\\" }),\\n    73\\t      );\\n    74\\t    }\\n    75\\t    vi.spyOn(process, \\\"cwd\\\").mockReturnValue(root);\\n    76\\t    vi.resetModules();\\n    77\\t    const { listWeekSummaries: list } = await import(\\\"./week-data\\\");\\n    78\\t    expect(list().map((summary) => summary.href)).toEqual([\\\"/2027/week-01/\\\", \\\"/2026/week-10/\\\", \\\"/2026/week-02/\\\"]);\\n    79\\t  });\\n    80\\t});\\n\"}"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+        "create_time": 1794518747.940229
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "medium",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1a6-886c-7d91-9865-85fa112b3d6b",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657",
+    "x-codex-ws-stream-request-start-ms": "1794518748216",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1a6-886c-7d91-9865-85fa112b3d6b\",\"thread_id\":\"01a1d1a6-886c-7d91-9865-85fa112b3d6b\",\"agent_name\":\"/root\",\"turn_id\":\"01a1d1a6-910b-7053-8367-8c958dab6b00\",\"window_id\":\"01a1d1a6-886c-7d91-9865-85fa112b3d6b:0\",\"window_number\":0,\"context_window_id\":\"01a1d1a6-8aa2-7fb0-a8a4-2dbe90c63234\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"root_turn_id\":\"01a1d1a6-910b-7053-8367-8c958dab6b00\",\"thread_source\":\"user\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518716711,\"analytics_enabled\":true,\"model\":\"gpt-6-astra\",\"reasoning_effort\":\"medium\"}",
+    "thread_id": "01a1d1a6-886c-7d91-9865-85fa112b3d6b",
+    "x-codex-window-id": "01a1d1a6-886c-7d91-9865-85fa112b3d6b:0",
+    "mcp_attribution": "{\"status\":\"none\"}",
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true",
+    "guardian_credits_requested": "true",
+    "session_id": "01a1d1a6-886c-7d91-9865-85fa112b3d6b",
+    "root_turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00",
+    "turn_id": "01a1d1a6-910b-7053-8367-8c958dab6b00"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

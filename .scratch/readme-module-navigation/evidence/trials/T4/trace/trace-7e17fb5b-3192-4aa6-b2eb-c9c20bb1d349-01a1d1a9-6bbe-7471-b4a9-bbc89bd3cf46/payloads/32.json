@@ -1,0 +1,26 @@
+{
+  "response_id": "resp_05afccdec9b8600b016af62f8ca83c87d1b812a245a0f30d4e",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 36493,
+    "cached_input_tokens": 34944,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 51,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 36544
+  },
+  "output_items": [
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_05afccdec9b8600b016af62f8fd40487d1b1e3f835ce21ba50",
+      "status": "completed",
+      "call_id": "call_360e006140c241a29eee49449ee94c50",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"nl -ba apps/pipeline/src/cornerstone/publish.py; nl -ba apps/pipeline/tests/test_rule_publish.py\",\"max_output_tokens\":10000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a9-7027-7e21-baa9-b492e6d9ba77",
+        "create_time": 1794518927.835826
+      }
+    }
+  ]
+}

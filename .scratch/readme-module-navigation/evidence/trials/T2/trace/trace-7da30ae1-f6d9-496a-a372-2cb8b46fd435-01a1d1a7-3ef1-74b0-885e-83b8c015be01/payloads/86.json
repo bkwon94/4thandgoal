@@ -1,0 +1,82 @@
+{
+  "type": "response.create",
+  "model": "gpt-6-astra",
+  "stream": true,
+  "previous_response_id": "resp_00d4f3ddbdf1525c016af62f164da487d19991c87730848bd4",
+  "input": [
+    {
+      "type": "function_call_output",
+      "id": "fco_01a1d1a7-f779-7773-98af-516fbbf35813",
+      "call_id": "call_fec14365684646ee98e33e5b86fd34f3",
+      "output": "{\"message\":\"Wait completed.\",\"timed_out\":false}",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518808.441455
+      }
+    },
+    {
+      "type": "agent_message",
+      "id": "amsg_01a1d1a7-f779-7773-98af-5174815ea5da",
+      "author": "/root/trace_owner",
+      "recipient": "/root",
+      "content": [
+        {
+          "type": "input_text",
+          "text": "Message Type: MESSAGE\nTask name: /root\nSender: /root/trace_owner\nPayload:\n"
+        },
+        {
+          "type": "encrypted_content",
+          "encrypted_content": "[REDACTED: opaque encrypted context or body; original fragment SHA256 7bc9fd6e51a25cf90a87288dfb0e3d0b2759ba60651308d7f9973450e476e2b7; full original remains local]"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+        "create_time": 1794518808.441615,
+        "content_item_metadata": [
+          {
+            "provenance": {
+              "type": "tool",
+              "namespace": "collaboration"
+            }
+          },
+          {
+            "provenance": {
+              "type": "tool",
+              "namespace": "collaboration"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "medium",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true",
+    "guardian_credits_requested": "true",
+    "x-codex-ws-stream-request-start-ms": "1794518808510",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"thread_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"agent_name\":\"/root\",\"turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"window_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01:0\",\"window_number\":0,\"context_window_id\":\"01a1d1a7-3ef5-7e81-a8fd-a5881e0c6293\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"root_turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"thread_source\":\"user\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518762019,\"analytics_enabled\":true,\"model\":\"gpt-6-astra\",\"reasoning_effort\":\"medium\"}",
+    "thread_id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657",
+    "session_id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+    "x-codex-window-id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01:0",
+    "root_turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+    "mcp_attribution": "{\"status\":\"none\"}"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

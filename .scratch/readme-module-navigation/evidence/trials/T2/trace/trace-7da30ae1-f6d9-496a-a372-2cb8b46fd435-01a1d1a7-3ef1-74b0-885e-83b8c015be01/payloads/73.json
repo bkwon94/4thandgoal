@@ -1,0 +1,60 @@
+{
+  "type": "response.create",
+  "model": "gpt-6.1-sol",
+  "stream": true,
+  "previous_response_id": "resp_0d63bdccdb669eee016af62f12136887d19b57286d67c929a9",
+  "input": [
+    {
+      "type": "custom_tool_call_output",
+      "id": "ctco_01a1d1a7-e78d-7e53-a386-8705739fa5c6",
+      "call_id": "call_498fe6b7dd28411b9e53af15fc7a9c13",
+      "output": [
+        {
+          "type": "input_text",
+          "text": "Script completed\nWall time 0.1 seconds\nOutput:\n"
+        },
+        {
+          "type": "input_text",
+          "text": "{\"chunk_id\":\"d4a5ee\",\"wall_time_seconds\":0.000004791,\"exit_code\":0,\"original_token_count\":525,\"output\":\"     1\\t# packages/analyzer/site/form: the trade analyzer and the trade finder\\n     2\\t\\n     3\\t## Knows\\n     4\\t\\n     5\\t- The analyzer page body: the passphrase dialog, the trade form, and the result. [team-picker.tsx](team-picker.tsx) restores selected-team focus after Change my team. [team-picker.test.tsx](team-picker.test.tsx) checks the selected radio.\\n     6\\t- The trade form, the Stack: the hero, the teams row, a card for each side, the sheets, the grade bar with its Ready halo, the fold line, the sweep, and the error box.\\n     7\\t- The result of one analyze document: the read hero with the Lean on its 5-step scale, the Case, and the fairness line, the swap card, one tab per side, and the Bullet rows in `bullet-rows.tsx`, which the Finder card reuses.\\n     8\\t- The trade finder, with an optional partner and up to three picks of the Advisor, each with a headline, the swap, and the Bullet rows. After a fallback, each trade of the shortlist shows its fact lines. The teams prefetch of the home page.\\n     9\\t- `useRequest`, the guard of a call from a part to the API: the run id, the abort controller, and the unmounted flag.\\n    10\\t\\n    11\\t## Ports\\n    12\\t\\n    13\\t- The site API, through the client in `../lib/api.ts`. The calls are teams, analyze, and find, at `/clients/<slug>/`.\\n    14\\t- The passphrase in local storage, through `../lib/passphrase.ts`.\\n    15\\t- The teams list in session storage, through `../lib/teams-store.ts`.\\n    16\\t- GoatCounter events, through `packages/design/site/lib/usage.ts`.\\n    17\\t- Player headshots from the Sleeper CDN. The URL comes in the teams answer of the site API.\\n    18\\t\\n    19\\t## Does not do\\n    20\\t\\n    21\\t- It grades no trade. The [analyzer Python owner](../../README.md) grades it through the site API, and this folder shows the answer.\\n    22\\t- It shows no roster grade. The roster grade lives in the managers part of the site.\\n    23\\t- It defines no API shape. `../lib/schemas/api.ts` holds the response schemas.\\n    24\\t- It reads no file, no env, and no config, and it imports no app. The page gives the API target and the finder flag.\\n\"}"
+        }
+      ],
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+        "create_time": 1794518804.365539
+      }
+    }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": false,
+  "reasoning": {
+    "effort": "low",
+    "context": "all_turns"
+  },
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content"
+  ],
+  "prompt_cache_key": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+  "text": {
+    "verbosity": "low"
+  },
+  "client_metadata": {
+    "session_id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "x-codex-parent-thread-id": "01a1d1a7-3ef1-74b0-885e-83b8c015be01",
+    "root_turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+    "ws_request_header_x_openai_internal_codex_responses_lite": "true",
+    "guardian_credits_requested": "true",
+    "x-codex-ws-stream-request-start-ms": "1794518804428",
+    "turn_id": "01a1d1a7-ad82-7053-97f7-e5919bccc49e",
+    "x-codex-installation-id": "fcc7afd6-1c3b-4d13-b821-6391c6919657",
+    "x-openai-subagent": "collab_spawn",
+    "thread_id": "01a1d1a7-ad0c-71e3-a022-246e76593f24",
+    "x-codex-window-id": "01a1d1a7-ad0c-71e3-a022-246e76593f24:0",
+    "parent_turn_id": "01a1d1a7-420d-7a92-8144-f402891e2af7",
+    "x-codex-turn-metadata": "{\"installation_id\":\"fcc7afd6-1c3b-4d13-b821-6391c6919657\",\"session_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"thread_id\":\"01a1d1a7-ad0c-71e3-a022-246e76593f24\",\"agent_name\":\"/root/trace_owner\",\"turn_id\":\"01a1d1a7-ad82-7053-97f7-e5919bccc49e\",\"window_id\":\"01a1d1a7-ad0c-71e3-a022-246e76593f24:0\",\"window_number\":0,\"context_window_id\":\"01a1d1a7-ad0e-7342-8086-eeac60e85ba5\",\"request_kind\":\"turn\",\"history_initialization\":\"new\",\"parent_thread_id\":\"01a1d1a7-3ef1-74b0-885e-83b8c015be01\",\"parent_turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"root_turn_id\":\"01a1d1a7-420d-7a92-8144-f402891e2af7\",\"subagent_kind\":\"thread_spawn\",\"thread_source\":\"subagent\",\"turn_trigger\":\"exec\",\"sandbox\":\"seatbelt\",\"sandbox_mode\":\"workspace-write\",\"auto_review_enabled\":false,\"node_repl_auto_review_required\":true,\"node_repl_disabled\":false,\"workspaces\":{\"/tmp/readme-navigation-trial-root\":{\"associated_remote_urls\":{\"origin\":\"ssh://git@ssh.github.com:443/bkwon94/4thandgoal.git\"},\"latest_git_commit_hash\":\"dad744db4f3b49732adc1586e08c34be2f381f73\",\"has_changes\":false}},\"turn_started_at_unix_ms\":1794518789546,\"analytics_enabled\":true,\"model\":\"gpt-6.1-sol\",\"reasoning_effort\":\"low\"}",
+    "mcp_attribution": "{\"status\":\"none\"}"
+  },
+  "access_programs": {
+    "cyber": "standard"
+  }
+}

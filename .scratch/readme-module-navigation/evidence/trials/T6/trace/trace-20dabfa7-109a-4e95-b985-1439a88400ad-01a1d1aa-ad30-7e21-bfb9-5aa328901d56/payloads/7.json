@@ -1,0 +1,45 @@
+{
+  "response_id": "resp_016a32cefd2e3640016af62fcd9a4887d1ae68f37ef2f51954",
+  "upstream_request_id": null,
+  "token_usage": {
+    "input_tokens": 29490,
+    "cached_input_tokens": 13312,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 61,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 29551
+  },
+  "output_items": [
+    {
+      "type": "message",
+      "status": "completed",
+      "id": "msg_016a32cefd2e3640016af62fcf413c87d1a5e3fac5c475d990",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "Brian, I will trace the API README links and count each file read. I will avoid the suspended tracker paths.\n",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "phase": "commentary",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+        "create_time": 1794518991.2618737
+      }
+    },
+    {
+      "type": "custom_tool_call",
+      "id": "ctc_016a32cefd2e3640016af62fd060f887d19703f52a87dceafe",
+      "status": "completed",
+      "call_id": "call_7fbb1dfcdbb743a3a93114f17fe2b580",
+      "name": "exec",
+      "input": "text(await tools.exec_command({cmd:\"pwd; ls -a\",\"max_output_tokens\":2000}));\n",
+      "internal_chat_message_metadata_passthrough": {
+        "turn_id": "01a1d1aa-b040-7162-9225-9c4305934589",
+        "create_time": 1794518992.382602
+      }
+    }
+  ]
+}
