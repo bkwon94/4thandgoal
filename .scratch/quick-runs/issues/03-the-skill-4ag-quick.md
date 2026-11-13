@@ -8,7 +8,7 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, and AT-11
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The plugin holds the skill, the quick file format, and the brief of the quick Judge, in the neutral harness words of `AGENTS.md`.
 - [x] A tracked symlink makes the skill a Codex skill, and the harness rule passes.
