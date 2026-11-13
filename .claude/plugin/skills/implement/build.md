@@ -30,7 +30,7 @@ For each ticket `<NN>` of the frontier:
 
 1. Run `git worktree add .claude/worktrees/<slug>-<NN> -b <slug>-<NN> <slug>` in the main checkout.
 2. Do the setup of the worktree.
-3. Start a fresh subagent. Give it the brief below. Start the subagents of one frontier in one message, so they run in parallel. In Codex, start them in batches of at most 6. Close each finished subagent before you start the next batch.
+3. Start a fresh subagent. Give it the brief below. Start the subagents of one frontier at the same time, within the limit of the harness.
 
 The brief of the subagent:
 
@@ -91,7 +91,7 @@ If a subagent returns `STUCK`, or a ticket conflicts with the spec or an ADR:
 4. Sort the findings into groups that share no file. Two findings that share a file go in the same group. Give each group a letter: `a`, `b`, and so on.
 5. Check that no two groups share a file. Write the table of the groups, with the findings and the files of each.
 6. For each group, run `git worktree add .claude/worktrees/<slug>-fix-<letter> -b <slug>-fix-<letter> <slug>` in the main checkout. Do the setup of the worktree.
-7. Start a fresh subagent per group, all in one message, so they run in parallel. In Codex, start them in batches of at most 6. Close each finished subagent before you start the next batch. Give each one the brief below.
+7. Start a fresh subagent per group. Start the subagents of all groups at the same time, within the limit of the harness. Give each one the brief below.
 8. Merge each fix branch into the Spec branch under the merge rule of stage 1, one at a time. Read `<slug>-fix-<letter>` for `<slug>-<NN>`. Skip steps 6 and 9, the Status and the frontier.
 9. Run `make check-fast BASE=main` again. The CI check `Check` on the PR runs the full check.
 
