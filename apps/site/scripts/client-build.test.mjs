@@ -383,6 +383,17 @@ describe("the client build", () => {
     expect(routeFiles(on.site).filter((path) => path.includes("ask"))).toEqual([]);
   });
 
+  it("writes a _redirects rule that sends /ask and /ask/ to / with the front door on, and none with it off", () => {
+    const on = repoClient("cpc", true);
+    buildClient(on);
+    const rules = readFileSync(join(on.site, "public", "_redirects"), "utf8").split("\n");
+    expect(rules).toContain("/ask / 301");
+    expect(rules).toContain("/ask/ / 301");
+    const off = repoClient("cpc", false);
+    buildClient(off);
+    expect(existsSync(join(off.site, "public", "_redirects"))).toBe(false);
+  });
+
   it("takes the front door as off when client.toml omits it", () => {
     const repo = tempRepo(CPC_TOML.replace("front_door = false\n", ""));
     buildClient(repo);

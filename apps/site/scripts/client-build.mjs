@@ -356,6 +356,11 @@ function wranglerText(slug) {
   return `${headerLine(slug)}\n${JSON.stringify(config, null, 2)}\n`;
 }
 
+/* The rule file of the Cloudflare Worker static assets. With the front door on, the old address /ask/ sends the visitor
+   to /, so a saved link still works. With the flag off, the hidden /ask/ page must serve, so the file goes. Next.js
+   copies public/ into out/, and the Worker reads out/_redirects. */
+const REDIRECTS = "/ask / 301\n/ask/ / 301\n";
+
 function writeFile(file, text) {
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, text);
@@ -381,6 +386,9 @@ export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", 
   writeFile(join(site, GENERATED_DIR, "client-values.ts"), clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy));
   writeFile(join(site, GENERATED_DIR, "brand.css"), brandCss(brand, { source: `clients/${slug}/brand.toml` }));
   copyPublished(published, join(site, "public"));
+  const redirects = join(site, "public", "_redirects");
+  if (frontDoorOf(values)) writeFile(redirects, REDIRECTS);
+  else rmSync(redirects, { force: true });
   writeFile(join(site, "wrangler.jsonc"), wranglerText(slug));
   return values;
 }
