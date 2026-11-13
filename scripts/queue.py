@@ -417,22 +417,26 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
     return plan + _plan_task_add(title, feature, ["ready-for-human"], "\n".join(lines), queue)
 
 
-def plan_take(name: str, path: str, queue: Queue) -> tuple[dict | None, list[list[str]]]:
-    """The open task of the name in Bugs or Quick Wins, and the `td` command that puts the key line `4ag: <path>` first
-    in its description.
+def plan_take(name: str, path: str, queue: Queue) -> tuple[list[dict], list[list[str]]]:
+    """The open tasks of the name in Bugs or Quick Wins, and the `td` command that puts the key line `4ag: <path>` first
+    in the description of the one match.
 
-    The update keeps the id, the section, the title, and the old description of the task. A task that has the key line
-    already needs no command. A name with no open task in the two sections gives None and no command.
+    The update keeps the id, the section, the title, and the text of the task. An old key line from another run gives
+    way to the new one, so the task never holds two key lines. A task that has the key line already needs no command.
+    A name with no open task, or with more than one, plans no command, because a guess could claim the wrong task.
     """
     sections = {queue.sections[section] for section in QUICK_SECTIONS.values() if section in queue.sections}
-    task = next((task for task in queue.tasks if task["content"] == name and task["sectionId"] in sections), None)
-    if task is None:
-        return None, []
+    tasks = [task for task in queue.tasks if task["content"] == name and task["sectionId"] in sections]
+    if len(tasks) != 1:
+        return tasks, []
+    task = tasks[0]
     key = f"4ag: {path}"
     old = task.get("description") or ""
-    if old.split("\n")[0] == key:
-        return task, []
-    return task, [["task", "update", f"id:{task['id']}", "--description", f"{key}\n{old}" if old else key]]
+    if _key(task) == path:
+        return tasks, []
+    if _key(task) is not None:
+        old = old.split("\n", 1)[1] if "\n" in old else ""
+    return tasks, [["task", "update", f"id:{task['id']}", "--description", f"{key}\n{old}" if old else key]]
 
 
 MERGE_PR_TITLE = re.compile(r"^Merge PR #(\d+)$")
@@ -783,13 +787,17 @@ def wait(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
 
 
 def take(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
-    """Print the title and the description of the task, then plan its claim. A missing task warns and plans nothing."""
+    """Print the title and the description of the task, then plan its claim. A missing task, or a name with more than
+    one open task, warns and plans nothing."""
     args.target = args.name
-    task, plan = plan_take(args.name, args.path, read_queue())
-    if task is None:
+    tasks, plan = plan_take(args.name, args.path, read_queue())
+    if not tasks:
         print(f"warning: the queue has no open task named {args.name!r} in Bugs or Quick Wins. Nothing changed.")
+    elif len(tasks) > 1:
+        print(f"warning: the queue has {len(tasks)} open tasks named {args.name!r} in Bugs or Quick Wins. Rename one "
+              "in Todoist, then take it again. Nothing changed.")
     else:
-        print(f"{task['content']}\n{task.get('description') or ''}")
+        print(f"{tasks[0]['content']}\n{tasks[0].get('description') or ''}")
     return args.name, plan
 
 

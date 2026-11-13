@@ -762,8 +762,8 @@ class ATake(unittest.TestCase):
         return queue_script.plan_take(name, self.PATH, Queue("p1", self.SECTIONS, tasks, set()))
 
     def test_a_take_plans_one_update_with_the_key_line_first_and_the_old_description_kept(self):
-        task, plan = self.take(self.NAME, [self.TASK])
-        self.assertEqual(task, self.TASK)
+        tasks, plan = self.take(self.NAME, [self.TASK])
+        self.assertEqual(tasks, [self.TASK])
         self.assertEqual(plan, [["task", "update", "id:6j2Gr9TakeTask01", "--description",
                                  f"4ag: {self.PATH}\nIt shows the first owner.\nSee week 8."]])
 
@@ -776,14 +776,36 @@ class ATake(unittest.TestCase):
         self.assertEqual(len(plan), 1)
 
     def test_a_take_of_a_task_outside_the_two_sections_plans_nothing(self):
-        self.assertEqual(self.take(self.NAME, [{**self.TASK, "sectionId": "ideas-id"}]), (None, []))
+        self.assertEqual(self.take(self.NAME, [{**self.TASK, "sectionId": "ideas-id"}]), ([], []))
 
     def test_a_take_of_an_unknown_name_plans_nothing(self):
-        self.assertEqual(self.take("No such task", [self.TASK]), (None, []))
+        self.assertEqual(self.take("No such task", [self.TASK]), ([], []))
 
     def test_a_take_of_a_task_with_the_key_line_plans_nothing(self):
         keyed = {**self.TASK, "description": f"4ag: {self.PATH}\nIt shows the first owner."}
         self.assertEqual(self.take(self.NAME, [keyed])[1], [])
+
+    def test_a_take_replaces_an_old_key_line_and_keeps_the_text_after_it(self):
+        keyed = {**self.TASK, "description": "4ag: .scratch/bugs/old-run.md\nIt shows the first owner."}
+        _, plan = self.take(self.NAME, [keyed])
+        self.assertEqual(option(plan[0], "--description"), f"4ag: {self.PATH}\nIt shows the first owner.")
+
+    def test_a_take_of_a_name_with_two_open_tasks_plans_nothing(self):
+        twin = {**self.TASK, "id": "6j2Gr9TakeTask02", "sectionId": "qw-id"}
+        tasks, plan = self.take(self.NAME, [self.TASK, twin])
+        self.assertEqual((tasks, plan), ([self.TASK, twin], []))
+
+    def test_a_take_of_a_name_with_two_open_tasks_prints_one_warning_and_exits_0(self):
+        twin = {**self.TASK, "id": "6j2Gr9TakeTask02"}
+        read = lambda: Queue("p1", self.SECTIONS, [self.TASK, twin], set())
+        original, queue_script.read_queue = queue_script.read_queue, read
+        self.addCleanup(setattr, queue_script, "read_queue", original)
+        code, out = self.run_main("take", self.NAME, self.PATH, "--dry-run")
+        self.assertEqual(code, 0)
+        warnings = [line for line in out.splitlines() if line.startswith("warning:")]
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("2 open tasks", warnings[0])
+        self.assertNotIn("td ", out)
 
     def run_main(self, *argv: str) -> tuple[int, str]:
         out = io.StringIO()
