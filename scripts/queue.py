@@ -81,6 +81,12 @@ def section_name(feature: str) -> str:
     return QUICK_SECTIONS.get(feature, feature)
 
 
+def _section(feature: str, queue: "Queue") -> tuple[str, str | None]:
+    """The section name of the feature, and its id in the queue, or None when the queue has no such section."""
+    name = section_name(feature)
+    return name, queue.sections.get(name)
+
+
 def _app_words(text: str) -> tuple[str, ...]:
     """The app labels that a text names, in the order of APPS. `both` names the site and the pipeline."""
     words = set(re.findall(r"[a-z]+", text.lower()))
@@ -323,8 +329,7 @@ def _plan_task_update(ticket: Ticket, task: dict, queue: Queue) -> list[list[str
         update += ["--labels", ",".join(labels)]
     if update:
         plan.append(["task", "update", f"id:{task['id']}", *update])
-    name = section_name(ticket.feature)
-    section = queue.sections.get(name)
+    name, section = _section(ticket.feature, queue)
     if section is None:
         plan.append(_section_create(name, queue))
         plan.append(["task", "move", f"id:{task['id']}", "--project", f"id:{queue.project_id}",
@@ -367,15 +372,14 @@ def _labels(ticket: Ticket, current: list[str]) -> list[str]:
     return others + flow + (["decision"] if ticket.decision else []) + list(ticket.apps)
 
 
-def _section_create(feature: str, queue: Queue) -> list[str]:
-    return ["section", "create", "--name", feature, "--project", f"id:{queue.project_id}"]
+def _section_create(name: str, queue: Queue) -> list[str]:
+    return ["section", "create", "--name", name, "--project", f"id:{queue.project_id}"]
 
 
 def _plan_task_add(title: str, feature: str, labels: list[str], description: str, queue: Queue) -> list[list[str]]:
     """Make a task in the section of the feature, and first the section when it is missing. A command after a planned
     `section create` names the section, because its id is not known yet."""
-    name = section_name(feature)
-    section = queue.sections.get(name)
+    name, section = _section(feature, queue)
     plan = [] if section else [_section_create(name, queue)]
     plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
                  "--section", f"id:{section}" if section else name,
@@ -522,9 +526,10 @@ def plan_sweep(root: Path, queue: Queue, states: dict[int, str]) -> list[list[st
                 plan.append(["task", "update", f"id:{wait['id']}", "--labels", ",".join(labels)])
 
     for feature in swept:
+        # A quick section stays, because Brian drops new tasks there. Each other feature keeps its slug as its name.
         if feature in QUICK_SECTIONS:
             continue
-        section = queue.sections.get(section_name(feature))
+        section = queue.sections.get(feature)
         if section and all(task["id"] in completed for task in queue.tasks if task["sectionId"] == section):
             plan.append(["section", "archive", f"id:{section}"])
     return plan
