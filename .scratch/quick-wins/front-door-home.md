@@ -10,8 +10,8 @@ Boundary: holds. 3 items of one kind; no new term or ADR; no moved seam; each do
 
 ### 1. The front door is the home page of both clients
 
-Done condition: `clients/cpc/client.toml` and `clients/norcal/client.toml` set `front_door = true`, and the comments of `apps/site/src/app/page.tsx` and both `client.toml` files describe the front door at `/` with no hidden `/ask/` route.
-Method: text only.
+Done condition: `clients/cpc/client.toml` and `clients/norcal/client.toml` set `front_door = true`, and the comments of `apps/site/src/app/page.tsx` and both `client.toml` files describe the front door at `/` with no hidden `/ask/` route, and the site tests of the repo clients expect the front door on.
+Method: tdd
 Red: pending
 Green: pending
 Test verdict: pending
@@ -33,3 +33,5 @@ Green: pending
 Test verdict: pending
 
 ## Comments
+
+- Item 1 was text only at the go. The flag switch failed 10 site tests that pin the repo clients to `front_door = false`, so item 1 moved to tdd.
