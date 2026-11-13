@@ -4,9 +4,15 @@
 
 **Blocked by:** None (can start immediately). Found on the real week 6 board, 2026-10-24.
 
-**Status:** needs-triage
+**Status:** wontfix
 
 - [ ] A player under the snap floor or the touches floor scores 0 on usage and carries no usage fact as a riser.
 - [ ] A player with a rest of season projection of 0 lands in no bucket but drops.
 - [ ] The floors are tunables with a reason comment.
 - [ ] The fresh week 6 board has no backup QB in best adds.
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12.
+Proof: Front-door ticket 15 (071b6021, squash dc564361) shipped the rest-of-season-projection rule; the snap and touches floor is a code screen, which the memory note `no-math-filters` rejects for a later Jev add judgment.
+Read 1 file: .scratch/todoist-queue/audit.md.

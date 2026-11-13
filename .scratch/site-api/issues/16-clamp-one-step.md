@@ -6,10 +6,16 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** in-progress, branch `clamp-one-step`
+**Status:** done
 
 - [ ] `CLAMP_STEPS = 1` in `src/cornerstone/tunables.py`, with the reason in the comment.
 - [ ] The two clamp tests in `tests/test_rubric.py` expect a one-step move.
 - [ ] The `HAND_WORKED` table of real week 6 trades carries the recomputed final letters and verdicts.
 - [ ] `uv run pytest -q` passes with no failed test.
 - [ ] Deploy needs Brian's `fly deploy`.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in e164732c.
+Proof: "Clamp the adjuster sum to one step" merged in da7ee83f on `main`; later manager brain c133eb89 removed the rubric and `CLAMP_STEPS`.
+Read 1 file: .scratch/todoist-queue/audit.md.

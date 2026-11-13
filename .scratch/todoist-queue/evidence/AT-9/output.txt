@@ -1,0 +1,69 @@
+# Given: the first push makes the task of 01-zz-ready.md.
+$ python3 scripts/queue.py push "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/01-zz-ready.md --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+td task add '01 ZZ ready' --project id:6j222rQrr58wHx9G --section id:6j23xPvRxhmXMwfG --labels ready-for-agent --description '4ag: .scratch/zz-queue-check/issues/01-zz-ready.md
+https://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/01-zz-ready.md
+A throwaway ticket for the acceptance tests of the queue. It names no real work.'
+1 command sent.
+[exit code: 0]
+# Given: td sets the label to ready-for-human. The file still says ready-for-agent.
+
+$ td task update id:6j23xRjQqWW8r3cG --labels ready-for-human
+Updated: 01 ZZ ready (id:6j23xRjQqWW8r3cG)
+[exit code: 0]
+
+$ grep -n Status "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/01-zz-ready.md
+7:**Status:** ready-for-agent
+[exit code: 0]
+# Before the push:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/01-"))]'
+[
+  {
+    "id": "6j23xRjQqWW8r3cG",
+    "content": "01 ZZ ready",
+    "description": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/01-zz-ready.md\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "ready-for-human"
+    ],
+    "url": "https://app.todoist.com/app/task/01-zz-ready-6j23xRjQqWW8r3cG",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+# When:
+
+$ python3 scripts/queue.py push "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/01-zz-ready.md --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+0 commands sent.
+[exit code: 0]
+# After the push:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/01-"))]'
+[
+  {
+    "id": "6j23xRjQqWW8r3cG",
+    "content": "01 ZZ ready",
+    "description": "4ag: .scratch/zz-queue-check/issues/01-zz-ready.md\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/01-zz-ready.md\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "ready-for-human"
+    ],
+    "url": "https://app.todoist.com/app/task/01-zz-ready-6j23xRjQqWW8r3cG",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]

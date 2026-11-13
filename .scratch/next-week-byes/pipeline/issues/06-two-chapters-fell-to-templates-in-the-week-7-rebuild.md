@@ -14,4 +14,10 @@ appears. Whether two attempts is enough for the rankings chapter, which writes 1
 
 **Blocked by:** None.
 
-**Status:** backlog
+**Status:** wontfix
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12. Brian dropped it, because it fixes no real bug and changes nothing that a manager sees.
+Proof: No team-count fact and no players-in-scope brief exist, and `facts/writer.py` still allows two attempts; no later spec names the issue, so it may no longer matter.
+Read 1 file: .scratch/todoist-queue/audit.md.

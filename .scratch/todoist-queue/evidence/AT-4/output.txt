@@ -1,0 +1,40 @@
+$ gh pr list --head codex-flow --state all --repo bkwon94/4thandgoal
+[exit code: 0]
+
+$ gh pr list --head codex-flow --state all --repo bkwon94/4thandgoal --json number,state
+[]
+[exit code: 0]
+
+$ git cat-file -e main:.scratch/codex-flow/issues/01-the-rules-move-to-agents-md.md; echo main has file: $?
+fatal: path '.scratch/codex-flow/issues/01-the-rules-move-to-agents-md.md' does not exist in 'main'
+main has file: 128
+[exit code: 0]
+
+$ git show codex-flow:.scratch/codex-flow/issues/01-the-rules-move-to-agents-md.md | grep -n Status
+11:**Status:** in-review
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.content == "01 The rules move to AGENTS.md")]'
+[
+  {
+    "id": "6j23MVJprgvqXH3p",
+    "content": "01 The rules move to AGENTS.md",
+    "description": "4ag: .scratch/codex-flow/issues/01-the-rules-move-to-agents-md.md\nApp: site, pipeline\nOn the spec branch codex-flow.\nThe repo rules live in `AGENTS.md` at the root and at the top of the site and the pipeline. Each `CLAUDE.md` holds only the line `@AGENTS.md`, so Claude Code reads the same rules as before and Codex reads them too. The text names `AGENTS.md` as the rules file and holds no stale `cpc:` or `~/.Codex` words. The readme rules of both apps limit `AGENTS.md` files the same way they limit `CLAUDE.md` files.",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23MVFvmP3pXp9G",
+    "parentId": null,
+    "labels": [
+      "in-review",
+      "pipeline",
+      "site"
+    ],
+    "url": "https://app.todoist.com/app/task/01-the-rules-move-to-agents-md-6j23MVJprgvqXH3p",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]

@@ -1,0 +1,80 @@
+$ td label list
+2186351579  @needs-triage
+2186351580  @needs-info
+2186351581  @ready-for-agent
+2186351582  @ready-for-human
+2186351583  @in-progress
+2186351584  @in-review
+2186351585  @blocked
+2186351586  @wontfix
+2186351587  @decision
+2186351588  @site
+2186351589  @pipeline
+2186351590  @api
+
+[exit code: 0]
+
+$ td label list --json --all | jq -r '.results[].name' | sort | uniq -c
+   1 api
+   1 blocked
+   1 decision
+   1 in-progress
+   1 in-review
+   1 needs-info
+   1 needs-triage
+   1 pipeline
+   1 ready-for-agent
+   1 ready-for-human
+   1 site
+   1 wontfix
+[exit code: 0]
+
+$ td section list 4thandgoal
+6j23MVCCH6GG33Qp  Ideas
+6j23MVFvmP3pXp9G  codex-flow
+6j23MVhF6HM9FRwp  front-door-lineup
+6j23MX6W842H5FGG  manager-pages
+6j23MXCJF4XHX95G  modular
+6j23MXRfvWVF8fWG  readme-module-navigation
+6j23MXhp23FMM8fp  site-pages
+6j23MXq7P8gc8vVp  todoist-queue
+6j23McXGPmCm5HwG  tone
+6j23McgvMHwC6V2G  week-8-fixes
+6j23w26gX28gv4hp  perf optimization
+
+[exit code: 0]
+
+$ td filter list
+id:2375407396  Assigned to me  "assigned to: me"
+id:2375407397  Priority 1  "priority 1"
+id:2375414163  Waits on Brian  "#4thandgoal & @ready-for-human"
+[exit code: 0]
+
+
+$ td task list --project 4thandgoal --filter '#4thandgoal & /Ideas' --json --all
+{
+  "results": [
+    {
+      "id": "6j23P9J6QXhg78xG",
+      "content": "Buy low targets from other rosters",
+      "description": "From .scratch/front-door/issues/12-buy-low.md, closed as wontfix in the audit of todoist-queue. The Topic \"Sell high or buy low\" names players of Your team to sell, and no buy-low targets. Add buy-low targets from the other rosters: players whose facts say their trade value sits under what they give. The Advisor picks them and writes why, from the same facts side by side as the sell list. No code screen picks a player.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j23MVCCH6GG33Qp",
+      "parentId": null,
+      "labels": [],
+      "url": "https://app.todoist.com/app/task/buy-low-targets-from-other-rosters-6j23P9J6QXhg78xG",
+      "responsibleUid": null,
+      "isUncompletable": false
+    }
+  ],
+  "nextCursor": null
+}
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.sectionId == "6j23MVCCH6GG33Qp")] | length'
+1
+[exit code: 0]

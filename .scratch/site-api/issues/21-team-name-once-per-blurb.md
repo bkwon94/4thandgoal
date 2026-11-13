@@ -6,7 +6,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] One rule in `src/cornerstone/prompts/writer.md`, `tone.md`, and `analysis.md`, in the voice of the rules around it. Keep "roast by team name" in the tone; the roast lands once.
 - [x] `code_check` in `src/cornerstone/verifier.py` counts whole-word mentions of each team name in the blurb text and fails on a second mention. The feedback line names the team and the count, with the same mask rule as the other lines.
@@ -30,3 +30,9 @@ Scope of the hard check: the prompt rule holds for every chapter. The verifier c
 The match ignores case, so "Behold the lamb" at the start of a sentence counts. The bounds stay whole-phrase, so "the lamb" alone does not count. One helper, `repeat_failure`, gives the failure line for the blurb check and the analysis check.
 
 `uv run pytest -q`: `564 passed, 8 deselected in 60.14s (0:01:00)`
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in ed455b93.
+Proof: "Name a team at most once per blurb and per side analysis" is on `main`, and `repeat_failure` and `TWO_TEAM_CHAPTERS` still sit in `packages/facts`; the weekly build reads the prompts from `main`.
+Read 1 file: .scratch/todoist-queue/audit.md.

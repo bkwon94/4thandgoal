@@ -1,0 +1,132 @@
+# Given: td unarchives the section zz-queue-check, which AT-20 archived.
+
+$ td section unarchive id:6j23xPvRxhmXMwfG --json
+{"ok":true,"command":"td section unarchive","messages":["Unarchived: zz-queue-check (id:6j23xPvRxhmXMwfG)"]}
+[exit code: 0]
+
+$ td section list 4thandgoal --json --all --full | jq '.results[] | select(.name == "zz-queue-check") | {id, name, isArchived, archivedAt}'
+{
+  "id": "6j23xPvRxhmXMwfG",
+  "name": "zz-queue-check",
+  "isArchived": false,
+  "archivedAt": null
+}
+[exit code: 0]
+
+$ python3 scripts/queue.py wait zz-queue-check merge-pr 16 --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+td task add 'Merge PR #16' --project id:6j222rQrr58wHx9G --section id:6j23xPvRxhmXMwfG --labels ready-for-human --description '4ag: zz-queue-check/wait/merge-pr
+https://github.com/bkwon94/4thandgoal/pull/16'
+1 command sent.
+[exit code: 0]
+
+$ gh pr view 16 --repo bkwon94/4thandgoal --json state,mergedAt
+{"mergedAt":null,"state":"CLOSED"}
+[exit code: 0]
+# Before the sweep:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.content == "Merge PR #16" and (.description | startswith("4ag: zz-queue-check/wait/merge-pr")))]'
+[
+  {
+    "id": "6j24262hfQPmQQ3G",
+    "content": "Merge PR #16",
+    "description": "4ag: zz-queue-check/wait/merge-pr\nhttps://github.com/bkwon94/4thandgoal/pull/16",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "ready-for-human"
+    ],
+    "url": "https://app.todoist.com/app/task/merge-pr-16-6j24262hfQPmQQ3G",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+# When:
+
+$ python3 scripts/queue.py sweep --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+warning: git fetch origin main failed: fatal: 'origin' does not appear to be a git repository fatal: Could not read from remote repository. Please make sure you have the correct access rights and the repository exists.. The sweep reads the last fetched main.
+td task update id:6j24262hfQPmQQ3G --labels blocked
+1 command sent.
+[exit code: 0]
+# After the sweep:
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.content == "Merge PR #16" and (.description | startswith("4ag: zz-queue-check/wait/merge-pr")))]'
+[
+  {
+    "id": "6j24262hfQPmQQ3G",
+    "content": "Merge PR #16",
+    "description": "4ag: zz-queue-check/wait/merge-pr\n[Throwaway: AT-27 of fast-cycle, one changed doc line by bkwon94 · Pull Request #16 · bkwon94/4thandgoal](https://github.com/bkwon94/4thandgoal/pull/16)",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "blocked"
+    ],
+    "url": "https://app.todoist.com/app/task/merge-pr-16-6j24262hfQPmQQ3G",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+
+# Cleanup after the last test of the throwaway feature: delete its open task, then the section zz-queue-check.
+
+$ td task list --project 4thandgoal --json --all | jq -r '.results[] | select(.sectionId == "6j23xPvRxhmXMwfG") | .id + "  " + .content'
+6j24262hfQPmQQ3G  Merge PR #16
+[exit code: 0]
+
+$ td task delete id:6j24262hfQPmQQ3G --yes
+Deleted: Merge PR #16 (id:6j24262hfQPmQQ3G)
+[exit code: 0]
+
+$ td section delete id:6j23xPvRxhmXMwfG --yes
+Deleted section: zz-queue-check (id:6j23xPvRxhmXMwfG)
+[exit code: 0]
+
+$ td section list 4thandgoal
+6j23MVCCH6GG33Qp  Ideas
+6j23MVFvmP3pXp9G  codex-flow
+6j23MVhF6HM9FRwp  front-door-lineup
+6j23MX6W842H5FGG  manager-pages
+6j23MXCJF4XHX95G  modular
+6j23MXRfvWVF8fWG  readme-module-navigation
+6j23MXhp23FMM8fp  site-pages
+6j23MXq7P8gc8vVp  todoist-queue
+6j23McXGPmCm5HwG  tone
+6j23McgvMHwC6V2G  week-8-fixes
+6j23w26gX28gv4hp  perf optimization
+
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/") or startswith("4ag: zz-queue-check/"))] | length'
+0
+[exit code: 0]
+
+$ td completed list --project 4thandgoal --since 2026-11-11 --until 2026-11-14 --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/") or startswith("4ag: zz-queue-check/"))] | length'
+0
+[exit code: 0]
+
+$ td label list
+2186351579  @needs-triage
+2186351580  @needs-info
+2186351581  @ready-for-agent
+2186351582  @ready-for-human
+2186351583  @in-progress
+2186351584  @in-review
+2186351585  @blocked
+2186351586  @wontfix
+2186351587  @decision
+2186351588  @site
+2186351589  @pipeline
+2186351590  @api
+
+[exit code: 0]

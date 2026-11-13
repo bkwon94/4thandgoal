@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The masthead takes the weeks and the open page's href as props. A test passes its own values.
 - [ ] One destination list: Home, Week N, Power rankings, Trade analyzer, then the past weeks newest first. Every link is a plain anchor with the base path.
@@ -20,3 +20,9 @@
 - [ ] Every page renders with scripts off and every menu link still navigates.
 - [ ] Tests at the masthead seam cover the items in order, the current-page state, Escape, the tap outside, focus return, the waiver flag, and motion off. The existing tests pass.
 - [ ] Checked with agent-browser at 390 by 844 with reduced motion on. Screenshots of the closed and the open menu in the feature folder.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in f1c3f09e.
+Proof: The commit "Add the menu button and the menu sheet to the masthead" merged in 6a480aec and a5559600.
+Read 1 file: .scratch/todoist-queue/audit.md.

@@ -1,0 +1,53 @@
+$ git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" show main:.scratch/zz-queue-check/issues/02-zz-blocked.md | grep Status
+**Status:** blocked
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/02-"))]'
+[
+  {
+    "id": "6j23xmWg29GC37Rp",
+    "content": "02 ZZ blocked",
+    "description": "4ag: .scratch/zz-queue-check/issues/02-zz-blocked.md\nhttps://github.com/bkwon94/4thandgoal/blob/main/.scratch/zz-queue-check/issues/02-zz-blocked.md\nA throwaway ticket for the acceptance tests of the queue. It names no real work.",
+    "priority": 1,
+    "due": null,
+    "deadline": null,
+    "duration": null,
+    "projectId": "6j222rQrr58wHx9G",
+    "sectionId": "6j23xPvRxhmXMwfG",
+    "parentId": null,
+    "labels": [
+      "blocked"
+    ],
+    "url": "https://app.todoist.com/app/task/02-zz-blocked-6j23xmWg29GC37Rp",
+    "responsibleUid": null,
+    "isUncompletable": false
+  }
+]
+[exit code: 0]
+
+$ td section list 4thandgoal
+6j23MVCCH6GG33Qp  Ideas
+6j23MVFvmP3pXp9G  codex-flow
+6j23MVhF6HM9FRwp  front-door-lineup
+6j23MX6W842H5FGG  manager-pages
+6j23MXCJF4XHX95G  modular
+6j23MXRfvWVF8fWG  readme-module-navigation
+6j23MXhp23FMM8fp  site-pages
+6j23MXq7P8gc8vVp  todoist-queue
+6j23McXGPmCm5HwG  tone
+6j23McgvMHwC6V2G  week-8-fixes
+6j23w26gX28gv4hp  perf optimization
+6j23xPvRxhmXMwfG  zz-queue-check
+
+[exit code: 0]
+
+$ td section list 4thandgoal --json --all | jq '.results[] | select(.name == "zz-queue-check")'
+{
+  "id": "6j23xPvRxhmXMwfG",
+  "name": "zz-queue-check",
+  "description": null,
+  "projectId": "6j222rQrr58wHx9G",
+  "sectionOrder": 13,
+  "url": "https://app.todoist.com/app/section/zz-queue-check-6j23xPvRxhmXMwfG"
+}
+[exit code: 0]

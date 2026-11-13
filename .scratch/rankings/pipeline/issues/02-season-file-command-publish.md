@@ -33,7 +33,7 @@ Spec: `.scratch/rankings/pipeline/PRD.md`, section "The season file".
 
 **Blocked by:** 01 The formula.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The `rankings` command on a saved week writes the file with one entry per week from 1 to that week, rows in rank order, blurbs empty.
 - [ ] The build writes the same file after the page.
@@ -48,3 +48,7 @@ Spec: `.scratch/rankings/pipeline/PRD.md`, section "The season file".
 - 2026-10-22: `make rankings WEEK=6` on the real history wrote weeks 1 to 6. Week 6 top three: 1 Lil Fridge 10-2, 2 London Cooking 9-3, 3 Bo Girds 8-4. All three show movement 0. London Cooking has schedule played rank 12.
 
 - 2026-10-22: fixes amended into `601be8e`. The file never shrinks: it covers weeks 1 to the latest saved week.
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in 49aeb86c.
+Proof: The merge of `rankings-file` holds 601be8e3 "Write the season file of power rankings", and later specs extend the file.
+Read 1 file: .scratch/todoist-queue/audit.md.

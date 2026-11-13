@@ -6,7 +6,7 @@ Spec: pipeline repo `.scratch/rankings/pipeline/PRD.md`, section "The site".
 
 **Blocked by:** 01 The reader and the route.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A tap opens the blurb, a second tap closes it, in a component test.
 - [ ] The blurb sentences render in order from the row's list.
@@ -19,3 +19,7 @@ Spec: pipeline repo `.scratch/rankings/pipeline/PRD.md`, section "The site".
 ## Comments
 
 - 2026-10-22: built on `rankings-blurb` at `a68024d`, two Opus reviews, one fix pass. Awaits Brian merge with `--no-ff`.
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in a68024d.
+Proof: The commit sits on `main` through the merge c6f2db70.
+Read 1 file: .scratch/todoist-queue/audit.md.

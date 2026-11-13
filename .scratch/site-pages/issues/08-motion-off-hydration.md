@@ -4,10 +4,16 @@
 
 **Blocked by:** None
 
-**Status:** triage
+**Status:** wontfix
 
 - [ ] Reproduce the warning in the dev page with reduced motion on.
 - [ ] Choose a fix that keeps `pnpm build` and `pnpm check:export` passing.
 - [ ] The dev page shows no hydration warning with reduced motion on or off.
 - [ ] The chevron still skips its transition with reduced motion on.
 - [ ] `pnpm typecheck` and `pnpm test` pass.
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12.
+Proof: The rankings row chevron and `src/lib/motion.ts` are gone since the redesign 0a8b8868, and `useMotionOff` now wraps the Framer `useReducedMotion`; nobody checked the warning again on the current pages.
+Read 1 file: .scratch/todoist-queue/audit.md.

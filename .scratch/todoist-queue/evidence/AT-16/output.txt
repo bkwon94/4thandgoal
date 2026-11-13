@@ -1,0 +1,12 @@
+# Given: the temp root has no uncommitted change.
+
+$ git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" checkout -- .scratch/zz-queue-check/issues/01-zz-ready.md; git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" status --short
+[exit code: 0]
+# When:
+
+$ TODOIST_API_TOKEN=invalid python3 scripts/queue.py pull zz-queue-check --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+warning: the queue pull of zz-queue-check failed: AUTH_ERROR HTTP 401: Unauthorized. The queue is behind the tracker.
+[exit code: 0]
+
+$ git -C "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq" status --short
+[exit code: 0]

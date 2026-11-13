@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The theme names three tier tokens: phone, tablet from 640px, desktop from 1024px, on Tailwind's defaults.
 - [ ] The theme names the page column width per tier. The desktop width is 720px, the tablet width 640px.
@@ -15,3 +15,9 @@
 - [ ] The 480px tier still folds the rankings table and the wide week tables on a phone.
 - [ ] The existing tests pass. The build and the export check pass.
 - [ ] Checked with agent-browser at 390 by 844, 768 by 1024, and 1280 by 800 with reduced motion on. Screenshots in the feature folder.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in be975af5.
+Proof: The commit "Size the page column per tier and span the masthead" merged in a5559600 on `main`.
+Read 1 file: .scratch/todoist-queue/audit.md.

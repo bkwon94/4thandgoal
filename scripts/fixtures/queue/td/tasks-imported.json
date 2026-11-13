@@ -1,0 +1,24 @@
+{
+  "results": [
+    {
+      "id": "6j23MXpC2h7HwqHG",
+      "content": "09 The home page test reads a class name",
+      "description": "4ag: .scratch/site-pages/issues/09-home-test-class-name.md\nApp: site\n[4thandgoal/.scratch/site-pages/issues/09-home-test-class-name.md at main · bkwon94/4thandgoal](https://github.com/bkwon94/4thandgoal/blob/main/.scratch/site-pages/issues/09-home-test-class-name.md)\n`src/app/page.test.tsx` checks the red season number with `className` and `text-red`. The spec says a test never reads a class name. Find a check that a reader can see, or drop the assertion.",
+      "priority": 1,
+      "due": null,
+      "deadline": null,
+      "duration": null,
+      "projectId": "6j222rQrr58wHx9G",
+      "sectionId": "6j23MXhp23FMM8fp",
+      "parentId": null,
+      "labels": [
+        "ready-for-agent",
+        "site"
+      ],
+      "url": "https://app.todoist.com/app/task/09-the-home-page-test-reads-a-class-name-6j23MXpC2h7HwqHG",
+      "responsibleUid": null,
+      "isUncompletable": false
+    }
+  ],
+  "nextCursor": null
+}

@@ -6,7 +6,13 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** triage
+**Status:** wontfix
 
 - [ ] The destination reads in full with the picker closed, or wraps to a second line
 - [ ] The rows in the two columns still line up at the tablet and desktop tiers
+
+## Comments
+
+Closes as wontfix in the audit of `todoist-queue` on 2026-11-12.
+Proof: The site redesign 0a8b8868 removed the `Select` To picker and `defaultTo` from `trade-form.tsx`, so the truncated trigger no longer exists.
+Read 1 file: .scratch/todoist-queue/audit.md.

@@ -18,7 +18,7 @@ Spec: `.scratch/rankings/pipeline/PRD.md`, section "The formula", amended by thi
 
 **Blocked by:** None. Main holds tickets 01 to 03.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Form is the mean of the three parts; a 4-game streak that counts a median win ranks above a 2-game head-to-head streak with the same record, on a built fixture.
 - [ ] The form streak counts both games per week and breaks on the first loss or tie, newest week back.
@@ -27,3 +27,9 @@ Spec: `.scratch/rankings/pipeline/PRD.md`, section "The formula", amended by thi
 - [ ] The glossary defines "form streak" and the formula section of the PRD is updated to this ticket's wording.
 - [ ] `make rankings WEEK=6` on the real history runs clean; note the new week 6 top three and any team that moved 3 or more places against the old file, in a comment at the bottom of this file.
 - [ ] `make test` passes. Lint count on the branch is no higher than 123.
+
+## Comments
+
+Closes as done in the audit of `todoist-queue` on 2026-11-12. The work merged in ce1e0abf.
+Proof: The merge of `rankings-form` holds c393978f "Add form streak, median games, and margin to ranks".
+Read 1 file: .scratch/todoist-queue/audit.md.

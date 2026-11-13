@@ -1,0 +1,37 @@
+# Given: the throwaway feature gets a new ticket 04-zz-new.md with no task.
+
+$ printf '# 04: ZZ new\n\n**What to build:** A throwaway ticket for the dry run of AT-24. It names no real work.\n\n**Blocked by:** none\n\n**Status:** ready-for-agent\n' > "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/04-zz-new.md; cat "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/04-zz-new.md
+# 04: ZZ new
+
+**What to build:** A throwaway ticket for the dry run of AT-24. It names no real work.
+
+**Blocked by:** none
+
+**Status:** ready-for-agent
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/04-"))] | length'
+0
+[exit code: 0]
+# The count of open tasks before:
+
+$ td task list --project 4thandgoal --json --all | jq '.results | length'
+45
+[exit code: 0]
+# When:
+
+$ python3 scripts/queue.py push "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"/.scratch/zz-queue-check/issues/04-zz-new.md --dry-run --root "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/20f729f2-2f60-4416-a60b-31e97ea470fa/scratchpad/zzq"
+td task add '04 ZZ new' --project id:6j222rQrr58wHx9G --section id:6j23xPvRxhmXMwfG --labels ready-for-agent --description '4ag: .scratch/zz-queue-check/issues/04-zz-new.md
+On the spec branch zz-queue-check.
+A throwaway ticket for the dry run of AT-24. It names no real work.'
+1 command planned, none sent.
+[exit code: 0]
+# The count of open tasks after:
+
+$ td task list --project 4thandgoal --json --all | jq '.results | length'
+45
+[exit code: 0]
+
+$ td task list --project 4thandgoal --json --all | jq '[.results[] | select(.description | startswith("4ag: .scratch/zz-queue-check/issues/04-"))] | length'
+0
+[exit code: 0]

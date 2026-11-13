@@ -1,0 +1,109 @@
+$ grep -rn 'scripts/queue.py' .claude/plugin/skills/
+.claude/plugin/skills/to-acceptance/SKILL.md:15:Start with the merge sweep: `python3 scripts/queue.py sweep`.
+.claude/plugin/skills/to-acceptance/SKILL.md:17:Then complete the wait task of the spec: `python3 scripts/queue.py wait <slug> approve-prd --done`.
+.claude/plugin/skills/to-acceptance/SKILL.md:51:Run `python3 scripts/queue.py wait <slug> approve-acceptance`. Then tell Brian that `4ag:to-tickets <slug>` is next.
+.claude/plugin/skills/plan/SKILL.md:17:Start with the merge sweep: `python3 scripts/queue.py sweep`.
+.claude/plugin/skills/plan/SKILL.md:51:9. Commit the map and the decision tickets on the Spec branch. Run `python3 scripts/queue.py push <path>` for each decision ticket. Then stop. Stage 1 clears no decision ticket.
+.claude/plugin/skills/plan/SKILL.md:55:1. Work in the worktree of the Spec branch `<slug>`. Run `python3 scripts/queue.py pull <slug>` there, and commit each changed `Status:` line. Read `.scratch/<slug>/MAP.md`. Read the Kind, Blocked by, and Status lines of each decision ticket: `grep -H '^\*\*' .scratch/<slug>/decisions/*.md`.
+.claude/plugin/skills/plan/SKILL.md:66:9. Commit the ticket, the map, and any record on the Spec branch. Run `python3 scripts/queue.py push <path>` for the decision ticket. Then stop. Clear one decision ticket per session. A research ticket may run in the background while you clear the next one.
+.claude/plugin/skills/to-tickets/SKILL.md:15:Start with the merge sweep: `python3 scripts/queue.py sweep`.
+.claude/plugin/skills/to-tickets/SKILL.md:17:Then complete the wait task of the tests: `python3 scripts/queue.py wait <slug> approve-acceptance --done`.
+.claude/plugin/skills/to-tickets/SKILL.md:35:9. Present the written tickets to Brian for approval. Then run `python3 scripts/queue.py wait <slug> approve-tickets`.
+.claude/plugin/skills/to-tickets/SKILL.md:36:10. After Brian approves the tickets, run `python3 scripts/queue.py push <path>` for each ticket. Then run `python3 scripts/queue.py wait <slug> approve-tickets --done`.
+.claude/plugin/skills/to-spec/SKILL.md:15:Start with the merge sweep: `python3 scripts/queue.py sweep`.
+.claude/plugin/skills/to-spec/SKILL.md:52:Run `python3 scripts/queue.py wait <slug> approve-prd`. Then tell Brian that `4ag:to-acceptance <slug>` is next.
+.claude/plugin/skills/review/SKILL.md:17:Start with the merge sweep: `python3 scripts/queue.py sweep`.
+.claude/plugin/skills/review/SKILL.md:60:- If a round changes the Status of a ticket, run `python3 scripts/queue.py push <path of the ticket>` for it.
+.claude/plugin/skills/implement/pr.md:29:5. Run `python3 scripts/queue.py wait <slug> merge-pr <PR number>`.
+.claude/plugin/skills/implement/build.md:20:5. Run `python3 scripts/queue.py pull <slug>` in the Spec worktree. Commit each changed `Status:` line.
+.claude/plugin/skills/implement/build.md:69:6. If the check passes, set the Status of the ticket to `in-review` in the Spec worktree. Commit it with the message `Mark <slug> <NN> in-review`. Then run `python3 scripts/queue.py push <path of the ticket>`.
+.claude/plugin/skills/implement/build.md:78:1. Set the Status of the ticket to `blocked` in the Spec worktree. Add the reason as a comment under `## Comments`. Commit. Then run `python3 scripts/queue.py push <path of the ticket>`.
+.claude/plugin/skills/implement/SKILL.md:17:Start with the merge sweep: `python3 scripts/queue.py sweep`.
+[exit code: 0]
+# The heading above each hit:
+
+$ grep -rn 'scripts/queue.py' .claude/plugin/skills/ | while IFS=: read f n rest; do h=$(head -n $n $f | grep '^#' | tail -1); echo "$f:$n  [$h]"; done
+.claude/plugin/skills/to-acceptance/SKILL.md:15  [## The queue]
+.claude/plugin/skills/to-acceptance/SKILL.md:17  [## The queue]
+.claude/plugin/skills/to-acceptance/SKILL.md:51  [## The end]
+.claude/plugin/skills/plan/SKILL.md:17  [## The queue]
+.claude/plugin/skills/plan/SKILL.md:51  [## Stage 1: write the map]
+.claude/plugin/skills/plan/SKILL.md:55  [## Stage 2: clear one decision ticket]
+.claude/plugin/skills/plan/SKILL.md:66  [## Stage 2: clear one decision ticket]
+.claude/plugin/skills/to-tickets/SKILL.md:15  [## The queue]
+.claude/plugin/skills/to-tickets/SKILL.md:17  [## The queue]
+.claude/plugin/skills/to-tickets/SKILL.md:35  [## Steps]
+.claude/plugin/skills/to-tickets/SKILL.md:36  [## Steps]
+.claude/plugin/skills/to-spec/SKILL.md:15  [## The queue]
+.claude/plugin/skills/to-spec/SKILL.md:52  [## The end]
+.claude/plugin/skills/review/SKILL.md:17  [## The queue]
+.claude/plugin/skills/review/SKILL.md:60  [## The rules]
+.claude/plugin/skills/implement/pr.md:29  [## Open the PR]
+.claude/plugin/skills/implement/build.md:20  [### The Spec branch]
+.claude/plugin/skills/implement/build.md:69  [### Merge one ticket]
+.claude/plugin/skills/implement/build.md:78  [### A blocked ticket]
+.claude/plugin/skills/implement/SKILL.md:17  [## The queue]
+[exit code: 0]
+# The headings of each SKILL.md, with line numbers, to show where the queue section sits:
+
+$ for f in .claude/plugin/skills/*/SKILL.md; do echo "== $f"; grep -n '^#' $f; done
+== .claude/plugin/skills/implement/SKILL.md
+7:# Implement
+13:## The queue
+21:## Before you start
+29:## The stages
+39:## The rules
+48:## A second start
+52:## The end
+== .claude/plugin/skills/plan/SKILL.md
+7:# Plan
+13:## The queue
+21:## Before you start
+27:## Invocation
+35:## The human side
+39:## Stage 1: write the map
+53:## Stage 2: clear one decision ticket
+== .claude/plugin/skills/review/SKILL.md
+7:# Review
+13:## The queue
+19:## Before you start
+27:## Steps
+52:## The rules
+62:## The end
+== .claude/plugin/skills/to-acceptance/SKILL.md
+7:# To acceptance
+11:## The queue
+19:## Before you start
+25:## Steps
+33:## The rules of a test
+45:## A revision
+49:## The end
+== .claude/plugin/skills/to-spec/SKILL.md
+7:# To spec
+11:## The queue
+17:## Before you start
+23:## Steps
+33:## The header
+38:# <Feature title>
+50:## The end
+== .claude/plugin/skills/to-tickets/SKILL.md
+7:# To tickets
+11:## The queue
+19:## Before you start
+25:## Steps
+38:## The ticket
+43:# <NN>: <Ticket title>
+61:## The state row
+71:## The end
+[exit code: 0]
+
+$ sed -n '13,20p' .claude/plugin/skills/implement/SKILL.md
+## The queue
+
+Run each call at the root of the checkout or worktree. A failed call prints a warning and exits 0, so never stop on it. Name each missed push in the final report.
+
+Start with the merge sweep: `python3 scripts/queue.py sweep`.
+
+Then pull the triage of Brian into the Spec worktree. See step 5 of [The Spec branch](build.md#the-spec-branch).
+
+[exit code: 0]
