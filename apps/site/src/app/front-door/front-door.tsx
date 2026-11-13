@@ -440,6 +440,7 @@ export function FrontDoor({
                         const shared = {
                           question: entry.question,
                           teamName: (id: number | null) => (id !== null && id !== team.id ? teams.find((other) => other.id === id)?.name : undefined),
+                          you: team.name,
                           onPick: (key: string, id: number | null) => open(key, id),
                         };
                         return entry.result ? (

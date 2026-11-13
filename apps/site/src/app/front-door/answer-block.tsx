@@ -246,8 +246,8 @@ function PlayerView({ block, live }: { block: Extract<AnswerBlock, { kind: "play
   );
 }
 
-/* The component of each kind of block. */
-export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }) {
+/* The component of each kind of block. `you` is the name of Your team, for a block that names each team only by its name. */
+export function BlockView({ block, live, you }: { block: AnswerBlock; live: boolean; you?: string }) {
   switch (block.kind) {
     case "list":
       return <ListView block={block} live={live} />;
@@ -260,7 +260,7 @@ export function BlockView({ block, live }: { block: AnswerBlock; live: boolean }
     case "trade":
       return <TradeBlockView block={block} live={live} />;
     case "feed":
-      return <FeedView block={block} live={live} />;
+      return <FeedView block={block} live={live} you={you} />;
     case "slot_ranks":
       return <SlotRanksView block={block} live={live} />;
     case "bye_grid":
