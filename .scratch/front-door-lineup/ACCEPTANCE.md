@@ -285,8 +285,8 @@ Evidence: the stream, and site screenshots of the card closed and open.
 AT-35: A free answer shows the transaction feed
 App: api, site
 Stories: 57, 58, 59
-Given: cpc in the live week.
-When: The reader types "What moves happened this week?".
+Given: cpc in a week with a trade, such as `2026` week 9.
+When: The reader types "What moves happened in week 9?".
 Then: The free answer shows the transaction feed: a strip of the moves per day, one row per move newest first with a dot for its kind, and a trade row that shows what each side got.
 Evidence: the stream, and site screenshots of the Answer.
 
@@ -534,3 +534,4 @@ Out of scope "The top five leaders at each position": no test. Reason: AT-21 che
 - 2026-11-12, AT-12: the Given line used the live week after the Thursday kickoff, so the test waited for a game. Brian chose a direct run now: the recorded week 10 with the clock set after the `start_time`. The lock reads the clock and the `has_started` flag, so the run proves the same rule.
 - 2026-11-12, AT-36: the wording tells Claude never to write a list, so no real Answer has all four marks. Brian chose: the vitest proves the four marks, and the screenshot shows a real Answer with the marks it has.
 - 2026-11-12, AT-38: the Then line now carries the PRD phrase "the up and down colors of the site mark a move", as Brian chose. The rank mover bars use those colors.
+- 2026-11-12, AT-35: the Given line used the live week, and week 10 had no trade, so no answer could show a trade row. Brian chose a week with a trade: cpc week 9, with 2 trades in Sleeper.
