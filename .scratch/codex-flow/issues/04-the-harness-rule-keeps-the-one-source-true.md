@@ -8,9 +8,13 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-9, AT-10, and AT-11.
 
 **Blocked by:** 03
 
-**Status:** in-review
+**Status:** done
 
 - [x] In a scratch copy with the `4ag-review` symlink removed, `make check-fast` fails and names it.
 - [x] In a scratch copy with an extra line in the site `CLAUDE.md`, the check fails and names the file.
 - [x] In a scratch copy with "the Skill tool" in the `to-spec` skill, the check fails and names the file and line.
 - [x] `make check-fast` passes on the head of the Spec branch.
+
+## Comments
+
+- Closes with the squash merge of the spec PR.

@@ -8,7 +8,7 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-7, AT-8, AT-13, AT-14, a
 
 **Blocked by:** 01, 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] A grep for "Skill tool" and "Agent tool" in the skills prints nothing.
 - [x] The section "The harness words" maps each phrase, the strong model, and the `research` name for both harnesses.
@@ -24,3 +24,4 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-7, AT-8, AT-13, AT-14, a
 - The `.git` probe is `test -w "$(git rev-parse --git-common-dir)"`. It is a read. It exits 1 under `:workspace` and 0 under the profile `4ag`.
 - The main checkout holds a stale untracked `AGENTS.md`, so each run prompt pointed Codex at the harness words in this worktree. The runs on the merged spec need no such pointer.
 - `~/.codex/config.toml` turns on the cached plugins `4ag@4ag-local` and `cpc@cpc-local`. Codex then lists each `4ag:` skill twice, once from `.agents/skills/` and once from `~/.codex/plugins/cache/4ag-local/`. The cache copy goes stale after a skill change.
+- Closes with the squash merge of the spec PR.

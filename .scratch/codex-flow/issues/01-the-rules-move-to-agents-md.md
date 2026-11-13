@@ -8,10 +8,14 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-4, AT-5, AT-6, and AT-12
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The repo tracks three `AGENTS.md` files and three `CLAUDE.md` files, and each `CLAUDE.md` holds only `@AGENTS.md`.
 - [x] `claude -p` in the worktree answers a question about the flow from the rules, through the import.
 - [x] A grep for `cpc:` and `~/.Codex` in the three `AGENTS.md` files prints nothing.
 - [x] A staged `AGENTS.md` below the top of an app fails the readme rule of that app.
 - [x] `make check-fast` passes.
+
+## Comments
+
+- Closes with the squash merge of the spec PR.

@@ -8,7 +8,7 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-16, AT
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] `codex debug prompt-input "hi"` names the six `4ag:` skills, each with a path under the plugin skills folder.
 - [x] A Codex session log for `$4ag:implement` injects the repo skill and no user skill.
@@ -23,3 +23,4 @@ Spec: `.scratch/codex-flow/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-16, AT
 - Codex starts at the main checkout root, not in a worktree. In a linked worktree, its own gitdir stays read-only and the other worktrees sit outside its workspace.
 - The `.git` grant is the absolute `~/repos/4thandgoal/.git`, because Codex 0.167.1 rejects a relative path. The prek hook needs write on `~/.cache/prek`, `~/.cache/uv`, and `~/Library/pnpm/store`.
 - The proof of box 4 on 2026-11-12: a default `codex exec` at the main checkout root, with no `-c`, ran with `sandbox: workspace-write (network access enabled)` and `approval: never`. It committed `0e738e1c probe` in the probe worktree with the hook passed, and `gh api` printed `4thandgoal`. The probe worktree and branch are removed.
+- Closes with the squash merge of the spec PR.
