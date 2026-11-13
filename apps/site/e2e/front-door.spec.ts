@@ -212,4 +212,27 @@ test.describe("the ask box on a phone with the keyboard open", () => {
     await expect(field).toBeFocused();
     await expect.poll(() => gapOverKeyboard(page), { message: "the ask box of the Thread sits right above the keyboard" }).toBe(12);
   });
+
+  /* Chrome on iOS and Android shrinks the layout viewport with the keyboard, and the visual viewport equals it. The
+     fake keyboard here is a resize of the window, so the inset of the visual viewport stays 0. */
+  test("the ask box of the empty Thread shows whole when the layout viewport shrinks with the keyboard", async ({ page }) => {
+    await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+    await page.addInitScript(() => localStorage.setItem("cpc.passphrase", "test"));
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(`${server.url}${DOOR}`);
+    await page.getByRole("dialog").getByRole("button").first().tap();
+    const field = page.getByRole("textbox", { name: "Ask a question" });
+    const form = page.getByRole("form", { name: "Ask" });
+    await field.tap();
+    await expect(field).toBeFocused();
+    await page.setViewportSize({ width: 375, height: 233 });
+    await expect
+      .poll(async () => (await form.boundingBox())!.y + (await form.boundingBox())!.height, { message: "the foot of the ask box is in the shrunk view" })
+      .toBeLessThanOrEqual(233);
+    expect((await form.boundingBox())!.y, "the top of the ask box is in the view").toBeGreaterThanOrEqual(0);
+    // The blur and the full size give the dock back its place at the center, with the team link under the ask box.
+    await field.blur();
+    await page.setViewportSize({ width: 375, height: 812 });
+    await expect(page.getByRole("button", { name: /Change the team/ })).toBeVisible();
+  });
 });

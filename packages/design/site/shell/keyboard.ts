@@ -37,8 +37,10 @@ export function useKeyboardOpen(): boolean {
   return useSyncExternalStore(subscribe, () => open, () => false);
 }
 
-/* True while a field has the focus and the keyboard covers the foot of the layout viewport, as on iOS Safari. Then
-   --keyboard-inset holds the height that it covers. Where the layout viewport shrinks with the keyboard, it stays false. */
+/* True while a field has the focus and the keyboard is open, so a part can pin itself right above it. Two cases raise it.
+   iOS Safari keeps the layout viewport at full height, so the keyboard covers its foot, and --keyboard-inset holds the
+   height that it covers. Chrome on iOS and Android shrink the layout viewport, so its foot is already the top of the
+   keyboard, and --keyboard-inset is 0. */
 export function useKeyboardRaised(): boolean {
   return useSyncExternalStore(subscribe, () => raised, () => false);
 }
@@ -47,8 +49,9 @@ export function useKeyboardRaised(): boolean {
  * The focus and blur handlers of a field that opens the keyboard. While the field has the focus, the root holds
  * --keyboard-inset: the part of the layout viewport that the keyboard covers. iOS Safari keeps the layout viewport at
  * full height under the keyboard and shrinks only the visual viewport, so a part that sticks to the foot of the layout
- * viewport sits under the keyboard. The inset lifts it to the foot of the visual viewport. Where the layout viewport
- * shrinks with the keyboard, or no keyboard opens, the inset is 0 and nothing moves.
+ * viewport sits under the keyboard. The inset lifts it to the foot of the visual viewport. Chrome on iOS and Android
+ * shrink the layout viewport instead, so the inset is 0 and the part already sits at the top of the keyboard. The
+ * shrink of the layout viewport since the focus marks the keyboard open there. With no keyboard, nothing moves.
  */
 export function useKeyboardField() {
   const [focused, setFocused] = useState(false);
@@ -57,19 +60,24 @@ export function useKeyboardField() {
     setOpen(true);
     const root = document.documentElement;
     const view = window.visualViewport;
+    // The keyboard is not open yet, so this is the full height of the layout viewport.
+    const full = root.clientHeight;
     const place = () => {
-      if (!view) return;
-      const inset = Math.max(0, root.clientHeight - view.height - view.offsetTop);
+      const inset = view ? Math.max(0, root.clientHeight - view.height - view.offsetTop) : 0;
+      const shrink = Math.max(0, full - root.clientHeight);
       root.style.setProperty("--keyboard-inset", `${Math.round(inset)}px`);
-      setRaised(inset >= RAISED_MIN);
+      setRaised(inset >= RAISED_MIN || shrink >= RAISED_MIN);
     };
     place();
     // The keyboard opens over about 250 ms, and iOS scrolls the visual viewport to show the field, so each step places it again.
     view?.addEventListener("resize", place);
     view?.addEventListener("scroll", place);
+    // A layout viewport that shrinks with the keyboard fires a resize of the window, not of the visual viewport.
+    window.addEventListener("resize", place);
     return () => {
       view?.removeEventListener("resize", place);
       view?.removeEventListener("scroll", place);
+      window.removeEventListener("resize", place);
       root.style.removeProperty("--keyboard-inset");
       setRaised(false);
       setOpen(false);
