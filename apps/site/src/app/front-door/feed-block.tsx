@@ -117,15 +117,27 @@ function Players({ sign, names }: { sign: string; names: string[] }) {
   );
 }
 
-function MoveBody({ row }: { row: MoveRow }) {
+/* The name of the team of a move. The name of Your team takes the red of the site and the word "You", so it never rests
+   on the red alone, as in the standings ladder and the rank mover list. The other names stay in ink. */
+function TeamName({ name, you, children }: { name: string; you: boolean; children?: ReactNode }) {
+  return (
+    <span className={`truncate text-row leading-tight font-semibold ${you ? "text-accent-ink" : "text-ink"}`} {...(you ? { "data-you": "" } : {})}>
+      {name}
+      {you && <> <span className="font-mono text-meta tracking-caps uppercase">You</span></>}
+      {children && <> {children}</>}
+    </span>
+  );
+}
+
+function MoveBody({ row, you }: { row: MoveRow; you?: string }) {
   if (row.kind === "trade") {
     return (
       <span className="flex min-w-0 flex-col gap-sp-2">
         {row.sides.map((side) => (
           <span key={side.team} className="flex min-w-0 flex-col gap-sp-1">
-            <span className="truncate text-row leading-tight font-semibold text-ink">
-              {side.team} <span className="font-normal text-mute">got</span>
-            </span>
+            <TeamName name={side.team} you={side.team === you}>
+              <span className="font-normal text-mute">got</span>
+            </TeamName>
             <Players sign="+" names={side.got.length ? side.got : ["nothing"]} />
           </span>
         ))}
@@ -134,7 +146,7 @@ function MoveBody({ row }: { row: MoveRow }) {
   }
   return (
     <span className="flex min-w-0 flex-col gap-sp-1">
-      <span className="truncate text-row leading-tight font-semibold text-ink">{row.team}</span>
+      <TeamName name={row.team} you={row.team === you} />
       <Players sign="+" names={row.added} />
       <Players sign="−" names={row.dropped} />
     </span>
@@ -142,8 +154,8 @@ function MoveBody({ row }: { row: MoveRow }) {
 }
 
 /* The feed: the title and the legend, the strip, then the rows, newest first, and the count of the moves past the
-   rows. */
-export function FeedView({ block, live }: { block: FeedBlock; live: boolean }) {
+   rows. `you` is the name of Your team, because the block names each team by its name. */
+export function FeedView({ block, live, you }: { block: FeedBlock; live: boolean; you?: string }) {
   const id = `block-${block.title}`.replace(/\W+/g, "-");
   const kinds = (["trade", "waiver", "free_agent"] as const).filter((kind) => block.rows.some((row) => row.kind === kind));
   return (
@@ -172,7 +184,7 @@ export function FeedView({ block, live }: { block: FeedBlock; live: boolean }) {
             </span>
             <span className="flex min-w-0 flex-col">
               <span className="sr-only">{KIND_WORDS[row.kind]}. </span>
-              <MoveBody row={row} />
+              <MoveBody row={row} you={you} />
             </span>
             <span className="flex flex-col items-end gap-sp-1 text-right">
               <span className="font-mono text-meta leading-tight text-mute">{row.day.slice(0, 3)}</span>

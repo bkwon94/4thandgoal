@@ -100,6 +100,23 @@ describe("Reduced motion on the blocks of an Answer (AT-39)", () => {
     expectNoMove(container);
   });
 
+  it("does not roll the digits of the lineup total with reduced motion, when the toggle changes the total", async () => {
+    // The recorded Start or sit stream with a Swap, because only a lineup with a Swap shows the total that rolls.
+    const lineup = blocksOf(partsOf(join(FIXTURES, "personal-answer", "start-sit-swap.sse"))).find((block) => block.kind === "lineup")!;
+    const { container } = render(<BlockView block={lineup} live />);
+    await expectShown(container);
+    const total = container.querySelector<HTMLElement>("[data-total]")!;
+    const before = total.getAttribute("data-total");
+    fireEvent.click(Array.from(container.querySelectorAll<HTMLElement>("button[aria-pressed]")).find((button) => button.textContent === "By projection")!);
+    // The tap changes the total, so each digit column moves to a new digit.
+    expect(container.querySelector("[data-total]")!.getAttribute("data-total")).not.toBe(before);
+    const columns = Array.from(container.querySelectorAll<HTMLElement>("[data-total] *")).filter((part) => /translateY/.test(part.style.transform));
+    expect(columns.length).toBeGreaterThan(0);
+    // Each column jumps to its digit with no transition under reduced motion, so no digit rolls.
+    for (const column of columns) expect(column.className).toContain("motion-reduce:transition-none");
+    expectNoMove(container);
+  });
+
   it.each(["lineup", "waiver_list", "sell_list", "trade"])("opens a row of the %s block at once, with no slide and no blur", async (kind) => {
     const { container } = render(<BlockView block={BLOCKS.get(kind)!} live />);
     await expectShown(container);

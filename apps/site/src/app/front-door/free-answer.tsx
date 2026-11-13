@@ -183,7 +183,7 @@ function CheckMark({ state, live }: { state: CheckState; live: boolean }) {
 /* The body of a free answer: the steps, the text with its block, and the check. The steps wait until the check or the text comes,
    with `first` as the stand-in line before the first step. The text shows only with "Checked", and its words sweep in
    from a blur. A failed check shows the fixing line, and the checked rewrite takes its place. */
-export function FreeBody({ view, live, first }: { view: FreeView; live: boolean; first?: string }) {
+export function FreeBody({ view, live, first, you }: { view: FreeView; live: boolean; first?: string; you?: string }) {
   const off = useMotionOff();
   const fixing = view.second !== null;
   // The steps of the tool calls are done once the check or the text comes, so the wait ends there.
@@ -200,7 +200,7 @@ export function FreeBody({ view, live, first }: { view: FreeView; live: boolean;
               </p>
             )}
             {view.second && <StreamText text={view.second} live={live} />}
-            {view.second && view.answerBlock && <BlockView block={view.answerBlock} live={live} />}
+            {view.second && view.answerBlock && <BlockView block={view.answerBlock} live={live} you={you} />}
           </motion.div>
         ) : (
           view.first && (
@@ -211,7 +211,7 @@ export function FreeBody({ view, live, first }: { view: FreeView; live: boolean;
               className="flex flex-col gap-sp-4"
             >
               <StreamText text={view.first} live={live} />
-              {view.answerBlock && <BlockView block={view.answerBlock} live={live} />}
+              {view.answerBlock && <BlockView block={view.answerBlock} live={live} you={you} />}
             </motion.div>
           )
         )}
@@ -224,6 +224,8 @@ export function FreeBody({ view, live, first }: { view: FreeView; live: boolean;
 type Shared = {
   question: string;
   teamName: (team: number | null) => string | undefined;
+  /* The name of Your team, so a block that names each team by its name marks Your team in red. */
+  you?: string;
   onPick: (key: string, team: number | null) => void;
 };
 
@@ -240,7 +242,7 @@ function SuggestionChip({ suggestion, teamName, onPick }: { suggestion: FreeResu
 /* A free answer that the browser kept. It shows as it ended, with no stream and no API call. It takes the place of
    the live card when the stream ends, so its parts show at once with no fade, and the card never goes blank (AT-20). */
 export const FreeAnswerCard = forwardRef<HTMLElement, Shared & { result: FreeResult }>(function FreeAnswerCard(
-  { question, result, teamName, onPick },
+  { question, result, teamName, you, onPick },
   ref,
 ) {
   const view: FreeView = { steps: result.steps.map((line) => ({ line, done: true })), first: result.text, second: null, answerBlock: result.block ?? null, check: "checked", suggestion: result.suggestion, closest: null };
@@ -249,7 +251,7 @@ export const FreeAnswerCard = forwardRef<HTMLElement, Shared & { result: FreeRes
       <article key="kept" ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
         <QuestionBubble question={question} />
         <Surface>
-          <FreeBody view={view} live={false} />
+          <FreeBody view={view} live={false} you={you} />
           <SuggestionChip suggestion={result.suggestion} teamName={teamName} onPick={onPick} />
         </Surface>
       </article>
@@ -269,7 +271,7 @@ export const FreeAnswerLive = forwardRef<
     onMiss: (closest: string[]) => void;
     onError: () => void;
   }
->(function FreeAnswerLive({ question, target, passphrase, body, teamName, onPick, onDone, onMiss, onError }, ref) {
+>(function FreeAnswerLive({ question, target, passphrase, body, teamName, you, onPick, onDone, onMiss, onError }, ref) {
   // The question goes in the body, so the prompt of Claude is the question.
   const fields = useMemo(() => ({ question, ...body }), [question, body]);
   const { view, busy, kept } = useAnswerStream({
@@ -297,7 +299,7 @@ export const FreeAnswerLive = forwardRef<
       <QuestionBubble question={question} />
       <Surface>
         {/* A kept Answer of the API shows whole at once, with no stream of its words. */}
-        <FreeBody view={view} live={!kept} />
+        <FreeBody view={view} live={!kept} you={you} />
         {view.check === "checked" && <SuggestionChip suggestion={view.suggestion} teamName={teamName} onPick={onPick} />}
       </Surface>
     </article>
