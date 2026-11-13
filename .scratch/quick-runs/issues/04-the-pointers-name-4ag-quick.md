@@ -10,9 +10,9 @@ Spec: `.scratch/quick-runs/PRD.md`. Acceptance tests AT-31 and AT-32.
 
 **Status:** ready-for-agent
 
-- [ ] `AGENTS.md` names `4ag:quick` in The flow.
-- [ ] `4ag:plan` points a bug or a small change to `4ag:quick` in one line.
-- [ ] `docs/agents/issue-tracker.md` gives the quick file shape, the two folders, and why a quick file has no row.
-- [ ] `docs/agents/codex.md` gives the install step of `diagnosing-bugs`.
-- [ ] The skill files of `4ag:implement` and `4ag:review` do not change.
-- [ ] `make check-fast` passes at the root.
+- [x] `AGENTS.md` names `4ag:quick` in The flow.
+- [x] `4ag:plan` points a bug or a small change to `4ag:quick` in one line.
+- [x] `docs/agents/issue-tracker.md` gives the quick file shape, the two folders, and why a quick file has no row.
+- [x] `docs/agents/codex.md` gives the install step of `diagnosing-bugs`.
+- [x] The skill files of `4ag:implement` and `4ag:review` do not change.
+- [x] `make check-fast` passes at the root.
