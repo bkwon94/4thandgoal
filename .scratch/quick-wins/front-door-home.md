@@ -50,7 +50,7 @@ Green: at `2614875c`, `pnpm exec vitest run scripts/client-build.test.mjs -t "wr
 
 Test verdict: pending
 
-### 3. The passphrase sits on the team sheet, not in the chat
+### 3. The passphrase asks in a modal before a chat turn, not in the chat
 
 Done condition: the team sheet asks only for the team, a chat turn that needs the API with no stored passphrase (for example none from the analyzer) first opens a passphrase modal and runs after it, the chat Thread never shows the passphrase card, and the header menu sheet holds a row to change it.
 Method: tdd
