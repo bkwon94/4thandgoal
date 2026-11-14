@@ -1,7 +1,7 @@
 # A new question scrolls into view from a scrolled-up Thread
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-ask-scroll`.
 Source: the session of 2026-11-13.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -36,3 +36,9 @@ Green: at `2b85fb51`, `cd apps/site && CLIENT=cpc pnpm build && pnpm exec playwr
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-ask-scroll`. Commits: `60d6e2c8`, `2b85fb51`. Date: 2026-11-13.
+The loop `apps/site/e2e/front-door-scroll-up.spec.ts` went red on the chip case at `60d6e2c8` and green on both cases at `2b85fb51`, and the site has 1506 passing vitest tests.
+The typed-question case passed at the red commit in WebKit, so the loop shows the chip half of the bug only.
+With reduced motion on, the chip case ends 20 px under the Thread header, not 16, which a later run can check.
+Read 7 files: docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, GLOSSARY.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, .claude/plugin/skills/implement/build.md, apps/site/src/app/front-door/front-door.tsx.
