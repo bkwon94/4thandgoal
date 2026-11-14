@@ -1,7 +1,7 @@
 # A follow-up in the Thread gets "I can't answer that."
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-chat-follow-ups`.
 Source: the session of 2026-11-14.
 Boundary: holds. 2 items of one kind; no new term or ADR; no moved seam, because the existing `turns` field carries the context; each done condition is one sentence.
@@ -58,3 +58,8 @@ Green: at `a88ab9de`, `cd apps/api && uv run --exact --package cpc-api pytest -m
 Test verdict: PASS
 
 ## Comments
+
+- Closes with the squash merge of the PR of `bug-chat-follow-ups`. Commits: `f4b17769`, `0ebf3af3`, `762e7148`, `a88ab9de`, `1ed61f19`. Date: 2026-11-14.
+- The full API suite gives 578 passed, the live route eval gives 56 of 59 against a bar of 52, and the loop of each item went red, then green.
+- A later run can change `CLAUDE_TURNS_LINE` in `chat_turns.py`, which still tells Claude to take no fact from an earlier answer.
+- Read 10 files: AGENTS.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, apps/site/src/app/front-door/front-door.tsx, apps/api/src/cornerstone_api/ask.py, apps/api/src/cornerstone_api/ask_wording.py, apps/api/src/cornerstone_api/chat_turns.py, apps/api/src/cornerstone_api/free_wording.py, apps/api/src/cornerstone_api/free_answer.py.
