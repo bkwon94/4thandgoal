@@ -27,7 +27,7 @@ test.afterAll(async () => {
 
 /* iOS keeps the layout viewport at full height and shrinks the visual viewport by the keyboard. On a tap, the field
    takes the focus first, and the keyboard rises after it. The fake visual viewport starts at full height, and
-   openKeyboard shrinks it and fires its resize, in that order. No passphrase is kept, so a question asks for it. */
+   openKeyboard shrinks it and fires its resize, in that order. No passphrase is kept, so the first action asks for it. */
 async function fakeViewport(page: Page) {
   await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
   await page.addInitScript(() => {
@@ -88,12 +88,15 @@ async function askForPassphrase(page: Page) {
 }
 
 test.describe("the passphrase box of the passphrase modal with the iOS keyboard (AT-51)", () => {
-  test("the team sheet asks only for the team, and the box sits above the keyboard on the first question", async ({ page }) => {
+  test("the team sheet asks only for the team, and the box sits above the keyboard on the first Topic tap", async ({ page }) => {
     await fakeViewport(page);
     await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
-    await expect(page.getByRole("dialog"), "the pick of the team closes the sheet").toHaveCount(0);
-    await askForPassphrase(page);
+    await expect(page.getByRole("dialog"), "the pick of the team closes the sheet, and no modal opens on its own").toHaveCount(0);
+    // A weekly Topic from "More" needs no API, and the first action still asks for the passphrase.
+    await page.getByRole("group", { name: "Suggestions" }).getByRole("button", { name: "More" }).tap();
+    await page.getByRole("list", { name: "All Topics" }).getByRole("button").first().tap();
+    await expect(page.getByRole("dialog", { name: "What is the league passphrase?" })).toBeVisible();
     await tapAndOpenKeyboard(page);
     const place = await boxAndKeyboard(page);
     console.log(`the box spans ${place.top} to ${place.bottom} px, and the keyboard starts at ${place.keyboard} px`);

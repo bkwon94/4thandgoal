@@ -17,6 +17,9 @@ const roots: string[] = [];
 beforeEach(() => {
   vi.stubGlobal("fetch", vi.fn(async () => new Response("", { status: 404 })));
 });
+/* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
+   action. */
+beforeEach(() => localStorage.setItem("cpc.passphrase", "cornerstone-test"));
 
 afterEach(() => {
   cleanup();

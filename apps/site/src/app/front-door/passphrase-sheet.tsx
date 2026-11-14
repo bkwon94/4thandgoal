@@ -1,6 +1,6 @@
 /**
- * The modal that asks for the league passphrase before a chat turn that needs the API, after a wrong passphrase, and
- * from the row of the header menu. It has the look and the motion of the team sheet, and it closes by "Not now" or Escape.
+ * The modal that asks for the league passphrase before the first action of the front door, after a wrong passphrase,
+ * and from the row of the header menu. It has the look and the motion of the team sheet, and it closes by "Not now" or Escape.
  */
 "use client";
 
@@ -12,7 +12,7 @@ import { useKeyboardField } from "@cpc/design/shell/keyboard";
 import { FAST, QUICK, SHEET_SPRING, SMOOTH, fadeIn } from "./motion";
 
 /* The ask box needs the passphrase, so only managers of the league ask. The browser keeps it under the same key as the
-   trade analyzer, so a manager types it once. `wrong` is true after the API turned the last one down. */
+   trade analyzer, so a manager types it once per device. `wrong` is true after the API turned the last one down. */
 export function PassphraseSheet({ siteName, wrong, onPassphrase, onClose }: { siteName: string; wrong: boolean; onPassphrase: (value: string) => void; onClose: () => void }) {
   const off = useMotionOff();
   const [value, setValue] = useState("");
@@ -80,7 +80,7 @@ export function PassphraseSheet({ siteName, wrong, onPassphrase, onClose }: { si
             What is the league passphrase?
           </h2>
           <p id="passphrase-line" className="m-0 text-lead leading-body text-ink-2">
-            {wrong ? "That passphrase did not match. Type the league passphrase again." : "Type it once. This phone keeps it."}
+            {wrong ? "That passphrase did not match. Type the league passphrase again." : "Type it once. This device keeps it."}
           </p>
         </div>
         {/* The end of the modal keeps the home bar of an iPhone clear. The keyboard covers the home bar, so the pad drops then. */}

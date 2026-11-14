@@ -361,6 +361,8 @@ describe("Reduced motion on the static pages", () => {
 
   it("keeps only the fades when a tapped Suggestion opens its Answer: no glide, blur, or spring (AT-46 of front-door)", async () => {
     localStorage.setItem("cpc.your-team", "3");
+    // A kept passphrase lets the tap open the Answer with no passphrase modal first.
+    localStorage.setItem("cpc.passphrase", "cornerstone-test");
     onTestFinished(() => localStorage.clear());
     render(<HomePage />);
     const chip = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole("button")[1];

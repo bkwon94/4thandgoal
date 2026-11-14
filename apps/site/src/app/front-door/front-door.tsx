@@ -1,7 +1,7 @@
 /**
  * The front door at /: the sheet that asks for Your team on the first visit, then the Thread with the Suggestions and
  * the ask box. A tap on a Suggestion puts its Answer in the Thread, and a typed question goes to the route of the API.
- * A turn that needs the API with no passphrase asks for it in a modal first.
+ * The first action with no stored passphrase, a question or a Topic, asks for it in a modal first.
  * The browser keeps Your team, the opened Topics, the league passphrase, and one Thread per team for the week.
  */
 "use client";
@@ -250,7 +250,7 @@ export function FrontDoor({
       put(id, itemOfError(error, question));
     }
   };
-  /* Open the passphrase modal before a turn that needs the API, and run `then` with the new passphrase once the manager
+  /* Open the passphrase modal before the first action, and run `then` with the new passphrase once the manager
      types it. `waiting` is the id of the question that waits in the Thread, so a close can remove it. A wrong
      passphrase leaves the store. */
   const askPassphrase = (wrong: boolean, waiting: number | null, then: (passphrase: string) => void) => {
@@ -261,6 +261,12 @@ export function FrontDoor({
   /* Open the Answer of a Topic for `of`, Your team by default, or for the team that a typed question named. */
   const open = (key: string, of: number | null = null) => {
     if (!team) return;
+    // Each action of the front door needs the passphrase, a league Topic too, so the first one asks for it in the modal
+    // and then runs. A passphrase that the trade analyzer stored counts.
+    if (!getPassphrase()) {
+      setMoreOpen(false);
+      return askPassphrase(false, null, () => open(key, of));
+    }
     const owner = of ?? team.id;
     const mode = TRADE_TOPICS[key];
     if (mode) {
@@ -272,8 +278,7 @@ export function FrontDoor({
         put(nextId.current++, { kind: "trade", mode, question: name, steps: [], answer: { kind: "form", form: { asker: team.id, partner, gives: [], gets: [] } } }, true);
         return;
       }
-      const passphrase = getPassphrase();
-      if (!passphrase) return askPassphrase(false, null, () => open(key, of));
+      const passphrase = getPassphrase() ?? "";
       // A trade Topic of Your team drops off the Suggestions until the API serves a new fact for it.
       if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
       // A tapped Topic has no closest Topics of its own, so a cap line offers the Suggestions of the day. A trade
@@ -283,16 +288,12 @@ export function FrontDoor({
       void runTrade(nextId.current++, name, mode === "sell" ? { mode, roster_id: team.id } : { mode, roster_id: team.id, partner }, passphrase, closest, true);
       return;
     }
-    // A personal Topic builds live on the API, so it needs the passphrase as a typed question does.
+    // A personal Topic builds live on the API.
     if (isPersonal(key)) {
       setMoreOpen(false);
-      const name = topicName(key);
-      if (!getPassphrase()) askPassphrase(false, null, () => open(key, of));
-      else {
-        // A personal Topic of Your team drops off the Suggestions until the API serves a new fact for it.
-        if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
-        put(nextId.current++, { kind: "personal", key, team: owner, question: null, result: null }, true);
-      }
+      // A personal Topic of Your team drops off the Suggestions until the API serves a new fact for it.
+      if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
+      put(nextId.current++, { kind: "personal", key, team: owner, question: null, result: null }, true);
       return;
     }
     const answer = (answers[owner] ?? []).find((candidate) => candidate.topic === key);

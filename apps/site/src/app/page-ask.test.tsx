@@ -226,8 +226,8 @@ describe("the empty screen says the league is fair game", () => {
   });
 });
 
-/* A chat turn that needs the API asks for the league passphrase in a modal first, so the Thread never holds a field of the
-   passphrase. The team sheet asks only for the team. */
+/* The first action with no stored passphrase, a question or a Topic, asks for the league passphrase in a modal first, so
+   the Thread never holds a field of the passphrase. The team sheet asks only for the team. */
 describe("the passphrase modal", () => {
   const passphraseModal = () => screen.findByRole("dialog", { name: "What is the league passphrase?" });
   const thread = () => screen.getByRole("region", { name: "Thread" });
@@ -239,17 +239,41 @@ describe("the passphrase modal", () => {
     fireEvent.submit(form);
   }
 
-  it("asks only for the team on a first visit, and a league Topic opens with no passphrase", async () => {
+  /* Opens a weekly league Topic from the list under "More", so the test needs no Suggestion of the day. */
+  async function openWeekRecap() {
+    fireEvent.click(within(await screen.findByRole("group", { name: "Suggestions" })).getByRole("button", { name: "More" }));
+    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Week recap/ }));
+  }
+
+  it("asks only for the team on a first visit, and the first tap on a weekly Topic opens the modal, then the Topic", async () => {
     localStorage.removeItem("cpc.your-team");
     localStorage.removeItem("cpc.passphrase");
     render(<HomePage />);
     fireEvent.click(within(await screen.findByRole("dialog", { name: "Which team is yours?" })).getByRole("button", { name: /Lil Fridge/ }));
+    // The page opens no modal on its own, only on the first action.
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
-    fireEvent.click(within(await screen.findByRole("group", { name: "Suggestions" })).getByRole("button", { name: "More" }));
-    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Week recap/ }));
+    await openWeekRecap();
+    await passphraseModal();
+    expect(screen.queryByRole("article", { name: "Week recap" })).toBeNull();
+    await typePassphrase(PASSPHRASE);
+    await screen.findByRole("article", { name: "Week recap" });
+    expect(localStorage.getItem("cpc.passphrase")).toBe(PASSPHRASE);
+  });
+
+  it("skips the modal for a Topic when a passphrase is stored, such as one from the analyzer", async () => {
+    render(<HomePage />);
+    await openWeekRecap();
     await screen.findByRole("article", { name: "Week recap" });
     expect(screen.queryByRole("dialog")).toBeNull();
-    expect(screen.queryByRole("form", { name: "League passphrase" })).toBeNull();
+  });
+
+  it("says that the device keeps the passphrase, never the phone", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    await passphraseForm();
+    expect(document.body.textContent).not.toMatch(/\bphone\b/i);
+    expect((await passphraseModal()).textContent).toContain("Type it once. This device keeps it.");
   });
 
   it("opens the modal before a question with no passphrase, never the card in the Thread, then sends the question", async () => {
@@ -281,7 +305,7 @@ describe("the passphrase modal", () => {
     expect(askCalls()[1][1].headers["X-League-Passphrase"]).toBe("the-right-one");
   });
 
-  it("removes the question that waits when the manager closes the modal with Not now", async () => {
+  it("drops the action when the manager closes the modal with Not now, and the next action asks again", async () => {
     localStorage.removeItem("cpc.passphrase");
     render(<HomePage />);
     await ask("who am i playing sunday");
@@ -289,6 +313,9 @@ describe("the passphrase modal", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
     expect(screen.queryByRole("article", { name: "who am i playing sunday" })).toBeNull();
     expect(askCalls()).toHaveLength(0);
+    await openWeekRecap();
+    await passphraseModal();
+    expect(screen.queryByRole("article", { name: "Week recap" })).toBeNull();
   });
 
   it("changes the passphrase from a row of the header menu, and keeps the old one on Escape", async () => {
