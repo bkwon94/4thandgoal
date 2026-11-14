@@ -16,8 +16,10 @@ export async function openDoor(page: Page, href: string) {
 
 /* Open a league Topic from the list under "More", so the test needs no Suggestion of the day. The tap on "More" holds
    the press for 100 ms, as a finger does. A pill that moves under the press then loses the tap on each run, and not
-   only on a slow CI runner. */
+   only on a slow CI runner. A pick shuts the panel, and the pill drops in place only when the panel has left, about
+   150 ms later. So the tap waits until the list "All Topics" is gone, and the pill stands still under the press. */
 export async function openTopic(page: Page, name: string) {
+  await expect(page.getByRole("list", { name: "All Topics" })).toHaveCount(0);
   await page.getByRole("button", { name: "More" }).click({ delay: 100 });
   await page.getByRole("list", { name: "All Topics" }).getByRole("button", { name: new RegExp(`^${name}:`) }).click();
   await expect(page.getByRole("article", { name })).toBeVisible();
