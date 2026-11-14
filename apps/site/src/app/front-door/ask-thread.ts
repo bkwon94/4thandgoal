@@ -110,7 +110,7 @@ export function itemOfRoute(
 }
 
 /* The item of a failed call. A 429 says how long to wait. Each other failure is an error, never a miss, so it offers a
-   retry. The front door takes a wrong passphrase to the passphrase step of the team sheet before it calls this. */
+   retry. The front door takes a wrong passphrase to the passphrase modal before it calls this. */
 export function itemOfError(error: unknown, question: string): ThreadItem {
   if (error instanceof AskError && error.status === 429) {
     const wait = error.retryAfter ? `Try again in ${error.retryAfter} seconds.` : "Try again in a minute.";

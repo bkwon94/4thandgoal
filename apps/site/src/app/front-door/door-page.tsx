@@ -19,7 +19,7 @@ export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: st
     <>
       {/* The front door has its own foot, the Suggestions and the ask box, so the pages sit in the header sheet in place of
           the dock, and the week chip leaves: the Answers are about the live week (decision 10). */}
-      {/* The header sheet holds a row that changes the league passphrase, which the front door asks for on the team sheet. */}
+      {/* The header sheet holds a row that changes the league passphrase, which the front door asks for in a modal. */}
       <TopBand {...shellProps()} pageHref={pageHref} nav="sheet" sheetRows={door ? <PassphraseRow /> : undefined} />
       {/* The strip of each package under the top band, edge to edge, such as the egg banner after an egg drop. */}
       {homeBanners.map((Banner, index) => (

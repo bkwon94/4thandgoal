@@ -1,6 +1,6 @@
 /**
- * The row of the header menu of the front door that opens the passphrase step of the team sheet, so a manager can change
- * the league passphrase. The top band and the front door are apart in the page, so the row reaches the front door here.
+ * The row of the header menu of the front door that opens the passphrase modal, so a manager can change the league
+ * passphrase. The top band and the front door are apart in the page, so the row reaches the front door here.
  */
 "use client";
 

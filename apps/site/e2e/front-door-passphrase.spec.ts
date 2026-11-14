@@ -1,6 +1,7 @@
 /**
- * The passphrase box of the team sheet of the front door on the static export in out/ of the current CLIENT, in WebKit at
- * the size of an iPhone. It checks that the box sits above the keyboard when the keyboard opens after the focus, as on iOS (AT-51).
+ * The passphrase box of the passphrase modal of the front door on the static export in out/ of the current CLIENT, in
+ * WebKit at the size of an iPhone. It checks that the box sits above the keyboard when the keyboard opens after the focus,
+ * as on iOS (AT-51).
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
@@ -26,7 +27,7 @@ test.afterAll(async () => {
 
 /* iOS keeps the layout viewport at full height and shrinks the visual viewport by the keyboard. On a tap, the field
    takes the focus first, and the keyboard rises after it. The fake visual viewport starts at full height, and
-   openKeyboard shrinks it and fires its resize, in that order. No passphrase is kept, so the sheet asks for it. */
+   openKeyboard shrinks it and fires its resize, in that order. No passphrase is kept, so a question asks for it. */
 async function fakeViewport(page: Page) {
   await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
   await page.addInitScript(() => {
@@ -76,12 +77,23 @@ async function tapAndOpenKeyboard(page: Page) {
   await page.evaluate((height) => (window as unknown as { openKeyboard: (height: number) => void }).openKeyboard(height), KEYBOARD);
 }
 
-test.describe("the passphrase box of the team sheet with the iOS keyboard (AT-51)", () => {
-  test("the box sits above the keyboard on the first visit, right after the team", async ({ page }) => {
+/* Ask a question with no kept passphrase, so the passphrase modal opens, and the Thread holds no passphrase box. */
+async function askForPassphrase(page: Page) {
+  const ask = page.getByRole("textbox", { name: "Ask a question" });
+  await ask.tap();
+  await ask.fill("Who should I start?");
+  await page.getByRole("button", { name: "Send" }).tap();
+  await expect(page.getByRole("dialog", { name: "What is the league passphrase?" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Thread" }).getByRole("form", { name: "League passphrase" }), "the Thread holds no passphrase box").toHaveCount(0);
+}
+
+test.describe("the passphrase box of the passphrase modal with the iOS keyboard (AT-51)", () => {
+  test("the team sheet asks only for the team, and the box sits above the keyboard on the first question", async ({ page }) => {
     await fakeViewport(page);
     await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
-    await expect(page.getByRole("dialog", { name: "What is the league passphrase?" })).toBeVisible();
+    await expect(page.getByRole("dialog"), "the pick of the team closes the sheet").toHaveCount(0);
+    await askForPassphrase(page);
     await tapAndOpenKeyboard(page);
     const place = await boxAndKeyboard(page);
     console.log(`the box spans ${place.top} to ${place.bottom} px, and the keyboard starts at ${place.keyboard} px`);
@@ -89,17 +101,11 @@ test.describe("the passphrase box of the team sheet with the iOS keyboard (AT-51
     expect(place.top, "the box is in view").toBeGreaterThanOrEqual(0);
   });
 
-  test("the box sits above the keyboard when a question needs the passphrase", async ({ page }) => {
+  test("the box sits above the keyboard with a kept team and no kept passphrase", async ({ page }) => {
     await fakeViewport(page);
-    // A kept team with no kept passphrase, as on a phone that picked the team before the passphrase moved to the sheet.
     await page.addInitScript(() => localStorage.setItem("cpc.your-team", "1"));
     await page.goto(`${server.url}${DOOR}`);
-    const ask = page.getByRole("textbox", { name: "Ask a question" });
-    await ask.tap();
-    await ask.fill("Who should I start?");
-    await page.getByRole("button", { name: "Send" }).tap();
-    await expect(page.getByRole("dialog", { name: "What is the league passphrase?" })).toBeVisible();
-    await expect(page.getByRole("region", { name: "Thread" }).getByRole("form", { name: "League passphrase" }), "the Thread holds no passphrase box").toHaveCount(0);
+    await askForPassphrase(page);
     await tapAndOpenKeyboard(page);
     const place = await boxAndKeyboard(page);
     expect(place.bottom, "the whole box is above the keyboard").toBeLessThanOrEqual(place.keyboard);
