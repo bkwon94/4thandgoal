@@ -52,7 +52,7 @@ Test verdict: pending
 
 ### 3. The passphrase sits on the team sheet, not in the chat
 
-Done condition: on a first visit with no stored passphrase, the team sheet asks for the team and then the passphrase, the chat Thread never shows the passphrase card, a passphrase already stored (for example from the analyzer) skips that step, and the header menu sheet holds a row to change it.
+Done condition: the team sheet asks only for the team, a chat turn that needs the API with no stored passphrase (for example none from the analyzer) first opens a passphrase modal and runs after it, the chat Thread never shows the passphrase card, and the header menu sheet holds a row to change it.
 Method: tdd
 Red: at `e9c941ff` with `apps/site/src/app/page-ask.test.tsx` of `31ea0936`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase on the team sheet"` in `apps/site`
 
@@ -79,3 +79,4 @@ Test verdict: pending
 
 - Item 1 was text only at the go. The flag switch failed 10 site tests that pin the repo clients to `front_door = false`, so item 1 moved to tdd.
 - Item 1 also failed the 3 floor tests "covers no page title", because they opened `/`, which has no week chip on the front door. Fix `79c24cc9` opens the latest week page. Floor: cpc 153 passed, 7 skipped; norcal 149 passed.
+- Brian changed the done condition of item 3 after the first build (31ea0936): no passphrase step on the team sheet; a modal opens before a chat turn that needs the API, so the weekly Topics stay open with no passphrase.
