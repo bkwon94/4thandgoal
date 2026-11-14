@@ -4,7 +4,7 @@ Kind: bug
 Status: in-progress
 Branch: `bug-chat-follow-ups`.
 Source: the session of 2026-11-14.
-Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam, because the existing `turns` field carries the context; the done condition is one sentence.
+Boundary: holds. 2 items of one kind; no new term or ADR; no moved seam, because the existing `turns` field carries the context; each done condition is one sentence.
 
 ## Items
 
@@ -32,6 +32,15 @@ Green: at `0ebf3af3`, `cd apps/api && uv run --exact --package cpc-api pytest -m
 'write me a poem': miss None {'fits_topic': 0.02, 'data_can_answer': 0.02, 'about_league': 0.02, 'abuse': 0.02, 'reacts_to_answer': 0.02, 'names_team': 0.01}
 3 passed in 1.15s
 ```
+Test verdict: pending
+
+### 2. The free-answer check fails a reply that stands on the earlier answer
+
+Done condition: With the turns of a start or sit answer and no new tool results, the free-answer check passes a reply to "you sure?" that restates a claim of the earlier answer, and still fails a reply with a claim that neither the turns nor the tool results state.
+Method: diagnosing-bugs.
+Cause: pending
+Red: pending
+Green: pending
 Test verdict: pending
 
 ## Comments
