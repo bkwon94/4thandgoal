@@ -28,7 +28,7 @@ Green: at `ffda338d`, `pnpm exec vitest run scripts/client-build.test.mjs -t "ha
  Tests  1 passed | 47 skipped (48)
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. The old /ask/ address sends the visitor to /
 
@@ -48,7 +48,7 @@ Green: at `2614875c`, `pnpm exec vitest run scripts/client-build.test.mjs -t "wr
  Tests  1 passed | 48 skipped (49)
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ### 3. The passphrase asks in a modal before a chat turn, not in the chat
 
@@ -77,7 +77,7 @@ Green: at `72067e3b`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the pa
  Tests  6 passed | 15 skipped (21)
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
 
