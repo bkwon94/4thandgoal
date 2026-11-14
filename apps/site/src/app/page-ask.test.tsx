@@ -159,51 +159,6 @@ describe("the ask box of Lil Fridge", () => {
     expect(within(miss).getByRole("group", { name: "Closest Topics" })).toBeTruthy();
   });
 
-  it("asks for the passphrase first, keeps it, and then sends the question", async () => {
-    localStorage.removeItem("cpc.passphrase");
-    answerWith(route({ route: "topic", topic: "next_matchup" }));
-    render(<HomePage />);
-    await ask("who am i playing sunday");
-    const form = await screen.findByRole("form", { name: "League passphrase" });
-    expect(askCalls()).toHaveLength(0);
-    fireEvent.change(within(form).getByLabelText("League passphrase"), { target: { value: PASSPHRASE } });
-    fireEvent.submit(form);
-    await articleWith("who am i playing sunday", "behold the lamb");
-    expect(localStorage.getItem("cpc.passphrase")).toBe(PASSPHRASE);
-  });
-
-  it("asks for the passphrase again after a 401, and forgets the wrong one", async () => {
-    answerWith(null, 401);
-    render(<HomePage />);
-    await ask("who am i playing sunday");
-    await articleWith("who am i playing sunday", "did not match");
-    expect(localStorage.getItem("cpc.passphrase")).toBeNull();
-  });
-
-  /* The passphrase field opens the keyboard as the ask box does, so the foot moves above the keyboard for it (AT-51). */
-  it("marks the passphrase field as a keyboard field while it has the focus (AT-51)", async () => {
-    localStorage.removeItem("cpc.passphrase");
-    render(<HomePage />);
-    await ask("who am i playing sunday");
-    const field = within(await screen.findByRole("form", { name: "League passphrase" })).getByLabelText("League passphrase");
-    act(() => field.blur());
-    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(false);
-    act(() => field.focus());
-    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(true);
-    act(() => field.blur());
-    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(false);
-  });
-
-  /* jsdom has no layout, so the test reads the scroll margin class. The WebKit run of the floor checks the place above
-     the foot (e2e/front-door-passphrase.spec.ts). */
-  it("keeps the passphrase box clear of the foot with a scroll margin as tall as the measured foot (AT-51)", async () => {
-    localStorage.removeItem("cpc.passphrase");
-    render(<HomePage />);
-    await ask("who am i playing sunday");
-    const form = await screen.findByRole("form", { name: "League passphrase" });
-    expect(form.className).toContain("scroll-mb-[calc(var(--spacing-door-foot)+var(--door-dock,0px)");
-  });
-
   it("shows a retry line after a failed route, never a miss, and asks again on a tap", async () => {
     answerWith(null, 503);
     answerWith(route({ route: "topic", topic: "next_matchup" }));
@@ -268,5 +223,139 @@ describe("the empty screen says the league is fair game", () => {
     expect(JSON.parse(askCalls()[0][1].body).question).toBe("who has the best roster");
     expect(document.activeElement).not.toBe(field);
     await articleWith("who has the best roster", "");
+  });
+});
+
+/* The first action with no stored passphrase, a question or a Topic, asks for the league passphrase in a modal first, so
+   the Thread never holds a field of the passphrase. The team sheet asks only for the team. */
+describe("the passphrase modal", () => {
+  const passphraseModal = () => screen.findByRole("dialog", { name: "What is the league passphrase?" });
+  const thread = () => screen.getByRole("region", { name: "Thread" });
+  const passphraseForm = () => screen.findByRole("form", { name: "League passphrase" });
+
+  async function typePassphrase(value: string) {
+    const form = within(await passphraseModal()).getByRole("form", { name: "League passphrase" });
+    fireEvent.change(within(form).getByLabelText("League passphrase"), { target: { value } });
+    fireEvent.submit(form);
+  }
+
+  /* Opens a weekly league Topic from the list under "More", so the test needs no Suggestion of the day. */
+  async function openWeekRecap() {
+    fireEvent.click(within(await screen.findByRole("group", { name: "Suggestions" })).getByRole("button", { name: "More" }));
+    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Week recap/ }));
+  }
+
+  it("asks only for the team on a first visit, and the first tap on a weekly Topic opens the modal, then the Topic", async () => {
+    localStorage.removeItem("cpc.your-team");
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    fireEvent.click(within(await screen.findByRole("dialog", { name: "Which team is yours?" })).getByRole("button", { name: /Lil Fridge/ }));
+    // The page opens no modal on its own, only on the first action.
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
+    await openWeekRecap();
+    await passphraseModal();
+    expect(screen.queryByRole("article", { name: "Week recap" })).toBeNull();
+    await typePassphrase(PASSPHRASE);
+    await screen.findByRole("article", { name: "Week recap" });
+    expect(localStorage.getItem("cpc.passphrase")).toBe(PASSPHRASE);
+  });
+
+  it("opens the modal on the first tap of a Suggestion chip, before its fact strip, then shows the strip", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    const [, chip] = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole("button");
+    const name = chip.getAttribute("aria-label")!.split(":")[0];
+    fireEvent.click(chip);
+    await passphraseModal();
+    expect(chip.getAttribute("aria-expanded")).toBe("false");
+    expect(screen.queryByRole("button", { name: `Open ${name}` })).toBeNull();
+    await typePassphrase(PASSPHRASE);
+    await waitFor(() => expect(chip.getAttribute("aria-expanded")).toBe("true"));
+    expect(screen.getByRole("button", { name: `Open ${name}` })).toBeTruthy();
+  });
+
+  it("skips the modal for a Topic when a passphrase is stored, such as one from the analyzer", async () => {
+    render(<HomePage />);
+    await openWeekRecap();
+    await screen.findByRole("article", { name: "Week recap" });
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("says that the device keeps the passphrase, never the phone", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    await passphraseForm();
+    expect(document.body.textContent).not.toMatch(/\bphone\b/i);
+    expect((await passphraseModal()).textContent).toContain("Type it once. This device keeps it.");
+  });
+
+  it("opens the modal before a question with no passphrase, never the card in the Thread, then sends the question", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    answerWith(route({ route: "topic", topic: "next_matchup" }));
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    await passphraseForm();
+    expect(within(thread()).queryByRole("form", { name: "League passphrase" })).toBeNull();
+    await passphraseModal();
+    expect(askCalls()).toHaveLength(0);
+    await typePassphrase(PASSPHRASE);
+    await articleWith("who am i playing sunday", "behold the lamb");
+    expect(localStorage.getItem("cpc.passphrase")).toBe(PASSPHRASE);
+  });
+
+  it("opens the modal as wrong after a 401, forgets the wrong one, and asks again after a new one", async () => {
+    answerWith(null, 401);
+    answerWith(route({ route: "topic", topic: "next_matchup" }));
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    await passphraseForm();
+    expect(within(thread()).queryByRole("form", { name: "League passphrase" })).toBeNull();
+    expect((await passphraseModal()).textContent).toContain("did not match");
+    expect(localStorage.getItem("cpc.passphrase")).toBeNull();
+    await typePassphrase("the-right-one");
+    await articleWith("who am i playing sunday", "behold the lamb");
+    expect(askCalls()).toHaveLength(2);
+    expect(askCalls()[1][1].headers["X-League-Passphrase"]).toBe("the-right-one");
+  });
+
+  it("drops the action when the manager closes the modal with Not now, and the next action asks again", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    fireEvent.click(within(await passphraseModal()).getByRole("button", { name: "Not now" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
+    expect(screen.queryByRole("article", { name: "who am i playing sunday" })).toBeNull();
+    expect(askCalls()).toHaveLength(0);
+    await openWeekRecap();
+    await passphraseModal();
+    expect(screen.queryByRole("article", { name: "Week recap" })).toBeNull();
+  });
+
+  it("has no passphrase row in the header menu, and Escape closes the modal and drops the action", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }));
+    expect(within(screen.getByRole("navigation", { name: "Pages" })).queryByText(/passphrase/i)).toBeNull();
+    fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Close the menu" }));
+    await ask("who am i playing sunday");
+    fireEvent.keyDown(await passphraseModal(), { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
+    expect(screen.queryByRole("article", { name: "who am i playing sunday" })).toBeNull();
+    expect(askCalls()).toHaveLength(0);
+  });
+
+  /* The field opens the keyboard as the ask box does, so the modal moves above the keyboard for it (AT-51). */
+  it("marks the passphrase field of the modal as a keyboard field while it has the focus (AT-51)", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    await ask("who am i playing sunday");
+    const field = within(within(await passphraseModal()).getByRole("form", { name: "League passphrase" })).getByLabelText("League passphrase");
+    act(() => field.blur());
+    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(false);
+    act(() => field.focus());
+    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(true);
+    act(() => field.blur());
+    expect(document.documentElement.hasAttribute("data-keyboard")).toBe(false);
   });
 });

@@ -1,6 +1,6 @@
 /**
- * The home page at /. The flag front_door of client.toml picks it: on, / is the front door; off, / is the Front page of
- * decision 08, and the front door sits at the hidden /ask/ route until the commissioner turns it on (ticket 43 of front-door).
+ * The home page at /. The flag front_door of client.toml picks it: on, / is the front door, with no /ask/ route. Both
+ * clients turn it on. Off, / is the Front page of decision 08, and the front door sits at the hidden /ask/ route.
  */
 import type { Metadata } from "next";
 import { clientValues } from "@/generated/client-values";

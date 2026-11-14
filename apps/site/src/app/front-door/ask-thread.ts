@@ -20,7 +20,6 @@ import { topicName } from "./topics";
 export type ThreadItem =
   | { kind: "topic"; key: string; team: number; question: string | null }
   | { kind: "pending"; question: string }
-  | { kind: "passphrase"; question: string; wrong: boolean }
   | { kind: "miss"; question: string; closest: string[]; block?: PersonalBlock }
   | { kind: "cap"; question: string; line: string; closest: string[] }
   | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean }
@@ -110,10 +109,9 @@ export function itemOfRoute(
   }
 }
 
-/* The item of a failed call. A wrong passphrase asks for it again. A 429 says how long to wait. Each other failure is
-   an error, never a miss, so it offers a retry. */
+/* The item of a failed call. A 429 says how long to wait. Each other failure is an error, never a miss, so it offers a
+   retry. The front door takes a wrong passphrase to the passphrase modal before it calls this. */
 export function itemOfError(error: unknown, question: string): ThreadItem {
-  if (error instanceof AskError && error.status === 401) return { kind: "passphrase", question, wrong: true };
   if (error instanceof AskError && error.status === 429) {
     const wait = error.retryAfter ? `Try again in ${error.retryAfter} seconds.` : "Try again in a minute.";
     return { kind: "note", question, line: `That is a lot of questions at once. ${wait}`, topic: null, team: null, retry: false };

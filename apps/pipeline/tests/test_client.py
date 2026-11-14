@@ -49,19 +49,19 @@ def test_the_cpc_client_reads_the_values_of_the_spec():
     assert values.package(LeagueValues).chart == "1QB0.5PPR4pt"
     assert [item.package or item.page for item in values.menu.items] == [
         "home", "week", "rankings", "midseason", "managers", "analyzer"]
-    assert values.front_door is False
+    assert values.front_door is True
     assert [item.package or item.page for item in values.menu.front_door_items or []] == [
         "home", "week", "rankings", "managers"]
 
 
-def test_each_client_of_the_repo_keeps_the_front_door_off():
-    # Ticket 43 of front-door: both live sites keep the home page and the menu of main until the commissioner turns it on.
+def test_each_client_of_the_repo_turns_the_front_door_on():
+    # Both live sites run the front door at / and the shorter menu of front_door_items.
     for slug in ["cpc", "norcal"]:
-        assert read_client_values(ROOT / "clients" / slug, VALUE_MODELS).front_door is False, slug
+        assert read_client_values(ROOT / "clients" / slug, VALUE_MODELS).front_door is True, slug
 
 
 def test_a_front_door_that_is_not_true_or_false_fails(tmp_path):
-    folder = _copy(tmp_path, "front_door = false", 'front_door = "yes"')
+    folder = _copy(tmp_path, "front_door = true", 'front_door = "yes"')
     with pytest.raises(ClientError) as err:
         read_client_values(folder, VALUE_MODELS)
     assert "front_door" in str(err.value)

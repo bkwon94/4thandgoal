@@ -30,6 +30,7 @@ export function Suggestions({
   moreOpen,
   onMore,
   onPick,
+  askFirst,
 }: {
   // null until the browser reads the day, so the placeholder chips show in place of the chips.
   picks: string[] | null;
@@ -37,6 +38,9 @@ export function Suggestions({
   moreOpen: boolean;
   onMore: (open: boolean) => void;
   onPick: (key: string) => void;
+  // The front door asks for the passphrase before the first tap shows a fact. It returns true when it took the tap, and
+  // it runs `then` once the manager types the passphrase.
+  askFirst?: (then: () => void) => boolean;
 }) {
   const off = useMotionOff();
   const panelId = useId();
@@ -52,10 +56,14 @@ export function Suggestions({
   };
   // The first tap shows the fact and keeps the keyboard, as "More" does. The second tap on the same chip opens it.
   // The strip takes the place of the "More" panel, so a chip tap closes the panel.
-  const tap = (key: string) => {
-    if (shown === key) return pick(key);
+  const reveal = (key: string) => {
     setShown(key);
     if (moreOpen) onMore(false);
+  };
+  const tap = (key: string) => {
+    if (shown === key) return pick(key);
+    if (askFirst?.(() => reveal(key))) return;
+    reveal(key);
   };
   const topics = (picks ?? []).map((key) => TOPICS.find((topic) => topic.key === key)).filter((topic): topic is Topic => !!topic);
   // The strip shows only while its chip is in the row and the "More" panel is shut.
