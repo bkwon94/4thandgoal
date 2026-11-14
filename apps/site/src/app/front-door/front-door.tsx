@@ -5,7 +5,7 @@
  */
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, frame, motion } from "framer-motion";
 import { type CSSProperties, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
@@ -178,7 +178,11 @@ export function FrontDoor({
     const height = dock.current?.offsetHeight ?? dockHeight;
     if (height !== dockHeight) return setDockHeight(height);
     scrollDue.current = false;
-    newest.current?.scrollIntoView?.({ behavior: off ? "auto" : "smooth", block: "start" });
+    // Motion measures a height animation at the start of its next frame, then puts the page back at the scroll it read
+    // there with window.scrollTo. That instant scroll stops a smooth scroll that starts before it, as when the strip of a
+    // tapped chip closes in the same render as the new turn. So the scroll starts after the render step of that frame.
+    const turn = newest.current;
+    frame.postRender(() => turn?.scrollIntoView?.({ behavior: off ? "auto" : "smooth", block: "start" }));
   }, [thread, off, dockHeight]);
 
   const team = teams.find((candidate) => candidate.id === teamId) ?? null;
