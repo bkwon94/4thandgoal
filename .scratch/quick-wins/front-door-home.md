@@ -1,7 +1,7 @@
 # The front door is the home page, and the passphrase leaves the chat
 
 Kind: quick-win
-Status: done
+Status: in-progress
 Branch: `win-front-door-home`.
 Source: the session of 2026-11-13.
 Boundary: holds. 3 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -50,9 +50,9 @@ Green: at `2614875c`, `pnpm exec vitest run scripts/client-build.test.mjs -t "wr
 
 Test verdict: PASS
 
-### 3. The passphrase asks in a modal before a chat turn, not in the chat
+### 3. The passphrase asks in a modal before the first action, not in the chat
 
-Done condition: the team sheet asks only for the team, a chat turn that needs the API with no stored passphrase (for example none from the analyzer) first opens a passphrase modal and runs after it, the chat Thread never shows the passphrase card, and the header menu sheet holds a row to change it.
+Done condition: the team sheet asks only for the team, the first action on the front door with no stored passphrase (a question, a Topic, or a Suggestion tap, but none when the analyzer stored one) first opens a passphrase modal that says "device", not "phone", and runs after it, the chat Thread never shows the passphrase card, and the header menu sheet holds a row to change it.
 Method: tdd
 Red: at `e9c941ff` with `apps/site/src/app/page-ask.test.tsx` of `72067e3b`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
 
@@ -88,3 +88,4 @@ Test verdict: PASS
 - The full site suite has 1510 tests passed, the floor is green in cpc (153) and norcal (149), and the loop of each item went red, then green.
 - Notes for a later run: the `_redirects` rule works only on Cloudflare, so a local preview of `/ask/` gives the 404 page; a close of the passphrase modal removes the question that waits.
 - Read 12 files: AGENTS.md, apps/site/AGENTS.md, docs/agents/issue-tracker.md, docs/adr/0033, GLOSSARY.md, clients/cpc/client.toml, clients/norcal/client.toml, apps/site/src/app/page.tsx, apps/site/src/app/_routes/ask/page.tsx, apps/site/scripts/check-export.mjs, apps/site/src/app/front-door/front-door.tsx, packages/analyzer/site/lib/passphrase.ts.
+- Brian changed the done condition of item 3 after the PR opened: the modal opens on the first action of any kind with no stored passphrase, the weekly Topics included, and its copy says "device", not "phone". Item 3 gets a new Red, Green, and Judge.
