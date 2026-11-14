@@ -1,7 +1,7 @@
 /**
  * The front door at /: the sheet that asks for Your team on the first visit, then the Thread with the Suggestions and
  * the ask box. A tap on a Suggestion puts its Answer in the Thread, and a typed question goes to the route of the API.
- * The first action with no stored passphrase, a question or a Topic, asks for it in a modal first.
+ * The first action with no stored passphrase, a question, a Topic, or a chip tap, asks for it in a modal first.
  * The browser keeps Your team, the opened Topics, the league passphrase, and one Thread per team for the week.
  */
 "use client";
@@ -257,6 +257,14 @@ export function FrontDoor({
     if (wrong) clearPassphrase();
     afterPassphrase.current = () => then(getPassphrase() ?? "");
     setPassStep({ wrong, waiting });
+  };
+  /* The first tap on a Suggestion chip with no passphrase opens the modal before the fact strip shows, and the strip
+     shows after a new passphrase. With a stored passphrase, the chip keeps its two taps (decision 02). */
+  const askFirst = (then: () => void) => {
+    if (getPassphrase()) return false;
+    setMoreOpen(false);
+    askPassphrase(false, null, then);
+    return true;
   };
   /* Open the Answer of a Topic for `of`, Your team by default, or for the team that a typed question named. */
   const open = (key: string, of: number | null = null) => {
@@ -559,7 +567,7 @@ export function FrontDoor({
               {!missed && (day === null || picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
                   {/* Until the browser reads the day, quiet placeholder chips hold the place of the chips. */}
-                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...shownFacts(facts, servedNow?.kickoffs ?? {}) }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
+                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...shownFacts(facts, servedNow?.kickoffs ?? {}) }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} askFirst={askFirst} />
                 </motion.div>
               ) : null}
               {/* The ask box glides on its own box too. The dock changes inside as it glides: the dock gains its top pad

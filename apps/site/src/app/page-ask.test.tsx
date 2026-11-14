@@ -260,6 +260,20 @@ describe("the passphrase modal", () => {
     expect(localStorage.getItem("cpc.passphrase")).toBe(PASSPHRASE);
   });
 
+  it("opens the modal on the first tap of a Suggestion chip, before its fact strip, then shows the strip", async () => {
+    localStorage.removeItem("cpc.passphrase");
+    render(<HomePage />);
+    const [, chip] = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole("button");
+    const name = chip.getAttribute("aria-label")!.split(":")[0];
+    fireEvent.click(chip);
+    await passphraseModal();
+    expect(chip.getAttribute("aria-expanded")).toBe("false");
+    expect(screen.queryByRole("button", { name: `Open ${name}` })).toBeNull();
+    await typePassphrase(PASSPHRASE);
+    await waitFor(() => expect(chip.getAttribute("aria-expanded")).toBe("true"));
+    expect(screen.getByRole("button", { name: `Open ${name}` })).toBeTruthy();
+  });
+
   it("skips the modal for a Topic when a passphrase is stored, such as one from the analyzer", async () => {
     render(<HomePage />);
     await openWeekRecap();
