@@ -1,7 +1,7 @@
 # The trade ideas show only real offers
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-hide-near-ideas`.
 Source: the session of 2026-11-13.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -30,3 +30,7 @@ Green: at `23471f01`, `cd apps/site && pnpm exec vitest run src/app/page-trade.t
 Test verdict: PASS
 
 ## Comments
+- Closes with the squash merge of the PR of `win-hide-near-ideas`. Commits: `23471f01`. Date: 2026-11-13.
+- The full site suite has 1506 tests passed, the floor is green in cpc (158) and norcal (154), and the loop went red, then green.
+- Notes for a later run: with no offer, the plain line can be `NO_CLEAR_PICK` in `packages/analyzer/python/src/analyzer/finder_pick.py:56`, which still says "these are ideas to weigh"; the judge model may write a line like it too.
+- Read 4 files: apps/site/src/app/front-door/trade-answer.tsx, apps/site/src/app/page-trade.test.tsx, packages/analyzer/python/src/analyzer/finder_pick.py, .claude/plugin/skills/quick/judge.md.
