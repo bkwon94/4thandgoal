@@ -1,7 +1,7 @@
 # The front door is the home page, and the passphrase leaves the chat
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-front-door-home`.
 Source: the session of 2026-11-13.
 Boundary: holds. 3 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
