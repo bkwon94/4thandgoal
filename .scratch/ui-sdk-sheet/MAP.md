@@ -15,10 +15,11 @@ The menu sheet runs on the ui-sdk `Drawer` on the live site, with a native feel 
 - A Sheet moves in from any edge, the Menu gets the menu sheet as a third form, and "Drawer" stays out of prose. `decisions/04-grill-the-names.md`.
 - A sheet you can drag follows a spring and may fade under reduced motion (ADR 0034). `decisions/05-grill-the-motion-rule.md`.
 - No `web.css`; Tailwind styles one wrapper per part in `packages/design/site/ui/`. `decisions/06-grill-the-style-and-the-wrapper.md`.
+- The `Drawer` works in our static build and with Tailwind 4; pin both packages exact; it costs about 43 KB gzip per page. `decisions/07-research-ui-sdk-in-our-build.md`.
 
 ## NOT YET SPECIFIED
 
-- Does the ui-sdk `Drawer` work in our static build, with Tailwind 4, at an OK bundle cost? `decisions/07-research-ui-sdk-in-our-build.md`.
+- Do we pay about 43 KB gzip on every page, or load the `Drawer` on the first tap? `decisions/10-grill-the-bundle-cost.md`.
 - How does the menu sheet feel as a `Drawer`: snap points, handle, physics? `decisions/08-prototype-the-feel-of-the-menu-sheet.md`.
 - Which `package.json` declares ui-sdk, and which rule test guards the wrapper rule? `decisions/09-spec-the-guard-and-the-dependency.md`.
 
