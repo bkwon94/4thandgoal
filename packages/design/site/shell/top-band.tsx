@@ -29,11 +29,9 @@ type TopBandProps = {
   // The place of the pages under the desktop tier. "dock" is the dock at the bottom and the week chip in the band.
   // "sheet" is the menu button in the band and the sheet it opens, for a page with its own foot, such as the front door.
   nav?: "dock" | "sheet";
-  // With nav "sheet", the rows that the page adds under the pages of the sheet, such as the passphrase row of the front door.
-  sheetRows?: ReactNode;
 };
 
-export function TopBand({ title, brand, menu, pageHref, children, actions, nav = "dock", sheetRows }: TopBandProps) {
+export function TopBand({ title, brand, menu, pageHref, children, actions, nav = "dock" }: TopBandProps) {
   const current = currentHref(menu.items, menu.weeks, pageHref);
   const week = chipWeek(menu.weeks, pageHref);
   return (
@@ -75,7 +73,7 @@ export function TopBand({ title, brand, menu, pageHref, children, actions, nav =
             {actions}
             {/* The theme button needs the script, so it hides with scripts off. The negative margin lines the icon up with the edge. */}
             <ThemeButton className={`${nav === "dock" ? "-mr-sp-3" : ""} [@media(scripting:none)]:hidden`} />
-            {nav === "sheet" && <MenuSheet items={menu.items} weeks={menu.weeks} current={current} pageHref={pageHref} rows={sheetRows} />}
+            {nav === "sheet" && <MenuSheet items={menu.items} weeks={menu.weeks} current={current} pageHref={pageHref} />}
           </div>
         </div>
       </header>

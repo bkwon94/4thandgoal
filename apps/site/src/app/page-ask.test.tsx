@@ -332,20 +332,17 @@ describe("the passphrase modal", () => {
     expect(screen.queryByRole("article", { name: "Week recap" })).toBeNull();
   });
 
-  it("changes the passphrase from a row of the header menu, and keeps the old one on Escape", async () => {
+  it("has no passphrase row in the header menu, and Escape closes the modal and drops the action", async () => {
+    localStorage.removeItem("cpc.passphrase");
     render(<HomePage />);
-    const openRow = async () => {
-      fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }));
-      fireEvent.click(within(screen.getByRole("navigation", { name: "Pages" })).getByRole("button", { name: /Change the league passphrase/ }));
-    };
-    await openRow();
+    fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }));
+    expect(within(screen.getByRole("navigation", { name: "Pages" })).queryByText(/passphrase/i)).toBeNull();
+    fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Close the menu" }));
+    await ask("who am i playing sunday");
     fireEvent.keyDown(await passphraseModal(), { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
-    expect(localStorage.getItem("cpc.passphrase")).toBe(PASSPHRASE);
-    await openRow();
-    await typePassphrase("a-new-one");
-    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
-    expect(localStorage.getItem("cpc.passphrase")).toBe("a-new-one");
+    expect(screen.queryByRole("article", { name: "who am i playing sunday" })).toBeNull();
+    expect(askCalls()).toHaveLength(0);
   });
 
   /* The field opens the keyboard as the ask box does, so the modal moves above the keyboard for it (AT-51). */

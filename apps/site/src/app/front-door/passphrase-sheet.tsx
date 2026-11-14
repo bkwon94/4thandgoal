@@ -1,6 +1,6 @@
 /**
- * The modal that asks for the league passphrase before the first action of the front door, after a wrong passphrase,
- * and from the row of the header menu. It has the look and the motion of the team sheet, and it closes by "Not now" or Escape.
+ * The modal that asks for the league passphrase before the first action of the front door, and again after a wrong
+ * passphrase. It has the look and the motion of the team sheet, and it closes by "Not now" or Escape.
  */
 "use client";
 
@@ -100,7 +100,7 @@ export function PassphraseSheet({ siteName, wrong, onPassphrase, onClose }: { si
               aria-label="League passphrase"
               placeholder="League passphrase"
               autoComplete="current-password"
-              // The modal follows a question, a Topic tap, or the menu row, so the next keys go to the field.
+              // The modal follows a question or a tap, so the next keys go to the field.
               autoFocus
               enterKeyHint="done"
               onFocus={keyboard.onFocus}

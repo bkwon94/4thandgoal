@@ -27,7 +27,6 @@ import { PersonalAnswerCard, PersonalAnswerLive } from "./personal-answer";
 import { PERSONAL_LINES, isPersonal } from "./personal-stream";
 import { getOpened, markOpened } from "./opened-store";
 import { Suggestions } from "./suggestions";
-import { onPassphraseRow } from "./passphrase-row";
 import { PassphraseSheet } from "./passphrase-sheet";
 import { TeamSheet } from "./team-sheet";
 import { type Entry, Thread, personalName } from "./thread";
@@ -129,16 +128,6 @@ export function FrontDoor({
       live = false;
     };
   }, [teamId, day, askTarget, passphraseCount]);
-
-  // The row of the header menu opens the passphrase modal, so a manager can change the passphrase.
-  useEffect(
-    () =>
-      onPassphraseRow(() => {
-        afterPassphrase.current = null;
-        setPassStep({ wrong: false, waiting: null });
-      }),
-    [],
-  );
 
   // The site asks the API whether the key of each personal and trade Answer of the Thread is still current. The check
   // costs nothing. It runs again only when the set of kept Answers changes. A trade Answer with no key never checks.
