@@ -46,6 +46,7 @@ from cornerstone_api.sources import Sources
 from cornerstone_api.start_sit import LiveWeek
 from cornerstone_api.value_models import VALUE_MODELS
 from league.history import load_saved_weeks
+from league.jev import JEV
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.models import ChartValues, History
 from league.parse import team_name
@@ -1083,3 +1084,30 @@ def test_a_question_about_the_bears_game_shows_the_nfl_game_card_with_the_gap_of
     assert checks.seen[0]["tool_results"]["nfl_game_Bears"]["expected_margin"] == card["margin"]
     assert _text(chunks) == "Here is the Bears game of week 11."
     assert not any(word in json.dumps(card) for word in INTERNAL)
+
+
+# The turn of a start or sit answer, as the site sends it after "Start Golden or Mumpfield?".
+START_SIT_TURN = {"question": "Start Golden or Mumpfield?",
+                  "answer": "Start Konata Mumpfield. His 6.8 projection trails, but the read of his matchup is better. "
+                            "Start the rest of your lineup by projection."}
+# Each reply to "you sure?" with no tool call, and whether the real check must pass it. The first restates a claim of
+# the earlier answer. The second states a number that neither the turn nor a tool result holds.
+FOLLOW_UP_REPLIES = [("Yes. The pick of Konata Mumpfield rests on his matchup, not his projection.", True),
+                     ("Yes. Konata Mumpfield scored 31.4 points last week.", False)]
+
+
+@pytest.mark.live
+@pytest.mark.parametrize(("reply", "passes"), FOLLOW_UP_REPLIES)
+def test_the_real_check_of_a_follow_up_reads_the_earlier_answer_and_no_more(repo, fixture_raw_dir, reply, passes):
+    # The real Jev routes "you sure?" with the turn to a free answer, then checks a reply that makes no tool call.
+    async def stream(messages: list[ModelMessage], info: AgentInfo) -> AsyncIterator[str]:
+        for word in reply.split(" "):
+            yield word + " "
+
+    api = _api(repo, fixture_raw_dir, JEV, FunctionModel(stream_function=stream))
+    body = {"question": "you sure?", "roster_id": LIL_FRIDGE, "week": 8, "turns": [START_SIT_TURN]}
+    route = api.post(ASK, json=body, headers=PASS).json()
+    chunks = _chunks(api.post(FREE, json=body, headers=PASS))
+    states = [c["data"]["state"] for c in chunks if c["type"] == "data-check"]
+    print(f"\n{reply!r}: route {route['route']}, checks {states}")
+    assert states[-1] == ("checked" if passes else "failed"), f"{reply!r} ended with {states}"
