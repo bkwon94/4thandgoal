@@ -297,14 +297,15 @@ async def answer_stream(asker: Asker, route: Route, question: str, roster_id: in
 
     The Suggestion names the roster of the team that the question names, or None for Your team. A test gives `model`,
     and the real app gives None, so the run takes the model of the agent. A checked answer goes to `store`. Claude
-    reads the earlier `turns` of the Thread as messages before the question, and the check never reads them.
+    reads the earlier `turns` of the Thread as messages before the question, and the check reads their answers too.
     """
     named = next((rid for rid, name in deps.data.teams.items() if name == route.team), None)
     your_team = deps.data.teams[roster_id]
     writer = Writer(label="free answer", agent=AGENT, prompt=question, deps=deps, instructions=instructions,
                     model=model, rewrite=rewrite_prompt, tool_calls=lambda: deps.calls,
                     history=turn_messages(turns or []), display_tool=DISPLAY_TOOL, block=lambda: shown_block(deps))
-    checker = Checker(question=question, your_team=your_team, results=deps.results, closest=route.closest)
+    checker = Checker(question=question, your_team=your_team, results=deps.results, closest=route.closest,
+                      turns=turns or [])
     outcome = Outcome()
     yield StartChunk()
     async for chunk in checked_answer(asker, writer, checker, roster_id, outcome):
