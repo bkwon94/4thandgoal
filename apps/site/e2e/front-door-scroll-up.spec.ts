@@ -68,6 +68,8 @@ test("a Suggestion chip tapped in a scrolled-up Thread scrolls its question to t
 });
 
 test("a question typed in a scrolled-up Thread scrolls to the top under the Thread header", async ({ page }) => {
+  // The same fixed Friday as the chip test, so both tests get the same Suggestions on each run. The timers still run.
+  await page.clock.setFixedTime(new Date("2026-11-13T12:00:00"));
   await openDoor(page, `${server.url}${DOOR}`);
   await scrollUp(page);
   await askQuestion(page, "week 1 results");
