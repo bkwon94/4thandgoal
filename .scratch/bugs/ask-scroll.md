@@ -42,3 +42,4 @@ The loop `apps/site/e2e/front-door-scroll-up.spec.ts` went red on the chip case 
 The typed-question case passed at the red commit in WebKit, so the loop shows the chip half of the bug only.
 With reduced motion on, the chip case ends 20 px under the Thread header, not 16, which a later run can check.
 Read 7 files: docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, GLOSSARY.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, .claude/plugin/skills/implement/build.md, apps/site/src/app/front-door/front-door.tsx.
+The CI floor of norcal failed the chip case 51 px under the header, because `--door-dock` lagged the shrunk dock by one frame and the fill of the newest turn left out its `pt-sp-6` step, so WebKit stopped the scroll at a short foot, and `29008c1b` fixes both.
