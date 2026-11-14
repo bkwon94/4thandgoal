@@ -54,7 +54,7 @@ Test verdict: PASS
 
 Done condition: the team sheet asks only for the team, the first action on the front door with no stored passphrase (a question, a Topic, or a Suggestion tap, but none when the analyzer stored one) first opens a passphrase modal that says "device", not "phone", and runs after it, the chat Thread never shows the passphrase card, and the header menu sheet has no passphrase row.
 Method: tdd
-Red: at `e9c941ff` with `apps/site/src/app/page-ask.test.tsx` of `cdc4f9a1`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
+Red: at `e9c941ff` with `apps/site/src/app/page-ask.test.tsx` of `f88d4942`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
 
 ```text
  × asks only for the team on a first visit, and the first tap on a weekly Topic opens the modal, then the Topic
@@ -71,25 +71,26 @@ AssertionError: expected <form …(2)>…(2)</form> to be null
   aria-label="League passphrase"
  × opens the modal as wrong after a 401, forgets the wrong one, and asks again after a new one
  × drops the action when the manager closes the modal with Not now, and the next action asks again
- × changes the passphrase from a row of the header menu, and keeps the old one on Escape
+ × has no passphrase row in the header menu, and Escape closes the modal and drops the action
+TestingLibraryElementError: Unable to find role="dialog" and name "What is the league passphrase?"
  × marks the passphrase field of the modal as a keyboard field while it has the focus (AT-51)
  Tests  8 failed | 1 passed | 15 skipped (24)
 ```
 
-Green: at `cdc4f9a1`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
+Green: at `f88d4942`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
 
 ```text
  Tests  9 passed | 15 skipped (24)
 ```
 
-Test verdict: PASS
+Test verdict: pending
 
 ## Comments
 
 - Item 1 was text only at the go. The flag switch failed 10 site tests that pin the repo clients to `front_door = false`, so item 1 moved to tdd.
 - Item 1 also failed the 3 floor tests "covers no page title", because they opened `/`, which has no week chip on the front door. Fix `79c24cc9` opens the latest week page. Floor: cpc 153 passed, 7 skipped; norcal 149 passed.
 - Brian changed the done condition of item 3 after the first build (31ea0936): no passphrase step on the team sheet; a modal opens before a chat turn that needs the API, so the weekly Topics stay open with no passphrase.
-- Closes with the squash merge of the PR of `win-front-door-home`. Commits: `ffda338d`, `2614875c`, `79c24cc9`, `4df8620d`, `cdc4f9a1`. Date: 2026-11-13.
+- Closes with the squash merge of the PR of `win-front-door-home`. Commits: `ffda338d`, `2614875c`, `79c24cc9`, `4df8620d`, `cdc4f9a1`, `f88d4942`. Date: 2026-11-13.
 - The full site suite has 1513 tests passed, the floor is green in cpc (153) and norcal (149), and the loop of each item went red, then green.
 - Notes for a later run: the `_redirects` rule works only on Cloudflare, so a local preview of `/ask/` gives the 404 page; a close of the passphrase modal drops the action; the next action asks again.
 - Read 12 files: AGENTS.md, apps/site/AGENTS.md, docs/agents/issue-tracker.md, docs/adr/0033, GLOSSARY.md, clients/cpc/client.toml, clients/norcal/client.toml, apps/site/src/app/page.tsx, apps/site/src/app/_routes/ask/page.tsx, apps/site/scripts/check-export.mjs, apps/site/src/app/front-door/front-door.tsx, packages/analyzer/site/lib/passphrase.ts.
