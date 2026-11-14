@@ -20,6 +20,7 @@ from cornerstone_api.ask_wording import (
     DATA_CAN_ANSWER,
     FITS_TOPIC,
     NAMES_TEAM,
+    REACTS_TO_ANSWER,
     TEAM,
     TOPIC,
     route_questions,
@@ -85,9 +86,11 @@ def decide(answers: JevResponse) -> tuple[RouteKind, str | None, str | None]:
     top = _ranked(answers.choices[TOPIC])[0]
     if level[ABUSE] == "yes":
         return "refuse", None, None
+    # A reaction to the last answer, such as "thank you" or "you sure?", gets a free answer that reads the turns.
+    reacts = level[REACTS_TO_ANSWER] == "yes"
     # The unsure band of "about the league" is a miss, because "write me a poem about my kicker" scored 0.39.
     if level[ABOUT_LEAGUE] != "yes":
-        return "miss", None, None
+        return ("free", None, None) if reacts else ("miss", None, None)
     if level[FITS_TOPIC] == "yes":
         return "topic", top, None
     # A stat lookup sits halfway between a Topic and a free answer, so a half fit shows its Topic as a Suggestion.
@@ -95,7 +98,7 @@ def decide(answers: JevResponse) -> tuple[RouteKind, str | None, str | None]:
         return "free", None, top if level[FITS_TOPIC] == "unsure" else None
     # A judgment question such as "worst move all year" lands in the unsure band, and the check of the free answer
     # holds a wrong answer back.
-    if level[DATA_CAN_ANSWER] == "unsure":
+    if level[DATA_CAN_ANSWER] == "unsure" or reacts:
         return "free", None, None
     return "miss", None, None
 

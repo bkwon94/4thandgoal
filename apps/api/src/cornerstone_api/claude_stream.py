@@ -29,6 +29,7 @@ from pydantic_ai.ui.vercel_ai.response_types import (
 
 from cornerstone_api.ask import YES, Asker
 from cornerstone_api.caps import sonnet_cost
+from cornerstone_api.chat_turns import Turn
 from cornerstone_api.free_wording import check_questions, check_state, plain_text, sentence_key, sentences
 from league.jev_port import Jev, JevError
 
@@ -124,9 +125,10 @@ async def run(agent: Agent[Any, str], prompt: str, deps: Any, instructions: str,
 
 
 def check(jev: Jev, question: str, your_team: str, text: str, results: dict[str, Any],
-          rows: list[str] | None = None) -> list[tuple[str, float]]:
+          rows: list[str] | None = None, turns: list[Turn] | None = None) -> list[tuple[str, float]]:
     """The sentences of `text` and the row sentences of its block, `rows`, that Jev does not read as following from
-    `results`, each with its noul, so the log can show how sure the check was. Raises JevError when the call fails.
+    `results` or from the earlier answers of `turns`, each with its noul, so the log can show how sure the check was.
+    Raises JevError when the call fails.
 
     A sentence passes only above the yes cutoff, so an unsure sentence gets the rewrite and the manager never reads a
     number that the data does not hold.
@@ -135,7 +137,8 @@ def check(jev: Jev, question: str, your_team: str, text: str, results: dict[str,
     parts = sentences(plain_text(text)) + list(rows or [])
     if not parts:
         return []
-    answers = jev.ask(check_state(question, your_team, parts, results, has_block=bool(rows)), check_questions(parts))
+    answers = jev.ask(check_state(question, your_team, parts, results, has_block=bool(rows), turns=turns),
+                      check_questions(parts, has_turns=bool(turns)))
     nouls = [answers.nouls[sentence_key(i)] for i in range(len(parts))]
     return [(part, noul) for part, noul in zip(parts, nouls) if noul <= YES]
 
@@ -176,12 +179,14 @@ class Writer:
 @dataclass(frozen=True)
 class Checker:
     """What the Jev check of one answer reads: the question, Your team, the results that each sentence must follow
-    from, and the closest Topics of the honest miss. The tools of a free answer fill `results` during the run."""
+    from, and the closest Topics of the honest miss. The tools of a free answer fill `results` during the run. `turns`
+    holds the earlier turns of the Thread, whose answers a sentence may follow from too, or nothing for a tapped Topic."""
 
     question: str
     your_team: str
     results: dict[str, Any]
     closest: list[str]
+    turns: list[Turn] = field(default_factory=list)
 
 
 async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_id: int | None,
@@ -215,7 +220,7 @@ async def checked_answer(asker: Asker, writer: Writer, checker: Checker, roster_
         yield data("check", {"state": "checking"}, id="check")
         try:
             failed = await anyio.to_thread.run_sync(check, asker.jev, checker.question, checker.your_team,
-                                                    attempt.text, checker.results, rows)
+                                                    attempt.text, checker.results, rows, checker.turns)
         except JevError as error:
             # A failed Jev call is an error, never a "no" and never a pass.
             logger.warning("The Jev check of the %s failed (%s)", writer.label, type(error).__name__)

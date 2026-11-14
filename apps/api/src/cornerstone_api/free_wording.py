@@ -4,6 +4,7 @@ each sentence against the tool results. Change the check here and run the live c
 """
 import re
 
+from cornerstone_api.chat_turns import Turn, with_turns
 from cornerstone_api.free_blocks import BLOCK_MEANING
 from league.jev_port import NoulQuestion
 
@@ -105,6 +106,18 @@ CHECK_NO = ("The sentence states a number, name, rank, record, or comparison tha
             "that `tool_results` contradict.")
 CHECK_CONTEXT = ("A fantasy football league site answered `manager_question` from the manager of `manager_team` with "
                  "`answer`. The answer read only `tool_results`, the data of this season.")
+# The check of a follow-up in the Thread. The earlier answers came from the same site and passed the same check, so a
+# claim that one of them states is grounded, and a reply to "you sure?" may restate it with no new tool result.
+CHECK_TURNS_QUESTION = "Does every claim in the sentence follow from `tool_results` or from an answer in `earlier_turns`?"
+CHECK_TURNS_YES = ("Each number, name, rank, record, comparison, and reason in the sentence is stated by `tool_results` "
+                   "or by an answer in `earlier_turns`, or follows from them by a plain reading. A sentence with no "
+                   "factual claim, such as one that says what the data does not hold, is fine.")
+CHECK_TURNS_NO = ("The sentence states a number, name, rank, record, or comparison that neither `tool_results` nor an "
+                  "answer in `earlier_turns` states, or that they contradict.")
+CHECK_TURNS_CONTEXT = ("A fantasy football league site answered `manager_question` from the manager of `manager_team` "
+                       "with `answer`. The answer read `tool_results`, the data of this season, and the earlier answers "
+                       "of the chat. Each answer in `earlier_turns` came from the same site and passed the same check "
+                       "against its own data.")
 
 # The end of a sentence: a stop, a question mark, or a bang, then a space. A line break ends a sentence too.
 # A stop after "St.", "Jr.", "Sr.", or one capital letter, as in "Amon-Ra St. Brown" or "T.J. Hockenson", is part of a
@@ -137,20 +150,23 @@ def sentence_key(index: int) -> str:
     return f"sentence_{index}"
 
 
-def check_questions(parts: list[str]) -> dict[str, NoulQuestion]:
-    """One Noul per sentence. Each sentence goes into its own question, so no question looks up an index in a list."""
-    return {sentence_key(i): NoulQuestion(instructions={"question": CHECK_QUESTION, "sentence": part},
-                                          yes=CHECK_YES, no=CHECK_NO)
+def check_questions(parts: list[str], has_turns: bool = False) -> dict[str, NoulQuestion]:
+    """One Noul per sentence. Each sentence goes into its own question, so no question looks up an index in a list. A
+    follow-up in the Thread asks the question that reads the earlier answers too."""
+    question, yes, no = ((CHECK_TURNS_QUESTION, CHECK_TURNS_YES, CHECK_TURNS_NO) if has_turns
+                         else (CHECK_QUESTION, CHECK_YES, CHECK_NO))
+    return {sentence_key(i): NoulQuestion(instructions={"question": question, "sentence": part}, yes=yes, no=no)
             for i, part in enumerate(parts)}
 
 
 def check_state(question: str, your_team: str, parts: list[str], tool_results: dict[str, object],
-                has_block: bool = False) -> dict:
+                has_block: bool = False, turns: list[Turn] | None = None) -> dict:
     """The state of one check: the question, the team of the manager who asks, so "your team" has its name, the whole
     answer so a pronoun has its subject, and each tool result by the name of its call. An answer with a block holds
-    the meaning of its row sentences too, so the check reads a row as the manager does."""
-    state = {"context": CHECK_CONTEXT, "manager_question": question, "manager_team": your_team, "answer": parts,
-             "tool_results": tool_results}
+    the meaning of its row sentences too, so the check reads a row as the manager does. A follow-up holds the earlier
+    turns of the Thread, so a reply that restates an earlier answer passes and a claim in neither still fails."""
+    state = {"context": CHECK_TURNS_CONTEXT if turns else CHECK_CONTEXT, "manager_question": question,
+             "manager_team": your_team, "answer": parts, "tool_results": tool_results}
     if has_block:
         state["block_rows"] = BLOCK_MEANING
-    return state
+    return with_turns(state, turns or [])
