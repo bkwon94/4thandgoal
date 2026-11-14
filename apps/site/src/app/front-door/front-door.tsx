@@ -6,7 +6,7 @@
  */
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, frame, motion } from "framer-motion";
 import { type CSSProperties, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@cpc/analyzer/lib/passphrase";
@@ -161,6 +161,7 @@ export function FrontDoor({
   // turn of the Thread reads it to hold the view under the Thread header (thread.tsx).
   const dock = useRef<HTMLDivElement>(null);
   const [dockHeight, setDockHeight] = useState(0);
+  const section = useRef<HTMLElement>(null);
   // iOS Safari keeps the layout viewport at full height under the keyboard, so the dock at the center of an empty
   // Thread can sit under it. While the keyboard covers the foot, the dock of an empty Thread pins right above it. A
   // Thread with an entry needs no pin: its dock sticks to --spacing-door-foot, which then holds the keyboard inset.
@@ -186,7 +187,17 @@ export function FrontDoor({
     const height = dock.current?.offsetHeight ?? dockHeight;
     if (height !== dockHeight) return setDockHeight(height);
     scrollDue.current = false;
-    newest.current?.scrollIntoView?.({ behavior: off ? "auto" : "smooth", block: "start" });
+    // Motion measures a height animation at the start of its next frame, then puts the page back at the scroll it read
+    // there with window.scrollTo. That instant scroll stops a smooth scroll that starts before it, as when the strip of a
+    // tapped chip closes in the same render as the new turn. So the scroll starts after the render step of that frame.
+    // The dock can also shrink in that frame, as the strip of a tapped chip closes, and the ResizeObserver brings the
+    // new height to --door-dock one frame late. The page is then short for that frame, and WebKit stops the smooth
+    // scroll at that short foot. So the scroll first sets --door-dock to the height of the dock in the same frame.
+    const turn = newest.current;
+    frame.postRender(() => {
+      if (dock.current) section.current?.style.setProperty("--door-dock", `${dock.current.offsetHeight}px`);
+      turn?.scrollIntoView?.({ behavior: off ? "auto" : "smooth", block: "start" });
+    });
   }, [thread, off, dockHeight]);
 
   const team = teams.find((candidate) => candidate.id === teamId) ?? null;
@@ -374,6 +385,7 @@ export function FrontDoor({
           reads top to bottom, and the chips and the ask box sit at its foot on one solid surface that touches the bottom
           edge. The surface pads its foot by the home bar, and drops that pad while the keyboard is open (decision 10). */}
       <section
+        ref={section}
         aria-label="Thread"
         style={{ "--door-dock": `${dockHeight}px` } as CSSProperties}
         className={`mx-auto flex min-h-door-fill w-full max-w-door desktop:min-h-door-fill-desktop flex-col px-gutter ${empty ? "justify-center pt-sp-6 pb-door-lift" : "justify-end pt-sp-2"}`}

@@ -69,7 +69,9 @@ export function Thread({
         // The newest turn under an older one holds at least the view between the Thread header and the dock, so the
         // page can scroll its question to the top under the header. --door-dock is the height of the dock (front-door.tsx).
         // The first turn sits under the header already, so it holds no extra height and the page never scrolls for it.
-        const turn = last && index > 0 ? " min-h-[calc(var(--spacing-door-fill)-var(--spacing-door-head)-var(--spacing-sp-2)-var(--door-dock,0px))] desktop:min-h-[calc(var(--spacing-door-fill-desktop)-var(--spacing-door-head)-var(--spacing-sp-2)-var(--door-dock,0px))]" : "";
+        // The min-height counts the pt-sp-6 step above the question too, so the fill adds that step back. Else a short
+        // Answer leaves the page one step short, and the browser stops the scroll with the question a step low.
+        const turn = last && index > 0 ? " min-h-[calc(var(--spacing-door-fill)-var(--spacing-door-head)-var(--spacing-sp-2)+var(--spacing-sp-6)-var(--door-dock,0px))] desktop:min-h-[calc(var(--spacing-door-fill-desktop)-var(--spacing-door-head)-var(--spacing-sp-2)+var(--spacing-sp-6)-var(--door-dock,0px))]" : "";
         return (
           // Each Answer sits a step below the one above it, so each question and its Answer read as one turn.
           <div key={entry.id} className={`${index > 0 ? "pt-sp-6" : ""}${turn}`}>
