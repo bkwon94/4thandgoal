@@ -1,7 +1,7 @@
 # The front door is the home page, and the passphrase leaves the chat
 
 Kind: quick-win
-Status: done
+Status: in-progress
 Branch: `win-front-door-home`.
 Source: the session of 2026-11-13.
 Boundary: holds. 3 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -52,7 +52,7 @@ Test verdict: PASS
 
 ### 3. The passphrase asks in a modal before the first action, not in the chat
 
-Done condition: the team sheet asks only for the team, the first action on the front door with no stored passphrase (a question, a Topic, or a Suggestion tap, but none when the analyzer stored one) first opens a passphrase modal that says "device", not "phone", and runs after it, the chat Thread never shows the passphrase card, and the header menu sheet holds a row to change it.
+Done condition: the team sheet asks only for the team, the first action on the front door with no stored passphrase (a question, a Topic, or a Suggestion tap, but none when the analyzer stored one) first opens a passphrase modal that says "device", not "phone", and runs after it, the chat Thread never shows the passphrase card, and the header menu sheet has no passphrase row.
 Method: tdd
 Red: at `e9c941ff` with `apps/site/src/app/page-ask.test.tsx` of `cdc4f9a1`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
 
@@ -94,3 +94,4 @@ Test verdict: PASS
 - Notes for a later run: the `_redirects` rule works only on Cloudflare, so a local preview of `/ask/` gives the 404 page; a close of the passphrase modal drops the action; the next action asks again.
 - Read 12 files: AGENTS.md, apps/site/AGENTS.md, docs/agents/issue-tracker.md, docs/adr/0033, GLOSSARY.md, clients/cpc/client.toml, clients/norcal/client.toml, apps/site/src/app/page.tsx, apps/site/src/app/_routes/ask/page.tsx, apps/site/scripts/check-export.mjs, apps/site/src/app/front-door/front-door.tsx, packages/analyzer/site/lib/passphrase.ts.
 - Brian changed the done condition of item 3 after the PR opened: the modal opens on the first action of any kind with no stored passphrase, the weekly Topics included, and its copy says "device", not "phone". Item 3 gets a new Red, Green, and Judge.
+- Brian removed the passphrase row of the header menu: a 401 opens the modal as wrong, so no row is needed. Item 3 gets a new Red, Green, and Judge.
