@@ -14,9 +14,11 @@ export async function openDoor(page: Page, href: string) {
   await expect(page.getByRole("textbox", { name: "Ask a question" })).toBeVisible();
 }
 
-/* Open a league Topic from the list under "More", so the test needs no Suggestion of the day. */
+/* Open a league Topic from the list under "More", so the test needs no Suggestion of the day. The tap on "More" holds
+   the press for 100 ms, as a finger does. A pill that moves under the press then loses the tap on each run, and not
+   only on a slow CI runner. */
 export async function openTopic(page: Page, name: string) {
-  await page.getByRole("button", { name: "More" }).click();
+  await page.getByRole("button", { name: "More" }).click({ delay: 100 });
   await page.getByRole("list", { name: "All Topics" }).getByRole("button", { name: new RegExp(`^${name}:`) }).click();
   await expect(page.getByRole("article", { name })).toBeVisible();
 }
