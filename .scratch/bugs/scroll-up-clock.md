@@ -1,7 +1,7 @@
 # The scroll-up test of a typed question fails for norcal on main
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-scroll-up-clock`.
 Source: the session of 2026-11-14. The check `Check` of the merge of #46 failed on `main`, run 43593394866.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; the done condition is one sentence.
@@ -39,3 +39,10 @@ Running 2 tests using 2 workers
 Test verdict: PASS
 
 ## Comments
+
+- Closes with the squash merge of the PR of `bug-scroll-up-clock`. Commits: `069f68cb`, `93fe39b6`. Date: 2026-11-14.
+- The loop of item 1 went red at `069f68cb` and green at `93fe39b6`, with 2 passed for each client and 1513 site unit tests passed.
+- The cause was a race of the tap on "More" in `openTopic`, not the day; the fixed clock only keeps the Suggestions the same.
+- The pill of "More" also drops about 150 ms after a pick in the real UI, so a fast real tap can miss; this needs its own ticket.
+- The hook failed once on `src/app/page.test.tsx:337` (AT-31), which passed 5 of 5 alone, so that unit test is flaky under load.
+- Read 7 files: AGENTS.md, apps/site/AGENTS.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, apps/site/e2e/front-door-scroll-up.spec.ts, apps/site/src/app/page.test.tsx.
