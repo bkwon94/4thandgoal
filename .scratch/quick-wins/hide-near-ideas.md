@@ -27,6 +27,6 @@ Green: at `23471f01`, `cd apps/site && pnpm exec vitest run src/app/page-trade.t
  Test Files  1 passed (1)
       Tests  2 passed | 21 skipped (23)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
