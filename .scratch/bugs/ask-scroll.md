@@ -33,6 +33,6 @@ Green: at `2b85fb51`, `cd apps/site && CLIENT=cpc pnpm build && pnpm exec playwr
 
   2 passed (9.1s)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
