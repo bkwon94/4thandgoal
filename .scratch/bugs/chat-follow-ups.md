@@ -38,9 +38,23 @@ Test verdict: pending
 
 Done condition: With the turns of a start or sit answer and no new tool results, the free-answer check passes a reply to "you sure?" that restates a claim of the earlier answer, and still fails a reply with a claim that neither the turns nor the tool results state.
 Method: diagnosing-bugs.
-Cause: pending
-Red: pending
-Green: pending
+Cause: `check_state` in `apps/api/src/cornerstone_api/free_wording.py` puts only `tool_results` in the Jev state, and `CHECK_QUESTION` asks only about them, so a reply to "you sure?" that restates the earlier answer fails at 0.02 twice and gives the honest miss. A follow-up now puts its turns in the check state with `with_turns`, and its Noul asks whether each claim follows from `tool_results` or from an answer in `earlier_turns`.
+Red: at `762e7148`, `cd apps/api && uv run --exact --package cpc-api pytest -m live -s -q tests/test_free_answer.py -k real_check`
+
+```text
+'Yes. The pick of Konata Mumpfield rests on his matchup, not his projection.': route free, checks ['checking', 'fixing', 'checking', 'failed']
+'Yes. Konata Mumpfield scored 31.4 points last week.': route free, checks ['checking', 'fixing', 'checking', 'failed']
+E       AssertionError: 'Yes. The pick of Konata Mumpfield rests on his matchup, not his projection.' ended with ['checking', 'fixing', 'checking', 'failed']
+1 failed, 1 passed, 62 deselected in 1.89s
+```
+
+Green: at `a88ab9de`, `cd apps/api && uv run --exact --package cpc-api pytest -m live -s -q tests/test_free_answer.py -k real_check`
+
+```text
+'Yes. The pick of Konata Mumpfield rests on his matchup, not his projection.': route free, checks ['checking', 'checked']
+'Yes. Konata Mumpfield scored 31.4 points last week.': route free, checks ['checking', 'fixing', 'checking', 'failed']
+2 passed, 62 deselected in 2.12s
+```
 Test verdict: pending
 
 ## Comments
