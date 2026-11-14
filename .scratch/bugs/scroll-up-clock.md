@@ -36,6 +36,6 @@ Running 2 tests using 2 workers
   ✓  2 [floor] › e2e/front-door-scroll-up.spec.ts:70:5 › a question typed in a scrolled-up Thread scrolls to the top under the Thread header (8.5s)
   2 passed (9.1s)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
