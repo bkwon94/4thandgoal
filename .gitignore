@@ -14,6 +14,7 @@ apps/site/src/generated/
 apps/site/src/app/(client)/
 apps/site/public/[0-9][0-9][0-9][0-9]/
 apps/site/public/brand/
+apps/site/public/_redirects
 apps/site/wrangler.jsonc
 # Playwright writes the trace and the page snapshot of each failed floor test here.
 apps/site/test-results/

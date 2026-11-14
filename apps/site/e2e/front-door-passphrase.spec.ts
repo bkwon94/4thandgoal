@@ -1,6 +1,7 @@
 /**
- * The passphrase box of the front door on the static export in out/ of the current CLIENT, in WebKit at the size of an
- * iPhone. It checks that the box comes back above the foot when the keyboard opens after the focus, as on iOS (AT-51).
+ * The passphrase box of the passphrase modal of the front door on the static export in out/ of the current CLIENT, in
+ * WebKit at the size of an iPhone. It checks that the box sits above the keyboard when the keyboard opens after the focus,
+ * as on iOS (AT-51).
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
@@ -26,7 +27,7 @@ test.afterAll(async () => {
 
 /* iOS keeps the layout viewport at full height and shrinks the visual viewport by the keyboard. On a tap, the field
    takes the focus first, and the keyboard rises after it. The fake visual viewport starts at full height, and
-   openKeyboard shrinks it and fires its resize, in that order. No passphrase is kept, so a question asks for it. */
+   openKeyboard shrinks it and fires its resize, in that order. No passphrase is kept, so the first action asks for it. */
 async function fakeViewport(page: Page) {
   await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
   await page.addInitScript(() => {
@@ -47,64 +48,70 @@ async function fakeViewport(page: Page) {
   });
 }
 
-/* The box of the passphrase and the top of the foot, in px of the page, read once the scroll comes to rest. */
-async function boxAndFoot(page: Page) {
-  // The newest card holds the focused box.
-  const field = page.getByRole("textbox", { name: "League passphrase" }).last();
-  const form = page.getByRole("form", { name: "League passphrase" }).last();
-  const foot = page.getByRole("textbox", { name: "Ask a question" }).locator("xpath=ancestor::*[contains(@class,'sticky')][1]");
+/* The box of the passphrase and the top of the keyboard, in px of the page, read once the sheet comes to rest. */
+async function boxAndKeyboard(page: Page) {
+  const field = page.getByRole("dialog").getByLabel("League passphrase", { exact: true }).and(page.locator("input"));
+  const form = page.getByRole("dialog").getByRole("form", { name: "League passphrase" });
   let last = "";
   for (;;) {
     await page.waitForTimeout(150);
     const read = JSON.stringify(
-      await page.evaluate(
-        ([formEl, footEl]) => {
-          const box = formEl!.getBoundingClientRect();
-          return { top: Math.round(box.top), bottom: Math.round(box.bottom), foot: Math.round(footEl!.getBoundingClientRect().top) };
-        },
-        [await form.elementHandle(), await foot.elementHandle()],
-      ),
+      await form.evaluate((formEl, keyboard) => {
+        const box = formEl.getBoundingClientRect();
+        return { top: Math.round(box.top), bottom: Math.round(box.bottom), keyboard: innerHeight - keyboard };
+      }, KEYBOARD),
     );
     if (read === last) break;
     last = read;
   }
   await expect(field).toBeFocused();
-  return JSON.parse(last) as { top: number; bottom: number; foot: number };
+  return JSON.parse(last) as { top: number; bottom: number; keyboard: number };
 }
 
-async function askForPassphrase(page: Page, question: string) {
-  const field = page.getByRole("textbox", { name: "Ask a question" });
+/* A tap focuses the field first, and then the keyboard rises, as on iOS. */
+async function tapAndOpenKeyboard(page: Page) {
+  const field = page.getByRole("dialog").getByLabel("League passphrase", { exact: true }).and(page.locator("input"));
+  await expect(field).toBeFocused();
+  await field.blur();
   await field.tap();
-  await field.fill(question);
-  await page.getByRole("button", { name: "Send" }).tap();
-  // The card takes the focus by itself, before the keyboard of the fake rises.
-  await expect(page.getByRole("textbox", { name: "League passphrase" }).last()).toBeFocused();
+  await page.evaluate((height) => (window as unknown as { openKeyboard: (height: number) => void }).openKeyboard(height), KEYBOARD);
 }
 
-test.describe("the passphrase box with the iOS keyboard (AT-51)", () => {
-  /* The second card sits low in the view, where the foot covers it once the keyboard lifts the foot. With the strip, the
-     first tap on a chip shows its fact, so the foot is one strip taller. */
-  for (const strip of [false, true]) {
-    test(`the box comes back above the foot when the keyboard opens after the focus${strip ? ", with the fact strip open" : ""}`, async ({ page }) => {
-      await fakeViewport(page);
-      await page.goto(`${server.url}${DOOR}`);
-      await page.getByRole("dialog").getByRole("button").first().tap();
-      await askForPassphrase(page, "Who should I start?");
-      if (strip) {
-        await page.getByRole("group", { name: "Suggestions" }).getByRole("button").filter({ hasNotText: /^More$/ }).first().tap();
-        await expect(page.getByRole("group", { name: "Suggestions" }).getByRole("button", { expanded: true })).toHaveCount(1);
-      }
-      await askForPassphrase(page, "Who should I sit?");
-      // The reader scrolls back up, so the box sits low, right above the foot. A tap focuses it, and then the keyboard rises.
-      const field = page.getByRole("textbox", { name: "League passphrase" }).last();
-      await field.blur();
-      await page.evaluate(() => scrollTo(0, 0));
-      await field.tap();
-      await page.evaluate((height) => (window as unknown as { openKeyboard: (height: number) => void }).openKeyboard(height), KEYBOARD);
-      const place = await boxAndFoot(page);
-      console.log(`the box spans ${place.top} to ${place.bottom} px, and the foot starts at ${place.foot} px (keyboard ${KEYBOARD} px${strip ? ", strip open" : ""})`);
-      expect(place.bottom, "the whole box is above the foot").toBeLessThanOrEqual(place.foot);
-      expect(place.top, "the box is in view").toBeGreaterThanOrEqual(0);
-    });
-  }
+/* Ask a question with no kept passphrase, so the passphrase modal opens, and the Thread holds no passphrase box. */
+async function askForPassphrase(page: Page) {
+  const ask = page.getByRole("textbox", { name: "Ask a question" });
+  await ask.tap();
+  await ask.fill("Who should I start?");
+  await page.getByRole("button", { name: "Send" }).tap();
+  await expect(page.getByRole("dialog", { name: "What is the league passphrase?" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Thread" }).getByRole("form", { name: "League passphrase" }), "the Thread holds no passphrase box").toHaveCount(0);
+}
+
+test.describe("the passphrase box of the passphrase modal with the iOS keyboard (AT-51)", () => {
+  test("the team sheet asks only for the team, and the box sits above the keyboard on the first Topic tap", async ({ page }) => {
+    await fakeViewport(page);
+    await page.goto(`${server.url}${DOOR}`);
+    await page.getByRole("dialog").getByRole("button").first().tap();
+    await expect(page.getByRole("dialog"), "the pick of the team closes the sheet, and no modal opens on its own").toHaveCount(0);
+    // A weekly Topic from "More" needs no API, and the first action still asks for the passphrase.
+    await page.getByRole("group", { name: "Suggestions" }).getByRole("button", { name: "More" }).tap();
+    await page.getByRole("list", { name: "All Topics" }).getByRole("button").first().tap();
+    await expect(page.getByRole("dialog", { name: "What is the league passphrase?" })).toBeVisible();
+    await tapAndOpenKeyboard(page);
+    const place = await boxAndKeyboard(page);
+    console.log(`the box spans ${place.top} to ${place.bottom} px, and the keyboard starts at ${place.keyboard} px`);
+    expect(place.bottom, "the whole box is above the keyboard").toBeLessThanOrEqual(place.keyboard);
+    expect(place.top, "the box is in view").toBeGreaterThanOrEqual(0);
+  });
+
+  test("the box sits above the keyboard with a kept team and no kept passphrase", async ({ page }) => {
+    await fakeViewport(page);
+    await page.addInitScript(() => localStorage.setItem("cpc.your-team", "1"));
+    await page.goto(`${server.url}${DOOR}`);
+    await askForPassphrase(page);
+    await tapAndOpenKeyboard(page);
+    const place = await boxAndKeyboard(page);
+    expect(place.bottom, "the whole box is above the keyboard").toBeLessThanOrEqual(place.keyboard);
+    expect(place.top, "the box is in view").toBeGreaterThanOrEqual(0);
+  });
 });

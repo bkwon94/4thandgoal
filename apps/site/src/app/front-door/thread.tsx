@@ -31,7 +31,7 @@ export function Thread({
   // The API that sends the live card of Your next matchup. With none, each league Answer shows only topics.json.
   live?: LiveSource;
   // The front door renders each item that is not a league Topic as its card: a trade, a free or personal Answer, a
-  // miss, a cap line, a note, a question in flight, or the passphrase card.
+  // miss, a cap line, a note, or a question in flight.
   // `morph` is the id that the newest item shares with its tapped Suggestion, so the chip morphs into its question.
   renderOther: (entry: Exclude<Entry, { kind: "topic" }>, ref: RefObject<HTMLElement | null> | undefined, morph: string | undefined) => ReactNode;
 }) {

@@ -1,6 +1,7 @@
 /**
  * The front door at /: the sheet that asks for Your team on the first visit, then the Thread with the Suggestions and
  * the ask box. A tap on a Suggestion puts its Answer in the Thread, and a typed question goes to the route of the API.
+ * The first action with no stored passphrase, a question, a Topic, or a chip tap, asks for it in a modal first.
  * The browser keeps Your team, the opened Topics, the league passphrase, and one Thread per team for the week.
  */
 "use client";
@@ -19,13 +20,14 @@ import { Dock } from "./dock";
 import { turnsBefore } from "./chat-turns";
 import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem, ideasRequestOf, itemOfError, itemOfRoute, tradePartner, tradeRequestOf } from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
-import { CapCard, MissCard, NoteCard, PassphraseCard, PendingCard } from "./miss-card";
+import { CapCard, MissCard, NoteCard, PendingCard } from "./miss-card";
 import { keepFocus, closeKeyboard } from "./keyboard-tap";
 import { FAST, GLIDE, fadeIn, riseIn } from "./motion";
 import { PersonalAnswerCard, PersonalAnswerLive } from "./personal-answer";
 import { PERSONAL_LINES, isPersonal } from "./personal-stream";
 import { getOpened, markOpened } from "./opened-store";
 import { Suggestions } from "./suggestions";
+import { PassphraseSheet } from "./passphrase-sheet";
 import { TeamSheet } from "./team-sheet";
 import { type Entry, Thread, personalName } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
@@ -72,6 +74,12 @@ export function FrontDoor({
   // undefined until the browser reads its store. The static page cannot know Your team, so it renders no team and no sheet.
   const [teamId, setTeamId] = useState<number | null | undefined>(undefined);
   const [picking, setPicking] = useState(false);
+  // The passphrase modal, while it shows. `waiting` is the id of the question in the Thread that waits for it, or null.
+  // The ref runs the turn that waits for the passphrase.
+  const [passStep, setPassStep] = useState<{ wrong: boolean; waiting: number | null } | null>(null);
+  const afterPassphrase = useRef<(() => void) | null>(null);
+  // A new passphrase asks the API for the Suggestions again, so they get the live facts once the modal closes.
+  const [passphraseCount, setPassphraseCount] = useState(0);
   const [hour, setHour] = useState<number | null>(null);
   // The live facts and the urgent Topics of Your team from the API, once it answers. Until then, and with no
   // passphrase, the Suggestions come from the facts of the weekly build alone.
@@ -119,7 +127,7 @@ export function FrontDoor({
     return () => {
       live = false;
     };
-  }, [teamId, day, askTarget]);
+  }, [teamId, day, askTarget, passphraseCount]);
 
   // The site asks the API whether the key of each personal and trade Answer of the Thread is still current. The check
   // costs nothing. It runs again only when the set of kept Answers changes. A trade Answer with no key never checks.
@@ -234,13 +242,39 @@ export function FrontDoor({
         onCap: (line) => put(id, { kind: "cap", question, line, closest }),
       });
     } catch (error) {
-      if (error instanceof AskError && error.status === 401) clearPassphrase();
+      // A wrong passphrase opens the passphrase modal, and the Topic runs again in its place after a new one.
+      if (error instanceof AskError && error.status === 401) {
+        put(id, { kind: "pending", question });
+        return askPassphrase(true, id, (fresh) => void runTrade(id, question, request, fresh, closest));
+      }
       put(id, itemOfError(error, question));
     }
+  };
+  /* Open the passphrase modal before the first action, and run `then` with the new passphrase once the manager
+     types it. `waiting` is the id of the question that waits in the Thread, so a close can remove it. A wrong
+     passphrase leaves the store. */
+  const askPassphrase = (wrong: boolean, waiting: number | null, then: (passphrase: string) => void) => {
+    if (wrong) clearPassphrase();
+    afterPassphrase.current = () => then(getPassphrase() ?? "");
+    setPassStep({ wrong, waiting });
+  };
+  /* The first tap on a Suggestion chip with no passphrase opens the modal before the fact strip shows, and the strip
+     shows after a new passphrase. With a stored passphrase, the chip keeps its two taps (decision 02). */
+  const askFirst = (then: () => void) => {
+    if (getPassphrase()) return false;
+    setMoreOpen(false);
+    askPassphrase(false, null, then);
+    return true;
   };
   /* Open the Answer of a Topic for `of`, Your team by default, or for the team that a typed question named. */
   const open = (key: string, of: number | null = null) => {
     if (!team) return;
+    // Each action of the front door needs the passphrase, a league Topic too, so the first one asks for it in the modal
+    // and then runs. A passphrase that the trade analyzer stored counts.
+    if (!getPassphrase()) {
+      setMoreOpen(false);
+      return askPassphrase(false, null, () => open(key, of));
+    }
     const owner = of ?? team.id;
     const mode = TRADE_TOPICS[key];
     if (mode) {
@@ -252,8 +286,7 @@ export function FrontDoor({
         put(nextId.current++, { kind: "trade", mode, question: name, steps: [], answer: { kind: "form", form: { asker: team.id, partner, gives: [], gets: [] } } }, true);
         return;
       }
-      const passphrase = getPassphrase();
-      if (!passphrase) return void put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
+      const passphrase = getPassphrase() ?? "";
       // A trade Topic of Your team drops off the Suggestions until the API serves a new fact for it.
       if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
       // A tapped Topic has no closest Topics of its own, so a cap line offers the Suggestions of the day. A trade
@@ -263,16 +296,12 @@ export function FrontDoor({
       void runTrade(nextId.current++, name, mode === "sell" ? { mode, roster_id: team.id } : { mode, roster_id: team.id, partner }, passphrase, closest, true);
       return;
     }
-    // A personal Topic builds live on the API, so it needs the passphrase as a typed question does.
+    // A personal Topic builds live on the API.
     if (isPersonal(key)) {
       setMoreOpen(false);
-      const name = topicName(key);
-      if (!getPassphrase()) put(nextId.current++, { kind: "passphrase", question: name, wrong: false }, true);
-      else {
-        // A personal Topic of Your team drops off the Suggestions until the API serves a new fact for it.
-        if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
-        put(nextId.current++, { kind: "personal", key, team: owner, question: null, result: null }, true);
-      }
+      // A personal Topic of Your team drops off the Suggestions until the API serves a new fact for it.
+      if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
+      put(nextId.current++, { kind: "personal", key, team: owner, question: null, result: null }, true);
       return;
     }
     const answer = (answers[owner] ?? []).find((candidate) => candidate.topic === key);
@@ -293,11 +322,9 @@ export function FrontDoor({
   const send = async (id: number, question: string, append = false) => {
     if (!team) return;
     const passphrase = getPassphrase();
-    if (!passphrase) {
-      put(id, { kind: "passphrase", question, wrong: false }, append);
-      return;
-    }
     put(id, { kind: "pending", question }, append);
+    // The question waits in its place while the modal asks for the passphrase, then goes.
+    if (!passphrase) return askPassphrase(false, id, () => void send(id, question));
     try {
       const turns = turnsOf(id);
       const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns });
@@ -308,7 +335,8 @@ export function FrontDoor({
       if (mode === "ideas") return void (await runTrade(id, question, ideasRequestOf(route, question, team.id, turns), passphrase, route.closest));
       put(id, itemOfRoute(route, question, team.id, answers));
     } catch (error) {
-      if (error instanceof AskError && error.status === 401) clearPassphrase();
+      // A wrong passphrase opens the passphrase modal, and the question goes again in its place after a new one.
+      if (error instanceof AskError && error.status === 401) return askPassphrase(true, id, () => void send(id, question));
       put(id, itemOfError(error, question));
     }
   };
@@ -425,18 +453,6 @@ export function FrontDoor({
                     switch (entry.kind) {
                       case "pending":
                         return <PendingCard ref={ref} question={entry.question} />;
-                      case "passphrase":
-                        return (
-                          <PassphraseCard
-                            ref={ref}
-                            question={entry.question}
-                            wrong={entry.wrong}
-                            onPassphrase={(value) => {
-                              setPassphrase(value);
-                              void send(entry.id, entry.question);
-                            }}
-                          />
-                        );
                       case "trade": {
                         const since = entry.read ? stale[entry.read.key] : undefined;
                         const { answer } = entry;
@@ -552,7 +568,7 @@ export function FrontDoor({
               {!missed && (day === null || picks.length > 0 || moreOpen) ? (
                 <motion.div {...riseIn(off, { delay: 0.06 })}>
                   {/* Until the browser reads the day, quiet placeholder chips hold the place of the chips. */}
-                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...shownFacts(facts, servedNow?.kickoffs ?? {}) }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} />
+                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...shownFacts(facts, servedNow?.kickoffs ?? {}) }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} askFirst={askFirst} />
                 </motion.div>
               ) : null}
               {/* The ask box glides on its own box too. The dock changes inside as it glides: the dock gains its top pad
@@ -581,6 +597,29 @@ export function FrontDoor({
       </section>
       <AnimatePresence>
         {teamId !== undefined && sheetOpen && <TeamSheet key="sheet" siteName={siteName} teams={teams} current={team?.id ?? null} onPick={pick} />}
+        {team && !sheetOpen && passStep && (
+          <PassphraseSheet
+            key="passphrase"
+            siteName={siteName}
+            wrong={passStep.wrong}
+            onPassphrase={(value) => {
+              setPassphrase(value);
+              setPassStep(null);
+              setPassphraseCount((count) => count + 1);
+              const then = afterPassphrase.current;
+              afterPassphrase.current = null;
+              then?.();
+            }}
+            // A close removes the question that waits, so the Thread holds no turn that never goes. A Topic tap has no
+            // turn in the Thread yet, so it leaves nothing.
+            onClose={() => {
+              const { waiting } = passStep;
+              afterPassphrase.current = null;
+              setPassStep(null);
+              if (waiting !== null) setThread((entries) => entries.filter((entry) => entry.id !== waiting));
+            }}
+          />
+        )}
       </AnimatePresence>
     </>
   );

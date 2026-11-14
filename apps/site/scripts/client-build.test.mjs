@@ -11,7 +11,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import { buildClient, ClientBuildError, clientRoot, REPO_ROOT, SCHEMA_FILE, valuesSchemaFile } from "./client-build.mjs";
 
 const SCRIPT = join(process.cwd(), "scripts", "client-build.mjs");
-const CPC_TOML = readFileSync(join(REPO_ROOT, "clients", "cpc", "client.toml"), "utf8");
+// The repo client has the front door on. These fixtures turn it off on purpose, to cover the off path.
+const CPC_TOML = readFileSync(join(REPO_ROOT, "clients", "cpc", "client.toml"), "utf8").replace(
+  "front_door = true",
+  "front_door = false",
+);
 const CPC_BRAND = readFileSync(join(REPO_ROOT, "clients", "cpc", "brand.toml"), "utf8");
 const CPC_COPY = readFileSync(join(REPO_ROOT, "clients", "cpc", "copy.toml"), "utf8");
 
@@ -312,14 +316,14 @@ describe("the client build", () => {
     ],
   };
 
-  /* A temp repo with the client.toml of the client `slug` of the repo, with the front door on when `on`. */
+  /* A temp repo with the client.toml of the client `slug` of the repo. The file has the front door on; `on` false turns it off. */
   function repoClient(slug, on) {
     const toml = readFileSync(join(REPO_ROOT, "clients", slug, "client.toml"), "utf8");
-    expect(toml, slug).toContain("front_door = false");
-    return tempRepo(on ? toml.replace("front_door = false", "front_door = true") : toml, slug);
+    expect(toml, slug).toContain("front_door = true");
+    return tempRepo(on ? toml : toml.replace("front_door = true", "front_door = false"), slug);
   }
 
-  it("keeps the front door off in each client of the repo, so the menu is the menu of main (ticket 43)", () => {
+  it("gives each client of the repo the menu of main when the front door is turned off (ticket 43)", () => {
     const menus = {
       cpc: [
         { page: "home", label: "Home" },
@@ -349,6 +353,15 @@ describe("the client build", () => {
     }
   });
 
+  it("has the front door on in each client of the repo, with no /ask/ route", () => {
+    for (const slug of ["cpc", "norcal"]) {
+      const repo = repoClient(slug, true);
+      buildClient(repo);
+      expect(clientValuesOf(repo.site).frontDoor, slug).toBe(true);
+      expect(routeFiles(repo.site).filter((path) => path.includes("ask")), slug).toEqual([]);
+    }
+  });
+
   it("gives each client of the repo Home, the week, Power Rankings, and Managers with the front door on (AT-48)", () => {
     for (const slug of ["cpc", "norcal"]) {
       const repo = repoClient(slug, true);
@@ -368,6 +381,17 @@ describe("the client build", () => {
     const on = repoClient("cpc", true);
     buildClient(on);
     expect(routeFiles(on.site).filter((path) => path.includes("ask"))).toEqual([]);
+  });
+
+  it("writes a _redirects rule that sends /ask and /ask/ to / with the front door on, and none with it off", () => {
+    const on = repoClient("cpc", true);
+    buildClient(on);
+    const rules = readFileSync(join(on.site, "public", "_redirects"), "utf8").split("\n");
+    expect(rules).toContain("/ask / 301");
+    expect(rules).toContain("/ask/ / 301");
+    const off = repoClient("cpc", false);
+    buildClient(off);
+    expect(existsSync(join(off.site, "public", "_redirects"))).toBe(false);
   });
 
   it("takes the front door as off when client.toml omits it", () => {

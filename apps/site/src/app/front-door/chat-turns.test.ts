@@ -51,7 +51,6 @@ describe("threadTurns", () => {
   it("leaves out each item in flight", () => {
     const items: ThreadItem[] = [
       { kind: "pending", question: "q" },
-      { kind: "passphrase", question: "q", wrong: false },
       { kind: "free", question: "q", result: null },
       { kind: "personal", key: "weak_spots", team: LIL_FRIDGE, question: "q", result: null },
       { kind: "trade", mode: "check", question: "q", steps: ["Read both rosters"], answer: null },

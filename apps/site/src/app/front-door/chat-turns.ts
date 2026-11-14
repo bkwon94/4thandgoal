@@ -74,11 +74,10 @@ function tradeFact(answer: TradeAnswer): string {
 }
 
 /* The name and one plain fact of an item that is not a league Topic, or null for an item in flight: a question that
-   routes, the passphrase field, or a stream that has not ended. A free and a personal answer use only the name here. */
+   routes, or a stream that has not ended. A free and a personal answer use only the name here. */
 function turnLine(item: Exclude<ThreadItem, { kind: "topic" }>, teamName: (team: number) => string | undefined): { name: string; fact: string } | null {
   switch (item.kind) {
     case "pending":
-    case "passphrase":
       return null;
     case "trade":
       return item.answer ? { name: item.question, fact: tradeFact(item.answer) } : null;

@@ -5,7 +5,7 @@
  * their byte budget, and that the front door sits at / or at the hidden /ask/ as the flag front_door says.
  * Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ClientBuildError, clientRoot, readClient, readCopy } from "./client-build.mjs";
 import { FONT_CAPS, FONT_TOTAL } from "../src/app/fonts/budget.ts";
@@ -114,8 +114,14 @@ const noindex = /<meta name="robots" content="noindex"\/?>/;
 let ask;
 if (values.front_door ?? false) {
   if (exported.includes(ASK_PAGE)) fail(`${ASK_PAGE} exists, but the front door of ${process.env.CLIENT} is at /`);
-  ask = "the front door at / and no /ask/ page";
+  // The Worker reads out/_redirects, so the old /ask and /ask/ addresses must send the visitor to /.
+  const rules = existsSync(join("out", "_redirects")) ? readFileSync(join("out", "_redirects"), "utf8").split("\n") : [];
+  for (const rule of ["/ask / 301", "/ask/ / 301"]) {
+    if (!rules.includes(rule)) fail(`out/_redirects has no rule "${rule}", so the old /ask/ address does not send the visitor to /`);
+  }
+  ask = "the front door at / with a redirect from /ask/ and no /ask/ page";
 } else {
+  if (existsSync(join("out", "_redirects"))) fail("out/_redirects exists, but the hidden /ask/ page must serve");
   if (!exported.includes(ASK_PAGE)) fail(`${ASK_PAGE} is missing, but the front door of ${process.env.CLIENT} is off`);
   if (!noindex.test(readFileSync(ASK_PAGE, "utf8"))) fail(`${ASK_PAGE} has no robots noindex meta`);
   const link = htmlPages.find((file) => file !== ASK_PAGE && /href="\/ask\/?"/.test(readFileSync(file, "utf8")));

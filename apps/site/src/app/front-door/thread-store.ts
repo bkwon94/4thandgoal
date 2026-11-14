@@ -10,7 +10,7 @@ import { tradeAnswerSchema } from "./trade-api";
 export const THREAD_KEY = "cpc.thread";
 
 /* One entry of the Thread that the browser keeps. A Topic entry names its Topic and its team, and its Answer reads
-   from the published week. A miss, a cap line, and a note keep their lines. A question in flight and the passphrase card stay out,
+   from the published week. A miss, a cap line, and a note keep their lines. A question in flight stays out,
    because they mean nothing after a reload. A trade Answer stays once it is whole, because a reread must cost nothing,
    and its steps in flight stay out. A free answer stays once it ends with its checked result, so a reload shows it
    with no new stream and no cost. A personal Answer stays once it ends checked, for the same reason. */

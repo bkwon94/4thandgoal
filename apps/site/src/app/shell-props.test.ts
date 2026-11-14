@@ -81,12 +81,12 @@ describe("menuPages", () => {
 });
 
 describe("shellProps of cpc", () => {
-  // The front door of cpc is off, so the menu is [menu] items. The client build tests prove the 4 items with it on (AT-48).
+  // The front door of cpc is on, so the menu is the front_door_items. The client build tests prove the [menu] items with it off.
   it("keeps the items and the labels of the CPC menu, with the short labels of the dock (AT-9, AT-10)", () => {
     // The report item shows once the season publishes a report, so this test leaves it out.
     const items = shellProps().menu.items.filter((item) => item.kind !== "midseason");
-    expect(items.map((item) => item.label)).toEqual(["Home", "Week 8", "Power Rankings", "Managers", "Trade Analyzer"]);
-    expect(items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
+    expect(items.map((item) => item.label)).toEqual(["Home", "Week 8", "Power Rankings", "Managers"]);
+    expect(items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers"]);
   });
 
   it("lists every published week, newest first, for the week chip and the strip (AT-11)", () => {
@@ -103,12 +103,12 @@ describe("shellProps of cpc", () => {
     expect(brand).toEqual({ home: "/", logo: "/brand/logo.png" });
   });
 
-  it("puts the egg button of the eggs package in the top band, and the dock keeps its five items", () => {
+  it("puts the egg button of the eggs package in the top band, and the dock keeps its four items", () => {
     const shell = shellProps();
     // The egg button renders only after the board of the API names a drop, so the test reads the part in the slot.
     expect((shell.actions as ReactElement[]).map((part) => part.type)).toEqual([BandPart]);
     render(createElement(TopBand, { ...shell, pageHref: "/" }));
-    expect(within(screen.getByRole("navigation", { name: "Bottom menu" })).getAllByRole("link")).toHaveLength(5);
+    expect(within(screen.getByRole("navigation", { name: "Bottom menu" })).getAllByRole("link")).toHaveLength(4);
     cleanup();
   });
 });

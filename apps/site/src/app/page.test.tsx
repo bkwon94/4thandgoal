@@ -15,6 +15,9 @@ import HomePage from "./front-door/door-page";
    restore of the mocks removes it. */
 await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
 beforeEach(() => readFixtureSite("cpc"));
+/* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
+   action. */
+beforeEach(() => localStorage.setItem("cpc.passphrase", "cornerstone-test"));
 
 /* The temp public/ folders that homeOfClient made, so each test removes its own folder. */
 const roots: string[] = [];

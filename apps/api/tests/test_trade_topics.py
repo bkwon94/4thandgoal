@@ -6,6 +6,7 @@ import dataclasses
 import functools
 import json
 import shutil
+from pathlib import Path
 
 import pytest
 import test_api
@@ -25,6 +26,8 @@ from cornerstone_api.trade_topics import NO_ONE_PLAYER
 from cornerstone_api.trade_wording import (
     AIM_POSITION,
     AIMS_POSITION,
+    GETS_ALSO_NAMED,
+    GETS_ALSO_PLAYER,
     GETS_NAMED,
     GETS_PLAYER,
     GIVES_NAMED,
@@ -55,6 +58,10 @@ VAGUE_IDEAS = "any trade ideas for my team"
 NO_TE = "id rather not trade a TE"
 KEEP_SHAKIR = "keep shakir"
 FOR_A_TE = "what about for a TE"
+ONE_FOR_TWO = "trade Kyren Williams for Chase Brown and Devonta Smith"
+# The rosters of the week 9 build of cpc, where Chase Brown and DeVonta Smith are both on NFC Least.
+WEEK_9_RAW = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026" / "week-09" / "raw"
+NFC_LEAST = 4
 SHAKIR = "8134"
 FLOWERS = "9997"
 # The words that site copy never holds (decision 08 and the copy rules of the spec).
@@ -74,6 +81,9 @@ PICKS = {
                   KEEPS_NAMED: 0.94, KEPT_PLAYER: "Khalil Shakir"},
     FOR_A_TE: {GIVES_NAMED: 0.05, GETS_NAMED: 0.1, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers",
                AIMS_POSITION: 0.93, AIM_POSITION: "TE"},
+    # Each Choice picks one player, so the second player that the manager gets has a Noul and a Choice of its own.
+    ONE_FOR_TWO: {GIVES_NAMED: 0.97, GETS_NAMED: 0.96, GIVES_PLAYER: "Kyren Williams", GETS_PLAYER: "Chase Brown",
+                  GETS_ALSO_NAMED: 0.94, GETS_ALSO_PLAYER: "DeVonta Smith"},
 }
 
 
@@ -155,7 +165,7 @@ def test_the_stream_holds_each_player_pick_with_its_jev_answers(api):
     # AT-24 evidence: the route response with each player pick.
     [picks] = _of(_parts(_check(api, SURE_TRADE)), "data-picks")
     assert picks["gives"] == {"named": 0.97, "player_id": "8134", "name": "Khalil Shakir", "probability": 0.95,
-                              "sure": True, "roster_id": LIL_FRIDGE}
+                              "sure": True, "roster_id": LIL_FRIDGE, "also": None}
     assert picks["gets"]["player_id"] == "9997" and picks["gets"]["roster_id"] == BO_GIRDS and picks["gets"]["sure"]
 
 
@@ -188,6 +198,18 @@ def test_an_unsure_pick_on_one_side_fills_only_the_sure_player(api, advisor):
     [answer] = _of(_parts(_check(api, HALF_TRADE)), "data-answer")
     assert answer == {"kind": "form", "form": {"asker": LIL_FRIDGE, "partner": None, "gives": ["8134"], "gets": []}}
     assert advisor.calls == []
+
+
+def test_a_typed_one_for_two_trade_weighs_all_three_players(settings, sources, jev, advisor):
+    week_9 = dataclasses.replace(sources, fetch_sleeper=lambda league_id: (load_raw(WEEK_9_RAW), test_api.FETCHED))
+    response = _api(settings, week_9, jev, advisor).post(
+        CHECK, json={"question": ONE_FOR_TWO, "roster_id": BO_GIRDS}, headers=HEADERS)
+    [answer] = _of(_parts(response), "data-answer")
+    assert answer["kind"] == "check"
+    [yours, theirs] = answer["document"]["trade"]["sides"]
+    assert [player["name"] for player in yours["gives"]] == ["Kyren Williams"]
+    assert [player["name"] for player in yours["gets"]] == ["Chase Brown", "DeVonta Smith"]
+    assert theirs["roster_id"] == NFC_LEAST
 
 
 def test_the_steps_of_a_trade_check_come_one_by_one_before_the_whole_answer(api):

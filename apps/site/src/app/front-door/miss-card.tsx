@@ -1,14 +1,12 @@
 /**
  * The Answers of the ask box that hold no Topic: the honest miss and the cap line, each with its 3 closest Topics, a
- * calm note such as the refusal, the line while the question routes, and the field of the league passphrase.
+ * calm note such as the refusal, and the line while the question routes.
  */
 "use client";
 
 import { motion } from "framer-motion";
-import { forwardRef, useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowUpIcon } from "lucide-react";
+import { forwardRef, type ReactNode } from "react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { useKeyboardField } from "@cpc/design/shell/keyboard";
 import { BlockView } from "./answer-block";
 import { AnswerBody } from "./answer-card";
 import { FAST, SLOW, STAGGER, bubbleIn, fadeIn } from "./motion";
@@ -183,83 +181,3 @@ export const PendingCard = forwardRef<HTMLElement, { question: string }>(functio
     </article>
   );
 });
-
-/* The field of the league passphrase. The ask box needs it, so only managers of the league ask. The browser keeps it,
-   under the same key as the trade analyzer, so a manager types it once. */
-export const PassphraseCard = forwardRef<HTMLElement, { question: string; wrong: boolean; onPassphrase: (value: string) => void }>(
-  function PassphraseCard({ question, wrong, onPassphrase }, ref) {
-    const [value, setValue] = useState("");
-    const typed = value.trim();
-    // The field opens the keyboard as the ask box does, so the foot of the Thread moves above the keyboard for it.
-    const keyboard = useKeyboardField();
-    const form = useRef<HTMLFormElement>(null);
-    const [focused, setFocused] = useState(false);
-    // On iOS the field takes the focus first, and the keyboard rises after it. The foot rises with the keyboard and
-    // would cover the field, so each resize of the visual viewport scrolls the field back above the foot (AT-51). The
-    // scroll waits one frame, so the foot has its place over the keyboard first (site/shell/keyboard.ts).
-    useEffect(() => {
-      const view = window.visualViewport;
-      if (!focused || !view) return;
-      let frame = 0;
-      const fit = () => {
-        cancelAnimationFrame(frame);
-        frame = requestAnimationFrame(() => form.current?.scrollIntoView({ block: "nearest" }));
-      };
-      view.addEventListener("resize", fit);
-      return () => {
-        cancelAnimationFrame(frame);
-        view.removeEventListener("resize", fit);
-      };
-    }, [focused]);
-    // The scroll margin of the field is the height of the foot over the keyboard: --door-dock is the measured height of
-    // the foot, so it holds with the fact strip open too (front-door.tsx). The margin keeps one step of air above the foot.
-    return (
-      <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
-        <QuestionBubble question={question} />
-        <Surface>
-          <p className="m-0 text-body leading-body text-ink-2">
-            {wrong ? "That passphrase did not match. Type the league passphrase again." : "Type the league passphrase to ask. You type it once on this phone."}
-          </p>
-          <form
-            ref={form}
-            aria-label="League passphrase"
-            className="flex min-h-ask scroll-mb-[calc(var(--spacing-door-foot)+var(--door-dock,0px)+var(--spacing-sp-3))] items-center gap-sp-2 rounded-pill border border-rule bg-page py-sp-1 pr-sp-1 pl-sp-5 transition-[border-color] duration-150 focus-within:border-ink"
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (typed) onPassphrase(typed);
-            }}
-          >
-            <input
-              type="password"
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-              aria-label="League passphrase"
-              placeholder="League passphrase"
-              autoComplete="current-password"
-              // The manager just sent a question, so the field takes the focus and the next keys go to it.
-              autoFocus
-              enterKeyHint="send"
-              onFocus={() => {
-                keyboard.onFocus();
-                setFocused(true);
-              }}
-              onBlur={() => {
-                keyboard.onBlur();
-                setFocused(false);
-              }}
-              className="min-w-0 flex-1 bg-transparent text-lead leading-tight text-ink outline-none placeholder:text-mute focus-visible:outline-none"
-            />
-            <button
-              type="submit"
-              aria-label="Ask with this passphrase"
-              disabled={!typed}
-              className="press flex size-send flex-none items-center justify-center rounded-full bg-accent text-on-dark transition-colors duration-150 disabled:bg-raised disabled:text-mute"
-            >
-              <ArrowUpIcon aria-hidden className="size-sp-5" strokeWidth={2.25} />
-            </button>
-          </form>
-        </Surface>
-      </article>
-    );
-  },
-);
