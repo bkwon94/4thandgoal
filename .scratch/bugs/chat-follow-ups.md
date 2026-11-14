@@ -32,7 +32,7 @@ Green: at `0ebf3af3`, `cd apps/api && uv run --exact --package cpc-api pytest -m
 'write me a poem': miss None {'fits_topic': 0.02, 'data_can_answer': 0.02, 'about_league': 0.02, 'abuse': 0.02, 'reacts_to_answer': 0.02, 'names_team': 0.01}
 3 passed in 1.15s
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. The free-answer check fails a reply that stands on the earlier answer
 
@@ -55,6 +55,6 @@ Green: at `a88ab9de`, `cd apps/api && uv run --exact --package cpc-api pytest -m
 'Yes. Konata Mumpfield scored 31.4 points last week.': route free, checks ['checking', 'fixing', 'checking', 'failed']
 2 passed, 62 deselected in 2.12s
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
