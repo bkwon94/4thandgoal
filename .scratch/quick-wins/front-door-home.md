@@ -54,30 +54,33 @@ Test verdict: PASS
 
 Done condition: the team sheet asks only for the team, the first action on the front door with no stored passphrase (a question, a Topic, or a Suggestion tap, but none when the analyzer stored one) first opens a passphrase modal that says "device", not "phone", and runs after it, the chat Thread never shows the passphrase card, and the header menu sheet holds a row to change it.
 Method: tdd
-Red: at `e9c941ff` with `apps/site/src/app/page-ask.test.tsx` of `72067e3b`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
+Red: at `e9c941ff` with `apps/site/src/app/page-ask.test.tsx` of `4df8620d`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
 
 ```text
+ × asks only for the team on a first visit, and the first tap on a weekly Topic opens the modal, then the Topic
+TestingLibraryElementError: Unable to find role="dialog" and name "What is the league passphrase?"
+ × says that the device keeps the passphrase, never the phone
+AssertionError: expected 'Cornerstone Fantasy Football LeagueHo…' not to match /\bphone\b/i
+"…who am i playing sundayType the league passphrase to ask. You type it once on this phone.MoreNext gamePlayoffsRecap"
  × opens the modal before a question with no passphrase, never the card in the Thread, then sends the question
- × opens the modal as wrong after a 401, forgets the wrong one, and asks again after a new one
- × removes the question that waits when the manager closes the modal with Not now
- × changes the passphrase from a row of the header menu, and keeps the old one on Escape
- × marks the passphrase field of the modal as a keyboard field while it has the focus (AT-51)
 AssertionError: expected <form …(2)>…(2)</form> to be null
 + Received:
 <form
   aria-label="League passphrase"
-TestingLibraryElementError: Unable to find role="dialog" and name "What is the league passphrase?"
-TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/Change the league passphrase/`
- Tests  5 failed | 1 passed | 15 skipped (21)
+ × opens the modal as wrong after a 401, forgets the wrong one, and asks again after a new one
+ × drops the action when the manager closes the modal with Not now, and the next action asks again
+ × changes the passphrase from a row of the header menu, and keeps the old one on Escape
+ × marks the passphrase field of the modal as a keyboard field while it has the focus (AT-51)
+ Tests  7 failed | 1 passed | 15 skipped (23)
 ```
 
-Green: at `72067e3b`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
+Green: at `4df8620d`, `pnpm exec vitest run src/app/page-ask.test.tsx -t "the passphrase modal"` in `apps/site`
 
 ```text
- Tests  6 passed | 15 skipped (21)
+ Tests  8 passed | 15 skipped (23)
 ```
 
-Test verdict: PASS
+Test verdict: pending
 
 ## Comments
 
