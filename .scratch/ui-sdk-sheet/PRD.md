@@ -5,7 +5,7 @@ Date: 2026-11-14
 Apps: site. The menu sheet of the front door moves to the ui-sdk `Drawer`, and the design package gets its first ui-sdk wrapper and the rules for later moves. The pipeline does not change.
 Spec branch: `ui-sdk-sheet`.
 Source: the map `.scratch/ui-sdk-sheet/MAP.md` and decision tickets 01 to 10. ADR 0034, ADR 0024, and ADR 0012.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 03, in `issues/`.
 
 ## Problem Statement
 
