@@ -8,4 +8,4 @@ Amends ADR 0024 in part.
 
 - A sheet uses the spring of the ui-sdk `Drawer`. A tune goes through its `physics` prop, never through a CSS transition on the translate.
 - A sheet stays transform and opacity only. The `Drawer` moves it with `translate` and dims the page with opacity.
-- Under reduced motion, a sheet fades and does not slide. No other part of the site fades under reduced motion.
+- Under reduced motion, a sheet fades and does not slide. The dock and the icon swap of the menu button also keep a short fade under reduced motion, as ADR 0024 allows. The sheet is the one part that fades in place of a slide.
