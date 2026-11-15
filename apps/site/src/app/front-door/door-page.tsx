@@ -20,7 +20,7 @@ export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: st
   const { items, weeks } = shell.menu;
   return (
     <>
-      {/* The front door has its own foot, the Suggestions and the ask box, so the pages sit in the header sheet in place of
+      {/* The front door has its own foot, the Suggestions and the ask box, so the pages sit in the menu sheet in place of
           the dock, and the week chip leaves: the Answers are about the live week (decision 10). */}
       <TopBand
         {...shell}

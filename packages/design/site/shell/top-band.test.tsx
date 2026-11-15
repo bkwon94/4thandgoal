@@ -1,6 +1,6 @@
 /**
  * Tests for the shell: the top band, the pill bar, the dock, the week chip with the strip of weeks, the theme button, and the
- * header sheet of the front door.
+ * menu sheet of the front door.
  * They read what a reader sees by role and name, not the class names.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
@@ -218,7 +218,7 @@ describe("The week chip (AT-11)", () => {
   });
 });
 
-/* The top band of the front door: the header sheet in place of the dock and the week chip (decision 10). */
+/* The top band of the front door: the menu sheet in place of the dock and the week chip (decision 10). */
 /* The front door gives its menu sheet to the top band, as the app does. */
 function doorBand(pageHref = "/", menu: SiteMenu = MENU) {
   const sheetNode = <MenuSheet items={menu.items} weeks={menu.weeks} current={currentHref(menu.items, menu.weeks, pageHref)} pageHref={pageHref} />;
@@ -232,7 +232,7 @@ function renderDoorBand(pageHref = "/", menu: SiteMenu = MENU) {
 const menuButton = () => within(screen.getByRole("banner")).getByRole("button", { name: /^(Open|Close) the menu$/ });
 const sheet = () => screen.getByRole("navigation", { name: "Pages" });
 
-describe("The header sheet of the front door (AT-45, AT-47)", () => {
+describe("The menu sheet of the front door (AT-45, AT-47)", () => {
   it("shows no menu button and no sheet on a dock page", () => {
     renderBand("/rankings/");
     expect(screen.queryByRole("button", { name: /^(Open|Close) the menu$/ })).toBeNull();
@@ -328,7 +328,7 @@ describe("The header sheet of the front door (AT-45, AT-47)", () => {
   });
 });
 
-describe("The header sheet closes three ways and keeps the focus in (AT-46)", () => {
+describe("The menu sheet closes three ways and keeps the focus in (AT-46)", () => {
   async function openSheet() {
     renderDoorBand();
     // A full tap, as a finger gives: the press, the release, then the click.
