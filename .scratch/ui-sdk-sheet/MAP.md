@@ -17,10 +17,10 @@ The menu sheet runs on the ui-sdk `Drawer` on the live site, with a native feel 
 - No `web.css`; Tailwind styles one wrapper per part in `packages/design/site/ui/`. `decisions/06-grill-the-style-and-the-wrapper.md`.
 - The `Drawer` works in our static build and with Tailwind 4; pin both packages exact; it costs about 43 KB gzip per page. `decisions/07-research-ui-sdk-in-our-build.md`.
 - The menu sheet drops from the top with one snap point, a grab handle, the default iOS physics, and a dim with no page scale. `decisions/08-prototype-the-feel-of-the-menu-sheet.md`.
+- Only the front door pays the `Drawer`, with a direct import; one acceptance test shows a dock page does not grow. `decisions/10-grill-the-bundle-cost.md`.
 
 ## NOT YET SPECIFIED
 
-- Do we pay about 43 KB gzip on every page, or load the `Drawer` on the first tap? `decisions/10-grill-the-bundle-cost.md`.
 - Which `package.json` declares ui-sdk, and which rule test guards the wrapper rule? `decisions/09-spec-the-guard-and-the-dependency.md`.
 
 ## OUT OF SCOPE
@@ -29,4 +29,6 @@ The menu sheet runs on the ui-sdk `Drawer` on the live site, with a native feel 
 - `side-tabs`, `show-all`, `index-list`, and other hand-built controls. The same reason.
 - The ui-sdk default look, `web.css`. The look of ADR 0024 owns the components (decision 06).
 - The pill bar of the desktop. It is no sheet, and it works.
+- The dock. It is no sheet, and it works (decision 10).
+- A standing check of the bundle size in CI. It is its own feature (decision 10).
 - A mouse drag on a row of the sheet on desktop. The native drag of the link stops it in the current sheet too, and touch works (decision 08).
