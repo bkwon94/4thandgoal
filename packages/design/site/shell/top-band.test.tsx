@@ -5,7 +5,8 @@
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import type { Brand, SiteMenu } from "./nav";
+import { MenuSheet } from "./menu-sheet";
+import { currentHref, type Brand, type SiteMenu } from "./nav";
 import { TopBand } from "./top-band";
 
 /* The brand of a build with no base path. */
@@ -216,14 +217,26 @@ describe("The week chip (AT-11)", () => {
 });
 
 /* The top band of the front door: the header sheet in place of the dock and the week chip (decision 10). */
+/* The front door gives its menu sheet to the top band, as the app does. */
+function doorBand(pageHref = "/", menu: SiteMenu = MENU) {
+  const sheetNode = <MenuSheet items={menu.items} weeks={menu.weeks} current={currentHref(menu.items, menu.weeks, pageHref)} pageHref={pageHref} />;
+  return <TopBand title={TITLE} brand={BRAND} menu={menu} pageHref={pageHref} menuSheet={sheetNode} />;
+}
+
 function renderDoorBand(pageHref = "/", menu: SiteMenu = MENU) {
-  render(<TopBand title={TITLE} brand={BRAND} menu={menu} pageHref={pageHref} nav="sheet" />);
+  render(doorBand(pageHref, menu));
 }
 
 const menuButton = () => within(screen.getByRole("banner")).getByRole("button", { name: /^(Open|Close) the menu$/ });
 const sheet = () => screen.getByRole("navigation", { name: "Pages" });
 
 describe("The header sheet of the front door (AT-45, AT-47)", () => {
+  it("shows no menu button and no sheet on a dock page", () => {
+    renderBand("/rankings/");
+    expect(screen.queryByRole("button", { name: /^(Open|Close) the menu$/ })).toBeNull();
+    expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+  });
+
   it("shows no dock and no week chip, and holds the menu button in the banner", () => {
     renderDoorBand();
     expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
@@ -347,7 +360,7 @@ describe("The header sheet closes four ways (AT-46)", () => {
   it("closes when a Tab moves the focus out of the sheet, and leaves the focus where it went", () => {
     render(
       <>
-        <TopBand title={TITLE} brand={BRAND} menu={MENU} pageHref="/" nav="sheet" />
+        {doorBand()}
         <button type="button">After</button>
       </>,
     );
