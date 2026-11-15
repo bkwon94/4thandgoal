@@ -1,0 +1,12 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:15:01, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 390: sheet {"x":0,"y":61,"width":390,"height":307,"bottom":368}; tap point (195, 700), below the sheet bottom 368; elementFromPoint there: DIV[data-slot=drawer-backdrop]
+  before: aria-expanded=true, URL http://127.0.0.1:59911/
+  after: aria-expanded=false, sheet content elements in the DOM=0, URL http://127.0.0.1:59911/
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 375: sheet {"x":0,"y":61,"width":375,"height":307,"bottom":368}; tap point (188, 700), below the sheet bottom 368; elementFromPoint there: DIV[data-slot=drawer-backdrop]
+  before: aria-expanded=true, URL http://127.0.0.1:59911/
+  after: aria-expanded=false, sheet content elements in the DOM=0, URL http://127.0.0.1:59911/
+(exit 0)

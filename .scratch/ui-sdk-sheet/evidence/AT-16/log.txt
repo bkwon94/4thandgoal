@@ -1,0 +1,8 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:15:30, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+row: icon lucide-house, name "Home", note "Ask about your team"
+row: icon lucide-calendar-days, name "Week 9", note "Scores and recaps"
+row: icon lucide-trophy, name "Power Rankings", note "The league, ranked"
+row: icon lucide-users, name "Managers", note "Grades and records"
+(exit 0)

@@ -8,6 +8,8 @@ import { readFixtureSite } from "@/fixtures/sites";
 import { homeHref } from "@/lib/routes";
 import { pageTitle } from "@/app/shell-props";
 import AskPage, { metadata } from "./page";
+// The jsdom stand-ins that the Drawer of the menu sheet needs.
+import "@cpc/design/ui/sheet-jsdom";
 
 beforeEach(() => readFixtureSite("cpc"));
 

@@ -1,0 +1,21 @@
+
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/ui-sdk-sheet/apps/site
+> node scripts/evidence.mjs ui-sdk-sheet
+
+
+Running 1 test using 1 worker
+
+build cpc: 4.5 s
+AT-9 / cpc: 6 shots in 27.0 s
+AT-10 / cpc: 6 shots in 26.8 s
+AT-11 / cpc: 12 shots in 42.2 s
+AT-16 / cpc: 6 shots in 26.8 s
+AT-17 / cpc: 6 shots in 26.9 s
+AT-27 / cpc: 2 shots in 6.8 s
+AT-31 / cpc: 6 shots in 26.8 s
+build norcal: 5.1 s
+AT-31 / norcal: 6 shots in 26.4 s
+Total: 7 tests of ui-sdk-sheet in 219.3 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of ui-sdk-sheet (3.7m)
+
+  1 passed (3.7m)

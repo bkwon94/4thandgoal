@@ -4,6 +4,8 @@ The site kept the look of the printed report: Helvetica, a black masthead, white
 
 Superseded in part by ADR 0027: the first hero of a page draws a scene of its data on a canvas in place of the scan line, and that canvas is the one exception to the rule of transform and opacity only.
 
+Amended in part by ADR 0034: a sheet you can drag settles with a spring, and under reduced motion it may fade in and out in place of a slide.
+
 ## Consequences
 
 - The look uses Space Grotesk for text and JetBrains Mono for numbers and labels, self-hosted (decision 02 of `site-redesign`).

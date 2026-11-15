@@ -9,6 +9,8 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
+// The jsdom stand-ins that the Drawer of the menu sheet needs.
+import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
    runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a

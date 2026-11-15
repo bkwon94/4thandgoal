@@ -1,0 +1,42 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:17:03, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+menu button aria-expanded=false
+accessibility snapshot of body:
+- banner:
+  - link "Cornerstone Fantasy Football League":
+    - /url: /
+  - button "Switch to light theme"
+  - button "Open the menu"
+- main:
+  - region "Thread":
+    - text: Good morning · Week 9
+    - heading "Ask about All You Need Is Love" [level=1]
+    - paragraph: or any team in the league.
+    - paragraph:
+      - text: Try
+      - button "who has the best roster"
+      - text: or
+      - button "week 1 results"
+    - group "Suggestions":
+      - button "More"
+      - 'button "Your next matchup: Next: behold the lamb, 6-12"'
+      - 'button "Playoff race: 78% playoff odds"'
+      - 'button "Week recap: You scored 106.39, 6th of 12"'
+    - form "Ask":
+      - textbox "Ask a question":
+        - /placeholder: Ask about your team or the league
+      - button "Send" [disabled]
+    - 'button "Your team: All You Need Is Love. Change the team"': Not your team? Change it
+- alert
+snapshot holds "link "Home Ask about your team"": false
+snapshot holds "link "Week 9 Scores and recaps"": false
+snapshot holds "link "Power Rankings The league, ranked"": false
+snapshot holds "link "Managers Grades and records"": false
+snapshot holds "Scores and recaps": false
+snapshot holds "The league, ranked": false
+snapshot holds "Grades and records": false
+snapshot holds "Past weeks": false
+snapshot holds "navigation "Pages"": false
+snapshot holds "dialog "Pages"": false
+sheet content elements in the DOM: 0
+(exit 0)

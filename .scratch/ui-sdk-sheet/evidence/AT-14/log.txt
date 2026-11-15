@@ -1,0 +1,12 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:15:11, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+width 390: menu button box {"x":342,"y":8,"width":44,"height":44,"bottom":52}
+  before the tap: [{"icon":"menu","x":354,"y":20,"width":20,"height":20,"opacity":"1"},{"icon":"X","x":359,"y":25,"width":10,"height":10,"opacity":"0"}]
+opened: menu button aria-expanded=true
+  after the tap: [{"icon":"menu","x":359,"y":25,"width":10,"height":10,"opacity":"0"},{"icon":"X","x":354,"y":20,"width":20,"height":20,"opacity":"1"}]; button box {"x":342,"y":8,"width":44,"height":44,"bottom":52}
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+width 375: menu button box {"x":327,"y":8,"width":44,"height":44,"bottom":52}
+  before the tap: [{"icon":"menu","x":339,"y":20,"width":20,"height":20,"opacity":"1"},{"icon":"X","x":344,"y":25,"width":10,"height":10,"opacity":"0"}]
+opened: menu button aria-expanded=true
+  after the tap: [{"icon":"menu","x":344,"y":25,"width":10,"height":10,"opacity":"0"},{"icon":"X","x":339,"y":20,"width":20,"height":20,"opacity":"1"}]; button box {"x":327,"y":8,"width":44,"height":44,"bottom":52}
+(exit 0)

@@ -1,0 +1,18 @@
+# The files: the player sheets, the claim sheet, the team sheets, the passphrase sheet, the dock, and the pill bar.
+$ git ls-files -- packages/analyzer/site/form/player-sheet.tsx packages/waiver/site/player-sheet.tsx packages/eggs/site/hunt/claim-sheet.tsx apps/site/src/app/front-door/team-sheet.tsx packages/analyzer/site/form/team-sheet.tsx apps/site/src/app/front-door/passphrase-sheet.tsx packages/design/site/shell/dock.tsx packages/design/site/shell/pill-bar.tsx
+apps/site/src/app/front-door/passphrase-sheet.tsx
+apps/site/src/app/front-door/team-sheet.tsx
+packages/analyzer/site/form/player-sheet.tsx
+packages/analyzer/site/form/team-sheet.tsx
+packages/design/site/shell/dock.tsx
+packages/design/site/shell/pill-bar.tsx
+packages/eggs/site/hunt/claim-sheet.tsx
+packages/waiver/site/player-sheet.tsx
+
+$ git diff origin/main --stat -- packages/analyzer/site/form/player-sheet.tsx packages/waiver/site/player-sheet.tsx packages/eggs/site/hunt/claim-sheet.tsx apps/site/src/app/front-door/team-sheet.tsx packages/analyzer/site/form/team-sheet.tsx apps/site/src/app/front-door/passphrase-sheet.tsx packages/design/site/shell/dock.tsx packages/design/site/shell/pill-bar.tsx
+(exit 0)
+
+# Control: the same command on a file the branch changes.
+$ git diff origin/main --stat -- packages/design/site/shell/menu-sheet.tsx
+ packages/design/site/shell/menu-sheet.tsx | 172 ++++++++----------------------
+ 1 file changed, 47 insertions(+), 125 deletions(-)

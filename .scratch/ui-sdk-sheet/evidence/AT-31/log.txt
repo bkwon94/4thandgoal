@@ -1,0 +1,21 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:17:27, build of fee8d319, CLIENT=cpc
+opened: menu button aria-expanded=true
+cpc light: html class "bKuuTq_variable hQ5RIa_variable", title "Cornerstone Fantasy Football League"
+  token --color-page #f4f4f4 = rgb(244, 244, 244); sheet background-color rgb(244, 244, 244); body background-color rgb(244, 244, 244)
+  token --color-accent #b8342a = rgb(184, 52, 42); token --color-accent-ink #a52e25 = rgb(165, 46, 37); check color rgb(165, 46, 37), check stroke rgb(165, 46, 37)
+opened: menu button aria-expanded=true
+cpc dark: html class "dark bKuuTq_variable hQ5RIa_variable", title "Cornerstone Fantasy Football League"
+  token --color-page #141414 = rgb(20, 20, 20); sheet background-color rgb(20, 20, 20); body background-color rgb(20, 20, 20)
+  token --color-accent #b8342a = rgb(184, 52, 42); token --color-accent-ink #f2a59e = rgb(242, 165, 158); check color rgb(242, 165, 158), check stroke rgb(242, 165, 158)
+(exit 0)
+
+$ CLIENT=norcal BASE=http://127.0.0.1:59912/ node script.mjs   # 2026-11-15 07:17:59, build of fee8d319, CLIENT=norcal
+opened: menu button aria-expanded=true
+norcal light: html class "bKuuTq_variable hQ5RIa_variable", title "NorCal Apex 6"
+  token --color-page #f5f3ef = rgb(245, 243, 239); sheet background-color rgb(245, 243, 239); body background-color rgb(245, 243, 239)
+  token --color-accent #c2410c = rgb(194, 65, 12); token --color-accent-ink #9a3412 = rgb(154, 52, 18); check color rgb(154, 52, 18), check stroke rgb(154, 52, 18)
+opened: menu button aria-expanded=true
+norcal dark: html class "dark bKuuTq_variable hQ5RIa_variable", title "NorCal Apex 6"
+  token --color-page #141414 = rgb(20, 20, 20); sheet background-color rgb(20, 20, 20); body background-color rgb(20, 20, 20)
+  token --color-accent #c2410c = rgb(194, 65, 12); token --color-accent-ink #e0a526 = rgb(224, 165, 38); check color rgb(224, 165, 38), check stroke rgb(224, 165, 38)
+(exit 0)

@@ -1,12 +1,15 @@
 /**
  * Tests for the shell: the top band, the pill bar, the dock, the week chip with the strip of weeks, the theme button, and the
- * header sheet of the front door.
+ * menu sheet of the front door.
  * They read what a reader sees by role and name, not the class names.
  */
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import type { Brand, SiteMenu } from "./nav";
+import { MenuSheet } from "./menu-sheet";
+import { currentHref, type Brand, type SiteMenu } from "./nav";
 import { TopBand } from "./top-band";
+// The jsdom stand-ins that the Drawer of the menu sheet needs.
+import "../ui/sheet-jsdom";
 
 /* The brand of a build with no base path. */
 const BRAND: Brand = { home: "/", logo: "/brand/logo.png" };
@@ -215,15 +218,27 @@ describe("The week chip (AT-11)", () => {
   });
 });
 
-/* The top band of the front door: the header sheet in place of the dock and the week chip (decision 10). */
+/* The top band of the front door: the menu sheet in place of the dock and the week chip (decision 10). */
+/* The front door gives its menu sheet to the top band, as the app does. */
+function doorBand(pageHref = "/", menu: SiteMenu = MENU) {
+  const sheetNode = <MenuSheet items={menu.items} weeks={menu.weeks} current={currentHref(menu.items, menu.weeks, pageHref)} pageHref={pageHref} />;
+  return <TopBand title={TITLE} brand={BRAND} menu={menu} pageHref={pageHref} menuSheet={sheetNode} />;
+}
+
 function renderDoorBand(pageHref = "/", menu: SiteMenu = MENU) {
-  render(<TopBand title={TITLE} brand={BRAND} menu={menu} pageHref={pageHref} nav="sheet" />);
+  render(doorBand(pageHref, menu));
 }
 
 const menuButton = () => within(screen.getByRole("banner")).getByRole("button", { name: /^(Open|Close) the menu$/ });
 const sheet = () => screen.getByRole("navigation", { name: "Pages" });
 
-describe("The header sheet of the front door (AT-45, AT-47)", () => {
+describe("The menu sheet of the front door (AT-45, AT-47)", () => {
+  it("shows no menu button and no sheet on a dock page", () => {
+    renderBand("/rankings/");
+    expect(screen.queryByRole("button", { name: /^(Open|Close) the menu$/ })).toBeNull();
+    expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+  });
+
   it("shows no dock and no week chip, and holds the menu button in the banner", () => {
     renderDoorBand();
     expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
@@ -233,7 +248,16 @@ describe("The header sheet of the front door (AT-45, AT-47)", () => {
 
   it("keeps the sheet closed and out of the accessibility tree until the button opens it", () => {
     renderDoorBand();
+    expect(screen.queryByRole("dialog", { name: "Pages" })).toBeNull();
     expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+  });
+
+  it("opens the sheet as a modal dialog named Pages, so the page under the dim takes no focus", () => {
+    renderDoorBand();
+    fireEvent.click(menuButton());
+    const dialog = screen.getByRole("dialog", { name: "Pages" });
+    expect(dialog.getAttribute("aria-modal")).toBe("true");
+    expect(dialog.contains(sheet())).toBe(true);
   });
 
   it("opens the sheet with one row per page, each with an icon, its name, and its note, and a check on the open page", () => {
@@ -260,10 +284,11 @@ describe("The header sheet of the front door (AT-45, AT-47)", () => {
     expect(menuButton().getAttribute("aria-label")).toBe("Close the menu");
   });
 
-  it("moves the focus to the sheet on open", () => {
+  it("moves the focus to the sheet on open", async () => {
     renderDoorBand();
     fireEvent.click(menuButton());
-    expect(sheet().contains(document.activeElement)).toBe(true);
+    const dialog = screen.getByRole("dialog", { name: "Pages" });
+    await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
   });
 
   it("marks no row on a page that is no destination, such as /ask/", () => {
@@ -303,66 +328,90 @@ describe("The header sheet of the front door (AT-45, AT-47)", () => {
   });
 });
 
-describe("The header sheet closes four ways (AT-46)", () => {
-  function openSheet() {
+describe("The menu sheet closes three ways and keeps the focus in (AT-46)", () => {
+  async function openSheet() {
     renderDoorBand();
+    // A full tap, as a finger gives: the press, the release, then the click.
+    fireEvent.pointerDown(menuButton());
+    fireEvent.pointerUp(menuButton());
     fireEvent.click(menuButton());
-    expect(sheet()).toBeTruthy();
+    const dialog = screen.getByRole("dialog", { name: "Pages" });
+    await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
   }
 
-  function expectClosed() {
+  async function expectClosed() {
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Pages" })).toBeNull());
     expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
     expect(menuButton().getAttribute("aria-expanded")).toBe("false");
     expect(document.activeElement).toBe(menuButton());
   }
 
-  it("closes by the X", () => {
-    openSheet();
+  it("closes by the X", async () => {
+    await openSheet();
     fireEvent.click(menuButton());
-    expectClosed();
+    await expectClosed();
   });
 
-  it("closes by a tap on the dimmed page", () => {
-    openSheet();
-    fireEvent.click(screen.getByTestId("menu-scrim"));
-    expectClosed();
+  it("closes by a tap on the dimmed page", async () => {
+    await openSheet();
+    const scrim = screen.getByTestId("menu-scrim");
+    fireEvent.pointerDown(scrim);
+    fireEvent.pointerUp(scrim);
+    await expectClosed();
   });
 
-  it("closes by Escape", () => {
-    openSheet();
-    fireEvent.keyDown(document, { key: "Escape" });
-    expectClosed();
+  it("closes by Escape", async () => {
+    await openSheet();
+    fireEvent.keyDown(document.activeElement ?? document, { key: "Escape" });
+    await expectClosed();
   });
 
-  it("closes by a swipe up", () => {
-    openSheet();
-    const panel = sheet();
-    fireEvent.pointerDown(panel, { pointerId: 1, clientY: 300, pointerType: "touch", isPrimary: true });
-    fireEvent.pointerMove(panel, { pointerId: 1, clientY: 240, pointerType: "touch", isPrimary: true });
-    fireEvent.pointerMove(panel, { pointerId: 1, clientY: 180, pointerType: "touch", isPrimary: true });
-    fireEvent.pointerUp(panel, { pointerId: 1, clientY: 180, pointerType: "touch", isPrimary: true });
-    expectClosed();
-  });
-
-  it("closes when a Tab moves the focus out of the sheet, and leaves the focus where it went", () => {
+  it("keeps the focus in the sheet when a Tab leaves its last row", async () => {
     render(
       <>
-        <TopBand title={TITLE} brand={BRAND} menu={MENU} pageHref="/" nav="sheet" />
+        {doorBand()}
         <button type="button">After</button>
       </>,
     );
     fireEvent.click(menuButton());
-    const after = screen.getByRole("button", { name: "After" });
-    fireEvent.blur(sheet(), { relatedTarget: after });
-    expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+    const dialog = screen.getByRole("dialog", { name: "Pages" });
+    await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+    const rows = within(dialog).getAllByRole("link").filter((link) => !/^WK /.test(link.textContent ?? ""));
+    const last = rows[rows.length - 1];
+    last.focus();
+    fireEvent.keyDown(last, { key: "Tab" });
+    // The trap takes the Tab and wraps the focus inside the sheet, so it never reaches the page under the dim.
+    await waitFor(() => expect(document.activeElement).not.toBe(last));
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    expect(document.activeElement).not.toBe(screen.getByRole("button", { name: "After" }));
+    expect(screen.getByRole("dialog", { name: "Pages" })).toBe(dialog);
   });
+});
 
-  it("stays open after a short drag that does not reach the line of a close", () => {
-    openSheet();
-    const panel = sheet();
-    fireEvent.pointerDown(panel, { pointerId: 1, clientY: 300, pointerType: "touch", isPrimary: true, timeStamp: 0 });
-    fireEvent.pointerMove(panel, { pointerId: 1, clientY: 296, pointerType: "touch", isPrimary: true });
-    fireEvent.pointerUp(panel, { pointerId: 1, clientY: 296, pointerType: "touch", isPrimary: true });
-    expect(sheet()).toBeTruthy();
+describe("The menu sheet closes at the desktop tier", () => {
+  it("closes when the window widens to the desktop tier, so the page does not stay inert under a hidden sheet", async () => {
+    // A query list for the desktop tier that the test can flip, as a browser does when the window widens.
+    const listeners = new Set<() => void>();
+    const desktop = {
+      matches: false,
+      addEventListener: (_type: string, listener: () => void) => listeners.add(listener),
+      removeEventListener: (_type: string, listener: () => void) => listeners.delete(listener),
+    };
+    const fallback = window.matchMedia;
+    // The same breakpoint as the desktop variant, --breakpoint-desktop in globals.css.
+    vi.stubGlobal("matchMedia", (query: string) => (query === "(min-width: 64rem)" ? desktop : fallback(query)));
+    try {
+      renderDoorBand();
+      fireEvent.click(menuButton());
+      expect(screen.getByRole("dialog", { name: "Pages" })).toBeTruthy();
+      act(() => {
+        desktop.matches = true;
+        for (const listener of listeners) listener();
+      });
+      await waitFor(() => expect(screen.queryByRole("dialog", { name: "Pages" })).toBeNull());
+      expect(menuButton().getAttribute("aria-expanded")).toBe("false");
+    } finally {
+      vi.stubGlobal("matchMedia", fallback);
+    }
   });
 });

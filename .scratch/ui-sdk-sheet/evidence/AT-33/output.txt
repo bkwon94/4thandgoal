@@ -1,0 +1,64 @@
+# With the throwaway line added to packages/design/site/shell/week-chip.tsx:
+$ git diff -- packages/design/site/shell/week-chip.tsx
+diff --git a/packages/design/site/shell/week-chip.tsx b/packages/design/site/shell/week-chip.tsx
+index 79121e5c..4f040310 100644
+--- a/packages/design/site/shell/week-chip.tsx
++++ b/packages/design/site/shell/week-chip.tsx
+@@ -3,6 +3,7 @@
+  * The chip week has the brand edge, and a tap on a week opens its page.
+  */
+ "use client";
++import "@ui-sdk/react/drawer";
+ 
+ import { ChevronDownIcon } from "lucide-react";
+ import { useEffect, useRef } from "react";
+
+$ corepack pnpm@10.12.4 --dir apps/site exec vitest run src/ui-sdk-rule.test.ts
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/ui-sdk-sheet/apps/site
+
+ ❯ src/ui-sdk-rule.test.ts (5 tests | 1 failed) 65ms
+   ❯ the ui-sdk wrapper rule (5)
+     × finds no file outside the wrapper folder that imports the ui-sdk scope 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/ui-sdk-rule.test.ts > the ui-sdk wrapper rule > finds no file outside the wrapper folder that imports the ui-sdk scope
+Error: 1 offense.
+
+../../packages/design/site/shell/week-chip.tsx:6  ui/no-ui-sdk-outside-wrapper
+  week-chip.tsx imports @ui-sdk/react/drawer.
+  Rule: only the wrapper folder of the design package imports @ui-sdk (docs/adr/0035-each-ui-sdk-part-has-one-wrapper.md).
+  Fix: import the wrapper in the ui folder of the design package
+ ❯ src/ui-sdk-rule.test.ts:80:33
+     78|       .filter((file) => !inWrapperDir(file))
+     79|       .flatMap(fileOffenses);
+     80|     if (found.length > 0) throw new Error(report(found));
+       |                                 ^
+     81|   });
+     82|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  07:22:30
+   Duration  658ms (environment 86%, tests 11%, transform 1%, import 1%)
+
+(exit 1)
+
+# After the line is removed:
+$ git restore packages/design/site/shell/week-chip.tsx
+$ git diff -- packages/design/site/shell/week-chip.tsx
+$ corepack pnpm@10.12.4 --dir apps/site exec vitest run src/ui-sdk-rule.test.ts
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/ui-sdk-sheet/apps/site
+
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  07:22:31
+   Duration  400ms (environment 85%, tests 12%, import 2%, transform 1%, worker 1%)
+
+(exit 0)

@@ -12,7 +12,7 @@ The band at the top of every page with the brand mark, the week chip, and the th
 _Avoid_: Masthead, header, nav bar, top bar, banner
 
 **Menu**:
-The list of the destinations of a client. It shows as the dock on a phone and a tablet, and as the pill bar on a desktop.
+The list of the destinations of a client. It shows as the dock on a phone and a tablet, and as the pill bar on a desktop. On a page with no dock, such as the front door, it shows as the menu sheet, which drops from the top band.
 _Avoid_: Drawer, nav, hamburger, navigation
 
 **Pill bar**:
@@ -44,7 +44,7 @@ One part of a page under its heading, such as Awards of the week page. "Card" na
 _Avoid_: Section, block, panel, black chapter, dark chapter
 
 **Sheet**:
-The short panel that rises from the bottom over the dimmed page, such as the team list and the player picker of the analyzer. The pipeline term is "Fact sheet".
+The panel that moves in from an edge over the dimmed page, such as the team list, the player picker of the analyzer, and the menu sheet. The pipeline term is "Fact sheet". `Drawer` names the ui-sdk part in code only.
 _Avoid_: Drawer, modal, overlay
 
 **Page**:

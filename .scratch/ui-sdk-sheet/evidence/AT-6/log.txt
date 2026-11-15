@@ -1,0 +1,14 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:13:36, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+sheet at rest: {"x":0,"y":61,"width":390,"height":307,"bottom":368}
+gesture: touchStart (195, 348), 19 touchMove to (195, 448) over 300 ms (event timestamps), held
+sheet during the hold: {"x":0,"y":82.1,"width":390,"height":307,"bottom":389.1}
+bottom at rest 368, during the hold 389.1: the bottom edge moved down 21.1 px for a 100 px drag
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+sheet at rest: {"x":0,"y":61,"width":375,"height":307,"bottom":368}
+gesture: touchStart (187.5, 348), 19 touchMove to (187.5, 448) over 300 ms (event timestamps), held
+sheet during the hold: {"x":0,"y":82.1,"width":375,"height":307,"bottom":389.1}
+bottom at rest 368, during the hold 389.1: the bottom edge moved down 21.1 px for a 100 px drag
+(exit 0)

@@ -1,0 +1,30 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:12:56, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+run A: sheet at rest {"x":0,"y":61,"width":390,"height":307,"bottom":368}; height 307 px; half 153.5 px; drag 184 px (59.9% of the height) over 600 ms = 306.7 px/s mean speed
+gesture: touchStart (195, 348), 38 touchMove to (195, 164) over 600 ms (event timestamps), held
+  bottom just before release: 192 (rest 368, moved 176 px)
+  released 0 ms after the last move
+  after release: menu button aria-expanded=false, sheet content elements in the DOM=0
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+run B: sheet at rest {"x":0,"y":61,"width":390,"height":307,"bottom":368}; height 307 px; half 153.5 px; drag 184 px (59.9% of the height) over 600 ms = 306.7 px/s mean speed
+gesture: touchStart (195, 348), 38 touchMove to (195, 164) over 600 ms (event timestamps), held
+  bottom just before release: 192 (rest 368, moved 176 px)
+  released 200 ms after the last move
+  after release: menu button aria-expanded=false, sheet content elements in the DOM=0
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+run A: sheet at rest {"x":0,"y":61,"width":375,"height":307,"bottom":368}; height 307 px; half 153.5 px; drag 184 px (59.9% of the height) over 600 ms = 306.7 px/s mean speed
+gesture: touchStart (187.5, 348), 38 touchMove to (187.5, 164) over 600 ms (event timestamps), held
+  bottom just before release: 192 (rest 368, moved 176 px)
+  released 0 ms after the last move
+  after release: menu button aria-expanded=false, sheet content elements in the DOM=0
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+run B: sheet at rest {"x":0,"y":61,"width":375,"height":307,"bottom":368}; height 307 px; half 153.5 px; drag 184 px (59.9% of the height) over 600 ms = 306.7 px/s mean speed
+gesture: touchStart (187.5, 348), 38 touchMove to (187.5, 164) over 600 ms (event timestamps), held
+  bottom just before release: 192 (rest 368, moved 176 px)
+  released 200 ms after the last move
+  after release: menu button aria-expanded=false, sheet content elements in the DOM=0
+(exit 0)

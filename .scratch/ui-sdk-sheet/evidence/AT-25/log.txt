@@ -1,0 +1,25 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:16:23, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+role of the sheet: dialog; aria-labelledby → "Pages"
+getByRole("dialog", { name: "Pages", exact: true }) count: 1
+accessibility snapshot of the open sheet:
+- dialog "Pages":
+  - heading "Pages" [level=2]
+  - navigation "Pages":
+    - list:
+      - listitem:
+        - link "Home Ask about your team":
+          - /url: /
+      - listitem:
+        - link "Week 9 Scores and recaps":
+          - /url: /2026/week-09/
+        - button "Past weeks"
+      - listitem:
+        - link "Power Rankings The league, ranked":
+          - /url: /rankings/
+      - listitem:
+        - link "Managers Grades and records":
+          - /url: /2026/managers/
+dialogs in the CDP accessibility tree: [{"role":"dialog","name":"Pages","ignored":false}]
+(exit 0)

@@ -1,0 +1,29 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:14:18, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 390: viewport 390 x 844; sheet {"x":0,"y":61,"width":390,"height":307,"bottom":368}
+  row Home: top 69, bottom 125, in the viewport (top >= 0 and bottom <= 844): true
+  row Week 9: top 129, bottom 185, in the viewport (top >= 0 and bottom <= 844): true
+  row Power Rankings: top 233, bottom 289, in the viewport (top >= 0 and bottom <= 844): true
+  row Managers: top 293, bottom 349, in the viewport (top >= 0 and bottom <= 844): true
+  sheet scrollHeight 306, clientHeight 306; elements in the sheet that scroll: []
+  data-snap-point of the sheet: content
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 375: viewport 375 x 844; sheet {"x":0,"y":61,"width":375,"height":307,"bottom":368}
+  row Home: top 69, bottom 125, in the viewport (top >= 0 and bottom <= 844): true
+  row Week 9: top 129, bottom 185, in the viewport (top >= 0 and bottom <= 844): true
+  row Power Rankings: top 233, bottom 289, in the viewport (top >= 0 and bottom <= 844): true
+  row Managers: top 293, bottom 349, in the viewport (top >= 0 and bottom <= 844): true
+  sheet scrollHeight 306, clientHeight 306; elements in the sheet that scroll: []
+  data-snap-point of the sheet: content
+phone 768x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 768: viewport 768 x 844; sheet {"x":0,"y":61,"width":768,"height":307,"bottom":368}
+  row Home: top 69, bottom 125, in the viewport (top >= 0 and bottom <= 844): true
+  row Week 9: top 129, bottom 185, in the viewport (top >= 0 and bottom <= 844): true
+  row Power Rankings: top 233, bottom 289, in the viewport (top >= 0 and bottom <= 844): true
+  row Managers: top 293, bottom 349, in the viewport (top >= 0 and bottom <= 844): true
+  sheet scrollHeight 306, clientHeight 306; elements in the sheet that scroll: []
+  data-snap-point of the sheet: content
+(exit 0)

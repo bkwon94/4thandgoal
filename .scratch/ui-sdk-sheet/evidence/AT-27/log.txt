@@ -1,0 +1,6 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:16:31, build of fee8d319, CLIENT=cpc
+desktop 1280x800 at http://127.0.0.1:59911/
+pill bar (header nav "Site menu"): count 1, visible true, display flex, box {"x":470.671875,"y":8,"width":697.328125,"height":44}
+pill bar links: Home, Week 9, Power Rankings, Managers
+menu button: count 1, visible false, display none, box null
+(exit 0)
