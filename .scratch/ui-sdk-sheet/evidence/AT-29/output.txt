@@ -1,0 +1,48 @@
+# main: origin/main 8dc8ff5c, CLIENT=cpc, built in /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7ae5c2e4-e43a-47eb-b7d9-3b02635ea08b/scratchpad/main-build
+$ bash at29.sh <main-build>/apps/site
+page /rankings
+  4673 /_next/static/chunks/01uu731kykvd4.js
+  7047 /_next/static/chunks/08wqf82sdpkgs.js
+  39390 /_next/static/chunks/0cz1d0mv5g_q7.js
+  3542 /_next/static/chunks/0o38nnj46v5bb.js
+  138566 /_next/static/chunks/0yw5xyrv0zycp.js
+  48821 /_next/static/chunks/2og6bsclcaeyn.js
+  71802 /_next/static/chunks/3sc26kxz0wnj9.js
+  3973 /_next/static/chunks/turbopack-3-ry682tkyiqk.js
+sum /rankings : 317814
+page /
+  7047 /_next/static/chunks/08wqf82sdpkgs.js
+  39390 /_next/static/chunks/0cz1d0mv5g_q7.js
+  3542 /_next/static/chunks/0o38nnj46v5bb.js
+  138566 /_next/static/chunks/0yw5xyrv0zycp.js
+  92060 /_next/static/chunks/1y_c1nvarv7i2.js
+  8556 /_next/static/chunks/21j0yuk4-fpnc.js
+  48821 /_next/static/chunks/2og6bsclcaeyn.js
+  71802 /_next/static/chunks/3sc26kxz0wnj9.js
+  3973 /_next/static/chunks/turbopack-3-ry682tkyiqk.js
+sum / : 413757
+
+# Spec branch: fee8d319, CLIENT=cpc, built in /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7ae5c2e4-e43a-47eb-b7d9-3b02635ea08b/scratchpad/head-build
+$ bash at29.sh <head-build>/apps/site
+page /rankings
+  7047 /_next/static/chunks/08wqf82sdpkgs.js
+  39390 /_next/static/chunks/0cz1d0mv5g_q7.js
+  3542 /_next/static/chunks/0o38nnj46v5bb.js
+  138566 /_next/static/chunks/0yw5xyrv0zycp.js
+  48821 /_next/static/chunks/225om3pb6rgq3.js
+  71802 /_next/static/chunks/3sc26kxz0wnj9.js
+  3129 /_next/static/chunks/3u8d2mfgwubqk.js
+  3973 /_next/static/chunks/turbopack-3-ry682tkyiqk.js
+sum /rankings : 316270
+page /
+  7047 /_next/static/chunks/08wqf82sdpkgs.js
+  39390 /_next/static/chunks/0cz1d0mv5g_q7.js
+  3542 /_next/static/chunks/0o38nnj46v5bb.js
+  138566 /_next/static/chunks/0yw5xyrv0zycp.js
+  14166 /_next/static/chunks/1ya_byy7vs3pv.js
+  48821 /_next/static/chunks/225om3pb6rgq3.js
+  7220 /_next/static/chunks/2edopu2l600lu.js
+  122253 /_next/static/chunks/2q1lonm2glxir.js
+  71802 /_next/static/chunks/3sc26kxz0wnj9.js
+  3973 /_next/static/chunks/turbopack-3-ry682tkyiqk.js
+sum / : 456780

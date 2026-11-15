@@ -1,0 +1,16 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:15:19, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 390: band {"x":0,"y":0,"width":390,"height":61,"bottom":61}; sheet {"x":0,"y":61,"width":390,"height":307,"bottom":368}
+  sheet top 61 vs band bottom 61: difference 0 px
+  elementFromPoint(195, 30.5): {"tag":"DIV","insideHeader":true,"html":"<div class=\"mx-auto flex max-w-band items-center gap-x-sp-3 px-gutter py-sp-2\"><a href=\"/\" class=\"flex min-h-touch min-w"}
+  tap the X at (364, 30), label "Close the menu"
+  after the tap: aria-expanded=false, sheet content elements in the DOM=0
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 375: band {"x":0,"y":0,"width":375,"height":61,"bottom":61}; sheet {"x":0,"y":61,"width":375,"height":307,"bottom":368}
+  sheet top 61 vs band bottom 61: difference 0 px
+  elementFromPoint(187.5, 30.5): {"tag":"DIV","insideHeader":true,"html":"<div class=\"mx-auto flex max-w-band items-center gap-x-sp-3 px-gutter py-sp-2\"><a href=\"/\" class=\"flex min-h-touch min-w"}
+  tap the X at (349, 30), label "Close the menu"
+  after the tap: aria-expanded=false, sheet content elements in the DOM=0
+(exit 0)

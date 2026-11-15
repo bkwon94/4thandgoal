@@ -1,0 +1,14 @@
+{
+  "route": "/",
+  "steps": [
+    {"click": "[role=dialog] button[aria-pressed]"},
+    {"wait": 1200},
+    {"click": "button[aria-label=\"Open the menu\"]:visible, main h1:visible"},
+    {"wait": "[data-slot=\"drawer-content\"]:visible, header nav[aria-label=\"Site menu\"]:visible"},
+    {"wait": 1000},
+    {"shot": "before"},
+    {"click": "[data-slot=\"drawer-content\"] button:has-text(\"Past weeks\"):visible, header nav[aria-label=\"Site menu\"] a[aria-current=page]:visible"},
+    {"wait": 1000},
+    {"shot": "after"}
+  ]
+}

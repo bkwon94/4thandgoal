@@ -1,0 +1,14 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:16:15, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened by Enter: aria-expanded=true; active element inside the sheet: <a href="/"> "HomeAsk about your team"
+Tab 1: inside the sheet: <a href="/2026/week-09/"> "Week 9Scores and recaps"
+Tab 2: inside the sheet: <button> "Past weeks"
+Tab 3: inside the sheet: <a href="/rankings/"> "Power RankingsThe league, rank"
+Tab 4: inside the sheet: <a href="/2026/managers/"> "ManagersGrades and records"
+Tab 5: inside the sheet: <a href="/"> "HomeAsk about your team"
+Tab 6: inside the sheet: <a href="/2026/week-09/"> "Week 9Scores and recaps"
+Tab 7: inside the sheet: <button> "Past weeks"
+Tab 8: inside the sheet: <a href="/rankings/"> "Power RankingsThe league, rank"
+Tab 9: inside the sheet: <a href="/2026/managers/"> "ManagersGrades and records"
+Tab 10: inside the sheet: <a href="/"> "HomeAsk about your team"
+(exit 0)

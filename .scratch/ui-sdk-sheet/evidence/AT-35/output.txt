@@ -1,0 +1,2 @@
+$ rg -n "rubberband|SLOP|CLOSE_SPEED|CLOSE_DISTANCE|onPointerMove|setPointerCapture" packages/design/site/shell/menu-sheet.tsx
+(exit 1)

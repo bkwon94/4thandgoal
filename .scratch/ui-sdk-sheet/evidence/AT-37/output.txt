@@ -1,0 +1,2 @@
+$ rg -n "web.css" --glob '!**/node_modules/**' apps packages
+(exit 1)

@@ -1,0 +1,77 @@
+$ jq "{dependencies, devDependencies, peerDependencies}" packages/design/site/package.json
+{
+  "dependencies": {
+    "@base-ui/react": "^1.9.0",
+    "@ui-sdk/core": "0.1.0-beta.2",
+    "@ui-sdk/react": "0.1.0-beta.2",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.5.0",
+    "framer-motion": "^14.5.0",
+    "lucide-react": "^1.61.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vitest": "^5.0.5"
+  },
+  "peerDependencies": {
+    "react": "^19.3.1"
+  }
+}
+
+$ jq "{dependencies, devDependencies, peerDependencies}" apps/site/package.json
+{
+  "dependencies": {
+    "@ai-sdk/react": "4.0.163",
+    "@base-ui/react": "^1.9.0",
+    "@cpc/analyzer": "workspace:*",
+    "@cpc/design": "workspace:*",
+    "@cpc/eggs": "workspace:*",
+    "@cpc/league": "workspace:*",
+    "@cpc/managers": "workspace:*",
+    "@cpc/midseason": "workspace:*",
+    "@cpc/rankings": "workspace:*",
+    "@cpc/sim": "workspace:*",
+    "@cpc/waiver": "workspace:*",
+    "@cpc/week": "workspace:*",
+    "ai": "7.0.159",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.5.0",
+    "framer-motion": "^14.5.0",
+    "lucide-react": "^1.61.0",
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tw-animate-css": "^1.4.0",
+    "unicode-animations": "1.0.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "~1.64.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "ajv": "^8.20.0",
+    "jsdom": "^30.1.3",
+    "postcss": "^8.5.31",
+    "shadcn": "^4.22.1",
+    "smol-toml": "^1.9.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "peerDependencies": null
+}
+
+$ rg -n "@ui-sdk" packages/design/site/package.json apps/site/package.json
+packages/design/site/package.json:9:    "@ui-sdk/core": "0.1.0-beta.2",
+packages/design/site/package.json:10:    "@ui-sdk/react": "0.1.0-beta.2",

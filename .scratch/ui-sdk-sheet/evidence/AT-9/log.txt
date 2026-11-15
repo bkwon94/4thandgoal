@@ -1,0 +1,12 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:14:10, build of fee8d319, CLIENT=cpc
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 375: sheet {"x":0,"y":61,"width":375,"height":307,"bottom":368}; grip {"x":167.5,"y":353,"width":40,"height":6,"bottom":359}
+  grip center x 187.5 vs sheet center x 187.5; grip bottom 359 vs sheet bottom 368 (gap 9 px); grip 40 x 6 px
+  grip background: rgb(51, 51, 51); last child of the sheet: sheet-grip
+phone 768x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 768: sheet {"x":0,"y":61,"width":768,"height":307,"bottom":368}; grip {"x":364,"y":353,"width":40,"height":6,"bottom":359}
+  grip center x 384 vs sheet center x 384; grip bottom 359 vs sheet bottom 368 (gap 9 px); grip 40 x 6 px
+  grip background: rgb(51, 51, 51); last child of the sheet: sheet-grip
+(exit 0)

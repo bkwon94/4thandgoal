@@ -1,0 +1,11 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:17:09, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+link rel=stylesheet hrefs (1):
+  http://127.0.0.1:59911/_next/static/chunks/2o_re657i7nen.css
+document.styleSheets hrefs: [null,null,"http://127.0.0.1:59911/_next/static/chunks/2o_re657i7nen.css"]
+stylesheet responses after the listener started: []
+any href with "ui-sdk" or "web.css": false
+  /_next/static/chunks/2o_re657i7nen.css: 118323 bytes; holds "ui-sdk": true; holds "data-ui-sdk": false
+    each "ui-sdk" in the file, with 60 chars around it: -shimmer-image:initial;--shimmer-text-fill:initial}}}@layer ui-sdk;@layer theme{:root,:host{--font-sans:var(--font-space-grote
+(exit 0)

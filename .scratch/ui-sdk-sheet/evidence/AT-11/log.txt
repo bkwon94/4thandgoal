@@ -1,0 +1,14 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:14:32, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 390: Power Rankings top before 233, after 337, moved down 104 px
+  Week 9 row bottom 185; Past weeks button bottom 229; chips list {"x":80,"y":229,"width":294,"height":104,"bottom":333}; chips region (.menu-past) height 104 px
+  chips bottom 333 <= Power Rankings top 337: true
+  sheet bottom before 368, after 472; Past weeks aria-expanded=true
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 375: Power Rankings top before 233, after 337, moved down 104 px
+  Week 9 row bottom 185; Past weeks button bottom 229; chips list {"x":80,"y":229,"width":279,"height":104,"bottom":333}; chips region (.menu-past) height 104 px
+  chips bottom 333 <= Power Rankings top 337: true
+  sheet bottom before 368, after 472; Past weeks aria-expanded=true
+(exit 0)

@@ -1,0 +1,51 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:15:57, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {"reducedMotion":"reduce"} at http://127.0.0.1:59911/
+matchMedia (prefers-reduced-motion: reduce): true
+tap sent about 30 ms after the sampler started
+  t=  0 ms no sheet in the DOM
+  t=  5 ms no sheet in the DOM
+  t= 29 ms no sheet in the DOM
+  t= 42 ms no sheet in the DOM
+  t= 58 ms no sheet in the DOM
+  t= 76 ms no sheet in the DOM
+  t= 92 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0 translate=0px
+  t=112 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0 translate=0px
+  t=125 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0.111333 translate=0px
+  t=143 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0.222 translate=0px
+  t=160 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0.333333 translate=0px
+  t=176 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0.444667 translate=0px
+  t=193 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0.555333 translate=0px
+  t=210 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0.666667 translate=0px
+  t=225 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0.777333 translate=0px
+  t=244 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=0.888667 translate=0px
+  t=259 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=276 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=291 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=310 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=325 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=342 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=358 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=375 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=392 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=408 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=425 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=442 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=458 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=476 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=492 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=510 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=525 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=542 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=558 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=575 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=592 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=608 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=627 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=641 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=659 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=675 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=693 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+  t=710 ms box x=0 y=61 w=390 h=307 bottom=368 opacity=1 translate=0px
+distinct boxes over the frames with the sheet: 1: 0,61,390,307
+first frame with the sheet: t=92 ms opacity 0; first frame at opacity 1: t=259 ms; fade time 167 ms
+(exit 0)

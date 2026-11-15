@@ -1,0 +1,8 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:15:51, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+chip labels in order: WK 09, WK 08, WK 07, WK 06
+chip hrefs in order: /2026/week-09/, /2026/week-08/, /2026/week-07/, /2026/week-06/
+chip visible: true, true, true, true
+published week folders of cpc in clients/cpc/published/2026/: week-06, week-07, week-08, week-09 (4)
+(exit 0)

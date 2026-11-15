@@ -1,0 +1,8 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:17:06, build of fee8d319, CLIENT=cpc
+width 390, javaScriptEnabled false, at http://127.0.0.1:59911/
+  menu button: count 1, visible false, box null
+  buttons visible in the band: ["Switch to light theme: false","Open the menu: false"]
+width 375, javaScriptEnabled false, at http://127.0.0.1:59911/
+  menu button: count 1, visible false, box null
+  buttons visible in the band: ["Switch to light theme: false","Open the menu: false"]
+(exit 0)

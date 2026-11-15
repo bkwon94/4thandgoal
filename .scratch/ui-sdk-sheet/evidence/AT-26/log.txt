@@ -1,0 +1,8 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:16:27, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+before the tap: aria-label "Open the menu"; snapshot: - button "Open the menu"
+getByRole("button", { name: "Open the menu" }) count before: 1
+opened: menu button aria-expanded=true
+after the tap: aria-label "Close the menu"; snapshot: - button "Close the menu" [expanded]
+getByRole("button", { name: "Close the menu" }) count after: 1
+(exit 0)

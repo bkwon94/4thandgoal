@@ -1,0 +1,26 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:15:34, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 390, path /:
+  row Home: 1 check(s), aria-current=page
+  row Week 9: 0 check(s), aria-current=null
+  row Power Rankings: 0 check(s), aria-current=null
+  row Managers: 0 check(s), aria-current=null
+  checks in the whole sheet: 1
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 375, path /:
+  row Home: 1 check(s), aria-current=page
+  row Week 9: 0 check(s), aria-current=null
+  row Power Rankings: 0 check(s), aria-current=null
+  row Managers: 0 check(s), aria-current=null
+  checks in the whole sheet: 1
+phone 768x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+width 768, path /:
+  row Home: 1 check(s), aria-current=page
+  row Week 9: 0 check(s), aria-current=null
+  row Power Rankings: 0 check(s), aria-current=null
+  row Managers: 0 check(s), aria-current=null
+  checks in the whole sheet: 1
+(exit 0)

@@ -1,0 +1,6 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:16:10, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened by Enter: aria-expanded=true; active element inside the sheet: <a> "HomeAsk about your team"
+after Escape: aria-expanded=false; sheet content elements in the DOM=0; active element inside the band: <button aria-label="Open the menu"> ""
+active element is the menu button: true
+(exit 0)

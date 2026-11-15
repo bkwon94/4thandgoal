@@ -1,0 +1,6 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:15:46, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+row Week 9 {"x":16,"y":129,"width":358,"height":56,"bottom":185}; URL before http://127.0.0.1:59911/
+URL after the tap: http://127.0.0.1:59911/2026/week-09/
+(exit 0)

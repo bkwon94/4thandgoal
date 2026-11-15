@@ -1,0 +1,130 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:12:34, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+sheet at rest: {"x":0,"y":61,"width":390,"height":307,"bottom":368}
+computed transition of the sheet content at rest: {"transition":"all","transitionProperty":"all","transitionDuration":"0s"}
+gesture: touchStart (195, 348), 13 touchMove to (195, 378) over 200 ms (event timestamps), held
+bottom during the hold before release: 383.3 (rest 368)
+frames from the release (transition = computed transition-property and transition-duration) (t=0 is the first frame after the sampler starts, the touchEnd follows within a few ms):
+  t=  3 ms bottom=383.25 offset=15.3 step=- translate=0px 15.25px transition=all 0s
+  t= 22 ms bottom=382.71 offset=14.7 step=-0.5 translate=0px 14.7115px transition=all 0s
+  t= 37 ms bottom=381.36 offset=13.4 step=-1.3 translate=0px 13.3619px transition=all 0s
+  t= 53 ms bottom=379.67 offset=11.7 step=-1.7 translate=0px 11.6733px transition=all 0s
+  t= 70 ms bottom=377.91 offset=9.9 step=-1.8 translate=0px 9.91327px transition=all 0s
+  t= 87 ms bottom=376.25 offset=8.3 step=-1.7 translate=0px 8.25076px transition=all 0s
+  t=104 ms bottom=374.76 offset=6.8 step=-1.5 translate=0px 6.76293px transition=all 0s
+  t=120 ms bottom=373.48 offset=5.5 step=-1.3 translate=0px 5.48275px transition=all 0s
+  t=137 ms bottom=372.4 offset=4.4 step=-1.1 translate=0px 4.39649px transition=all 0s
+  t=153 ms bottom=371.5 offset=3.5 step=-0.9 translate=0px 3.49622px transition=all 0s
+  t=170 ms bottom=370.76 offset=2.8 step=-0.7 translate=0px 2.76467px transition=all 0s
+  t=187 ms bottom=370.17 offset=2.2 step=-0.6 translate=0px 2.17069px transition=all 0s
+  t=205 ms bottom=369.7 offset=1.7 step=-0.5 translate=0px 1.69605px transition=all 0s
+  t=220 ms bottom=369.32 offset=1.3 step=-0.4 translate=0px 1.32114px transition=all 0s
+  t=237 ms bottom=369.02 offset=1 step=-0.3 translate=0px 1.02287px transition=all 0s
+  t=253 ms bottom=368.79 offset=0.8 step=-0.2 translate=0px 0.790287px transition=all 0s
+  t=270 ms bottom=368.61 offset=0.6 step=-0.2 translate=0px 0.608106px transition=all 0s
+  t=287 ms bottom=368.19 offset=0.2 step=-0.4 translate=0px 0.186532px transition=all 0s
+  t=304 ms bottom=368 offset=0 step=-0.2 translate=0px transition=all 0s
+  t=320 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=336 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=353 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=370 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=386 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=403 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=420 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=436 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=453 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=470 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=486 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=503 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=520 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=536 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=553 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=570 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=586 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=603 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=620 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=636 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=654 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=670 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=686 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=703 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=720 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=736 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=753 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=770 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=786 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=803 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=820 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=836 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=853 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=870 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=886 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=905 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+first frame that moved: t=22 ms; first frame within 0.5 px of rest for good: t=287 ms; time from first move to rest: 265 ms
+distinct computed transition values of the sheet content over the frames: ["all 0s"]
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+sheet at rest: {"x":0,"y":61,"width":375,"height":307,"bottom":368}
+computed transition of the sheet content at rest: {"transition":"all","transitionProperty":"all","transitionDuration":"0s"}
+gesture: touchStart (187.5, 348), 13 touchMove to (187.5, 378) over 200 ms (event timestamps), held
+bottom during the hold before release: 383.3 (rest 368)
+frames from the release (transition = computed transition-property and transition-duration) (t=0 is the first frame after the sampler starts, the touchEnd follows within a few ms):
+  t= 18 ms bottom=383.19 offset=15.2 step=- translate=0px 15.1899px transition=all 0s
+  t= 18 ms bottom=382.41 offset=14.4 step=-0.8 translate=0px 14.4103px transition=all 0s
+  t= 34 ms bottom=380.95 offset=12.9 step=-1.5 translate=0px 12.948px transition=all 0s
+  t= 52 ms bottom=379.22 offset=11.2 step=-1.7 translate=0px 11.2179px transition=all 0s
+  t= 67 ms bottom=377.48 offset=9.5 step=-1.7 translate=0px 9.47518px transition=all 0s
+  t= 85 ms bottom=375.86 offset=7.9 step=-1.6 translate=0px 7.86219px transition=all 0s
+  t=101 ms bottom=374.42 offset=6.4 step=-1.4 translate=0px 6.41503px transition=all 0s
+  t=117 ms bottom=373.19 offset=5.2 step=-1.2 translate=0px 5.1864px transition=all 0s
+  t=134 ms bottom=372.15 offset=4.1 step=-1 translate=0px 4.14766px transition=all 0s
+  t=151 ms bottom=371.3 offset=3.3 step=-0.8 translate=0px 3.29643px transition=all 0s
+  t=168 ms bottom=370.6 offset=2.6 step=-0.7 translate=0px 2.59797px transition=all 0s
+  t=185 ms bottom=370.04 offset=2 step=-0.6 translate=0px 2.0362px transition=all 0s
+  t=201 ms bottom=369.59 offset=1.6 step=-0.5 translate=0px 1.59065px transition=all 0s
+  t=217 ms bottom=369.24 offset=1.2 step=-0.3 translate=0px 1.23578px transition=all 0s
+  t=234 ms bottom=368.96 offset=1 step=-0.3 translate=0px 0.956908px transition=all 0s
+  t=251 ms bottom=368.74 offset=0.7 step=-0.2 translate=0px 0.738991px transition=all 0s
+  t=267 ms bottom=368.57 offset=0.6 step=-0.2 translate=0px 0.56882px transition=all 0s
+  t=284 ms bottom=368 offset=0 step=-0.6 translate=0px transition=all 0s
+  t=301 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=317 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=334 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=351 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=368 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=384 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=401 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=418 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=434 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=451 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=467 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=484 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=501 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=517 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=534 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=551 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=568 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=584 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=601 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=617 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=634 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=651 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=668 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=684 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=701 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=717 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=734 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=751 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=768 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=784 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=801 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=817 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=834 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=851 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=867 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=885 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+  t=901 ms bottom=368 offset=0 step=0 translate=0px transition=all 0s
+first frame that moved: t=18 ms; first frame within 0.5 px of rest for good: t=284 ms; time from first move to rest: 266 ms
+distinct computed transition values of the sheet content over the frames: ["all 0s"]
+(exit 0)

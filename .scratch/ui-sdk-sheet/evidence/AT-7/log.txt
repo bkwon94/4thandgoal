@@ -1,0 +1,16 @@
+$ BASE=http://127.0.0.1:59911/ node script.mjs   # 2026-11-15 07:13:46, build of fee8d319, CLIENT=cpc
+phone 390x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+row Power Rankings: {"x":16,"y":233,"width":358,"height":56,"bottom":289}
+URL before: http://127.0.0.1:59911/
+gesture: touchStart (195, 261), 8 touchMove to (195, 256) over 120 ms (event timestamps), touchEnd
+URL after: http://127.0.0.1:59911/rankings/
+location.pathname after: /rankings/
+phone 375x844 hasTouch isMobile {} at http://127.0.0.1:59911/
+opened: menu button aria-expanded=true
+row Power Rankings: {"x":16,"y":233,"width":343,"height":56,"bottom":289}
+URL before: http://127.0.0.1:59911/
+gesture: touchStart (187.5, 261), 8 touchMove to (187.5, 256) over 120 ms (event timestamps), touchEnd
+URL after: http://127.0.0.1:59911/rankings/
+location.pathname after: /rankings/
+(exit 0)
