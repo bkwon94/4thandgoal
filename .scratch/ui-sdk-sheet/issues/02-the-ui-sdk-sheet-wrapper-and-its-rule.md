@@ -8,7 +8,7 @@ Spec: `.scratch/ui-sdk-sheet/PRD.md`. Acceptance tests AT-32, AT-33, AT-34, AT-3
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The rule test fails a throwaway import of `@ui-sdk` in a shell file, with the file and the line, and passes on the real tree (AT-33).
 - [x] A search for `@ui-sdk` in the source, outside `node_modules`, lists only files in the wrapper folder (AT-32).
