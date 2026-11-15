@@ -26,6 +26,6 @@ Green: at `3e81e5d3`, `cd apps/site && pnpm exec vitest run ../../packages/desig
  Test Files  1 passed (1)
       Tests  1 passed | 33 skipped (34)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
