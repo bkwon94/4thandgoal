@@ -1,6 +1,6 @@
 /**
  * The pill bar: the destinations of the menu with their full labels, in the top band from the desktop tier up.
- * The open destination is marked. Below the desktop tier the dock takes its place.
+ * The open destination is marked. Below the desktop tier the menu sheet takes its place.
  */
 import { cn } from "../lib/utils";
 import type { NavItem } from "./nav";

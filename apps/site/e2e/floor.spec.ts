@@ -309,7 +309,7 @@ for (const route of routes.filter((route) => !fullFloorRoutes.includes(route))) 
 
 /*
  * The shell at the widths between the two of the floor. The top band is one row at every width.
- * On a tablet the dock holds the destinations. From the desktop tier the pill bar holds them with full labels on the row.
+ * On a tablet the menu button opens the sheet of the destinations. From the desktop tier the pill bar holds them with full labels on the row.
  */
 const bandRow = async (page: Page) => {
   const parts = [
@@ -327,13 +327,14 @@ const bandRow = async (page: Page) => {
 
 for (const width of [768, 1024, 1280]) {
   const pills = width >= 1024;
-  test(`the top band of ${CLIENT} is one row at ${width}px, with the ${pills ? "pill bar" : "dock"}`, async ({ page }) => {
+  test(`the top band of ${CLIENT} is one row at ${width}px, with the ${pills ? "pill bar" : "menu button"}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}/rankings/`, "dark");
     const bar = page.getByRole("navigation", { name: "Site menu" });
-    const dock = page.getByRole("navigation", { name: "Bottom menu" });
-    await expect(pills ? bar : dock).toBeVisible();
-    await expect(pills ? dock : bar).toBeHidden();
+    const menu = page.getByRole("button", { name: "Open the menu" });
+    await expect(pills ? bar : menu).toBeVisible();
+    await expect(pills ? menu : bar).toBeHidden();
+    await expect(page.getByRole("navigation", { name: "Bottom menu" })).toHaveCount(0);
     expect(await bandRow(page)).toEqual(pills ? [true, true, true, true] : [true, true, true]);
     // The pill bar shows each full label with no scroll of its own.
     if (pills) expect(await bar.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);

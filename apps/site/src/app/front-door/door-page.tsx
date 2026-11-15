@@ -3,8 +3,6 @@
  * shows the empty Thread with the ask box. A server component that reads the latest week, so the sheet ships in the export.
  */
 import { TopBand } from "@cpc/design/shell/top-band";
-import { MenuSheet } from "@cpc/design/shell/menu-sheet";
-import { currentHref } from "@cpc/design/shell/nav";
 import { clientValues } from "@/generated/client-values";
 import { homeBanners } from "@/generated/registry";
 import { loadFrontDoor } from "@/lib/data/front-door-data";
@@ -17,16 +15,11 @@ import { FrontDoor } from "@/app/front-door/front-door";
 export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: string }) {
   const door = loadFrontDoor();
   const shell = shellProps();
-  const { items, weeks } = shell.menu;
   return (
     <>
-      {/* The front door has its own foot, the Suggestions and the ask box, so the pages sit in the menu sheet in place of
-          the dock, and the week chip leaves: the Answers are about the live week (decision 10). */}
-      <TopBand
-        {...shell}
-        pageHref={pageHref}
-        menuSheet={<MenuSheet items={items} weeks={weeks} current={currentHref(items, weeks, pageHref)} pageHref={pageHref} />}
-      />
+      {/* The front door has its own foot, the Suggestions and the ask box, so the week chip leaves: the Answers are about
+          the live week (decision 10). */}
+      <TopBand {...shell} pageHref={pageHref} weekChip={false} />
       {/* The strip of each package under the top band, edge to edge, such as the egg banner after an egg drop. */}
       {homeBanners.map((Banner, index) => (
         <Banner key={index} />

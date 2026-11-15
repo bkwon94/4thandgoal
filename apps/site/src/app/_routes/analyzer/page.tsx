@@ -1,7 +1,7 @@
 /**
  * The trade analyzer route at /analyze/.
  * It renders the shell above the Stack of the analyzer, in the column of the page.
- * The column keeps the space of the grade bar free at its end, so the bar on the dock covers no content.
+ * The column keeps the space of the grade bar free at its end, so the bar covers no content.
  */
 import type { Metadata } from "next";
 import { Analyzer } from "@cpc/analyzer/form/analyzer";

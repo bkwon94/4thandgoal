@@ -13,7 +13,7 @@ export function HomeTool() {
     <>
       {/* A reader who opens the analyzer next sees the pickers at once, because the teams are already in session storage. */}
       <TeamsPrefetch target={apiTarget} />
-      {/* The dock shows the same icon for the analyzer, so the tile and the dock item read as one place. */}
+      {/* The menu sheet shows the same icon for the analyzer, so the tile and the sheet row read as one place. */}
       <HomeTile
         href={analyzeHref()}
         icon={ArrowLeftRightIcon}

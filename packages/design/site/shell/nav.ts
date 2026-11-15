@@ -6,10 +6,10 @@
 /* One place a link goes. The href carries the base path, because every link is a plain anchor. */
 export type Destination = { label: string; href: string };
 
-/* The kind of a destination. The dock picks the icon of each item from it. */
+/* The kind of a destination. The menu sheet picks the icon of each item from it. */
 export type NavKind = "home" | "week" | "rankings" | "managers" | "analyzer" | "waiver" | "midseason";
 
-/* One destination of the menu. The pill bar shows the full label, and the dock shows the short label under the icon. */
+/* One destination of the menu. The pill bar shows the full label, and the short label is for a menu with little room. */
 export type NavItem = Destination & { kind: NavKind; short: string };
 
 /* One published week of the season, for the week chip and the strip of weeks. */

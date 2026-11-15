@@ -1,16 +1,37 @@
 /**
- * The menu button of the top band and the sheet of pages that it opens, on a page that has no dock, such as the front door.
+ * The menu button of the top band and the sheet of pages that it opens, below the desktop tier on every page.
  * The sheet drops from under the band with one row per page, the week row, and "Past weeks". From the desktop tier the pill bar takes its place.
  */
 "use client";
 
-import { CheckIcon, ChevronDownIcon, MenuIcon, XIcon } from "lucide-react";
+import {
+  ArrowLeftRightIcon,
+  CalendarDaysIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  HouseIcon,
+  MenuIcon,
+  TrophyIcon,
+  UsersIcon,
+  WalletIcon,
+  XIcon,
+  type LucideIcon,
+} from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { Sheet, SheetBackdrop, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "../ui/sheet";
-import { ICONS } from "./dock";
 import { weekChipLabel, type NavItem, type NavKind, type WeekLink } from "./nav";
 
 type SheetKind = Exclude<NavKind, "midseason">;
+
+/* The icon of each kind of destination. The name in the row names the item, so each icon is decorative. */
+export const ICONS: Record<Exclude<NavKind, "midseason">, LucideIcon> = {
+  home: HouseIcon,
+  week: CalendarDaysIcon,
+  rankings: TrophyIcon,
+  managers: UsersIcon,
+  analyzer: ArrowLeftRightIcon,
+  waiver: WalletIcon,
+};
 
 /* The desktop tier, the same breakpoint as the desktop variant, --breakpoint-desktop in globals.css. */
 const DESKTOP = "(min-width: 64rem)";

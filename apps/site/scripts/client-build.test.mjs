@@ -436,7 +436,7 @@ describe("the client build", () => {
     const toml = CPC_TOML.slice(0, CPC_TOML.indexOf("# Each item names"));
     const repo = tempRepo(toml);
     buildClient(repo);
-    // The menu values keep midseason, sim, and eggs, but the shell gives them no menu item and no dock item.
+    // The menu values keep midseason, sim, and eggs, but the shell gives them no menu item.
     expect(clientValuesOf(repo.site).menu).toEqual({
       items: [
         { page: "home" },

@@ -18,7 +18,7 @@ The browser storage: `scene-canvas.ts` reads and writes `window.localStorage` fo
 ## Does not do
 
 - It holds no primitive. The shadcn primitives live in `site/ui/`.
-- It holds no shell or photo. The top band, the dock, and the theme button live in `site/shell/`, and the page passes the src of each avatar and headshot to the photo frame.
+- It holds no shell or photo. The top band, the menu sheet, and the theme button live in `site/shell/`, and the page passes the src of each avatar and headshot to the photo frame.
 - Most parts serve two or more pages. `tag.tsx` and `error-line.tsx` serve one page today.
 - It builds no route. The page passes each href, and a part only shows it (ADR 0012).
 - It reads no file, no env, and no config, and it calls no loader (ADR 0012).

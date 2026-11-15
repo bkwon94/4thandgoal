@@ -1,6 +1,6 @@
 /**
- * The keyboard signal of the shell: a field that opens the on-screen keyboard marks it here, and the dock tucks away
- * while it is open. The field stays right above the keyboard, through the inset of the visual viewport.
+ * The keyboard signal of the shell: a field that opens the on-screen keyboard marks it here, and the root carries
+ * data-keyboard while it is open. The field stays right above the keyboard, through the inset of the visual viewport.
  */
 import { useEffect, useState, useSyncExternalStore } from "react";
 
@@ -30,11 +30,6 @@ function setRaised(next: boolean) {
   if (raised === next) return;
   raised = next;
   listeners.forEach((listener) => listener());
-}
-
-/* True while a field that opens the keyboard has the focus. The server render has no keyboard. */
-export function useKeyboardOpen(): boolean {
-  return useSyncExternalStore(subscribe, () => open, () => false);
 }
 
 /* True while a field has the focus and the keyboard is open, so a part can pin itself right above it. Two cases raise it.

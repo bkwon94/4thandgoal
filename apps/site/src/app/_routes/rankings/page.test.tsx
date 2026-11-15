@@ -143,12 +143,12 @@ function blueTent() {
   return within(screen.getByRole("main")).getByRole("button", { name: /The Blue Tent/ });
 }
 
-describe("RankingsPage keeps the dock and the week chip (AT-49)", () => {
-  it("shows the dock and the week chip, and no menu button", async () => {
+describe("RankingsPage keeps the week chip and shows the menu button (AT-49)", () => {
+  it("shows the week chip and the menu button, and no dock", async () => {
     const RankingsPage = await pageOver(fixture);
     render(<RankingsPage />);
-    expect(screen.getByRole("navigation", { name: "Bottom menu" })).toBeTruthy();
+    expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
     expect(screen.getByText(/^WK \d\d$/, { selector: "summary" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Open the menu" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Open the menu" })).toBeTruthy();
   });
 });

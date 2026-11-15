@@ -1,12 +1,11 @@
 /**
- * Tests for the shell: the top band, the pill bar, the dock, the week chip with the strip of weeks, the theme button, and the
- * menu sheet of the front door.
+ * Tests for the shell: the top band, the pill bar, the week chip with the strip of weeks, the theme button, and the
+ * menu sheet of every page.
  * They read what a reader sees by role and name, not the class names.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import { MenuSheet } from "./menu-sheet";
-import { currentHref, type Brand, type SiteMenu } from "./nav";
+import type { Brand, SiteMenu } from "./nav";
 import { TopBand } from "./top-band";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
 import "../ui/sheet-jsdom";
@@ -55,7 +54,6 @@ const chip = (label: string) => screen.getByText(label, { selector: "summary" })
 const stripOpen = (label: string) => (chip(label).closest("details") as HTMLDetailsElement).open;
 
 const pillBar = () => screen.getByRole("navigation", { name: "Site menu" });
-const dock = () => screen.getByRole("navigation", { name: "Bottom menu" });
 
 /* jsdom has no matchMedia, and Framer Motion reads it. The stub matches no query. */
 vi.stubGlobal(
@@ -95,14 +93,15 @@ describe("TopBand", () => {
     expect(within(screen.getByRole("banner")).getByRole("button", { name: /Switch to (light|dark) theme/ })).toBeTruthy();
   });
 
-  it("holds the actions of the app just before the theme button, and the dock keeps its five items", () => {
+  it("holds the actions of the app just before the theme button, and the sheet keeps its five items", () => {
     render(<TopBand title={TITLE} brand={BRAND} menu={MENU} pageHref="/" actions={<a href="/eggs/">Egg board</a>} />);
     const band = screen.getByRole("banner");
     const action = within(band).getByRole("link", { name: "Egg board" });
     const theme = within(band).getByRole("button", { name: /Switch to (light|dark) theme/ });
     expect(action.compareDocumentPosition(theme) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(action.parentElement).toBe(theme.parentElement);
-    expect(within(screen.getByRole("navigation", { name: "Bottom menu" })).getAllByRole("link")).toHaveLength(5);
+    fireEvent.click(menuButton());
+    expect(within(sheet()).getAllByRole("link").filter((link) => !/^WK /.test(link.textContent ?? ""))).toHaveLength(5);
   });
 });
 
@@ -129,47 +128,42 @@ describe("The pill bar (AT-10)", () => {
   });
 });
 
-describe("The dock (AT-9)", () => {
-  it("lists Home, Week N, Rankings, Managers, and Trade, each with an icon", () => {
-    renderBand("/");
-    const links = within(dock()).getAllByRole("link");
-    expect(links.map((link) => link.textContent)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
-    for (const link of links) expect(link.querySelector("svg")).not.toBeNull();
-  });
-
-  it("leaves out the midseason report, so five items share the width of a phone", () => {
+describe("The menu sheet of every page (AT-9)", () => {
+  it("leaves out the midseason report, so the sheet lists the five destinations of the dock", () => {
     const items: SiteMenu["items"] = [
       ...MENU.items,
       { kind: "midseason", label: "Midseason Report", short: "Report", href: "/midseason/2026/" },
     ];
     renderBand("/", { ...MENU, items });
     expect(within(pillBar()).getAllByRole("link").map((link) => link.textContent)).toContain("Midseason Report");
-    expect(within(dock()).getAllByRole("link").map((link) => link.textContent)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
-  });
-
-  it("sits outside the top band, so it stays at the bottom of the viewport", () => {
-    renderBand("/");
-    expect(screen.getByRole("banner").contains(dock())).toBe(false);
+    fireEvent.click(menuButton());
+    const rows = within(sheet()).getAllByRole("link").filter((link) => !/^WK /.test(link.textContent ?? ""));
+    expect(rows).toHaveLength(5);
+    expect(rows.map((row) => row.textContent).join()).not.toContain("Midseason");
   });
 
   it("marks the week of the open week page", () => {
     renderBand("/2026/week-08/");
-    expect(current(dock())).toEqual(["Week 8"]);
+    fireEvent.click(menuButton());
+    expect(current(sheet())).toEqual(["Week 8Scores and recaps"]);
   });
 
   it("marks the week item on the page of an older week too", () => {
     renderBand("/2026/week-07/");
-    expect(current(dock())).toEqual(["Week 8"]);
+    fireEvent.click(menuButton());
+    expect(current(sheet())).toEqual(["Week 8Scores and recaps"]);
   });
 
   it("marks Managers on the page of one manager", () => {
     renderBand("/2026/managers/6/");
-    expect(current(dock())).toEqual(["Managers"]);
+    fireEvent.click(menuButton());
+    expect(current(sheet())).toEqual(["ManagersGrades and records"]);
   });
 
   it("marks no item on a page that is no destination, such as the 404 page", () => {
     renderBand(undefined);
-    expect(current(dock())).toEqual([]);
+    fireEvent.click(menuButton());
+    expect(current(sheet())).toEqual([]);
   });
 });
 
@@ -218,11 +212,9 @@ describe("The week chip (AT-11)", () => {
   });
 });
 
-/* The top band of the front door: the menu sheet in place of the dock and the week chip (decision 10). */
-/* The front door gives its menu sheet to the top band, as the app does. */
+/* The top band of the front door: no week chip (decision 10). */
 function doorBand(pageHref = "/", menu: SiteMenu = MENU) {
-  const sheetNode = <MenuSheet items={menu.items} weeks={menu.weeks} current={currentHref(menu.items, menu.weeks, pageHref)} pageHref={pageHref} />;
-  return <TopBand title={TITLE} brand={BRAND} menu={menu} pageHref={pageHref} menuSheet={sheetNode} />;
+  return <TopBand title={TITLE} brand={BRAND} menu={menu} pageHref={pageHref} weekChip={false} />;
 }
 
 function renderDoorBand(pageHref = "/", menu: SiteMenu = MENU) {
@@ -232,11 +224,11 @@ function renderDoorBand(pageHref = "/", menu: SiteMenu = MENU) {
 const menuButton = () => within(screen.getByRole("banner")).getByRole("button", { name: /^(Open|Close) the menu$/ });
 const sheet = () => screen.getByRole("navigation", { name: "Pages" });
 
-describe("The menu sheet of the front door (AT-45, AT-47)", () => {
-  it("shows no menu button and no sheet on a dock page", () => {
+describe("The menu sheet and the top band of the front door (AT-45, AT-47)", () => {
+  it("shows the menu button, and no dock, on a page that passes no sheet", () => {
     renderBand("/rankings/");
-    expect(screen.queryByRole("button", { name: /^(Open|Close) the menu$/ })).toBeNull();
-    expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+    expect(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" })).toBeTruthy();
+    expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
   });
 
   it("shows no dock and no week chip, and holds the menu button in the banner", () => {
