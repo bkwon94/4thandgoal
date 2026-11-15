@@ -10,7 +10,7 @@ import { HomeTile } from "@/app/home-tile";
 export function HomeTool() {
   const managersHref = currentManagersHref();
   if (!managersHref) return null;
-  // The dock shows the same icon for the managers, so the tile and the dock item read as one place.
+  // The menu sheet shows the same icon for the managers, so the tile and the sheet row read as one place.
   return (
     <HomeTile
       href={managersHref}

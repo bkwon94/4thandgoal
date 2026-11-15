@@ -8,20 +8,16 @@ A term sits in the section of the app that owns it. The workflow terms hold for 
 The public site of the Cornerstone Fantasy Football League. It renders the weekly report, the power rankings, and the trade analyzer that the pipeline publishes.
 
 **Top band**:
-The band at the top of every page with the brand mark, the week chip, and the theme button. On a desktop it also holds the pill bar.
+The band at the top of every page with the brand mark, the week chip, and the theme button. On a desktop it also holds the pill bar. Below the desktop tier it holds the menu button.
 _Avoid_: Masthead, header, nav bar, top bar, banner
 
 **Menu**:
-The list of the destinations of a client. It shows as the dock on a phone and a tablet, and as the pill bar on a desktop. On a page with no dock, such as the front door, it shows as the menu sheet, which drops from the top band.
+The list of the destinations of a client. It shows as the menu sheet on a phone and a tablet, which drops from the top band, and as the pill bar on a desktop.
 _Avoid_: Drawer, nav, hamburger, navigation
 
 **Pill bar**:
 The row of destinations with full labels in the top band of a desktop.
 _Avoid_: Tab bar, nav bar, link row
-
-**Dock**:
-The bar of destinations that floats at the bottom of the viewport on a phone and a tablet, and stays on screen at every scroll.
-_Avoid_: Tab bar, bottom nav, footer
 
 **Week chip**:
 The control in the top band that shows the current week and opens the strip of the weeks of the season.
@@ -219,7 +215,7 @@ A shadcn control under the parts: a button, a select, a dialog, a popover. A pri
 _Avoid_: Base component, atom, ui element
 
 **Shell**:
-The parts that frame every page: the top band, the dock, the pill bar, the week chip, and the theme button.
+The parts that frame every page: the top band, the pill bar, the week chip, and the theme button.
 _Avoid_: Layout, chrome, frame, nav
 
 **Loader**:

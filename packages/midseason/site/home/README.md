@@ -16,4 +16,4 @@
 
 - It computes no fact. The pipeline writes the tile into the midseason file.
 - It reads no file, no env, and no config (ADR 0012).
-- It adds no menu item and no dock item.
+- It adds no menu item.

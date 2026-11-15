@@ -72,11 +72,11 @@ describe("The 404 page (AT-32)", () => {
     expect(within(main).getByRole("link", { name: "Go Home" }).getAttribute("href")).toBe("/");
   });
 
-  it("shows the top band and the dock with no item marked", () => {
+  it("shows the top band and the menu button, with no dock and no item marked", () => {
     render(<NotFound />);
     expect(screen.getByRole("banner")).toBeTruthy();
-    const dock = screen.getByRole("navigation", { name: "Bottom menu" });
-    expect(within(dock).getAllByRole("link")).toHaveLength(4);
+    expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
+    expect(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" })).toBeTruthy();
     expect(document.querySelector("[aria-current=page]")).toBeNull();
   });
 });

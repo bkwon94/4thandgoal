@@ -3,7 +3,7 @@
  * The client build checks the files with the schemas and writes the CSS. The contrast test reads the colors of each set.
  */
 
-/* The roles that each set must give. `raised` is the surface one step up from the card, such as the active dock item.
+/* The roles that each set must give. `raised` is the surface one step up from the card, such as the open row of the menu sheet.
    `grid` is the line color of the grid texture of the hero. */
 export const BASE_ROLES = ["accent", "band", "page", "card", "raised", "text", "muted", "grid"] as const;
 export type BaseRole = (typeof BASE_ROLES)[number];

@@ -32,7 +32,7 @@ afterEach(() => {
 });
 
 describe("the front door of cpc", () => {
-  it("has no dock and no week chip, and the menu button opens the sheet of pages (AT-45, AT-47)", () => {
+  it("has no week chip, and the menu button opens the sheet of pages (AT-45, AT-47)", () => {
     render(<HomePage />);
     expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
     expect(screen.queryByText(/^WK /, { selector: "summary" })).toBeNull();

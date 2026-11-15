@@ -1,6 +1,6 @@
 /**
  * The egg button: a 44px icon link beside the theme button in the top band of every page, which opens the egg board.
- * Its red badge is the count of eggs left to find. The egg board is no menu item, so the dock keeps its five items.
+ * Its red badge is the count of eggs left to find. The egg board is no menu item, so the menu keeps its five items.
  */
 "use client";
 

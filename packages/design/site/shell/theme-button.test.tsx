@@ -113,12 +113,11 @@ describe("Theme button", () => {
     delete window.goatcounter;
   });
 
-  it("is the one theme button of the page, outside the pill bar and the dock", () => {
+  it("is the one theme button of the page, outside the pill bar", () => {
     shipDark();
     renderWeekBand();
     expect(screen.getAllByRole("button", { name: TO_LIGHT })).toHaveLength(1);
     expect(within(screen.getByRole("navigation", { name: "Site menu" })).queryByRole("button")).toBeNull();
-    expect(within(screen.getByRole("navigation", { name: "Bottom menu" })).queryByRole("button")).toBeNull();
   });
 
   it("names the dark theme on mount when the boot script removed the dark class for a stored light choice", () => {
