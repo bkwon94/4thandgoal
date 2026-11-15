@@ -1,6 +1,6 @@
 /**
  * Sheet primitive built on the ui-sdk Drawer. It is the one place the site imports ui-sdk.
- * It renders the root, trigger, backdrop, content, handle, title, and close parts of an edge sheet.
+ * It renders the root, trigger, backdrop, content, grip, title, and close parts of an edge sheet.
  */
 "use client"
 
@@ -10,7 +10,6 @@ import {
   DrawerBackdrop,
   DrawerClose,
   DrawerContent,
-  DrawerHandle,
   DrawerTitle,
   DrawerTrigger,
 } from "@ui-sdk/react/drawer"
@@ -51,13 +50,14 @@ function SheetContent({
   )
 }
 
-function SheetHandle({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerHandle>) {
+// The grip shows that the sheet drags. A sheet with one snap point takes this plain bar, not the handle button of the
+// Drawer, because a press on that button has no other place to move the sheet to.
+function SheetGrip({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <DrawerHandle
-      className={cn("mx-auto my-2 block h-1.5 w-10 rounded-full bg-muted-foreground/40", className)}
+    <div
+      aria-hidden
+      data-slot="sheet-grip"
+      className={cn("mx-auto h-1.5 w-10 flex-none rounded-pill bg-rule", className)}
       {...props}
     />
   )
@@ -76,7 +76,7 @@ export {
   SheetBackdrop,
   SheetClose,
   SheetContent,
-  SheetHandle,
+  SheetGrip,
   SheetTitle,
   SheetTrigger,
 }

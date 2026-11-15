@@ -6,7 +6,7 @@
 
 import { CheckIcon, ChevronDownIcon, MenuIcon, XIcon } from "lucide-react";
 import { useId, useRef, useState } from "react";
-import { Sheet, SheetBackdrop, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
+import { Sheet, SheetBackdrop, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { ICONS } from "./dock";
 import { weekChipLabel, type NavItem, type NavKind, type WeekLink } from "./nav";
 
@@ -109,9 +109,8 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
             })}
           </ul>
         </nav>
-        {/* The grab handle shows that the sheet drags. A sheet with one snap point takes a plain bar, not a handle
-            button, because a press on that button has no other place to move the sheet to. */}
-        <div aria-hidden data-grab="" className="mx-auto mb-sp-2 h-1.5 w-10 flex-none rounded-pill bg-rule" />
+        {/* The grip at the bottom edge shows that the sheet drags. */}
+        <SheetGrip className="mb-sp-2" />
       </SheetContent>
     </Sheet>
   );
