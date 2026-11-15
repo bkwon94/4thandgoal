@@ -5,6 +5,7 @@
 - The button, the dialog, the input, the label, the popover, the select, and the sheet.
 - Most of them wrap a Base UI primitive and add the site styles.
 - The sheet wraps the ui-sdk `Drawer`: root, trigger, backdrop, content, handle, title, and close. `sheet.tsx` is the one file that imports `@ui-sdk`.
+- `sheet-jsdom.ts` holds the jsdom stand-ins that a test imports before it opens the sheet.
 - The label is the form label. The red label that opens a chapter is `site/parts/label.tsx`.
 
 ## Ports

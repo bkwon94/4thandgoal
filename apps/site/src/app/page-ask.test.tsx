@@ -8,6 +8,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
 import { REFUSE_LINE } from "./front-door/ask-thread";
+// The jsdom stand-ins that the Drawer of the menu sheet needs.
+import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
    runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a

@@ -1527,55 +1527,26 @@ html:not([data-hydrated]) [data-draw] {
         }
     }
 }
-/* The header sheet of the front door drops from under the top band, as the panel reveal of transitions-dev: it opens
-   on --duration-fast with the drawer curve of iOS and closes faster, on --duration-quick, back up the way it came. A
-   drag sets an inline transform with no transition, and the release gives the transition back, so the sheet leaves
-   from where the finger let go. Visibility steps at the end of the close, so the closed sheet takes no tap and no focus.
-   Under reduced motion the sheet only fades, with no move. */
-@utility menu-sheet {
-    translate: 0 -100%;
-    opacity: 0;
-    visibility: hidden;
-    touch-action: none;
-    transition:
-        translate 180ms cubic-bezier(0.32, 0.72, 0, 1),
-        transform 180ms cubic-bezier(0.32, 0.72, 0, 1),
-        opacity 180ms ease-out,
-        visibility 180ms;
-    &[data-open] {
-        translate: 0 0;
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        transition-duration: 280ms;
-    }
-    @media (prefers-reduced-motion: reduce) {
-        translate: none;
-        transition:
-            opacity 150ms ease-out,
-            visibility 150ms !important;
-    }
+/* The menu sheet of the front door runs on the ui-sdk Drawer, which puts its viewport and its dim in the top layer, over
+   the band. These rules move the top edge of both to the bottom of the band, so the band and its X stay on top and the
+   sheet seems to drop out of the band. The Drawer writes the inset of its viewport inline, so the viewport rules need
+   !important. The clip hides the sheet while it sits up under the band. The backdrop is a popover, so it drops the
+   size, margin, border, and pad of a popover. The Drawer owns the slide, the spring, the dim, and the fade under
+   reduced motion, so no rule here moves the sheet. */
+[data-slot="drawer-viewport"]:has(> [data-menu-sheet]) {
+    top: var(--spacing-band-height) !important;
+    overflow: clip !important;
 }
-/* The dim of the page under the open sheet. It fades in with the sheet and out a little faster. Under reduced motion
-   the fade stays, because it moves nothing. */
-@utility menu-scrim {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition:
-        opacity 180ms ease-out,
-        visibility 180ms;
-    &[data-open] {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        transition-duration: 280ms;
-    }
-    @media (prefers-reduced-motion: reduce) {
-        transition:
-            opacity 150ms ease-out,
-            visibility 150ms !important;
-    }
+[data-slot="drawer-backdrop"][data-menu-sheet] {
+    position: fixed;
+    inset: var(--spacing-band-height) 0 0 0;
+    width: auto;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    padding: 0;
 }
 /* The icon of the menu button turns into an X, as the icon swap of transitions-dev: the two icons share one cell and
    cross-fade with a blur of --blur-small and a scale from 0.5, on --duration-fast. Under reduced motion they only fade. */
