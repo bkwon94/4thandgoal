@@ -1,9 +1,9 @@
 /**
  * Tests for the shell: the top band, the pill bar, the dock, the week chip with the strip of weeks, the theme button, and the
- * header sheet of the front door.
+ * menu sheet of the front door.
  * They read what a reader sees by role and name, not the class names.
  */
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { MenuSheet } from "./menu-sheet";
 import { currentHref, type Brand, type SiteMenu } from "./nav";
@@ -218,7 +218,7 @@ describe("The week chip (AT-11)", () => {
   });
 });
 
-/* The top band of the front door: the header sheet in place of the dock and the week chip (decision 10). */
+/* The top band of the front door: the menu sheet in place of the dock and the week chip (decision 10). */
 /* The front door gives its menu sheet to the top band, as the app does. */
 function doorBand(pageHref = "/", menu: SiteMenu = MENU) {
   const sheetNode = <MenuSheet items={menu.items} weeks={menu.weeks} current={currentHref(menu.items, menu.weeks, pageHref)} pageHref={pageHref} />;
@@ -232,7 +232,7 @@ function renderDoorBand(pageHref = "/", menu: SiteMenu = MENU) {
 const menuButton = () => within(screen.getByRole("banner")).getByRole("button", { name: /^(Open|Close) the menu$/ });
 const sheet = () => screen.getByRole("navigation", { name: "Pages" });
 
-describe("The header sheet of the front door (AT-45, AT-47)", () => {
+describe("The menu sheet of the front door (AT-45, AT-47)", () => {
   it("shows no menu button and no sheet on a dock page", () => {
     renderBand("/rankings/");
     expect(screen.queryByRole("button", { name: /^(Open|Close) the menu$/ })).toBeNull();
@@ -328,7 +328,7 @@ describe("The header sheet of the front door (AT-45, AT-47)", () => {
   });
 });
 
-describe("The header sheet closes three ways and keeps the focus in (AT-46)", () => {
+describe("The menu sheet closes three ways and keeps the focus in (AT-46)", () => {
   async function openSheet() {
     renderDoorBand();
     // A full tap, as a finger gives: the press, the release, then the click.
@@ -385,5 +385,33 @@ describe("The header sheet closes three ways and keeps the focus in (AT-46)", ()
     expect(dialog.contains(document.activeElement)).toBe(true);
     expect(document.activeElement).not.toBe(screen.getByRole("button", { name: "After" }));
     expect(screen.getByRole("dialog", { name: "Pages" })).toBe(dialog);
+  });
+});
+
+describe("The menu sheet closes at the desktop tier", () => {
+  it("closes when the window widens to the desktop tier, so the page does not stay inert under a hidden sheet", async () => {
+    // A query list for the desktop tier that the test can flip, as a browser does when the window widens.
+    const listeners = new Set<() => void>();
+    const desktop = {
+      matches: false,
+      addEventListener: (_type: string, listener: () => void) => listeners.add(listener),
+      removeEventListener: (_type: string, listener: () => void) => listeners.delete(listener),
+    };
+    const fallback = window.matchMedia;
+    // The same breakpoint as the desktop variant, --breakpoint-desktop in globals.css.
+    vi.stubGlobal("matchMedia", (query: string) => (query === "(min-width: 64rem)" ? desktop : fallback(query)));
+    try {
+      renderDoorBand();
+      fireEvent.click(menuButton());
+      expect(screen.getByRole("dialog", { name: "Pages" })).toBeTruthy();
+      act(() => {
+        desktop.matches = true;
+        for (const listener of listeners) listener();
+      });
+      await waitFor(() => expect(screen.queryByRole("dialog", { name: "Pages" })).toBeNull());
+      expect(menuButton().getAttribute("aria-expanded")).toBe("false");
+    } finally {
+      vi.stubGlobal("matchMedia", fallback);
+    }
   });
 });

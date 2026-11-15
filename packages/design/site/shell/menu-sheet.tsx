@@ -5,12 +5,15 @@
 "use client";
 
 import { CheckIcon, ChevronDownIcon, MenuIcon, XIcon } from "lucide-react";
-import { useId, useRef, useState } from "react";
-import { Sheet, SheetBackdrop, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
+import { useEffect, useId, useRef, useState } from "react";
+import { Sheet, SheetBackdrop, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { ICONS } from "./dock";
 import { weekChipLabel, type NavItem, type NavKind, type WeekLink } from "./nav";
 
 type SheetKind = Exclude<NavKind, "midseason">;
+
+/* The desktop tier, the same breakpoint as the desktop variant, --breakpoint-desktop in globals.css. */
+const DESKTOP = "(min-width: 64rem)";
 
 /* The note under the name of each page. The name says what the page is, and the note says what a manager does there. */
 const NOTES: Record<SheetKind, string> = {
@@ -39,6 +42,19 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
   const [open, setOpen] = useState(false);
   const [pastOpen, setPastOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
+
+  // The desktop tier hides the sheet and its button. A modal sheet left open there keeps the page inert under a hidden
+  // sheet, with no way out, so the sheet closes once the window reaches the desktop tier.
+  useEffect(() => {
+    if (!open) return;
+    const desktop = window.matchMedia(DESKTOP);
+    const closeOnDesktop = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    closeOnDesktop();
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, [open]);
 
   // The modal sheet makes the page inert. The band stays usable, so its X closes the sheet.
   const band = () => {
@@ -72,12 +88,12 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
         </span>
       </SheetTrigger>
       {/* The page under the band dims while the sheet is open, and a tap on it closes the sheet. */}
-      <SheetBackdrop data-testid="menu-scrim" data-menu-sheet="" className="bg-scrim desktop:hidden" />
+      <SheetBackdrop data-testid="menu-scrim" data-menu-sheet="" className="desktop:hidden" />
       {/* data-menu-sheet lets globals.css move the top edge of the sheet and the dim to the bottom of the band, so the
           band stays on top. */}
       <SheetContent
         data-menu-sheet=""
-        className="flex w-full flex-col rounded-b-card border-b border-rule bg-page text-ink shadow-drop desktop:hidden"
+        className="flex w-full flex-col desktop:hidden"
       >
         <SheetTitle className="sr-only">Pages</SheetTitle>
         <nav aria-label="Pages">
@@ -109,14 +125,12 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
             })}
           </ul>
         </nav>
-        {/* The grab handle shows that the sheet drags. A sheet with one snap point takes a plain bar, not a handle
-            button, because a press on that button has no other place to move the sheet to. */}
-        <div aria-hidden data-grab="" className="mx-auto mb-sp-2 h-1.5 w-10 flex-none rounded-pill bg-rule" />
+        {/* The grip at the bottom edge shows that the sheet drags. */}
+        <SheetGrip className="mb-sp-2" />
       </SheetContent>
     </Sheet>
   );
 }
-
 
 type PastWeeksProps = { weeks: WeekLink[]; pageHref?: string; open: boolean; onToggle: () => void };
 
