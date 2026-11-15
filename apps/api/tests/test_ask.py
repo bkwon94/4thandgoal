@@ -50,6 +50,8 @@ JUDGMENTS = {
                                          "topic": "playoff_race"},
     "worst move all year": {"fits_topic": 0.25, "data_can_answer": 0.64, "about_league": 0.97,
                             "topic": "your_season"},
+    "thank you": {"fits_topic": 0.03, "data_can_answer": 0.04, "about_league": 0.43, "reacts_to_answer": 0.99,
+                  "topic": "start_sit"},
 }
 
 
@@ -124,16 +126,23 @@ def test_loose_words_reach_the_next_matchup_topic_with_each_jev_answer(api):
     assert set(body["jev"]["choices"]) == {"topic", "team"}
 
 
-def test_one_request_asks_the_seven_questions_of_the_spec_over_the_teams_of_the_league(api, jev):
+def test_one_request_asks_the_eight_questions_of_the_route_over_the_teams_of_the_league(api, jev):
     _ask(api, "who am i playing sunday")
     assert len(jev.requests) == 1
     request = jev.requests[0]
-    assert set(request.questions) == {"topic", "fits_topic", "data_can_answer", "about_league", "abuse", "names_team",
-                                      "team"}
+    assert set(request.questions) == {"topic", "fits_topic", "data_can_answer", "about_league", "abuse",
+                                      "reacts_to_answer", "names_team", "team"}
     assert set(request.questions["topic"].options) == set(TOPICS)
     assert "Lil Fridge" in request.state["teams_in_league"] and len(request.state["teams_in_league"]) == 12
     # Decision 09: without this fact, "week 1 results" went to the week recap.
     assert "week 8 of the 2026 season" in request.state["about_topics"]["latest_week_only"]
+
+
+def test_a_reaction_to_the_last_answer_gets_a_free_answer_and_no_miss(api):
+    # A thanks after an answer is about no league fact, but Jev reads it as a reaction, so it never shows a miss.
+    body = _ask(api, "thank you").json()
+    assert (body["route"], body["topic"]) == ("free", None)
+    assert _misses(api) == []
 
 
 def test_a_question_about_another_team_gives_the_roster_of_that_team(api):

@@ -2,7 +2,6 @@
 Tests for the turns of the Thread that each typed question carries: the cut past the limit, the Jev state of the route,
 and the earlier messages of Claude with the cache mark, for the free answer and a personal Topic typed as a question.
 """
-import json
 from collections.abc import AsyncIterator
 
 import pytest
@@ -117,7 +116,7 @@ def test_the_route_cuts_a_long_list_from_the_oldest_end(repo, fixture_raw_dir):
     assert len(sent) < 40
 
 
-def test_a_free_answer_reads_the_turns_as_earlier_messages_and_the_check_never_sees_them(repo, fixture_raw_dir):
+def test_a_free_answer_reads_the_turns_as_earlier_messages_and_the_check_reads_their_answers(repo, fixture_raw_dir):
     checks = free.Checks([True])
     script = free.Script("standings", {}, free._leader)
     api = free._api(repo, fixture_raw_dir, FakeJev(answer=checks.answer, choose=free._choice), script.model())
@@ -132,9 +131,9 @@ def test_a_free_answer_reads_the_turns_as_earlier_messages_and_the_check_never_s
     marks = [item for m in first if isinstance(m, ModelRequest) for part in m.parts if isinstance(part, UserPromptPart)
              and isinstance(part.content, list) for item in part.content if isinstance(item, CachePoint)]
     assert len(marks) == 1
-    # The check judges each claim against the tool results only. The turns are context, never a source of a claim.
-    assert "earlier_turns" not in checks.seen[0]
-    assert FIRST["answer"] not in json.dumps(checks.seen[0])
+    # The check judges each claim against the tool results and the earlier answers, which passed the same check. A
+    # reply to "you sure?" may restate an earlier answer with no new tool result.
+    assert checks.seen[0]["earlier_turns"] == [FIRST]
 
 
 def test_a_free_answer_with_turns_never_reads_the_kept_answer_of_the_same_question_with_no_turns(repo,
