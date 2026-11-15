@@ -8,7 +8,7 @@ Spec: `.scratch/ui-sdk-sheet/PRD.md`. Acceptance test AT-29.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The top band tests of the menu sheet pass with no change to what they check.
 - [x] A dock page renders no menu button and no menu sheet, and the front door renders both, as before.
