@@ -18,10 +18,11 @@ The menu sheet runs on the ui-sdk `Drawer` on the live site, with a native feel 
 - The `Drawer` works in our static build and with Tailwind 4; pin both packages exact; it costs about 43 KB gzip per page. `decisions/07-research-ui-sdk-in-our-build.md`.
 - The menu sheet drops from the top with one snap point, a grab handle, the default iOS physics, and a dim with no page scale. `decisions/08-prototype-the-feel-of-the-menu-sheet.md`.
 - Only the front door pays the `Drawer`, with a direct import; one acceptance test shows a dock page does not grow. `decisions/10-grill-the-bundle-cost.md`.
+- The design package alone declares ui-sdk, pinned exact; a rule test fails an import of ui-sdk outside its ui folder. `decisions/09-spec-the-guard-and-the-dependency.md`.
 
 ## NOT YET SPECIFIED
 
-- Which `package.json` declares ui-sdk, and which rule test guards the wrapper rule? `decisions/09-spec-the-guard-and-the-dependency.md`.
+None.
 
 ## OUT OF SCOPE
 

@@ -6,7 +6,7 @@ Map: `.scratch/ui-sdk-sheet/MAP.md`.
 
 **Blocked by:** 06
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -17,4 +17,4 @@ Decision 06 says only `packages/design/site/ui/` imports `@ui-sdk`. The spec rec
 
 ## Decision
 
-None yet.
+The `package.json` of the design package declares `@ui-sdk/react` and `@ui-sdk/core`, each pinned to one exact version. The site app gets them through its workspace dependency, so it does not declare them. A rule test beside `apps/site/src/component-rule.test.ts` fails an import of `@ui-sdk` outside `packages/design/site/ui/`, through the shared rule report. `PRD.md` records both under Implementation Decisions. Brian approved the spec on 2026-11-14.
