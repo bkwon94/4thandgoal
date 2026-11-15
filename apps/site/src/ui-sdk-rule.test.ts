@@ -34,7 +34,7 @@ function sourceFiles(dir: string): string[] {
 const SPECIFIER = /(?:\bfrom|\bimport\s*\(?|\bmock\s*\(|\brequire\s*\()\s*["']([^"']+)["']/g;
 
 const RULE = `only the wrapper folder of the design package imports ${SCOPE}`;
-const ADR = ".scratch/ui-sdk-sheet/PRD.md";
+const ADR = "docs/adr/0035-each-ui-sdk-part-has-one-wrapper.md";
 
 /* The wrapper folder is the one place that may import the ui-sdk scope. */
 function inWrapperDir(file: string): boolean {
