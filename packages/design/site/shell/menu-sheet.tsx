@@ -5,12 +5,15 @@
 "use client";
 
 import { CheckIcon, ChevronDownIcon, MenuIcon, XIcon } from "lucide-react";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Sheet, SheetBackdrop, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { ICONS } from "./dock";
 import { weekChipLabel, type NavItem, type NavKind, type WeekLink } from "./nav";
 
 type SheetKind = Exclude<NavKind, "midseason">;
+
+/* The desktop tier, the same breakpoint as the desktop variant, --breakpoint-desktop in globals.css. */
+const DESKTOP = "(min-width: 64rem)";
 
 /* The note under the name of each page. The name says what the page is, and the note says what a manager does there. */
 const NOTES: Record<SheetKind, string> = {
@@ -39,6 +42,19 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
   const [open, setOpen] = useState(false);
   const [pastOpen, setPastOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
+
+  // The desktop tier hides the sheet and its button. A modal sheet left open there keeps the page inert under a hidden
+  // sheet, with no way out, so the sheet closes once the window reaches the desktop tier.
+  useEffect(() => {
+    if (!open) return;
+    const desktop = window.matchMedia(DESKTOP);
+    const closeOnDesktop = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    closeOnDesktop();
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, [open]);
 
   // The modal sheet makes the page inert. The band stays usable, so its X closes the sheet.
   const band = () => {

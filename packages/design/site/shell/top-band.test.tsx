@@ -3,7 +3,7 @@
  * menu sheet of the front door.
  * They read what a reader sees by role and name, not the class names.
  */
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { MenuSheet } from "./menu-sheet";
 import { currentHref, type Brand, type SiteMenu } from "./nav";
@@ -385,5 +385,33 @@ describe("The menu sheet closes three ways and keeps the focus in (AT-46)", () =
     expect(dialog.contains(document.activeElement)).toBe(true);
     expect(document.activeElement).not.toBe(screen.getByRole("button", { name: "After" }));
     expect(screen.getByRole("dialog", { name: "Pages" })).toBe(dialog);
+  });
+});
+
+describe("The menu sheet closes at the desktop tier", () => {
+  it("closes when the window widens to the desktop tier, so the page does not stay inert under a hidden sheet", async () => {
+    // A query list for the desktop tier that the test can flip, as a browser does when the window widens.
+    const listeners = new Set<() => void>();
+    const desktop = {
+      matches: false,
+      addEventListener: (_type: string, listener: () => void) => listeners.add(listener),
+      removeEventListener: (_type: string, listener: () => void) => listeners.delete(listener),
+    };
+    const fallback = window.matchMedia;
+    // The same breakpoint as the desktop variant, --breakpoint-desktop in globals.css.
+    vi.stubGlobal("matchMedia", (query: string) => (query === "(min-width: 64rem)" ? desktop : fallback(query)));
+    try {
+      renderDoorBand();
+      fireEvent.click(menuButton());
+      expect(screen.getByRole("dialog", { name: "Pages" })).toBeTruthy();
+      act(() => {
+        desktop.matches = true;
+        for (const listener of listeners) listener();
+      });
+      await waitFor(() => expect(screen.queryByRole("dialog", { name: "Pages" })).toBeNull());
+      expect(menuButton().getAttribute("aria-expanded")).toBe("false");
+    } finally {
+      vi.stubGlobal("matchMedia", fallback);
+    }
   });
 });
