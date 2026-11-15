@@ -17,8 +17,9 @@ if (typeof Element.prototype.getAnimations !== "function") {
   Element.prototype.getAnimations = () => [];
 }
 
-/* With no popover API, the Drawer moves its dim and its sheet to the end of the body. A browser has one, and there the
-   Drawer renders them in place, inside the band. These give jsdom the browser placement, so a test sees what a browser does. */
+/* A browser has the popover API, and the Drawer puts its dim and its sheet in the top layer with it. With no popover API,
+   the Drawer gives them a high inline z-index instead. These let jsdom take the browser path. The menu sheet passes the body
+   as its container, so a browser and jsdom both render its dim and its sheet in the body. These do not change that place. */
 if (typeof HTMLElement.prototype.showPopover !== "function") {
   Object.defineProperty(HTMLElement.prototype, "popover", {
     configurable: true,
