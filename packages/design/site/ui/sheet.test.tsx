@@ -5,20 +5,8 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { Sheet, SheetClose, SheetContent, SheetHandle, SheetTitle, SheetTrigger } from "./sheet";
-
-/* jsdom has no ResizeObserver, and the Drawer measures its sheet with one. This inert stand-in fills the gap; it feeds the Drawer no size. */
-if (typeof globalThis.ResizeObserver === "undefined") {
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  };
-}
-
-/* jsdom has no getAnimations either. The Drawer asks for the running animations when it closes, and an empty list lets it finish. */
-if (typeof Element.prototype.getAnimations !== "function") {
-  Element.prototype.getAnimations = () => [];
-}
+// The jsdom stand-ins that the Drawer needs.
+import "./sheet-jsdom";
 
 afterEach(cleanup);
 
