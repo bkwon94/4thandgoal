@@ -1530,23 +1530,15 @@ html:not([data-hydrated]) [data-draw] {
 /* The menu sheet of the front door runs on the ui-sdk Drawer, which puts its viewport and its dim in the top layer, over
    the band. These rules move the top edge of both to the bottom of the band, so the band and its X stay on top and the
    sheet seems to drop out of the band. The Drawer writes the inset of its viewport inline, so the viewport rules need
-   !important. The clip hides the sheet while it sits up under the band. The backdrop is a popover, so it drops the
-   size, margin, border, and pad of a popover. The Drawer owns the slide, the spring, the dim, and the fade under
-   reduced motion, so no rule here moves the sheet. */
+   !important. The clip hides the sheet while it sits up under the band. The sheet wrapper drops the popover box of the
+   backdrop. The Drawer owns the slide, the spring, the dim, and the fade under reduced motion, so no rule here moves
+   the sheet. */
 [data-slot="drawer-viewport"]:has(> [data-menu-sheet]) {
     top: var(--spacing-band-height) !important;
     overflow: clip !important;
 }
 [data-slot="drawer-backdrop"][data-menu-sheet] {
-    position: fixed;
-    inset: var(--spacing-band-height) 0 0 0;
-    width: auto;
-    height: auto;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    border: 0;
-    padding: 0;
+    top: var(--spacing-band-height);
 }
 /* The icon of the menu button turns into an X, as the icon swap of transitions-dev: the two icons share one cell and
    cross-fade with a blur of --blur-small and a scale from 0.5, on --duration-fast. Under reduced motion they only fade. */

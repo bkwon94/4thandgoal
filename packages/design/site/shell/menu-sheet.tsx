@@ -72,12 +72,12 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
         </span>
       </SheetTrigger>
       {/* The page under the band dims while the sheet is open, and a tap on it closes the sheet. */}
-      <SheetBackdrop data-testid="menu-scrim" data-menu-sheet="" className="bg-scrim desktop:hidden" />
+      <SheetBackdrop data-testid="menu-scrim" data-menu-sheet="" className="desktop:hidden" />
       {/* data-menu-sheet lets globals.css move the top edge of the sheet and the dim to the bottom of the band, so the
           band stays on top. */}
       <SheetContent
         data-menu-sheet=""
-        className="flex w-full flex-col rounded-b-card border-b border-rule bg-page text-ink shadow-drop desktop:hidden"
+        className="flex w-full flex-col desktop:hidden"
       >
         <SheetTitle className="sr-only">Pages</SheetTitle>
         <nav aria-label="Pages">
