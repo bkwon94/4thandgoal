@@ -2,6 +2,8 @@
  * Tailwind entry, the design tokens, and the shadcn theme variables for the app routes. The brand of the client adds
  * the color roles. The fonts and the radii belong to the look, so they live here (ADR 0024). Pages in public/ do not load this file. Every other hex color and pixel size lives here.
  */
+/* The ui-sdk layer comes first, so the styles of the site win over the CSS that ui-sdk adds. */
+@layer ui-sdk;
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
