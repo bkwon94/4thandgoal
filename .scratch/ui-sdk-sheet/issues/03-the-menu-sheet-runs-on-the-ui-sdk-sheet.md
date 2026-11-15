@@ -8,7 +8,7 @@ Spec: `.scratch/ui-sdk-sheet/PRD.md`. Acceptance tests AT-1 to AT-31, AT-35, AT-
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] On a 390 x 844 touch phone, the sheet follows the finger, settles on a spring, closes on a flick and on a slow drag past half its height, and goes back after a short drag (AT-1 to AT-6).
 - [x] A 5 px move on a row opens the row, and a 30 px move does not (AT-7, AT-8).
