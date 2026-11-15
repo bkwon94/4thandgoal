@@ -8,7 +8,7 @@ Spec: `.scratch/ui-sdk-sheet/PRD.md`. Acceptance tests AT-32, AT-33, AT-34, AT-3
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The rule test fails a throwaway import of `@ui-sdk` in a shell file, with the file and the line, and passes on the real tree (AT-33).
 - [x] A search for `@ui-sdk` in the source, outside `node_modules`, lists only files in the wrapper folder (AT-32).
@@ -17,3 +17,11 @@ Spec: `.scratch/ui-sdk-sheet/PRD.md`. Acceptance tests AT-32, AT-33, AT-34, AT-3
 - [x] The README of the wrapper folder names the sheet wrapper and the rule (AT-36).
 - [x] The static build of `cpc` passes with no new warning.
 - [x] `make check-fast` passes at the root.
+
+## Comments
+
+The merge: `753eeae4` on `ui-sdk-sheet-02`, merged into `ui-sdk-sheet` on 2026-11-14, with review fixes S2 `0fa6cc42`, S5 `8ecf8fca`, and P2 `2771ff6e`.
+The proof: The site suite passed 1521 of 1521, with 8 new tests in the wrapper test and the ui-sdk rule test.
+The note: Later sheets reuse `SheetGrip` and the parts of `ui/sheet.tsx`, and `ui/sheet-jsdom.ts` holds the jsdom stand-ins they need.
+Read at least 8 files: AGENTS.md, apps/site/AGENTS.md, .scratch/ui-sdk-sheet/PRD.md, .scratch/ui-sdk-sheet/ACCEPTANCE.md, .scratch/ui-sdk-sheet/issues/02-the-ui-sdk-sheet-wrapper-and-its-rule.md, .scratch/ui-sdk-sheet/decisions/07-research-ui-sdk-in-our-build.notes.md, apps/site/src/component-rule.test.ts, packages/design/site/ui/dialog.tsx.
+Closes with the squash merge of the spec PR.

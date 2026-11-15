@@ -8,9 +8,16 @@ Spec: `.scratch/ui-sdk-sheet/PRD.md`. Acceptance test AT-29.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The top band tests of the menu sheet pass with no change to what they check.
 - [x] A dock page renders no menu button and no menu sheet, and the front door renders both, as before.
 - [x] The gzip sum of the scripts of `/rankings/` on the static build of `cpc` is less than or equal to the sum on `main` (AT-29).
 - [x] `make check-fast` passes at the root.
+
+## Comments
+
+The merge: `90562bc8` on `ui-sdk-sheet-01`, merged into `ui-sdk-sheet` on 2026-11-14.
+The proof: The site suite passed 1514 of 1514, and AT-29 measured `/rankings/` at 316270 bytes gzip against 317814 on `main`.
+Read at least 7 files: AGENTS.md, apps/site/AGENTS.md, .scratch/ui-sdk-sheet/PRD.md, .scratch/ui-sdk-sheet/ACCEPTANCE.md, .scratch/ui-sdk-sheet/issues/01-the-front-door-gives-the-menu-sheet-to-the-top-band.md, packages/design/site/shell/top-band.tsx, apps/site/src/app/front-door/door-page.tsx.
+Closes with the squash merge of the spec PR.
