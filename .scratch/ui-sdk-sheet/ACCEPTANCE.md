@@ -13,7 +13,7 @@ App: site
 Stories: 1
 Given: the open sheet on the phone.
 When: the reader touches the sheet, drags up 40 px, and holds the touch.
-Then: the bottom edge of the sheet sits 40 px higher than at rest, within 2 px.
+Then: the bottom edge of the sheet sits 32 px higher than at rest, which is the 40 px drag less the 8 px tap slop of the `Drawer`, within 2 px.
 Evidence: the Playwright log of the bounding box of the sheet at rest and during the hold, and a screenshot during the hold at 375 px.
 
 AT-2: The sheet settles on a spring
@@ -157,7 +157,7 @@ App: site
 Stories: 18
 Given: the open sheet on the phone.
 When: the reader taps "Past weeks".
-Then: the chips read from WK 09 first down to WK 01 last, one chip for each published week.
+Then: the chips read WK 09, WK 08, WK 07, WK 06, in that order, one chip for each published week of `cpc`.
 Evidence: the Playwright list of the chip labels in order.
 
 AT-20: The sheet fades under reduced motion
@@ -369,4 +369,4 @@ Out of scope "a sheet from the bottom edge": AT-15
 
 ## Revisions
 
-None yet.
+- 2026-11-15: AT-1 expects 32 px, because the `Drawer` waits for an 8 px tap slop before the sheet follows the finger. AT-19 names the weeks that `cpc` publishes, WK 09 to WK 06. Brian approved both.
