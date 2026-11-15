@@ -117,7 +117,6 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
   );
 }
 
-
 type PastWeeksProps = { weeks: WeekLink[]; pageHref?: string; open: boolean; onToggle: () => void };
 
 /* "Past weeks" under the week row, and the chips of every week that it opens, newest first. The list grows on the
