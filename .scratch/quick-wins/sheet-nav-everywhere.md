@@ -1,7 +1,7 @@
 # The menu sheet replaces the dock on every page
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-sheet-nav-everywhere`.
 Source: the session of 2026-11-15.
 Boundary: holds. 1 item of one kind; no new term or ADR, and the `Dock` term leaves `GLOSSARY.md`; no moved seam; each done condition is one sentence.
@@ -29,3 +29,10 @@ Green: at `3e81e5d3`, `cd apps/site && pnpm exec vitest run ../../packages/desig
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `win-sheet-nav-everywhere`. Commits: `3d569486`, `3e81e5d3`, `b8612607`, `c7d2e05f`. Date: 2026-11-15.
+The loop went red on the old band and green on the fix, and `make check-fast` passes with 1521 site tests.
+The flaky AT-31 test of `apps/site/src/app/page.test.tsx` fails about 1 run in 6 on `main` too, so it needs its own fix.
+The "Grade the Trade" bar now sits at the bottom edge on a phone and a tablet, its place on a desktop.
+The Playwright specs, with the changed `apps/site/e2e/floor.spec.ts`, run only in CI.
+Read 9 files: AGENTS.md, GLOSSARY.md, docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, packages/design/site/shell/top-band.tsx, packages/design/site/shell/dock.tsx, packages/design/site/shell/menu-sheet.tsx, packages/design/site/shell/README.md, apps/site/src/app/shell-props.ts.
