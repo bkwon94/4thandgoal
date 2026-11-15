@@ -10,7 +10,7 @@ Spec: `.scratch/ui-sdk-sheet/PRD.md`. Acceptance test AT-29.
 
 **Status:** ready-for-agent
 
-- [ ] The top band tests of the menu sheet pass with no change to what they check.
-- [ ] A dock page renders no menu button and no menu sheet, and the front door renders both, as before.
-- [ ] The gzip sum of the scripts of `/rankings/` on the static build of `cpc` is less than or equal to the sum on `main` (AT-29).
-- [ ] `make check-fast` passes at the root.
+- [x] The top band tests of the menu sheet pass with no change to what they check.
+- [x] A dock page renders no menu button and no menu sheet, and the front door renders both, as before.
+- [x] The gzip sum of the scripts of `/rankings/` on the static build of `cpc` is less than or equal to the sum on `main` (AT-29).
+- [x] `make check-fast` passes at the root.
