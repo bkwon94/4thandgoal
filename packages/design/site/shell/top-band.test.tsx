@@ -1,5 +1,5 @@
 /**
- * Tests for the shell: the top band, the pill bar, the week chip with the strip of weeks, the theme button, and the
+ * Tests for the shell: the top band, the pill bar, the theme button, and the
  * menu sheet of every page.
  * They read what a reader sees by role and name, not the class names.
  */
@@ -48,10 +48,6 @@ function current(element: HTMLElement) {
     .filter((link) => link.getAttribute("aria-current") === "page")
     .map((link) => link.textContent);
 }
-
-/* The week chip. The closed strip still holds a link with the same text, so the query names the summary of the chip. */
-const chip = (label: string) => screen.getByText(label, { selector: "summary" });
-const stripOpen = (label: string) => (chip(label).closest("details") as HTMLDetailsElement).open;
 
 const pillBar = () => screen.getByRole("navigation", { name: "Site menu" });
 
@@ -167,54 +163,37 @@ describe("The menu sheet of every page (AT-9)", () => {
   });
 });
 
-describe("The week chip (AT-11)", () => {
-  it("reads WK 08 on a page that is not a week page, the latest week", () => {
+describe("The top band has no week chip (AT-11)", () => {
+  it("shows no week chip and no strip of weeks, on a page that is not a week page", () => {
     renderBand("/");
-    expect(chip("WK 08")).toBeTruthy();
+    expect(screen.queryByText(/^WK /, { selector: "summary" })).toBeNull();
+    expect(screen.queryByRole("navigation", { name: "Weeks of the season" })).toBeNull();
+    expect(within(screen.getByRole("banner")).queryByText(/^WK /)).toBeNull();
   });
 
-  it("reads the week of the open week page", () => {
+  it("shows no week chip and no strip of weeks, on the page of a week", () => {
     renderBand("/2026/week-07/");
-    expect(chip("WK 07")).toBeTruthy();
+    expect(screen.queryByText(/^WK /, { selector: "summary" })).toBeNull();
+    expect(screen.queryByRole("navigation", { name: "Weeks of the season" })).toBeNull();
+    expect(within(screen.getByRole("banner")).queryByText(/^WK /)).toBeNull();
   });
 
-  it("opens the strip of weeks on a tap, oldest first, with the chip week marked", () => {
-    renderBand("/");
-    expect(stripOpen("WK 08")).toBe(false);
-    fireEvent.click(chip("WK 08"));
-    expect(stripOpen("WK 08")).toBe(true);
-    const strip = screen.getByRole("navigation", { name: "Weeks of the season" });
-    expect(linksIn(strip)).toEqual([
-      ["WK 06", "/2026/week-06/"],
-      ["WK 07", "/2026/week-07/"],
+  it("keeps the week row and Past weeks in the menu sheet", () => {
+    renderBand("/2026/week-07/");
+    fireEvent.click(menuButton());
+    expect(within(sheet()).getByRole("link", { name: /^Week 8/ })).toBeTruthy();
+    fireEvent.click(within(sheet()).getByRole("button", { name: "Past weeks" }));
+    expect(linksIn(screen.getByRole("list", { name: "Past weeks" }))).toEqual([
       ["WK 08", "/2026/week-08/"],
+      ["WK 07", "/2026/week-07/"],
+      ["WK 06", "/2026/week-06/"],
     ]);
-    expect(within(strip).getByRole("link", { name: "WK 08" }).getAttribute("aria-current")).toBe("true");
-  });
-
-  it("closes the strip on Escape", () => {
-    renderBand("/");
-    fireEvent.click(chip("WK 08"));
-    fireEvent.keyDown(document, { key: "Escape" });
-    expect(stripOpen("WK 08")).toBe(false);
-  });
-
-  it("closes the strip on a tap outside it", () => {
-    renderBand("/");
-    fireEvent.click(chip("WK 08"));
-    fireEvent.pointerDown(document.body);
-    expect(stripOpen("WK 08")).toBe(false);
-  });
-
-  it("shows no chip for a client with no published week", () => {
-    renderBand("/", { ...MENU, weeks: [] });
-    expect(screen.queryByText(/^WK /)).toBeNull();
   });
 });
 
-/* The top band of the front door: no week chip (decision 10). */
+/* The top band of the front door. */
 function doorBand(pageHref = "/", menu: SiteMenu = MENU) {
-  return <TopBand title={TITLE} brand={BRAND} menu={menu} pageHref={pageHref} weekChip={false} />;
+  return <TopBand title={TITLE} brand={BRAND} menu={menu} pageHref={pageHref} />;
 }
 
 function renderDoorBand(pageHref = "/", menu: SiteMenu = MENU) {
@@ -231,7 +210,7 @@ describe("The menu sheet and the top band of the front door (AT-45, AT-47)", () 
     expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
   });
 
-  it("shows no dock and no week chip, and holds the menu button in the banner", () => {
+  it("shows no dock, and holds the menu button in the banner", () => {
     renderDoorBand();
     expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
     expect(screen.queryByText(/^WK /, { selector: "summary" })).toBeNull();

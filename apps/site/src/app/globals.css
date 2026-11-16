@@ -86,9 +86,6 @@
     --spacing-touch: 44px;
     /* An item of the menu sheet: the 20px icon, a 4px gap, and the 12px label, with room above and below for a thumb. */
     --spacing-dock: 56px;
-    /* The open strip of weeks: a 44px chip row, 12px above and below, and its 1px rule on top. The top band grows by
-       the same space while the strip is open, so the strip covers no part of the page. */
-    --spacing-strip: calc(var(--spacing-touch) + 2 * var(--spacing-sp-3) + 1px);
     /* The height of the top band: one 44px row, 8px above and below, and its 1px rule. The name is not "band", because
        max-w-band reads the container token of that name. */
     --spacing-band-height: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2) + 1px);
@@ -179,8 +176,8 @@
     --container-page-phone: 100%;
     --container-page-tablet: 640px;
     --container-page-desktop: 720px;
-    /* The top band: wider than the page column, so the brand mark, the pill bar, the week chip, and the theme button
-       share one row from the rail tier up. */
+    /* The top band: wider than the page column, so the brand mark, the pill bar, and the theme button share
+       one row from the rail tier up. */
     --container-band: 1200px;
     /* The page column that max-w-page reads. A rule in the base layer switches it to the token of the tier. */
     --container-page: var(--container-page-phone);

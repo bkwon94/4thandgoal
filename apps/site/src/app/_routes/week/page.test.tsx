@@ -425,11 +425,11 @@ describe("WeekPage with no median game", () => {
   });
 });
 
-describe("WeekPage keeps the week chip and shows the menu button (AT-49)", () => {
-  it("shows the week chip and the menu button, and no dock", async () => {
+describe("WeekPage shows no week chip and shows the menu button (AT-49)", () => {
+  it("shows no week chip, the menu button, and no dock", async () => {
     await renderWeek7();
     expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
-    expect(screen.getByText("WK 07", { selector: "summary" })).toBeTruthy();
+    expect(screen.queryByText("WK 07", { selector: "summary" })).toBeNull();
     expect(screen.getByRole("button", { name: "Open the menu" })).toBeTruthy();
   });
 });
