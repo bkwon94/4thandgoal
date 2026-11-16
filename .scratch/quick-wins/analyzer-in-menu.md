@@ -1,7 +1,7 @@
 # The Trade Analyzer is in the menu with the front door on
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-analyzer-in-menu`.
 Source: the session of 2026-11-15.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam, because `front_door_items` keeps its shape and only gains an item; each done condition is one sentence.
@@ -34,3 +34,8 @@ Green: at `dd7fbc4a`, `cd apps/site && CLIENT=cpc node scripts/client-build.mjs 
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `win-analyzer-in-menu`. Commits: `a98facb0`, `dd7fbc4a`, `ce70f114`. Date: 2026-11-15.
+The loop went red on 2 of 16 tests at the parent and green on 16 of 16 at the fix, and `make check-fast` passes with 1521 site tests.
+The desktop pill bar now holds five items; a sixth, such as the midseason report, may overflow it at 1280px.
+Read 5 files: clients/cpc/client.toml, clients/norcal/client.toml, apps/site/scripts/client-build.mjs, apps/site/src/app/shell-props.test.ts, apps/site/src/app/_routes/analyzer/menu.ts.
