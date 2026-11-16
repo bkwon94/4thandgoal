@@ -29,6 +29,6 @@ Green: at `29ce51bb`, `cd apps/api && uv run --exact --package cpc-api pytest -q
 ....                                                                     [100%]
 4 passed, 40 deselected in 4.53s
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
