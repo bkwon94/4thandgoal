@@ -83,20 +83,22 @@ Test verdict: pending
 
 Done condition: `packages/analyzer/site/form/passphrase-dialog.tsx` renders the shared `Sheet` of `@cpc/design/ui/sheet` in place of the centered `Dialog`, so the analyzer asks for the passphrase in the same sheet as the front door.
 Method: tdd
-Red: at `7766f282` with `packages/analyzer/site/form/passphrase-dialog.test.tsx` of `60af5c88`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/passphrase-dialog.test.tsx`
+Red: at `7766f282` with `packages/analyzer/site/form/passphrase-dialog.test.tsx` of `74d2c587`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/passphrase-dialog.test.tsx`
 
 ```text
  FAIL  ../../packages/analyzer/site/form/passphrase-dialog.test.tsx > the passphrase dialog of the analyzer > renders the shared Sheet from the bottom, with no grip because it does not drag
 AssertionError: expected null to be 'bottom' // Object.is equality
+ FAIL  ../../packages/analyzer/site/form/passphrase-dialog.test.tsx > the passphrase dialog of the analyzer > lifts the content by the keyboard signal so the field sits above the keyboard
+AssertionError: expected '' to be 'var(--spacing-door-foot)' // Object.is equality
  Test Files  1 failed (1)
-      Tests  1 failed | 2 passed (3)
+      Tests  2 failed | 2 passed (4)
 ```
 
-Green: at `60af5c88`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/passphrase-dialog.test.tsx`
+Green: at `74d2c587`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/passphrase-dialog.test.tsx`
 
 ```text
  Test Files  1 passed (1)
-      Tests  3 passed (3)
+      Tests  4 passed (4)
 ```
 Test verdict: pending
 
