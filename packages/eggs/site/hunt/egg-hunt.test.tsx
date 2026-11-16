@@ -4,6 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import "@cpc/design/ui/sheet-jsdom";
 import { TAP_GAP_MS } from "../listener/listener";
 import { EggsError, type Board } from "../lib/api";
 import { board, boardWith, fakeEggsApi, PASSPHRASE } from "../lib/fixtures/eggs-api";
