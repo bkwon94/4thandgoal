@@ -29,6 +29,6 @@ Green: at `6cda97a8`, `cd apps/site && npx vitest run ../../packages/analyzer/si
 
 The hook of `6cda97a8` and `make check-fast BASE=main` passed: 147 files, 1523 tests.
 
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
