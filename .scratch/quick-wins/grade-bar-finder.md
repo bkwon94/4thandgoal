@@ -1,7 +1,7 @@
 # The grade bar keeps clear of the finder
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-grade-bar-finder`.
 Source: the session of 2026-11-16.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam, it changes the position of one part and adds no port, page, or data shape; the done condition is one sentence.
@@ -35,3 +35,8 @@ Test verdict: PASS
 ## Comments
 
 - The command `pnpm check:grade-bar` builds the export of norcal, the client with the finder on, then runs the Playwright project `grade-bar`.
+- Closes with the squash merge of the PR of `win-grade-bar-finder`. Commits: `7b186906`, `6b43dfb1`, `d1f7fa01`, `d52748a2`. Date: 2026-11-16.
+- The Playwright project `grade-bar` has 2 tests, its loop went red at `7b186906` and green at `6b43dfb1`, and the site vitest suite has 1525 tests that pass.
+- While a grade runs, the form folds, so the "Grading…" bar sits under the grading hero, not at the bottom of the screen.
+- The test `AT-31` in `apps/site/src/app/page.test.tsx` fails often in the full suite, with or without this change, so it needs its own Bug run.
+- Read 6 files: packages/analyzer/site/form/grade-bar.tsx, packages/analyzer/site/form/trade-form.tsx, packages/analyzer/site/form/trade-finder.tsx, apps/site/src/app/_routes/analyzer/page.tsx, docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md.
