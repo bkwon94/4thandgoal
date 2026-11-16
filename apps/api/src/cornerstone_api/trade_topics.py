@@ -31,10 +31,12 @@ from cornerstone_api.trade_wording import (
     CONTEXT,
     GETS_ALSO_NAMED,
     GETS_ALSO_PLAYER,
+    GETS_MORE_NAMED,
     GETS_NAMED,
     GETS_PLAYER,
     GIVES_ALSO_NAMED,
     GIVES_ALSO_PLAYER,
+    GIVES_MORE_NAMED,
     GIVES_NAMED,
     GIVES_PLAYER,
     IDEAS_CONTEXT,
@@ -99,7 +101,10 @@ class Pick:
 
     `also` is the pick of a second player of the side, such as the second player of a 1-for-2 trade, when Jev is sure
     that the question names two. A sure second player on another roster makes the side unsure, because the trade
-    check weighs a trade of two teams only."""
+    check weighs a trade of two teams only.
+
+    `more` is the probability that the question names three or more players of the side. The pick holds two players
+    at most, so a sure yes makes the side unsure, and the trade check never weighs a trade without a named player."""
 
     named: float
     player_id: str
@@ -107,9 +112,16 @@ class Pick:
     probability: float
     roster_id: int
     also: "Pick | None" = None
+    more: float = 0.0
 
     @property
     def sure(self) -> bool:
+        return self.found and self.more <= YES
+
+    @property
+    def found(self) -> bool:
+        """Jev is sure of each player of `players`, though the side may name more players than the pick holds. The
+        form fills the players of a found side."""
         return (self.named > YES and self.probability > YES
                 and (self.second is None or self.second.roster_id == self.roster_id))
 
@@ -158,17 +170,19 @@ def pick_players(jev: Jev, question: str, teams: list[dict], asker: int, context
         questions |= limit_questions(give_options)
     answers = jev.ask(state, questions)
 
-    def side(named: str, choice: str, keys: dict[str, str], also: Pick | None = None) -> Pick:
+    def side(named: str, choice: str, keys: dict[str, str], also: Pick | None = None, more: float = 0.0) -> Pick:
         key, probability = _top(answers.choices[choice])
         pid = next(pid for pid, option in keys.items() if option == key)
         return Pick(named=answers.nouls[named], player_id=pid, name=_name(team_of[pid], pid), probability=probability,
-                    roster_id=team_of[pid]["roster_id"], also=also)
+                    roster_id=team_of[pid]["roster_id"], also=also, more=more)
 
     def second(named: str, choice: str, keys: dict[str, str]) -> Pick | None:
         return side(named, choice, keys) if answers.nouls[named] > YES else None
 
-    gives = side(GIVES_NAMED, GIVES_PLAYER, give_keys, second(GIVES_ALSO_NAMED, GIVES_ALSO_PLAYER, give_keys))
-    gets = side(GETS_NAMED, GETS_PLAYER, get_keys, second(GETS_ALSO_NAMED, GETS_ALSO_PLAYER, get_keys))
+    gives = side(GIVES_NAMED, GIVES_PLAYER, give_keys, second(GIVES_ALSO_NAMED, GIVES_ALSO_PLAYER, give_keys),
+                 answers.nouls[GIVES_MORE_NAMED])
+    gets = side(GETS_NAMED, GETS_PLAYER, get_keys, second(GETS_ALSO_NAMED, GETS_ALSO_PLAYER, get_keys),
+                answers.nouls[GETS_MORE_NAMED])
     return gives, gets, answers
 
 
@@ -341,7 +355,8 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
                 served: ServedClient) -> StreamingResponse:
     """The trade check of a typed question. With two sure picks, the steps of the analyze press and its document. A
     side with a sure second player gives or gets both. With an unsure pick, the form of the Trade page with each sure
-    player and no unsure one (AT-58)."""
+    player and no unsure one (AT-58). A side of three or more players is unsure, so its form holds the players of the
+    pick, and the manager adds the rest."""
     teams = _teams(asker, served, body.roster_id)
     question = body.question.strip()
 
@@ -351,9 +366,9 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
                             "gets": {**asdict(gets), "sure": gets.sure}})
         if not (gives.sure and gets.sure):
             emit("data-answer", {"kind": "form", "form": {
-                "asker": body.roster_id, "partner": gets.roster_id if gets.sure else None,
-                "gives": [pick.player_id for pick in gives.players] if gives.sure else [],
-                "gets": [pick.player_id for pick in gets.players] if gets.sure else []}})
+                "asker": body.roster_id, "partner": gets.roster_id if gets.found else None,
+                "gives": [pick.player_id for pick in gives.players] if gives.found else [],
+                "gets": [pick.player_id for pick in gets.players] if gets.found else []}})
             return
         step = _step(emit)
         step(f"Found {_names([pick.name for pick in gives.players + gets.players])}")

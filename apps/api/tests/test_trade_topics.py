@@ -182,7 +182,7 @@ def test_the_stream_holds_each_player_pick_with_its_jev_answers(api):
     # AT-24 evidence: the route response with each player pick.
     [picks] = _of(_parts(_check(api, SURE_TRADE)), "data-picks")
     assert picks["gives"] == {"named": 0.97, "player_id": "8134", "name": "Khalil Shakir", "probability": 0.95,
-                              "sure": True, "roster_id": LIL_FRIDGE, "also": None}
+                              "sure": True, "roster_id": LIL_FRIDGE, "also": None, "more": 0.05}
     assert picks["gets"]["player_id"] == "9997" and picks["gets"]["roster_id"] == BO_GIRDS and picks["gets"]["sure"]
 
 
