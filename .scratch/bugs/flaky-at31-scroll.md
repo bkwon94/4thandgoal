@@ -1,7 +1,7 @@
 # AT-31 of the home page test fails often in the commit hook
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-flaky-at31-scroll`.
 Source: the session of 2026-11-16.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -48,3 +48,8 @@ exit 0
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-flaky-at31-scroll`. Commits: `a85360e7`, `6151eb9f`, `800fd833`, `bc32ad43`, `c1cc1ec6`. Date: 2026-11-16.
+The site suite has 1525 tests, all pass, and the loop of item 1 went red in 2 of 20 runs at `a85360e7`, then green in 20 of 20 at `6151eb9f`.
+AT-31 failed only when 4 suites ran at the same time, so a later flaky test of the Thread can use the same 4-at-a-time loop.
+Read 10 files: AGENTS.md, apps/site/AGENTS.md, GLOSSARY.md, docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, .claude/plugin/skills/implement/build.md, apps/site/src/app/page.test.tsx, apps/site/src/app/front-door/front-door.tsx.
