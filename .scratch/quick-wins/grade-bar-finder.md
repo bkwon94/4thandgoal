@@ -30,7 +30,7 @@ Green: at `6b43dfb1`, `cd apps/site && pnpm check:grade-bar`
   ✓  [grade-bar] › e2e/grade-bar.spec.ts:62:5 › the bar rests at the end of the form and covers no part of the finder (grade-bar-finder item 1)
   2 passed
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
 
