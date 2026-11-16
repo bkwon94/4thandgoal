@@ -30,6 +30,6 @@ Green: at `448a1368`, `cd apps/site && pnpm exec vitest run src/../../../package
  Test Files  1 passed (1)
       Tests  31 passed (31)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
