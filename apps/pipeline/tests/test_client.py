@@ -51,7 +51,7 @@ def test_the_cpc_client_reads_the_values_of_the_spec():
         "home", "week", "rankings", "midseason", "managers", "analyzer"]
     assert values.front_door is True
     assert [item.package or item.page for item in values.menu.front_door_items or []] == [
-        "home", "week", "rankings", "managers"]
+        "home", "week", "rankings", "managers", "analyzer"]
 
 
 def test_each_client_of_the_repo_turns_the_front_door_on():

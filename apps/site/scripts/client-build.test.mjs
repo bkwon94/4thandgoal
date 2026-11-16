@@ -198,7 +198,7 @@ describe("the client build", () => {
     // A client that omits analyzer has no [values.analyzer] table, because a table of a package off the list fails.
     const omitted = tempRepo(
       CPC_TOML.replace('"analyzer", ', "")
-        .replace('  { package = "analyzer", label = "Trade Analyzer" },\n', "")
+        .replaceAll('  { package = "analyzer", label = "Trade Analyzer" },\n', "")
         .replace("[values.analyzer]\nfinder = false\n", ""),
     );
     buildClient(omitted);
@@ -313,6 +313,7 @@ describe("the client build", () => {
       { package: "week" },
       { package: "rankings", label: "Power Rankings" },
       { package: "managers", label: "Managers" },
+      { package: "analyzer", label: "Trade Analyzer" },
     ],
   };
 
@@ -362,7 +363,7 @@ describe("the client build", () => {
     }
   });
 
-  it("gives each client of the repo Home, the week, Power Rankings, and Managers with the front door on (AT-48)", () => {
+  it("gives each client of the repo Home, the week, Power Rankings, Managers, and Trade Analyzer with the front door on (AT-48)", () => {
     for (const slug of ["cpc", "norcal"]) {
       const repo = repoClient(slug, true);
       buildClient(repo);
