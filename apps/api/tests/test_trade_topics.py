@@ -30,6 +30,8 @@ from cornerstone_api.trade_wording import (
     GETS_ALSO_PLAYER,
     GETS_NAMED,
     GETS_PLAYER,
+    GIVES_ALSO_NAMED,
+    GIVES_ALSO_PLAYER,
     GIVES_NAMED,
     GIVES_PLAYER,
     KEEPS_NAMED,
@@ -59,6 +61,12 @@ NO_TE = "id rather not trade a TE"
 KEEP_SHAKIR = "keep shakir"
 FOR_A_TE = "what about for a TE"
 ONE_FOR_TWO = "trade Kyren Williams for Chase Brown and Devonta Smith"
+TWO_FOR_TWO = "trade Kyren Williams and Zay Flowers for Chase Brown and Devonta Smith"
+ONE_FOR_THREE = "trade Kyren Williams for Chase Brown, Saquon Barkley, and Devonta Smith"
+THREE_FOR_ONE = "trade Kyren Williams, Zay Flowers, and Trey McBride for Saquon Barkley"
+# The keys of the Noul of a side that names three or more players. The pick reads them by these keys.
+GIVES_MORE_NAMED = "gives_more_named"
+GETS_MORE_NAMED = "gets_more_named"
 # The rosters of the week 9 build of cpc, where Chase Brown and DeVonta Smith are both on NFC Least.
 WEEK_9_RAW = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026" / "week-09" / "raw"
 NFC_LEAST = 4
@@ -84,6 +92,15 @@ PICKS = {
     # Each Choice picks one player, so the second player that the manager gets has a Noul and a Choice of its own.
     ONE_FOR_TWO: {GIVES_NAMED: 0.97, GETS_NAMED: 0.96, GIVES_PLAYER: "Kyren Williams", GETS_PLAYER: "Chase Brown",
                   GETS_ALSO_NAMED: 0.94, GETS_ALSO_PLAYER: "DeVonta Smith"},
+    TWO_FOR_TWO: {GIVES_NAMED: 0.97, GETS_NAMED: 0.96, GIVES_PLAYER: "Kyren Williams", GETS_PLAYER: "Chase Brown",
+                  GIVES_ALSO_NAMED: 0.95, GIVES_ALSO_PLAYER: "Zay Flowers",
+                  GETS_ALSO_NAMED: 0.94, GETS_ALSO_PLAYER: "DeVonta Smith"},
+    # The first and the last Choice of a side of three hold two of its players, so the Noul of three or more says that
+    # the pick holds only some of them.
+    ONE_FOR_THREE: {GIVES_NAMED: 0.97, GETS_NAMED: 0.96, GIVES_PLAYER: "Kyren Williams", GETS_PLAYER: "Chase Brown",
+                    GETS_ALSO_NAMED: 0.94, GETS_ALSO_PLAYER: "DeVonta Smith", GETS_MORE_NAMED: 0.95},
+    THREE_FOR_ONE: {GIVES_NAMED: 0.97, GETS_NAMED: 0.96, GIVES_PLAYER: "Kyren Williams", GETS_PLAYER: "Saquon Barkley",
+                    GIVES_ALSO_NAMED: 0.95, GIVES_ALSO_PLAYER: "Trey McBride", GIVES_MORE_NAMED: 0.96},
 }
 
 
@@ -210,6 +227,47 @@ def test_a_typed_one_for_two_trade_weighs_all_three_players(settings, sources, j
     assert [player["name"] for player in yours["gives"]] == ["Kyren Williams"]
     assert [player["name"] for player in yours["gets"]] == ["Chase Brown", "DeVonta Smith"]
     assert theirs["roster_id"] == NFC_LEAST
+
+
+def _week_9_check(settings, sources, jev, advisor, question: str) -> list[dict]:
+    """The stream parts of a trade check of Bo Girds over the rosters of the week 9 build of cpc."""
+    week_9 = dataclasses.replace(sources, fetch_sleeper=lambda league_id: (load_raw(WEEK_9_RAW), test_api.FETCHED))
+    response = _api(settings, week_9, jev, advisor).post(
+        CHECK, json={"question": question, "roster_id": BO_GIRDS}, headers=HEADERS)
+    return _parts(response)
+
+
+def test_a_typed_two_for_two_trade_weighs_all_four_players(settings, sources, jev, advisor):
+    [answer] = _of(_week_9_check(settings, sources, jev, advisor, TWO_FOR_TWO), "data-answer")
+    assert answer["kind"] == "check"
+    [yours, theirs] = answer["document"]["trade"]["sides"]
+    assert [player["name"] for player in yours["gives"]] == ["Kyren Williams", "Zay Flowers"]
+    assert [player["name"] for player in yours["gets"]] == ["Chase Brown", "DeVonta Smith"]
+    assert theirs["roster_id"] == NFC_LEAST
+
+
+def _weighed(answer: dict) -> list[list[str]]:
+    """The names of the players that each side of a checked trade gives, or none for a form."""
+    if answer["kind"] != "check":
+        return []
+    return [[player["name"] for player in side["gives"]] for side in answer["document"]["trade"]["sides"]]
+
+
+def test_a_typed_trade_that_gets_three_players_opens_the_form_with_each_sure_player(settings, sources, jev, advisor):
+    # The pick holds two of the three players, so a check would weigh a trade without Saquon Barkley.
+    [answer] = _of(_week_9_check(settings, sources, jev, advisor, ONE_FOR_THREE), "data-answer")
+    assert _weighed(answer) == [], f"weighed a trade of only {_weighed(answer)}"
+    assert answer == {"kind": "form", "form": {"asker": BO_GIRDS, "partner": NFC_LEAST, "gives": ["8150"],
+                                               "gets": ["9224", "7525"]}}
+    assert advisor.calls == []
+
+
+def test_a_typed_three_for_one_trade_opens_the_form_with_each_sure_player(settings, sources, jev, advisor):
+    [answer] = _of(_week_9_check(settings, sources, jev, advisor, THREE_FOR_ONE), "data-answer")
+    assert _weighed(answer) == [], f"weighed a trade of only {_weighed(answer)}"
+    assert answer == {"kind": "form", "form": {"asker": BO_GIRDS, "partner": NFC_LEAST, "gives": ["8150", "8130"],
+                                               "gets": ["4866"]}}
+    assert advisor.calls == []
 
 
 def test_the_steps_of_a_trade_check_come_one_by_one_before_the_whole_answer(api):
