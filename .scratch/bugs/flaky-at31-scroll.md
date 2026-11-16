@@ -45,6 +45,6 @@ bash -c 'cd apps/site && L=$(mktemp -d) && CLIENT=cpc node scripts/client-build.
 AT-31 passed in each of 20 runs
 exit 0
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
