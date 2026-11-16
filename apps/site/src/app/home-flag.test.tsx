@@ -6,6 +6,8 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFixtureSite } from "@/fixtures/sites";
 import { clientValues } from "@/generated/client-values";
+// The jsdom stand-ins that the Drawer of the team sheet needs.
+import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. */
 await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));

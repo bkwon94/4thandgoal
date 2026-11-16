@@ -27,6 +27,8 @@ import { TeamPicker } from "@cpc/analyzer/form/team-picker";
 import { week6, week8 } from "@cpc/week/fixtures/week-page";
 import { AllMatchups } from "@cpc/week/chapters/all-matchups";
 import { readFixtureSite } from "@/fixtures/sites";
+// The jsdom stand-ins that the Drawer of the team sheet needs.
+import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
    runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a

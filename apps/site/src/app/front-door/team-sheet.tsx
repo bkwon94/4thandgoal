@@ -6,10 +6,11 @@
 
 import { motion } from "framer-motion";
 import { XIcon } from "lucide-react";
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useRef, useState } from "react";
+import { Sheet, SheetBackdrop, SheetClose, SheetContent, SheetGrip, SheetTitle } from "@cpc/design/ui/sheet";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorTeam } from "@/lib/data/front-door-data";
-import { FAST, QUICK, SHEET_SPRING, SMOOTH, fadeIn, staggerOf } from "./motion";
+import { FAST, SMOOTH, fadeIn, staggerOf } from "./motion";
 
 /* The check lands, then the sheet leaves, so the tap reads as done before the page changes. */
 const PICK_BEAT_MS = 420;
@@ -21,8 +22,9 @@ function ordinal(n: number): string {
   return `${n}${{ 1: "st", 2: "nd", 3: "rd" }[n % 10] ?? "th"}`;
 }
 
-/* onClose comes only on a change of team. Without it, the sheet of the first visit has no close button, and Escape and a
-   tap on the dim do nothing. */
+/* onClose comes only on a change of team. Without it, the sheet of the first visit is not dismissible: a drag, Escape, and a
+   tap on the dim do nothing, and it has no close button. The Drawer owns the slide, the drag, the dim, the focus trap, and
+   the fade under reduced motion. */
 export function TeamSheet({
   siteName,
   teams,
@@ -38,91 +40,53 @@ export function TeamSheet({
 }) {
   const off = useMotionOff();
   const [chosen, setChosen] = useState<number | null>(current);
-  const panel = useRef<HTMLDivElement>(null);
-
-  // The sheet takes the focus, and the page under it stops its scroll while the sheet is open.
-  useEffect(() => {
-    panel.current?.focus({ preventScroll: true });
-    const root = document.documentElement;
-    const before = root.style.overflow;
-    root.style.overflow = "hidden";
-    return () => {
-      root.style.overflow = before;
-    };
-  }, []);
+  const [open, setOpen] = useState(true);
+  // The team that a tap picked. The sheet leaves first, then onPick runs, so the page changes after the sheet is gone.
+  const picked = useRef<number | null>(null);
 
   const choose = (id: number) => {
     if (chosen !== null && chosen !== current) return;
     setChosen(id);
-    window.setTimeout(() => onPick(id), PICK_BEAT_MS);
+    picked.current = id;
+    window.setTimeout(() => setOpen(false), PICK_BEAT_MS);
   };
 
-  // The sheet is modal, so Tab cycles inside it. Escape closes it only on a change of team. On the first visit it has no
-  // close, so Escape does nothing.
-  const trap = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Escape" && onClose) {
-      event.preventDefault();
-      onClose();
-      return;
-    }
-    if (event.key !== "Tab") return;
-    const buttons = [...(panel.current?.querySelectorAll<HTMLButtonElement>("button") ?? [])];
-    const first = buttons[0];
-    const last = buttons.at(-1);
-    if (!first || !last) return;
-    if (event.shiftKey && (document.activeElement === first || document.activeElement === panel.current)) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
+  // The sheet is gone, so the parent drops it. A pick keeps the new team, and a close keeps the old team.
+  const left = (isOpen: boolean) => {
+    if (isOpen) return;
+    if (picked.current !== null) onPick(picked.current);
+    else onClose?.();
   };
 
   return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-scrim tablet:items-center tablet:p-sp-6"
-      // With motion off, the scrim and the sheet show at once, so a scan of the floor never reads them in mid-fade.
-      initial={off ? false : { opacity: 0 }}
-      animate={{ opacity: 1, transition: fadeIn(FAST) }}
-      exit={{ opacity: 0, transition: fadeIn(FAST) }}
-      // A tap on the dim closes the sheet on a change of team. A tap inside the sheet never reaches this check.
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose?.();
-      }}
+    <Sheet
+      side="bottom"
+      open={open}
+      onOpenChange={setOpen}
+      onOpenChangeComplete={left}
+      dismissible={onClose !== undefined}
+      container={typeof document === "undefined" ? undefined : document.body}
     >
-      <motion.div
-        ref={panel}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="your-team-title"
+      <SheetBackdrop />
+      <SheetContent
         aria-describedby="your-team-line"
-        tabIndex={-1}
-        onKeyDown={trap}
-        className="flex max-h-[88dvh] w-full max-w-sheet flex-col rounded-t-hero border border-b-0 border-rule bg-card text-ink shadow-sheet outline-none tablet:max-h-[80dvh] tablet:rounded-hero tablet:border-b"
-        initial={off ? false : { y: "100%" }}
-        animate={off ? { opacity: 1, transition: fadeIn(FAST) } : { y: 0, transition: SHEET_SPRING }}
-        exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { y: "100%", transition: { duration: 0.35, ease: SMOOTH } }}
+        className="mx-auto flex max-h-[88dvh] w-full max-w-sheet flex-col rounded-t-hero border border-b-0 border-rule bg-card shadow-sheet tablet:max-h-[80dvh]"
       >
-        {/* The grabber says "sheet" to a thumb. The grabber drags nothing: the first visit has no close, and a change of team
-            closes with the X, Escape, or a tap on the dim. */}
-        <span aria-hidden className="mx-auto mt-sp-2 h-sp-1 w-sp-6 flex-none rounded-pill bg-rule tablet:hidden" />
+        {/* The grip says "sheet" to a thumb. On a change of team the sheet drags down to close. On the first visit it has no
+            close, so a drag springs back. */}
+        <SheetGrip className="mt-sp-2 w-sp-6 h-sp-1" />
         {/* With a close, the right pad of the header clears the X, so a long title never runs under it. */}
         <div className={`relative flex flex-none flex-col gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3 ${onClose ? "pr-[calc(var(--spacing-touch)+var(--spacing-sp-2))]" : ""}`}>
           {onClose && (
-            <button
-              type="button"
-              onClick={onClose}
+            <SheetClose
               aria-label="Close"
               className="press absolute top-sp-2 right-sp-2 flex size-touch items-center justify-center rounded-pill text-mute hover-fine:text-ink"
             >
               <XIcon aria-hidden className="size-sp-5" />
-            </button>
+            </SheetClose>
           )}
           <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{siteName}</span>
-          <h2 id="your-team-title" className="m-0 text-score leading-tight font-bold tracking-tight">
-            Which team is yours?
-          </h2>
+          <SheetTitle className="m-0 text-score leading-tight font-bold tracking-tight">Which team is yours?</SheetTitle>
           <p id="your-team-line" className="m-0 text-lead leading-body text-ink-2">
             Pick once. This page then answers for your team.
           </p>
@@ -160,8 +124,8 @@ export function TeamSheet({
             );
           })}
         </ul>
-      </motion.div>
-    </motion.div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
