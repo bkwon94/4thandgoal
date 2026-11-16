@@ -12,8 +12,24 @@ Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam, it chang
 
 Done condition: On the analyzer page with the finder on, the "Grade the Trade" bar stays pinned at the bottom of the screen while the trade form is in view, and rests at the end of the form when the reader scrolls to the finder, so it covers no finder card.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `7b186906`, `cd apps/site && pnpm check:grade-bar` (it builds the export of norcal, then runs the project `grade-bar`)
+
+```text
+  ✓  [grade-bar] › e2e/grade-bar.spec.ts:80:5 › the bar stays pinned at the bottom of the screen over the top of the form
+  ✘  [grade-bar] › e2e/grade-bar.spec.ts:62:5 › the bar rests at the end of the form and covers no part of the finder (grade-bar-finder item 1)
+    Error: the bar overlaps the part by 44px
+    Expected: <= 0
+    Received:    44
+  1 failed
+  1 passed
+```
+Green: at `6b43dfb1`, `cd apps/site && pnpm check:grade-bar`
+
+```text
+  ✓  [grade-bar] › e2e/grade-bar.spec.ts:80:5 › the bar stays pinned at the bottom of the screen over the top of the form
+  ✓  [grade-bar] › e2e/grade-bar.spec.ts:62:5 › the bar rests at the end of the form and covers no part of the finder (grade-bar-finder item 1)
+  2 passed
+```
 Test verdict: pending
 
 ## Comments
