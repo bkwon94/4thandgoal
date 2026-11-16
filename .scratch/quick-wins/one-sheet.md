@@ -12,8 +12,23 @@ Boundary: holds. 4 items of one kind; no new term or ADR; no moved seam, each it
 
 Done condition: `packages/analyzer/site/form/sheet.tsx` renders the shared `Sheet` of `@cpc/design/ui/sheet` in place of the `Dialog`, so the player sheet and the team sheet of the analyzer drag closed like the team sheet of the front door.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `4ca8b2d1` with `packages/analyzer/site/form/sheet.test.tsx` of `2b717bea`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/sheet.test.tsx`
+
+```text
+ FAIL  ../../packages/analyzer/site/form/sheet.test.tsx > the sheet of the analyzer > shows the grip of the shared Sheet, the title, the body, and the footer
+AssertionError: expected null to be truthy
+ FAIL  ../../packages/analyzer/site/form/sheet.test.tsx > the sheet of the analyzer > closes on a drag down and calls onClose
+AssertionError: expected [] to deeply equal [ 'close' ]
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+```
+
+Green: at `2b717bea`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/sheet.test.tsx`
+
+```text
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+```
 Test verdict: pending
 
 ### 2. The claim sheet of the egg hunt is the shared Sheet
