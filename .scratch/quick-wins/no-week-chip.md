@@ -12,8 +12,24 @@ Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam, it remov
 
 Done condition: The top band of every page shows no week chip "WK NN" and no strip of weeks, and the menu sheet keeps its week row and "Past weeks".
 Method: tdd
-Red: pending
-Green: pending
+Red: at `60e95e71` with `packages/design/site/shell/top-band.test.tsx` of `448a1368`, `cd apps/site && pnpm exec vitest run src/../../../packages/design/site/shell/top-band.test.tsx`
+
+```text
+ FAIL  ../../packages/design/site/shell/top-band.test.tsx > The top band has no week chip (AT-11) > shows no week chip and no strip of weeks, on a page that is not a week page
+AssertionError: expected <summary ...>WK 08 ...</summary> to be null
+ FAIL  ../../packages/design/site/shell/top-band.test.tsx > The top band has no week chip (AT-11) > shows no week chip and no strip of weeks, on the page of a week
+AssertionError: expected <summary ...>WK 07 ...</summary> to be null
+ FAIL  ../../packages/design/site/shell/top-band.test.tsx > The menu sheet and the top band of the front door (AT-45, AT-47) > shows no dock, and holds the menu button in the banner
+AssertionError: expected <summary ...>WK 08 ...</summary> to be null
+ Test Files  1 failed (1)
+      Tests  3 failed | 28 passed (31)
+```
+Green: at `448a1368`, `cd apps/site && pnpm exec vitest run src/../../../packages/design/site/shell/top-band.test.tsx`
+
+```text
+ Test Files  1 passed (1)
+      Tests  31 passed (31)
+```
 Test verdict: pending
 
 ## Comments
