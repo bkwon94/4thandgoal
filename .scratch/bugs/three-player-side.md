@@ -1,7 +1,7 @@
 # A trade check drops a player of a side of three or more
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-three-player-side`.
 Source: the queue task `Front door trade drops a player of a 3-or-more trade side`.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -32,3 +32,8 @@ Green: at `29ce51bb`, `cd apps/api && uv run --exact --package cpc-api pytest -q
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-three-player-side`. Commits: `524e23b2`, `29ce51bb`. Date: 2026-11-16.
+The loop of 4 tests in `apps/api/tests/test_trade_topics.py` went red at `524e23b2` and green at `29ce51bb`, and the full API suite passes with 581 tests.
+Each Pick in the `data-picks` stream part now has a `more` key, and the trade ideas route gets no anchor when a side names three or more players.
+Read 7 files: AGENTS.md, apps/api/AGENTS.md, apps/api/src/cornerstone_api/trade_topics.py, apps/api/src/cornerstone_api/trade_wording.py, apps/api/tests/test_trade_topics.py, .claude/plugin/skills/quick/format.md, .scratch/bugs/three-player-side.md.
