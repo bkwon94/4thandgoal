@@ -129,13 +129,13 @@ test("each page of the full floor is a built page", () => {
    The URL of the waiver page of the latest week then gives the 404 page, as the Worker does. */
 /* The spec of the floor names 7 pages and 3 open states per client: home, the latest week, rankings, the managers index,
    the manager page with the longest team name, the empty analyzer, and 404, then an open game card, ladder card,
-   Index list row, and strip. The hidden /ask/ of the front door is an extra page while the flag front_door is off. */
-test("the full floor holds the 7 pages and the 4 open states of the spec", () => {
+   and Index list row. The hidden /ask/ of the front door is an extra page while the flag front_door is off. */
+test("the full floor holds the 7 pages and the 3 open states of the spec", () => {
   const spec = FULL_FLOOR_PAGES.filter((entry) => entry !== "/ask/");
   const pages = spec.filter((entry) => typeof entry === "string");
   expect(new Set(pages).size).toBe(pages.length);
   expect(pages.length).toBe(7);
-  expect(spec.length - pages.length).toBe(4);
+  expect(spec.length - pages.length).toBe(3);
 });
 
 test("no waiver page is built, and its URL shows the 404 page", async ({ page }) => {
@@ -311,7 +311,6 @@ for (const route of routes.filter((route) => !fullFloorRoutes.includes(route))) 
 const bandRow = async (page: Page) => {
   const parts = [
     page.locator("header > div > a").first(),
-    page.locator("header details > summary"),
     page.getByRole("button", { name: /theme/i }),
   ];
   const bar = page.getByRole("navigation", { name: "Site menu" });
@@ -332,7 +331,7 @@ for (const width of [768, 1024, 1280]) {
     await expect(pills ? bar : menu).toBeVisible();
     await expect(pills ? menu : bar).toBeHidden();
     await expect(page.getByRole("navigation", { name: "Bottom menu" })).toHaveCount(0);
-    expect(await bandRow(page)).toEqual(pills ? [true, true, true, true] : [true, true, true]);
+    expect(await bandRow(page)).toEqual(pills ? [true, true, true] : [true, true]);
     // The pill bar shows each full label with no scroll of its own.
     if (pills) expect(await bar.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
     const targets = await scanTargets(page);
