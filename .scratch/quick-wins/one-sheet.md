@@ -58,8 +58,25 @@ Test verdict: pending
 
 Done condition: `apps/site/src/app/front-door/passphrase-sheet.tsx` renders the shared `Sheet` of `@cpc/design/ui/sheet` in place of its own `motion.div` modal, and its field still stays above the keyboard.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `6b576def~1` with `apps/site/src/app/front-door/passphrase-sheet.test.tsx` of `6b576def`, `cd apps/site && npx vitest run src/app/front-door/passphrase-sheet.test.tsx`
+
+```text
+ FAIL  src/app/front-door/passphrase-sheet.test.tsx > the passphrase sheet of the front door > shows the grip of the shared Sheet and keeps the focus in the field
+AssertionError: expected null to be truthy
+ FAIL  src/app/front-door/passphrase-sheet.test.tsx > the passphrase sheet of the front door > lifts the content by the keyboard signal so the field sits above the keyboard
+AssertionError: expected '' to be 'var(--spacing-door-foot)' // Object.is equality
+ FAIL  src/app/front-door/passphrase-sheet.test.tsx > the passphrase sheet of the front door > closes on a drag down and calls onClose once
+AssertionError: expected [] to deeply equal [ 'close' ]
+ Test Files  1 failed (1)
+      Tests  3 failed | 3 passed (6)
+```
+
+Green: at `6b576def`, `cd apps/site && npx vitest run src/app/front-door/passphrase-sheet.test.tsx`
+
+```text
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+```
 Test verdict: pending
 
 ### 4. The passphrase dialog of the analyzer is the shared Sheet

@@ -65,7 +65,7 @@ describe("the passphrase sheet of the front door", () => {
     expect(sent).toEqual(["abc"]);
   });
 
-  /* The drag runs last: the Drawer swallows the next click after a drag, so a click test after it would miss. */
+  /* The drag runs last: a click test that runs after a drag in jsdom misses its click. */
   it("closes on a drag down and calls onClose once", async () => {
     const closed: string[] = [];
     function Holder() {
