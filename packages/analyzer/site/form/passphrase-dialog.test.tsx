@@ -1,6 +1,6 @@
 /**
  * Tests for the passphrase dialog of the analyzer. It is the shared Sheet, which the Drawer renders with a side.
- * It is a gate, so Escape leaves it open, and the field and the submit still work.
+ * It is a gate, so Escape leaves it open, and the content keeps the keyboard signal, and the field and the submit still work.
  */
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -24,6 +24,11 @@ describe("the passphrase dialog of the analyzer", () => {
     render(<PassphraseDialog open onSubmit={noop} />);
     expect(screen.getByRole("dialog", { name: "League Passphrase" }).getAttribute("data-side")).toBe("bottom");
     expect(document.querySelector('[data-slot="sheet-grip"]')).toBeNull();
+  });
+
+  it("lifts the content by the keyboard signal so the field sits above the keyboard", () => {
+    render(<PassphraseDialog open onSubmit={noop} />);
+    expect(screen.getByRole("dialog", { name: "League Passphrase" }).style.bottom).toBe("var(--spacing-door-foot)");
   });
 
   it("shows the error line and sends the trimmed passphrase", () => {

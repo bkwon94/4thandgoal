@@ -9,6 +9,7 @@ import { ErrorLine } from "@cpc/design/parts/error-line";
 import { Button } from "@cpc/design/ui/button";
 import { Input } from "@cpc/design/ui/input";
 import { Label } from "@cpc/design/ui/label";
+import { useKeyboardField } from "@cpc/design/shell/keyboard";
 import { Sheet, SheetBackdrop, SheetContent, SheetTitle } from "@cpc/design/ui/sheet";
 
 type PassphraseDialogProps = {
@@ -20,6 +21,8 @@ type PassphraseDialogProps = {
 
 export function PassphraseDialog({ open, error, onSubmit }: PassphraseDialogProps) {
   const [value, setValue] = useState("");
+  // The field opens the keyboard, so the foot of the sheet moves above the keyboard while the field has the focus.
+  const keyboard = useKeyboardField();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,6 +40,10 @@ export function PassphraseDialog({ open, error, onSubmit }: PassphraseDialogProp
       <SheetBackdrop />
       <SheetContent
         aria-describedby="passphrase-line"
+        // The Drawer content sits at the foot of the screen. --spacing-door-foot holds the height of the keyboard while a
+        // field has the focus (globals.css), so the field sits right above the keyboard on iOS. A transform moves the
+        // drag, so the offset and the drag do not meet.
+        style={{ bottom: "var(--spacing-door-foot)" }}
         className="mx-auto flex w-full max-w-sheet flex-col gap-sp-4 rounded-t-hero border border-b-0 border-rule bg-card p-gutter pb-[calc(var(--spacing-gutter)+env(safe-area-inset-bottom))] shadow-sheet"
       >
         <div className="flex flex-col gap-sp-2">
@@ -56,6 +63,8 @@ export function PassphraseDialog({ open, error, onSubmit }: PassphraseDialogProp
             autoComplete="off"
             value={value}
             onChange={(event) => setValue(event.target.value)}
+            onFocus={keyboard.onFocus}
+            onBlur={keyboard.onBlur}
             className="h-touch rounded-card px-sp-3 text-lead"
           />
           <Button type="submit" className="press h-touch rounded-card text-lead font-bold">
