@@ -35,8 +35,23 @@ Test verdict: pending
 
 Done condition: `packages/eggs/site/hunt/claim-sheet.tsx` renders the shared `Sheet` of `@cpc/design/ui/sheet` in place of its own fixed `div` with `role="dialog"`, so it drags closed like the team sheet of the front door.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `4ccf87cd` with `packages/eggs/site/hunt/claim-sheet.test.tsx` of `1f96b744`, `cd apps/site && npx vitest run ../../packages/eggs/site/hunt/claim-sheet.test.tsx`
+
+```text
+ FAIL  ../../packages/eggs/site/hunt/claim-sheet.test.tsx > the claim sheet of the egg hunt > shows the grip of the shared Sheet and the team pills
+AssertionError: expected null to be truthy
+ FAIL  ../../packages/eggs/site/hunt/claim-sheet.test.tsx > the claim sheet of the egg hunt > closes on a drag down and calls onClose once
+AssertionError: expected [] to deeply equal [ 'close' ]
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+```
+
+Green: at `1f96b744`, `cd apps/site && npx vitest run ../../packages/eggs/site/hunt/claim-sheet.test.tsx`
+
+```text
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+```
 Test verdict: pending
 
 ### 3. The passphrase sheet of the front door is the shared Sheet
