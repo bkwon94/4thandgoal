@@ -31,6 +31,6 @@ Green: at `dd7fbc4a`, `cd apps/site && CLIENT=cpc node scripts/client-build.mjs 
  Test Files  1 passed (1)
       Tests  16 passed (16)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
