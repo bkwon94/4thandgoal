@@ -327,6 +327,9 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
 
   const form = (
     <>
+      {/* The bar sticks inside this part, so it stays pinned at the bottom of the screen over the form and rests at the end
+          of the form, above the finder. The part holds the form section and the bar, and nothing after them. */}
+      <div>
       {/* The folded form stays in the page, so the picks, the sheets, and the finder cards keep their state for Edit. */}
       <div hidden={folded}>
         <section aria-label="Who gets what" className="mt-sp-5 flex flex-col gap-sp-4">
@@ -375,6 +378,11 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
             </div>
           )}
         </section>
+      </div>
+      {/* Under a folded result the bar has no trade to grade again, so it hides until Edit. */}
+      {!(folded && grade.status === "done") && <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />}
+      </div>
+      <div hidden={folded}>
         {/* The finder needs the asker, so it shows once the asker is picked. The key resets the partner and the cards when the asker changes.
             The finder grades two sides, so it hides at three or four. */}
         {/* The finder is off by default because the page felt crowded. */}
@@ -416,8 +424,6 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
           onClose={() => setSheet(null)}
         />
       </div>
-      {/* Under a folded result the bar has no trade to grade again, so it hides until Edit. */}
-      {!(folded && grade.status === "done") && <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />}
     </>
   );
 
