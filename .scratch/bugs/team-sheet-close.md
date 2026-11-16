@@ -34,6 +34,6 @@ Green: at `43ce82a2`, `pnpm vitest run src/app/page.test.tsx -t "team sheet" --r
  ✓ keeps the team sheet of the first visit open on Escape and on a tap on the dim, with no close button 528ms
       Tests  4 passed | 27 skipped (31)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
