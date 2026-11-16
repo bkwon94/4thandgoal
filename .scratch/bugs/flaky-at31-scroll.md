@@ -12,9 +12,35 @@ Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each don
 
 Done condition: AT-31 in `apps/site/src/app/page.test.tsx` passes in each of 20 runs of the full site unit suite, the load that the commit hook puts on it.
 Method: diagnosing-bugs
-Cause: pending
-Red: pending
-Green: pending
+Cause: AT-31 in `apps/site/src/app/page.test.tsx` reads its record of `scrollIntoView` right after `openTopic` returns, but the scroll effect in `apps/site/src/app/front-door/front-door.tsx` asks for the scroll in `frame.postRender` of the next motion frame, so under load the test clears the record before the scroll of Week recap lands, or reads it before the scroll of Power rankings lands.
+Red: at `a85360e7`, run at the worktree root with Node 24 first on PATH. The loop runs 20 full site unit suites, 4 at a time in 5 rounds, the load of hooks in several worktrees at once.
+
+```sh
+bash -c 'cd apps/site && L=$(mktemp -d) && CLIENT=cpc node scripts/client-build.mjs >/dev/null && for r in 1 2 3 4 5; do for c in 1 2 3 4; do pnpm test > "$L/$r-$c.log" 2>&1 & done; wait; done; if grep -l "FAIL .*(AT-31)" "$L"/*.log; then grep -h -A9 "FAIL .*(AT-31)" "$L"/*.log; exit 1; fi; grep -h "Tests " "$L"/*.log | sort | uniq -c; echo "AT-31 passed in each of 20 runs"'
+```
+
+```text
+/var/folders/.../tmp.TptX1zMxvt/1-4.log
+/var/folders/.../tmp.TptX1zMxvt/5-2.log
+ FAIL  src/app/page.test.tsx > the Thread of Lil Fridge > scrolls each new question to its top under the Thread header, and leaves the older Answers in place (AT-31)
+AssertionError: expected <article …(2)>…(2)</article> to be <article …(2)>…(2)</article> // Object.is equality
+-   aria-label="Power rankings"
++   aria-label="Week recap"
+--
+ FAIL  src/app/page.test.tsx > the Thread of Lil Fridge > scrolls each new question to its top under the Thread header, and leaves the older Answers in place (AT-31)
+AssertionError: expected [ <article …(2)>…(2)</article>, …(1) ] to not include <article …(2)>…(2)</article>
+ ❯ src/app/page.test.tsx:377:26
+    377|     expect(scrolled).not.toContain(recap);
+exit 1
+```
+
+Green: at `6151eb9f`, the same command.
+
+```text
+  20       Tests  1525 passed (1525)
+AT-31 passed in each of 20 runs
+exit 0
+```
 Test verdict: pending
 
 ## Comments
