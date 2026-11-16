@@ -12,7 +12,7 @@ Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam, it chang
 
 Done condition: On the analyzer page with the finder on, the "Grade the Trade" bar stays pinned at the bottom of the screen while the trade form is in view, and rests at the end of the form when the reader scrolls to the finder, so it covers no finder card.
 Method: tdd
-Red: at `7b186906`, `cd apps/site && pnpm check:grade-bar` (it builds the export of norcal, then runs the project `grade-bar`)
+Red: at `7b186906`, `cd apps/site && pnpm check:grade-bar`
 
 ```text
   ✓  [grade-bar] › e2e/grade-bar.spec.ts:80:5 › the bar stays pinned at the bottom of the screen over the top of the form
@@ -33,3 +33,5 @@ Green: at `6b43dfb1`, `cd apps/site && pnpm check:grade-bar`
 Test verdict: pending
 
 ## Comments
+
+- The command `pnpm check:grade-bar` builds the export of norcal, the client with the finder on, then runs the Playwright project `grade-bar`.
