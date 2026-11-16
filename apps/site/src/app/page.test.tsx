@@ -11,6 +11,7 @@ import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixture
 import HomePage from "./front-door/door-page";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
+import { standInForAnimate } from "@cpc/design/ui/sheet-drag-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
    runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
@@ -112,10 +113,19 @@ describe("the front door of cpc", () => {
   });
 
   /* The sheet of a change of team closes three ways, and each way keeps the old team. */
+  /* A tap on the dim is a press, a release, and a click, as in a browser. The Drawer holds the next click after a press outside
+     it, so a tap with no click would swallow the first click of the next test. */
+  const tapDim = () => {
+    const dim = document.querySelector('[data-slot="drawer-backdrop"]') as HTMLElement;
+    fireEvent.pointerDown(dim);
+    fireEvent.pointerUp(dim);
+    fireEvent.click(dim);
+  };
+
   it.each([
     ["the close button", (sheet: HTMLElement) => fireEvent.click(within(sheet).getByRole("button", { name: "Close" }))],
     ["Escape", (sheet: HTMLElement) => fireEvent.keyDown(sheet, { key: "Escape" })],
-    ["a tap on the dim", (sheet: HTMLElement) => fireEvent.click(sheet.parentElement as HTMLElement)],
+    ["a tap on the dim", () => tapDim()],
   ])("closes the team sheet of a change of team with %s and keeps the old team", async (_, close) => {
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
@@ -127,11 +137,13 @@ describe("the front door of cpc", () => {
   });
 
   it("keeps the team sheet of the first visit open on Escape and on a tap on the dim, with no close button", async () => {
+    // A refused dismissal springs the sheet back, and the spring needs an animation.
+    onTestFinished(standInForAnimate());
     render(<HomePage />);
     const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
     expect(within(sheet).queryByRole("button", { name: "Close" })).toBeNull();
     fireEvent.keyDown(sheet, { key: "Escape" });
-    fireEvent.click(sheet.parentElement as HTMLElement);
+    tapDim();
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(screen.getByRole("dialog", { name: "Which team is yours?" })).toBeTruthy();
   });
