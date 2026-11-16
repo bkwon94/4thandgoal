@@ -1,7 +1,7 @@
 # The team sheet has no close on a change of team
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-team-sheet-close`.
 Source: the session of 2026-11-15.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -37,3 +37,8 @@ Green: at `43ce82a2`, `pnpm vitest run src/app/page.test.tsx -t "team sheet" --r
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-team-sheet-close`. Commits: `af04a1c8`, `43ce82a2`, `1748ecf4`. Date: 2026-11-15.
+The loop went red on 3 of 4 tests at the parent and green on 4 of 4 at the fix, and `make check-fast` passes with 1525 site tests.
+A drag down to close the team sheet is not built, because the sheet runs on framer-motion and its grabber drags nothing.
+Read 3 files: apps/site/src/app/front-door/front-door.tsx, apps/site/src/app/front-door/team-sheet.tsx, docs/agents/issue-tracker.md.
