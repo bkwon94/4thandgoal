@@ -29,7 +29,7 @@ Green: at `2b717bea`, `cd apps/site && npx vitest run ../../packages/analyzer/si
  Test Files  1 passed (1)
       Tests  2 passed (2)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. The claim sheet of the egg hunt is the shared Sheet
 
@@ -52,7 +52,7 @@ Green: at `1f96b744`, `cd apps/site && npx vitest run ../../packages/eggs/site/h
  Test Files  1 passed (1)
       Tests  2 passed (2)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ### 3. The passphrase sheet of the front door is the shared Sheet
 
@@ -77,7 +77,7 @@ Green: at `6b576def`, `cd apps/site && npx vitest run src/app/front-door/passphr
  Test Files  1 passed (1)
       Tests  6 passed (6)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ### 4. The passphrase dialog of the analyzer is the shared Sheet
 
@@ -100,6 +100,6 @@ Green: at `74d2c587`, `cd apps/site && npx vitest run ../../packages/analyzer/si
  Test Files  1 passed (1)
       Tests  4 passed (4)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
