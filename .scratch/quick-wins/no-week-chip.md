@@ -1,7 +1,7 @@
 # The top band has no week chip
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-no-week-chip`.
 Source: the session of 2026-11-15.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam, it removes a part and adds no port, page, or data shape; the done condition is one sentence.
@@ -33,3 +33,8 @@ Green: at `448a1368`, `cd apps/site && pnpm exec vitest run src/../../../package
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `win-no-week-chip`. Commits: `60e95e71`, `448a1368`, `ec285c1f`, `12f7021e`. Date: 2026-11-15.
+The test file `top-band.test.tsx` went red with 3 of 31 failed, then green with 31 of 31 passed, and `make check-fast BASE=main` passed.
+The e2e floor in `apps/site/e2e/floor.spec.ts` lost its strip-of-weeks entry, and CI runs it.
+Read 9 files: AGENTS.md, GLOSSARY.md, docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, packages/design/site/shell/week-chip.tsx, packages/design/site/shell/top-band.tsx, apps/site/src/app/shell-props.ts.
