@@ -1,10 +1,11 @@
 /**
- * The sheet that asks for Your team on the first visit. It lists the teams of the league by name, with no skip, no close,
- * and no login, because every Suggestion of the front door comes from Your team (decision 08).
+ * The sheet that asks for Your team. It lists the teams of the league by name. On the first visit it has no skip, no close,
+ * and no login, because every Suggestion of the front door comes from Your team (decision 08). On a change of team it closes and keeps the old team.
  */
 "use client";
 
 import { motion } from "framer-motion";
+import { XIcon } from "lucide-react";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorTeam } from "@/lib/data/front-door-data";
@@ -20,7 +21,21 @@ function ordinal(n: number): string {
   return `${n}${{ 1: "st", 2: "nd", 3: "rd" }[n % 10] ?? "th"}`;
 }
 
-export function TeamSheet({ siteName, teams, current, onPick }: { siteName: string; teams: DoorTeam[]; current: number | null; onPick: (id: number) => void }) {
+/* onClose comes only on a change of team. Without it, the sheet of the first visit has no close button, and Escape and a
+   tap on the dim do nothing. */
+export function TeamSheet({
+  siteName,
+  teams,
+  current,
+  onPick,
+  onClose,
+}: {
+  siteName: string;
+  teams: DoorTeam[];
+  current: number | null;
+  onPick: (id: number) => void;
+  onClose?: () => void;
+}) {
   const off = useMotionOff();
   const [chosen, setChosen] = useState<number | null>(current);
   const panel = useRef<HTMLDivElement>(null);
@@ -42,8 +57,14 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
     window.setTimeout(() => onPick(id), PICK_BEAT_MS);
   };
 
-  // The sheet is modal, so Tab cycles inside it. It has no close, so Escape does nothing.
+  // The sheet is modal, so Tab cycles inside it. Escape closes it only on a change of team. On the first visit it has no
+  // close, so Escape does nothing.
   const trap = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape" && onClose) {
+      event.preventDefault();
+      onClose();
+      return;
+    }
     if (event.key !== "Tab") return;
     const buttons = [...(panel.current?.querySelectorAll<HTMLButtonElement>("button") ?? [])];
     const first = buttons[0];
@@ -65,6 +86,10 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
       initial={off ? false : { opacity: 0 }}
       animate={{ opacity: 1, transition: fadeIn(FAST) }}
       exit={{ opacity: 0, transition: fadeIn(FAST) }}
+      // A tap on the dim closes the sheet on a change of team. A tap inside the sheet never reaches this check.
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose?.();
+      }}
     >
       <motion.div
         ref={panel}
@@ -79,9 +104,21 @@ export function TeamSheet({ siteName, teams, current, onPick }: { siteName: stri
         animate={off ? { opacity: 1, transition: fadeIn(FAST) } : { y: 0, transition: SHEET_SPRING }}
         exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { y: "100%", transition: { duration: 0.35, ease: SMOOTH } }}
       >
-        {/* The grabber says "sheet" to a thumb. The sheet has no close, so the grabber drags nothing. */}
+        {/* The grabber says "sheet" to a thumb. The grabber drags nothing: the first visit has no close, and a change of team
+            closes with the X, Escape, or a tap on the dim. */}
         <span aria-hidden className="mx-auto mt-sp-2 h-sp-1 w-sp-6 flex-none rounded-pill bg-rule tablet:hidden" />
-        <div className="flex flex-none flex-col gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3">
+        {/* With a close, the right pad of the header clears the X, so a long title never runs under it. */}
+        <div className={`relative flex flex-none flex-col gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3 ${onClose ? "pr-[calc(var(--spacing-touch)+var(--spacing-sp-2))]" : ""}`}>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="press absolute top-sp-2 right-sp-2 flex size-touch items-center justify-center rounded-pill text-mute hover-fine:text-ink"
+            >
+              <XIcon aria-hidden className="size-sp-5" />
+            </button>
+          )}
           <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{siteName}</span>
           <h2 id="your-team-title" className="m-0 text-score leading-tight font-bold tracking-tight">
             Which team is yours?

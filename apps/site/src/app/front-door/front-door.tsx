@@ -596,7 +596,17 @@ export function FrontDoor({
         )}
       </section>
       <AnimatePresence>
-        {teamId !== undefined && sheetOpen && <TeamSheet key="sheet" siteName={siteName} teams={teams} current={team?.id ?? null} onPick={pick} />}
+        {teamId !== undefined && sheetOpen && (
+          <TeamSheet
+            key="sheet"
+            siteName={siteName}
+            teams={teams}
+            current={team?.id ?? null}
+            onPick={pick}
+            // Only a set team gives the sheet a close, so the first visit still has to pick a team (decision 08).
+            onClose={team ? () => setPicking(false) : undefined}
+          />
+        )}
         {team && !sheetOpen && passStep && (
           <PassphraseSheet
             key="passphrase"

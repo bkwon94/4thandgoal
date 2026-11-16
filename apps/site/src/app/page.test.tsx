@@ -111,6 +111,31 @@ describe("the front door of cpc", () => {
     expect(localStorage.getItem("cpc.your-team")).toBe("6");
   });
 
+  /* The sheet of a change of team closes three ways, and each way keeps the old team. */
+  it.each([
+    ["the close button", (sheet: HTMLElement) => fireEvent.click(within(sheet).getByRole("button", { name: "Close" }))],
+    ["Escape", (sheet: HTMLElement) => fireEvent.keyDown(sheet, { key: "Escape" })],
+    ["a tap on the dim", (sheet: HTMLElement) => fireEvent.click(sheet.parentElement as HTMLElement)],
+  ])("closes the team sheet of a change of team with %s and keeps the old team", async (_, close) => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    fireEvent.click(await screen.findByRole("button", { name: "Your team: Lil Fridge. Change the team" }));
+    close(await screen.findByRole("dialog", { name: "Which team is yours?" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Ask about Lil Fridge");
+    expect(localStorage.getItem("cpc.your-team")).toBe("3");
+  });
+
+  it("keeps the team sheet of the first visit open on Escape and on a tap on the dim, with no close button", async () => {
+    render(<HomePage />);
+    const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
+    expect(within(sheet).queryByRole("button", { name: "Close" })).toBeNull();
+    fireEvent.keyDown(sheet, { key: "Escape" });
+    fireEvent.click(sheet.parentElement as HTMLElement);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(screen.getByRole("dialog", { name: "Which team is yours?" })).toBeTruthy();
+  });
+
   it("asks again when the stored team is no team of the league", async () => {
     localStorage.setItem("cpc.your-team", "99");
     render(<HomePage />);
