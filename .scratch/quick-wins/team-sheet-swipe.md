@@ -27,6 +27,6 @@ Green: at `f31db328`, `cd apps/site && pnpm exec vitest run src/app/front-door/t
  Test Files  1 passed (1)
       Tests  2 passed (2)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
