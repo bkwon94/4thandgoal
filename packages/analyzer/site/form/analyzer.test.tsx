@@ -345,4 +345,22 @@ describe("Analyzer", () => {
     expect(submit().disabled).toBe(true);
     window.history.pushState({}, "", "/");
   });
+
+  it("fills Your Team from the team of the front door, and a team in the query still wins", async () => {
+    localStorage.setItem("cpc.passphrase", "pw");
+    localStorage.setItem("cpc.your-team", "2");
+    answer(200, { teams: ROSTERS });
+    render(<Analyzer target={apiTarget} finderOn={false} />);
+    await formReady();
+    expect(slot("Your Team").getAttribute("aria-label")).toMatch(/^Your Team: Blitz Bakers/);
+    expect(slot("Team Two").getAttribute("aria-label")).toMatch(/^Pick Team Two/);
+    cleanup();
+
+    answer(200, { teams: ROSTERS });
+    window.history.pushState({}, "", "/analyze/?team=1");
+    render(<Analyzer target={apiTarget} finderOn={false} />);
+    await formReady();
+    expect(slot("Your Team").getAttribute("aria-label")).toMatch(/^Your Team: Gridiron Ghosts/);
+    window.history.pushState({}, "", "/");
+  });
 });

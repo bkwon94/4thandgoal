@@ -17,6 +17,7 @@ import { clearPassphrase, getPassphrase, setPassphrase } from "../lib/passphrase
 import { clearStoredTeams, fetchAndStoreTeams, readStoredTeams } from "../lib/teams-store";
 import { prefillSides, readPrefill } from "../lib/prefill";
 import type { Sides } from "../lib/trade";
+import { getYourTeam } from "../lib/your-team";
 
 type TeamsState =
   | { status: "idle" }
@@ -47,7 +48,13 @@ export function Analyzer({ target, finderOn }: { target: ApiTarget; finderOn: bo
   useEffect(() => {
     setPassphraseState(getPassphrase());
     const named = readPrefill(window.location.search);
-    if (named) setPrefill(prefillSides(named));
+    if (named) {
+      setPrefill(prefillSides(named));
+      return;
+    }
+    // A link with no team opens on the team that the manager picked on the front door.
+    const team = getYourTeam();
+    if (team !== null) setPrefill(prefillSides({ team, partner: null, gives: [], gets: [] }));
   }, []);
 
   useEffect(() => {
