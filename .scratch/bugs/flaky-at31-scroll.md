@@ -36,6 +36,10 @@ exit 1
 
 Green: at `6151eb9f`, the same command.
 
+```sh
+bash -c 'cd apps/site && L=$(mktemp -d) && CLIENT=cpc node scripts/client-build.mjs >/dev/null && for r in 1 2 3 4 5; do for c in 1 2 3 4; do pnpm test > "$L/$r-$c.log" 2>&1 & done; wait; done; if grep -l "FAIL .*(AT-31)" "$L"/*.log; then grep -h -A9 "FAIL .*(AT-31)" "$L"/*.log; exit 1; fi; grep -h "Tests " "$L"/*.log | sort | uniq -c; echo "AT-31 passed in each of 20 runs"'
+```
+
 ```text
   20       Tests  1525 passed (1525)
 AT-31 passed in each of 20 runs
