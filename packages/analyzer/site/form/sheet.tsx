@@ -1,14 +1,12 @@
 /**
  * The sheet of the analyzer: a short panel that rises from the bottom over the dimmed page, with a title and a close button.
- * It closes with the close button, Escape, a tap on the dim page, or a button of the caller, such as Done.
+ * It is the shared Sheet. It closes with a drag down, the close button, Escape, a tap on the dim page, or a button of the caller, such as Done.
  */
 "use client";
 
 import { XIcon } from "lucide-react";
-import type { ReactNode } from "react";
-import { Dialog, DialogClose, DialogOverlay, DialogPopup, DialogPortal, DialogTitle } from "@cpc/design/ui/dialog";
-import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { cn } from "@cpc/design/lib/utils";
+import { useEffect, useRef, type ReactNode } from "react";
+import { Sheet as SharedSheet, SheetBackdrop, SheetClose, SheetContent, SheetGrip, SheetTitle } from "@cpc/design/ui/sheet";
 
 type SheetProps = {
   open: boolean;
@@ -21,41 +19,43 @@ type SheetProps = {
 };
 
 export function Sheet({ open, title, onClose, children, footer }: SheetProps) {
-  // The sheet rises with CSS. The one motion switch turns that off too.
-  const still = useMotionOff() && "data-open:animate-none data-closed:animate-none";
+  const asked = useRef(false);
+  useEffect(() => {
+    asked.current = false;
+  }, [open]);
+  // The Drawer owns the slide, the drag, the dim, the focus trap, and the fade under reduced motion, so the one motion switch needs no class here.
   return (
-    <Dialog
+    <SharedSheet
+      side="bottom"
       open={open}
       onOpenChange={(next) => {
-        if (!next) onClose();
+        // A drag close reports twice before the caller turns open off, and the caller must hear one close.
+        if (!next && !asked.current) {
+          asked.current = true;
+          onClose();
+        }
       }}
+      container={typeof document === "undefined" ? undefined : document.body}
     >
-      <DialogPortal>
-        {/* The dim page is a plain dark layer with no blur, so a tap on it reads as a tap outside the sheet. */}
-        <DialogOverlay data-slot="sheet-backdrop" className={cn("bg-black/60 supports-backdrop-filter:backdrop-blur-none", still)} />
-        <DialogPopup
-          className={cn(
-            "fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[85dvh] w-full max-w-page flex-col rounded-t-hero border border-b-0 border-rule bg-page pb-[env(safe-area-inset-bottom)] text-ink outline-none",
-            "duration-200 data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom",
-            still,
-          )}
-        >
-          <div className="flex items-center justify-between gap-sp-3 px-sp-4 pt-sp-3">
-            <DialogTitle className="m-0 min-w-0 truncate text-stat leading-stat font-bold">{title}</DialogTitle>
-            <DialogClose
-              aria-label="Close"
-              className="press -mr-sp-2 grid size-touch flex-none cursor-pointer place-items-center rounded-pill text-mute hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
-            >
-              <XIcon aria-hidden="true" className="size-sp-5" />
-            </DialogClose>
-          </div>
-          {/* min-h-0 lets the list shrink and scroll inside the sheet, so the title and the footer stay in view.
-              Each child keeps its full height and the body scrolls instead. A row with its own overflow, such as the
-              tabs that scroll sideways, has a min height of 0, so without shrink-0 it shrinks to 0 in a full sheet. */}
-          <div className="flex min-h-0 flex-1 flex-col gap-sp-3 overflow-y-auto px-sp-4 py-sp-3 *:shrink-0">{children}</div>
-          {footer && <div className="border-t border-rule px-sp-4 py-sp-3">{footer}</div>}
-        </DialogPopup>
-      </DialogPortal>
-    </Dialog>
+      <SheetBackdrop />
+      <SheetContent className="mx-auto flex max-h-[85dvh] w-full max-w-page flex-col rounded-t-hero border border-b-0 border-rule bg-page pb-[env(safe-area-inset-bottom)]">
+        {/* The grip says "sheet" to a thumb. A drag down on the sheet closes it. */}
+        <SheetGrip className="mt-sp-2 h-sp-1 w-sp-6" />
+        <div className="flex items-center justify-between gap-sp-3 px-sp-4 pt-sp-3">
+          <SheetTitle className="m-0 min-w-0 truncate text-stat leading-stat font-bold">{title}</SheetTitle>
+          <SheetClose
+            aria-label="Close"
+            className="press -mr-sp-2 grid size-touch flex-none cursor-pointer place-items-center rounded-pill text-mute hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            <XIcon aria-hidden="true" className="size-sp-5" />
+          </SheetClose>
+        </div>
+        {/* min-h-0 lets the list shrink and scroll inside the sheet, so the title and the footer stay in view.
+            Each child keeps its full height and the body scrolls instead. A row with its own overflow, such as the
+            tabs that scroll sideways, has a min height of 0, so without shrink-0 it shrinks to 0 in a full sheet. */}
+        <div className="flex min-h-0 flex-1 flex-col gap-sp-3 overflow-y-auto overscroll-contain px-sp-4 py-sp-3 *:shrink-0">{children}</div>
+        {footer && <div className="border-t border-rule px-sp-4 py-sp-3">{footer}</div>}
+      </SheetContent>
+    </SharedSheet>
   );
 }

@@ -4,6 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, analyzeResponse as fixtureJson } from "../lib/fixtures/api";
 import { findResponse as findJson } from "../lib/fixtures/api";
 import type { Team } from "../lib/api";
@@ -190,10 +191,12 @@ describe("TradeForm", () => {
     await pickTeam("Team Two", "Blitz Bakers");
     fireEvent.click(addPlayer("Your Team"));
     fireEvent.click(within(await screen.findByRole("dialog")).getByRole("checkbox", { name: /Ben Two/ }));
-    const dim = document.querySelector<HTMLElement>('[data-slot="sheet-backdrop"]')!;
-    fireEvent.pointerDown(dim);
-    fireEvent.mouseDown(dim);
-    fireEvent.click(dim);
+    const dim = document.querySelector<HTMLElement>('[data-slot="drawer-backdrop"]')!;
+    // A tap is a press, a release, and a click, as in a browser. The press closes the sheet and removes the dim, so the click lands on the page.
+    const mouse = { pointerId: 1, pointerType: "mouse", button: 0 };
+    fireEvent.pointerDown(dim, mouse);
+    fireEvent.pointerUp(dim, mouse);
+    fireEvent.click(document.body);
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
   });
