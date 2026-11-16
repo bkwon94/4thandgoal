@@ -90,7 +90,7 @@ describe("shellProps of cpc", () => {
     expect(items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
   });
 
-  it("lists every published week, newest first, for the week chip and the strip (AT-11)", () => {
+  it("lists every published week, newest first, for the menu sheet (AT-11)", () => {
     expect(shellProps().menu.weeks).toEqual([
       { number: 8, href: "/2026/week-08/" },
       { number: 7, href: "/2026/week-07/" },

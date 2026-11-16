@@ -8,7 +8,7 @@ A term sits in the section of the app that owns it. The workflow terms hold for 
 The public site of the Cornerstone Fantasy Football League. It renders the weekly report, the power rankings, and the trade analyzer that the pipeline publishes.
 
 **Top band**:
-The band at the top of every page with the brand mark, the week chip, and the theme button. On a desktop it also holds the pill bar. Below the desktop tier it holds the menu button.
+The band at the top of every page with the brand mark and the theme button. On a desktop it also holds the pill bar. Below the desktop tier it holds the menu button.
 _Avoid_: Masthead, header, nav bar, top bar, banner
 
 **Menu**:
@@ -215,7 +215,7 @@ A shadcn control under the parts: a button, a select, a dialog, a popover. A pri
 _Avoid_: Base component, atom, ui element
 
 **Shell**:
-The parts that frame every page: the top band, the pill bar, the week chip, and the theme button.
+The parts that frame every page: the top band, the pill bar, and the theme button.
 _Avoid_: Layout, chrome, frame, nav
 
 **Loader**:

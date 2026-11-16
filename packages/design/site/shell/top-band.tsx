@@ -1,14 +1,13 @@
 /**
- * The shell of every page: the top band with the brand mark, the pill bar, the week chip, the actions, the theme button,
- * and the menu button with its sheet of pages below the desktop tier. A page with its own foot hides the week chip.
+ * The shell of every page: the top band with the brand mark, the pill bar, the actions, the theme button,
+ * and the menu button with its sheet of pages below the desktop tier.
  * The top band stays on screen at every scroll.
  */
 import type { ReactNode } from "react";
 import { MenuSheet } from "./menu-sheet";
-import { chipWeek, currentHref, type Brand, type SiteMenu } from "./nav";
+import { currentHref, type Brand, type SiteMenu } from "./nav";
 import { PillBar } from "./pill-bar";
 import { ThemeButton } from "./theme-button";
-import { WeekChip } from "./week-chip";
 
 type TopBandProps = {
   // The site name of copy.toml. It names the home link. The app layer passes it, so the shell names no league.
@@ -25,23 +24,17 @@ type TopBandProps = {
   // The buttons of the packages of the client, such as the egg button, just before the theme button. The app layer
   // passes them, so the shell names no package. A client with none passes none.
   actions?: ReactNode;
-  // False hides the week chip, for a page with its own foot, such as the front door: its Answers are about the live week.
-  // The default is true.
-  weekChip?: boolean;
 };
 
-export function TopBand({ title, brand, menu, pageHref, children, actions, weekChip = true }: TopBandProps) {
+export function TopBand({ title, brand, menu, pageHref, children, actions }: TopBandProps) {
   const current = currentHref(menu.items, menu.weeks, pageHref);
-  const week = chipWeek(menu.weeks, pageHref);
   return (
     <>
       {/* Sticky, so the band stays at the top at every scroll and takes its space in the flow, and the page never jumps.
-          The band paints the page color in both themes. The hero is the one loud surface of a page.
-          While the strip of weeks is open, the band grows by the height of the strip and the strip fills that space,
-          so the page moves down and the strip covers no part of it, such as the page title. */}
-      <header className="sticky top-0 z-40 border-b border-rule bg-page text-ink has-[details[open]]:pb-strip">
+          The band paints the page color in both themes. The hero is the one loud surface of a page. */}
+      <header className="sticky top-0 z-40 border-b border-rule bg-page text-ink">
         {/* One row at every tier, so the band keeps one height at every width. On a phone and a tablet it holds the brand
-            mark, the week chip, and the theme button. From the desktop tier the pill bar sits between them, with full labels. */}
+            mark and the theme button. From the desktop tier the pill bar sits between them, with full labels. */}
         <div className="mx-auto flex max-w-band items-center gap-x-sp-3 px-gutter py-sp-2">
           {/* A plain anchor, so the home link works with scripts off. The title names the link, so the logo is decorative.
               Under the rail tier the logo shows alone, so the pill bar has room for its full labels on one row. The title
@@ -67,10 +60,9 @@ export function TopBand({ title, brand, menu, pageHref, children, actions, weekC
             className="min-w-0 flex-auto justify-center"
           />
           <div className="ml-auto flex flex-none items-center gap-sp-2">
-            {weekChip && week !== undefined && <WeekChip weeks={menu.weeks} week={week} pageHref={pageHref} />}
             {actions}
             {/* The theme button needs the script, so it hides with scripts off. The negative margin lines the icon up with the edge. */}
-            <ThemeButton className={`${weekChip ? "desktop:-mr-sp-3" : ""} [@media(scripting:none)]:hidden`} />
+            <ThemeButton className="[@media(scripting:none)]:hidden" />
             <MenuSheet items={menu.items} weeks={menu.weeks} current={current} pageHref={pageHref} />
           </div>
         </div>

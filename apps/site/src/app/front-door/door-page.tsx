@@ -17,9 +17,7 @@ export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: st
   const shell = shellProps();
   return (
     <>
-      {/* The front door has its own foot, the Suggestions and the ask box, so the week chip leaves: the Answers are about
-          the live week (decision 10). */}
-      <TopBand {...shell} pageHref={pageHref} weekChip={false} />
+      <TopBand {...shell} pageHref={pageHref} />
       {/* The strip of each package under the top band, edge to edge, such as the egg banner after an egg drop. */}
       {homeBanners.map((Banner, index) => (
         <Banner key={index} />

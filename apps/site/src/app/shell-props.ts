@@ -59,7 +59,7 @@ export function takesEggs(): boolean {
 export function shellProps(): { title: string; brand: Brand; menu: SiteMenu; actions: ReactNode } {
   // The registry holds only the packages of the client, so an omitted package has no link and no code in the bundle.
   const home = homeHref();
-  // Every published week, newest first, for the week chip and the strip. A client with no week lists none.
+  // Every published week, newest first, for the menu sheet. A client with no week lists none.
   const weeks = clientValues.packages.includes("week")
     ? listWeekSummaries().map((summary) => ({ number: summary.number, href: summary.href }))
     : [];

@@ -47,9 +47,9 @@ function longestNameRoute(): string {
 
 /*
  * The pages and the open states of the full floor: all four rules, in both themes, at both widths.
- * The spec names 7 pages and 4 open states per client. The home page is one of the 7 pages. With the flag front_door
+ * The spec names 7 pages and 3 open states per client. The home page is one of the 7 pages. With the flag front_door
  * on, it is the front door, which shows the sheet of Your team on a first visit. With it off, the front door gets the
- * full floor at the hidden /ask/ too (ticket 43 of front-door). The open strip of weeks is a tap on the latest week page. The Season So Far dial sits on the manager page of the list, so that page covers it.
+ * full floor at the hidden /ask/ too (ticket 43 of front-door). The Season So Far dial sits on the manager page of the list, so that page covers it.
  * A page not in the list, such as a past week, gets the fast sweep only, so it still has the text floor.
  */
 const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
@@ -70,9 +70,6 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]:not([aria-label])' },
   "/",
   ...(existsSync(join(OUT, "ask", "index.html")) ? ["/ask/"] : []),
-  // The open strip of weeks: a tap on the week chip of the top band opens the strip of the weeks of the season. The
-  // sheet of Your team covers the band of the home page on a first visit, so the tap opens the strip on the latest week.
-  { route: LATEST_WEEK_ROUTE, tap: "header details > summary", scope: 'header nav[aria-label="Weeks of the season"]' },
 ];
 
 const routeOf = (entry: string | OpenState) => (typeof entry === "string" ? entry : entry.route);
@@ -130,15 +127,15 @@ test("each page of the full floor is a built page", () => {
 
 /* No client takes the waiver package, so no client builds a waiver page, even where the week publishes a waiver file.
    The URL of the waiver page of the latest week then gives the 404 page, as the Worker does. */
-/* The spec of the floor names 7 pages and 4 open states per client: home, the latest week, rankings, the managers index,
+/* The spec of the floor names 7 pages and 3 open states per client: home, the latest week, rankings, the managers index,
    the manager page with the longest team name, the empty analyzer, and 404, then an open game card, ladder card,
-   Index list row, and strip. The hidden /ask/ of the front door is an extra page while the flag front_door is off. */
-test("the full floor holds the 7 pages and the 4 open states of the spec", () => {
+   and Index list row. The hidden /ask/ of the front door is an extra page while the flag front_door is off. */
+test("the full floor holds the 7 pages and the 3 open states of the spec", () => {
   const spec = FULL_FLOOR_PAGES.filter((entry) => entry !== "/ask/");
   const pages = spec.filter((entry) => typeof entry === "string");
   expect(new Set(pages).size).toBe(pages.length);
   expect(pages.length).toBe(7);
-  expect(spec.length - pages.length).toBe(4);
+  expect(spec.length - pages.length).toBe(3);
 });
 
 test("no waiver page is built, and its URL shows the 404 page", async ({ page }) => {
@@ -314,7 +311,6 @@ for (const route of routes.filter((route) => !fullFloorRoutes.includes(route))) 
 const bandRow = async (page: Page) => {
   const parts = [
     page.locator("header > div > a").first(),
-    page.locator("header details > summary"),
     page.getByRole("button", { name: /theme/i }),
   ];
   const bar = page.getByRole("navigation", { name: "Site menu" });
@@ -335,27 +331,11 @@ for (const width of [768, 1024, 1280]) {
     await expect(pills ? bar : menu).toBeVisible();
     await expect(pills ? menu : bar).toBeHidden();
     await expect(page.getByRole("navigation", { name: "Bottom menu" })).toHaveCount(0);
-    expect(await bandRow(page)).toEqual(pills ? [true, true, true, true] : [true, true, true]);
+    expect(await bandRow(page)).toEqual(pills ? [true, true, true] : [true, true]);
     // The pill bar shows each full label with no scroll of its own.
     if (pills) expect(await bar.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
     const targets = await scanTargets(page);
     expect([...targets.failures, ...(await scanScroll(page))]).toEqual([]);
-  });
-}
-
-/* The open strip of weeks takes its own space under the top band, so it covers no part of the page, such as the page title. */
-for (const width of [375, 768, 1280]) {
-  test(`the open strip of weeks of ${CLIENT} covers no page title at ${width}px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 900 });
-    // The front door has no week chip, so the test opens the latest week page, which keeps the chip.
-    // The home page shows the chip only when a client sets front_door to false.
-    await openPage(page, `${server.url}${LATEST_WEEK_ROUTE}`, "dark");
-    await page.locator("header details > summary").click();
-    const strip = await page.getByRole("navigation", { name: "Weeks of the season" }).boundingBox();
-    const title = await page.locator("h1").first().boundingBox();
-    expect(strip).not.toBeNull();
-    expect(title).not.toBeNull();
-    expect(strip!.y + strip!.height).toBeLessThanOrEqual(title!.y);
   });
 }
 
