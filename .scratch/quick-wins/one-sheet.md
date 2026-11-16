@@ -1,7 +1,7 @@
 # Each sheet is the shared Sheet
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-one-sheet`.
 Source: the session of 2026-11-16.
 Boundary: holds. 4 items of one kind; no new term or ADR; no moved seam, each item swaps a part for the shared `Sheet` of `packages/design/site/ui/sheet.tsx`; each done condition is one sentence.
@@ -103,3 +103,10 @@ Green: at `74d2c587`, `cd apps/site && npx vitest run ../../packages/analyzer/si
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `win-one-sheet`. Commits: `2b717bea`, `1f96b744`, `6b576def`, `60af5c88`, `74d2c587`. Date: 2026-11-16.
+The four new test files went red on the old code and green on the fix, and `make check-fast BASE=main` passed with 1539 site tests.
+Brian checks items 3 and 4 on iPhone Safari and Chrome, because jsdom checks only the style of the keyboard lift.
+The rule `egg-sheet-rise` in `apps/site/src/app/globals.css` has no user now, and a later run can remove it.
+In jsdom, a click test after a drag test of the Drawer misses its click, so each drag test runs last in its file.
+Read 14 files: AGENTS.md, apps/site/AGENTS.md, docs/agents/issue-tracker.md, GLOSSARY.md, packages/design/site/ui/README.md, packages/design/site/ui/sheet.tsx, packages/design/site/shell/keyboard.ts, apps/site/src/app/globals.css, apps/site/src/app/front-door/team-sheet.tsx, apps/site/src/app/front-door/passphrase-sheet.tsx, packages/analyzer/site/form/sheet.tsx, packages/analyzer/site/form/passphrase-dialog.tsx, packages/analyzer/site/form/analyzer.tsx, packages/eggs/site/hunt/claim-sheet.tsx.
