@@ -21,7 +21,7 @@ type PassphraseDialogProps = {
 
 export function PassphraseDialog({ open, error, onSubmit }: PassphraseDialogProps) {
   const [value, setValue] = useState("");
-  // The field opens the keyboard, so the foot of the sheet moves above the keyboard while the field has the focus.
+  // The field opens the keyboard, so the root marks the keyboard open while the field has the focus.
   const keyboard = useKeyboardField();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -40,10 +40,9 @@ export function PassphraseDialog({ open, error, onSubmit }: PassphraseDialogProp
       <SheetBackdrop />
       <SheetContent
         aria-describedby="passphrase-line"
-        // The Drawer content sits at the foot of the screen. --spacing-door-foot holds the height of the keyboard while a
-        // field has the focus (globals.css), so the field sits right above the keyboard on iOS. A transform moves the
-        // drag, so the offset and the drag do not meet.
-        style={{ bottom: "var(--spacing-door-foot)" }}
+        // The Drawer lifts its viewport by the --keyboard-inset that it reads from the visual viewport, so the field sits
+        // right above the keyboard on iOS. The Drawer sets the top of the content inline, so a bottom offset here would
+        // squash the content to its border and push the field off the screen.
         className="mx-auto flex w-full max-w-sheet flex-col gap-sp-4 rounded-t-hero border border-b-0 border-rule bg-card p-gutter pb-[calc(var(--spacing-gutter)+env(safe-area-inset-bottom))] shadow-sheet"
       >
         <div className="flex flex-col gap-sp-2">

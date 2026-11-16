@@ -16,7 +16,7 @@ import { useKeyboardField } from "@cpc/design/shell/keyboard";
 export function PassphraseSheet({ siteName, wrong, onPassphrase, onClose }: { siteName: string; wrong: boolean; onPassphrase: (value: string) => void; onClose: () => void }) {
   const [value, setValue] = useState("");
   const typed = value.trim();
-  // The field opens the keyboard as the ask box does, so the foot of the sheet moves above the keyboard for it.
+  // The field opens the keyboard as the ask box does, so the root marks the keyboard open and the pad of the home bar drops.
   const keyboard = useKeyboardField();
   // A drag close reports twice before the parent drops the sheet, and the parent must hear one close.
   const asked = useRef(false);
@@ -38,10 +38,9 @@ export function PassphraseSheet({ siteName, wrong, onPassphrase, onClose }: { si
       <SheetBackdrop />
       <SheetContent
         aria-describedby="passphrase-line"
-        // The Drawer content is a relative box at the foot of the screen. Its bottom offset is --spacing-door-foot, which
-        // holds the height of the keyboard while a field has the focus, so the field sits right above the keyboard on
-        // iOS (globals.css). A transform moves the drag, so the offset and the drag do not meet.
-        style={{ bottom: "var(--spacing-door-foot)" }}
+        // The Drawer lifts its viewport by the --keyboard-inset that it reads from the visual viewport, so the field sits
+        // right above the keyboard on iOS. The Drawer sets the top of the content inline, so a bottom offset here would
+        // squash the content to its border and push the field off the screen.
         className="mx-auto flex w-full max-w-sheet flex-col rounded-t-hero border border-b-0 border-rule bg-card p-0 shadow-sheet"
       >
         <SheetGrip className="mt-sp-2 h-sp-1 w-sp-6" />

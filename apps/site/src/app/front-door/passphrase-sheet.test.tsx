@@ -1,6 +1,6 @@
 /**
  * Tests for the passphrase sheet of the front door. It is the shared Sheet, so it shows the grip and drags closed.
- * Its content keeps the keyboard signal that lifts the field above the keyboard, and the field keeps the focus.
+ * The Drawer lifts its content above the keyboard, and the field keeps the focus.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
@@ -37,9 +37,12 @@ describe("the passphrase sheet of the front door", () => {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText("League passphrase", { selector: "input" })));
   });
 
-  it("lifts the content by the keyboard signal so the field sits above the keyboard", () => {
+  it("leaves the lift above the keyboard to the Drawer, so the content keeps its height", () => {
     render(<PassphraseSheet siteName="Test league" wrong={false} onPassphrase={noop} onClose={noop} />);
-    expect(screen.getByRole("dialog", { name: "What is the league passphrase?" }).style.bottom).toBe("var(--spacing-door-foot)");
+    const content = screen.getByRole("dialog", { name: "What is the league passphrase?" });
+    // The Drawer sets the top of the content inline, so a bottom offset would squash the content and push the field off the screen.
+    expect(content.style.bottom).toBe("");
+    expect(content.parentElement?.style.inset).toContain("var(--keyboard-inset");
   });
 
   it("closes on Not now", () => {
